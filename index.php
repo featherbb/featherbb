@@ -17,6 +17,7 @@ if ($pun_user['g_read_board'] == '0')
 // Load the index.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/index.php';
 
+// Load the index.php model file
 require PUN_ROOT.'model/index.php';
 
 // Get list of forums and topics with new posts since last visit
@@ -39,7 +40,6 @@ define('PUN_ALLOW_INDEX', 1);
 define('PUN_ACTIVE_PAGE', 'index');
 require PUN_ROOT.'header.php';
 
-// ne mettre que les sql dans cette fonction, enlever le traitement
 $forum_data = print_categories_forum();
 
 $stats = collect_stats();
