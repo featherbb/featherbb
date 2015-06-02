@@ -59,8 +59,6 @@ $errors = array();
 // Did someone just hit "Submit" or "Preview"?
 if (isset($_POST['form_sent']))
 {
-	flux_hook('post_before_validation');
-
 	// Flood protection
 	if (!isset($_POST['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood'])
 		$errors[] = sprintf($lang_post['Flood start'], $pun_user['g_post_flood'], $pun_user['g_post_flood'] - (time() - $pun_user['last_post']));
@@ -162,8 +160,6 @@ if (isset($_POST['form_sent']))
 	$message = strip_bad_multibyte_chars($message);
 
 	$now = time();
-
-	flux_hook('post_after_validation');
 
 	// Did everything go according to plan?
 	if (empty($errors) && !isset($_POST['preview']))
@@ -545,8 +541,6 @@ else
 	$focus_element[] = 'req_username';
 }
 
-flux_hook('post_before_header');
-
 define('PUN_ACTIVE_PAGE', 'index');
 require PUN_ROOT.'header.php';
 
@@ -706,7 +700,6 @@ if (!empty($checkboxes))
 
 ?>
 			</div>
-<?php flux_hook('post_before_submit') ?>
 			<p class="buttons"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>
