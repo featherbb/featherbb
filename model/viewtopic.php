@@ -5,7 +5,8 @@
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
+// Redirects to a post in particular
 function redirect_to_post($post_id)
 {
 	global $db, $pun_user, $lang_common;
@@ -25,6 +26,7 @@ function redirect_to_post($post_id)
 	return $post;
 }
 
+// Redirects to new posts or last post
 function handle_actions($action, $topic_id)
 {
 	global $db, $pun_user;
@@ -66,6 +68,7 @@ function handle_actions($action, $topic_id)
 	}
 }
 
+// Gets some info about the topic
 function get_info_topic($id)
 {
 	global $db, $pun_user, $lang_common;
@@ -83,6 +86,7 @@ function get_info_topic($id)
 	return $cur_topic;
 }
 
+// Generates the post link
 function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
 {
 	global $db, $pun_user, $lang_topic;
@@ -107,6 +111,7 @@ function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
 	return $post_link;
 }
 
+// Should we display the quickpost?
 function is_quickpost($post_replies, $closed, $is_admmod)
 {
 	global $pun_config, $pun_user;
@@ -130,6 +135,7 @@ function is_quickpost($post_replies, $closed, $is_admmod)
 	return $quickpost;
 }
 
+// Subscraction link
 function get_subscraction($is_subscribed, $topic_id)
 {
 	global $pun_user, $pun_config, $lang_topic;
@@ -148,6 +154,7 @@ function get_subscraction($is_subscribed, $topic_id)
 	return $subscraction;
 }
 
+// Adds relationship meta tags
 function get_page_head($topic_id, $num_pages, $p)
 {
 	global $pun_config, $lang_common;
@@ -171,6 +178,7 @@ function get_page_head($topic_id, $num_pages, $p)
 	return $page_head;
 }
 
+// Prints the posts
 function print_posts($topic_id, $start_from, $cur_topic)
 {
 	global $db, $pun_user, $pun_config, $lang_topic;
