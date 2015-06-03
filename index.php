@@ -20,6 +20,7 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/index.php';
 // Load the index.php model file
 require PUN_ROOT.'model/index.php';
 
+// Add relationship meta tags
 $page_head = get_page_head();
 
 $forum_actions = get_forum_actions();
