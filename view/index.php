@@ -11,7 +11,7 @@ if (!defined('PUN'))
 	exit;
 
 $cur_cat = 0;
-foreach ($forum_data as $forum)
+foreach ($index_data as $forum)
 {
 	if ($forum['cur_category'] == 0) : ?>
 	<div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo $lang_index['Empty board'] ?></p></div></div></div>

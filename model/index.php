@@ -6,7 +6,34 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-function get_forum_topic_list()
+// Returns page head
+function get_page_head()
+{
+	global $pun_config, $lang_common;
+	if ($pun_config['o_feed_type'] == '1')
+		$page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.$lang_common['RSS active topics feed'].'" />');
+	else if ($pun_config['o_feed_type'] == '2')
+		$page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.$lang_common['Atom active topics feed'].'" />');
+	
+	return $page_head;
+}
+
+// Returns forum action
+function get_forum_actions()
+{
+	global $pun_user, $lang_common;
+	
+	$forum_actions = array();
+
+	// Display a "mark all as read" link
+	if (!$pun_user['is_guest'])
+		$forum_actions[] = '<a href="misc.php?action=markread">'.$lang_common['Mark all as read'].'</a>';
+	
+	return $forum_actions;
+}
+
+// Detects if a "new" icon has to be displayed
+function get_new_posts()
 {
 	global $db, $pun_user;
 	
@@ -39,17 +66,22 @@ function get_forum_topic_list()
 			}
 		}
 		
-		return $new_topics;
+		return $forums;
 	}
 }
 
-function print_categories_forum()
+// Returns the elements needed to display categories and their forums
+function print_categories_forums()
 {
 	global $db, $lang_common, $lang_index, $pun_user;
 	
+	// Get list of forums and topics with new posts since last visit
+	if (!$pun_user['is_guest'])
+		$new_topics = get_new_posts();
+	
 	$result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 	
-	$forum_data = array();
+	$index_data = array();
 
 	$cur_forum['cur_category'] = 0;
 	$cur_forum['cat_count_formatted'] = 0;
@@ -121,12 +153,13 @@ function print_categories_forum()
 			$cur_forum['moderators_formatted'] = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.$lang_common['Moderated by'].'</em> '.implode(', ', $moderators).')</p>'."\n";
 		}
 		
-		$forum_data[] = $cur_forum;
+		$index_data[] = $cur_forum;
 	}
 		
-	return $forum_data;
+	return $index_data;
 }
 
+// Returns the elements needed to display stats
 function collect_stats()
 {
 	global $db, $pun_user;
@@ -155,6 +188,7 @@ function collect_stats()
 	return $stats;
 }
 
+// Returns the elements needed to display users online
 function fetch_users_online()
 {
 	global $db, $pun_user;
