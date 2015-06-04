@@ -95,7 +95,7 @@ function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
 	if ($closed == '0')
 	{
 		if (($post_replies == '' && $pun_user['g_post_replies'] == '1') || $post_replies == '1' || $is_admmod)
-			$post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?tid='.$id.'">'.$lang_topic['Post reply'].'</a></p>'."\n";
+			$post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?tid='.$topic_id.'">'.$lang_topic['Post reply'].'</a></p>'."\n";
 		else
 			$post_link = '';
 	}
