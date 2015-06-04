@@ -80,6 +80,7 @@ if (isset($_POST['form_sent']))
 		// If it's a new topic
 		else if ($fid)
 		{
+			// Insert the topic, get the new_pid
 			$new_pid = insert_topic($post, $fid);
 
 			// Should we send out notifications?
