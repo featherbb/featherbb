@@ -1,13 +1,14 @@
-# FluxBB 1.5 Readme
+# FeatherBB Readme
 
 [![Join the chat at https://gitter.im/featherbb/featherbb](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/featherbb/featherbb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## About
 
-FluxBB is an open source forum application released under the GNU General Public
-Licence. It is free to download and use and will remain so. FluxBB was conceived and
-designed to be fast and light with less of the "not so essential" features that some
-of the other forums have whilst not sacrificing essential functionality or usability.
+FeatherBB is an open source forum application released under the GNU General Public
+Licence. It is free to download and use and will remain so. FeatherBB is a fork of
+FluxBB 1.5 designed to be simple and very lightweight, with modern features: MVC
+architecture, PDO, OOP (soon) and a plugin system (soon). Maybe more? You're more
+than welcome to join the development :-)
 
 ## Requirements
 
@@ -22,9 +23,8 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 
 ## Links
 
-* Homepage: http://fluxbb.org
-* Documentation: http://fluxbb.org/docs/v1.5
-* Community: http://fluxbb.org/forums/
-* Resources: http://fluxbb.org/resources/
-* IRC: irc://irc.freenode.net/fluxbb
-* Development: http://github.com/fluxbb/fluxbb
+* Homepage: http://featherbb.org
+* Documentation: soon
+* Community: http://featherbb.org/forums/
+* Chat: https://gitter.im/featherbb/featherbb
+* Development: http://github.com/featherbb/featherbb
