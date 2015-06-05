@@ -171,7 +171,7 @@ if (isset($pun_config['o_database_revision']) && $pun_config['o_database_revisio
 
 $default_style = $pun_config['o_default_style'];
 if (!file_exists(PUN_ROOT.'style/'.$default_style.'.css'))
-	$default_style = 'Air';
+	$default_style = 'FeatherBB';
 
 // Start a session, used to queue up errors if duplicate users occur when converting from FluxBB v1.2.
 session_start();
@@ -1850,7 +1850,7 @@ foreach ($errors[$id] as $cur_error)
 
 		// Check the default style still exists!
 		if (!file_exists(PUN_ROOT.'style/'.$pun_config['o_default_style'].'.css'))
-			$db->query('UPDATE '.$db->prefix.'config SET conf_value = \'Air\' WHERE conf_name = \'o_default_style\'') or error('Unable to update default style', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'config SET conf_value = \'FeatherBB\' WHERE conf_name = \'o_default_style\'') or error('Unable to update default style', __FILE__, __LINE__, $db->error());
 
 		// This feels like a good time to synchronize the forums
 		$result = $db->query('SELECT id FROM '.$db->prefix.'forums') or error('Unable to fetch forum IDs', __FILE__, __LINE__, $db->error());
