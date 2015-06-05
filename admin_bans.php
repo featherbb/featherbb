@@ -517,7 +517,7 @@ generate_admin_menu('bans');
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Username label'] ?></th>
-									<td><input type="text" name="form[username]" size="25" maxlength="25" tabindex="4" /></td>
+									<td><input type="text" name="form[username]" size="30" maxlength="25" tabindex="4" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['IP label'] ?></th>
