@@ -1651,8 +1651,8 @@ img {
 #profile.block2col div.blockform div.box form#profile7 div.inform fieldset div.infldset div.conl div.rbox label,
 #quickpost.blockform div.box form#quickpostform div.inform fieldset div.infldset.txtarea label,
 #postform.blockform div.box form#post div.inform fieldset div.infldset.txtarea label.required,
-#editform.blockform div.box form#edit div.inform fieldset div.infldset div.rbox label,
-#postform.blockform div.box form#post div.inform fieldset div.infldset div.rbox label{
+#editform.blockform div.box form#edit div.inform fieldset div.infldset.txtarea label.required,
+#editform.blockform div.box form#edit div.inform fieldset div.infldset div.rbox label{
 	display: block;
 }
 #redir {
