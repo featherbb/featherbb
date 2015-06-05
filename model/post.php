@@ -534,7 +534,7 @@ function get_quote_message($qid, $tid)
 // Get the current state of checkboxes
 function get_checkboxes($post_data, $fid, $is_admmod)
 {
-	global $pun_user, $lang_post, $pun_config;
+	global $pun_user, $lang_post, $lang_common, $pun_config;
 	
 	$checkboxes = array();
 	if ($fid && $is_admmod)
