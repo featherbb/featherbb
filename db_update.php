@@ -8,7 +8,7 @@
  */
 
 // The FluxBB version this script updates to
-define('UPDATE_TO', '1.5.8');
+define('UPDATE_TO', '1.0.0');
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2);
@@ -33,7 +33,7 @@ define('FORUM_NO_SET_NAMES', 1);
 
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
-	exit('You are running PHP version '.PHP_VERSION.'. FluxBB '.UPDATE_TO.' requires at least PHP '.MIN_PHP_VERSION.' to run properly. You must upgrade your PHP installation before you can continue.');
+	exit('You are running PHP version '.PHP_VERSION.'. FeatherBB '.UPDATE_TO.' requires at least PHP '.MIN_PHP_VERSION.' to run properly. You must upgrade your PHP installation before you can continue.');
 
 define('PUN_ROOT', dirname(__FILE__).'/');
 
