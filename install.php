@@ -149,7 +149,7 @@ if (!isset($_POST['form_sent']))
 	$title = $lang_install['My FeatherBB Forum'];
 	$description = '<p><span>'.$lang_install['Description'].'</span></p>';
 	$default_lang = $install_lang;
-	$default_style = 'Air';
+	$default_style = 'FeatherBB';
 }
 else
 {
