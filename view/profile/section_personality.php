@@ -50,3 +50,5 @@ if (!defined('PUN'))
 		</form>
 	</div>
 </div>
+	<div class="clearer"></div>
+</div>
