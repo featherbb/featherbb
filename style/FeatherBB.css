@@ -1677,3 +1677,28 @@ img {
 #searchform.blockform div.box form#search div.inform fieldset div.infldset label.conl select#search_in {
     margin-top: 7px;
 }
+body #puninstall {
+    padding-bottom: 60px;
+}
+#puninstall .blockform .box .inform fieldset {
+	margin-top: 15px;
+}
+#puninstall h3 {
+	font-size: 22px;
+	text-align: center;
+}
+.forminfo p, #install p.buttons, html body div#puninstall.pun div.punwrap section.container div#brdheader.block div.box div#brdtitle.inbox {
+	text-align: center;
+}
+#install p.buttons {
+	font-size: 22px;
+}
+#puninstall .blockform .box .inform fieldset label {
+	display: block;
+}
+#puninstall .blockform .box .inform fieldset legend {
+	margin-bottom: 0;
+}
+#puninstall.pun div.punwrap section.container div#brdmain div.blockform div.box form#install div.inform fieldset div.infldset p{
+	margin-bottom: 12px;
+}

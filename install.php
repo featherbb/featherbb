@@ -297,203 +297,207 @@ function process_form(the_form)
 <div class="top-box"><div><!-- Top Corners --></div></div>
 <div class="punwrap">
 
-<div id="brdheader" class="block">
-	<div class="box">
-		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo $lang_install['FeatherBB Installation'] ?></span></h1>
-			<div id="brddesc"><p><?php echo $lang_install['Welcome'] ?></p></div>
+<section class="container">
+	<div id="brdheader" class="block">
+		<div class="box">
+			<div id="brdtitle" class="inbox">
+				<h1><span><?php echo $lang_install['FeatherBB Installation'] ?></span></h1>
+				<div id="brddesc"><p><?php echo $lang_install['Welcome'] ?></p></div>
+			</div>
 		</div>
 	</div>
-</div>
+</section>
 
-<div id="brdmain">
-<?php if (count($languages) > 1): ?><div class="blockform">
-	<h2><span><?php echo $lang_install['Choose install language'] ?></span></h2>
-	<div class="box">
-		<form id="install" method="post" action="install.php">
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_install['Install language'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Choose install language info'] ?></p>
-						<label><strong><?php echo $lang_install['Install language'] ?></strong>
-						<br /><select name="install_lang">
+<section class="container">
+	<div id="brdmain">
+	<?php if (count($languages) > 1): ?><div class="blockform">
+		<h2><span><?php echo $lang_install['Choose install language'] ?></span></h2>
+		<div class="box">
+			<form id="install" method="post" action="install.php">
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_install['Install language'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Choose install language info'] ?></p>
+							<label><strong><?php echo $lang_install['Install language'] ?></strong>
+							<br /><select name="install_lang">
 <?php
 
-		foreach ($languages as $temp)
-		{
-			if ($temp == $install_lang)
-				echo "\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
-			else
-				echo "\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
-		}
+			foreach ($languages as $temp)
+			{
+				if ($temp == $install_lang)
+					echo "\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
+				else
+					echo "\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
+			}
 
 ?>
-						</select>
-						<br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Change language'] ?>" /></p>
-		</form>
+							</select>
+							<br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Change language'] ?>" /></p>
+			</form>
+		</div>
 	</div>
-</div>
-<?php endif; ?>
+	<?php endif; ?>
 
-<div class="blockform">
-	<h2><span><?php echo sprintf($lang_install['Install'], FORUM_VERSION) ?></span></h2>
-	<div class="box">
-		<form id="install" method="post" action="install.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
-		<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo pun_htmlspecialchars($install_lang) ?>" /></div>
-			<div class="inform">
-<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
-					<h3><?php echo $lang_install['Errors'] ?></h3>
-					<ul class="error-list">
+	<div class="blockform">
+		<h2><span><?php echo sprintf($lang_install['Install'], FORUM_VERSION) ?></span></h2>
+		<div class="box">
+			<form id="install" method="post" action="install.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
+			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo pun_htmlspecialchars($install_lang) ?>" /></div>
+				<div class="inform">
+	<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
+						<h3><?php echo $lang_install['Errors'] ?></h3>
+						<ul class="error-list">
 <?php
 
-foreach ($alerts as $cur_alert)
-	echo "\t\t\t\t\t\t".'<li><strong>'.$cur_alert.'</strong></li>'."\n";
+	foreach ($alerts as $cur_alert)
+		echo "\t\t\t\t\t\t".'<li><strong>'.$cur_alert.'</strong></li>'."\n";
 ?>
-					</ul>
-				</div>
-<?php endif; ?>			</div>
-			<div class="inform">
-				<div class="forminfo">
-					<h3><?php echo $lang_install['Database setup'] ?></h3>
-					<p><?php echo $lang_install['Info 1'] ?></p>
-				</div>
-				<fieldset>
-				<legend><?php echo $lang_install['Select database'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 2'] ?></p>
-						<label class="required"><strong><?php echo $lang_install['Database type'] ?> <span><?php echo $lang_install['Required'] ?></span></strong>
-						<br /><select name="req_db_type">
+						</ul>
+					</div>
+	<?php endif; ?>			</div>
+				<div class="inform">
+					<div class="forminfo">
+						<h3><?php echo $lang_install['Database setup'] ?></h3>
+						<p><?php echo $lang_install['Info 1'] ?></p>
+					</div>
+					<fieldset>
+					<legend><?php echo $lang_install['Select database'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 2'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Database type'] ?> <span><?php echo $lang_install['Required'] ?></span></strong>
+							<br /><select name="req_db_type">
 <?php
 
-	foreach ($db_extensions as $temp)
-	{
-		if ($temp[0] == $db_type)
-			echo "\t\t\t\t\t\t\t".'<option value="'.$temp[0].'" selected="selected">'.$temp[1].'</option>'."\n";
-		else
-			echo "\t\t\t\t\t\t\t".'<option value="'.$temp[0].'">'.$temp[1].'</option>'."\n";
-	}
-
-?>
-						</select>
-						<br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_install['Database hostname'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 3'] ?></p>
-						<label class="required"><strong><?php echo $lang_install['Database server hostname'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo pun_htmlspecialchars($db_host) ?>" size="50" /><br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_install['Database enter name'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 4'] ?></p>
-						<label class="required"><strong><?php echo $lang_install['Database name'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo pun_htmlspecialchars($db_name) ?>" size="30" /><br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_install['Database enter informations'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 5'] ?></p>
-						<label class="conl"><?php echo $lang_install['Database username'] ?><br /><input type="text" name="db_username" value="<?php echo pun_htmlspecialchars($db_username) ?>" size="30" /><br /></label>
-						<label class="conl"><?php echo $lang_install['Database password'] ?><br /><input type="password" name="db_password" size="30" /><br /></label>
-						<div class="clearer"></div>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_install['Database enter prefix'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 6'] ?></p>
-						<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<div class="forminfo">
-					<h3><?php echo $lang_install['Administration setup'] ?></h3>
-					<p><?php echo $lang_install['Info 7'] ?></p>
-				</div>
-				<fieldset>
-					<legend><?php echo $lang_install['Administration setup'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 8'] ?></p>
-						<label class="required"><strong><?php echo $lang_install['Administrator username'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
-						<label class="conl required"><strong><?php echo $lang_install['Password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
-						<label class="conl required"><strong><?php echo $lang_install['Confirm password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
-						<div class="clearer"></div>
-						<label class="required"><strong><?php echo $lang_install['Administrator email'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo pun_htmlspecialchars($email) ?>" size="50" maxlength="80" /><br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<div class="forminfo">
-					<h3><?php echo $lang_install['Board setup'] ?></h3>
-					<p><?php echo $lang_install['Info 11'] ?></p>
-				</div>
-				<fieldset>
-					<legend><?php echo $lang_install['General information'] ?></legend>
-					<div class="infldset">
-						<label class="required"><strong><?php echo $lang_install['Board title'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo pun_htmlspecialchars($title) ?>" size="60" maxlength="255" /><br /></label>
-						<label><?php echo $lang_install['Board description'] ?><br /><input id="desc" type="text" name="desc" value="<?php echo pun_htmlspecialchars($description) ?>" size="60" maxlength="255" /><br /></label>
-						<label class="required"><strong><?php echo $lang_install['Base URL'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo pun_htmlspecialchars($base_url) ?>" size="60" maxlength="100" /><br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_install['Appearance'] ?></legend>
-					<div class="infldset">
-						<p><?php echo $lang_install['Info 15'] ?></p>
-						<label class="required"><strong><?php echo $lang_install['Default language'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
-<?php
-
-		$languages = forum_list_langs();
-		foreach ($languages as $temp)
+		foreach ($db_extensions as $temp)
 		{
-			if ($temp == $default_lang)
-				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
+			if ($temp[0] == $db_type)
+				echo "\t\t\t\t\t\t\t".'<option value="'.$temp[0].'" selected="selected">'.$temp[1].'</option>'."\n";
 			else
-				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
+				echo "\t\t\t\t\t\t\t".'<option value="'.$temp[0].'">'.$temp[1].'</option>'."\n";
 		}
 
 ?>
-						</select><br /></label>
-						<label class="required"><strong><?php echo $lang_install['Default style'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_style" name="req_default_style">
+							</select>
+							<br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_install['Database hostname'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 3'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Database server hostname'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo pun_htmlspecialchars($db_host) ?>" size="50" /><br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_install['Database enter name'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 4'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Database name'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo pun_htmlspecialchars($db_name) ?>" size="30" /><br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_install['Database enter informations'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 5'] ?></p>
+							<label class="conl"><?php echo $lang_install['Database username'] ?><br /><input type="text" name="db_username" value="<?php echo pun_htmlspecialchars($db_username) ?>" size="30" /><br /></label>
+							<label class="conl"><?php echo $lang_install['Database password'] ?><br /><input type="password" name="db_password" size="30" /><br /></label>
+							<div class="clearer"></div>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_install['Database enter prefix'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 6'] ?></p>
+							<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<div class="forminfo">
+						<h3><?php echo $lang_install['Administration setup'] ?></h3>
+						<p><?php echo $lang_install['Info 7'] ?></p>
+					</div>
+					<fieldset>
+						<legend><?php echo $lang_install['Administration setup'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 8'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Administrator username'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
+							<label class="conl required"><strong><?php echo $lang_install['Password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
+							<label class="conl required"><strong><?php echo $lang_install['Confirm password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
+							<div class="clearer"></div>
+							<label class="required"><strong><?php echo $lang_install['Administrator email'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo pun_htmlspecialchars($email) ?>" size="50" maxlength="80" /><br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<div class="forminfo">
+						<h3><?php echo $lang_install['Board setup'] ?></h3>
+						<p><?php echo $lang_install['Info 11'] ?></p>
+					</div>
+					<fieldset>
+						<legend><?php echo $lang_install['General information'] ?></legend>
+						<div class="infldset">
+							<label class="required"><strong><?php echo $lang_install['Board title'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo pun_htmlspecialchars($title) ?>" size="60" maxlength="255" /><br /></label>
+							<label><?php echo $lang_install['Board description'] ?><br /><input id="desc" type="text" name="desc" value="<?php echo pun_htmlspecialchars($description) ?>" size="60" maxlength="255" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Base URL'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo pun_htmlspecialchars($base_url) ?>" size="60" maxlength="100" /><br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_install['Appearance'] ?></legend>
+						<div class="infldset">
+							<p><?php echo $lang_install['Info 15'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Default language'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
 <?php
 
-		$styles = forum_list_styles();
-		foreach ($styles as $temp)
-		{
-			if ($temp == $default_style)
-				echo "\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
-			else
-				echo "\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
-		}
+			$languages = forum_list_langs();
+			foreach ($languages as $temp)
+			{
+				if ($temp == $default_lang)
+					echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
+				else
+					echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
+			}
 
 ?>
-						</select><br /></label>
-					</div>
-				</fieldset>
-			</div>
-			<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Start install'] ?>" /></p>
-		</form>
+							</select><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Default style'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_style" name="req_default_style">
+<?php
+
+			$styles = forum_list_styles();
+			foreach ($styles as $temp)
+			{
+				if ($temp == $default_style)
+					echo "\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+				else
+					echo "\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+			}
+
+?>
+							</select><br /></label>
+						</div>
+					</fieldset>
+				</div>
+				<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Start install'] ?>" /></p>
+			</form>
+		</div>
 	</div>
-</div>
-</div>
+	</div>
+</section>
 
 </div>
 <div class="end-box"><div><!-- Bottom Corners --></div></div>
