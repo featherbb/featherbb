@@ -93,8 +93,5 @@ if (!defined('PUN'))
 			</form>
 		</div>
 	</div>
-<?php
-endif;
-?>
 	<div class="clearer"></div>
 </div>
