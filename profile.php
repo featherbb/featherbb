@@ -50,7 +50,7 @@ if ($action == 'change_pass')
 	require PUN_ROOT.'header.php';
 	
 	// Load the view.php view file
-	require PUN_ROOT.'view/profile.php';
+	require PUN_ROOT.'view/profile/change_pass.php';
 
 	require PUN_ROOT.'footer.php';
 }
@@ -67,7 +67,7 @@ else if ($action == 'change_email')
 	require PUN_ROOT.'header.php';
 	
 	// Load the view.php view file
-	require PUN_ROOT.'view/profile.php';
+	require PUN_ROOT.'view/profile/change_mail.php';
 
 	require PUN_ROOT.'footer.php';
 }
@@ -91,7 +91,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 	require PUN_ROOT.'header.php';
 	
 	// Load the view.php view file
-	require PUN_ROOT.'view/profile.php';
+	require PUN_ROOT.'view/profile/upload_avatar.php';
 
 	require PUN_ROOT.'footer.php';
 }
@@ -158,7 +158,7 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 	require PUN_ROOT.'header.php';
 	
 	// Load the view.php view file
-	require PUN_ROOT.'view/profile.php';
+	require PUN_ROOT.'view/profile/delete_user.php';
 
 	require PUN_ROOT.'footer.php';
 }
@@ -206,10 +206,8 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 	define('PUN_ACTIVE_PAGE', 'index');
 	require PUN_ROOT.'header.php';
 
-	$view_profile = true;
-
 	// Load the view.php view file
-	require PUN_ROOT.'view/profile.php';
+	require PUN_ROOT.'view/profile/view_profile.php';
 
 	require PUN_ROOT.'footer.php';
 }
@@ -227,7 +225,7 @@ else
 		generate_profile_menu('essentials');
 		
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_essentials.php';
 	}
 	else if ($section == 'personal')
 	{
@@ -241,7 +239,7 @@ else
 		generate_profile_menu('personal');
 		
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_personal.php';
 	}
 	else if ($section == 'messaging')
 	{
@@ -253,7 +251,7 @@ else
 		generate_profile_menu('messaging');
 		
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_messaging.php';
 	}
 	else if ($section == 'personality')
 	{
@@ -280,7 +278,7 @@ else
 		generate_profile_menu('personality');
 		
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_personality.php';
 
 	}
 	else if ($section == 'display')
@@ -292,7 +290,7 @@ else
 		generate_profile_menu('display');
 
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_display.php';
 	}
 	else if ($section == 'privacy')
 	{
@@ -303,7 +301,7 @@ else
 		generate_profile_menu('privacy');
 		
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_privacy.php';
 	}
 	else if ($section == 'admin')
 	{
@@ -318,7 +316,7 @@ else
 		generate_profile_menu('admin');
 		
 		// Load the view.php view file
-		require PUN_ROOT.'view/profile.php';
+		require PUN_ROOT.'view/profile/section_admin.php';
 	}
 	else
 		message($lang_common['Bad request'], false, '404 Not Found');
