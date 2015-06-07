@@ -58,10 +58,10 @@ function check_for_errors($post_data)
 		if ($pun_config['p_allow_banned_email'] == '0')
 			$user['errors'][] = $lang_prof_reg['Banned email'];
 
-		$banned_email = true; // Used later when we send an alert email
+		$user['banned_email'] = 1; // Used later when we send an alert email
 	}
 	else
-		$banned_email = false;
+		$user['banned_email'] = 0;
 
 	// Check if someone else already has registered with that email address
 	$dupe_list = array();
@@ -86,14 +86,6 @@ function check_for_errors($post_data)
 	else
 		$user['language'] = $pun_config['o_default_lang'];
 
-	$user['timezone'] = round($post_data['timezone'], 1);
-
-	$user['dst'] = isset($post_data['dst']) ? '1' : '0';
-
-	$user['email_setting'] = intval($post_data['email_setting']);
-	if ($user['email_setting'] < 0 || $user['email_setting'] > 2)
-		$user['email_setting'] = $pun_config['o_default_email_setting'];
-	
 	return $user;
 }
 
@@ -108,7 +100,7 @@ function insert_user($user)
 	$password_hash = pun_hash($user['password1']);
 
 	// Add the user
-	$db->query('INSERT INTO '.$db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$db->escape($user['username']).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$db->escape($user['email1']).'\', '.$user['email_setting'].', '.$user['timezone'].' , '.$user['dst'].', \''.$db->escape($user['language']).'\', \''.$pun_config['o_default_style'].'\', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$db->escape($user['username']).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$db->escape($user['email1']).'\', '.$pun_config['o_default_email_setting'].', '.$pun_config['o_default_timezone'].' , 0, \''.$db->escape($user['language']).'\', \''.$pun_config['o_default_style'].'\', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
 	$new_uid = $db->insert_id();
 
 	if ($pun_config['o_regs_verify'] == '0')
@@ -124,7 +116,7 @@ function insert_user($user)
 	if ($pun_config['o_mailing_list'] != '')
 	{
 		// If we previously found out that the email was banned
-		if ($banned_email)
+		if ($user['banned_email'])
 		{
 			// Load the "banned email register" template
 			$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/banned_email_register.tpl'));
