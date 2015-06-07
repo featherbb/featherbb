@@ -40,23 +40,23 @@ function check_for_errors($post_data)
 	check_username($user['username']);
 
 	if (pun_strlen($user['password1']) < 6)
-		$errors[] = $lang_prof_reg['Pass too short'];
+		$user['errors'][] = $lang_prof_reg['Pass too short'];
 	else if ($user['password1'] != $password2)
-		$errors[] = $lang_prof_reg['Pass not match'];
+		$user['errors'][] = $lang_prof_reg['Pass not match'];
 
 	// Validate email
 	require PUN_ROOT.'include/email.php';
 
 	if (!is_valid_email($user['email1']))
-		$errors[] = $lang_common['Invalid email'];
+		$user['errors'][] = $lang_common['Invalid email'];
 	else if ($pun_config['o_regs_verify'] == '1' && $user['email1'] != $email2)
-		$errors[] = $lang_register['Email not match'];
+		$user['errors'][] = $lang_register['Email not match'];
 
 	// Check if it's a banned email address
 	if (is_banned_email($user['email1']))
 	{
 		if ($pun_config['p_allow_banned_email'] == '0')
-			$errors[] = $lang_prof_reg['Banned email'];
+			$user['errors'][] = $lang_prof_reg['Banned email'];
 
 		$banned_email = true; // Used later when we send an alert email
 	}
@@ -70,7 +70,7 @@ function check_for_errors($post_data)
 	if ($db->num_rows($result))
 	{
 		if ($pun_config['p_allow_dupe_email'] == '0')
-			$errors[] = $lang_prof_reg['Dupe email'];
+			$user['errors'][] = $lang_prof_reg['Dupe email'];
 
 		while ($cur_dupe = $db->fetch_assoc($result))
 			$dupe_list[] = $cur_dupe['username'];

@@ -12,7 +12,7 @@ if (!defined('PUN'))
 	exit;
 
 // If there are errors, we display them
-if (!empty($errors))
+if (!empty($user['errors']))
 {
 
 ?>
@@ -24,7 +24,7 @@ if (!empty($errors))
 			<ul class="error-list">
 <?php
 
-	foreach ($errors as $cur_error)
+	foreach ($user['errors'] as $cur_error)
 		echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
 ?>
 			</ul>
