@@ -1652,7 +1652,8 @@ img {
 #quickpost.blockform div.box form#quickpostform div.inform fieldset div.infldset.txtarea label,
 #postform.blockform div.box form#post div.inform fieldset div.infldset.txtarea label.required,
 #editform.blockform div.box form#edit div.inform fieldset div.infldset.txtarea label.required,
-#editform.blockform div.box form#edit div.inform fieldset div.infldset div.rbox label{
+#editform.blockform div.box form#edit div.inform fieldset div.infldset div.rbox label,
+#regform.blockform div.box form#register div.inform fieldset div.infldset div.rbox label{
 	display: block;
 }
 #redir {
