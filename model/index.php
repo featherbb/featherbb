@@ -216,7 +216,10 @@ function fetch_users_online()
 			++$num_guests;
 	}
 
-	$online['num_users'] = count($online['users']);
+	if(isset($online['users']))
+		$online['num_users'] = count($online['users']);
+	else
+		$online['num_users'] = 0;
 	$online['num_guests'] = $num_guests;
 	
 	return $online;
