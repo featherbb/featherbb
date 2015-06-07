@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-// The FluxBB version this script updates to
+// The FeatherBB version this script updates to
 define('UPDATE_TO', '1.0.0');
 
 define('UPDATE_TO_DB_REVISION', 21);
