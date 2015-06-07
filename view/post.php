@@ -102,9 +102,7 @@ if ($pun_user['is_guest'])
 						<label class="conl<?php echo ($pun_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" value="<?php if (isset($_POST[$email_form_name])) echo pun_htmlspecialchars($post['email']); ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php
-
 }
-
 if ($fid): ?>
 						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (isset($_POST['req_subject'])) echo pun_htmlspecialchars($post['subject']); ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
@@ -120,7 +118,6 @@ if ($fid): ?>
 <?php				
 if (!empty($checkboxes))
 {
-
 ?>
 			</div>
 			<div class="inform">
@@ -156,6 +153,7 @@ if ($tid && $pun_config['o_topic_review'] != '0') :
 	
 	foreach ($post_data as $post)
 	{
+		++$post_count;
 	?>
 	<div class="blockpost">
 	<div class="box<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
@@ -178,7 +176,6 @@ if ($tid && $pun_config['o_topic_review'] != '0') :
 	</div>
 </div>
 	<?php
-	++$post_count;
 	}
 	?>
 		
