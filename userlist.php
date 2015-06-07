@@ -34,7 +34,7 @@ $show_group = isset($_GET['show_group']) ? intval($_GET['show_group']) : -1;
 $sort_by = isset($_GET['sort_by']) && (in_array($_GET['sort_by'], array('username', 'registered')) || ($_GET['sort_by'] == 'num_posts' && $show_post_count)) ? $_GET['sort_by'] : 'username';
 $sort_dir = isset($_GET['sort_dir']) && $_GET['sort_dir'] == 'DESC' ? 'DESC' : 'ASC';
 
-$num_users = fetch_user_count($username);
+$num_users = fetch_user_count($username, $show_group);
 
 // Determine the user offset (based on $_GET['p'])
 $num_pages = ceil($num_users / 50);
@@ -55,7 +55,7 @@ define('PUN_ACTIVE_PAGE', 'userlist');
 require PUN_ROOT.'header.php';
 
 // Print the users
-$userlist_data = print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count);
+$userlist_data = print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count, $show_group);
 
 // Load the userlist.php view file
 require PUN_ROOT.'view/userlist.php';

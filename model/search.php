@@ -471,6 +471,7 @@ function get_search_results($get_data)
 
 		$p = (!isset($get_data['p']) || $get_data['p'] <= 1 || $get_data['p'] > $num_pages) ? 1 : intval($get_data['p']);
 		$start_from = $per_page * ($p - 1);
+		$search['start_from'] = $start_from;
 
 		// Generate paging links
 		$search['paging_links'] = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'search.php?search_id='.$search_id);
@@ -537,12 +538,11 @@ function get_search_results($get_data)
 	}
 	
 	$search['show_as'] = $show_as;
-	$search['start_from'] = $start_from;
 	
 	return $search;
 }
 
-function display_search_results($search, $post_count, $topic_count)
+function display_search_results($search)
 {
 	global $pun_config, $pun_user, $lang_forum, $lang_common, $lang_topic, $lang_search;
 	
@@ -550,6 +550,8 @@ function display_search_results($search, $post_count, $topic_count)
 	if (!$pun_user['is_guest'])
 		$tracked_topics = get_tracked_topics();
 	
+	$post_count = $topic_count = 0;
+
 	foreach ($search['search_set'] as $cur_search)
 	{
 		$forum = '<a href="viewforum.php?id='.$cur_search['forum_id'].'">'.pun_htmlspecialchars($cur_search['forum_name']).'</a>';

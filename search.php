@@ -43,18 +43,13 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		// Load the search.php header file
 		require PUN_ROOT.'view/search/header.php';
 
-		if ($search['show_as'] == 'topics')
-			$topic_count = 0;
-		else if ($search['show_as'] == 'posts')
+		if ($search['show_as'] == 'posts')
 		{
 			require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
-
 			require PUN_ROOT.'include/parser.php';
-
-			$post_count = 0;
 		}
 
-		display_search_results($search, $post_count, $topic_count);
+		display_search_results($search);
 
 		// Load the search.php view footer file
 		require PUN_ROOT.'view/search/footer.php';

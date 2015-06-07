@@ -8,9 +8,9 @@
  */
 
 // Counts the numeber of user for a specific query
-function fetch_user_count($username)
+function fetch_user_count($username, $show_group)
 {
-	global $db;
+	global $db, $db_type;
 	
 	// Create any SQL for the WHERE clause
 	$where_sql = array();
@@ -45,9 +45,9 @@ function generate_dropdown_menu()
 }
 
 // Prints the users
-function print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count)
+function print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count, $show_group)
 {
-	global $db;
+	global $db, $db_type;
 	
 	$userlist_data = array();
 	
