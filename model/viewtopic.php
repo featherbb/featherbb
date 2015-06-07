@@ -115,7 +115,7 @@ function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
 // Should we display the quickpost?
 function is_quickpost($post_replies, $closed, $is_admmod)
 {
-	global $pun_config, $pun_user;
+	global $pun_config, $pun_user, $lang_common;
 	
 	$quickpost = false;
 	if ($pun_config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $pun_user['g_post_replies'] == '1')) && ($closed == '0' || $is_admmod))
@@ -180,9 +180,9 @@ function get_page_head($topic_id, $num_pages, $p)
 }
 
 // Prints the posts
-function print_posts($topic_id, $start_from, $cur_topic)
+function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 {
-	global $db, $pun_user, $pun_config, $lang_topic;
+	global $db, $pun_user, $pun_config, $lang_topic, $lang_common;
 	
 	$post_data = array();
 	

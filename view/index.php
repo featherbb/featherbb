@@ -27,7 +27,7 @@ foreach ($index_data as $forum)
 	</div>
 	</div>
 	<?php endif; ?>
-	<div id="idx<?php echo $forum['cat_count'] ?>" class="blocktable">
+	<div id="idx<?php echo $forum['cid'] ?>" class="blocktable">
 	<h2><span><?php echo pun_htmlspecialchars($forum['cat_name']) ?></span></h2>
 	<div class="box">
 		<div class="inbox">

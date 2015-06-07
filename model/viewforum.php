@@ -49,7 +49,7 @@ function sort_forum_by($sort_by_sql)
 // Adds relationship meta tags
 function get_page_head($forum_id, $num_pages, $p)
 {
-	global $pun_config;
+	global $pun_config, $lang_common;
 	
 	$page_head = array();
 	$page_head['canonical'] = '<link rel="canonical" href="viewforum.php?id='.$forum_id.($p == 1 ? '' : '&amp;p='.$p).'" title="'.sprintf($lang_common['Page'], $p).'" />';
@@ -96,7 +96,7 @@ function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
 // Returns the elements needed to display topics
 function print_topics($forum_id, $sort_by, $start_from)
 {
-	global $db, $lang_common, $lang_index, $pun_user;
+	global $db, $lang_common, $lang_index, $pun_user, $pun_config;
 	
 	// Get topic/forum tracking data
 	if (!$pun_user['is_guest'])
@@ -128,12 +128,12 @@ function print_topics($forum_id, $sort_by, $start_from)
 
 		$result = $db->query($sql) or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
 
-		$cur_topic['topic_count'] = 0;
+		$topic_count = 0;
 		while ($cur_topic = $db->fetch_assoc($result))
 		{
-			++$cur_topic['topic_count'];
+			++$topic_count;
 			$status_text = array();
-			$cur_topic['item_status'] = ($cur_topic['topic_count'] % 2 == 0) ? 'roweven' : 'rowodd';
+			$cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
 			$cur_topic['icon_type'] = 'icon';
 
 			if (is_null($cur_topic['moved_to']))

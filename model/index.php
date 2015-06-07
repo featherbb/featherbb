@@ -85,15 +85,18 @@ function print_categories_forums()
 	$index_data = array();
 
 	$cur_forum['cur_category'] = 0;
-	$cur_forum['cat_count_formatted'] = 0;
 	$cur_forum['forum_count_formatted'] = 0;
 	while ($cur_forum = $db->fetch_assoc($result))
 	{
 		$moderators = '';
+		
+		if (isset($cur_forum['cur_category']))
+			$cur_cat = $cur_forum['cur_category'];
+		else
+			$cur_cat = 0;
 
-		if ($cur_forum['cid'] != $cur_forum['cur_category']) // A new category since last iteration?
+		if ($cur_forum['cid'] != $cur_cat) // A new category since last iteration?
 		{
-			++$cur_forum['cat_count_formatted'];
 			$cur_forum['forum_count_formatted'] = 0;
 			$cur_forum['cur_category'] = $cur_forum['cid'];
 		}
@@ -150,9 +153,11 @@ function print_categories_forums()
 				else
 					$moderators[] = pun_htmlspecialchars($mod_username);
 			}
-
+			
 			$cur_forum['moderators_formatted'] = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.$lang_common['Moderated by'].'</em> '.implode(', ', $moderators).')</p>'."\n";
 		}
+		else
+			$cur_forum['moderators_formatted'] = '';
 		
 		$index_data[] = $cur_forum;
 	}

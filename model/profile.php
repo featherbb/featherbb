@@ -990,7 +990,7 @@ function parse_user_info($user)
 
 function edit_essentials($id, $user)
 {
-	global $pun_user, $lang_profile, $lang_common;
+	global $pun_user, $pun_config, $lang_profile, $lang_common;
 	
 	$user_disp = array();
 	

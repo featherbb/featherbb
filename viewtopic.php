@@ -89,7 +89,7 @@ require PUN_ROOT.'header.php';
 require PUN_ROOT.'include/parser.php';
 
 // Print the topic itself
-$post_data = print_posts($id, $start_from, $cur_topic);
+$post_data = print_posts($id, $start_from, $cur_topic, $is_admmod);
 
 // Load the viewtopic.php view file
 require PUN_ROOT.'view/viewtopic.php';

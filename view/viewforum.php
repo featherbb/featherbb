@@ -41,12 +41,14 @@ if (!defined('PUN'))
 			</thead>
 			<tbody>
 			<?php
+			$topic_count = 0;
 			foreach ($forum_data as $topic)
 			{
+				++$topic_count;
 				?>
 					<tr class="<?php echo $topic['item_status'] ?>">
 						<td class="tcl">
-							<div class="<?php echo $topic['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($topic['topic_count'] + $start_from) ?></div></div>
+							<div class="<?php echo $topic['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($topic_count + $start_from) ?></div></div>
 							<div class="tclcon">
 								<div>
 									<?php echo $topic['subject_formatted']."\n" ?>
