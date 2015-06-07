@@ -67,7 +67,7 @@ function get_new_posts()
 			}
 		}
 		
-		return $forums;
+		return $new_topics;
 	}
 }
 

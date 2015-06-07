@@ -98,6 +98,10 @@ function print_topics($forum_id, $sort_by, $start_from)
 {
 	global $db, $lang_common, $lang_index, $pun_user;
 	
+	// Get topic/forum tracking data
+	if (!$pun_user['is_guest'])
+		$tracked_topics = get_tracked_topics();
+	
 	// Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
 	$result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$pun_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
 	

@@ -47,10 +47,6 @@ if (($cur_forum['post_topics'] == '' && $pun_user['g_post_topics'] == '1') || $c
 else
 	$post_link = '';
 
-// Get topic/forum tracking data
-if (!$pun_user['is_guest'])
-	$tracked_topics = get_tracked_topics();
-
 // Determine the topic offset (based on $_GET['p'])
 $num_pages = ceil($cur_forum['num_topics'] / $pun_user['disp_topics']);
 
