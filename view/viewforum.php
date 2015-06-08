@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 <div class="linkst">
@@ -41,11 +42,10 @@ if (!defined('PUN'))
 			</thead>
 			<tbody>
 			<?php
-			$topic_count = 0;
-			foreach ($forum_data as $topic)
-			{
-				++$topic_count;
-				?>
+            $topic_count = 0;
+            foreach ($forum_data as $topic) {
+                ++$topic_count;
+                ?>
 					<tr class="<?php echo $topic['item_status'] ?>">
 						<td class="tcl">
 							<div class="<?php echo $topic['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($topic_count + $start_from) ?></div></div>
@@ -55,16 +55,18 @@ if (!defined('PUN'))
 								</div>
 							</div>
 						</td>
-						<td class="tc2"><?php echo (is_null($topic['moved_to'])) ? forum_number_format($topic['num_replies']) : '-' ?></td>
-	<?php if ($pun_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo (is_null($topic['moved_to'])) ? forum_number_format($topic['num_views']) : '-' ?></td>
-	<?php endif; ?>					<td class="tcr"><?php echo $topic['last_post_formatted'] ?></td>
+						<td class="tc2"><?php echo(is_null($topic['moved_to'])) ? forum_number_format($topic['num_replies']) : '-' ?></td>
+	<?php if ($pun_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(is_null($topic['moved_to'])) ? forum_number_format($topic['num_views']) : '-' ?></td>
+	<?php endif;
+                ?>					<td class="tcr"><?php echo $topic['last_post_formatted'] ?></td>
 					</tr>
 			<?php
-			}
-			if (empty($forum_data)):
-			?>
+
+            }
+            if (empty($forum_data)):
+            ?>
 					<tr class="rowodd inone">
-						<td class="tcl" colspan="<?php echo ($pun_config['o_topic_views'] == 1) ? 4 : 3 ?>">
+						<td class="tcl" colspan="<?php echo($pun_config['o_topic_views'] == 1) ? 4 : 3 ?>">
 							<div class="icon inone"><div class="nosize"><!-- --></div></div>
 							<div class="tclcon">
 								<div>
@@ -74,8 +76,8 @@ if (!defined('PUN'))
 						</td>
 					</tr>
 			<?php
-			endif;
-			?>
+            endif;
+            ?>
 			</tbody>
 			</table>
 		</div>
@@ -92,7 +94,7 @@ if (!defined('PUN'))
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><strong><a href="viewforum.php?id=<?php echo $id ?>"><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
-<?php echo (!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
+<?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
 		<div class="clearer"></div>
 	</div>
 </div>

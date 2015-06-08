@@ -11,13 +11,15 @@ define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
 
-if ($pun_user['g_read_board'] == '0')
-	message($lang_common['No view'], false, '403 Forbidden');
+if ($pun_user['g_read_board'] == '0') {
+    message($lang_common['No view'], false, '403 Forbidden');
+}
 
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($id < 1)
-	message($lang_common['Bad request'], false, '404 Not Found');
+if ($id < 1) {
+    message($lang_common['Bad request'], false, '404 Not Found');
+}
 
 // Load the viewforum.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/forum.php';
@@ -29,10 +31,9 @@ require PUN_ROOT.'model/viewforum.php';
 $cur_forum = get_info_forum($id);
 
 // Is this a redirect forum? In that case, redirect!
-if ($cur_forum['redirect_url'] != '')
-{
-	header('Location: '.$cur_forum['redirect_url']);
-	exit;
+if ($cur_forum['redirect_url'] != '') {
+    header('Location: '.$cur_forum['redirect_url']);
+    exit;
 }
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -42,10 +43,11 @@ $is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1'
 $sort_by = sort_forum_by($cur_forum['sort_by']);
 
 // Can we or can we not post new topics?
-if (($cur_forum['post_topics'] == '' && $pun_user['g_post_topics'] == '1') || $cur_forum['post_topics'] == '1' || $is_admmod)
-	$post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?fid='.$id.'">'.$lang_forum['Post topic'].'</a></p>'."\n";
-else
-	$post_link = '';
+if (($cur_forum['post_topics'] == '' && $pun_user['g_post_topics'] == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
+    $post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?fid='.$id.'">'.$lang_forum['Post topic'].'</a></p>'."\n";
+} else {
+    $post_link = '';
+}
 
 // Determine the topic offset (based on $_GET['p'])
 $num_pages = ceil($cur_forum['num_topics'] / $pun_user['disp_topics']);

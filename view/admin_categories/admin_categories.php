@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 	<div class="blockform">
@@ -49,8 +50,9 @@ if (!defined('PUN'))
 										<select name="cat_to_delete" tabindex="3">
 <?php
 
-	foreach ($cat_list as $cur_cat)
-		echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.pun_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+    foreach ($cat_list as $cur_cat) {
+        echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.pun_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+    }
 
 ?>
 										</select>
@@ -82,17 +84,15 @@ if (!defined('PUN'))
 							<tbody>
 <?php
 
-	foreach ($cat_list as $cur_cat)
-	{
-
-?>
+    foreach ($cat_list as $cur_cat) {
+        ?>
 								<tr>
 									<td class="tcl"><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][name]" value="<?php echo pun_htmlspecialchars($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
 									<td><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][order]" value="<?php echo $cur_cat['disp_position'] ?>" size="3" maxlength="3" /></td>
 								</tr>
 <?php
 
-	}
+    }
 
 ?>
 							</tbody>

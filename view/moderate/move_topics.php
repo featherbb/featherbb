@@ -8,13 +8,14 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 
 <div class="blockform">
-	<h2><span><?php echo ($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics'] ?></span></h2>
+	<h2><span><?php echo($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="moderate.php?fid=<?php echo $fid ?>">
 			<div class="inform">
@@ -29,7 +30,9 @@ if (!defined('PUN'))
 						</select>
 						<br /></label>
 						<div class="rbox">
-							<label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') echo ' checked="checked"' ?> /><?php echo $lang_misc['Leave redirect'] ?><br /></label>
+							<label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') {
+    echo ' checked="checked"';
+} ?> /><?php echo $lang_misc['Leave redirect'] ?><br /></label>
 						</div>
 					</div>
 				</fieldset>

@@ -15,8 +15,9 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
-if (!$pun_user['is_admmod'])
-	message($lang_common['No permission'], false, '403 Forbidden');
+if (!$pun_user['is_admmod']) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the admin_index.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_index.php';
@@ -25,40 +26,38 @@ $action = isset($_GET['action']) ? $_GET['action'] : null;
 
 
 // Show phpinfo() output
-if ($action == 'phpinfo' && $pun_user['g_id'] == PUN_ADMIN)
-{
-	// Is phpinfo() a disabled function?
-	if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false)
-		message($lang_admin_index['PHPinfo disabled message']);
+if ($action == 'phpinfo' && $pun_user['g_id'] == PUN_ADMIN) {
+    // Is phpinfo() a disabled function?
+    if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {
+        message($lang_admin_index['PHPinfo disabled message']);
+    }
 
-	phpinfo();
-	exit;
+    phpinfo();
+    exit;
 }
 
 
 // Get the server load averages (if possible)
-if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg'))
-{
-	// We use @ just in case
-	$fh = @fopen('/proc/loadavg', 'r');
-	$load_averages = @fread($fh, 64);
-	@fclose($fh);
+if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg')) {
+    // We use @ just in case
+    $fh = @fopen('/proc/loadavg', 'r');
+    $load_averages = @fread($fh, 64);
+    @fclose($fh);
 
-	if (($fh = @fopen('/proc/loadavg', 'r')))
-	{
-		$load_averages = fread($fh, 64);
-		fclose($fh);
-	}
-	else
-		$load_averages = '';
+    if (($fh = @fopen('/proc/loadavg', 'r'))) {
+        $load_averages = fread($fh, 64);
+        fclose($fh);
+    } else {
+        $load_averages = '';
+    }
 
-	$load_averages = @explode(' ', $load_averages);
-	$server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : $lang_admin_index['Not available'];
+    $load_averages = @explode(' ', $load_averages);
+    $server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : $lang_admin_index['Not available'];
+} elseif (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages)) {
+    $server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
+} else {
+    $server_load = $lang_admin_index['Not available'];
 }
-else if (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages))
-	$server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
-else
-	$server_load = $lang_admin_index['Not available'];
 
 
 // Get number of current visitors
@@ -67,37 +66,36 @@ $num_online = $db->result($result);
 
 
 // Collect some additional info about MySQL
-if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb')
-{
-	// Calculate total db size/row count
-	$result = $db->query('SHOW TABLE STATUS LIKE \''.$db->prefix.'%\'') or error('Unable to fetch table status', __FILE__, __LINE__, $db->error());
+if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') {
+    // Calculate total db size/row count
+    $result = $db->query('SHOW TABLE STATUS LIKE \''.$db->prefix.'%\'') or error('Unable to fetch table status', __FILE__, __LINE__, $db->error());
 
-	$total_records = $total_size = 0;
-	while ($status = $db->fetch_assoc($result))
-	{
-		$total_records += $status['Rows'];
-		$total_size += $status['Data_length'] + $status['Index_length'];
-	}
+    $total_records = $total_size = 0;
+    while ($status = $db->fetch_assoc($result)) {
+        $total_records += $status['Rows'];
+        $total_size += $status['Data_length'] + $status['Index_length'];
+    }
 
-	$total_size = file_size($total_size);
+    $total_size = file_size($total_size);
 }
 
 
 // Check for the existence of various PHP opcode caches/optimizers
-if (function_exists('mmcache'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['Turck MMCache link'].'">'.$lang_admin_index['Turck MMCache'].'</a>';
-else if (isset($_PHPA))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['ionCube PHP Accelerator link'].'">'.$lang_admin_index['ionCube PHP Accelerator'].'</a>';
-else if (ini_get('apc.enabled'))
-	$php_accelerator ='<a href="http://'.$lang_admin_index['Alternative PHP Cache (APC) link'].'">'.$lang_admin_index['Alternative PHP Cache (APC)'].'</a>';
-else if (ini_get('zend_optimizer.optimization_level'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['Zend Optimizer link'].'">'.$lang_admin_index['Zend Optimizer'].'</a>';
-else if (ini_get('eaccelerator.enable'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['eAccelerator link'].'">'.$lang_admin_index['eAccelerator'].'</a>';
-else if (ini_get('xcache.cacher'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['XCache link'].'">'.$lang_admin_index['XCache'].'</a>';
-else
-	$php_accelerator = $lang_admin_index['NA'];
+if (function_exists('mmcache')) {
+    $php_accelerator = '<a href="http://'.$lang_admin_index['Turck MMCache link'].'">'.$lang_admin_index['Turck MMCache'].'</a>';
+} elseif (isset($_PHPA)) {
+    $php_accelerator = '<a href="http://'.$lang_admin_index['ionCube PHP Accelerator link'].'">'.$lang_admin_index['ionCube PHP Accelerator'].'</a>';
+} elseif (ini_get('apc.enabled')) {
+    $php_accelerator ='<a href="http://'.$lang_admin_index['Alternative PHP Cache (APC) link'].'">'.$lang_admin_index['Alternative PHP Cache (APC)'].'</a>';
+} elseif (ini_get('zend_optimizer.optimization_level')) {
+    $php_accelerator = '<a href="http://'.$lang_admin_index['Zend Optimizer link'].'">'.$lang_admin_index['Zend Optimizer'].'</a>';
+} elseif (ini_get('eaccelerator.enable')) {
+    $php_accelerator = '<a href="http://'.$lang_admin_index['eAccelerator link'].'">'.$lang_admin_index['eAccelerator'].'</a>';
+} elseif (ini_get('xcache.cacher')) {
+    $php_accelerator = '<a href="http://'.$lang_admin_index['XCache link'].'">'.$lang_admin_index['XCache'].'</a>';
+} else {
+    $php_accelerator = $lang_admin_index['NA'];
+}
 
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Server statistics']);

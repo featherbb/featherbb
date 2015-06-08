@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 
@@ -45,11 +46,10 @@ if (!defined('PUN'))
 			<tbody>
 			
 			<?php
-			$topic_count = 0;
-			foreach($topic_data as $topic)
-			{
-				++$topic_count;
-			?>
+            $topic_count = 0;
+            foreach ($topic_data as $topic) {
+                ++$topic_count;
+                ?>
 							<tr class="<?php echo $topic['item_status'] ?>">
 					<td class="tcl">
 						<div class="<?php echo $topic['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($topic_count + $start_from) ?></div></div>
@@ -59,19 +59,21 @@ if (!defined('PUN'))
 							</div>
 						</div>
 					</td>
-					<td class="tc2"><?php echo (!$topic['ghost_topic']) ? forum_number_format($topic['num_replies']) : '-' ?></td>
-<?php if ($pun_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo (!$topic['ghost_topic']) ? forum_number_format($topic['num_views']) : '-' ?></td>
-<?php endif; ?>					<td class="tcr"><?php echo $topic['last_post_disp'] ?></td>
+					<td class="tc2"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_replies']) : '-' ?></td>
+<?php if ($pun_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_views']) : '-' ?></td>
+<?php endif;
+                ?>					<td class="tcr"><?php echo $topic['last_post_disp'] ?></td>
 					<td class="tcmod"><input type="checkbox" name="topics[<?php echo $topic['id'] ?>]" value="1" /></td>
 				</tr>
 			<?php
-			}
-			if (empty($topic_data)):
-				$colspan = ($pun_config['o_topic_views'] == '1') ? 5 : 4;
-				$button_status = ' disabled="disabled"';
-				echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.$lang_forum['Empty forum'].'</td></tr>'."\n";
-			endif;
-			?>
+
+            }
+            if (empty($topic_data)):
+                $colspan = ($pun_config['o_topic_views'] == '1') ? 5 : 4;
+                $button_status = ' disabled="disabled"';
+                echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.$lang_forum['Empty forum'].'</td></tr>'."\n";
+            endif;
+            ?>
 			</tbody>
 			</table>
 		</div>

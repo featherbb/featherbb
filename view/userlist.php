@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 <div class="blockform">
@@ -23,24 +24,36 @@ if (!defined('PUN'))
 <?php if ($pun_user['g_search_users'] == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php echo $lang_ul['User group']."\n" ?>
 						<br /><select name="show_group">
-							<option value="-1"<?php if ($show_group == -1) echo ' selected="selected"' ?>><?php echo $lang_ul['All users'] ?></option>
+							<option value="-1"<?php if ($show_group == -1) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_ul['All users'] ?></option>
 <?php generate_dropdown_menu(); ?>
 						</select>
 						<br /></label>
 						<label class="conl"><?php echo $lang_search['Sort by']."\n" ?>
 						<br /><select name="sort_by">
-							<option value="username"<?php if ($sort_by == 'username') echo ' selected="selected"' ?>><?php echo $lang_common['Username'] ?></option>
-							<option value="registered"<?php if ($sort_by == 'registered') echo ' selected="selected"' ?>><?php echo $lang_common['Registered'] ?></option>
-<?php if ($show_post_count): ?>							<option value="num_posts"<?php if ($sort_by == 'num_posts') echo ' selected="selected"' ?>><?php echo $lang_ul['No of posts'] ?></option>
+							<option value="username"<?php if ($sort_by == 'username') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_common['Username'] ?></option>
+							<option value="registered"<?php if ($sort_by == 'registered') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_common['Registered'] ?></option>
+<?php if ($show_post_count): ?>							<option value="num_posts"<?php if ($sort_by == 'num_posts') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_ul['No of posts'] ?></option>
 <?php endif; ?>						</select>
 						<br /></label>
 						<label class="conl"><?php echo $lang_search['Sort order']."\n" ?>
 						<br /><select name="sort_dir">
-							<option value="ASC"<?php if ($sort_dir == 'ASC') echo ' selected="selected"' ?>><?php echo $lang_search['Ascending'] ?></option>
-							<option value="DESC"<?php if ($sort_dir == 'DESC') echo ' selected="selected"' ?>><?php echo $lang_search['Descending'] ?></option>
+							<option value="ASC"<?php if ($sort_dir == 'ASC') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_search['Ascending'] ?></option>
+							<option value="DESC"<?php if ($sort_dir == 'DESC') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_search['Descending'] ?></option>
 						</select>
 						<br /></label>
-						<p class="clearb"><?php echo ($pun_user['g_search_users'] == '1' ? $lang_ul['User search info'].' ' : '').$lang_ul['User sort info']; ?></p>
+						<p class="clearb"><?php echo($pun_user['g_search_users'] == '1' ? $lang_ul['User search info'].' ' : '').$lang_ul['User sort info']; ?></p>
 					</div>
 				</fieldset>
 			</div>
@@ -71,21 +84,23 @@ if (!defined('PUN'))
 			</thead>
 			<tbody>
 			<?php
-			foreach ($userlist_data as $user)
-			{
-			?>
+            foreach ($userlist_data as $user) {
+                ?>
 					<tr>
 						<td class="tcl"><?php echo '<a href="profile.php?id='.$user['id'].'">'.pun_htmlspecialchars($user['username']).'</a>' ?></td>
 						<td class="tc2"><?php echo get_title($user) ?></td>
 	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo forum_number_format($user['num_posts']) ?></td>
-	<?php endif; ?>
+	<?php endif;
+                ?>
 						<td class="tcr"><?php echo format_time($user['registered'], true) ?></td>
 					</tr>
 			<?php
-			}
-			if (empty($userlist_data))
-				echo "\t\t\t".'<tr>'."\n\t\t\t\t\t".'<td class="tcl" colspan="'.(($show_post_count) ? 4 : 3).'">'.$lang_search['No hits'].'</td></tr>'."\n";
-			?>
+
+            }
+            if (empty($userlist_data)) {
+                echo "\t\t\t".'<tr>'."\n\t\t\t\t\t".'<td class="tcl" colspan="'.(($show_post_count) ? 4 : 3).'">'.$lang_search['No hits'].'</td></tr>'."\n";
+            }
+            ?>
 			</tbody>
 			</table>
 		</div>

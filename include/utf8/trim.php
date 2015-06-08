@@ -18,15 +18,16 @@
 * @package utf8
 * @subpackage strings
 */
-function utf8_ltrim( $str, $charlist=false)
+function utf8_ltrim($str, $charlist=false)
 {
-	if($charlist === false)
-		return ltrim($str);
+    if ($charlist === false) {
+        return ltrim($str);
+    }
 
-	// Quote charlist for use in a characterclass
-	$charlist = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $charlist);
+    // Quote charlist for use in a characterclass
+    $charlist = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $charlist);
 
-	return preg_replace('/^['.$charlist.']+/u', '', $str);
+    return preg_replace('/^['.$charlist.']+/u', '', $str);
 }
 
 /**
@@ -43,13 +44,14 @@ function utf8_ltrim( $str, $charlist=false)
 */
 function utf8_rtrim($str, $charlist=false)
 {
-	if($charlist === false)
-		return rtrim($str);
+    if ($charlist === false) {
+        return rtrim($str);
+    }
 
-	// Quote charlist for use in a characterclass
-	$charlist = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $charlist);
+    // Quote charlist for use in a characterclass
+    $charlist = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $charlist);
 
-	return preg_replace('/['.$charlist.']+$/u', '', $str);
+    return preg_replace('/['.$charlist.']+$/u', '', $str);
 }
 
 //---------------------------------------------------------------
@@ -65,10 +67,11 @@ function utf8_rtrim($str, $charlist=false)
 * @package utf8
 * @subpackage strings
 */
-function utf8_trim( $str, $charlist=false)
+function utf8_trim($str, $charlist=false)
 {
-	if($charlist === false)
-		return trim($str);
+    if ($charlist === false) {
+        return trim($str);
+    }
 
-	return utf8_ltrim(utf8_rtrim($str, $charlist), $charlist);
+    return utf8_ltrim(utf8_rtrim($str, $charlist), $charlist);
 }

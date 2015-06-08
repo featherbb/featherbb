@@ -32,31 +32,31 @@
 */
 function utf8_bad_find($str)
 {
-	$UTF8_BAD =
-		'([\x00-\x7F]'.                          # ASCII (including control chars)
-		'|[\xC2-\xDF][\x80-\xBF]'.               # Non-overlong 2-byte
-		'|\xE0[\xA0-\xBF][\x80-\xBF]'.           # Excluding overlongs
-		'|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}'.    # Straight 3-byte
-		'|\xED[\x80-\x9F][\x80-\xBF]'.           # Excluding surrogates
-		'|\xF0[\x90-\xBF][\x80-\xBF]{2}'.        # Planes 1-3
-		'|[\xF1-\xF3][\x80-\xBF]{3}'.            # Planes 4-15
-		'|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
-		'|(.{1}))';                              # Invalid byte
-	$pos = 0;
-	$badList = array();
+    $UTF8_BAD =
+        '([\x00-\x7F]'.                          # ASCII (including control chars)
+        '|[\xC2-\xDF][\x80-\xBF]'.               # Non-overlong 2-byte
+        '|\xE0[\xA0-\xBF][\x80-\xBF]'.           # Excluding overlongs
+        '|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}'.    # Straight 3-byte
+        '|\xED[\x80-\x9F][\x80-\xBF]'.           # Excluding surrogates
+        '|\xF0[\x90-\xBF][\x80-\xBF]{2}'.        # Planes 1-3
+        '|[\xF1-\xF3][\x80-\xBF]{3}'.            # Planes 4-15
+        '|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
+        '|(.{1}))';                              # Invalid byte
+    $pos = 0;
+    $badList = array();
 
-	while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches))
-	{
-		$bytes = strlen($matches[0]);
+    while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
+        $bytes = strlen($matches[0]);
 
-		if (isset($matches[2]))
-			return $pos;
+        if (isset($matches[2])) {
+            return $pos;
+        }
 
-		$pos += $bytes;
-		$str = substr($str,$bytes);
-	}
+        $pos += $bytes;
+        $str = substr($str, $bytes);
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -73,34 +73,35 @@ function utf8_bad_find($str)
 */
 function utf8_bad_findall($str)
 {
-	$UTF8_BAD =
-		'([\x00-\x7F]'.                          # ASCII (including control chars)
-		'|[\xC2-\xDF][\x80-\xBF]'.               # Non-overlong 2-byte
-		'|\xE0[\xA0-\xBF][\x80-\xBF]'.           # Excluding overlongs
-		'|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}'.    # Straight 3-byte
-		'|\xED[\x80-\x9F][\x80-\xBF]'.           # Excluding surrogates
-		'|\xF0[\x90-\xBF][\x80-\xBF]{2}'.        # Planes 1-3
-		'|[\xF1-\xF3][\x80-\xBF]{3}'.            # Planes 4-15
-		'|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
-		'|(.{1}))';                              # Invalid byte
-	$pos = 0;
-	$badList = array();
+    $UTF8_BAD =
+        '([\x00-\x7F]'.                          # ASCII (including control chars)
+        '|[\xC2-\xDF][\x80-\xBF]'.               # Non-overlong 2-byte
+        '|\xE0[\xA0-\xBF][\x80-\xBF]'.           # Excluding overlongs
+        '|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}'.    # Straight 3-byte
+        '|\xED[\x80-\x9F][\x80-\xBF]'.           # Excluding surrogates
+        '|\xF0[\x90-\xBF][\x80-\xBF]{2}'.        # Planes 1-3
+        '|[\xF1-\xF3][\x80-\xBF]{3}'.            # Planes 4-15
+        '|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
+        '|(.{1}))';                              # Invalid byte
+    $pos = 0;
+    $badList = array();
 
-	while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches))
-	{
-		$bytes = strlen($matches[0]);
+    while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
+        $bytes = strlen($matches[0]);
 
-		if (isset($matches[2]))
-			$badList[] = $pos;
+        if (isset($matches[2])) {
+            $badList[] = $pos;
+        }
 
-		$pos += $bytes;
-		$str = substr($str,$bytes);
-	}
+        $pos += $bytes;
+        $str = substr($str, $bytes);
+    }
 
-	if (count($badList) > 0)
-		return $badList;
+    if (count($badList) > 0) {
+        return $badList;
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -116,7 +117,7 @@ function utf8_bad_findall($str)
 */
 function utf8_bad_strip($original)
 {
-	return utf8_bad_replace($original, '');
+    return utf8_bad_replace($original, '');
 }
 
 /**
@@ -132,54 +133,66 @@ function utf8_bad_strip($original)
 * @package utf8
 * @subpackage bad
 */
-function utf8_bad_replace($original, $replace = '?') {
-	$result = '';
+function utf8_bad_replace($original, $replace = '?')
+{
+    $result = '';
 
-	$strlen = strlen($original);
-	for ($i = 0; $i < $strlen;) {
-		$char = $original[$i++];
-		$byte = ord($char);
+    $strlen = strlen($original);
+    for ($i = 0; $i < $strlen;) {
+        $char = $original[$i++];
+        $byte = ord($char);
 
-		if ($byte < 0x80) $bytes = 0; // 1-bytes (00000000 - 01111111)
-		else if ($byte < 0xC0) { // 1-bytes (10000000 - 10111111)
-			$result .= $replace;
-			continue;
-		}
-		else if ($byte < 0xE0) $bytes = 1; // 2-bytes (11000000 - 11011111)
-		else if ($byte < 0xF0) $bytes = 2; // 3-bytes (11100000 - 11101111)
-		else if ($byte < 0xF8) $bytes = 3; // 4-bytes (11110000 - 11110111)
-		else if ($byte < 0xFC) $bytes = 4; // 5-bytes (11111000 - 11111011)
-		else if ($byte < 0xFE) $bytes = 5; // 6-bytes (11111100 - 11111101)
-		else { // Otherwise it's something invalid
-			$result .= $replace;
-			continue;
-		}
+        if ($byte < 0x80) {
+            $bytes = 0;
+        } // 1-bytes (00000000 - 01111111)
+        elseif ($byte < 0xC0) { // 1-bytes (10000000 - 10111111)
+            $result .= $replace;
+            continue;
+        } elseif ($byte < 0xE0) {
+            $bytes = 1;
+        } // 2-bytes (11000000 - 11011111)
+        elseif ($byte < 0xF0) {
+            $bytes = 2;
+        } // 3-bytes (11100000 - 11101111)
+        elseif ($byte < 0xF8) {
+            $bytes = 3;
+        } // 4-bytes (11110000 - 11110111)
+        elseif ($byte < 0xFC) {
+            $bytes = 4;
+        } // 5-bytes (11111000 - 11111011)
+        elseif ($byte < 0xFE) {
+            $bytes = 5;
+        } // 6-bytes (11111100 - 11111101)
+        else { // Otherwise it's something invalid
+            $result .= $replace;
+            continue;
+        }
 
-		// Check our input actually has enough data
-		if ($i + $bytes > $strlen) {
-			$result .= $replace;
-			continue;
-		}
+        // Check our input actually has enough data
+        if ($i + $bytes > $strlen) {
+            $result .= $replace;
+            continue;
+        }
 
-		// If we've got this far then we have a multiple-byte character
-		for ($j = 0; $j < $bytes; $j++) {
-			$byte = $original[$i + $j];
+        // If we've got this far then we have a multiple-byte character
+        for ($j = 0; $j < $bytes; $j++) {
+            $byte = $original[$i + $j];
 
-			$char .= $byte;
-			$byte = ord($byte);
+            $char .= $byte;
+            $byte = ord($byte);
 
-			// Every following byte must be 10000000 - 10111111
-			if ($byte < 0x80 || $byte > 0xBF) {
-				$result .= $replace;
-				continue 2;
-			}
-		}
+            // Every following byte must be 10000000 - 10111111
+            if ($byte < 0x80 || $byte > 0xBF) {
+                $result .= $replace;
+                continue 2;
+            }
+        }
 
-		$i += $bytes;
-		$result .= $char;
-	}
+        $i += $bytes;
+        $result .= $char;
+    }
 
-	return $result;
+    return $result;
 }
 
 /**
@@ -261,125 +274,103 @@ define('UTF8_BAD_SEQINCOMPLETE', 7);
 */
 function utf8_bad_identify($str, &$i)
 {
-	$mState = 0;	// Cached expected number of octets after the current octet
-					// until the beginning of the next UTF8 character sequence
-	$mUcs4  = 0;	// Cached Unicode character
-	$mBytes = 1;	// Cached expected number of octets in the current sequence
+    $mState = 0;    // Cached expected number of octets after the current octet
+                    // until the beginning of the next UTF8 character sequence
+    $mUcs4  = 0;    // Cached Unicode character
+    $mBytes = 1;    // Cached expected number of octets in the current sequence
 
-	$len = strlen($str);
+    $len = strlen($str);
 
-	for($i=0; $i < $len; $i++)
-	{
-		$in = ord($str{$i});
+    for ($i=0; $i < $len; $i++) {
+        $in = ord($str{$i});
 
-		if ( $mState == 0)
-		{
-			// When mState is zero we expect either a US-ASCII character or a multi-octet sequence.
-			if (0 == (0x80 & ($in)))
-			{
-				// US-ASCII, pass straight through.
-				$mBytes = 1;
-			}
-			else if (0xC0 == (0xE0 & ($in)))
-			{
-				// First octet of 2 octet sequence
-				$mUcs4 = ($in);
-				$mUcs4 = ($mUcs4 & 0x1F) << 6;
-				$mState = 1;
-				$mBytes = 2;
-			}
-			else if (0xE0 == (0xF0 & ($in)))
-			{
-				// First octet of 3 octet sequence
-				$mUcs4 = ($in);
-				$mUcs4 = ($mUcs4 & 0x0F) << 12;
-				$mState = 2;
-				$mBytes = 3;
-			}
-			else if (0xF0 == (0xF8 & ($in)))
-			{
-				// First octet of 4 octet sequence
-				$mUcs4 = ($in);
-				$mUcs4 = ($mUcs4 & 0x07) << 18;
-				$mState = 3;
-				$mBytes = 4;
-			}
-			else if (0xF8 == (0xFC & ($in)))
-			{
-				/* First octet of 5 octet sequence.
-				*
-				* This is illegal because the encoded codepoint must be either
-				* (a) not the shortest form or
-				* (b) outside the Unicode range of 0-0x10FFFF.
-				*/
-				return UTF8_BAD_5OCTET;
-			}
-			else if (0xFC == (0xFE & ($in)))
-			{
-				// First octet of 6 octet sequence, see comments for 5 octet sequence.
-				return UTF8_BAD_6OCTET;
-			}
-			else
-			{
-				// Current octet is neither in the US-ASCII range nor a legal first
-				// octet of a multi-octet sequence.
-				return UTF8_BAD_SEQID;
-			}
-		}
-		else
-		{
-			// When mState is non-zero, we expect a continuation of the multi-octet sequence
-			if (0x80 == (0xC0 & ($in)))
-			{
-				// Legal continuation.
-				$shift = ($mState - 1) * 6;
-				$tmp = $in;
-				$tmp = ($tmp & 0x0000003F) << $shift;
-				$mUcs4 |= $tmp;
+        if ($mState == 0) {
+            // When mState is zero we expect either a US-ASCII character or a multi-octet sequence.
+            if (0 == (0x80 & ($in))) {
+                // US-ASCII, pass straight through.
+                $mBytes = 1;
+            } elseif (0xC0 == (0xE0 & ($in))) {
+                // First octet of 2 octet sequence
+                $mUcs4 = ($in);
+                $mUcs4 = ($mUcs4 & 0x1F) << 6;
+                $mState = 1;
+                $mBytes = 2;
+            } elseif (0xE0 == (0xF0 & ($in))) {
+                // First octet of 3 octet sequence
+                $mUcs4 = ($in);
+                $mUcs4 = ($mUcs4 & 0x0F) << 12;
+                $mState = 2;
+                $mBytes = 3;
+            } elseif (0xF0 == (0xF8 & ($in))) {
+                // First octet of 4 octet sequence
+                $mUcs4 = ($in);
+                $mUcs4 = ($mUcs4 & 0x07) << 18;
+                $mState = 3;
+                $mBytes = 4;
+            } elseif (0xF8 == (0xFC & ($in))) {
+                /* First octet of 5 octet sequence.
+                *
+                * This is illegal because the encoded codepoint must be either
+                * (a) not the shortest form or
+                * (b) outside the Unicode range of 0-0x10FFFF.
+                */
+                return UTF8_BAD_5OCTET;
+            } elseif (0xFC == (0xFE & ($in))) {
+                // First octet of 6 octet sequence, see comments for 5 octet sequence.
+                return UTF8_BAD_6OCTET;
+            } else {
+                // Current octet is neither in the US-ASCII range nor a legal first
+                // octet of a multi-octet sequence.
+                return UTF8_BAD_SEQID;
+            }
+        } else {
+            // When mState is non-zero, we expect a continuation of the multi-octet sequence
+            if (0x80 == (0xC0 & ($in))) {
+                // Legal continuation.
+                $shift = ($mState - 1) * 6;
+                $tmp = $in;
+                $tmp = ($tmp & 0x0000003F) << $shift;
+                $mUcs4 |= $tmp;
 
-				/**
-				* End of the multi-octet sequence. mUcs4 now contains the final
-				* Unicode codepoint to be output
-				*/
-				if (0 == --$mState)
-				{
-					// From Unicode 3.1, non-shortest form is illegal
-					if (((2 == $mBytes) && ($mUcs4 < 0x0080)) ||
-					((3 == $mBytes) && ($mUcs4 < 0x0800)) ||
-					((4 == $mBytes) && ($mUcs4 < 0x10000)) )
-						return UTF8_BAD_NONSHORT;
-					else if (($mUcs4 & 0xFFFFF800) == 0xD800) // From Unicode 3.2, surrogate characters are illegal
-						return UTF8_BAD_SURROGATE;
-					else if ($mUcs4 > 0x10FFFF) // Codepoints outside the Unicode range are illegal
-						return UTF8_BAD_UNIOUTRANGE;
+                /**
+                * End of the multi-octet sequence. mUcs4 now contains the final
+                * Unicode codepoint to be output
+                */
+                if (0 == --$mState) {
+                    // From Unicode 3.1, non-shortest form is illegal
+                    if (((2 == $mBytes) && ($mUcs4 < 0x0080)) ||
+                    ((3 == $mBytes) && ($mUcs4 < 0x0800)) ||
+                    ((4 == $mBytes) && ($mUcs4 < 0x10000))) {
+                        return UTF8_BAD_NONSHORT;
+                    } elseif (($mUcs4 & 0xFFFFF800) == 0xD800) { // From Unicode 3.2, surrogate characters are illegal
+                        return UTF8_BAD_SURROGATE;
+                    } elseif ($mUcs4 > 0x10FFFF) { // Codepoints outside the Unicode range are illegal
+                        return UTF8_BAD_UNIOUTRANGE;
+                    }
 
-					// Initialize UTF8 cache
-					$mState = 0;
-					$mUcs4  = 0;
-					$mBytes = 1;
-				}
+                    // Initialize UTF8 cache
+                    $mState = 0;
+                    $mUcs4  = 0;
+                    $mBytes = 1;
+                }
+            } else {
+                // ((0xC0 & (*in) != 0x80) && (mState != 0))
+                // Incomplete multi-octet sequence.
+                $i--;
+                return UTF8_BAD_SEQINCOMPLETE;
+            }
+        }
+    }
 
-			}
-			else
-			{
-				// ((0xC0 & (*in) != 0x80) && (mState != 0))
-				// Incomplete multi-octet sequence.
-				$i--;
-				return UTF8_BAD_SEQINCOMPLETE;
-			}
-		}
-	}
+    // Incomplete multi-octet sequence
+    if ($mState != 0) {
+        $i--;
+        return UTF8_BAD_SEQINCOMPLETE;
+    }
 
-	// Incomplete multi-octet sequence
-	if ($mState != 0)
-	{
-		$i--;
-		return UTF8_BAD_SEQINCOMPLETE;
-	}
-
-	// No bad octets found
-	$i = null;
-	return false;
+    // No bad octets found
+    $i = null;
+    return false;
 }
 
 /**
@@ -393,38 +384,37 @@ function utf8_bad_identify($str, &$i)
 */
 function utf8_bad_explain($code)
 {
-	switch ($code)
-	{
-		case UTF8_BAD_5OCTET:
-		return 'Five octet sequences are valid UTF-8 but are not supported by Unicode';
-		break;
+    switch ($code) {
+        case UTF8_BAD_5OCTET:
+        return 'Five octet sequences are valid UTF-8 but are not supported by Unicode';
+        break;
 
-		case UTF8_BAD_6OCTET:
-		return 'Six octet sequences are valid UTF-8 but are not supported by Unicode';
-		break;
+        case UTF8_BAD_6OCTET:
+        return 'Six octet sequences are valid UTF-8 but are not supported by Unicode';
+        break;
 
-		case UTF8_BAD_SEQID:
-		return 'Invalid octet for use as start of multi-byte UTF-8 sequence';
-		break;
+        case UTF8_BAD_SEQID:
+        return 'Invalid octet for use as start of multi-byte UTF-8 sequence';
+        break;
 
-		case UTF8_BAD_NONSHORT:
-		return 'From Unicode 3.1, non-shortest form is illegal';
-		break;
+        case UTF8_BAD_NONSHORT:
+        return 'From Unicode 3.1, non-shortest form is illegal';
+        break;
 
-		case UTF8_BAD_SURROGATE:
-		return 'From Unicode 3.2, surrogate characters are illegal';
-		break;
+        case UTF8_BAD_SURROGATE:
+        return 'From Unicode 3.2, surrogate characters are illegal';
+        break;
 
-		case UTF8_BAD_UNIOUTRANGE:
-		return 'Codepoints outside the Unicode range are illegal';
-		break;
+        case UTF8_BAD_UNIOUTRANGE:
+        return 'Codepoints outside the Unicode range are illegal';
+        break;
 
-		case UTF8_BAD_SEQINCOMPLETE:
-		return 'Incomplete multi-octet sequence';
-		break;
-	}
+        case UTF8_BAD_SEQINCOMPLETE:
+        return 'Incomplete multi-octet sequence';
+        break;
+    }
 
-	trigger_error('Unknown error code: '.$code, E_USER_WARNING);
+    trigger_error('Unknown error code: '.$code, E_USER_WARNING);
 
-	return false;
+    return false;
 }

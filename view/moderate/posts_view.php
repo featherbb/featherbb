@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 <div class="linkst">
@@ -30,12 +31,17 @@ if (!defined('PUN'))
 <form method="post" action="moderate.php?fid=<?php echo $fid ?>&amp;tid=<?php echo $tid ?>">
 <?php
 $post_count = 0; // Keep track of post numbers
-foreach ($post_data as $post)
-{
-	$post_count++;
-?>
-	<div id="p<?php echo $post['id'] ?>" class="blockpost<?php if($post['id'] == $cur_topic['first_post_id']) echo ' firstpost' ?><?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) echo ' blockpost1' ?>">
-		<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="viewtopic.php?pid=<?php echo $post['id'].'#p'.$post['id'] ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
+foreach ($post_data as $post) {
+    $post_count++;
+    ?>
+	<div id="p<?php echo $post['id'] ?>" class="blockpost<?php if ($post['id'] == $cur_topic['first_post_id']) {
+    echo ' firstpost';
+}
+    ?><?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) {
+    echo ' blockpost1';
+}
+    ?>">
+		<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="viewtopic.php?pid=<?php echo $post['id'].'#p'.$post['id'] ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<div class="postbody">
@@ -49,19 +55,23 @@ foreach ($post_data as $post)
 						<h3 class="nosize"><?php echo $lang_common['Message'] ?></h3>
 						<div class="postmsg">
 							<?php echo $post['message']."\n" ?>
-	<?php if ($post['edited'] != '') echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.$lang_topic['Last edit'].' '.pun_htmlspecialchars($post['edited_by']).' ('.format_time($post['edited']).')</em></p>'."\n"; ?>
+	<?php if ($post['edited'] != '') {
+    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.$lang_topic['Last edit'].' '.pun_htmlspecialchars($post['edited_by']).' ('.format_time($post['edited']).')</em></p>'."\n";
+}
+    ?>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="inbox">
 				<div class="postfoot clearb">
-					<div class="postfootright"><?php echo ($post['id'] != $cur_topic['first_post_id']) ? '<p class="multidelete"><label><strong>'.$lang_misc['Select'].'</strong>&#160;<input type="checkbox" name="posts['.$post['id'].']" value="1" /></label></p>' : '<p>'.$lang_misc['Cannot select first'].'</p>' ?></div>
+					<div class="postfootright"><?php echo($post['id'] != $cur_topic['first_post_id']) ? '<p class="multidelete"><label><strong>'.$lang_misc['Select'].'</strong>&#160;<input type="checkbox" name="posts['.$post['id'].']" value="1" /></label></p>' : '<p>'.$lang_misc['Cannot select first'].'</p>' ?></div>
 				</div>
 			</div>
 		</div>
 	</div>
 <?php
+
 }
 ?>
 

@@ -11,10 +11,11 @@ define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
 
-if ($pun_user['g_read_board'] == '0')
-	message($lang_common['No view'], false, '403 Forbidden');
-else if ($pun_user['g_view_users'] == '0')
-	message($lang_common['No permission'], false, '403 Forbidden');
+if ($pun_user['g_read_board'] == '0') {
+    message($lang_common['No view'], false, '403 Forbidden');
+} elseif ($pun_user['g_view_users'] == '0') {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the userlist.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/userlist.php';
@@ -43,8 +44,9 @@ $p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : in
 $start_from = 50 * ($p - 1);
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_common['User list']);
-if ($pun_user['g_search_users'] == '1')
-	$focus_element = array('userlist', 'username');
+if ($pun_user['g_search_users'] == '1') {
+    $focus_element = array('userlist', 'username');
+}
 
 // Generate paging links
 $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'userlist.php?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);

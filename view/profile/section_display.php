@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 <div class="blockform">
@@ -19,15 +20,13 @@ if (!defined('PUN'))
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 
-	$styles = forum_list_styles();
+    $styles = forum_list_styles();
 
-	// Only display the style selection box if there's more than one style available
-	if (count($styles) == 1)
-		echo "\t\t\t".'<div><input type="hidden" name="form[style]" value="'.$styles[0].'" /></div>'."\n";
-	else if (count($styles) > 1)
-	{
-
-?>
+    // Only display the style selection box if there's more than one style available
+    if (count($styles) == 1) {
+        echo "\t\t\t".'<div><input type="hidden" name="form[style]" value="'.$styles[0].'" /></div>'."\n";
+    } elseif (count($styles) > 1) {
+        ?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Style legend'] ?></legend>
@@ -36,15 +35,15 @@ if (!defined('PUN'))
 						<select name="form[style]">
 <?php
 
-		foreach ($styles as $temp)
-		{
-			if ($user['style'] == $temp)
-				echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
-			else
-				echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
-		}
+        foreach ($styles as $temp) {
+            if ($user['style'] == $temp) {
+                echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+            } else {
+                echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+            }
+        }
 
-?>
+        ?>
 						</select>
 						<br /></label>
 					</div>
@@ -52,7 +51,7 @@ if (!defined('PUN'))
 			</div>
 <?php
 
-	}
+    }
 
 ?>
 <?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1' || $pun_config['o_signatures'] == '1' || $pun_config['o_avatars'] == '1' || ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1')): ?>
@@ -62,11 +61,21 @@ if (!defined('PUN'))
 					<div class="infldset">
 						<p><?php echo $lang_profile['Post display info'] ?></p>
 						<div class="rbox">
-<?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form[show_smilies]" value="1"<?php if ($user['show_smilies'] == '1') echo ' checked="checked"' ?> /><?php echo $lang_profile['Show smilies'] ?><br /></label>
-<?php endif; if ($pun_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form[show_sig]" value="1"<?php if ($user['show_sig'] == '1') echo ' checked="checked"' ?> /><?php echo $lang_profile['Show sigs'] ?><br /></label>
-<?php endif; if ($pun_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form[show_avatars]" value="1"<?php if ($user['show_avatars'] == '1') echo ' checked="checked"' ?> /><?php echo $lang_profile['Show avatars'] ?><br /></label>
-<?php endif; if ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form[show_img]" value="1"<?php if ($user['show_img'] == '1') echo ' checked="checked"' ?> /><?php echo $lang_profile['Show images'] ?><br /></label>
-<?php endif; if ($pun_config['o_signatures'] == '1' && $pun_config['p_sig_bbcode'] == '1' && $pun_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form[show_img_sig]" value="1"<?php if ($user['show_img_sig'] == '1') echo ' checked="checked"' ?> /><?php echo $lang_profile['Show images sigs'] ?><br /></label>
+<?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form[show_smilies]" value="1"<?php if ($user['show_smilies'] == '1') {
+    echo ' checked="checked"';
+} ?> /><?php echo $lang_profile['Show smilies'] ?><br /></label>
+<?php endif; if ($pun_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form[show_sig]" value="1"<?php if ($user['show_sig'] == '1') {
+    echo ' checked="checked"';
+} ?> /><?php echo $lang_profile['Show sigs'] ?><br /></label>
+<?php endif; if ($pun_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form[show_avatars]" value="1"<?php if ($user['show_avatars'] == '1') {
+    echo ' checked="checked"';
+} ?> /><?php echo $lang_profile['Show avatars'] ?><br /></label>
+<?php endif; if ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form[show_img]" value="1"<?php if ($user['show_img'] == '1') {
+    echo ' checked="checked"';
+} ?> /><?php echo $lang_profile['Show images'] ?><br /></label>
+<?php endif; if ($pun_config['o_signatures'] == '1' && $pun_config['p_sig_bbcode'] == '1' && $pun_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form[show_img_sig]" value="1"<?php if ($user['show_img_sig'] == '1') {
+    echo ' checked="checked"';
+} ?> /><?php echo $lang_profile['Show images sigs'] ?><br /></label>
 <?php endif; ?>
 						</div>
 					</div>

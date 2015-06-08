@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 	<div class="blockform">
@@ -26,21 +27,29 @@ if (!defined('PUN'))
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Username label'] ?></th>
 									<td>
-										<input type="text" name="ban_user" size="25" maxlength="25" value="<?php if (isset($ban['ban_user'])) echo pun_htmlspecialchars($ban['ban_user']); ?>" tabindex="1" />
+										<input type="text" name="ban_user" size="25" maxlength="25" value="<?php if (isset($ban['ban_user'])) {
+    echo pun_htmlspecialchars($ban['ban_user']);
+} ?>" tabindex="1" />
 										<span><?php echo $lang_admin_bans['Username help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['IP label'] ?></th>
 									<td>
-										<input type="text" name="ban_ip" size="45" maxlength="255" value="<?php if (isset($ban['ip'])) echo pun_htmlspecialchars($ban['ip']); ?>" tabindex="2" />
-										<span><?php echo $lang_admin_bans['IP help'] ?><?php if ($ban['ban_user'] != '' && isset($ban['user_id'])) printf(' '.$lang_admin_bans['IP help link'], '<a href="admin_users.php?ip_stats='.$ban['user_id'].'">'.$lang_admin_common['here'].'</a>') ?></span>
+										<input type="text" name="ban_ip" size="45" maxlength="255" value="<?php if (isset($ban['ip'])) {
+    echo pun_htmlspecialchars($ban['ip']);
+} ?>" tabindex="2" />
+										<span><?php echo $lang_admin_bans['IP help'] ?><?php if ($ban['ban_user'] != '' && isset($ban['user_id'])) {
+    printf(' '.$lang_admin_bans['IP help link'], '<a href="admin_users.php?ip_stats='.$ban['user_id'].'">'.$lang_admin_common['here'].'</a>');
+} ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['E-mail label'] ?></th>
 									<td>
-										<input type="text" name="ban_email" size="40" maxlength="80" value="<?php if (isset($ban['email'])) echo pun_htmlspecialchars($ban['email']); ?>" tabindex="3" />
+										<input type="text" name="ban_email" size="40" maxlength="80" value="<?php if (isset($ban['email'])) {
+    echo pun_htmlspecialchars($ban['email']);
+} ?>" tabindex="3" />
 										<span><?php echo $lang_admin_bans['E-mail help'] ?></span>
 									</td>
 								</tr>
@@ -57,14 +66,18 @@ if (!defined('PUN'))
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Ban message label'] ?></th>
 									<td>
-										<input type="text" name="ban_message" size="50" maxlength="255" value="<?php if (isset($ban['message'])) echo pun_htmlspecialchars($ban['message']); ?>" tabindex="4" />
+										<input type="text" name="ban_message" size="50" maxlength="255" value="<?php if (isset($ban['message'])) {
+    echo pun_htmlspecialchars($ban['message']);
+} ?>" tabindex="4" />
 										<span><?php echo $lang_admin_bans['Ban message help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Expire date label'] ?></th>
 									<td>
-										<input type="text" name="ban_expire" size="17" maxlength="10" value="<?php if (isset($ban['expire'])) echo $ban['expire']; ?>" tabindex="5" />
+										<input type="text" name="ban_expire" size="17" maxlength="10" value="<?php if (isset($ban['expire'])) {
+    echo $ban['expire'];
+} ?>" tabindex="5" />
 										<span><?php echo $lang_admin_bans['Expire date help'] ?></span>
 									</td>
 								</tr>
