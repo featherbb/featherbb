@@ -21,7 +21,7 @@ if ($pun_user['g_id'] != PUN_ADMIN)
 // Load the admin_categories.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_categories.php';
 
-// Load the register.php model file
+// Load the admin_categories.php model file
 require PUN_ROOT.'model/admin_categories.php';
 
 // Add a new category
