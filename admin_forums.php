@@ -21,7 +21,7 @@ if ($pun_user['g_id'] != PUN_ADMIN)
 // Load the admin_forums.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_forums.php';
 
-// Load the admin_censoring.php model file
+// Load the admin_forums.php model file
 require PUN_ROOT.'model/admin_forums.php';
 
 // Add a "default" forum
