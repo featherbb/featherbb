@@ -62,8 +62,8 @@ if (!defined('PUN'))
 <?php
 
 		}
-if (empty($ban_data))
-		echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.$lang_admin_bans['No match'].'</td></tr>'."\n";
+		if (empty($ban_data))
+			echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.$lang_admin_bans['No match'].'</td></tr>'."\n";
 
 ?>
 			</tbody>
