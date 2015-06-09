@@ -170,7 +170,8 @@ if ($pun_user['id'] != $id &&                                                   
     ($pun_user['g_id'] != PUN_ADMIN &&                                                            // or we aren't an admin and ...
     ($pun_user['g_mod_edit_users'] == '0' ||                                                    // mods aren't allowed to edit users
     $user['g_id'] == PUN_ADMIN ||                                                                // or the user is an admin
-    $user['g_moderator'] == '1')))) {// or the user is another mod
+    $user['g_moderator'] == '1')))) {
+    // or the user is another mod
     $user_info = parse_user_info($user);
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), sprintf($lang_profile['Users profile'], pun_htmlspecialchars($user['username'])));

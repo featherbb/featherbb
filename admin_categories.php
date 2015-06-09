@@ -57,7 +57,8 @@ elseif (isset($_POST['del_cat']) || isset($_POST['del_cat_comply'])) {
 
         require PUN_ROOT.'footer.php';
     }
-} elseif (isset($_POST['update'])) {// Change position and name of the categories
+} elseif (isset($_POST['update'])) {
+    // Change position and name of the categories
     confirm_referrer('admin_categories.php');
 
     $categories = $_POST['cat'];
