@@ -15,8 +15,9 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
-if ($pun_user['g_id'] != PUN_ADMIN)
-	message($lang_common['No permission'], false, '403 Forbidden');
+if ($pun_user['g_id'] != PUN_ADMIN) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the admin_forums.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_forums.php';
@@ -25,66 +26,68 @@ require PUN_ROOT.'lang/'.$admin_language.'/admin_forums.php';
 require PUN_ROOT.'model/admin_forums.php';
 
 // Add a "default" forum
-if (isset($_POST['add_forum']))
-	add_forum($_POST);
+if (isset($_POST['add_forum'])) {
+    add_forum($_POST);
+}
 
 // Delete a forum
-else if (isset($_GET['del_forum']))
-{
-	confirm_referrer('admin_forums.php');
+elseif (isset($_GET['del_forum'])) {
+    confirm_referrer('admin_forums.php');
 
-	$forum_id = intval($_GET['del_forum']);
-	if ($forum_id < 1)
-		message($lang_common['Bad request'], false, '404 Not Found');
+    $forum_id = intval($_GET['del_forum']);
+    if ($forum_id < 1) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	if (isset($_POST['del_forum_comply'])) // Delete a forum with all posts
-		delete_forum($_POST, $forum_id);
-	else // If the user hasn't confirmed the delete
-	{
-		$forum_name = get_forum_name($forum_id);
+    if (isset($_POST['del_forum_comply'])) { // Delete a forum with all posts
+        delete_forum($_POST, $forum_id);
+    } else {
+        // If the user hasn't confirmed the delete
 
-		$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
-		define('PUN_ACTIVE_PAGE', 'admin');
-		require PUN_ROOT.'header.php';
+        $forum_name = get_forum_name($forum_id);
 
-		generate_admin_menu('forums');
+        $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+        define('PUN_ACTIVE_PAGE', 'admin');
+        require PUN_ROOT.'header.php';
 
-		// Load the admin_forums.php view file
-		require PUN_ROOT.'view/admin_forums/delete_forum.php';
+        generate_admin_menu('forums');
 
-		require PUN_ROOT.'footer.php';
-	}
+        // Load the admin_forums.php view file
+        require PUN_ROOT.'view/admin_forums/delete_forum.php';
+
+        require PUN_ROOT.'footer.php';
+    }
 }
 
 // Update forum positions
-else if (isset($_POST['update_positions']))
-	update_positions($_POST);
-	
-else if (isset($_GET['edit_forum']))
-{
-	$forum_id = intval($_GET['edit_forum']);
-	if ($forum_id < 1)
-		message($lang_common['Bad request'], false, '404 Not Found');
+elseif (isset($_POST['update_positions'])) {
+    update_positions($_POST);
+} elseif (isset($_GET['edit_forum'])) {
+    $forum_id = intval($_GET['edit_forum']);
+    if ($forum_id < 1) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	// Update group permissions for $forum_id
-	if (isset($_POST['save']))
-		update_permissions($_POST, $forum_id);
-	else if (isset($_POST['revert_perms']))
-		revert_permissions($forum_id);
+    // Update group permissions for $forum_id
+    if (isset($_POST['save'])) {
+        update_permissions($_POST, $forum_id);
+    } elseif (isset($_POST['revert_perms'])) {
+        revert_permissions($forum_id);
+    }
 
-	// Fetch forum info
-	$cur_forum = get_forum_info($forum_id);
+    // Fetch forum info
+    $cur_forum = get_forum_info($forum_id);
 
-	$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
-	define('PUN_ACTIVE_PAGE', 'admin');
-	require PUN_ROOT.'header.php';
+    $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+    define('PUN_ACTIVE_PAGE', 'admin');
+    require PUN_ROOT.'header.php';
 
-	generate_admin_menu('forums');
+    generate_admin_menu('forums');
 
-	// Load the admin_forums.php view file
-	require PUN_ROOT.'view/admin_forums/permissions.php';
+    // Load the admin_forums.php view file
+    require PUN_ROOT.'view/admin_forums/permissions.php';
 
-	require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'footer.php';
 }
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);

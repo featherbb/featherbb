@@ -19,18 +19,21 @@
 */
 function utf8_strcspn($str, $mask, $start=null, $length=null)
 {
-	if (empty($mask) || strlen($mask) == 0)
-		return null;
+    if (empty($mask) || strlen($mask) == 0) {
+        return null;
+    }
 
-	$mask = preg_replace('!([\\\\\\-\\]\\[/^])!','\\\${1}', $mask);
+    $mask = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $mask);
 
-	if (!is_null($start) || !is_null($length))
-		$str = utf8_substr($str, $start, $length);
+    if (!is_null($start) || !is_null($length)) {
+        $str = utf8_substr($str, $start, $length);
+    }
 
-	preg_match('/^[^'.$mask.']+/u', $str, $matches);
+    preg_match('/^[^'.$mask.']+/u', $str, $matches);
 
-	if (isset($matches[0]))
-		return utf8_strlen($matches[0]);
+    if (isset($matches[0])) {
+        return utf8_strlen($matches[0]);
+    }
 
-	return 0;
+    return 0;
 }

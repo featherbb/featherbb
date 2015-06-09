@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 <div class="linkst">
@@ -30,7 +31,7 @@ if (!defined('PUN'))
 			<div class="inform">
 				<div class="forminfo">
 					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.pun_htmlspecialchars($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
-					<p><?php echo ($is_topic_post) ? '<strong>'.$lang_delete['Topic warning'].'</strong>' : '<strong>'.$lang_delete['Warning'].'</strong>' ?><br /><?php echo $lang_delete['Delete info'] ?></p>
+					<p><?php echo($is_topic_post) ? '<strong>'.$lang_delete['Topic warning'].'</strong>' : '<strong>'.$lang_delete['Warning'].'</strong>' ?><br /><?php echo $lang_delete['Delete info'] ?></p>
 				</div>
 			</div>
 			<p class="buttons"><input type="submit" name="delete" value="<?php echo $lang_delete['Delete'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>

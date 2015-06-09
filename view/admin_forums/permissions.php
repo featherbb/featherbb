@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 	<div class="blockform">
@@ -42,15 +43,21 @@ if (!defined('PUN'))
 									<th scope="row"><?php echo $lang_admin_forums['Sort by label'] ?></th>
 									<td>
 										<select name="sort_by" tabindex="4">
-											<option value="0"<?php if ($cur_forum['sort_by'] == '0') echo ' selected="selected"' ?>><?php echo $lang_admin_forums['Last post'] ?></option>
-											<option value="1"<?php if ($cur_forum['sort_by'] == '1') echo ' selected="selected"' ?>><?php echo $lang_admin_forums['Topic start'] ?></option>
-											<option value="2"<?php if ($cur_forum['sort_by'] == '2') echo ' selected="selected"' ?>><?php echo $lang_admin_forums['Subject'] ?></option>
+											<option value="0"<?php if ($cur_forum['sort_by'] == '0') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_forums['Last post'] ?></option>
+											<option value="1"<?php if ($cur_forum['sort_by'] == '1') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_forums['Topic start'] ?></option>
+											<option value="2"<?php if ($cur_forum['sort_by'] == '2') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_forums['Subject'] ?></option>
 										</select>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_forums['Redirect label'] ?></th>
-									<td><?php echo ($cur_forum['num_topics']) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.pun_htmlspecialchars($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
+									<td><?php echo($cur_forum['num_topics']) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.pun_htmlspecialchars($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>
@@ -72,32 +79,48 @@ if (!defined('PUN'))
 							</thead>
 							<tbody>
 <?php
-	$perm_data = get_permissions($forum_id);
+    $perm_data = get_permissions($forum_id);
 
-	$cur_index = 7;
+    $cur_index = 7;
 
-	foreach ($perm_data as $perm)
-	{
-
-?>
+    foreach ($perm_data as $perm) {
+        ?>
 								<tr>
 									<th class="atcl"><?php echo pun_htmlspecialchars($perm['g_title']) ?></th>
-									<td<?php if (!$perm['read_forum_def']) echo ' class="nodefault"'; ?>>
-										<input type="hidden" name="read_forum_old[<?php echo $perm['g_id'] ?>]" value="<?php echo ($perm['read_forum']) ? '1' : '0'; ?>" />
-										<input type="checkbox" name="read_forum_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo ($perm['read_forum']) ? ' checked="checked"' : ''; ?><?php echo ($perm['g_read_board'] == '0') ? ' disabled="disabled"' : ''; ?> tabindex="<?php echo $cur_index++ ?>" />
+									<td<?php if (!$perm['read_forum_def']) {
+    echo ' class="nodefault"';
+}
+        ?>>
+										<input type="hidden" name="read_forum_old[<?php echo $perm['g_id'] ?>]" value="<?php echo($perm['read_forum']) ? '1' : '0';
+        ?>" />
+										<input type="checkbox" name="read_forum_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo($perm['read_forum']) ? ' checked="checked"' : '';
+        ?><?php echo($perm['g_read_board'] == '0') ? ' disabled="disabled"' : '';
+        ?> tabindex="<?php echo $cur_index++ ?>" />
 									</td>
-									<td<?php if (!$perm['post_replies_def'] && $cur_forum['redirect_url'] == '') echo ' class="nodefault"'; ?>>
-										<input type="hidden" name="post_replies_old[<?php echo $perm['g_id'] ?>]" value="<?php echo ($perm['post_replies']) ? '1' : '0'; ?>" />
-										<input type="checkbox" name="post_replies_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo ($perm['post_replies']) ? ' checked="checked"' : ''; ?><?php echo ($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : ''; ?> tabindex="<?php echo $cur_index++ ?>" />
+									<td<?php if (!$perm['post_replies_def'] && $cur_forum['redirect_url'] == '') {
+    echo ' class="nodefault"';
+}
+        ?>>
+										<input type="hidden" name="post_replies_old[<?php echo $perm['g_id'] ?>]" value="<?php echo($perm['post_replies']) ? '1' : '0';
+        ?>" />
+										<input type="checkbox" name="post_replies_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo($perm['post_replies']) ? ' checked="checked"' : '';
+        ?><?php echo($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : '';
+        ?> tabindex="<?php echo $cur_index++ ?>" />
 									</td>
-									<td<?php if (!$perm['post_topics_def'] && $cur_forum['redirect_url'] == '') echo ' class="nodefault"'; ?>>
-										<input type="hidden" name="post_topics_old[<?php echo $perm['g_id'] ?>]" value="<?php echo ($perm['post_topics']) ? '1' : '0'; ?>" />
-										<input type="checkbox" name="post_topics_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo ($perm['post_topics']) ? ' checked="checked"' : ''; ?><?php echo ($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : ''; ?> tabindex="<?php echo $cur_index++ ?>" />
+									<td<?php if (!$perm['post_topics_def'] && $cur_forum['redirect_url'] == '') {
+    echo ' class="nodefault"';
+}
+        ?>>
+										<input type="hidden" name="post_topics_old[<?php echo $perm['g_id'] ?>]" value="<?php echo($perm['post_topics']) ? '1' : '0';
+        ?>" />
+										<input type="checkbox" name="post_topics_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo($perm['post_topics']) ? ' checked="checked"' : '';
+        ?><?php echo($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : '';
+        ?> tabindex="<?php echo $cur_index++ ?>" />
 									</td>
 								</tr>
 <?php
 
-	}
+    }
 
 ?>
 							</tbody>

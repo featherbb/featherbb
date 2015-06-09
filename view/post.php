@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 
@@ -29,10 +30,8 @@ if (!defined('PUN'))
 <?php
 
 // If there are errors, we display them
-if (!empty($errors))
-{
-
-?>
+if (!empty($errors)) {
+    ?>
 <div id="posterror" class="block">
 	<h2><span><?php echo $lang_post['Post errors'] ?></span></h2>
 	<div class="box">
@@ -41,9 +40,10 @@ if (!empty($errors))
 			<ul class="error-list">
 <?php
 
-	foreach ($errors as $cur_error)
-		echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-?>
+    foreach ($errors as $cur_error) {
+        echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
+    }
+    ?>
 			</ul>
 		</div>
 	</div>
@@ -51,13 +51,11 @@ if (!empty($errors))
 
 <?php
 
-}
-else if (isset($_POST['preview']))
-{
-	require_once PUN_ROOT.'include/parser.php';
-	$preview_message = parse_message($post['message'], $post['hide_smilies']);
+} elseif (isset($_POST['preview'])) {
+    require_once PUN_ROOT.'include/parser.php';
+    $preview_message = parse_message($post['message'], $post['hide_smilies']);
 
-?>
+    ?>
 <div id="postpreview" class="blockpost">
 	<h2><span><?php echo $lang_post['Post preview'] ?></span></h2>
 	<div class="box">
@@ -92,33 +90,40 @@ $cur_index = 1;
 						<input type="hidden" name="form_sent" value="1" />
 <?php
 
-if ($pun_user['is_guest'])
-{
-	$email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
-	$email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
+if ($pun_user['is_guest']) {
+    $email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
+    $email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
 
-?>
-						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php if (isset($_POST['req_username'])) echo pun_htmlspecialchars($post['username']); ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
-						<label class="conl<?php echo ($pun_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" value="<?php if (isset($_POST[$email_form_name])) echo pun_htmlspecialchars($post['email']); ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+    ?>
+						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php if (isset($_POST['req_username'])) {
+    echo pun_htmlspecialchars($post['username']);
+}
+    ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+						<label class="conl<?php echo($pun_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" value="<?php if (isset($_POST[$email_form_name])) {
+    echo pun_htmlspecialchars($post['email']);
+}
+    ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php
+
 }
 if ($fid): ?>
-						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (isset($_POST['req_subject'])) echo pun_htmlspecialchars($post['subject']); ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (isset($_POST['req_subject'])) {
+    echo pun_htmlspecialchars($post['subject']);
+} ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
 						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo isset($_POST['req_message']) ? pun_linebreaks(pun_trim(pun_htmlspecialchars($_POST['req_message']))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
 						<ul class="bblinks">
-							<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="help.php#img" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="help.php#smilies" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo ($pun_config['o_smilies'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($pun_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($pun_config['p_message_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="help.php#img" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="help.php#smilies" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($pun_config['o_smilies'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 						</ul>
 					</div>
 				</fieldset>
-<?php				
-if (!empty($checkboxes))
-{
-?>
+<?php
+if (!empty($checkboxes)) {
+    ?>
 			</div>
 			<div class="inform">
 				<fieldset>
@@ -148,15 +153,14 @@ if ($tid && $pun_config['o_topic_review'] != '0') :
 	<h2><span><?php echo $lang_post['Topic review'] ?></span></h2>
 	
 	<?php
-	// Set background switching on
-	$post_count = 0;
-	
-	foreach ($post_data as $post)
-	{
-		++$post_count;
-	?>
+    // Set background switching on
+    $post_count = 0;
+    
+    foreach ($post_data as $post) {
+        ++$post_count;
+        ?>
 	<div class="blockpost">
-	<div class="box<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
+	<div class="box<?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
 		<div class="inbox">
 			<div class="postbody">
 				<div class="postleft">
@@ -176,8 +180,9 @@ if ($tid && $pun_config['o_topic_review'] != '0') :
 	</div>
 </div>
 	<?php
-	}
-	?>
+
+    }
+    ?>
 		
 </div>
 <?php endif;?>

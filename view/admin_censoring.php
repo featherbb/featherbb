@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 	<div class="blockform">
@@ -45,9 +46,8 @@ if (!defined('PUN'))
 						<legend><?php echo $lang_admin_censoring['Edit remove subhead'] ?></legend>
 						<div class="infldset">
 <?php
-if ($is_word)
-{
-?>
+if ($is_word) {
+    ?>
 							<table>
 							<thead>
 								<tr>
@@ -59,17 +59,18 @@ if ($is_word)
 							<tbody>
 <?php
 
-	foreach ($word_data as $word)
-		echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.pun_htmlspecialchars($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.pun_htmlspecialchars($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.$lang_admin_common['Update'].'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.$lang_admin_common['Remove'].'" /></td></tr>'."\n";
+    foreach ($word_data as $word) {
+        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.pun_htmlspecialchars($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.pun_htmlspecialchars($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.$lang_admin_common['Update'].'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.$lang_admin_common['Remove'].'" /></td></tr>'."\n";
+    }
 
-?>
+    ?>
 							</tbody>
 							</table>
 <?php
 
+} else {
+    echo "\t\t\t\t\t\t\t".'<p>'.$lang_admin_censoring['No words in list'].'</p>'."\n";
 }
-else
-	echo "\t\t\t\t\t\t\t".'<p>'.$lang_admin_censoring['No words in list'].'</p>'."\n";
 
 ?>
 						</div>

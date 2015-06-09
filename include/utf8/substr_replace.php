@@ -13,15 +13,16 @@
 * @see utf8_strlen
 * @see utf8_substr
 */
-function utf8_substr_replace($str, $repl, $start , $length=null)
+function utf8_substr_replace($str, $repl, $start, $length=null)
 {
-	preg_match_all('/./us', $str, $ar);
-	preg_match_all('/./us', $repl, $rar);
+    preg_match_all('/./us', $str, $ar);
+    preg_match_all('/./us', $repl, $rar);
 
-	if(is_null($length))
-		$length = utf8_strlen($str);
+    if (is_null($length)) {
+        $length = utf8_strlen($str);
+    }
 
-	array_splice($ar[0], $start, $length, $rar[0]);
+    array_splice($ar[0], $start, $length, $rar[0]);
 
-	return implode($ar[0]);
+    return implode($ar[0]);
 }

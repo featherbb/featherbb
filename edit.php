@@ -11,13 +11,15 @@ define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
 
-if ($pun_user['g_read_board'] == '0')
-	message($lang_common['No view'], false, '403 Forbidden');
+if ($pun_user['g_read_board'] == '0') {
+    message($lang_common['No view'], false, '403 Forbidden');
+}
 
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($id < 1)
-	message($lang_common['Bad request'], false, '404 Not Found');
+if ($id < 1) {
+    message($lang_common['Bad request'], false, '404 Not Found');
+}
 
 // Load the edit.php model file
 require PUN_ROOT.'model/edit.php';
@@ -31,21 +33,22 @@ $is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1'
 
 $can_edit_subject = $id == $cur_post['first_post_id'];
 
-if ($pun_config['o_censoring'] == '1')
-{
-	$cur_post['subject'] = censor_words($cur_post['subject']);
-	$cur_post['message'] = censor_words($cur_post['message']);
+if ($pun_config['o_censoring'] == '1') {
+    $cur_post['subject'] = censor_words($cur_post['subject']);
+    $cur_post['message'] = censor_words($cur_post['message']);
 }
 
 // Do we have permission to edit this post?
 if (($pun_user['g_edit_posts'] == '0' ||
-	$cur_post['poster_id'] != $pun_user['id'] ||
-	$cur_post['closed'] == '1') &&
-	!$is_admmod)
-	message($lang_common['No permission'], false, '403 Forbidden');
+    $cur_post['poster_id'] != $pun_user['id'] ||
+    $cur_post['closed'] == '1') &&
+    !$is_admmod) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
-if ($is_admmod && $pun_user['g_id'] != PUN_ADMIN && in_array($cur_post['poster_id'], get_admin_ids()))
-	message($lang_common['No permission'], false, '403 Forbidden');
+if ($is_admmod && $pun_user['g_id'] != PUN_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the post.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
@@ -54,22 +57,20 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
 $errors = array();
 
 
-if (isset($_POST['form_sent']))
-{
-	// Let's see if everything went right
-	$errors = check_errors_before_edit($fid, $_POST, $can_edit_subject, $errors);
-	
-	// Setup some variables before post
-	$post = setup_variables($_POST, $cur_post, $is_admmod, $can_edit_subject, $errors);
+if (isset($_POST['form_sent'])) {
+    // Let's see if everything went right
+    $errors = check_errors_before_edit($fid, $_POST, $can_edit_subject, $errors);
+    
+    // Setup some variables before post
+    $post = setup_variables($_POST, $cur_post, $is_admmod, $can_edit_subject, $errors);
 
-	// Did everything go according to plan?
-	if (empty($errors) && !isset($_POST['preview']))
-	{
-		// Edit the post
-		edit_post($id, $can_edit_subject, $post, $cur_post, $_POST, $is_admmod);
+    // Did everything go according to plan?
+    if (empty($errors) && !isset($_POST['preview'])) {
+        // Edit the post
+        edit_post($id, $can_edit_subject, $post, $cur_post, $_POST, $is_admmod);
 
-		redirect('viewtopic.php?pid='.$id.'#p'.$id, $lang_post['Edit redirect']);
-	}
+        redirect('viewtopic.php?pid='.$id.'#p'.$id, $lang_post['Edit redirect']);
+    }
 }
 
 
@@ -81,10 +82,9 @@ require PUN_ROOT.'header.php';
 
 $cur_index = 1;
 
-if (isset($_POST['preview']))
-{
-	require_once PUN_ROOT.'include/parser.php';
-	$preview_message = parse_message($post['message'], $post['hide_smilies']);
+if (isset($_POST['preview'])) {
+    require_once PUN_ROOT.'include/parser.php';
+    $preview_message = parse_message($post['message'], $post['hide_smilies']);
 }
 
 $checkboxes = get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $_POST, $cur_index);

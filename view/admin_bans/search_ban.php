@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 <div class="linkst">
@@ -46,24 +47,23 @@ if (!defined('PUN'))
 			<tbody>
 <?php
 
-		foreach ($ban_data as $cur_ban)
-		{
-
-?>
+        foreach ($ban_data as $cur_ban) {
+            ?>
 				<tr>
-					<td class="tcl"><?php echo ($cur_ban['username'] != '') ? pun_htmlspecialchars($cur_ban['username']) : '&#160;' ?></td>
-					<td class="tc2"><?php echo ($cur_ban['email'] != '') ? pun_htmlspecialchars($cur_ban['email']) : '&#160;' ?></td>
-					<td class="tc3"><?php echo ($cur_ban['ip'] != '') ? pun_htmlspecialchars($cur_ban['ip']) : '&#160;' ?></td>
+					<td class="tcl"><?php echo($cur_ban['username'] != '') ? pun_htmlspecialchars($cur_ban['username']) : '&#160;' ?></td>
+					<td class="tc2"><?php echo($cur_ban['email'] != '') ? pun_htmlspecialchars($cur_ban['email']) : '&#160;' ?></td>
+					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? pun_htmlspecialchars($cur_ban['ip']) : '&#160;' ?></td>
 					<td class="tc4"><?php echo format_time($cur_ban['expire'], true) ?></td>
-					<td class="tc5"><?php echo ($cur_ban['message'] != '') ? pun_htmlspecialchars($cur_ban['message']) : '&#160;' ?></td>
-					<td class="tc6"><?php echo ($cur_ban['ban_creator_username'] != '') ? '<a href="profile.php?id='.$cur_ban['ban_creator'].'">'.pun_htmlspecialchars($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
+					<td class="tc5"><?php echo($cur_ban['message'] != '') ? pun_htmlspecialchars($cur_ban['message']) : '&#160;' ?></td>
+					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="profile.php?id='.$cur_ban['ban_creator'].'">'.pun_htmlspecialchars($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
 					<td class="tcr"><?php echo '<a href="admin_bans.php?edit_ban='.$cur_ban['id'].'">'.$lang_admin_common['Edit'].'</a> | <a href="admin_bans.php?del_ban='.$cur_ban['id'].'">'.$lang_admin_common['Remove'].'</a>' ?></td>
 				</tr>
 <?php
 
-		}
-		if (empty($ban_data))
-			echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.$lang_admin_bans['No match'].'</td></tr>'."\n";
+        }
+        if (empty($ban_data)) {
+            echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.$lang_admin_bans['No match'].'</td></tr>'."\n";
+        }
 
 ?>
 			</tbody>

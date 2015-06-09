@@ -8,25 +8,26 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 $cur_cat = 0;
-foreach ($index_data as $forum)
-{
-	if ($forum['cur_category'] == 0) : ?>
+foreach ($index_data as $forum) {
+    if ($forum['cur_category'] == 0) : ?>
 	<div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo $lang_index['Empty board'] ?></p></div></div></div>
 	<?php
-	endif;
-	if ($forum['cid'] != $cur_cat) :
-		if ($cur_cat != 0) :
-	?>
+    endif;
+    if ($forum['cid'] != $cur_cat) :
+        if ($cur_cat != 0) :
+    ?>
 				</tbody>
 			</table>
 		</div>
 	</div>
 	</div>
-	<?php endif; ?>
+	<?php endif;
+    ?>
 	<div id="idx<?php echo $forum['cid'] ?>" class="blocktable">
 	<h2><span><?php echo pun_htmlspecialchars($forum['cat_name']) ?></span></h2>
 	<div class="box">
@@ -42,9 +43,9 @@ foreach ($index_data as $forum)
 			</thead>
 			<tbody>
 	<?php
-	$cur_cat = $forum['cid'];
-	endif;
-	?>
+    $cur_cat = $forum['cid'];
+    endif;
+    ?>
 				<tr class="<?php echo $forum['item_status'] ?>">
 					<td class="tcl">
 						<div class="<?php echo $forum['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($forum['forum_count_formatted']) ?></div></div>
@@ -59,9 +60,10 @@ foreach ($index_data as $forum)
 					<td class="tcr"><?php echo $forum['last_post_formatted'] ?></td>
 				</tr>
 	<?php
+
 }
 if ($cur_cat > 0) :
-	?>
+    ?>
 					</tbody>
 			</table>
 		</div>
@@ -98,13 +100,14 @@ endif;
 				<?php endif; ?>
 			</dl>
 			<?php
-			if ($pun_config['o_users_online'] == 1) :
-				if ($online['num_users'] > 0)
-					echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
-				else
-					echo "\t\t\t".'<div class="clearer"></div>'."\n";
-			endif;
-			?>
+            if ($pun_config['o_users_online'] == 1) :
+                if ($online['num_users'] > 0) {
+                    echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
+                } else {
+                    echo "\t\t\t".'<div class="clearer"></div>'."\n";
+                }
+            endif;
+            ?>
 		</div>
 	</div>
 </div>

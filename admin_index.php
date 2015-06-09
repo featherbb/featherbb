@@ -15,8 +15,9 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
-if (!$pun_user['is_admmod'])
-	message($lang_common['No permission'], false, '403 Forbidden');
+if (!$pun_user['is_admmod']) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the admin_index.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_index.php';
@@ -24,29 +25,31 @@ require PUN_ROOT.'lang/'.$admin_language.'/admin_index.php';
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 
 // Check for upgrade
-if ($action == 'check_upgrade')
-{
-	if (!ini_get('allow_url_fopen'))
-		message($lang_admin_index['fopen disabled message']);
+if ($action == 'check_upgrade') {
+    if (!ini_get('allow_url_fopen')) {
+        message($lang_admin_index['fopen disabled message']);
+    }
 
-	$latest_version = trim(@file_get_contents('http://fluxbb.org/latest_version'));
-	if (empty($latest_version))
-		message($lang_admin_index['Upgrade check failed message']);
+    $latest_version = trim(@file_get_contents('http://fluxbb.org/latest_version'));
+    if (empty($latest_version)) {
+        message($lang_admin_index['Upgrade check failed message']);
+    }
 
-	if (version_compare($pun_config['o_cur_version'], $latest_version, '>='))
-		message($lang_admin_index['Running latest version message']);
-	else
-		message(sprintf($lang_admin_index['New version available message'], '<a href="http://fluxbb.org/">FluxBB.org</a>'));
+    if (version_compare($pun_config['o_cur_version'], $latest_version, '>=')) {
+        message($lang_admin_index['Running latest version message']);
+    } else {
+        message(sprintf($lang_admin_index['New version available message'], '<a href="http://fluxbb.org/">FluxBB.org</a>'));
+    }
 }
 // Remove install.php
-else if ($action == 'remove_install_file')
-{
-	$deleted = @unlink(PUN_ROOT.'install.php');
+elseif ($action == 'remove_install_file') {
+    $deleted = @unlink(PUN_ROOT.'install.php');
 
-	if ($deleted)
-		redirect('admin_index.php', $lang_admin_index['Deleted install.php redirect']);
-	else
-		message($lang_admin_index['Delete install.php failed']);
+    if ($deleted) {
+        redirect('admin_index.php', $lang_admin_index['Deleted install.php redirect']);
+    } else {
+        message($lang_admin_index['Delete install.php failed']);
+    }
 }
 
 $install_file_exists = is_file(PUN_ROOT.'install.php');

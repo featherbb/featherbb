@@ -11,15 +11,17 @@ define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
 
-if ($pun_user['g_read_board'] == '0')
-	message($lang_common['No view'], false, '403 Forbidden');
+if ($pun_user['g_read_board'] == '0') {
+    message($lang_common['No view'], false, '403 Forbidden');
+}
 
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
-if ($id < 1 && $pid < 1)
-	message($lang_common['Bad request'], false, '404 Not Found');
+if ($id < 1 && $pid < 1) {
+    message($lang_common['Bad request'], false, '404 Not Found');
+}
 
 // Load the viewtopic.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
@@ -29,14 +31,13 @@ require PUN_ROOT.'model/viewtopic.php';
 
 
 // If a post ID is specified we determine topic ID and page number so we can redirect to the correct message
-if ($pid)
-{
-	$post = redirect_to_post($pid);
-	$id = $post['topic_id'];
-	$_GET['p'] = $post['get_p'];
+if ($pid) {
+    $post = redirect_to_post($pid);
+    $id = $post['topic_id'];
+    $_GET['p'] = $post['get_p'];
+} else {
+    handle_actions($action, $id);
 }
-else
-	handle_actions($action, $id);
 
 
 // Fetch some informations about the topic
@@ -45,19 +46,19 @@ $cur_topic = get_info_topic($id);
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
 $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
 $is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array))) ? true : false;
-if ($is_admmod)
-	$admin_ids = get_admin_ids();
+if ($is_admmod) {
+    $admin_ids = get_admin_ids();
+}
 
 // Can we or can we not post replies?
 $post_link = get_post_link($id, $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
 
 
 // Add/update this topic in our list of tracked topics
-if (!$pun_user['is_guest'])
-{
-	$tracked_topics = get_tracked_topics();
-	$tracked_topics['topics'][$id] = time();
-	set_tracked_topics($tracked_topics);
+if (!$pun_user['is_guest']) {
+    $tracked_topics = get_tracked_topics();
+    $tracked_topics['topics'][$id] = time();
+    set_tracked_topics($tracked_topics);
 }
 
 
@@ -71,8 +72,9 @@ $start_from = $pun_user['disp_posts'] * ($p - 1);
 $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'viewtopic.php?id='.$id);
 
 
-if ($pun_config['o_censoring'] == '1')
-	$cur_topic['subject'] = censor_words($cur_topic['subject']);
+if ($pun_config['o_censoring'] == '1') {
+    $cur_topic['subject'] = censor_words($cur_topic['subject']);
+}
 
 $quickpost = is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
 
@@ -95,8 +97,9 @@ $post_data = print_posts($id, $start_from, $cur_topic, $is_admmod);
 require PUN_ROOT.'view/viewtopic.php';
 
 // Increment "num_views" for topic
-if ($pun_config['o_topic_views'] == '1')
-	$db->query('UPDATE '.$db->prefix.'topics SET num_views=num_views+1 WHERE id='.$id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+if ($pun_config['o_topic_views'] == '1') {
+    $db->query('UPDATE '.$db->prefix.'topics SET num_views=num_views+1 WHERE id='.$id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+}
 
 $forum_id = $cur_topic['forum_id'];
 $footer_style = 'viewtopic';

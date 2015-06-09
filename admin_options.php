@@ -15,211 +15,226 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
-if ($pun_user['g_id'] != PUN_ADMIN)
-	message($lang_common['No permission'], false, '403 Forbidden');
+if ($pun_user['g_id'] != PUN_ADMIN) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the admin_options.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_options.php';
 
-if (isset($_POST['form_sent']))
-{
-	confirm_referrer('admin_options.php', $lang_admin_options['Bad HTTP Referer message']);
+if (isset($_POST['form_sent'])) {
+    confirm_referrer('admin_options.php', $lang_admin_options['Bad HTTP Referer message']);
 
-	$form = array(
-		'board_title'			=> pun_trim($_POST['form']['board_title']),
-		'board_desc'			=> pun_trim($_POST['form']['board_desc']),
-		'base_url'				=> pun_trim($_POST['form']['base_url']),
-		'default_timezone'		=> floatval($_POST['form']['default_timezone']),
-		'default_dst'			=> $_POST['form']['default_dst'] != '1' ? '0' : '1',
-		'default_lang'			=> pun_trim($_POST['form']['default_lang']),
-		'default_style'			=> pun_trim($_POST['form']['default_style']),
-		'time_format'			=> pun_trim($_POST['form']['time_format']),
-		'date_format'			=> pun_trim($_POST['form']['date_format']),
-		'timeout_visit'			=> (intval($_POST['form']['timeout_visit']) > 0) ? intval($_POST['form']['timeout_visit']) : 1,
-		'timeout_online'		=> (intval($_POST['form']['timeout_online']) > 0) ? intval($_POST['form']['timeout_online']) : 1,
-		'redirect_delay'		=> (intval($_POST['form']['redirect_delay']) >= 0) ? intval($_POST['form']['redirect_delay']) : 0,
-		'show_version'			=> $_POST['form']['show_version'] != '1' ? '0' : '1',
-		'show_user_info'		=> $_POST['form']['show_user_info'] != '1' ? '0' : '1',
-		'show_post_count'		=> $_POST['form']['show_post_count'] != '1' ? '0' : '1',
-		'smilies'				=> $_POST['form']['smilies'] != '1' ? '0' : '1',
-		'smilies_sig'			=> $_POST['form']['smilies_sig'] != '1' ? '0' : '1',
-		'make_links'			=> $_POST['form']['make_links'] != '1' ? '0' : '1',
-		'topic_review'			=> (intval($_POST['form']['topic_review']) >= 0) ? intval($_POST['form']['topic_review']) : 0,
-		'disp_topics_default'	=> intval($_POST['form']['disp_topics_default']),
-		'disp_posts_default'	=> intval($_POST['form']['disp_posts_default']),
-		'indent_num_spaces'		=> (intval($_POST['form']['indent_num_spaces']) >= 0) ? intval($_POST['form']['indent_num_spaces']) : 0,
-		'quote_depth'			=> (intval($_POST['form']['quote_depth']) > 0) ? intval($_POST['form']['quote_depth']) : 1,
-		'quickpost'				=> $_POST['form']['quickpost'] != '1' ? '0' : '1',
-		'users_online'			=> $_POST['form']['users_online'] != '1' ? '0' : '1',
-		'censoring'				=> $_POST['form']['censoring'] != '1' ? '0' : '1',
-		'signatures'			=> $_POST['form']['signatures'] != '1' ? '0' : '1',
-		'show_dot'				=> $_POST['form']['show_dot'] != '1' ? '0' : '1',
-		'topic_views'			=> $_POST['form']['topic_views'] != '1' ? '0' : '1',
-		'quickjump'				=> $_POST['form']['quickjump'] != '1' ? '0' : '1',
-		'gzip'					=> $_POST['form']['gzip'] != '1' ? '0' : '1',
-		'search_all_forums'		=> $_POST['form']['search_all_forums'] != '1' ? '0' : '1',
-		'additional_navlinks'	=> pun_trim($_POST['form']['additional_navlinks']),
-		'feed_type'				=> intval($_POST['form']['feed_type']),
-		'feed_ttl'				=> intval($_POST['form']['feed_ttl']),
-		'report_method'			=> intval($_POST['form']['report_method']),
-		'mailing_list'			=> pun_trim($_POST['form']['mailing_list']),
-		'avatars'				=> $_POST['form']['avatars'] != '1' ? '0' : '1',
-		'avatars_dir'			=> pun_trim($_POST['form']['avatars_dir']),
-		'avatars_width'			=> (intval($_POST['form']['avatars_width']) > 0) ? intval($_POST['form']['avatars_width']) : 1,
-		'avatars_height'		=> (intval($_POST['form']['avatars_height']) > 0) ? intval($_POST['form']['avatars_height']) : 1,
-		'avatars_size'			=> (intval($_POST['form']['avatars_size']) > 0) ? intval($_POST['form']['avatars_size']) : 1,
-		'admin_email'			=> strtolower(pun_trim($_POST['form']['admin_email'])),
-		'webmaster_email'		=> strtolower(pun_trim($_POST['form']['webmaster_email'])),
-		'forum_subscriptions'	=> $_POST['form']['forum_subscriptions'] != '1' ? '0' : '1',
-		'topic_subscriptions'	=> $_POST['form']['topic_subscriptions'] != '1' ? '0' : '1',
-		'smtp_host'				=> pun_trim($_POST['form']['smtp_host']),
-		'smtp_user'				=> pun_trim($_POST['form']['smtp_user']),
-		'smtp_ssl'				=> $_POST['form']['smtp_ssl'] != '1' ? '0' : '1',
-		'regs_allow'			=> $_POST['form']['regs_allow'] != '1' ? '0' : '1',
-		'regs_verify'			=> $_POST['form']['regs_verify'] != '1' ? '0' : '1',
-		'regs_report'			=> $_POST['form']['regs_report'] != '1' ? '0' : '1',
-		'rules'					=> $_POST['form']['rules'] != '1' ? '0' : '1',
-		'rules_message'			=> pun_trim($_POST['form']['rules_message']),
-		'default_email_setting'	=> intval($_POST['form']['default_email_setting']),
-		'announcement'			=> $_POST['form']['announcement'] != '1' ? '0' : '1',
-		'announcement_message'	=> pun_trim($_POST['form']['announcement_message']),
-		'maintenance'			=> $_POST['form']['maintenance'] != '1' ? '0' : '1',
-		'maintenance_message'	=> pun_trim($_POST['form']['maintenance_message']),
-	);
+    $form = array(
+        'board_title'            => pun_trim($_POST['form']['board_title']),
+        'board_desc'            => pun_trim($_POST['form']['board_desc']),
+        'base_url'                => pun_trim($_POST['form']['base_url']),
+        'default_timezone'        => floatval($_POST['form']['default_timezone']),
+        'default_dst'            => $_POST['form']['default_dst'] != '1' ? '0' : '1',
+        'default_lang'            => pun_trim($_POST['form']['default_lang']),
+        'default_style'            => pun_trim($_POST['form']['default_style']),
+        'time_format'            => pun_trim($_POST['form']['time_format']),
+        'date_format'            => pun_trim($_POST['form']['date_format']),
+        'timeout_visit'            => (intval($_POST['form']['timeout_visit']) > 0) ? intval($_POST['form']['timeout_visit']) : 1,
+        'timeout_online'        => (intval($_POST['form']['timeout_online']) > 0) ? intval($_POST['form']['timeout_online']) : 1,
+        'redirect_delay'        => (intval($_POST['form']['redirect_delay']) >= 0) ? intval($_POST['form']['redirect_delay']) : 0,
+        'show_version'            => $_POST['form']['show_version'] != '1' ? '0' : '1',
+        'show_user_info'        => $_POST['form']['show_user_info'] != '1' ? '0' : '1',
+        'show_post_count'        => $_POST['form']['show_post_count'] != '1' ? '0' : '1',
+        'smilies'                => $_POST['form']['smilies'] != '1' ? '0' : '1',
+        'smilies_sig'            => $_POST['form']['smilies_sig'] != '1' ? '0' : '1',
+        'make_links'            => $_POST['form']['make_links'] != '1' ? '0' : '1',
+        'topic_review'            => (intval($_POST['form']['topic_review']) >= 0) ? intval($_POST['form']['topic_review']) : 0,
+        'disp_topics_default'    => intval($_POST['form']['disp_topics_default']),
+        'disp_posts_default'    => intval($_POST['form']['disp_posts_default']),
+        'indent_num_spaces'        => (intval($_POST['form']['indent_num_spaces']) >= 0) ? intval($_POST['form']['indent_num_spaces']) : 0,
+        'quote_depth'            => (intval($_POST['form']['quote_depth']) > 0) ? intval($_POST['form']['quote_depth']) : 1,
+        'quickpost'                => $_POST['form']['quickpost'] != '1' ? '0' : '1',
+        'users_online'            => $_POST['form']['users_online'] != '1' ? '0' : '1',
+        'censoring'                => $_POST['form']['censoring'] != '1' ? '0' : '1',
+        'signatures'            => $_POST['form']['signatures'] != '1' ? '0' : '1',
+        'show_dot'                => $_POST['form']['show_dot'] != '1' ? '0' : '1',
+        'topic_views'            => $_POST['form']['topic_views'] != '1' ? '0' : '1',
+        'quickjump'                => $_POST['form']['quickjump'] != '1' ? '0' : '1',
+        'gzip'                    => $_POST['form']['gzip'] != '1' ? '0' : '1',
+        'search_all_forums'        => $_POST['form']['search_all_forums'] != '1' ? '0' : '1',
+        'additional_navlinks'    => pun_trim($_POST['form']['additional_navlinks']),
+        'feed_type'                => intval($_POST['form']['feed_type']),
+        'feed_ttl'                => intval($_POST['form']['feed_ttl']),
+        'report_method'            => intval($_POST['form']['report_method']),
+        'mailing_list'            => pun_trim($_POST['form']['mailing_list']),
+        'avatars'                => $_POST['form']['avatars'] != '1' ? '0' : '1',
+        'avatars_dir'            => pun_trim($_POST['form']['avatars_dir']),
+        'avatars_width'            => (intval($_POST['form']['avatars_width']) > 0) ? intval($_POST['form']['avatars_width']) : 1,
+        'avatars_height'        => (intval($_POST['form']['avatars_height']) > 0) ? intval($_POST['form']['avatars_height']) : 1,
+        'avatars_size'            => (intval($_POST['form']['avatars_size']) > 0) ? intval($_POST['form']['avatars_size']) : 1,
+        'admin_email'            => strtolower(pun_trim($_POST['form']['admin_email'])),
+        'webmaster_email'        => strtolower(pun_trim($_POST['form']['webmaster_email'])),
+        'forum_subscriptions'    => $_POST['form']['forum_subscriptions'] != '1' ? '0' : '1',
+        'topic_subscriptions'    => $_POST['form']['topic_subscriptions'] != '1' ? '0' : '1',
+        'smtp_host'                => pun_trim($_POST['form']['smtp_host']),
+        'smtp_user'                => pun_trim($_POST['form']['smtp_user']),
+        'smtp_ssl'                => $_POST['form']['smtp_ssl'] != '1' ? '0' : '1',
+        'regs_allow'            => $_POST['form']['regs_allow'] != '1' ? '0' : '1',
+        'regs_verify'            => $_POST['form']['regs_verify'] != '1' ? '0' : '1',
+        'regs_report'            => $_POST['form']['regs_report'] != '1' ? '0' : '1',
+        'rules'                    => $_POST['form']['rules'] != '1' ? '0' : '1',
+        'rules_message'            => pun_trim($_POST['form']['rules_message']),
+        'default_email_setting'    => intval($_POST['form']['default_email_setting']),
+        'announcement'            => $_POST['form']['announcement'] != '1' ? '0' : '1',
+        'announcement_message'    => pun_trim($_POST['form']['announcement_message']),
+        'maintenance'            => $_POST['form']['maintenance'] != '1' ? '0' : '1',
+        'maintenance_message'    => pun_trim($_POST['form']['maintenance_message']),
+    );
 
-	if ($form['board_title'] == '')
-		message($lang_admin_options['Must enter title message']);
+    if ($form['board_title'] == '') {
+        message($lang_admin_options['Must enter title message']);
+    }
 
-	// Make sure base_url doesn't end with a slash
-	if (substr($form['base_url'], -1) == '/')
-		$form['base_url'] = substr($form['base_url'], 0, -1);
-		
-	// Convert IDN to Punycode if needed
-	if (preg_match('/[^\x00-\x7F]/', $form['base_url']))
-	{
-		if (!function_exists('idn_to_ascii'))
-			message($lang_admin_options['Base URL problem']);
-		else
-			$form['base_url'] = idn_to_ascii($form['base_url']);
-	}
+    // Make sure base_url doesn't end with a slash
+    if (substr($form['base_url'], -1) == '/') {
+        $form['base_url'] = substr($form['base_url'], 0, -1);
+    }
+        
+    // Convert IDN to Punycode if needed
+    if (preg_match('/[^\x00-\x7F]/', $form['base_url'])) {
+        if (!function_exists('idn_to_ascii')) {
+            message($lang_admin_options['Base URL problem']);
+        } else {
+            $form['base_url'] = idn_to_ascii($form['base_url']);
+        }
+    }
 
-	$languages = forum_list_langs();
-	if (!in_array($form['default_lang'], $languages))
-		message($lang_common['Bad request'], false, '404 Not Found');
+    $languages = forum_list_langs();
+    if (!in_array($form['default_lang'], $languages)) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	$styles = forum_list_styles();
-	if (!in_array($form['default_style'], $styles))
-		message($lang_common['Bad request'], false, '404 Not Found');
+    $styles = forum_list_styles();
+    if (!in_array($form['default_style'], $styles)) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	if ($form['time_format'] == '')
-		$form['time_format'] = 'H:i:s';
+    if ($form['time_format'] == '') {
+        $form['time_format'] = 'H:i:s';
+    }
 
-	if ($form['date_format'] == '')
-		$form['date_format'] = 'Y-m-d';
+    if ($form['date_format'] == '') {
+        $form['date_format'] = 'Y-m-d';
+    }
 
 
-	require PUN_ROOT.'include/email.php';
+    require PUN_ROOT.'include/email.php';
 
-	if (!is_valid_email($form['admin_email']))
-		message($lang_admin_options['Invalid e-mail message']);
+    if (!is_valid_email($form['admin_email'])) {
+        message($lang_admin_options['Invalid e-mail message']);
+    }
 
-	if (!is_valid_email($form['webmaster_email']))
-		message($lang_admin_options['Invalid webmaster e-mail message']);
+    if (!is_valid_email($form['webmaster_email'])) {
+        message($lang_admin_options['Invalid webmaster e-mail message']);
+    }
 
-	if ($form['mailing_list'] != '')
-		$form['mailing_list'] = strtolower(preg_replace('%\s%S', '', $form['mailing_list']));
+    if ($form['mailing_list'] != '') {
+        $form['mailing_list'] = strtolower(preg_replace('%\s%S', '', $form['mailing_list']));
+    }
 
-	// Make sure avatars_dir doesn't end with a slash
-	if (substr($form['avatars_dir'], -1) == '/')
-		$form['avatars_dir'] = substr($form['avatars_dir'], 0, -1);
+    // Make sure avatars_dir doesn't end with a slash
+    if (substr($form['avatars_dir'], -1) == '/') {
+        $form['avatars_dir'] = substr($form['avatars_dir'], 0, -1);
+    }
 
-	if ($form['additional_navlinks'] != '')
-		$form['additional_navlinks'] = pun_trim(pun_linebreaks($form['additional_navlinks']));
+    if ($form['additional_navlinks'] != '') {
+        $form['additional_navlinks'] = pun_trim(pun_linebreaks($form['additional_navlinks']));
+    }
 
-	// Change or enter a SMTP password
-	if (isset($_POST['form']['smtp_change_pass']))
-	{
-		$smtp_pass1 = isset($_POST['form']['smtp_pass1']) ? pun_trim($_POST['form']['smtp_pass1']) : '';
-		$smtp_pass2 = isset($_POST['form']['smtp_pass2']) ? pun_trim($_POST['form']['smtp_pass2']) : '';
+    // Change or enter a SMTP password
+    if (isset($_POST['form']['smtp_change_pass'])) {
+        $smtp_pass1 = isset($_POST['form']['smtp_pass1']) ? pun_trim($_POST['form']['smtp_pass1']) : '';
+        $smtp_pass2 = isset($_POST['form']['smtp_pass2']) ? pun_trim($_POST['form']['smtp_pass2']) : '';
 
-		if ($smtp_pass1 == $smtp_pass2)
-			$form['smtp_pass'] = $smtp_pass1;
-		else
-			message($lang_admin_options['SMTP passwords did not match']);
-	}
+        if ($smtp_pass1 == $smtp_pass2) {
+            $form['smtp_pass'] = $smtp_pass1;
+        } else {
+            message($lang_admin_options['SMTP passwords did not match']);
+        }
+    }
 
-	if ($form['announcement_message'] != '')
-		$form['announcement_message'] = pun_linebreaks($form['announcement_message']);
-	else
-	{
-		$form['announcement_message'] = $lang_admin_options['Enter announcement here'];
-		$form['announcement'] = '0';
-	}
+    if ($form['announcement_message'] != '') {
+        $form['announcement_message'] = pun_linebreaks($form['announcement_message']);
+    } else {
+        $form['announcement_message'] = $lang_admin_options['Enter announcement here'];
+        $form['announcement'] = '0';
+    }
 
-	if ($form['rules_message'] != '')
-		$form['rules_message'] = pun_linebreaks($form['rules_message']);
-	else
-	{
-		$form['rules_message'] = $lang_admin_options['Enter rules here'];
-		$form['rules'] = '0';
-	}
+    if ($form['rules_message'] != '') {
+        $form['rules_message'] = pun_linebreaks($form['rules_message']);
+    } else {
+        $form['rules_message'] = $lang_admin_options['Enter rules here'];
+        $form['rules'] = '0';
+    }
 
-	if ($form['maintenance_message'] != '')
-		$form['maintenance_message'] = pun_linebreaks($form['maintenance_message']);
-	else
-	{
-		$form['maintenance_message'] = $lang_admin_options['Default maintenance message'];
-		$form['maintenance'] = '0';
-	}
+    if ($form['maintenance_message'] != '') {
+        $form['maintenance_message'] = pun_linebreaks($form['maintenance_message']);
+    } else {
+        $form['maintenance_message'] = $lang_admin_options['Default maintenance message'];
+        $form['maintenance'] = '0';
+    }
 
-	// Make sure the number of displayed topics and posts is between 3 and 75
-	if ($form['disp_topics_default'] < 3)
-		$form['disp_topics_default'] = 3;
-	else if ($form['disp_topics_default'] > 75)
-		$form['disp_topics_default'] = 75;
+    // Make sure the number of displayed topics and posts is between 3 and 75
+    if ($form['disp_topics_default'] < 3) {
+        $form['disp_topics_default'] = 3;
+    } elseif ($form['disp_topics_default'] > 75) {
+        $form['disp_topics_default'] = 75;
+    }
 
-	if ($form['disp_posts_default'] < 3)
-		$form['disp_posts_default'] = 3;
-	else if ($form['disp_posts_default'] > 75)
-		$form['disp_posts_default'] = 75;
+    if ($form['disp_posts_default'] < 3) {
+        $form['disp_posts_default'] = 3;
+    } elseif ($form['disp_posts_default'] > 75) {
+        $form['disp_posts_default'] = 75;
+    }
 
-	if ($form['feed_type'] < 0 || $form['feed_type'] > 2)
-		message($lang_common['Bad request'], false, '404 Not Found');
+    if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	if ($form['feed_ttl'] < 0)
-		message($lang_common['Bad request'], false, '404 Not Found');
+    if ($form['feed_ttl'] < 0) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	if ($form['report_method'] < 0 || $form['report_method'] > 2)
-		message($lang_common['Bad request'], false, '404 Not Found');
+    if ($form['report_method'] < 0 || $form['report_method'] > 2) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2)
-		message($lang_common['Bad request'], false, '404 Not Found');
+    if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	if ($form['timeout_online'] >= $form['timeout_visit'])
-		message($lang_admin_options['Timeout error message']);
+    if ($form['timeout_online'] >= $form['timeout_visit']) {
+        message($lang_admin_options['Timeout error message']);
+    }
 
-	foreach ($form as $key => $input)
-	{
-		// Only update values that have changed
-		if (array_key_exists('o_'.$key, $pun_config) && $pun_config['o_'.$key] != $input)
-		{
-			if ($input != '' || is_int($input))
-				$value = '\''.$db->escape($input).'\'';
-			else
-				$value = 'NULL';
+    foreach ($form as $key => $input) {
+        // Only update values that have changed
+        if (array_key_exists('o_'.$key, $pun_config) && $pun_config['o_'.$key] != $input) {
+            if ($input != '' || is_int($input)) {
+                $value = '\''.$db->escape($input).'\'';
+            } else {
+                $value = 'NULL';
+            }
 
-			$db->query('UPDATE '.$db->prefix.'config SET conf_value='.$value.' WHERE conf_name=\'o_'.$db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
-		}
-	}
+            $db->query('UPDATE '.$db->prefix.'config SET conf_value='.$value.' WHERE conf_name=\'o_'.$db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+        }
+    }
 
-	// Regenerate the config cache
-	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-		require PUN_ROOT.'include/cache.php';
+    // Regenerate the config cache
+    if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+        require PUN_ROOT.'include/cache.php';
+    }
 
-	generate_config_cache();
-	clear_feed_cache();
+    generate_config_cache();
+    clear_feed_cache();
 
-	redirect('admin_options.php', $lang_admin_options['Options updated redirect']);
+    redirect('admin_options.php', $lang_admin_options['Options updated redirect']);
 }
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
@@ -265,46 +280,126 @@ generate_admin_menu('options');
 									<th scope="row"><?php echo $lang_admin_options['Timezone label'] ?></th>
 									<td>
 										<select name="form[default_timezone]">
-											<option value="-12"<?php if ($pun_config['o_default_timezone'] == -12) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-12:00'] ?></option>
-											<option value="-11"<?php if ($pun_config['o_default_timezone'] == -11) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-11:00'] ?></option>
-											<option value="-10"<?php if ($pun_config['o_default_timezone'] == -10) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-10:00'] ?></option>
-											<option value="-9.5"<?php if ($pun_config['o_default_timezone'] == -9.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-09:30'] ?></option>
-											<option value="-9"<?php if ($pun_config['o_default_timezone'] == -9) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-09:00'] ?></option>
-											<option value="-8.5"<?php if ($pun_config['o_default_timezone'] == -8.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-08:30'] ?></option>
-											<option value="-8"<?php if ($pun_config['o_default_timezone'] == -8) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-08:00'] ?></option>
-											<option value="-7"<?php if ($pun_config['o_default_timezone'] == -7) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-07:00'] ?></option>
-											<option value="-6"<?php if ($pun_config['o_default_timezone'] == -6) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-06:00'] ?></option>
-											<option value="-5"<?php if ($pun_config['o_default_timezone'] == -5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-05:00'] ?></option>
-											<option value="-4"<?php if ($pun_config['o_default_timezone'] == -4) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-04:00'] ?></option>
-											<option value="-3.5"<?php if ($pun_config['o_default_timezone'] == -3.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-03:30'] ?></option>
-											<option value="-3"<?php if ($pun_config['o_default_timezone'] == -3) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-03:00'] ?></option>
-											<option value="-2"<?php if ($pun_config['o_default_timezone'] == -2) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-02:00'] ?></option>
-											<option value="-1"<?php if ($pun_config['o_default_timezone'] == -1) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC-01:00'] ?></option>
-											<option value="0"<?php if ($pun_config['o_default_timezone'] == 0) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC'] ?></option>
-											<option value="1"<?php if ($pun_config['o_default_timezone'] == 1) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+01:00'] ?></option>
-											<option value="2"<?php if ($pun_config['o_default_timezone'] == 2) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+02:00'] ?></option>
-											<option value="3"<?php if ($pun_config['o_default_timezone'] == 3) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+03:00'] ?></option>
-											<option value="3.5"<?php if ($pun_config['o_default_timezone'] == 3.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+03:30'] ?></option>
-											<option value="4"<?php if ($pun_config['o_default_timezone'] == 4) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+04:00'] ?></option>
-											<option value="4.5"<?php if ($pun_config['o_default_timezone'] == 4.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+04:30'] ?></option>
-											<option value="5"<?php if ($pun_config['o_default_timezone'] == 5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+05:00'] ?></option>
-											<option value="5.5"<?php if ($pun_config['o_default_timezone'] == 5.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+05:30'] ?></option>
-											<option value="5.75"<?php if ($pun_config['o_default_timezone'] == 5.75) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+05:45'] ?></option>
-											<option value="6"<?php if ($pun_config['o_default_timezone'] == 6) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+06:00'] ?></option>
-											<option value="6.5"<?php if ($pun_config['o_default_timezone'] == 6.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+06:30'] ?></option>
-											<option value="7"<?php if ($pun_config['o_default_timezone'] == 7) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+07:00'] ?></option>
-											<option value="8"<?php if ($pun_config['o_default_timezone'] == 8) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+08:00'] ?></option>
-											<option value="8.75"<?php if ($pun_config['o_default_timezone'] == 8.75) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+08:45'] ?></option>
-											<option value="9"<?php if ($pun_config['o_default_timezone'] == 9) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+09:00'] ?></option>
-											<option value="9.5"<?php if ($pun_config['o_default_timezone'] == 9.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+09:30'] ?></option>
-											<option value="10"<?php if ($pun_config['o_default_timezone'] == 10) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+10:00'] ?></option>
-											<option value="10.5"<?php if ($pun_config['o_default_timezone'] == 10.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+10:30'] ?></option>
-											<option value="11"<?php if ($pun_config['o_default_timezone'] == 11) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+11:00'] ?></option>
-											<option value="11.5"<?php if ($pun_config['o_default_timezone'] == 11.5) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+11:30'] ?></option>
-											<option value="12"<?php if ($pun_config['o_default_timezone'] == 12) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+12:00'] ?></option>
-											<option value="12.75"<?php if ($pun_config['o_default_timezone'] == 12.75) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+12:45'] ?></option>
-											<option value="13"<?php if ($pun_config['o_default_timezone'] == 13) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+13:00'] ?></option>
-											<option value="14"<?php if ($pun_config['o_default_timezone'] == 14) echo ' selected="selected"' ?>><?php echo $lang_admin_options['UTC+14:00'] ?></option>
+											<option value="-12"<?php if ($pun_config['o_default_timezone'] == -12) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-12:00'] ?></option>
+											<option value="-11"<?php if ($pun_config['o_default_timezone'] == -11) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-11:00'] ?></option>
+											<option value="-10"<?php if ($pun_config['o_default_timezone'] == -10) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-10:00'] ?></option>
+											<option value="-9.5"<?php if ($pun_config['o_default_timezone'] == -9.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-09:30'] ?></option>
+											<option value="-9"<?php if ($pun_config['o_default_timezone'] == -9) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-09:00'] ?></option>
+											<option value="-8.5"<?php if ($pun_config['o_default_timezone'] == -8.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-08:30'] ?></option>
+											<option value="-8"<?php if ($pun_config['o_default_timezone'] == -8) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-08:00'] ?></option>
+											<option value="-7"<?php if ($pun_config['o_default_timezone'] == -7) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-07:00'] ?></option>
+											<option value="-6"<?php if ($pun_config['o_default_timezone'] == -6) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-06:00'] ?></option>
+											<option value="-5"<?php if ($pun_config['o_default_timezone'] == -5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-05:00'] ?></option>
+											<option value="-4"<?php if ($pun_config['o_default_timezone'] == -4) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-04:00'] ?></option>
+											<option value="-3.5"<?php if ($pun_config['o_default_timezone'] == -3.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-03:30'] ?></option>
+											<option value="-3"<?php if ($pun_config['o_default_timezone'] == -3) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-03:00'] ?></option>
+											<option value="-2"<?php if ($pun_config['o_default_timezone'] == -2) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-02:00'] ?></option>
+											<option value="-1"<?php if ($pun_config['o_default_timezone'] == -1) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC-01:00'] ?></option>
+											<option value="0"<?php if ($pun_config['o_default_timezone'] == 0) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC'] ?></option>
+											<option value="1"<?php if ($pun_config['o_default_timezone'] == 1) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+01:00'] ?></option>
+											<option value="2"<?php if ($pun_config['o_default_timezone'] == 2) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+02:00'] ?></option>
+											<option value="3"<?php if ($pun_config['o_default_timezone'] == 3) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+03:00'] ?></option>
+											<option value="3.5"<?php if ($pun_config['o_default_timezone'] == 3.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+03:30'] ?></option>
+											<option value="4"<?php if ($pun_config['o_default_timezone'] == 4) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+04:00'] ?></option>
+											<option value="4.5"<?php if ($pun_config['o_default_timezone'] == 4.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+04:30'] ?></option>
+											<option value="5"<?php if ($pun_config['o_default_timezone'] == 5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+05:00'] ?></option>
+											<option value="5.5"<?php if ($pun_config['o_default_timezone'] == 5.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+05:30'] ?></option>
+											<option value="5.75"<?php if ($pun_config['o_default_timezone'] == 5.75) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+05:45'] ?></option>
+											<option value="6"<?php if ($pun_config['o_default_timezone'] == 6) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+06:00'] ?></option>
+											<option value="6.5"<?php if ($pun_config['o_default_timezone'] == 6.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+06:30'] ?></option>
+											<option value="7"<?php if ($pun_config['o_default_timezone'] == 7) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+07:00'] ?></option>
+											<option value="8"<?php if ($pun_config['o_default_timezone'] == 8) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+08:00'] ?></option>
+											<option value="8.75"<?php if ($pun_config['o_default_timezone'] == 8.75) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+08:45'] ?></option>
+											<option value="9"<?php if ($pun_config['o_default_timezone'] == 9) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+09:00'] ?></option>
+											<option value="9.5"<?php if ($pun_config['o_default_timezone'] == 9.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+09:30'] ?></option>
+											<option value="10"<?php if ($pun_config['o_default_timezone'] == 10) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+10:00'] ?></option>
+											<option value="10.5"<?php if ($pun_config['o_default_timezone'] == 10.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+10:30'] ?></option>
+											<option value="11"<?php if ($pun_config['o_default_timezone'] == 11) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+11:00'] ?></option>
+											<option value="11.5"<?php if ($pun_config['o_default_timezone'] == 11.5) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+11:30'] ?></option>
+											<option value="12"<?php if ($pun_config['o_default_timezone'] == 12) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+12:00'] ?></option>
+											<option value="12.75"<?php if ($pun_config['o_default_timezone'] == 12.75) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+12:45'] ?></option>
+											<option value="13"<?php if ($pun_config['o_default_timezone'] == 13) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+13:00'] ?></option>
+											<option value="14"<?php if ($pun_config['o_default_timezone'] == 14) {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['UTC+14:00'] ?></option>
 										</select>
 										<span><?php echo $lang_admin_options['Timezone help'] ?></span>
 									</td>
@@ -312,8 +407,12 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['DST label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[default_dst]" value="1"<?php if ($pun_config['o_default_dst'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[default_dst]" value="0"<?php if ($pun_config['o_default_dst'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[default_dst]" value="1"<?php if ($pun_config['o_default_dst'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[default_dst]" value="0"<?php if ($pun_config['o_default_dst'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['DST help'] ?></span>
 									</td>
 								</tr>
@@ -323,15 +422,15 @@ generate_admin_menu('options');
 										<select name="form[default_lang]">
 <?php
 
-		$languages = forum_list_langs();
+        $languages = forum_list_langs();
 
-		foreach ($languages as $temp)
-		{
-			if ($pun_config['o_default_lang'] == $temp)
-				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
-			else
-				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
-		}
+        foreach ($languages as $temp) {
+            if ($pun_config['o_default_lang'] == $temp) {
+                echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
+            } else {
+                echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
+            }
+        }
 
 ?>
 										</select>
@@ -344,15 +443,15 @@ generate_admin_menu('options');
 										<select name="form[default_style]">
 <?php
 
-		$styles = forum_list_styles();
+        $styles = forum_list_styles();
 
-		foreach ($styles as $temp)
-		{
-			if ($pun_config['o_default_style'] == $temp)
-				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
-			else
-				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
-		}
+        foreach ($styles as $temp) {
+            if ($pun_config['o_default_style'] == $temp) {
+                echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+            } else {
+                echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+            }
+        }
 
 ?>
 										</select>
@@ -365,8 +464,8 @@ generate_admin_menu('options');
 				</div>
 <?php
 
-	$diff = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
-	$timestamp = time() + $diff;
+    $diff = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
+    $timestamp = time() + $diff;
 
 ?>
 				<div class="inform">
@@ -421,48 +520,72 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Version number label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[show_version]" value="1"<?php if ($pun_config['o_show_version'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[show_version]" value="0"<?php if ($pun_config['o_show_version'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_version]" value="1"<?php if ($pun_config['o_show_version'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_version]" value="0"<?php if ($pun_config['o_show_version'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Version number help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Info in posts label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[show_user_info]" value="1"<?php if ($pun_config['o_show_user_info'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[show_user_info]" value="0"<?php if ($pun_config['o_show_user_info'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_user_info]" value="1"<?php if ($pun_config['o_show_user_info'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_user_info]" value="0"<?php if ($pun_config['o_show_user_info'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Info in posts help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Post count label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[show_post_count]" value="1"<?php if ($pun_config['o_show_post_count'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[show_post_count]" value="0"<?php if ($pun_config['o_show_post_count'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_post_count]" value="1"<?php if ($pun_config['o_show_post_count'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_post_count]" value="0"<?php if ($pun_config['o_show_post_count'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Post count help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Smilies label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[smilies]" value="1"<?php if ($pun_config['o_smilies'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[smilies]" value="0"<?php if ($pun_config['o_smilies'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[smilies]" value="1"<?php if ($pun_config['o_smilies'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[smilies]" value="0"<?php if ($pun_config['o_smilies'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Smilies help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Smilies sigs label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[smilies_sig]" value="1"<?php if ($pun_config['o_smilies_sig'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[smilies_sig]" value="0"<?php if ($pun_config['o_smilies_sig'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[smilies_sig]" value="1"<?php if ($pun_config['o_smilies_sig'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[smilies_sig]" value="0"<?php if ($pun_config['o_smilies_sig'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Smilies sigs help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Clickable links label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[make_links]" value="1"<?php if ($pun_config['o_make_links'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[make_links]" value="0"<?php if ($pun_config['o_make_links'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[make_links]" value="1"<?php if ($pun_config['o_make_links'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[make_links]" value="0"<?php if ($pun_config['o_make_links'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Clickable links help'] ?></span>
 									</td>
 								</tr>
@@ -513,72 +636,108 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Quick post label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[quickpost]" value="1"<?php if ($pun_config['o_quickpost'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[quickpost]" value="0"<?php if ($pun_config['o_quickpost'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[quickpost]" value="1"<?php if ($pun_config['o_quickpost'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[quickpost]" value="0"<?php if ($pun_config['o_quickpost'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Quick post help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Users online label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[users_online]" value="1"<?php if ($pun_config['o_users_online'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[users_online]" value="0"<?php if ($pun_config['o_users_online'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[users_online]" value="1"<?php if ($pun_config['o_users_online'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[users_online]" value="0"<?php if ($pun_config['o_users_online'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Users online help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><a name="censoring"></a><?php echo $lang_admin_options['Censor words label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[censoring]" value="1"<?php if ($pun_config['o_censoring'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[censoring]" value="0"<?php if ($pun_config['o_censoring'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[censoring]" value="1"<?php if ($pun_config['o_censoring'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[censoring]" value="0"<?php if ($pun_config['o_censoring'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php printf($lang_admin_options['Censor words help'], '<a href="admin_censoring.php">'.$lang_admin_common['Censoring'].'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><a name="signatures"></a><?php echo $lang_admin_options['Signatures label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[signatures]" value="1"<?php if ($pun_config['o_signatures'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[signatures]" value="0"<?php if ($pun_config['o_signatures'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[signatures]" value="1"<?php if ($pun_config['o_signatures'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[signatures]" value="0"<?php if ($pun_config['o_signatures'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Signatures help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['User has posted label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[show_dot]" value="1"<?php if ($pun_config['o_show_dot'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[show_dot]" value="0"<?php if ($pun_config['o_show_dot'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_dot]" value="1"<?php if ($pun_config['o_show_dot'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[show_dot]" value="0"<?php if ($pun_config['o_show_dot'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['User has posted help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Topic views label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[topic_views]" value="1"<?php if ($pun_config['o_topic_views'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[topic_views]" value="0"<?php if ($pun_config['o_topic_views'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[topic_views]" value="1"<?php if ($pun_config['o_topic_views'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[topic_views]" value="0"<?php if ($pun_config['o_topic_views'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Topic views help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Quick jump label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[quickjump]" value="1"<?php if ($pun_config['o_quickjump'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[quickjump]" value="0"<?php if ($pun_config['o_quickjump'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[quickjump]" value="1"<?php if ($pun_config['o_quickjump'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[quickjump]" value="0"<?php if ($pun_config['o_quickjump'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Quick jump help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['GZip label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[gzip]" value="1"<?php if ($pun_config['o_gzip'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[gzip]" value="0"<?php if ($pun_config['o_gzip'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[gzip]" value="1"<?php if ($pun_config['o_gzip'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[gzip]" value="0"<?php if ($pun_config['o_gzip'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['GZip help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Search all label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[search_all_forums]" value="1"<?php if ($pun_config['o_search_all_forums'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[search_all_forums]" value="0"<?php if ($pun_config['o_search_all_forums'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[search_all_forums]" value="1"<?php if ($pun_config['o_search_all_forums'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[search_all_forums]" value="0"<?php if ($pun_config['o_search_all_forums'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Search all help'] ?></span>
 									</td>
 								</tr>
@@ -601,9 +760,15 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Default feed label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[feed_type]" value="0"<?php if ($pun_config['o_feed_type'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_options['None'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[feed_type]" value="1"<?php if ($pun_config['o_feed_type'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_options['RSS'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[feed_type]" value="2"<?php if ($pun_config['o_feed_type'] == '2') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_options['Atom'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[feed_type]" value="0"<?php if ($pun_config['o_feed_type'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_options['None'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[feed_type]" value="1"<?php if ($pun_config['o_feed_type'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_options['RSS'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[feed_type]" value="2"<?php if ($pun_config['o_feed_type'] == '2') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_options['Atom'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Default feed help'] ?></span>
 									</td>
 								</tr>
@@ -611,13 +776,16 @@ generate_admin_menu('options');
 									<th scope="row"><?php echo $lang_admin_options['Feed TTL label'] ?></th>
 									<td>
 										<select name="form[feed_ttl]">
-											<option value="0"<?php if ($pun_config['o_feed_ttl'] == '0') echo ' selected="selected"'; ?>><?php echo $lang_admin_options['No cache'] ?></option>
+											<option value="0"<?php if ($pun_config['o_feed_ttl'] == '0') {
+    echo ' selected="selected"';
+} ?>><?php echo $lang_admin_options['No cache'] ?></option>
 <?php
 
-		$times = array(5, 15, 30, 60);
+        $times = array(5, 15, 30, 60);
 
-		foreach ($times as $time)
-			echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($pun_config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf($lang_admin_options['Minutes'], $time).'</option>'."\n";
+        foreach ($times as $time) {
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($pun_config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf($lang_admin_options['Minutes'], $time).'</option>'."\n";
+        }
 
 ?>
 										</select>
@@ -636,9 +804,15 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Reporting method label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[report_method]" value="0"<?php if ($pun_config['o_report_method'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_options['Internal'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[report_method]" value="1"<?php if ($pun_config['o_report_method'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_options['By e-mail'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[report_method]" value="2"<?php if ($pun_config['o_report_method'] == '2') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_options['Both'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[report_method]" value="0"<?php if ($pun_config['o_report_method'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_options['Internal'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[report_method]" value="1"<?php if ($pun_config['o_report_method'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_options['By e-mail'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[report_method]" value="2"<?php if ($pun_config['o_report_method'] == '2') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_options['Both'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Reporting method help'] ?></span>
 									</td>
 								</tr>
@@ -661,8 +835,12 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Use avatars label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[avatars]" value="1"<?php if ($pun_config['o_avatars'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[avatars]" value="0"<?php if ($pun_config['o_avatars'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[avatars]" value="1"<?php if ($pun_config['o_avatars'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[avatars]" value="0"<?php if ($pun_config['o_avatars'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Use avatars help'] ?></span>
 									</td>
 								</tr>
@@ -720,16 +898,24 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Forum subscriptions label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[forum_subscriptions]" value="1"<?php if ($pun_config['o_forum_subscriptions'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[forum_subscriptions]" value="0"<?php if ($pun_config['o_forum_subscriptions'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[forum_subscriptions]" value="1"<?php if ($pun_config['o_forum_subscriptions'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[forum_subscriptions]" value="0"<?php if ($pun_config['o_forum_subscriptions'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Forum subscriptions help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Topic subscriptions label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[topic_subscriptions]" value="1"<?php if ($pun_config['o_topic_subscriptions'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[topic_subscriptions]" value="0"<?php if ($pun_config['o_topic_subscriptions'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[topic_subscriptions]" value="1"<?php if ($pun_config['o_topic_subscriptions'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[topic_subscriptions]" value="0"<?php if ($pun_config['o_topic_subscriptions'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Topic subscriptions help'] ?></span>
 									</td>
 								</tr>
@@ -760,8 +946,12 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['SMTP SSL label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[smtp_ssl]" value="1"<?php if ($pun_config['o_smtp_ssl'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[smtp_ssl]" value="0"<?php if ($pun_config['o_smtp_ssl'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[smtp_ssl]" value="1"<?php if ($pun_config['o_smtp_ssl'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[smtp_ssl]" value="0"<?php if ($pun_config['o_smtp_ssl'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['SMTP SSL help'] ?></span>
 									</td>
 								</tr>
@@ -777,32 +967,48 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Allow new label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[regs_allow]" value="1"<?php if ($pun_config['o_regs_allow'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[regs_allow]" value="0"<?php if ($pun_config['o_regs_allow'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[regs_allow]" value="1"<?php if ($pun_config['o_regs_allow'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[regs_allow]" value="0"<?php if ($pun_config['o_regs_allow'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Allow new help'] ?></span>
-									</td> 
+									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Verify label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[regs_verify]" value="1"<?php if ($pun_config['o_regs_verify'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[regs_verify]" value="0"<?php if ($pun_config['o_regs_verify'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[regs_verify]" value="1"<?php if ($pun_config['o_regs_verify'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[regs_verify]" value="0"<?php if ($pun_config['o_regs_verify'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Verify help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Report new label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[regs_report]" value="1"<?php if ($pun_config['o_regs_report'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[regs_report]" value="0"<?php if ($pun_config['o_regs_report'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[regs_report]" value="1"<?php if ($pun_config['o_regs_report'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[regs_report]" value="0"<?php if ($pun_config['o_regs_report'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Report new help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Use rules label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[rules]" value="1"<?php if ($pun_config['o_rules'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[rules]" value="0"<?php if ($pun_config['o_rules'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[rules]" value="1"<?php if ($pun_config['o_rules'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[rules]" value="0"<?php if ($pun_config['o_rules'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Use rules help'] ?></span>
 									</td>
 								</tr>
@@ -817,9 +1023,15 @@ generate_admin_menu('options');
 									<th scope="row"><?php echo $lang_admin_options['E-mail default label'] ?></th>
 									<td>
 										<span><?php echo $lang_admin_options['E-mail default help'] ?></span>
-										<label><input type="radio" name="form[default_email_setting]" id="form_default_email_setting_0" value="0"<?php if ($pun_config['o_default_email_setting'] == '0') echo ' checked="checked"' ?> />&#160;<?php echo $lang_admin_options['Display e-mail label'] ?></label>
-										<label><input type="radio" name="form[default_email_setting]" id="form_default_email_setting_1" value="1"<?php if ($pun_config['o_default_email_setting'] == '1') echo ' checked="checked"' ?> />&#160;<?php echo $lang_admin_options['Hide allow form label'] ?></label>
-										<label><input type="radio" name="form[default_email_setting]" id="form_default_email_setting_2" value="2"<?php if ($pun_config['o_default_email_setting'] == '2') echo ' checked="checked"' ?> />&#160;<?php echo $lang_admin_options['Hide both label'] ?></label>
+										<label><input type="radio" name="form[default_email_setting]" id="form_default_email_setting_0" value="0"<?php if ($pun_config['o_default_email_setting'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<?php echo $lang_admin_options['Display e-mail label'] ?></label>
+										<label><input type="radio" name="form[default_email_setting]" id="form_default_email_setting_1" value="1"<?php if ($pun_config['o_default_email_setting'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<?php echo $lang_admin_options['Hide allow form label'] ?></label>
+										<label><input type="radio" name="form[default_email_setting]" id="form_default_email_setting_2" value="2"<?php if ($pun_config['o_default_email_setting'] == '2') {
+    echo ' checked="checked"';
+} ?> />&#160;<?php echo $lang_admin_options['Hide both label'] ?></label>
 									</td>
 								</tr>
 							</table>
@@ -834,8 +1046,12 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Display announcement label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[announcement]" value="1"<?php if ($pun_config['o_announcement'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[announcement]" value="0"<?php if ($pun_config['o_announcement'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[announcement]" value="1"<?php if ($pun_config['o_announcement'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[announcement]" value="0"<?php if ($pun_config['o_announcement'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Display announcement help'] ?></span>
 									</td>
 								</tr>
@@ -858,8 +1074,12 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><a name="maintenance"></a><?php echo $lang_admin_options['Maintenance mode label'] ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[maintenance]" value="1"<?php if ($pun_config['o_maintenance'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
-										<label class="conl"><input type="radio" name="form[maintenance]" value="0"<?php if ($pun_config['o_maintenance'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[maintenance]" value="1"<?php if ($pun_config['o_maintenance'] == '1') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
+										<label class="conl"><input type="radio" name="form[maintenance]" value="0"<?php if ($pun_config['o_maintenance'] == '0') {
+    echo ' checked="checked"';
+} ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Maintenance mode help'] ?></span>
 									</td>
 								</tr>

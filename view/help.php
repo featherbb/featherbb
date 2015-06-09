@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 ?>
 
@@ -127,11 +128,13 @@ require PUN_ROOT.'include/parser.php';
 
 $smiley_groups = array();
 
-foreach ($smilies as $smiley_text => $smiley_img)
-	$smiley_groups[$smiley_img][] = $smiley_text;
+foreach ($smilies as $smiley_text => $smiley_img) {
+    $smiley_groups[$smiley_img][] = $smiley_text;
+}
 
-foreach ($smiley_groups as $smiley_img => $smiley_texts)
-	echo "\t\t".'<p><code>'.implode('</code> '.$lang_common['and'].' <code>', $smiley_texts).'</code> <span>'.$lang_help['produces'].'</span> <samp><img src="'.pun_htmlspecialchars(get_base_url(true)).'/img/smilies/'.$smiley_img.'" width="15" height="15" alt="'.$smiley_texts[0].'" /></samp></p>'."\n";
+foreach ($smiley_groups as $smiley_img => $smiley_texts) {
+    echo "\t\t".'<p><code>'.implode('</code> '.$lang_common['and'].' <code>', $smiley_texts).'</code> <span>'.$lang_help['produces'].'</span> <samp><img src="'.pun_htmlspecialchars(get_base_url(true)).'/img/smilies/'.$smiley_img.'" width="15" height="15" alt="'.$smiley_texts[0].'" /></samp></p>'."\n";
+}
 
 ?>
 	</div>

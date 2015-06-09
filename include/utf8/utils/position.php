@@ -29,83 +29,81 @@
 */
 function utf8_byte_position()
 {
-	$args = func_get_args();
-	$str =& array_shift($args);
+    $args = func_get_args();
+    $str =& array_shift($args);
 
-	if (!is_string($str))
-		return false;
+    if (!is_string($str)) {
+        return false;
+    }
 
-	$result = array();
-	$prev = array(0, 0); // Trivial byte index, character offset pair
-	$i = utf8_locate_next_chr($str, 300); // Use a short piece of str to estimate bytes per character. $i (& $j) -> byte indexes into $str
-	$c = strlen(utf8_decode(substr($str, 0, $i))); // $c -> character offset into $str
+    $result = array();
+    $prev = array(0, 0); // Trivial byte index, character offset pair
+    $i = utf8_locate_next_chr($str, 300); // Use a short piece of str to estimate bytes per character. $i (& $j) -> byte indexes into $str
+    $c = strlen(utf8_decode(substr($str, 0, $i))); // $c -> character offset into $str
 
-	// Deal with arguments from lowest to highest
-	sort($args);
+    // Deal with arguments from lowest to highest
+    sort($args);
 
-	foreach ($args as $offset)
-	{
-		// Sanity checks FIXME
+    foreach ($args as $offset) {
+        // Sanity checks FIXME
 
-		// 0 is an easy check
-		if ($offset == 0)
-		{
-			$result[] = 0; continue;
-		}
+        // 0 is an easy check
+        if ($offset == 0) {
+            $result[] = 0;
+            continue;
+        }
 
-		// Ensure no endless looping
-		$safety_valve = 50;
+        // Ensure no endless looping
+        $safety_valve = 50;
 
-		do
-		{
-			if (($c - $prev[1]) == 0)
-			{
-				// Hack: gone past end of string
-				$error = 0;
-				$i = strlen($str);
-				break;
-			}
+        do {
+            if (($c - $prev[1]) == 0) {
+                // Hack: gone past end of string
+                $error = 0;
+                $i = strlen($str);
+                break;
+            }
 
-			$j = $i + (int)(($offset-$c) * ($i - $prev[0]) / ($c - $prev[1]));
-			$j = utf8_locate_next_chr($str, $j); // Correct to utf8 character boundary
-			$prev = array($i,$c); // Save the index, offset for use next iteration
+            $j = $i + (int)(($offset-$c) * ($i - $prev[0]) / ($c - $prev[1]));
+            $j = utf8_locate_next_chr($str, $j); // Correct to utf8 character boundary
+            $prev = array($i,$c); // Save the index, offset for use next iteration
 
-			if ($j > $i)
-				$c += strlen(utf8_decode(substr($str, $i, $j-$i))); // Determine new character offset
-			else
-				$c -= strlen(utf8_decode(substr($str, $j, $i-$j))); // Ditto
+            if ($j > $i) {
+                $c += strlen(utf8_decode(substr($str, $i, $j-$i)));
+            } // Determine new character offset
+            else {
+                $c -= strlen(utf8_decode(substr($str, $j, $i-$j)));
+            } // Ditto
 
-			$error = abs($c-$offset);
-			$i = $j; // Ready for next time around
-		}
-		while (($error > 7) && --$safety_valve); // From 7 it is faster to iterate over the string
+            $error = abs($c-$offset);
+            $i = $j; // Ready for next time around
+        } while (($error > 7) && --$safety_valve); // From 7 it is faster to iterate over the string
 
-		if ($error && $error <= 7)
-		{
-			if ($c < $offset)
-			{
-				// Move up
-				while ($error--)
-					$i = utf8_locate_next_chr($str, ++$i);
-			}
-			else
-			{
-				// Move down
-				while ($error--)
-					$i = utf8_locate_current_chr($str, --$i);
-			}
+        if ($error && $error <= 7) {
+            if ($c < $offset) {
+                // Move up
+                while ($error--) {
+                    $i = utf8_locate_next_chr($str, ++$i);
+                }
+            } else {
+                // Move down
+                while ($error--) {
+                    $i = utf8_locate_current_chr($str, --$i);
+                }
+            }
 
-			// Ready for next arg
-			$c = $offset;
-		}
+            // Ready for next arg
+            $c = $offset;
+        }
 
-		$result[] = $i;
-	}
+        $result[] = $i;
+    }
 
-	if (count($result) == 1)
-		return $result[0];
+    if (count($result) == 1) {
+        return $result[0];
+    }
 
-	return $result;
+    return $result;
 }
 
 /**
@@ -122,22 +120,25 @@ function utf8_byte_position()
 * @package utf8
 * @subpackage position
 */
-function utf8_locate_current_chr( &$str, $idx )
+function utf8_locate_current_chr(&$str, $idx)
 {
-	if ($idx <= 0)
-		return 0;
+    if ($idx <= 0) {
+        return 0;
+    }
 
-	$limit = strlen($str);
-	if ($idx >= $limit)
-		return $limit;
+    $limit = strlen($str);
+    if ($idx >= $limit) {
+        return $limit;
+    }
 
-	// Binary value for any byte after the first in a multi-byte UTF-8 character
-	// will be like 10xxxxxx so & 0xC0 can be used to detect this kind
-	// of byte - assuming well formed UTF-8
-	while ($idx && ((ord($str[$idx]) & 0xC0) == 0x80))
-		$idx--;
+    // Binary value for any byte after the first in a multi-byte UTF-8 character
+    // will be like 10xxxxxx so & 0xC0 can be used to detect this kind
+    // of byte - assuming well formed UTF-8
+    while ($idx && ((ord($str[$idx]) & 0xC0) == 0x80)) {
+        $idx--;
+    }
 
-	return $idx;
+    return $idx;
 }
 
 /**
@@ -154,18 +155,21 @@ function utf8_locate_current_chr( &$str, $idx )
 */
 function utf8_locate_next_chr(&$str, $idx)
 {
-	if ($idx <= 0)
-		return 0;
+    if ($idx <= 0) {
+        return 0;
+    }
 
-	$limit = strlen($str);
-	if ($idx >= $limit)
-		return $limit;
+    $limit = strlen($str);
+    if ($idx >= $limit) {
+        return $limit;
+    }
 
-	// Binary value for any byte after the first in a multi-byte UTF-8 character
-	// will be like 10xxxxxx so & 0xC0 can be used to detect this kind
-	// of byte - assuming well formed UTF-8
-	while (($idx < $limit) && ((ord($str[$idx]) & 0xC0) == 0x80))
-		$idx++;
+    // Binary value for any byte after the first in a multi-byte UTF-8 character
+    // will be like 10xxxxxx so & 0xC0 can be used to detect this kind
+    // of byte - assuming well formed UTF-8
+    while (($idx < $limit) && ((ord($str[$idx]) & 0xC0) == 0x80)) {
+        $idx++;
+    }
 
-	return $idx;
+    return $idx;
 }

@@ -15,8 +15,9 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
-if ($pun_user['g_id'] != PUN_ADMIN)
-	message($lang_common['No permission'], false, '403 Forbidden');
+if ($pun_user['g_id'] != PUN_ADMIN) {
+    message($lang_common['No permission'], false, '403 Forbidden');
+}
 
 // Load the admin_censoring.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_censoring.php';
@@ -25,16 +26,19 @@ require PUN_ROOT.'lang/'.$admin_language.'/admin_censoring.php';
 require PUN_ROOT.'model/admin_censoring.php';
 
 // Add a censor word
-if (isset($_POST['add_word']))
-	add_word($_POST);
+if (isset($_POST['add_word'])) {
+    add_word($_POST);
+}
 
 // Update a censor word
-else if (isset($_POST['update']))
-	update_word($_POST);
+elseif (isset($_POST['update'])) {
+    update_word($_POST);
+}
 
 // Remove a censor word
-else if (isset($_POST['remove']))
-	remove_word($_POST);
+elseif (isset($_POST['remove'])) {
+    remove_word($_POST);
+}
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
 $focus_element = array('censoring', 'new_search_for');
@@ -45,8 +49,9 @@ generate_admin_menu('censoring');
 
 $is_word = check_words();
 
-if ($is_word)
-	$word_data = get_words();
+if ($is_word) {
+    $word_data = get_words();
+}
 
 // Load the admin_censoring.php view file
 require PUN_ROOT.'view/admin_censoring.php';

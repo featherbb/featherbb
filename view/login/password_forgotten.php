@@ -8,14 +8,13 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 
 // If there are errors, we display them
-if (!empty($errors))
-{
-
-?>
+if (!empty($errors)) {
+    ?>
 <div id="posterror" class="block">
 	<h2><span><?php echo $lang_login['New password errors'] ?></span></h2>
 	<div class="box">
@@ -24,9 +23,10 @@ if (!empty($errors))
 			<ul class="error-list">
 <?php
 
-	foreach ($errors as $cur_error)
-		echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-?>
+    foreach ($errors as $cur_error) {
+        echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
+    }
+    ?>
 			</ul>
 		</div>
 	</div>
