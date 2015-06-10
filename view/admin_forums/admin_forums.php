@@ -18,11 +18,8 @@ if (!defined('PUN')) {
 		<div class="box">
 			<form method="post" action="admin_forums.php?action=adddel">
 <?php
-
-$is_forum = check_forums();
-
 if ($is_forum) {
-    ?>
+?>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Create new subhead'] ?></legend>
@@ -32,8 +29,7 @@ if ($is_forum) {
 									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" name="add_forum" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
 									<td>
 										<select name="add_to_cat" tabindex="1">
-											<?php get_categories_add();
-    ?>
+											<?php get_categories_add(); ?>
 										</select>
 										<span><?php echo $lang_admin_forums['Add forum help'] ?></span>
 									</td>
@@ -43,9 +39,8 @@ if ($is_forum) {
 					</fieldset>
 				</div>
 <?php
-
 } else {
-    ?>
+?>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_common['None'] ?></legend>
@@ -62,22 +57,13 @@ if ($is_forum) {
 			</form>
 		</div>
 <?php
-
-$is_category = check_categories();
-
-if ($is_category) {
+if (!empty($forum_data)) {
     ?>
 		<h2 class="block2"><span><?php echo $lang_admin_forums['Edit forums head'] ?></span></h2>
 		<div class="box">
 			<form id="edforum" method="post" action="admin_forums.php?action=edit">
 				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" /></p>
 <?php
-
-$cur_index = 4;
-    $cur_category = 0;
-
-    $forum_data = get_forums();
-
     foreach ($forum_data as $forum) {
         if ($forum['cid'] != $cur_category) {
             // A new category since last iteration?
@@ -86,7 +72,7 @@ $cur_index = 4;
             echo "\t\t\t\t\t\t\t".'</tbody>'."\n\t\t\t\t\t\t\t".'</table>'."\n\t\t\t\t\t\t".'</div>'."\n\t\t\t\t\t".'</fieldset>'."\n\t\t\t\t".'</div>'."\n";
         }
 
-            ?>
+?>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo pun_htmlspecialchars($forum['cat_name']) ?></legend>
