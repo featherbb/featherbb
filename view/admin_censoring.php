@@ -46,7 +46,7 @@ if (!defined('PUN')) {
 						<legend><?php echo $lang_admin_censoring['Edit remove subhead'] ?></legend>
 						<div class="infldset">
 <?php
-if ($is_word) {
+if (!empty($word_data)) {
     ?>
 							<table>
 							<thead>

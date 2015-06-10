@@ -79,20 +79,6 @@ function remove_word($post_data)
     redirect('admin_censoring.php',  $lang_admin_censoring['Word removed redirect']);
 }
 
-function check_words()
-{
-    global $db;
-    
-    $result = $db->query('SELECT id, search_for, replace_with FROM '.$db->prefix.'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
-    if ($db->num_rows($result)) {
-        $is_word = true;
-    } else {
-        $is_word = false;
-    }
-    
-    return $is_word;
-}
-
 function get_words()
 {
     global $db;

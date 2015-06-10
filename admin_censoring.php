@@ -47,11 +47,7 @@ require PUN_ROOT.'header.php';
 
 generate_admin_menu('censoring');
 
-$is_word = check_words();
-
-if ($is_word) {
-    $word_data = get_words();
-}
+$word_data = get_words();
 
 // Load the admin_censoring.php view file
 require PUN_ROOT.'view/admin_censoring.php';
