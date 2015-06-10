@@ -114,11 +114,11 @@ elseif ($action == 'markforumread') {
     }
 
     if (isset($_POST['form_sent'])) {
-        insert_report($_POST);
+        insert_report($_POST, $post_id);
     }
 
     // Fetch some info about the post, the topic and the forum
-    $cur_post = get_info_report();
+    $cur_post = get_info_report($post_id);
 
     if ($pun_config['o_censoring'] == '1') {
         $cur_post['subject'] = censor_words($cur_post['subject']);

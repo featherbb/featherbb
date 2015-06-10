@@ -96,7 +96,7 @@ function get_redirect_url($server_data, $recipient_id)
     return $redirect_url;
 }
 
-function insert_report($post_data)
+function insert_report($post_data, $post_id)
 {
     global $db, $lang_misc, $pun_user, $lang_common, $pun_config;
     
@@ -166,7 +166,7 @@ function insert_report($post_data)
     redirect('viewforum.php?id='.$forum_id, $lang_misc['Report redirect']);
 }
 
-function get_info_report()
+function get_info_report($post_id)
 {
     global $db, $pun_user, $lang_common;
     
