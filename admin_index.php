@@ -30,7 +30,7 @@ if ($action == 'check_upgrade') {
         message($lang_admin_index['fopen disabled message']);
     }
 
-    $latest_version = trim(@file_get_contents('http://fluxbb.org/latest_version'));
+    $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
     if (empty($latest_version)) {
         message($lang_admin_index['Upgrade check failed message']);
     }
@@ -38,7 +38,7 @@ if ($action == 'check_upgrade') {
     if (version_compare($pun_config['o_cur_version'], $latest_version, '>=')) {
         message($lang_admin_index['Running latest version message']);
     } else {
-        message(sprintf($lang_admin_index['New version available message'], '<a href="http://fluxbb.org/">FluxBB.org</a>'));
+        message(sprintf($lang_admin_index['New version available message'], '<a href="http://featherbb.org/">FeatherBB.org</a>'));
     }
 }
 // Remove install.php
@@ -60,55 +60,7 @@ require PUN_ROOT.'header.php';
 
 generate_admin_menu('index');
 
-?>
-	<div class="block">
-		<h2><span><?php echo $lang_admin_index['Forum admin head'] ?></span></h2>
-		<div id="adintro" class="box">
-			<div class="inbox">
-				<p><?php echo $lang_admin_index['Welcome to admin'] ?></p>
-				<ul>
-					<li><span><?php echo $lang_admin_index['Welcome 1'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 2'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 3'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 4'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 5'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 6'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 7'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 8'] ?></span></li>
-					<li><span><?php echo $lang_admin_index['Welcome 9'] ?></span></li>
-				</ul>
-			</div>
-		</div>
-
-<?php if ($install_file_exists) : ?>
-		<h2 class="block2"><span><?php echo $lang_admin_index['Alerts head'] ?></span></h2>
-		<div id="adalerts" class="box">
-			<p><?php printf($lang_admin_index['Install file exists'], '<a href="admin_index.php?action=remove_install_file">'.$lang_admin_index['Delete install file'].'</a>') ?></p>
-		</div>
-<?php endif; ?>
-
-		<h2 class="block2"><span><?php echo $lang_admin_index['About head'] ?></span></h2>
-		<div id="adstats" class="box">
-			<div class="inbox">
-				<dl>
-					<dt><?php echo $lang_admin_index['FluxBB version label'] ?></dt>
-					<dd>
-						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'], '<a href="admin_index.php?action=check_upgrade">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
-					</dd>
-					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
-					<dd>
-						<a href="admin_statistics.php"><?php echo $lang_admin_index['View server statistics'] ?></a>
-					</dd>
-					<dt><?php echo $lang_admin_index['Support label'] ?></dt>
-					<dd>
-						<a href="http://fluxbb.org/forums/index.php"><?php echo $lang_admin_index['Forum label'] ?></a> - <a href="http://fluxbb.org/community/irc.html"><?php echo $lang_admin_index['IRC label'] ?></a>
-					</dd>
-				</dl>
-			</div>
-		</div>
-	</div>
-	<div class="clearer"></div>
-</div>
-<?php
+// Load the admin_index.php view file
+require PUN_ROOT.'view/admin_index.php';
 
 require PUN_ROOT.'footer.php';
