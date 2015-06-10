@@ -54,9 +54,6 @@ if (!defined('PUN_PLUGIN_LOADED')) {
 }
 
 // Output the clearer div
-?>
-	<div class="clearer"></div>
-</div>
-<?php
+require PUN_ROOT.'view/admin_loader.php';
 
 require PUN_ROOT.'footer.php';
