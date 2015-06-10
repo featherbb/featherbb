@@ -517,9 +517,14 @@ function forum_sort_by($forum_sort)
 
 function display_topics($fid, $sort_by, $start_from)
 {
-    global $db, $pun_user, $pun_config, $lang_forum;
+    global $db, $pun_user, $pun_config, $lang_forum, $lang_common;
     
     $topic_data = array();
+	
+	// Get topic/forum tracking data
+	if (!$pun_user['is_guest']) {
+		$tracked_topics = get_tracked_topics();
+	}
     
     // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
     $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$fid.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$pun_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
@@ -534,7 +539,6 @@ function display_topics($fid, $sort_by, $start_from)
         // Select topics
         $result = $db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $db->error());
 
-        $button_status = '';
         $topic_count = 0;
         while ($cur_topic = $db->fetch_assoc($result)) {
             ++$topic_count;

@@ -47,6 +47,7 @@ if (!defined('PUN')) {
 			
 			<?php
             $topic_count = 0;
+			$button_status = '';
             foreach ($topic_data as $topic) {
                 ++$topic_count;
                 ?>

@@ -38,11 +38,6 @@ if ($pun_user['g_id'] != PUN_ADMIN && ($pun_user['g_moderator'] == '0' || !array
     message($lang_common['No permission'], false, '403 Forbidden');
 }
 
-// Get topic/forum tracking data
-if (!$pun_user['is_guest']) {
-    $tracked_topics = get_tracked_topics();
-}
-
 // Load the misc.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
