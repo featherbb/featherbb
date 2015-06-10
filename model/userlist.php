@@ -31,7 +31,7 @@ function fetch_user_count($username, $show_group)
 }
 
 // Generates the dropdown menu containing groups
-function generate_dropdown_menu()
+function generate_dropdown_menu($show_group)
 {
     global $db;
     
