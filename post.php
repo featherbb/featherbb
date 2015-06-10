@@ -138,7 +138,7 @@ define('PUN_ACTIVE_PAGE', 'index');
 require PUN_ROOT.'header.php';
 
 // Get the current state of checkboxes
-$checkboxes = get_checkboxes($_POST, $fid, $is_admmod);
+$checkboxes = get_checkboxes($_POST, $fid, $is_admmod, $is_subscribed);
 
 // Check to see if the topic review is to be displayed
 if ($tid && $pun_config['o_topic_review'] != '0') {
