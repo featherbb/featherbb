@@ -73,33 +73,33 @@ if (isset($_POST['form_sent'])) {
         // If it's a reply
         if ($tid) {
             // Insert the reply, get the new_pid
-            $new_pid = insert_reply($post, $tid, $cur_posting);
+            $new = insert_reply($post, $tid, $cur_posting);
 
             // Should we send out notifications?
             if ($pun_config['o_topic_subscriptions'] == '1') {
-                send_notifications_reply($tid, $cur_posting);
+                send_notifications_reply($tid, $cur_posting, $new['pid']);
             }
         }
         // If it's a new topic
         elseif ($fid) {
             // Insert the topic, get the new_pid
-            $new_pid = insert_topic($post, $fid);
+            $new = insert_topic($post, $fid);
 
             // Should we send out notifications?
             if ($pun_config['o_forum_subscriptions'] == '1') {
-                send_notifications_new_topic($post, $cur_posting);
+                send_notifications_new_topic($post, $cur_posting, $new['tid']);
             }
         }
 
         // If we previously found out that the email was banned
         if ($pun_user['is_guest'] && $banned_email && $pun_config['o_mailing_list'] != '') {
-            warn_banned_user($post, $new_pid);
+            warn_banned_user($post, $new['pid']);
         }
 
         // If the posting user is logged in, increment his/her post count
-        increment_post_count($post);
+        increment_post_count($post, $new['tid']);
 
-        redirect('viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $lang_post['Post redirect']);
+        redirect('viewtopic.php?pid='.$new['pid'].'#p'.$new['pid'], $lang_post['Post redirect']);
     }
 }
 

@@ -144,7 +144,9 @@ function setup_variables($post_data, $errors, $is_admmod)
         $post['email'] = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $post_data['req_email'] : $post_data['email']));
     }
     
-    $post['subject'] = pun_trim($post_data['req_subject']);
+	if(isset($post_data['req_subject'])) {
+		$post['subject'] = pun_trim($post_data['req_subject']);
+	}
     
     $post['hide_smilies'] = isset($post_data['hide_smilies']) ? '1' : '0';
     $post['subscribe'] = isset($post_data['subscribe']) ? '1' : '0';
@@ -170,19 +172,21 @@ function setup_variables($post_data, $errors, $is_admmod)
 function insert_reply($post, $tid, $cur_posting)
 {
     global $db, $pun_user, $pun_config;
+	
+	$new = array();
     
     if (!$pun_user['is_guest']) {
-        $new_tid = $tid;
+        $new['tid'] = $tid;
 
         // Insert the new post
         $db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$db->escape($post['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$tid.')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
-        $new_pid = $db->insert_id();
+        $new['pid'] = $db->insert_id();
 
         // To subscribe or not to subscribe, that ...
         if ($pun_config['o_topic_subscriptions'] == '1') {
-            if ($post['subscribe'] && !$is_subscribed) {
+            if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
                 $db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$pun_user['id'].' ,'.$tid.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
-            } elseif (!$post['subscribe'] && $is_subscribed) {
+            } elseif (!isset($post['subscribe']) && $is_subscribed) {
                 $db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE user_id='.$pun_user['id'].' AND topic_id='.$tid) or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
             }
         }
@@ -190,21 +194,21 @@ function insert_reply($post, $tid, $cur_posting)
         // It's a guest. Insert the new post
         $email_sql = ($pun_config['p_force_guest_email'] == '1' || $post['email'] != '') ? '\''.$db->escape($post['email']).'\'' : 'NULL';
         $db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\''.$db->escape($post['username']).'\', \''.$db->escape(get_remote_address()).'\', '.$email_sql.', \''.$db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$tid.')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
-        $new_pid = $db->insert_id();
+        $new['pid'] = $db->insert_id();
     }
 
     // Update topic
-    $db->query('UPDATE '.$db->prefix.'topics SET num_replies=num_replies+1, last_post='.$post['time'].', last_post_id='.$new_pid.', last_poster=\''.$db->escape($post['username']).'\' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+    $db->query('UPDATE '.$db->prefix.'topics SET num_replies=num_replies+1, last_post='.$post['time'].', last_post_id='.$new['pid'].', last_poster=\''.$db->escape($post['username']).'\' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
-    update_search_index('post', $new_pid, $post['message']);
+    update_search_index('post', $new['pid'], $post['message']);
 
     update_forum($cur_posting['id']);
     
-    return $new_pid;
+    return $new;
 }
 
 // Send notifications for replies
-function send_notifications_reply($tid, $cur_posting)
+function send_notifications_reply($tid, $cur_posting, $new_pid)
 {
     global $db, $pun_config, $pun_user;
     
@@ -287,38 +291,40 @@ function send_notifications_reply($tid, $cur_posting)
 function insert_topic($post, $fid)
 {
     global $db, $pun_user, $pun_config;
+	
+	$new = array();
     
     // Create the topic
     $db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, last_post, last_poster, sticky, forum_id) VALUES(\''.$db->escape($post['username']).'\', \''.$db->escape($post['subject']).'\', '.$post['time'].', '.$post['time'].', \''.$db->escape($post['username']).'\', '.$post['stick_topic'].', '.$fid.')') or error('Unable to create topic', __FILE__, __LINE__, $db->error());
-    $new_tid = $db->insert_id();
+    $new['tid'] = $db->insert_id();
 
     if (!$pun_user['is_guest']) {
         // To subscribe or not to subscribe, that ...
         if ($pun_config['o_topic_subscriptions'] == '1' && $post['subscribe']) {
-            $db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$pun_user['id'].' ,'.$new_tid.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
+            $db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$pun_user['id'].' ,'.$new['tid'].')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
         }
 
         // Create the post ("topic post")
-        $db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$db->escape($post['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new_tid.')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
+        $db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$db->escape($post['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new['tid'].')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
     } else {
         // Create the post ("topic post")
         $email_sql = ($pun_config['p_force_guest_email'] == '1' || $post['email'] != '') ? '\''.$db->escape($post['email']).'\'' : 'NULL';
-        $db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\''.$db->escape($post['username']).'\', \''.$db->escape(get_remote_address()).'\', '.$email_sql.', \''.$db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new_tid.')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
+        $db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\''.$db->escape($post['username']).'\', \''.$db->escape(get_remote_address()).'\', '.$email_sql.', \''.$db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new['tid'].')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
     }
-    $new_pid = $db->insert_id();
+    $new['pid'] = $db->insert_id();
 
     // Update the topic with last_post_id
-    $db->query('UPDATE '.$db->prefix.'topics SET last_post_id='.$new_pid.', first_post_id='.$new_pid.' WHERE id='.$new_tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+    $db->query('UPDATE '.$db->prefix.'topics SET last_post_id='.$new['pid'].', first_post_id='.$new['pid'].' WHERE id='.$new['tid']) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
-    update_search_index('post', $new_pid, $post['message'], $post['subject']);
+    update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
     update_forum($fid);
     
-    return $new_pid;
+    return $new;
 }
 
 // Send notifications for new topics
-function send_notifications_new_topic($post, $cur_posting)
+function send_notifications_new_topic($post, $cur_posting, $new_tid)
 {
     global $db, $pun_user;
     
@@ -417,7 +423,7 @@ function warn_banned_user($post, $new_pid)
 }
 
 // Increment post count, change group if needed
-function increment_post_count($post)
+function increment_post_count($post, $new_tid)
 {
     global $db, $pun_user;
     
