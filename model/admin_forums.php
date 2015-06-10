@@ -256,20 +256,6 @@ function check_forums()
     return $is_forum;
 }
 
-function check_categories()
-{
-    global $db;
-    
-    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.disp_position FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
-    if ($db->num_rows($result)) {
-        $is_category = true;
-    } else {
-        $is_category = false;
-    }
-    
-    return $is_category;
-}
-
 function get_forums()
 {
     global $db;

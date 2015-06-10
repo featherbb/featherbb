@@ -62,7 +62,11 @@ elseif (isset($_GET['del_forum'])) {
 // Update forum positions
 elseif (isset($_POST['update_positions'])) {
     update_positions($_POST);
-} elseif (isset($_GET['edit_forum'])) {
+}
+
+// Update forum
+elseif (isset($_GET['edit_forum'])) {
+	
     $forum_id = intval($_GET['edit_forum']);
     if ($forum_id < 1) {
         message($lang_common['Bad request'], false, '404 Not Found');
@@ -95,6 +99,13 @@ define('PUN_ACTIVE_PAGE', 'admin');
 require PUN_ROOT.'header.php';
 
 generate_admin_menu('forums');
+
+$is_forum = check_forums();
+
+$forum_data = get_forums();
+
+$cur_index = 4;
+$cur_category = 0;
 
 // Load the admin_forums.php view file
 require PUN_ROOT.'view/admin_forums/admin_forums.php';
