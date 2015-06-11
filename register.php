@@ -23,7 +23,9 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/register.php';
 // Load the register.php/profile.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
 
-if ($pun_config['o_regs_allow'] == '0') {
+// Display an error message if new registrations are disabled
+// If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
+if ($pun_config['o_regs_allow'] == '0' || !empty($_REQUEST['username']) || !empty($_REQUEST['password'])) {
     message($lang_register['No new regs']);
 }
 
@@ -45,22 +47,25 @@ if (isset($_GET['cancel'])) {
     require PUN_ROOT.'footer.php';
 }
 
-// Start with a clean slate
-$errors = array();
+// Simple anti-spam system: generate a new name for user field
+session_start();
+if (!isset($_SESSION['user_field'])) {
+    $_SESSION['user_field'] = random_pass(8);
+}
 
 if (isset($_POST['form_sent'])) {
-    $user = check_for_errors($_POST);
+    $user = check_for_errors($_POST, $_SESSION['user_field']);
 
     // Did everything go according to plan? Insert the user
-    if (empty($errors)) {
+    if (empty($user['errors'])) {
+		session_destroy();
         insert_user($user);
     }
 }
 
-
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_register['Register']);
-$required_fields = array('req_user' => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2');
-$focus_element = array('register', 'req_user');
+$required_fields = array($_SESSION['user_field'] => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2');
+$focus_element = array('register', $_SESSION['user_field']);
 
 define('PUN_ACTIVE_PAGE', 'register');
 require PUN_ROOT.'header.php';

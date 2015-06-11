@@ -25,6 +25,11 @@ if ($tid < 1 && $fid < 1 || $tid > 0 && $fid > 0) {
 // Load the post.php model file
 require PUN_ROOT.'model/post.php';
 
+// If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
+if (!empty($_REQUEST['username'])) {
+    message($lang_common['Bad request'], false, '404 Not Found');
+}
+
 // Fetch some info about the topic and/or the forum
 $cur_posting = get_info_post($tid, $fid);
 
@@ -58,13 +63,22 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
 $errors = array();
 
 
+// Anti spam feature
+session_start();
+
+if(!isset($_SESSION['user_field'])) {
+	$_SESSION['user_field'] = '';
+}
+
+
 // Did someone just hit "Submit" or "Preview"?
 if (isset($_POST['form_sent'])) {
+	
     // Let's see if everything went right
-    $errors = check_errors_before_post($fid, $_POST, $errors);
+    $errors = check_errors_before_post($fid, $_POST, $errors, $_SESSION['user_field']);
     
     // Setup some variables before post
-    $post = setup_variables($_POST, $errors, $is_admmod);
+    $post = setup_variables($_POST, $errors, $is_admmod, $_SESSION['user_field']);
 
     // Did everything go according to plan?
     if (empty($errors) && !isset($_POST['preview'])) {
@@ -92,12 +106,16 @@ if (isset($_POST['form_sent'])) {
         }
 
         // If we previously found out that the email was banned
-        if ($pun_user['is_guest'] && $banned_email && $pun_config['o_mailing_list'] != '') {
+        if ($pun_user['is_guest'] && isset($errors['banned_email']) && $pun_config['o_mailing_list'] != '') {
             warn_banned_user($post, $new['pid']);
         }
 
         // If the posting user is logged in, increment his/her post count
-        increment_post_count($post, $new['tid']);
+		if (!$pun_user['is_guest']) {
+			increment_post_count($post, $new['tid']);
+		}
+		
+		session_destroy();
 
         redirect('viewtopic.php?pid='.$new['pid'].'#p'.$new['pid'], $lang_post['Post redirect']);
     }
@@ -130,8 +148,12 @@ $focus_element = array('post');
 if (!$pun_user['is_guest']) {
     $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
 } else {
-    $required_fields['req_username'] = $lang_post['Guest name'];
-    $focus_element[] = 'req_username';
+	// Simple anti-spam system: generate a new name for user field
+	if (!isset($_SESSION['user_field'])) {
+		$_SESSION['user_field'] = random_pass(8);
+	}
+    $required_fields[$_SESSION['user_field']] = $lang_post['Guest name'];
+    $focus_element[] = $_SESSION['user_field'];
 }
 
 define('PUN_ACTIVE_PAGE', 'index');

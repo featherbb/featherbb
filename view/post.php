@@ -95,7 +95,7 @@ if ($pun_user['is_guest']) {
     $email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
 
     ?>
-						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php if (isset($_POST['req_username'])) {
+						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo $_SESSION['user_field'] ?>" value="<?php if (isset($_POST[$_SESSION['user_field']])) {
     echo pun_htmlspecialchars($post['username']);
 }
     ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>

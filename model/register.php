@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function check_for_errors($post_data)
+function check_for_errors($post_data, $user_field)
 {
     global $db, $pun_user, $pun_config, $lang_register, $lang_prof_reg, $lang_common;
     
@@ -21,7 +21,7 @@ function check_for_errors($post_data)
     }
 
 
-    $user['username'] = pun_trim($post_data['req_user']);
+    $user['username'] = pun_trim($post_data[$user_field]);
     $user['email1'] = strtolower(pun_trim($post_data['req_email1']));
 
     if ($pun_config['o_regs_verify'] == '1') {

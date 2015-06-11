@@ -26,6 +26,9 @@ if ($id < 1 && $pid < 1) {
 // Load the viewtopic.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
 
+// Load the post.php language file
+require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
+
 // Load the viewtopic.php model file
 require PUN_ROOT.'model/viewtopic.php';
 

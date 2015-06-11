@@ -28,9 +28,9 @@ function get_info_post($tid, $fid)
 }
 
 // Checks the post for errors before posting
-function check_errors_before_post($fid, $post_data, $errors)
+function check_errors_before_post($fid, $post_data, $errors, $user_field)
 {
-    global $db, $pun_user, $pun_config, $lang_post, $re_list, $smilies;
+    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $re_list, $smilies;
     
     // Flood protection
     if (!isset($post_data['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood']) {
@@ -66,9 +66,8 @@ function check_errors_before_post($fid, $post_data, $errors)
     }
     // Otherwise it should be in $post_data
     else {
-        $username = pun_trim($post_data['req_username']);
+        $username = pun_trim($post_data[$user_field]);
         $email = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $post_data['req_email'] : $post_data['email']));
-        $banned_email = false;
 
         // Load the register.php/prof_reg.php language files
         require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
@@ -90,7 +89,7 @@ function check_errors_before_post($fid, $post_data, $errors)
                     $errors[] = $lang_prof_reg['Banned email'];
                 }
 
-                $banned_email = true; // Used later when we send an alert email
+                $errors['banned_email'] = 1; // Used later when we send an alert email
             }
         }
     }
@@ -128,7 +127,7 @@ function check_errors_before_post($fid, $post_data, $errors)
 }
 
 // If the previous check went OK, setup some variables used later
-function setup_variables($post_data, $errors, $is_admmod)
+function setup_variables($post_data, $errors, $is_admmod, $user_field)
 {
     global $pun_user, $pun_config;
     
@@ -140,7 +139,7 @@ function setup_variables($post_data, $errors, $is_admmod)
     }
     // Otherwise it should be in $post_data
     else {
-        $post['username'] = pun_trim($post_data['req_username']);
+        $post['username'] = pun_trim($post_data[$user_field]);
         $post['email'] = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $post_data['req_email'] : $post_data['email']));
     }
     
