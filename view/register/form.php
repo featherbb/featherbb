@@ -50,6 +50,8 @@ if (!empty($user['errors'])) {
 					<legend><?php echo $lang_register['Username legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
+						<input type="hidden" name="username" value="" />
+						<input type="hidden" name="password" value="" />
 						<label class="required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo $_SESSION['user_field'] ?>" value="<?php if (isset($_POST[$_SESSION['user_field']])) {
     echo pun_htmlspecialchars($_POST[$_SESSION['user_field']]);
 } ?>" size="25" maxlength="25" /><br /></label>
