@@ -23,9 +23,9 @@ function get_info_edit($id)
     return $cur_post;
 }
 
-function check_errors_before_edit($fid, $post_data, $can_edit_subject, $errors)
+function check_errors_before_edit($post_data, $can_edit_subject, $errors)
 {
-    global $db, $pun_user, $pun_config, $lang_post, $re_list, $smilies;
+    global $db, $pun_user, $pun_config, $lang_post, $pd;
     
     // Make sure they got here from the site
     confirm_referrer('edit.php');
@@ -84,7 +84,7 @@ function check_errors_before_edit($fid, $post_data, $can_edit_subject, $errors)
 // If the previous check went OK, setup some variables used later
 function setup_variables($post_data, $cur_post, $is_admmod, $can_edit_subject, $errors)
 {
-    global $pun_config;
+    global $pun_config, $pd;
     
     $post = array();
     
@@ -138,7 +138,7 @@ function edit_post($id, $can_edit_subject, $post, $cur_post, $post_data, $is_adm
 
 function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $post_data, $cur_index)
 {
-    global $lang_post, $lang_common;
+    global $lang_post, $lang_common, $pun_config;
     
     $checkboxes = array();
     

@@ -30,18 +30,20 @@ function get_info_post($tid, $fid)
 // Checks the post for errors before posting
 function check_errors_before_post($fid, $post_data, $errors, $user_field)
 {
-    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $re_list, $smilies, $lang_antispam, $lang_antispam_questions;
+    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $lang_antispam, $lang_antispam_questions, $pd;
 	
 	// Antispam feature
-	$question = isset($post_data['captcha_q']) ? trim($post_data['captcha_q']) : '';
-	$answer = isset($post_data['captcha']) ? strtoupper(trim($post_data['captcha'])) : '';
-	$lang_antispam_questions_array = array();
-	
-	foreach ($lang_antispam_questions as $k => $v) {
-	  $lang_antispam_questions_array[md5($k)] = strtoupper($v);
-	}
-	if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
-	  $errors[] = $lang_antispam['Robot test fail'];
+	if ($pun_user['is_guest']) {
+		$question = isset($post_data['captcha_q']) ? trim($post_data['captcha_q']) : '';
+		$answer = isset($post_data['captcha']) ? strtoupper(trim($post_data['captcha'])) : '';
+		$lang_antispam_questions_array = array();
+		
+		foreach ($lang_antispam_questions as $k => $v) {
+		  $lang_antispam_questions_array[md5($k)] = strtoupper($v);
+		}
+		if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
+		  $errors[] = $lang_antispam['Robot test fail'];
+		}
 	}
     
     // Flood protection
@@ -504,30 +506,26 @@ function get_quote_message($qid, $tid)
 
     $q_message = pun_htmlspecialchars($q_message);
 
-    if ($pun_config['p_message_bbcode'] == '1') {
-        // If username contains a square bracket, we add "" or '' around it (so we know when it starts and ends)
-        if (strpos($q_poster, '[') !== false || strpos($q_poster, ']') !== false) {
-            if (strpos($q_poster, '\'') !== false) {
-                $q_poster = '"'.$q_poster.'"';
-            } else {
-                $q_poster = '\''.$q_poster.'\'';
-            }
-        } else {
-            // Get the characters at the start and end of $q_poster
-            $ends = substr($q_poster, 0, 1).substr($q_poster, -1, 1);
-
-            // Deal with quoting "Username" or 'Username' (becomes '"Username"' or "'Username'")
-            if ($ends == '\'\'') {
-                $q_poster = '"'.$q_poster.'"';
-            } elseif ($ends == '""') {
-                $q_poster = '\''.$q_poster.'\'';
-            }
-        }
-
-        $quote = '[quote='.$q_poster.']'.$q_message.'[/quote]'."\n";
-    } else {
-        $quote = '> '.$q_poster.' '.$lang_common['wrote']."\n\n".'> '.$q_message."\n";
-    }
+		if ($pun_config['p_message_bbcode'] == '1')
+		{	// Sanitize username for inclusion within QUOTE BBCode attribute.
+			//   This is a bit tricky because a username can have any "special"
+			//   characters such as backslash \ square brackets [] and quotes '".
+			if (preg_match('/[[\]\'"]/S', $q_poster)) // Check if we need to quote it.
+			{ // Post has special chars. Escape escapes and quotes then wrap in quotes.
+				if (strpos($q_poster, '"') !== false && strpos($q_poster, '\'') === false)
+				{ // If there are double quotes but no single quotes, use single quotes,
+					$q_poster = pun_htmlspecialchars(str_replace('\\', '\\\\', $q_poster));
+					$q_poster = '\''. $q_poster .'#'. $qid .'\'';
+				} else { // otherwise use double quotes.
+					$q_poster = pun_htmlspecialchars(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
+					$q_poster = '"'. $q_poster .'#'. $qid .'"';
+				}
+			} else $q_poster = $q_poster .'#'. $qid;
+			$quote = '[quote='. $q_poster .']'.$q_message.'[/quote]'."\n";
+		}
+		else {
+			$quote = '> '.$q_poster.' '.$lang_common['wrote']."\n\n".'> '.$q_message."\n";
+		}
     
     return $quote;
 }
@@ -577,7 +575,7 @@ function get_checkboxes($post_data, $fid, $is_admmod, $is_subscribed)
 // Display the topic review if needed
 function topic_review($tid)
 {
-    global $db, $pun_config, $smilies, $re_list;
+    global $db, $pun_config, $pd;
     
     $post_data = array();
 

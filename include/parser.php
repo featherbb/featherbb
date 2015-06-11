@@ -2,962 +2,906 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
+ * Parser (C) 2011 Jeff Roberson (jmrware.com)
  * based on code by (C) 2008-2012 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
-    exit;
+if (!defined('PUN'))
+	exit;
+
+define('PUN_PARSER', '11-Feb-2011 13:33');
+
+// globals. we share one array: $pd
+if (file_exists (PUN_ROOT.'cache/cache_parser_data.php')) { // If file already exists
+	require_once(PUN_ROOT.'cache/cache_parser_data.php');
+} else { // It needs to be re-generated.
+	require_once(PUN_ROOT.'include/bbcd_source.php');
+	require_once(PUN_ROOT.'include/bbcd_compile.php');
+}
+// !!!! AVOIDING PCRE STACK OVERFLOWS WHICH SEG-FAULT CRASH APACHE/PHP !!!!
+// By default, PHP sets up pcre.recursion_limit way too high (100000). According
+// to PCRE documentation, a sensible value for this parameter is the stacksize
+// of the PCRE executable, divided by 500. The Apache executable for Windows is
+// built with a 256KB stack, but most *nix installations set a stack size of 8MB.
+// We need to set the PCRE pcre.recursion_limit to the stacksize / 500. If this
+// precaution is not done, then an overly large subject text will cause the
+// executable to stack-overflow, and seg-fault crash with no warning. Taking the
+// following precaution, prevents this severe error and allows the program to
+// gracefully recover and display an appropriate error message.
+if (isset($_ENV['OS']) && $_ENV['OS'] === "Windows_NT") { // Are we: Win NT, 2K, XP, Vista or 7)?
+	ini_set("pcre.recursion_limit", "524");		// 256KB / 500 = 524
+} else {										// Otherwise assume we are on a *nix box.
+	ini_set("pcre.recursion_limit", "16777");	// 8MB / 500 = 16777
+}
+/* ***********************************************************
+callback function _preparse_bbcode_callback($matches)
+
+  This is the callback function for the main pre-parser. This routine is
+called when the preg_replace_callback function within the preparse_bbcode()
+function matches one BBCode open/close pair. The BBCode tag components are
+passed in $matches. This routine checks for various error conditions and
+repairs some of them. Erroneous code that cannot be fixed is wrapped in the
+special error BBCode tag: ERR.
+
+Parameters: (See the BBcode regex to see how each of these parameters are captured.)
+	$matches[0];					=  ([TAG=att]..content..[/TAG])	// The whole match.
+	$matches[1];	$tagname		=  (TAG)				// The BBCode tag name.
+	$matches[2];					=  (=)					// Attribute equals sign delimiter.
+	$matches[3];	$attribute		= '(attribute)'			// Attribute within single quotes, or
+	$matches[4];	$attribute		= "(attribute)"			// Attribute within double quotes or
+	$matches[5];	$attribute		=  (attribute)			// Attribute within no or any quotes.
+	$matches[6];	$contents		=  (tag contents)		// BBCode tag contents.
+*********************************************************** */
+function _preparse_bbcode_callback($matches) {
+	global $lang_common, $errors, $pd;
+
+	// Initialize some local variables. Use reference variables where possible.
+	$tagname =& $matches[1];								// BBCode tag name.
+	$contents =& $matches[6];								// BBCode tag contents.
+	$tag =& $pd['bbcd'][$tagname];							// alias to this tags array element of the BBCD database
+	$parent = end($pd['tag_stack']);						// Name of parent tag. ("_ROOT_" is base parent tag).
+/*	$new_errors = array();	*/								// BBCode tag error messages. (Create on error.)
+
+	// First things first.
+	$tag['depth']++;										// Increment tag-specific nesting level depth.
+	$tagname = strtolower($tagname);						// Force lowercase tags name.
+	array_push($pd['tag_stack'], $tagname);					// Push this tags name onto the tag stack.
+
+	// ---------------------------------------------------------------------------
+	// Recursively parse any nested BBCode tag markup (unless tag type is hidden):
+	// ---------------------------------------------------------------------------
+	if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== FALSE) {
+		$contents = preg_replace_callback($pd['re_bbcode'], '_preparse_bbcode_callback', $contents);
+		if ($contents === NULL) // On error, preg_replace_callback returns NULL.
+		{ // Error #1: '(%s) Message is too long or too complex. Please shorten.'
+			$new_errors[] = sprintf($lang_common['BBerr pcre'], preg_error());
+			$contents = ''; // Zero out the contents.
+		}
+	}
+	// ---------------------------------------------------------------------------------------
+	// Process optional $attribute. Set $fmt_open, $fmt_close and $handler based on attribute.
+	// ---------------------------------------------------------------------------------------
+	$fmt_close = '[/'. $tagname .']';						// BBCode closing tag format specifier string.
+	if ($matches[2]) { 										// Check if attribute specified?
+		// Attribute specified. Pick value from one of the three possible quote delimitations.
+		if ($matches[3]) {									// Non-empty single-quoted value.
+			$attribute =& $matches[3];						// Set attribute to quoted content.
+			$fmt_open = '['. $tagname .'=\'%a_str%\']';		// Set 'single-quoted' opening format.
+		}
+		elseif ($matches[4]) {								// Non-empty double-quoted value.
+			$attribute =& $matches[4];						// Set attribute to quoted content.
+			$fmt_open = '['. $tagname .'="%a_str%"]';		// Set "double-quoted" opening format.
+		}
+		elseif ($matches[5]) {								// Non-empty un-or-any-quoted value.
+			$attribute =& $matches[5];						// Set attribute to unquoted content.
+			$fmt_open = '['. $tagname .'=%a_str%]';			// Set un-'or'-"any"-quoted opening format.
+		}
+		else {												// Otherwise must be empty.
+			$attribute = '';								// Set empty attribute.
+			$fmt_open = '['. $tagname .'=%a_str%]';			// Set empty-attribute opening format.
+		}
+		// Consolidate consecutive attribute whitespace to a single space. Trim start and end.
+		$attribute = preg_replace(array('/\s++/S', '/^ /', '/ $/'), array(' ', '', ''), $attribute);
+
+		// Determine attribute handler: fixed or variable or none.
+		if (isset($tag['handlers'][$attribute])) {			// If attribute matches handler key
+			$handler =& $tag['handlers'][$attribute];		// use the fixed-attribute handler.
+		} elseif (isset($tag['handlers']['ATTRIB'])) {		// Else if we have one, use this tags
+			$handler =& $tag['handlers']['ATTRIB'];			// variable attribute handler. Otherwise...
+		} elseif (isset($tag['handlers']['NO_ATTRIB']) &&	// Otherwise we have an erroneous attribute
+							count($tag['handlers']) === 1)	// which is either unexpected or unrecognized.
+		{ // Error #2: 'Unexpected attribute: "%1$s". (No attribute allowed for [%2$s].'.
+			$handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
+			$new_errors[] = sprintf($lang_common['BBerr unexpected attribute'], $attribute, $tagname);
+		} else
+		{ // Error #3: 'Unrecognized attribute: "%1$s", is not valid for [%2$s].'
+			$handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
+			$new_errors[] = sprintf($lang_common['BBerr unrecognized attribute'], $attribute, $tagname);
+		}
+		// Make sure attribute does nor contain a valid BBcode tag.
+		if (preg_match($pd['re_bbtag'], $attribute))
+		{ // Error #4: 'Attribute may NOT contain open or close bbcode tags'
+			$handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
+			$new_errors[] = $lang_common['BBerr bbcode attribute'];
+		}
+		// Validate and filter tag's attribute value if and according to custom attribute regex.
+		if (isset($handler['a_regex'])) { // Check if this tag has an attribute regex? (very rare)
+			if (preg_match($handler['a_regex'], $attribute, $m)) { // Yes. Check if regex matches attribute?
+				$attribute = $m[1];
+			} else
+			{ // Error #4b: 'Invalid attribute, [%s] requires specific attribute.'
+				$new_errors[] = sprintf($lang_common['BBerr invalid attrib'], $tagname);
+			}
+		}
+	} else { // Attribute not specified. Use the NO_ATTRIB handler if it exixts else error.
+		$attribute = '';									// No attribute? Make it so.
+		$fmt_open = '['. $tagname .']';						// Set no-attribute fmt_open string.
+		if (isset($tag['handlers']['NO_ATTRIB'])) {			// If we have one, use this tags
+			$handler =& $tag['handlers']['NO_ATTRIB'];		// no-attribute handler. Otherwise...
+		} else
+		{ // Error #5: '[%1$s] is missing a required attribute.'.
+			$handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
+			$new_errors[] = sprintf($lang_common['BBerr missing attribute'], $tagname);
+		}
+	}
+	// -------------------------------------------------------
+	// Do some validation checks. Fix problems where possible:
+	// -------------------------------------------------------
+	// Handle tag nesting depth overflow.
+	if ($tag['depth'] > $tag['depth_max']) { // Allowable tag nesting level exceeded?
+		switch($tag['nest_type']) {			// Overflow. Handle based upon tag's "nest_type"
+		case 'clip':						// Silently strip overly nested tags and content.
+			$contents = '';
+			break;
+		case 'fix':							// Silently strip overly-nested tags (keep contents).
+			$fmt_open = $fmt_close = '';
+			break;
+		case 'err':	// Error #6: '[%1$s] tag nesting depth: %2$d exceeds allowable limit: %3$d.'.
+			$new_errors[] = sprintf($lang_common['BBerr nesting overflow'],
+								$tagname, $tag['depth'], $tag['depth_max']);
+			break;
+		default:
+		}
+	}
+	// Verify this tag is not in its parent's excluded tags list.
+	if (isset($pd['bbcd'][$parent]['tags_excluded'][$tagname])) // Are we illegitimate?
+	{	// Yes. Pick between error #6 and #7.
+		if ($parent === $tagname)
+		{ // Error #7: '[%s] was opened within itself, this is not allowed.'
+			$new_errors[] = sprintf($lang_common['BBerr self-nesting'], $tagname);
+		} else
+		{ // Error #8: '[%1$s] was opened within [%2$s], this is not allowed.'
+			$new_errors[] = sprintf($lang_common['BBerr invalid nesting'], $tagname, $parent);
+		}
+	}
+	// Verfify our parent tag is in our 'parents' allowable array if it exists.
+	if (isset($tag['parents']) && !isset($tag['parents'][$parent]))
+	{ // Error #9: '[%1$s] cannot be within: [%2$s]. Allowable parent tags: %3$s.'.
+		$new_errors[] = sprintf($lang_common['BBerr invalid parent'],
+			$tagname, $parent, '('. implode('), (', array_keys($tag['parents'])) .')');
+	}
+	// -----------------------------------------
+	// Perform content-type-specific processing:
+	// -----------------------------------------
+	switch($handler['c_type']) {
+	case 'width_height':
+		if (preg_match('/\b(\d++)[Xx](\d++)\b/S', $contents, $m)) {
+			$width = (int)$m[1];
+			$height = (int)$m[2];
+		}
+		if (preg_match('/\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b/Si',  $contents, $m)) $width  = (int)$m[1];
+		if (preg_match('/\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b/Si', $contents, $m)) $height = (int)$m[1];
+		if (isset($height, $tag['x_padding'], $tag['y_padding'])) {
+			$height -= $tag['y_padding'] - $tag['x_padding']; // Adjust for height of embedded controller.
+		}
+		break;
+
+	case 'url':
+		// Sanitize contents which is (hopefully) a url link. Trim spaces.
+		$contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
+		// Handle special case link to a
+		if (($m = url_valid($contents))) {
+			$contents = $m['url']; // Fetch possibly more complete url address.
+		} else
+		{ // Error #10a: 'Invalid URL name: %s'.
+			$new_errors[] = sprintf($lang_common['BBerr Invalid URL name'], $contents);
+		}
+		break;
+
+	case 'email':
+		// TODO: improve this quick-n-dirty email check.
+		if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $contents))
+		{ // Error #10c: 'Invalid email address: %s'.
+			$new_errors[] = sprintf($lang_common['BBerr Invalid email address'], $contents);
+		}
+		break;
+
+	default:
+	} // End c_type switch().
+	// -------------------------------------------
+	// Perform attribute-type-specific processing:
+	// -------------------------------------------
+	switch($handler['a_type']) {
+	case 'width_height':
+		if ($attribute) {
+			if (preg_match('/\b(\d++)[Xx](\d++)\b/', $attribute, $m)) {	// Check for a "123x456" WxH spec?
+				$width = (int)$m[1];									// Yes. Set both dimensions.
+				$height = (int)$m[2];
+			}
+			if (preg_match('/\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b/i', $attribute, $m))  $width  = (int)$m[1];
+			if (preg_match('/\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b/i', $attribute, $m)) $height = (int)$m[1];
+			$attribute = preg_replace('/[;\s]?+\b(?:(?:w(?:idth)?+|h(?:eight)?+)\s*+=\s*+|\d++[Xx])\d++\b/Si',
+							'', $attribute);
+		}
+		break;
+
+	case 'url':
+		if (($m = url_valid($attribute))) {
+			$attribute = $m['url']; // Fetch possibly more complete url address.
+		} else
+		{ // Error #10b: 'Invalid URL name: %s'.
+			$new_errors[] = sprintf($lang_common['BBerr Invalid URL name'], $attribute);
+		}
+		break;
+
+	case 'color':
+		if (!preg_match($pd['re_color'], $attribute))
+		{ // Error #11: 'Invalid color attribute: %s'.
+			$new_errors[] = sprintf($lang_common['BBerr Invalid color'], $attribute);
+		}
+		break;
+
+	case 'email':
+		// TODO: improve this quick-n-dirty email check.
+		if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $attribute))
+		{ // Error #10c: 'Invalid email address: %s'.
+			$new_errors[] = sprintf($lang_common['BBerr Invalid email address'], $attribute);
+		}
+		break;
+
+	default:
+	} // End a_type switch().
+
+	// ----------------------------------------------------------
+	// Perform tag-specific processing of attribute and contents:
+	// ----------------------------------------------------------
+	switch($tagname) {
+	case 'img': // Handle bad image url, file too big, then scale-to-fit within forum defaults if too large.
+		if ($tag['depth'] === 1) { // Check if not overly nested?
+			if (($pd['ipass'] === 2) && $pd['config']['valid_imgs'] && url_valid($contents)) { // Valid URI?
+				// Yes. Fetch file headers containing file type and size ("Content-Type" and "Content-Length").
+				// ??? Should this call to get_headers have an @ in case of weird errors?
+				if (($http = get_headers($contents)) !== FALSE && is_array($http)) {
+					if (preg_match('/\b200\s++OK\s*+$/i', $http[0])) { // Good response header?
+						for ($i = 1, $len = count($http); $i < $len; ++$i) { // Yes. Loop through HTTP response headers.
+							if (preg_match('/^\s*+Content-Length\s*+:\s*+(\d++)\s*+$/i', $http[$i], $m))
+								$size = (int)$m[1];				// File size found.
+							if (preg_match('/^\s*+Content-Type\s*+:\s*+image\/(.++)$/i', $http[$i], $m))
+								$type = $m[1];					// Image file type found.
+						}
+						// Verify Content-Type is an image.
+						if (isset($type)) {
+							// Verify remote file size is not too big. (If too big, handle error.)
+							if (isset($size)) {
+								if ($size <= $pd['config']['max_size']) {
+									// Filesize is ok. Do nothing.
+									if (($info = @getimagesize($contents)) && is_array($info)) {// Fetch width & height.
+										// Now we know the filesize, width and height of remote image.
+						                if (($iwidth = (int)$info[0]) && ($iheight = (int)$info[1])) {
+						                	// To resize or not resize, that is the question.
+						                	// If bigger than default, scale down. Otherwise dont touch.
+											// Scale image to fit within forum default width/height box dimensions.
+											$ar = ((float)$iwidth) / ((float)$iheight);
+											// Otherwise, for images that naturally fit inside the box,
+											// leave the attribute clean (or unset).
+											if (	!isset($width) && !isset($height) &&
+													( 	$iwidth > $pd['config']['def_width'] ||
+														$iheight > $pd['config']['def_height'] )
+											) {	// Remote file dimensions are too big to fit within default box.
+												// Explicitly scale a new width and height in IMG attribute.
+												$width = $pd['config']['def_width'];
+												$height = (int)((((float)$width) / $ar) + 0.5);
+												if ($height > $pd['config']['def_height']) {
+													$height = $pd['config']['def_height'];
+													$width = (int)((((float)$height) * $ar) + 0.5);
+												}
+											} // Else remote image fits. Do nothing special with width and height.
+										}
+									} else
+									{ // Error #13: 'Unable to retrieve image data from remote url: %s'.
+										$new_errors[] = sprintf($lang_common['BBerr bad meta data'], $contents);
+									} // NOTE: cannot generate this error.
+								} else
+								{ // Filesize of remote image is too big. Silently convert to link if possible.
+									if (isset($pd['bbcd']['url']) && $pd['bbcd']['url']['depth'] === 0) {
+										$fmt_open  = '{[url='. $contents .']';
+										$fmt_close = '[/url]}';
+										$contents = $lang_common['BBmsg big image'];
+									} else { // Image within a url cannot be linkified. Just display url name.
+										$contents = '{'. $contents .'}';
+										$fmt_open  = '';
+										$fmt_close = '';
+									}
+								}
+							} else // $size not set.
+							{ // Error #14: 'Unable to determine remote file size.'.
+								$new_errors[] = $lang_common['BBerr no file size'];
+							} // NOTE: cannot generate this error.
+						} else
+						{ // Error #15: 'Remote url does not have Content-Type: "image".'
+							$new_errors[] = $lang_common['BBerr non image'];
+						}
+					} else
+					{ // Error #16: 'Bad HTTP response header: "%s"'.
+						$new_errors[] = sprintf($lang_common['BBerr bad http response'], $http[0]);
+					}
+				} else
+				{ // Error #17: 'Unable to read remote image http headers.'.
+					$new_errors[] = $lang_common['BBerr bad headers'];
+				}
+
+			} // Image validation turned off. Do nothing.
+		} else
+		{ // Non-Error: IMG tag self nesting. Handle by silently stripping tags with no error.
+			$fmt_open = $fmt_close = '';
+		}
+		break;
+
+	case 'list': // Fixup lists within lists. In lists, everything must be in a [*] tag.
+		// Check if LIST contents well-formed.
+		if ($pd['ipass'] === 2 && !preg_match('% # Rev:20110220_1200
+			^\s*+  # This regex validates well-formed list content.
+			(?:
+			  \[\*\]
+			  [^[]*+(?:(?!\[/?\*\])\[[^[]*+)*+
+			  \[/\*\]\s*+
+			)++
+			$
+			%x', $contents))
+		{ // Not well formed. Do fixup to ensure list contents are only * tags.
+			// First regex wraps invalid characters at start of LIST in a [*]...[/*] tag.
+			$contents = preg_replace($pd['re_fixlist_1'], '[*]$1[/*]', $contents);
+			// Second regex wraps invalid characters between [/*] and [*] (or [/list]).
+			$contents = preg_replace($pd['re_fixlist_2'], '$1[/*]', $contents);
+		} // Well-formed LIST contents!
+		if ($parent === 'list') {
+			$fmt_open = '[*]'. $fmt_open;
+			$fmt_close .= '[/*]';
+		}
+		break;
+
+	default:
+		break;
+	} // End switch statement.
+	// -------------------------------------------
+	// Process width and height values if present.
+	// -------------------------------------------
+	if (isset($width) || isset($height)) { // Check if dimension specified in attrib or contents?
+		// Yes. Clip both $width and/or $height to their respective config maximums.
+		if (isset($width)) {							// Clip to max. Set to default if zero.
+			if ($width > $pd['config']['max_width'])	$width = $pd['config']['max_width'];
+			elseif ($width === 0)						$width = $pd['config']['def_width'];
+		}
+		if (isset($height)) {							// Clip to max. Set to default if zero.
+			if ($height > $pd['config']['max_height'])	$height = $pd['config']['max_height'];
+			elseif ($height === 0)						$height = $pd['config']['def_height'];
+		}
+		if (isset($ar)) { // If the real image dimensions are known ($ar), then adjust to fit in box and maintain $ar.
+			if (isset($width) && isset($height)) {		// Check if both dimensions set?
+				if ($ar > (((float)$width) / ((float)$height))) {	// Yes. Check if $width more precise than $height?
+					$height = (int)((((float)$width) / $ar) + 0.5); // Yes. Compute height from width and AR.
+					if ($height > $pd['config']['max_height']) {
+						$height = $pd['config']['max_height'];
+						$width = (int)((((float)$height) * $ar) + 0.5);
+					}
+				} else {
+					$width = (int)((((float)$height) * $ar) + 0.5); // Compute width from height and AR.
+					if ($width > $pd['config']['max_width']) {
+						$width = $pd['config']['max_width'];
+						$height = (int)((((float)$width) / $ar) + 0.5);
+					}
+				}
+			} elseif (isset($width)) {
+				$height = (int)((((float)$width) / $ar) + 0.5);		// Compute height from width and AR.
+				if ($height > $pd['config']['max_height']) {
+					$height = $pd['config']['max_height'];
+					$width = (int)((((float)$height) * $ar) + 0.5);
+				}
+			} else {
+				$width = (int)((((float)$height) * $ar) + 0.5); 	// Compute width from height and AR.
+				if ($width > $pd['config']['max_width']) {
+					$width = $pd['config']['max_width'];
+					$height = (int)((((float)$width) / $ar) + 0.5);
+				}
+			}
+		}
+		// Unconditionally write width and/or height data back into attribute.
+		if ($width === 0) $width = 1;
+		if ($height === 0) $height = 1;
+		if ($attribute) $attribute .= ';';				// Add delimiter for non-empty attrib.
+		if (isset($width) && isset($height)) {
+			$attribute .= $width .'x'. $height;
+		} elseif (isset($width)) {
+			$attribute .= 'w='. $width;
+		} else {
+			$attribute .= 'h='. $height;
+		}
+		$fmt_open = '['. $tagname .'=%a_str%]';	// Set open tag format to receive attribute.
+	}
+	// Validate and filter tag's contents if and according to optional contents regex.
+	if (isset($handler['c_regex'])) { // Check if this tag has a contents regex? (youtube, vimeo, etc.)
+		// Yes. Check if regex matches contents?
+		if (preg_match($handler['c_regex'], $contents, $m)) $contents = $m[1];
+		else
+		{ // Error #12: 'Invalid content, [%s] requires specific content.'
+			$new_errors[] = sprintf($lang_common['BBerr invalid content'], $tagname);
+		}
+	}
+	// Silently strip empty or all-white tags:
+	if (preg_match('/^\s*+$/', $contents)) $contents = '';
+
+	// Unconditionally hide all opening square brackets within hidden CODE contents.
+	// This is necessary otherwise the LIST fixup code would process "[*]" within CODE tags.
+	// These \3 byte markers are subsequently removed by preparse_bbcode().
+	if ($tag['tag_type'] === 'hidden') {
+		$contents = str_replace('[', "\3", $contents);
+	}
+	// On first pass, fix inline tags which span paragraphs by closting then re-opening.
+	if ($pd['ipass'] === 1 && $tag['html_type'] === 'inline' &&
+			$tag['tag_type'] !== 'hidden' && strpos($contents, "\n") !== FALSE) {
+		$contents = preg_replace('/\n\s*?\n\s*/',
+			"\1\2". $fmt_close ."\1".'$0'."\1\2". str_replace('%a_str%', $attribute, $fmt_open) ."\1", $contents);
+	}
+	// ***********************************************************************************
+	// Handle errors. Wrap this tags open and close BBCode tag each in a valid [err] tag.
+	// ***********************************************************************************
+	if (isset($new_errors) && $fmt_open)	// check if we detected any errors?
+	{ // Yes, we have detected one or more new error conditions.
+		foreach($new_errors as $errmsg) // Push all new errors on g errors array.
+			$pd['new_errors'][] = htmlspecialchars($errmsg);
+ 		// Wrap offending BBCode open and close tags each in its own valid error tag (last err only).
+		$fmt_open  = '[err='. $errmsg .']'. $fmt_open  . '[/err]';	// Wrap tags in the last error message.
+		$fmt_close = '[err='. $errmsg .']'. $fmt_close . '[/err]';
+	}
+
+	// -----------------------------------------------------------------------------
+	// All done processing. Substitute $attribute and $contents into format strings:
+	// -----------------------------------------------------------------------------
+	if ($contents) {
+		if ($pd['ipass'] === 1) {					// Add byte markers on first pass.
+			if ($tag['tag_type'] === 'hidden' || $handler['c_type'] == 'url')
+					$text = "\1\2". $fmt_open .'%c_str%'. $fmt_close ."\1";
+			else	$text = "\1\2". $fmt_open ."\1%c_str%\1\2". $fmt_close ."\1";
+		} else		$text = $fmt_open .'%c_str%'. $fmt_close; // Pass 2, dont bother with byte markers.
+		$text = str_replace('%a_str%', $attribute, $text);
+		$text = str_replace('%c_str%', $contents, $text);
+	} else $text = '';
+	array_pop($pd['tag_stack']);							// Were done. Pop this tag off the stack.
+	$tag['depth']--;										// Restore pre-call tag specific depth.
+	return $text;
+} // Exit _preparse_bbcode_callback
+
+/**----------------------------------------------------------------
+ * Pre-process text containing BBCodes. Check for integrity,
+ * well-formedness, nesting, etc. Flag errors by wrapping offending
+ * tags in a special [err] tag.
+ *-----------------------------------------------------------------
+ */
+function preparse_bbcode($text, &$errors, $is_signature = false) {
+	global $lang_common, $pun_config, $pun_user, $pd;
+	$pd['new_errors'] = array(); // Reset the parser error message stack.
+	$pd['in_signature'] = ($is_signature) ? TRUE : FALSE;
+	$pd['ipass'] = 1;
+	$newtext = preg_replace_callback($pd['re_bbcode'], '_preparse_bbcode_callback', $text);
+	if ($newtext === NULL) // On error, preg_replace_callback returns NULL.
+	{ // Error #1: '(%s) Message is too long or too complex. Please shorten.'
+		$errors[] = sprintf($lang_common['BBerr pcre'], preg_error());
+		return $text;
+	}
+	$newtext = str_replace("\3", '[', $newtext); // Fixup CODE sections.
+	$parts = explode("\1", $newtext); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
+	for ($i = 0, $len = count($parts); $i < $len; ++$i) {	// Loop through hidden and non-hidden text chunks.
+		$part =& $parts[$i];								// Use shortcut alias
+		if (empty($part)) continue;							// Skip empty string chunks.
+		if ($part[0] !== "\2") { // If not hidden, process this normal text content.
+			// Mark erroneous orphan tags.
+			$part = preg_replace_callback($pd['re_bbtag'], '_orphan_callback', $part);
+			// Process do-clickeys if enabled.
+			if ($pun_config['o_make_links'])
+				$part = linkify($part);
+			// Process textile syntax tag shortcuts.
+			if ($pd['config']['textile']) {
+				// Do phrase replacements.
+				$part = preg_replace_callback($pd['re_textile'],
+							'_textile_phrase_callback', $part);
+				// Do lists.
+				$part = preg_replace_callback('/^([*#]) .*+(?:\n\1 .*+)++$/Sm',
+							'_textile_list_callback', $part);
+			}
+			$part = preg_replace('/^[ \t]++$/m', '', $part);	// Clear "white" lines of spaces and tabs.
+		} else $part = substr($part, 1); // For hidden chunks, strip \2 marker byte.
+	}
+	$text = implode("", $parts); // Put hidden and non-hidden chunks back together.
+	$pd['ipass'] = 2; // Run a second pass through parser to clean changed content.
+	$text = preg_replace_callback($pd['re_bbcode'], '_preparse_bbcode_callback', $text);
+	$text = str_replace("\3", '[', $text); // Fixup CODE sections.
+	if (!empty($pd['new_errors'])) {
+		foreach($pd['new_errors'] as $errmsg) $errors[] = $errmsg; // Push all new errors on global array.
+	}
+	return $text;
+}
+//
+// Helper preg_replace_callback function for orphan processing.
+//
+function _orphan_callback($matches) {
+	global $pd, $lang_common;
+	if ($matches[0][1] === '/')
+	{ // Error #18: 'Orphan close tag: [/%s] is missing its open tag.'
+		$errmsg = sprintf($lang_common['BBerr orphan close'], $matches[1]);
+	} else
+	{ // Error #19: 'Orphan open tag: [%s] is missing its close tag.'
+		$errmsg = sprintf($lang_common['BBerr orphan open'], $matches[1]);
+	}
+	$pd['new_errors'][] = $errmsg;	// Append to array of errors so far.
+	return '[err='. $errmsg .']'. $matches[0] .'[/err]';
+}
+//
+// Helper preg_replace_callback function for textile lists processing.
+//
+function _textile_list_callback($matches) {
+	global $pd;
+	if (!isset($pd['bbcd']['list'])) return $matches[0];
+	$parts = preg_split('/(?:^|\n)\\'. $matches[1] .' /S', $matches[0], -1, PREG_SPLIT_NO_EMPTY);
+	switch ($matches[1]) {
+	case '*': return "[list]\n[*]". implode("[/*]\n[*]", $parts) ."[/*]\n[/list]";
+	case '#': return "[list=1]\n[*]". implode("[/*]\n[*]", $parts) ."[/*]\n[/list]";
+	}
+}
+//
+// Helper preg_replace_callback function for textile processing.
+//
+function _textile_phrase_callback($matches) {
+	global $pd;
+	$matches[2] = preg_replace_callback($pd['re_textile'], '_textile_phrase_callback', $matches[2]);
+	switch($matches[1]) {
+	case '_': return (isset($pd['bbcd']['i']))   ? '[i]'.   $matches[2] .'[/i]'   : $matches[0];
+	case '*': return (isset($pd['bbcd']['b']))   ? '[b]'.   $matches[2] .'[/b]'   : $matches[0];
+	case '@': return (isset($pd['bbcd']['tt']))  ? '[tt]'.  $matches[2] .'[/tt]'  : $matches[0];
+	case '^': return (isset($pd['bbcd']['sup'])) ? '[sup]'. $matches[2] .'[/sup]' : $matches[0];
+	case '~': return (isset($pd['bbcd']['sub'])) ? '[sub]'. $matches[2] .'[/sub]' : $matches[0];
+	case '-': return (isset($pd['bbcd']['del'])) ? '[del]'. $matches[2] .'[/del]' : $matches[0];
+	case '+': return (isset($pd['bbcd']['ins'])) ? '[ins]'. $matches[2] .'[/ins]' : $matches[0];
+	}
 }
 
-// Global variables
-/* regular expression to match nested BBCode LIST tags
-'%
-\[list                # match opening bracket and tag name of outermost LIST tag
-(?:=([1a*]))?+        # optional attribute capture in group 1
-\]                    # closing bracket of outermost opening LIST tag
-(                     # capture contents of LIST tag in group 2
-  (?:                 # non capture group for either contents or whole nested LIST
-    [^\[]*+           # unroll the loop! consume everything up to next [ (normal *)
-    (?:               # (See "Mastering Regular Expressions" chapter 6 for details)
-      (?!             # negative lookahead ensures we are NOT on [LIST*] or [/LIST]
-        \[list        # opening LIST tag
-        (?:=[1a*])?+  # with optional attribute
-        \]            # closing bracket of opening LIST tag
-        |             # or...
-        \[/list\]     # a closing LIST tag
-      )               # end negative lookahead assertion (we are not on a LIST tag)
-      \[              # match the [ which is NOT the start of LIST tag (special)
-      [^\[]*+         # consume everything up to next [ (normal *)
-    )*+               # finish up "unrolling the loop" technique (special (normal*))*
-  |                   # or...
-    (?R)              # recursively match a whole nested LIST element
-  )*                  # as many times as necessary until deepest nested LIST tag grabbed
-)                     # end capturing contents of LIST tag into group 2
-\[/list\]             # match outermost closing LIST tag
-%iex' */
-$re_list = '%\[list(?:=([1a*]))?+\]((?:[^\[]*+(?:(?!\[list(?:=[1a*])?+\]|\[/list\])\[[^\[]*+)*+|(?R))*)\[/list\]%i';
-
-// Here you can add additional smilies if you like (please note that you must escape single quote and backslash)
-$smilies = array(
-    ':)' => 'smile.png',
-    '=)' => 'smile.png',
-    ':|' => 'neutral.png',
-    '=|' => 'neutral.png',
-    ':(' => 'sad.png',
-    '=(' => 'sad.png',
-    ':D' => 'big_smile.png',
-    '=D' => 'big_smile.png',
-    ':o' => 'yikes.png',
-    ':O' => 'yikes.png',
-    ';)' => 'wink.png',
-    ':/' => 'hmm.png',
-    ':P' => 'tongue.png',
-    ':p' => 'tongue.png',
-    ':lol:' => 'lol.png',
-    ':mad:' => 'mad.png',
-    ':rolleyes:' => 'roll.png',
-    ':cool:' => 'cool.png');
-
-//
-// Make sure all BBCodes are lower case and do a little cleanup
-//
-function preparse_bbcode($text, &$errors, $is_signature = false)
-{
-    global $pun_config, $lang_common, $lang_post, $re_list;
-
-    // Remove empty tags
-    while (($new_text = strip_empty_bbcode($text)) !== false) {
-        if ($new_text != $text) {
-            $text = $new_text;
-            if ($new_text == '') {
-                $errors[] = $lang_post['Empty after strip'];
-                return '';
-            }
-        } else {
-            break;
-        }
-    }
-
-    if ($is_signature) {
-        global $lang_profile;
-
-        if (preg_match('%\[/?(?:quote|code|list|h)\b[^\]]*\]%i', $text)) {
-            $errors[] = $lang_profile['Signature quote/code/list/h'];
-        }
-    }
-
-    // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
-    if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false) {
-        list($inside, $text) = extract_blocks($text, '[code]', '[/code]');
-    }
-
-    // Tidy up lists
-    $temp = preg_replace_callback($re_list, create_function('$matches', 'return preparse_list_tag($matches[2], $matches[1]);'), $text);
-
-    // If the regex failed
-    if (is_null($temp)) {
-        $errors[] = $lang_common['BBCode list size error'];
-    } else {
-        $text = str_replace('*'."\0".']', '*]', $temp);
-    }
-
-    if ($pun_config['o_make_links'] == '1') {
-        $text = do_clickable($text);
-    }
-
-    $temp_text = false;
-    if (empty($errors)) {
-        $temp_text = preparse_tags($text, $errors, $is_signature);
-    }
-
-    if ($temp_text !== false) {
-        $text = $temp_text;
-    }
-
-    // If we split up the message before we have to concatenate it together again (code tags)
-    if (isset($inside)) {
-        $outside = explode("\1", $text);
-        $text = '';
-
-        $num_tokens = count($outside);
-        for ($i = 0; $i < $num_tokens; ++$i) {
-            $text .= $outside[$i];
-            if (isset($inside[$i])) {
-                $text .= '[code]'.$inside[$i].'[/code]';
-            }
-        }
-
-        unset($inside);
-    }
-
-    // Remove empty tags
-    while (($new_text = strip_empty_bbcode($text)) !== false) {
-        if ($new_text != $text) {
-            $text = $new_text;
-            if ($new_text == '') {
-                $errors[] = $lang_post['Empty after strip'];
-                break;
-            }
-        } else {
-            break;
-        }
-    }
-
-    return pun_trim($text);
+/* --- function preg_error()
+Check to see what the last PREG/PCRE error was. Returns a string describing the
+last error, or an empty string if there is no error (or if the PHP version is
+older than 5.2.0).
+--- */
+function preg_error() {
+	global $pd;
+	$errmsg = '';										// assume no error has occured. return empty string
+	if ($pd['newer_php_version']) {						// this function requires PHP 5.2.0 or higher
+		switch (preg_last_error()) {					// this returns the last error condition as a number
+			case PREG_NO_ERROR:
+				break;									// no error? return empty string === FALSE
+			case PREG_INTERNAL_ERROR:
+				$errmsg = 'PREG_INTERNAL_ERROR';
+				break;
+			case PREG_BACKTRACK_LIMIT_ERROR:
+				$errmsg = 'PREG_BACKTRACK_LIMIT_ERROR';
+				break;
+			case PREG_RECURSION_LIMIT_ERROR:
+				$errmsg = 'PREG_RECURSION_LIMIT_ERROR';
+				break;
+			case PREG_BAD_UTF8_ERROR:
+				$errmsg = 'PREG_BAD_UTF8_ERROR';
+				break;
+			case PREG_BAD_UTF8_OFFSET_ERROR:
+				$errmsg = 'PREG_BAD_UTF8_OFFSET_ERROR';
+				break;
+			default:
+				$errmsg = 'Unrecognized PREG error';
+				break;
+		}
+	}
+	return $errmsg;
 }
+/* ***********************************************************
+callback function _parse_bbcode_callback($matches)
 
+  This is the callback function for the main parser. This routine is called
+when the preg_replace_callback function within the parse_bbcode() function
+matches one BBCode open/close pair. The BBCode tag components are passed in
+$matches. The BBCode is converted to HTML markup according to the format
+string specified in the $bbcd array member for this tag. If an attribute is
+specified, it is encoded along with the tag contents to generate a valid
+HTML markup snippet. If this tag is not enabled (either the 'in_post' or
+'in_sig' member in $bbcd are FALSE), then the output depends upon the tag
+type; If 'zombie' or 'hidden', then both the tags and contents are displayed.
+If 'normal', then the open and close tags are stripped and the contents are
+displayed. If 'atomic', then both the tags and contents are stripped.
 
+Parameters:
+	$matches[0];					=  ([TAG=att]..[/TAG])	// The whole match
+	$matches[1];	$tagname		=  (TAG)				// The BBCode tag name.
+	$matches[2];					=  (=)					// Attribute equals sign delimiter.
+	$matches[3];	$attribute		= '(attribute)'			// Attribute within single quotes.
+	$matches[4];	$attribute		= "(attribute)"			// Attribute within double quotes.
+	$matches[5];	$attribute		=  (attribute)			// Attribute within no-or-any quotes.
+	$matches[6];	$contents		=  (ontents)			// Tag contents.
+*********************************************************** */
+function _parse_bbcode_callback($matches) {
+	global $pd, $lang_common;
+	$tagname =& $matches[1];			// TAGNAME we are currently servicing.
+	$contents =& $matches[6];			// Shortcut to contents.
+	$tag =& $pd['bbcd'][$tagname];		// Shortcut to bbcd array entry.
+	$tag['depth']++;					// update tag-specific nesting level
+
+	// Set local parse enable flag based upon message type and global flags.
+	$enabled = (!$pd['in_signature'] && $tag['in_post'] ||	// If in a post and post-enabled, or
+		$pd['in_signature'] && $tag['in_sig'] ) ? TRUE : FALSE;	// in a sig and sig-enabled, then enabled.
+
+	// Recursively parse any nested BBCode tag markup (unless tag type is hidden).
+	if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== FALSE) {
+		$contents = preg_replace_callback($pd['re_bbcode'], '_parse_bbcode_callback', $contents);
+	}
+	// ------------------------------------------------------------------------------
+	// Determine $attribute and format conversion $handler to use based on attribute.
+	// ------------------------------------------------------------------------------
+	if (!$matches[2]) {	// No attribute specified? Use the NO_ATTRIB handler.
+		$attribute = '';
+		if (isset($tag['handlers']['NO_ATTRIB']))			// If we have one, use this tags
+			$handler =& $tag['handlers']['NO_ATTRIB'];		// no-attribute handler. Otherwise...
+		else $handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB']; // Missing attribute! Strip tag.
+	} else { // Attribute specified. Assign it from one of the three possible delimitations.
+		if ($matches[3]) {									// Non-empty single-quoted value.
+			$attribute =& $matches[3]; // Strip out escape from escapes and single quotes.
+			$attribute = str_replace(array('\\\\', '\\\''), array('\\', '\''), $attribute);
+		}
+		elseif ($matches[4]) {								// Non-empty double-quoted value.
+			$attribute =& $matches[4]; // Strip out escape from escapes and double quotes.
+			$attribute = str_replace(array('\\\\', '\\"'), array('\\', '"'), $attribute);
+		}
+		elseif ($matches[5]) $attribute =& $matches[5];		// Non-empty un-or-any-quoted value.
+		else				 $attribute = '';				// Otherwise must be empty.
+		// Determine which type of attribute handler: fixed or variable.
+		if (isset($tag['handlers'][$attribute])) {			// If attribute matches handler key
+			$handler =& $tag['handlers'][$attribute];		// use the fixed-attribute handler.
+		} elseif (isset($tag['handlers']['ATTRIB'])) {		// Else if we have one, use this tags
+			$handler =& $tag['handlers']['ATTRIB'];			// variable attribute handler. Otherwise...
+		}  else $handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB']; // Missing attribute! Strip tag.
+		// htmlspecialchars() was already called (but not for quotes).
+		// Hide any double quotes in attribute now.
+		$attribute = str_replace('"', '&quot;', $attribute);
+	}
+
+	// Set default format handler
+	$format = $handler['format'];
+
+	// -------------------------------------------
+	// Perform attribute-type-specific processing:
+	// -------------------------------------------
+	switch($handler['a_type']) {
+	case 'width_height': // This attribute type is used for video BBCodes (YouTube, Vimeo, ...).
+		if ($attribute) {
+			if (preg_match('/\b(\d++)[Xx](\d++)\b/S', $attribute, $m)) {// Check for a "123x456" WxH spec?
+				$width = (int)$m[1];									// Yes. Set both dimensions.
+				$height = (int)$m[2];
+			}
+			if (preg_match('%\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b%Si', $attribute, $m))  $width  = (int)$m[1];
+			if (preg_match('%\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b%Si', $attribute, $m)) $height = (int)$m[1];
+			if (isset($width) && isset($height)) {
+				$ar = (float)$width / (float)$height;
+			}
+			// Clean the attribute of any and all width/height specs.
+			$attribute = preg_replace('/[ ;#]?\b(?:(?:w(?:idth)?+|h(?:eight)?+)\s*+=\s*+([\'"])?+|\d++X)\d++\b(?(1)\1)?+/Si',
+							'', $attribute);
+			if (isset($width)) { // If set, clip to max allowed. Convert zero to global default.
+				if ($width > $pd['config']['max_width']) $width = $pd['config']['max_width'];
+				elseif ($width === 0) $width = $pd['config']['def_width']; // If zero, set to default.
+			}
+			if (isset($height)) { // If set, clip to max allowed. Convert zero to global default.
+				if ($height > $pd['config']['max_height']) $height = $pd['config']['max_height'];
+				elseif ($height === 0) $height = $pd['config']['def_height']; // If zero, set to default.
+			}
+			if (!isset($width))  $format = str_replace('width="%w_str%"',  '', $format);
+			if (!isset($height)) $format = str_replace('height="%h_str%"', '', $format);
+		} else {
+			$width = $pd['config']['def_width'];
+			$height = $pd['config']['def_height'];
+		}
+		if (isset($tag['x_padding']) && $width)		$width	+= $tag['x_padding'];
+		if (isset($tag['y_padding']) && $height)	$height	+= $tag['y_padding'];
+		break;
+	default:
+	}
+	// ----------------------------------------------------------
+	// Perform tag-specific processing of attribute and contents:
+	// ----------------------------------------------------------
+	switch($tagname) {
+
+	case 'img': // Handle disabled image, image inside of QUOTE, and width/height dimensions in attribute.
+		if (!$enabled || (!$pd['config']['quote_imgs'] && isset($pd['bbcd']['quote']) && $pd['bbcd']['quote']['depth'] > 0))
+		{ // IMG not enabled in this context. Convert to a text URL link if possible and re-enable.
+			if (isset($pd['bbcd']['url']) && $pd['bbcd']['url']['depth'] > 0) $format = "{%c_str%}";
+			else {
+				if ($attribute) $format = '{<a href="%c_str%" title="%a_str%">'. $lang_common['Image link'] .'</a>}';
+				else $format = '{<a href="%c_str%" title="'. $lang_common['BBmsg images disabled'] .'">'.
+					$lang_common['Image link'] .'</a>}';
+				$enabled = TRUE; // Re-enable to override defauslt disabled handling (i.e. dont delete.)
+			}
+		} else { // IMG is enabled in this context. Wrap image inside a clickable link if global option is set.
+			if ($pd['config']['click_imgs'] && isset($pd['bbcd']['url']) && $pd['bbcd']['url']['depth'] === 0) {
+				$format = preg_replace('/^\x01\x02([^\x01]*+)\x01$/', '<a href="%c_str%">$1</a>', $format);
+			}
+		}
+		$format = "\1\2". $format ."\1";
+		// If user provided a verbose attribute (in addition to WxH), place this in the title attribute,
+		// otherwise place the URL ($contents) in the ALT attribute and remove the title attribute from format.
+		if (preg_match('/^\s*$/', $attribute)) {
+			$attribute = $contents;
+			$format = str_replace(' title="%a_str%"', '', $format);
+		}
+		break;
+
+	case 'quote': // Quotes require language-specific "wrote:" following the posters name.
+		if ($attribute) { // Quote attribute specified. Convert optional #post_id to a post link.
+			if (preg_match('/#(\d++)$/', $attribute, $m)) // Check for optional embedded post id.
+			{ // Attribute has optional '#1234' quoted post ID number. Convert to link back to quoted post.
+				$attribute = preg_replace('/\s*#\d++$/S', '', $attribute); // Strip post id from attribute.
+				$attribute .= ' '. $lang_common['wrote'];  // Append language-specific "wrote:".
+				if ($pd['config']['quote_links']) {
+					$attribute = ' <a href="'. get_base_url(TRUE) .'/viewtopic.php?pid='.
+					$m[1] .'#p'. $m[1] . '">'. $attribute .'</a>';
+				}
+			} else $attribute .= ' '. $lang_common['wrote']; // If no post id, just add "wrote:".
+		}
+		break;
+
+// TODO: The following is somewhat of a hack. Need to implement generic handling of tags
+// which can only contain specific tags and must not contain any text (including whitespace).
+// For example: the UL and OL list tags may only contain LI tags. TABLE can only have THEAD,
+//  TBODY, TR, etc, and TR can only contain TD, etc...
+	case 'list': // Clean whitespace cruft bordering <li> tags.
+	case 'table': // Clean whitespace cruft bordering <tr> tags.
+	case 'tr': // Clean whitespace cruft bordering <td> tags.
+//		$contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul)>)%S', '%(?<=</(?:li|ol|ul)>\x01)\s++%S'), '', $contents);
+		$contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul|tr|td)>)%S', '%(?<=</(?:li|ol|ul|tr|td)>\x01)\s++%S'), '', $contents);
+		break;
+
+	case 'code':
+		if ($attribute) {
+			if (!isset($tag['handlers'][$attribute])) // Check for no matching attribute handler.
+			{ // Yes, the attribute may be more complex. Extract the extra verbage to add to code header.
+				if (preg_match('/^([\w\-.:]++)\s*+(.*)$/', $attribute, $m)) {
+					$type = strtolower($m[1]);
+					if (isset($tag['handlers'][$type])) { // Check if we recognize this first word?
+						$handler =& $tag['handlers'][$type];	// Yes. Set new fixed-attribute handler.
+						if ($m[2]) { // Check if there are extra words.
+							// Yes. Use this extra part of the attribute to augment the code header.
+							$format = str_replace('</h4>', ' - "'. $m[2] .'"</h4>', $handler['format']);
+						}
+						$attribute = $type;
+					}
+				}
+			}
+		}
+		break;
+
+	case 'color':
+	case 'colour':
+		if (preg_match($pd['re_color'], $attribute, $m)) {
+			if (isset($m[2]) && $m[2]) {
+				$attribute = $m[1] .'; background-color: '. $m[2];
+			} else {
+				$attribute = $m[1];
+			}
+		}
+	default:
+	}
+
+	// The return value depends upon whether this tag is currently enabled.
+	if ($enabled) { // Tag is enabled. Add byte markers to hidden chunks to allow easy explode() later.
+		if (isset($width))	$format = str_replace('%w_str%', $width, $format);
+		if (isset($height))	$format = str_replace('%h_str%', $height, $format);
+		// Subtitute attribute into format string.
+		$format = str_replace('%a_str%', $attribute, $format);	// Encode attribute value.
+		// Finally, subtitute the content into the message.
+		$text = str_replace('%c_str%', $contents, $format);		// Encode contents.
+	} else { // Tag is not enabled. Strip HTML tags and contents according to tag_type.
+		 switch ($tag['tag_type']) {
+		 case 'atomic':					// Strip everything.
+		 	$text = '';
+		 	break;
+		 case 'normal':					// Strip HTML open and close tags only.
+		 	$text =& $contents;
+		 	break;
+		 case 'hidden':					// Hidden and 'zombie' tags are displayed without.
+		 case 'zombie':					// stripping anything. All [BBCODES] are displayed.
+		 default:						// Default === hidden === zombie === Strip nothing.
+		 	$text =& $matches[0];		// $format = '['. $tagname .']%c_str%[/'. $tagname .']';
+		 }
+	}
+	if ($tag['depth'] > $tag['depth_max']) $text = ''; // Silently clip overly-nested tags.
+	$tag['depth']--;					// restore pre-call tag specific depth
+	return $text;
+} // exit _parse_bbcode_callback
 //
-// Strip empty bbcode tags from some text
+// Parse post or signature message text.
 //
-function strip_empty_bbcode($text)
-{
-    // If the message contains a code tag we have to split it up (empty tags within [code][/code] are fine)
-    if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false) {
-        list($inside, $text) = extract_blocks($text, '[code]', '[/code]');
-    }
+function parse_bbcode(&$text, $hide_smilies = 0) {
+	global $pun_config, $pun_user, $pd;
 
-    // Remove empty tags
-    while (!is_null($new_text = preg_replace('%\[(b|u|s|ins|del|em|i|h|colou?r|quote|img|url|email|list|topic|post|forum|user|left|right|center|justify)(?:\=[^\]]*)?\]\s*\[/\1\]%', '', $text))) {
-        if ($new_text != $text) {
-            $text = $new_text;
-        } else {
-            break;
-        }
-    }
+	if ($pun_config['o_censoring'] === '1') {
+		$text = censor_words($text);
+	}
+	// Convert [&<>] characters to HTML entities (but preserve [""''] quotes).
+	$text = htmlspecialchars($text, ENT_NOQUOTES);
 
-    // If we split up the message before we have to concatenate it together again (code tags)
-    if (isset($inside)) {
-        $parts = explode("\1", $text);
-        $text = '';
-        foreach ($parts as $i => $part) {
-            $text .= $part;
-            if (isset($inside[$i])) {
-                $text .= '[code]'.$inside[$i].'[/code]';
-            }
-        }
-    }
+	// Parse BBCode if globally enabled.
+	if ($pun_config['p_message_bbcode']) {
+		$text = preg_replace_callback($pd['re_bbcode'], '_parse_bbcode_callback', $text);
+	}
+	// Set $smile_on flag depending on global flags and whether or not this is a signature.
+	if ($pd['in_signature']) {
+		$smile_on = ($pun_config['o_smilies_sig'] && $pun_user['show_smilies'] && !$hide_smilies) ? 1 : 0;
+	} else {
+		$smile_on = ($pun_config['o_smilies'] && $pun_user['show_smilies'] && !$hide_smilies) ? 1 : 0;
+	}
+	// Split text into hidden and non-hidden chunks. Process the non-hidden content chunks.
+	$parts = explode("\1", $text); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
+	for ($i = 0, $len = count($parts); $i < $len; ++$i) { // Loop through hidden and non-hidden text chunks.
+		$part =& $parts[$i];									// Use shortcut alias
+		if (empty($part)) continue;								// Skip empty string chunks.
+		if ($part[0] !== "\2") { // If not hidden, process this normal text content.
+			if ($smile_on) { // If smileys enebled, do them all in one whack.
+				$part = preg_replace_callback($pd['re_smilies'], '_do_smilies_callback', $part);
+			}
+			// Deal with newlines, tabs and multiple spaces
+			$part = str_replace(
+				array("\n",		"\t",				'  ',		'  '),
+				array('<br />', '&#160; &#160; ',	'&#160; ',	' &#160;'), $part);
+		} else $part = substr($part, 1); // For hidden chunks, strip \2 marker byte.
+	}
+	$text = implode("", $parts); // Put hidden and non-hidden chunks back together.
 
-    // Remove empty code tags
-    while (!is_null($new_text = preg_replace('%\[(code)\]\s*\[/\1\]%', '', $text))) {
-        if ($new_text != $text) {
-            $text = $new_text;
-        } else {
-            break;
-        }
-    }
-
-    return $text;
+	// Add paragraph tag around post, but make sure there are no empty paragraphs
+	$text = str_replace('<p><br />', '<p>', $text);
+	$text = str_replace('<p></p>', '', '<p>'. $text .'</p>');
+	return $text;
 }
-
-
 //
-// Check the structure of bbcode tags and fix simple mistakes where possible
+// Helper preg_replace_callback function for smilies processing.
 //
-function preparse_tags($text, &$errors, $is_signature = false)
-{
-    global $lang_common, $pun_config, $pun_user;
-
-    // Start off by making some arrays of bbcode tags and what we need to do with each one
-
-    // List of all the tags
-    $tags = array('quote', 'code', 'b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'url', 'email', 'img', 'list', '*', 'h', 'topic', 'post', 'forum', 'user', 'left', 'right', 'center', 'justify');
-    // List of tags that we need to check are open (You could not put b,i,u in here then illegal nesting like [b][i][/b][/i] would be allowed)
-    $tags_opened = $tags;
-    // and tags we need to check are closed (the same as above, added it just in case)
-    $tags_closed = $tags;
-    // Tags we can nest and the depth they can be nested to
-    $tags_nested = array('quote' => $pun_config['o_quote_depth'], 'list' => 5, '*' => 5);
-    // Tags to ignore the contents of completely (just code)
-    $tags_ignore = array('code');
-    // Tags not allowed
-    $tags_forbidden = array();
-    // Block tags, block tags can only go within another block tag, they cannot be in a normal tag
-    $tags_block = array('quote', 'code', 'list', 'h', '*', 'left', 'right', 'center', 'justify');
-    // Inline tags, we do not allow new lines in these
-    $tags_inline = array('b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'h', 'topic', 'post', 'forum', 'user');
-    // Tags we trim interior space
-    $tags_trim = array('img');
-    // Tags we remove quotes from the argument
-    $tags_quotes = array('url', 'email', 'img', 'topic', 'post', 'forum', 'user');
-    // Tags we limit bbcode in
-    $tags_limit_bbcode = array(
-        '*'    => array('b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'url', 'email', 'list', 'img', 'code', 'topic', 'post', 'forum', 'user'),
-        'list'    => array('*'),
-        'url'    => array('img'),
-        'email' => array('img'),
-        'topic' => array('img'),
-        'post'  => array('img'),
-        'forum' => array('img'),
-        'user'  => array('img'),
-        'img'    => array(),
-        'h'        => array('b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'url', 'email', 'topic', 'post', 'forum', 'user'),
-    );
-    // Tags we can automatically fix bad nesting
-    $tags_fix = array('quote', 'b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'url', 'email', 'h', 'topic', 'post', 'forum', 'user');
-
-    // Disallow URL tags
-    if ($pun_user['g_post_links'] != '1') {
-        $tags_forbidden[] = 'url';
-    }
-
-    $split_text = preg_split('%(\[[\*a-zA-Z0-9-/]*?(?:=.*?)?\])%', $text, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
-
-    $open_tags = array('fluxbb-bbcode');
-    $open_args = array('');
-    $opened_tag = 0;
-    $new_text = '';
-    $current_ignore = '';
-    $current_nest = '';
-    $current_depth = array();
-    $limit_bbcode = $tags;
-    $count_ignored = array();
-
-    foreach ($split_text as $current) {
-        if ($current == '') {
-            continue;
-        }
-
-        // Are we dealing with a tag?
-        if (substr($current, 0, 1) != '[' || substr($current, -1, 1) != ']') {
-            // It's not a bbcode tag so we put it on the end and continue
-            // If we are nested too deeply don't add to the end
-            if ($current_nest) {
-                continue;
-            }
-
-            $current = str_replace("\r\n", "\n", $current);
-            $current = str_replace("\r", "\n", $current);
-            if (in_array($open_tags[$opened_tag], $tags_inline) && strpos($current, "\n") !== false) {
-                // Deal with new lines
-                $split_current = preg_split('%(\n\n+)%', $current, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
-                $current = '';
-
-                if (!pun_trim($split_current[0], "\n")) { // The first part is a linebreak so we need to handle any open tags first
-                    array_unshift($split_current, '');
-                }
-
-                for ($i = 1; $i < count($split_current); $i += 2) {
-                    $temp_opened = array();
-                    $temp_opened_arg = array();
-                    $temp = $split_current[$i - 1];
-                    while (!empty($open_tags)) {
-                        $temp_tag = array_pop($open_tags);
-                        $temp_arg = array_pop($open_args);
-
-                        if (in_array($temp_tag, $tags_inline)) {
-                            array_push($temp_opened, $temp_tag);
-                            array_push($temp_opened_arg, $temp_arg);
-                            $temp .= '[/'.$temp_tag.']';
-                        } else {
-                            array_push($open_tags, $temp_tag);
-                            array_push($open_args, $temp_arg);
-                            break;
-                        }
-                    }
-                    $current .= $temp.$split_current[$i];
-                    $temp = '';
-                    while (!empty($temp_opened)) {
-                        $temp_tag = array_pop($temp_opened);
-                        $temp_arg = array_pop($temp_opened_arg);
-                        if (empty($temp_arg)) {
-                            $temp .= '['.$temp_tag.']';
-                        } else {
-                            $temp .= '['.$temp_tag.'='.$temp_arg.']';
-                        }
-                        array_push($open_tags, $temp_tag);
-                        array_push($open_args, $temp_arg);
-                    }
-                    $current .= $temp;
-                }
-
-                if (array_key_exists($i - 1, $split_current)) {
-                    $current .= $split_current[$i - 1];
-                }
-            }
-
-            if (in_array($open_tags[$opened_tag], $tags_trim)) {
-                $new_text .= pun_trim($current);
-            } else {
-                $new_text .= $current;
-            }
-
-            continue;
-        }
-
-        // Get the name of the tag
-        $current_arg = '';
-        if (strpos($current, '/') === 1) {
-            $current_tag = substr($current, 2, -1);
-        } elseif (strpos($current, '=') === false) {
-            $current_tag = substr($current, 1, -1);
-        } else {
-            $current_tag = substr($current, 1, strpos($current, '=')-1);
-            $current_arg = substr($current, strpos($current, '=')+1, -1);
-        }
-        $current_tag = strtolower($current_tag);
-
-        // Is the tag defined?
-        if (!in_array($current_tag, $tags)) {
-            // It's not a bbcode tag so we put it on the end and continue
-            if (!$current_nest) {
-                $new_text .= $current;
-            }
-
-            continue;
-        }
-
-        // We definitely have a bbcode tag
-
-        // Make the tag string lower case
-        if ($equalpos = strpos($current, '=')) {
-            // We have an argument for the tag which we don't want to make lowercase
-            if (strlen(substr($current, $equalpos)) == 2) {
-                // Empty tag argument
-                $errors[] = sprintf($lang_common['BBCode error empty attribute'], $current_tag);
-                return false;
-            }
-            $current = strtolower(substr($current, 0, $equalpos)).substr($current, $equalpos);
-        } else {
-            $current = strtolower($current);
-        }
-
-        // This is if we are currently in a tag which escapes other bbcode such as code
-        // We keep a count of ignored bbcodes (code tags) so we can nest them, but
-        // only balanced sets of tags can be nested
-        if ($current_ignore) {
-            // Increase the current ignored tags counter
-            if ('['.$current_ignore.']' == $current) {
-                $count_ignored[$current_tag]++;
-            }
-
-            // Decrease the current ignored tags counter
-            if ('[/'.$current_ignore.']' == $current) {
-                $count_ignored[$current_tag]--;
-            }
-
-            if ('[/'.$current_ignore.']' == $current && $count_ignored[$current_tag] == 0) {
-                // We've finished the ignored section
-                $current = '[/'.$current_tag.']';
-                $current_ignore = '';
-                $count_ignored = array();
-            }
-
-            $new_text .= $current;
-
-            continue;
-        }
-
-        // Is the tag forbidden?
-        if (in_array($current_tag, $tags_forbidden)) {
-            if (isset($lang_common['BBCode error tag '.$current_tag.' not allowed'])) {
-                $errors[] = sprintf($lang_common['BBCode error tag '.$current_tag.' not allowed']);
-            } else {
-                $errors[] = sprintf($lang_common['BBCode error tag not allowed'], $current_tag);
-            }
-
-            return false;
-        }
-
-        if ($current_nest) {
-            // We are currently too deeply nested so lets see if we are closing the tag or not
-            if ($current_tag != $current_nest) {
-                continue;
-            }
-
-            if (substr($current, 1, 1) == '/') {
-                $current_depth[$current_nest]--;
-            } else {
-                $current_depth[$current_nest]++;
-            }
-
-            if ($current_depth[$current_nest] <= $tags_nested[$current_nest]) {
-                $current_nest = '';
-            }
-
-            continue;
-        }
-
-        // Check the current tag is allowed here
-        if (!in_array($current_tag, $limit_bbcode) && $current_tag != $open_tags[$opened_tag]) {
-            $errors[] = sprintf($lang_common['BBCode error invalid nesting'], $current_tag, $open_tags[$opened_tag]);
-            return false;
-        }
-
-        if (substr($current, 1, 1) == '/') {
-            // This is if we are closing a tag
-            if ($opened_tag == 0 || !in_array($current_tag, $open_tags)) {
-                // We tried to close a tag which is not open
-                if (in_array($current_tag, $tags_opened)) {
-                    $errors[] = sprintf($lang_common['BBCode error no opening tag'], $current_tag);
-                    return false;
-                }
-            } else {
-                // Check nesting
-                while (true) {
-                    // Nesting is ok
-                    if ($open_tags[$opened_tag] == $current_tag) {
-                        array_pop($open_tags);
-                        array_pop($open_args);
-                        $opened_tag--;
-                        break;
-                    }
-
-                    // Nesting isn't ok, try to fix it
-                    if (in_array($open_tags[$opened_tag], $tags_closed) && in_array($current_tag, $tags_closed)) {
-                        if (in_array($current_tag, $open_tags)) {
-                            $temp_opened = array();
-                            $temp_opened_arg = array();
-                            $temp = '';
-                            while (!empty($open_tags)) {
-                                $temp_tag = array_pop($open_tags);
-                                $temp_arg = array_pop($open_args);
-
-                                if (!in_array($temp_tag, $tags_fix)) {
-                                    // We couldn't fix nesting
-                                    $errors[] = sprintf($lang_common['BBCode error no closing tag'], array_pop($temp_opened));
-                                    return false;
-                                }
-                                array_push($temp_opened, $temp_tag);
-                                array_push($temp_opened_arg, $temp_arg);
-
-                                if ($temp_tag == $current_tag) {
-                                    break;
-                                } else {
-                                    $temp .= '[/'.$temp_tag.']';
-                                }
-                            }
-                            $current = $temp.$current;
-                            $temp = '';
-                            array_pop($temp_opened);
-                            array_pop($temp_opened_arg);
-
-                            while (!empty($temp_opened)) {
-                                $temp_tag = array_pop($temp_opened);
-                                $temp_arg = array_pop($temp_opened_arg);
-                                if (empty($temp_arg)) {
-                                    $temp .= '['.$temp_tag.']';
-                                } else {
-                                    $temp .= '['.$temp_tag.'='.$temp_arg.']';
-                                }
-                                array_push($open_tags, $temp_tag);
-                                array_push($open_args, $temp_arg);
-                            }
-                            $current .= $temp;
-                            $opened_tag--;
-                            break;
-                        } else {
-                            // We couldn't fix nesting
-                            $errors[] = sprintf($lang_common['BBCode error no opening tag'], $current_tag);
-                            return false;
-                        }
-                    } elseif (in_array($open_tags[$opened_tag], $tags_closed)) {
-                        break;
-                    } else {
-                        array_pop($open_tags);
-                        array_pop($open_args);
-                        $opened_tag--;
-                    }
-                }
-            }
-
-            if (in_array($current_tag, array_keys($tags_nested))) {
-                if (isset($current_depth[$current_tag])) {
-                    $current_depth[$current_tag]--;
-                }
-            }
-
-            if (in_array($open_tags[$opened_tag], array_keys($tags_limit_bbcode))) {
-                $limit_bbcode = $tags_limit_bbcode[$open_tags[$opened_tag]];
-            } else {
-                $limit_bbcode = $tags;
-            }
-
-            $new_text .= $current;
-
-            continue;
-        } else {
-            // We are opening a tag
-            if (in_array($current_tag, array_keys($tags_limit_bbcode))) {
-                $limit_bbcode = $tags_limit_bbcode[$current_tag];
-            } else {
-                $limit_bbcode = $tags;
-            }
-
-            if (in_array($current_tag, $tags_block) && !in_array($open_tags[$opened_tag], $tags_block) && $opened_tag != 0) {
-                // We tried to open a block tag within a non-block tag
-                $errors[] = sprintf($lang_common['BBCode error invalid nesting'], $current_tag, $open_tags[$opened_tag]);
-                return false;
-            }
-
-            if (in_array($current_tag, $tags_ignore)) {
-                // It's an ignore tag so we don't need to worry about what's inside it
-                $current_ignore = $current_tag;
-                $count_ignored[$current_tag] = 1;
-                $new_text .= $current;
-                continue;
-            }
-
-            // Deal with nested tags
-            if (in_array($current_tag, $open_tags) && !in_array($current_tag, array_keys($tags_nested))) {
-                // We nested a tag we shouldn't
-                $errors[] = sprintf($lang_common['BBCode error invalid self-nesting'], $current_tag);
-                return false;
-            } elseif (in_array($current_tag, array_keys($tags_nested))) {
-                // We are allowed to nest this tag
-
-                if (isset($current_depth[$current_tag])) {
-                    $current_depth[$current_tag]++;
-                } else {
-                    $current_depth[$current_tag] = 1;
-                }
-
-                // See if we are nested too deep
-                if ($current_depth[$current_tag] > $tags_nested[$current_tag]) {
-                    $current_nest = $current_tag;
-                    continue;
-                }
-            }
-
-            // Remove quotes from arguments for certain tags
-            if (strpos($current, '=') !== false && in_array($current_tag, $tags_quotes)) {
-                $current = preg_replace('%\['.$current_tag.'=("|\'|)(.*?)\\1\]\s*%i', '['.$current_tag.'=$2]', $current);
-            }
-
-            if (in_array($current_tag, array_keys($tags_limit_bbcode))) {
-                $limit_bbcode = $tags_limit_bbcode[$current_tag];
-            }
-
-            $open_tags[] = $current_tag;
-            $open_args[] = $current_arg;
-            $opened_tag++;
-            $new_text .= $current;
-            continue;
-        }
-    }
-
-    // Check we closed all the tags we needed to
-    foreach ($tags_closed as $check) {
-        if (in_array($check, $open_tags)) {
-            // We left an important tag open
-            $errors[] = sprintf($lang_common['BBCode error no closing tag'], $check);
-            return false;
-        }
-    }
-
-    if ($current_ignore) {
-        // We left an ignore tag open
-        $errors[] = sprintf($lang_common['BBCode error no closing tag'], $current_ignore);
-        return false;
-    }
-
-    return $new_text;
+function _do_smilies_callback($matches) {
+	global $pd;
+	return $pd['smilies'][$matches[0]]['html'];
 }
-
-
-//
-// Preparse the contents of [list] bbcode
-//
-function preparse_list_tag($content, $type = '*')
-{
-    global $lang_common, $re_list;
-
-    if (strlen($type) != 1) {
-        $type = '*';
-    }
-
-    if (strpos($content, '[list') !== false) {
-        $content = preg_replace_callback($re_list, create_function('$matches', 'return preparse_list_tag($matches[2], $matches[1]);'), $content);
-    }
-
-    $items = explode('[*]', str_replace('\"', '"', $content));
-
-    $content = '';
-    foreach ($items as $item) {
-        if (pun_trim($item) != '') {
-            $content .= '[*'."\0".']'.str_replace('[/*]', '', pun_trim($item)).'[/*'."\0".']'."\n";
-        }
-    }
-
-    return '[list='.$type.']'."\n".$content.'[/list]';
-}
-
-
-//
-// Truncate URL if longer than 55 characters (add http:// or ftp:// if missing)
-//
-function handle_url_tag($url, $link = '', $bbcode = false)
-{
-    $url = pun_trim($url);
-
-    // Deal with [url][img]http://example.com/test.png[/img][/url]
-    if (preg_match('%<img src=\"(.*?)\"%', $url, $matches)) {
-        return handle_url_tag($matches[1], $url, $bbcode);
-    }
-
-    $full_url = str_replace(array(' ', '\'', '`', '"'), array('%20', '', '', ''), $url);
-    if (strpos($url, 'www.') === 0) { // If it starts with www, we add http://
-        $full_url = 'http://'.$full_url;
-    } elseif (strpos($url, 'ftp.') === 0) { // Else if it starts with ftp, we add ftp://
-        $full_url = 'ftp://'.$full_url;
-    } elseif (strpos($url, '/') === 0) { // Allow for relative URLs that start with a slash
-        $full_url = get_base_url(true).$full_url;
-    } elseif (!preg_match('#^([a-z0-9]{3,6})://#', $url)) { // Else if it doesn't start with abcdef://, we add http://
-        $full_url = 'http://'.$full_url;
-    }
-
-    // Ok, not very pretty :-)
-    if ($bbcode) {
-        if ($full_url == $link) {
-            return '[url]'.$link.'[/url]';
-        } else {
-            return '[url='.$full_url.']'.$link.'[/url]';
-        }
-    } else {
-        if ($link == '' || $link == $url) {
-            $url = pun_htmlspecialchars_decode($url);
-            $link = utf8_strlen($url) > 55 ? utf8_substr($url, 0, 39).' … '.utf8_substr($url, -10) : $url;
-            $link = pun_htmlspecialchars($link);
-        } else {
-            $link = stripslashes($link);
-        }
-
-        return '<a href="'.$full_url.'" rel="nofollow">'.$link.'</a>';
-    }
-}
-
-
-//
-// Turns an URL from the [img] tag into an <img> tag or a <a href...> tag
-//
-function handle_img_tag($url, $is_signature = false, $alt = null)
-{
-    global $lang_common, $pun_user;
-
-    if (is_null($alt)) {
-        $alt = basename($url);
-    }
-
-    $img_tag = '<a href="'.$url.'" rel="nofollow">&lt;'.$lang_common['Image link'].' - '.$alt.'&gt;</a>';
-
-    if ($is_signature && $pun_user['show_img_sig'] != '0') {
-        $img_tag = '<img class="sigimage" src="'.$url.'" alt="'.$alt.'" />';
-    } elseif (!$is_signature && $pun_user['show_img'] != '0') {
-        $img_tag = '<span class="postimg"><img src="'.$url.'" alt="'.$alt.'" /></span>';
-    }
-
-    return $img_tag;
-}
-
-
-//
-// Parse the contents of [list] bbcode
-//
-function handle_list_tag($content, $type = '*')
-{
-    global $re_list;
-
-    if (strlen($type) != 1) {
-        $type = '*';
-    }
-
-    if (strpos($content, '[list') !== false) {
-        $content = preg_replace_callback($re_list, create_function('$matches', 'return handle_list_tag($matches[2], $matches[1]);'), $content);
-    }
-
-    $content = preg_replace('#\s*\[\*\](.*?)\[/\*\]\s*#s', '<li><p>$1</p></li>', pun_trim($content));
-
-    if ($type == '*') {
-        $content = '<ul>'.$content.'</ul>';
-    } elseif ($type == 'a') {
-        $content = '<ol class="alpha">'.$content.'</ol>';
-    } else {
-        $content = '<ol class="decimal">'.$content.'</ol>';
-    }
-
-    return '</p>'.$content.'<p>';
-}
-
-
-//
-// Convert BBCodes to their HTML equivalent
-//
-function do_bbcode($text, $is_signature = false)
-{
-    global $lang_common, $pun_user, $pun_config, $re_list;
-
-    if (strpos($text, '[quote') !== false) {
-        $text = preg_replace('%\[quote\]\s*%', '</p><div class="quotebox"><blockquote><div><p>', $text);
-        $text = preg_replace_callback('%\[quote=(&quot;|&\#039;|"|\'|)(.*?)\\1\]%s', create_function('$matches', 'global $lang_common; return "</p><div class=\"quotebox\"><cite>".str_replace(array(\'[\', \'\\"\'), array(\'&#91;\', \'"\'), $matches[2])." ".$lang_common[\'wrote\']."</cite><blockquote><div><p>";'), $text);
-        $text = preg_replace('%\s*\[\/quote\]%S', '</p></div></blockquote></div><p>', $text);
-    }
-    if (!$is_signature) {
-        $pattern_callback[] = $re_list;
-        $replace_callback[] = 'handle_list_tag($matches[2], $matches[1])';
-    }
-
-    $pattern[] = '%\[b\](.*?)\[/b\]%ms';
-    $pattern[] = '%\[i\](.*?)\[/i\]%ms';
-    $pattern[] = '%\[u\](.*?)\[/u\]%ms';
-    $pattern[] = '%\[s\](.*?)\[/s\]%ms';
-    $pattern[] = '%\[del\](.*?)\[/del\]%ms';
-    $pattern[] = '%\[ins\](.*?)\[/ins\]%ms';
-    $pattern[] = '%\[em\](.*?)\[/em\]%ms';
-    $pattern[] = '%\[colou?r=([a-zA-Z]{3,20}|\#[0-9a-fA-F]{6}|\#[0-9a-fA-F]{3})](.*?)\[/colou?r\]%ms';
-    $pattern[] = '%\[h\](.*?)\[/h\]%ms';
-    $pattern[] = '%\[left\](.*?)\[/left\]%ms';
-    $pattern[] = '%\[right\](.*?)\[/right\]%ms';
-    $pattern[] = '%\[center\](.*?)\[/center\]%ms';
-    $pattern[] = '%\[justify\](.*?)\[/justify\]%ms';
-
-    $replace[] = '<strong>$1</strong>';
-    $replace[] = '<em>$1</em>';
-    $replace[] = '<span class="bbu">$1</span>';
-    $replace[] = '<span class="bbs">$1</span>';
-    $replace[] = '<del>$1</del>';
-    $replace[] = '<ins>$1</ins>';
-    $replace[] = '<em>$1</em>';
-    $replace[] = '<span style="color: $1">$2</span>';
-    $replace[] = '</p><h5>$1</h5><p>';
-    $replace[] = '</p><div align="left"><p>$1</p></div><p>';
-    $replace[] = '</p><div align="right"><p>$1</p></div><p>';
-    $replace[] = '</p><div align="center"><p>$1</p></div><p>';
-    $replace[] = '</p><div align="justify"><p>$1</p></div><p>';
-
-    if (($is_signature && $pun_config['p_sig_img_tag'] == '1') || (!$is_signature && $pun_config['p_message_img_tag'] == '1')) {
-        $pattern_callback[] = '%\[img\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%';
-        $pattern_callback[] = '%\[img=([^\[]*?)\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%';
-        if ($is_signature) {
-            $replace_callback[] = 'handle_img_tag($matches[1].$matches[3], true)';
-            $replace_callback[] = 'handle_img_tag($matches[2].$matches[4], true, $matches[1])';
-        } else {
-            $replace_callback[] = 'handle_img_tag($matches[1].$matches[3], false)';
-            $replace_callback[] = 'handle_img_tag($matches[2].$matches[4], false, $matches[1])';
-        }
-    }
-
-    $pattern_callback[] = '%\[url\]([^\[]*?)\[/url\]%';
-    $pattern_callback[] = '%\[url=([^\[]+?)\](.*?)\[/url\]%';
-    $pattern[] = '%\[email\]([^\[]*?)\[/email\]%';
-    $pattern[] = '%\[email=([^\[]+?)\](.*?)\[/email\]%';
-    $pattern_callback[] = '%\[topic\]([1-9]\d*)\[/topic\]%';
-    $pattern_callback[] = '%\[topic=([1-9]\d*)\](.*?)\[/topic\]%';
-    $pattern_callback[] = '%\[post\]([1-9]\d*)\[/post\]%';
-    $pattern_callback[] = '%\[post=([1-9]\d*)\](.*?)\[/post\]%';
-    $pattern_callback[] = '%\[forum\]([1-9]\d*)\[/forum\]%';
-    $pattern_callback[] = '%\[forum=([1-9]\d*)\](.*?)\[/forum\]%';
-    $pattern_callback[] = '%\[user\]([1-9]\d*)\[/user\]%';
-    $pattern_callback[] = '%\[user=([1-9]\d*)\](.*?)\[/user\]%';
-
-    $replace_callback[] = 'handle_url_tag($matches[1])';
-    $replace_callback[] = 'handle_url_tag($matches[1], $matches[2])';
-    $replace[] = '<a href="mailto:$1">$1</a>';
-    $replace[] = '<a href="mailto:$1">$2</a>';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?id=\'.$matches[1])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?id=\'.$matches[1], $matches[2])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?pid=\'.$matches[1].\'#p\'.$matches[1])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?pid=\'.$matches[1].\'#p\'.$matches[1], $matches[2])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewforum.php?id=\'.$matches[1])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewforum.php?id=\'.$matches[1], $matches[2])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/profile.php?id=\'.$matches[1])';
-    $replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/profile.php?id=\'.$matches[1], $matches[2])';
-
-    // This thing takes a while! :)
-    $text = preg_replace($pattern, $replace, $text);
-    $count = count($pattern_callback);
-    for ($i = 0 ; $i < $count ; $i++) {
-        $text = preg_replace_callback($pattern_callback[$i], create_function('$matches', 'return '.$replace_callback[$i].';'), $text);
-    }
-    return $text;
-}
-
-
-//
-// Make hyperlinks clickable
-//
-function do_clickable($text)
-{
-    $text = ' '.$text;
-    $text = ucp_preg_replace_callback('%(?<=[\s\]\)])(<)?(\[)?(\()?([\'"]?)(https?|ftp|news){1}://([\p{L}\p{N}\-]+\.([\p{L}\p{N}\-]+\.)*[\p{L}\p{N}]+(:[0-9]+)?(/(?:[^\s\[]*[^\s.,?!\[;:-])?)?)\4(?(3)(\)))(?(2)(\]))(?(1)(>))(?![^\s]*\[/(?:url|img)\])%ui', 'stripslashes($matches[1].$matches[2].$matches[3].$matches[4]).handle_url_tag($matches[5]."://".$matches[6], $matches[5]."://".$matches[6], true).stripslashes($matches[4].forum_array_key($matches, 10).forum_array_key($matches, 11).forum_array_key($matches, 12))', $text);
-    $text = ucp_preg_replace_callback('%(?<=[\s\]\)])(<)?(\[)?(\()?([\'"]?)(www|ftp)\.(([\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]+(:[0-9]+)?(/(?:[^\s\[]*[^\s.,?!\[;:-])?)?)\4(?(3)(\)))(?(2)(\]))(?(1)(>))(?![^\s]*\[/(?:url|img)\])%ui', 'stripslashes($matches[1].$matches[2].$matches[3].$matches[4]).handle_url_tag($matches[5].".".$matches[6], $matches[5].".".$matches[6], true).stripslashes($matches[4].forum_array_key($matches, 10).forum_array_key($matches, 11).forum_array_key($matches, 12))', $text);
-
-    return substr($text, 1);
-}
-
-
-//
-// Return an array key, if it exists, otherwise return an empty string
-//
-function forum_array_key($arr, $key)
-{
-    return isset($arr[$key]) ? $arr[$key] : '';
-}
-
-
-//
-// Convert a series of smilies to images
-//
-function do_smilies($text)
-{
-    global $smilies;
-
-    $text = ' '.$text.' ';
-
-    foreach ($smilies as $smiley_text => $smiley_img) {
-        if (strpos($text, $smiley_text) !== false) {
-            $text = ucp_preg_replace('%(?<=[>\s])'.preg_quote($smiley_text, '%').'(?=[^\p{L}\p{N}])%um', '<img src="'.pun_htmlspecialchars(get_base_url(true).'/img/smilies/'.$smiley_img).'" width="15" height="15" alt="'.substr($smiley_img, 0, strrpos($smiley_img, '.')).'" />', $text);
-        }
-    }
-
-    return substr($text, 1, -1);
-}
-
-
 //
 // Parse message text
 //
-function parse_message($text, $hide_smilies)
-{
-    global $pun_config, $lang_common, $pun_user;
-
-    if ($pun_config['o_censoring'] == '1') {
-        $text = censor_words($text);
-    }
-
-    // Convert applicable characters to HTML entities
-    $text = pun_htmlspecialchars($text);
-
-    // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
-    if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false) {
-        list($inside, $text) = extract_blocks($text, '[code]', '[/code]');
-    }
-
-    if ($pun_config['p_message_bbcode'] == '1' && strpos($text, '[') !== false && strpos($text, ']') !== false) {
-        $text = do_bbcode($text);
-    }
-
-    if ($pun_config['o_smilies'] == '1' && $pun_user['show_smilies'] == '1' && $hide_smilies == '0') {
-        $text = do_smilies($text);
-    }
-
-    // Deal with newlines, tabs and multiple spaces
-    $pattern = array("\n", "\t", '  ', '  ');
-    $replace = array('<br />', '&#160; &#160; ', '&#160; ', ' &#160;');
-    $text = str_replace($pattern, $replace, $text);
-
-    // If we split up the message before we have to concatenate it together again (code tags)
-    if (isset($inside)) {
-        $parts = explode("\1", $text);
-        $text = '';
-        foreach ($parts as $i => $part) {
-            $text .= $part;
-            if (isset($inside[$i])) {
-                $num_lines = (substr_count($inside[$i], "\n"));
-                $text .= '</p><div class="codebox"><pre'.(($num_lines > 28) ? ' class="vscroll"' : '').'><code>'.pun_trim($inside[$i], "\n\r").'</code></pre></div><p>';
-            }
-        }
-    }
-
-    return clean_paragraphs($text);
+function parse_message($text, $hide_smilies) {
+	global $pd, $pun_config, $pun_user;
+	$pd['in_signature'] = FALSE;
+	// Disable images via the $bbcd['in_post'] flag if globally disabled.
+	if ($pun_config['p_message_img_tag'] !== '1' || $pun_user['show_img'] !== '1')
+		if (isset($pd['bbcd']['img'])) $pd['bbcd']['img']['in_post'] = FALSE;
+	return parse_bbcode($text, $hide_smilies);
 }
-
-
-//
-// Clean up paragraphs and line breaks
-//
-function clean_paragraphs($text)
-{
-    // Add paragraph tag around post, but make sure there are no empty paragraphs
-
-    $text = '<p>'.$text.'</p>';
-
-    // Replace any breaks next to paragraphs so our replace below catches them
-    $text = preg_replace('%(</?p>)(?:\s*?<br />){1,2}%i', '$1', $text);
-    $text = preg_replace('%(?:<br />\s*?){1,2}(</?p>)%i', '$1', $text);
-
-    // Remove any empty paragraph tags (inserted via quotes/lists/code/etc) which should be stripped
-    $text = str_replace('<p></p>', '', $text);
-
-    $text = preg_replace('%<br />\s*?<br />%i', '</p><p>', $text);
-
-    $text = str_replace('<p><br />', '<br /><p>', $text);
-    $text = str_replace('<br /></p>', '</p><br />', $text);
-    $text = str_replace('<p></p>', '<br /><br />', $text);
-
-    return $text;
-}
-
-
 //
 // Parse signature text
 //
-function parse_signature($text)
-{
-    global $pun_config, $lang_common, $pun_user;
-
-    if ($pun_config['o_censoring'] == '1') {
-        $text = censor_words($text);
-    }
-
-    // Convert applicable characters to HTML entities
-    $text = pun_htmlspecialchars($text);
-
-    if ($pun_config['p_sig_bbcode'] == '1' && strpos($text, '[') !== false && strpos($text, ']') !== false) {
-        $text = do_bbcode($text, true);
-    }
-
-    if ($pun_config['o_smilies_sig'] == '1' && $pun_user['show_smilies'] == '1') {
-        $text = do_smilies($text);
-    }
-
-
-    // Deal with newlines, tabs and multiple spaces
-    $pattern = array("\n", "\t", '  ', '  ');
-    $replace = array('<br />', '&#160; &#160; ', '&#160; ', ' &#160;');
-    $text = str_replace($pattern, $replace, $text);
-
-    return clean_paragraphs($text);
+function parse_signature($text) {
+	global $pd, $pun_config, $pun_user;
+	$pd['in_signature'] = TRUE;
+	// Disable images via the $bbcd['in_sig'] flag if globally disabled.
+	if ($pun_config['p_sig_img_tag'] !== '1' || $pun_user['show_img_sig'] !== '1')
+		if (isset($pd['bbcd']['img'])) $pd['bbcd']['img']['in_sig'] = FALSE;
+	return parse_bbcode($text);
 }
+?>

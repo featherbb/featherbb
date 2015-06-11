@@ -93,6 +93,10 @@ function generate_admin_menu($page = '')
     echo ' class="isactive"';
 }
         ?>><a href="admin_censoring.php"><?php echo $lang_admin_common['Censoring'] ?></a></li>
+					<li<?php if ($page == 'parser') {
+    echo ' class="isactive"';
+}
+        ?>><a href="admin_parser.php"><?php echo $lang_admin_common['Parser'] ?></a></li>
 					<li<?php if ($page == 'maintenance') {
     echo ' class="isactive"';
 }

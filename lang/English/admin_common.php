@@ -14,6 +14,7 @@ $lang_admin_common = array(
 'User groups'            =>    'User groups',
 'Options'                =>    'Options',
 'Permissions'            =>    'Permissions',
+'Parser'				=>	'Parser',
 'Censoring'                =>    'Censoring',
 'Bans'                    =>    'Bans',
 'Prune'                    =>    'Prune',

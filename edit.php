@@ -59,7 +59,7 @@ $errors = array();
 
 if (isset($_POST['form_sent'])) {
     // Let's see if everything went right
-    $errors = check_errors_before_edit($fid, $_POST, $can_edit_subject, $errors);
+    $errors = check_errors_before_edit($_POST, $can_edit_subject, $errors);
     
     // Setup some variables before post
     $post = setup_variables($_POST, $cur_post, $is_admmod, $can_edit_subject, $errors);
