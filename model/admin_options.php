@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function admin_options($post_data)
+function update_options($post_data)
 {
-	global $db, $lang_admin_options, $lang_common;
+	global $db, $lang_admin_options, $lang_common, $pun_config;
 	
     confirm_referrer('admin_options.php', $lang_admin_options['Bad HTTP Referer message']);
 
