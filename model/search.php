@@ -558,12 +558,11 @@ function display_search_results($search)
             $cur_search['message'] = parse_message($cur_search['message'], $cur_search['hide_smilies']);
             $pposter = pun_htmlspecialchars($cur_search['pposter']);
 
-            if ($cur_search['poster_id'] > 1) {
-                if ($pun_user['g_view_users'] == '1') {
+            if ($cur_search['poster_id'] > 1 && $pun_user['g_view_users'] == '1') {
                     $cur_search['pposter_disp'] = '<strong><a href="profile.php?id='.$cur_search['poster_id'].'">'.$pposter.'</a></strong>';
-                } else {
-                    $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
-                }
+			}
+            else {
+				$cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
             }
             
             // Load the search.php view posts file
