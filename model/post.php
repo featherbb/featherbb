@@ -30,7 +30,19 @@ function get_info_post($tid, $fid)
 // Checks the post for errors before posting
 function check_errors_before_post($fid, $post_data, $errors, $user_field)
 {
-    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $re_list, $smilies;
+    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $re_list, $smilies, $lang_antispam, $lang_antispam_questions;
+	
+	// Antispam feature
+	$question = isset($post_data['captcha_q']) ? trim($post_data['captcha_q']) : '';
+	$answer = isset($post_data['captcha']) ? strtoupper(trim($post_data['captcha'])) : '';
+	$lang_antispam_questions_array = array();
+	
+	foreach ($lang_antispam_questions as $k => $v) {
+	  $lang_antispam_questions_array[md5($k)] = strtoupper($v);
+	}
+	if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
+	  $errors[] = $lang_antispam['Robot test fail'];
+	}
     
     // Flood protection
     if (!isset($post_data['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood']) {

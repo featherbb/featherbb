@@ -25,7 +25,11 @@ if ($tid < 1 && $fid < 1 || $tid > 0 && $fid > 0) {
 // Load the post.php model file
 require PUN_ROOT.'model/post.php';
 
-// If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
+// Antispam feature
+require PUN_ROOT.'lang/'.$pun_user['language'].'/antispam.php';
+$index_questions = rand(0,count($lang_antispam_questions)-1);
+
+// If $_REQUEST['username'] is filled, we are facing a bot
 if (!empty($_REQUEST['username'])) {
     message($lang_common['Bad request'], false, '404 Not Found');
 }
@@ -153,6 +157,7 @@ if (!$pun_user['is_guest']) {
 		$_SESSION['user_field'] = random_pass(8);
 	}
     $required_fields[$_SESSION['user_field']] = $lang_post['Guest name'];
+	$required_fields['captcha'] = $lang_antispam['Robot title'];
     $focus_element[] = $_SESSION['user_field'];
 }
 

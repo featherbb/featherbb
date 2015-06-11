@@ -140,6 +140,24 @@ if (!empty($checkboxes)) {
 
 ?>
 			</div>
+			<?php if($pun_user['is_guest']) : ?>
+			<div class="inform">
+				<fieldset>
+					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
+					<div class="infldset">
+						<p><?php echo $lang_antispam['Robot info']	?></p>
+						<label class="required"><strong><?php
+							 $question = array_keys($lang_antispam_questions);
+							 $qencoded = md5($question[$index_questions]);
+							 echo sprintf($lang_antispam['Robot question'],$question[$index_questions]);?>
+							 <span><?php echo $lang_common['Required'] ?></span></strong>
+							 <br />
+							 <input	name="captcha" id="captcha"	type="text"	size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /><br />
+						</label>
+					</div>
+				</fieldset>
+			</div>
+			<?php endif; ?>
 			<p class="buttons"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>

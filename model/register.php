@@ -9,16 +9,16 @@
  
 function check_for_errors($post_data, $user_field)
 {
-    global $db, $pun_user, $pun_config, $lang_register, $lang_prof_reg, $lang_common;
+    global $db, $pun_user, $pun_config, $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
     
     $user = array();
     
     // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-    $result = $db->query('SELECT 1 FROM '.$db->prefix.'users WHERE registration_ip=\''.$db->escape(get_remote_address()).'\' AND registered>'.(time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    /*$result = $db->query('SELECT 1 FROM '.$db->prefix.'users WHERE registration_ip=\''.$db->escape(get_remote_address()).'\' AND registered>'.(time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
     if ($db->num_rows($result)) {
         message($lang_register['Registration flood']);
-    }
+    }*/
 
 
     $user['username'] = pun_trim($post_data[$user_field]);
@@ -42,6 +42,18 @@ function check_for_errors($post_data, $user_field)
     } elseif ($user['password1'] != $password2) {
         $user['errors'][] = $lang_prof_reg['Pass not match'];
     }
+	
+	// Antispam feature
+	$question = isset($post_data['captcha_q']) ? trim($post_data['captcha_q']) : '';
+	$answer = isset($post_data['captcha']) ? strtoupper(trim($post_data['captcha'])) : '';
+	$lang_antispam_questions_array = array();
+	
+	foreach ($lang_antispam_questions as $k => $v) {
+	  $lang_antispam_questions_array[md5($k)] = strtoupper($v);
+	}
+	if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
+	  $user['errors'][] = $lang_antispam['Robot test fail'];
+	}
 
     // Validate email
     require PUN_ROOT.'include/email.php';
@@ -57,10 +69,7 @@ function check_for_errors($post_data, $user_field)
         if ($pun_config['p_allow_banned_email'] == '0') {
             $user['errors'][] = $lang_prof_reg['Banned email'];
         }
-
         $user['banned_email'] = 1; // Used later when we send an alert email
-    } else {
-        $user['banned_email'] = 0;
     }
 
     // Check if someone else already has registered with that email address
@@ -116,7 +125,7 @@ function insert_user($user)
     // If the mailing list isn't empty, we may need to send out some alerts
     if ($pun_config['o_mailing_list'] != '') {
         // If we previously found out that the email was banned
-        if ($user['banned_email']) {
+        if (isset($user['banned_email'])) {
             // Load the "banned email register" template
             $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/banned_email_register.tpl'));
 

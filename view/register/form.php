@@ -121,6 +121,22 @@ if (!empty($user['errors'])) {
 
         }
 ?>
+			<div class="inform">
+				<fieldset>
+					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
+					<div class="infldset">
+						<p><?php echo $lang_antispam['Robot info']	?></p>
+						<label class="required"><strong><?php
+							 $question = array_keys($lang_antispam_questions);
+							 $qencoded = md5($question[$index_questions]);
+							 echo sprintf($lang_antispam['Robot question'],$question[$index_questions]);?>
+							 <span><?php echo $lang_common['Required'] ?></span></strong>
+							 <br />
+							 <input	name="captcha" id="captcha"	type="text"	size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /><br />
+						</label>
+					</div>
+				</fieldset>
+			</div>
 			<p class="buttons"><input type="submit" name="register" value="<?php echo $lang_register['Register'] ?>" /></p>
 		</form>
 	</div>

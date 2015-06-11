@@ -29,6 +29,10 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
 // Load the post.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
 
+// Antispam feature
+require PUN_ROOT.'lang/'.$pun_user['language'].'/antispam.php';
+$index_questions = rand(0,count($lang_antispam_questions)-1);
+
 // Load the viewtopic.php model file
 require PUN_ROOT.'model/viewtopic.php';
 

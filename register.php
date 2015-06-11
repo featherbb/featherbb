@@ -23,6 +23,10 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/register.php';
 // Load the register.php/profile.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
 
+// Antispam feature
+require PUN_ROOT.'lang/'.$pun_user['language'].'/antispam.php';
+$index_questions = rand(0,count($lang_antispam_questions)-1);
+
 // Display an error message if new registrations are disabled
 // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
 if ($pun_config['o_regs_allow'] == '0' || !empty($_REQUEST['username']) || !empty($_REQUEST['password'])) {
@@ -64,7 +68,7 @@ if (isset($_POST['form_sent'])) {
 }
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_register['Register']);
-$required_fields = array($_SESSION['user_field'] => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2');
+$required_fields = array($_SESSION['user_field'] => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2', 'captcha' => $lang_antispam['Robot title']);
 $focus_element = array('register', $_SESSION['user_field']);
 
 define('PUN_ACTIVE_PAGE', 'register');
