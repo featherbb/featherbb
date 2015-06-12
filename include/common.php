@@ -195,9 +195,9 @@ if ($pun_user['is_guest'] && isset($_GET['login'])) {
     message($lang_common['No cookie']);
 }
 
-// The maximum size of a post, in bytes, since the field is now MEDIUMTEXT this allows ~16MB but lets cap at 1MB...
+// 32kb should be more than enough for forum posts
 if (!defined('PUN_MAX_POSTSIZE')) {
-    define('PUN_MAX_POSTSIZE', 1048576);
+    define('PUN_MAX_POSTSIZE', 32768);
 }
 
 if (!defined('PUN_SEARCH_MIN_WORD')) {
