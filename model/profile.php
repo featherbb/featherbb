@@ -579,8 +579,8 @@ function update_profile($id, $info, $section, $post_data)
                         // Check username
                         require PUN_ROOT.'lang/'.$pun_user['language'].'/register.php';
 
-                        $errors = array();
-                        check_username($form['username'], $id);
+						$errors = '';
+                        $errors = check_username($form['username'], $errors, $id);
                         if (!empty($errors)) {
                             message($errors[0]);
                         }

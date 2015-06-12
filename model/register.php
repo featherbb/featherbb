@@ -12,6 +12,7 @@ function check_for_errors($post_data, $user_field)
     global $db, $pun_user, $pun_config, $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
     
     $user = array();
+	$user['errors'] = '';
     
     // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
     $result = $db->query('SELECT 1 FROM '.$db->prefix.'users WHERE registration_ip=\''.$db->escape(get_remote_address()).'\' AND registered>'.(time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
@@ -35,7 +36,7 @@ function check_for_errors($post_data, $user_field)
     }
 
     // Validate username and passwords
-    check_username($user['username']);
+    $user['errors'] = check_username($user['username'], $user['errors']);
 
     if (pun_strlen($user['password1']) < 6) {
         $user['errors'][] = $lang_prof_reg['Pass too short'];

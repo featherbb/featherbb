@@ -452,7 +452,7 @@ function check_bans()
 //
 // Check username
 //
-function check_username($username, $exclude_id = null)
+function check_username($username, $errors, $exclude_id = null)
 {
     global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $pun_bans;
 
@@ -499,6 +499,8 @@ function check_username($username, $exclude_id = null)
             break;
         }
     }
+	
+	return $errors;
 }
 
 
