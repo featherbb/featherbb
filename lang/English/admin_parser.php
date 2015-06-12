@@ -51,6 +51,7 @@ $lang_admin_parser = array(
 	'smiley_text_label'		=>	'Smiley text',
 	'smiley_file_label'		=>	'Smiley image file',
 	'smiley_upload'			=>	'Upload new smiley image',
+	'New smiley image'		=>	'New smiley image',
 	'upload_err_1'			=>	'Smiley upload failed. Unable to move to smiley folder.',
 	'upload_err_2'			=>	'Smiley upload failed. File is too big.',
 	'upload_err_3'			=>	'Smiley upload failed. File type is not an image.',

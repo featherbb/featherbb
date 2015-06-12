@@ -8,7 +8,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-// This script compiles the $options, $syntaxes, $smilies and $bbcd arrays (from bbcd_source.php script
+// This script compiles the $options, $smilies and $bbcd arrays (from bbcd_source.php script
 // or from an admin page web form) into the cache/cache_parser_data.php.
 
 // Initialize a new global parser data array $pd:
