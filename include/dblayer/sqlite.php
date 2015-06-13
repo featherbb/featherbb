@@ -33,7 +33,7 @@ class DBLayer
     );
 
 
-    public function DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
+    public function __construct($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
     {
         // Prepend $db_name with the path to the forum root directory
         $db_name = PUN_ROOT.$db_name;
