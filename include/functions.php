@@ -2255,3 +2255,16 @@ function _linkify_callback($m) { // Only linkify valid urls.
 	else
 		return	$m[1].$m[4].$m[7].$m[10].$m[13].		$url.			   $m[3].$m[6].$m[9].$m[12];
 }
+
+// Return the path to load the view file
+function get_path_view()
+{
+	global $pun_user;
+	
+	if (is_dir('style/'.$pun_user['style'].'/view')) {
+		return PUN_ROOT.'style/'.$pun_user['style'].'/view';
+	}
+	else {
+		return PUN_ROOT.'view';
+	}
+}
