@@ -140,13 +140,12 @@ if ($quickpost) {
 if ($pun_user['is_guest']) {
     $email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
     $email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
-	session_start();
-	if (!isset($_SESSION['user_field'])) {
-	$_SESSION['user_field'] = random_pass(8);
+	if (!isset($session['user_field'])) {
+		$session['user_field'] = random_pass(8);
 	}
 
     ?>
-						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo $_SESSION['user_field'] ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo $session['user_field'] ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<label class="conl<?php echo($pun_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php
