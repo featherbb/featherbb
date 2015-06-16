@@ -29,7 +29,7 @@ function redirect_to_post($post_id)
 }
 
 // Redirects to new posts or last post
-function handle_actions($action, $topic_id)
+function handle_actions($topic_id, $action)
 {
     global $db, $pun_user;
     
@@ -44,7 +44,7 @@ function handle_actions($action, $topic_id)
             $first_new_post_id = $db->result($result);
 
             if ($first_new_post_id) {
-                header('Location: viewtopic.php?pid='.$first_new_post_id.'#p'.$first_new_post_id);
+                header('Location: '.get_base_url().'/post/'.$first_new_post_id.'#p'.$first_new_post_id);
                 exit;
             }
         }
@@ -59,7 +59,7 @@ function handle_actions($action, $topic_id)
         $last_post_id = $db->result($result);
 
         if ($last_post_id) {
-            header('Location: viewtopic.php?pid='.$last_post_id.'#p'.$last_post_id);
+            header('Location: '.get_base_url().'/post/'.$last_post_id.'#p'.$last_post_id);
             exit;
         }
     }
@@ -180,7 +180,7 @@ function get_page_head($topic_id, $num_pages, $p)
 // Prints the posts
 function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 {
-    global $db, $pun_user, $pun_config, $lang_topic, $lang_common;
+    global $db, $pun_user, $pun_config, $lang_topic, $lang_common, $pd;
     
     $post_data = array();
     
