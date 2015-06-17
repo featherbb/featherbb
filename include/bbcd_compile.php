@@ -379,7 +379,9 @@ $s = "<?php // File: cache_parser_data.php. Automatically generated: " . date('Y
 
 $s .= sprintf("\$pd = ", count($pd));
 $s .= var_export($pd, true);
+$s .= ";\n";
 
+$s .= "?>";
 file_put_contents(PUN_ROOT.'cache/cache_parser_data.php', $s);
 
 // Clean up our global variables.
