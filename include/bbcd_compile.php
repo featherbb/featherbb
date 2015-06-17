@@ -357,24 +357,6 @@ unset($i); unset($iname); unset($n); unset($re_name); unset($tagname); unset($ta
 // SUPPORT FUNCTIONS
 //
 
-function esc_sq($str) { // Escape single quotes and escapes.
-	// Note: When sprintf is used to write a string into another string, it is
-	//      interpreted and thus loses its escapes in front of single quotes
-	//      and escapes. This function puts the necessary extras in so that
-	//		when it is written, it looks the same as when it started.
-	$str = preg_replace('/ # Regex to reliably escape non-escaped single quotes.
-		( [^\'\\\\]++(?:\\\\.[^\'\\\\]*+)*+  # One or more non-quotes and escaped anything.
-		|            (?:\\\\.[^\'\\\\]*+)++  # or (same thing but start on an escape).
-		) \'/sx', "$1\\'", $str); // Replace all non-escaped quotes with an escaped one.
-	$str = preg_replace('/ # Regex to reliably escape non-escaped escapes.
-		( [^\\\\]++(?:\\\\[^\\\\][^\\\\]*+)*+       # One or more non-escapes and escaped anything-but-escape.
-		|          (?:\\\\[^\\\\][^\\\\]*+)++       # or (same thing but start on an escape).
-		) \\\\\\\\/x', '$1\\\\\\\\\\\\\\\\', $str); // Match an escaped escape, then double it.
-		// Note: The above may look pretty "slashy", but this is precisely what it takes!
-		// There may be a built-in PHP function that this, but couldnt find it.
-	return $str;
-}
-
 // Make a nice title out of a file name.
 function file2title($file) {
 	// Strip off file extention.
@@ -392,70 +374,11 @@ function file2title($file) {
 	return $title;
 }
 
-function print_array($a) {	// Pretty-print an array to string $s.
-	global $s;
-	static $depth = 0;	// Keep track of nesting depth to allow tidy indentation.
-	++$depth;
-	foreach ($a as $key => $value) {
-		for ($i = 0; $i < $depth; $i++) $s .= "\t";
-		if (is_string($key)) {
-			$s .= sprintf("'%s'\t=> ", esc_sq($key));
-		} elseif (is_int($key)){
-			$s .= sprintf("%d\t=> ", $key);
-		}
-		if (is_array($value)) {
-			$s .= sprintf("array( // count == %d\n", count($value));
-			print_array($value);
-			for ($i = 0; $i < $depth; $i++) $s .= "\t";
-			$s .= sprintf("),\n");
-		} elseif (is_int($value)) {
-			$s .= sprintf("%d,\n", $value);
-		} elseif (is_bool($value)) {
-			if ($value) {
-				$s .= sprintf("TRUE,\n");
-			} else {
-				$s .= sprintf("FALSE,\n");
-			}
-		} elseif (is_string($value)) {
-			$s .= sprintf("'%s',\n", esc_sq($value));
-		}
-	}
-	$s = preg_replace('/,$/', '', $s);
-	--$depth;
-}
-
 // Output the $pd global data array to the cache file. Convert to string first.
 $s = "<?php // File: cache_parser_data.php. Automatically generated: " . date('Y-m-d h:i:s') . ". DO NOT EDIT!!!\n";
 
-$s .= sprintf("\$pd = array( // count == %d\n", count($pd));
-$depth = 0;
-++$depth;
-foreach ($pd as $key => $value) {
-	for ($i = 0; $i < $depth; $i++) $s .= "\t";
-	if (is_string($key)) {
-		$s .= sprintf("'%s'\t=> ", esc_sq($key));
-	} elseif (is_int($key)){
-		$s .= sprintf("%d\t=> ", $key);
-	}
-	if (is_array($value)) {
-		$s .= sprintf("array( // count == %d\n", count($value));
-		print_array($value);
-		for ($i = 0; $i < $depth; $i++) $s .= "\t";
-		$s .= sprintf("),\n");
-	} elseif (is_int($value)) {
-		$s .= sprintf("%d,\n", $value);
-	} elseif (is_bool($value)) {
-		if ($value) {
-			$s .= sprintf("TRUE,\n");
-		} else {
-			$s .= sprintf("FALSE,\n");
-		}
-	} elseif (is_string($value)) {
-		$s .= sprintf("'%s',\n", esc_sq($value));
-	}
-}
-$s = preg_replace('/,$/', '', $s);
---$depth;
+$s .= sprintf("\$pd = ", count($pd));
+$s .= var_export($pd, true);
 $s .= ");\n";
 
 $s .= "?>";
@@ -464,3 +387,6 @@ file_put_contents(PUN_ROOT.'cache/cache_parser_data.php', $s);
 // Clean up our global variables.
 unset($all_tags); unset($all_block_tags);
 unset($bbcd); unset($format_str); unset($handler); unset($key); unset($s);
+
+
+?>
