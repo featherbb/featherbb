@@ -122,7 +122,7 @@ function print_categories_forums()
             $cur_forum['item_status'] .= ' iredirect';
             $cur_forum['icon_type'] = 'icon';
         } else {
-            $cur_forum['forum_field'] = '<h3><a href="viewforum.php?id='.$cur_forum['fid'].'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
+            $cur_forum['forum_field'] = '<h3><a href="'.get_link('forum/$1/$2/', array($cur_forum['fid'], url_friendly($cur_forum['forum_name']))).'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
             $cur_forum['num_topics_formatted'] = $cur_forum['num_topics'];
             $cur_forum['num_posts_formatted'] = $cur_forum['num_posts'];
         }
@@ -133,7 +133,7 @@ function print_categories_forums()
 
         // If there is a last_post/last_poster
         if ($cur_forum['last_post'] != '') {
-            $cur_forum['last_post_formatted'] = '<a href="viewtopic.php?pid='.$cur_forum['last_post_id'].'#p'.$cur_forum['last_post_id'].'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_forum['last_poster']).'</span>';
+            $cur_forum['last_post_formatted'] = '<a href="'.get_link('post/$1/#p$1', array($cur_forum['last_post_id'])).'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_forum['last_poster']).'</span>';
         } elseif ($cur_forum['redirect_url'] != '') {
             $cur_forum['last_post_formatted'] = '- - -';
         } else {
