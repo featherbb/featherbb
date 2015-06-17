@@ -61,9 +61,12 @@ namespace controller{
 
 			$p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
 			$start_from = $pun_user['disp_posts'] * ($p - 1);
+			
+			$url_topic = url_friendly($cur_topic['subject']);
+			$url_forum = url_friendly($cur_topic['forum_name']);
 
 			// Generate paging links
-			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'viewtopic.php?id='.$id);
+			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'topic/$1/$2/#', array($id, $url_topic));
 
 
 			if ($pun_config['o_censoring'] == '1') {
@@ -75,12 +78,12 @@ namespace controller{
 			$subscraction = get_subscraction($cur_topic['is_subscribed'], $id);
 
 			// Add relationship meta tags
-			$page_head = get_page_head($id, $num_pages, $p);
+			$page_head = get_page_head($id, $num_pages, $p, $url_topic);
 
 			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), pun_htmlspecialchars($cur_topic['forum_name']), pun_htmlspecialchars($cur_topic['subject']));
 			define('PUN_ALLOW_INDEX', 1);
 			if (!defined('PUN_ACTIVE_PAGE')) {
-				define('PUN_ACTIVE_PAGE', 'index');
+				define('PUN_ACTIVE_PAGE', 'viewtopic');
 			}
 			
 			require PUN_ROOT.'header.php';
@@ -93,7 +96,7 @@ namespace controller{
 				'pun_config' => $pun_config,
 				'_SERVER'	=>	$_SERVER,
 				//'required_fields'	=>	$required_fields,
-				'page_head'		=>	get_page_head($id, $num_pages, $p),
+				'page_head'		=>	$page_head,
 				'navlinks'		=>	$navlinks,
 				'page_info'		=>	$page_info,
 				'db'		=>	$db,
@@ -128,6 +131,8 @@ namespace controller{
 				'quickpost'		=>	$quickpost,
 				'index_questions'		=>	$index_questions,
 				'lang_antispam_questions'		=>	$lang_antispam_questions,
+				'url_forum'		=>	$url_forum,
+				'url_topic'		=>	$url_topic,
 				)
 			);
 			

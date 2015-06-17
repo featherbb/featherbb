@@ -152,21 +152,20 @@ function get_subscraction($is_subscribed, $topic_id)
 }
 
 // Adds relationship meta tags
-function get_page_head($topic_id, $num_pages, $p)
+function get_page_head($topic_id, $num_pages, $p, $url_topic)
 {
     global $pun_config, $lang_common;
     
     $page_head = array();
-    $page_head['canonical'] = '<link rel="canonical" href="viewtopic.php?id='.$topic_id.($p == 1 ? '' : '&amp;p='.$p).'" title="'.sprintf($lang_common['Page'], $p).'" />';
+	$page_head['canonical'] = "\t".'<link href="'.get_link('topic/$1/$2/', array($topic_id, $url_topic)).'" rel="canonical" />';
 
-    if ($num_pages > 1) {
-        if ($p > 1) {
-            $page_head['prev'] = '<link rel="prev" href="viewtopic.php?id='.$topic_id.($p == 2 ? '' : '&amp;p='.($p - 1)).'" title="'.sprintf($lang_common['Page'], $p - 1).'" />';
-        }
-        if ($p < $num_pages) {
-            $page_head['next'] = '<link rel="next" href="viewtopic.php?id='.$topic_id.'&amp;p='.($p + 1).'" title="'.sprintf($lang_common['Page'], $p + 1).'" />';
-        }
-    }
+	if ($num_pages > 1)
+	{
+		if ($p > 1)
+			$page_head['prev'] = "\t".'<link href="'.get_link('topic/$1/$2/page/$3/', array($topic_id, $url_topic, ($p - 1))).'" rel="prev" />';
+		if ($p < $num_pages)
+			$page_head['next'] = "\t".'<link href="'.get_link('topic/$1/$2/page/$3/', array($topic_id, $url_topic, ($p + 1))).'" rel="next" />';
+	}
 
     if ($pun_config['o_feed_type'] == '1') {
         $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.$lang_common['RSS topic feed'].'" />';
