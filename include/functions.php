@@ -970,7 +970,9 @@ function message($message, $no_back_link = false, $http_status = null)
 
     if (!defined('PUN_HEADER')) {
         $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_common['Info']);
-        define('PUN_ACTIVE_PAGE', 'index');
+		if(!defined('PUN_ACTIVE_PAGE')) {
+			define('PUN_ACTIVE_PAGE', 'index');
+		}
         require PUN_ROOT.'header.php';
     }
 
