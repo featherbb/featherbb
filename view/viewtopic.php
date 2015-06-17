@@ -18,8 +18,8 @@ if (!defined('PUN')) {
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>/"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo get_link('forum/$1/$2/', array($cur_topic['forum_id'], $url_forum)) ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></strong></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo get_link('topic/$1/$2/', array($id, $url_topic)) ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo get_link('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -40,7 +40,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/$1/#p$1', array($post['id'])) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
+	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -108,8 +108,8 @@ foreach ($post_data as $post) {
 		</div>
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>/"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo get_link('forum/$1/$2/', array($cur_topic['forum_id'], $url_forum)) ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></strong></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo get_link('topic/$1/$2/', array($id, $url_topic)) ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo get_link('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 <?php echo $subscraction ?>
 		<div class="clearer"></div>

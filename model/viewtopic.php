@@ -157,14 +157,14 @@ function get_page_head($topic_id, $num_pages, $p, $url_topic)
     global $pun_config, $lang_common;
     
     $page_head = array();
-	$page_head['canonical'] = "\t".'<link href="'.get_link('topic/$1/$2/', array($topic_id, $url_topic)).'" rel="canonical" />';
+	$page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
 
 	if ($num_pages > 1)
 	{
 		if ($p > 1)
-			$page_head['prev'] = "\t".'<link href="'.get_link('topic/$1/$2/page/$3/', array($topic_id, $url_topic, ($p - 1))).'" rel="prev" />';
+			$page_head['prev'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p - 1).'/').'" rel="prev" />';
 		if ($p < $num_pages)
-			$page_head['next'] = "\t".'<link href="'.get_link('topic/$1/$2/page/$3/', array($topic_id, $url_topic, ($p + 1))).'" rel="next" />';
+			$page_head['next'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p + 1).'/').'" rel="next" />';
 	}
 
     if ($pun_config['o_feed_type'] == '1') {
@@ -211,7 +211,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
         // If the poster is a registered user
         if ($cur_post['poster_id'] > 1) {
             if ($pun_user['g_view_users'] == '1') {
-                $cur_post['username_formatted'] = '<a href="profile.php?id='.$cur_post['poster_id'].'">'.pun_htmlspecialchars($cur_post['username']).'</a>';
+                $cur_post['username_formatted'] = '<a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/">'.pun_htmlspecialchars($cur_post['username']).'</a>';
             } else {
                 $cur_post['username_formatted'] = pun_htmlspecialchars($cur_post['username']);
             }
@@ -267,7 +267,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 
             if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && $pun_user['g_mod_promote_users'] == '1')) {
                 if ($cur_post['g_promote_next_group']) {
-                    $cur_post['user_info'][] = '<dd><span><a href="profile.php?action=promote&amp;id='.$cur_post['poster_id'].'&amp;pid='.$cur_post['id'].'">'.$lang_topic['Promote user'].'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.$lang_topic['Promote user'].'</a></span></dd>';
                 }
             }
 

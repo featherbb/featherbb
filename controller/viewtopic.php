@@ -66,7 +66,7 @@ namespace controller{
 			$url_forum = url_friendly($cur_topic['forum_name']);
 
 			// Generate paging links
-			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'topic/$1/$2/#', array($id, $url_topic));
+			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
 
 			if ($pun_config['o_censoring'] == '1') {

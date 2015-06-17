@@ -122,7 +122,7 @@ function print_categories_forums()
             $cur_forum['item_status'] .= ' iredirect';
             $cur_forum['icon_type'] = 'icon';
         } else {
-            $cur_forum['forum_field'] = '<h3><a href="'.get_link('forum/$1/$2/', array($cur_forum['fid'], url_friendly($cur_forum['forum_name']))).'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
+            $cur_forum['forum_field'] = '<h3><a href="'.get_link('forum/'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name'])).'/'.'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
             $cur_forum['num_topics_formatted'] = $cur_forum['num_topics'];
             $cur_forum['num_posts_formatted'] = $cur_forum['num_posts'];
         }
@@ -133,7 +133,7 @@ function print_categories_forums()
 
         // If there is a last_post/last_poster
         if ($cur_forum['last_post'] != '') {
-            $cur_forum['last_post_formatted'] = '<a href="'.get_link('post/$1/#p$1', array($cur_forum['last_post_id'])).'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_forum['last_poster']).'</span>';
+            $cur_forum['last_post_formatted'] = '<a href="'.get_link('post/'.$cur_forum['last_post_id'].'/#p'.$cur_forum['last_post_id']).'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_forum['last_poster']).'</span>';
         } elseif ($cur_forum['redirect_url'] != '') {
             $cur_forum['last_post_formatted'] = '- - -';
         } else {
@@ -146,7 +146,7 @@ function print_categories_forums()
 
             foreach ($mods_array as $mod_username => $mod_id) {
                 if ($pun_user['g_view_users'] == '1') {
-                    $moderators[] = '<a href="profile.php?id='.$mod_id.'">'.pun_htmlspecialchars($mod_username).'</a>';
+                    $moderators[] = '<a href="'.get_link('/user/'.$mod_id.'/').'/">'.pun_htmlspecialchars($mod_username).'</a>';
                 } else {
                     $moderators[] = pun_htmlspecialchars($mod_username);
                 }
@@ -186,7 +186,7 @@ function collect_stats()
     list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $db->fetch_row($result));
 
     if ($pun_user['g_view_users'] == '1') {
-        $stats['newest_user'] = '<a href="profile.php?id='.$stats['last_user']['id'].'">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>';
+        $stats['newest_user'] = '<a href="'.get_link('/user/'.$stats['last_user']['id']).'/">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>';
     } else {
         $stats['newest_user'] = pun_htmlspecialchars($stats['last_user']['username']);
     }
@@ -206,7 +206,7 @@ function fetch_users_online()
     while ($pun_user_online = $db->fetch_assoc($result)) {
         if ($pun_user_online['user_id'] > 1) {
             if ($pun_user['g_view_users'] == '1') {
-                $online['users'][] = "\n\t\t\t\t".'<dd><a href="profile.php?id='.$pun_user_online['user_id'].'">'.pun_htmlspecialchars($pun_user_online['ident']).'</a>';
+                $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('/user/'.$pun_user_online['user_id']).'/">'.pun_htmlspecialchars($pun_user_online['ident']).'</a>';
             } else {
                 $online['users'][] = "\n\t\t\t\t".'<dd>'.pun_htmlspecialchars($pun_user_online['ident']);
             }

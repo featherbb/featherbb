@@ -59,7 +59,7 @@ namespace controller{
 			$url_forum = url_friendly($cur_forum['forum_name']);
 
 			// Generate paging links
-			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'forum/$1/$2/#', array($id, $url_forum));
+			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
 
 			// Add relationship meta tags
 			$page_head = get_page_head($id, $num_pages, $p, $url_forum);
@@ -103,6 +103,7 @@ namespace controller{
 				'post_link' => $post_link,
 				'is_admmod' => $is_admmod,
 				'start_from' => $start_from,
+				'url_forum' => $url_forum,
 				)
 			);
 
