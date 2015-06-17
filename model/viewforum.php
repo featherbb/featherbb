@@ -48,21 +48,21 @@ function sort_forum_by($sort_by_sql)
 }
 
 // Adds relationship meta tags
-function get_page_head($forum_id, $num_pages, $p)
+function get_page_head($forum_id, $num_pages, $p, $url_forum)
 {
     global $pun_config, $lang_common;
     
     $page_head = array();
-    $page_head['canonical'] = '<link rel="canonical" href="viewforum.php?id='.$forum_id.($p == 1 ? '' : '&amp;p='.$p).'" title="'.sprintf($lang_common['Page'], $p).'" />';
+	$page_head['canonical'] = "\t".'<link href="'.get_link('forum/$1/$2/', array($forum_id, $url_forum)).'" rel="canonical" />';
 
-    if ($num_pages > 1) {
-        if ($p > 1) {
-            $page_head['prev'] = '<link rel="prev" href="viewforum.php?id='.$forum_id.($p == 2 ? '' : '&amp;p='.($p - 1)).'" title="'.sprintf($lang_common['Page'], $p - 1).'" />';
-        }
-        if ($p < $num_pages) {
-            $page_head['next'] = '<link rel="next" href="viewforum.php?id='.$forum_id.'&amp;p='.($p + 1).'" title="'.sprintf($lang_common['Page'], $p + 1).'" />';
-        }
-    }
+	if ($num_pages > 1) {
+		if ($p > 1) {
+			$page_head['prev'] = "\t".'<link href="'.get_link('forum/$1/$3/page/$2/', array($forum_id, ($p -1), $url_forum)).'" rel="prev" />';
+		}
+		if ($p < $num_pages) {
+			$page_head['next'] = "\t".'<link href="'.get_link('forum/$1/$3/page/$2/', array($forum_id, ($p +1), $url_forum)).'" rel="next" />';
+		}
+	}
 
     if ($pun_config['o_feed_type'] == '1') {
         $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss" title="'.$lang_common['RSS forum feed'].'" />';
@@ -134,9 +134,10 @@ function print_topics($forum_id, $sort_by, $start_from)
             $status_text = array();
             $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
             $cur_topic['icon_type'] = 'icon';
+			$url_subject = url_friendly($cur_topic['subject']);
 
             if (is_null($cur_topic['moved_to'])) {
-                $cur_topic['last_post_formatted'] = '<a href="viewtopic.php?pid='.$cur_topic['last_post_id'].'#p'.$cur_topic['last_post_id'].'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['last_poster']).'</span>';
+                $cur_topic['last_post_formatted'] = '<a href="'.get_link('post/$1/#p$1', array($cur_topic['last_post_id'])).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['last_poster']).'</span>';
             } else {
                 $cur_topic['last_post_formatted'] = '- - -';
             }
@@ -151,13 +152,13 @@ function print_topics($forum_id, $sort_by, $start_from)
             }
 
             if ($cur_topic['moved_to'] != 0) {
-                $cur_topic['subject_formatted'] = '<a href="viewtopic.php?id='.$cur_topic['moved_to'].'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/$1/$2/', array($cur_topic['moved_to'], $url_subject)).'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
                 $status_text[] = '<span class="movedtext">'.$lang_forum['Moved'].'</span>';
                 $cur_topic['item_status'] .= ' imoved';
             } elseif ($cur_topic['closed'] == '0') {
-                $cur_topic['subject_formatted'] = '<a href="viewtopic.php?id='.$cur_topic['id'].'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/$1/$2/', array($cur_topic['id'], $url_subject)).'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
             } else {
-                $cur_topic['subject_formatted'] = '<a href="viewtopic.php?id='.$cur_topic['id'].'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/$1/$2/', array($cur_topic['id'], $url_subject)).'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
                 $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
                 $cur_topic['item_status'] .= ' iclosed';
             }
@@ -166,7 +167,7 @@ function print_topics($forum_id, $sort_by, $start_from)
                 $cur_topic['item_status'] .= ' inew';
                 $cur_topic['icon_type'] = 'icon icon-new';
                 $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
-                $subject_new_posts = '<span class="newtext">[ <a href="viewtopic.php?id='.$cur_topic['id'].'&amp;action=new" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
+                $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/$1/$2/action/new', array($cur_topic['id'], $url_subject)).'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
             } else {
                 $subject_new_posts = null;
             }
@@ -185,7 +186,7 @@ function print_topics($forum_id, $sort_by, $start_from)
             $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
 
             if ($num_pages_topic > 1) {
-                $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'viewtopic.php?id='.$cur_topic['id']).' ]</span>';
+                $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/$1/$2/#', array($cur_topic['id'], $url_subject)).' ]</span>';
             } else {
                 $subject_multipage = null;
             }

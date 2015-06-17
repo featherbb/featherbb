@@ -56,19 +56,21 @@ namespace controller{
 
 			$p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
 			$start_from = $pun_user['disp_topics'] * ($p - 1);
+			$url_forum = url_friendly($cur_forum['forum_name']);
 
 			// Generate paging links
-			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'viewforum.php?id='.$id);
+			$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'forum/$1/$2/#', array($id, $url_forum));
 
 			// Add relationship meta tags
-			$page_head = get_page_head($id, $num_pages, $p);
+			$page_head = get_page_head($id, $num_pages, $p, $url_forum);
 
 			$forum_actions = get_forum_actions($id, $pun_config['o_forum_subscriptions'], $cur_forum['is_subscribed']);
+			
 
 			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), pun_htmlspecialchars($cur_forum['forum_name']));
 			define('PUN_ALLOW_INDEX', 1);
 			if (!defined('PUN_ACTIVE_PAGE')) {
-				define('PUN_ACTIVE_PAGE', 'index');
+				define('PUN_ACTIVE_PAGE', 'viewforum');
 			}
 			
 			require PUN_ROOT.'header.php';
@@ -81,7 +83,7 @@ namespace controller{
 				'pun_config' => $pun_config,
 				'_SERVER'	=>	$_SERVER,
 				//'required_fields'	=>	$required_fields,
-				'page_head'		=>	get_page_head($id, $num_pages, $p),
+				'page_head'		=>	$page_head,
 				'navlinks'		=>	$navlinks,
 				'page_info'		=>	$page_info,
 				'db'		=>	$db,
