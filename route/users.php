@@ -35,4 +35,9 @@ $feather->get('/userlist/username/:username/group/:group/sort/:sort/dir/:dir/pag
 $feather->get('/login(/)', '\controller\Login:display');
 $feather->post('/login/action/in(/)', '\controller\Login:logmein');
 $feather->map('/login/action/forget(/)', '\controller\Login:forget')->via('GET', 'POST');
-$feather->get('/logout/id/:id/token/:token(/)', '\controller\Login:logmeout');
+$feather->get('/logout/id/:id/token/:token(/)', '\controller\Login:logmeout')->conditions(array('id' => '[0-9]+'));
+
+// Register
+$feather->get('/register(/)', '\controller\Register:rules');
+$feather->map('/register/agree(/)', '\controller\Register:display')->via('GET', 'POST');
+$feather->get('/register/cancel(/)', '\controller\Register:cancel');

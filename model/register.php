@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function check_for_errors($post_data, $user_field)
+function check_for_errors($feather, $user_field)
 {
     global $db, $pun_user, $pun_config, $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
     
@@ -22,17 +22,17 @@ function check_for_errors($post_data, $user_field)
     }
 
 
-    $user['username'] = pun_trim($post_data[$user_field]);
-    $user['email1'] = strtolower(pun_trim($post_data['req_email1']));
+    $user['username'] = pun_trim($feather->request->post($user_field));
+    $user['email1'] = strtolower(pun_trim($feather->request->post('req_email1')));
 
     if ($pun_config['o_regs_verify'] == '1') {
-        $email2 = strtolower(pun_trim($post_data['req_email2']));
+        $email2 = strtolower(pun_trim($feather->request->post('req_email2')));
 
         $user['password1'] = random_pass(12);
         $password2 = $user['password1'];
     } else {
-        $user['password1'] = pun_trim($post_data['req_password1']);
-        $password2 = pun_trim($post_data['req_password2']);
+        $user['password1'] = pun_trim($feather->request->post('req_password1'));
+        $password2 = pun_trim($feather->request->post('req_password2'));
     }
 
     // Validate username and passwords
@@ -45,8 +45,8 @@ function check_for_errors($post_data, $user_field)
     }
 	
 	// Antispam feature
-	$question = isset($post_data['captcha_q']) ? trim($post_data['captcha_q']) : '';
-	$answer = isset($post_data['captcha']) ? strtoupper(trim($post_data['captcha'])) : '';
+	$question = !empty($feather->request->post('captcha_q')) ? trim($feather->request->post('captcha_q')) : '';
+	$answer = !empty($feather->request->post('captcha')) ? strtoupper(trim($feather->request->post('captcha'))) : '';
 	$lang_antispam_questions_array = array();
 	
 	foreach ($lang_antispam_questions as $k => $v) {
@@ -88,8 +88,8 @@ function check_for_errors($post_data, $user_field)
     }
 
     // Make sure we got a valid language string
-    if (isset($post_data['language'])) {
-        $user['language'] = preg_replace('%[\.\\\/]%', '', $post_data['language']);
+    if (!empty($feather->request->post('language'))) {
+        $user['language'] = preg_replace('%[\.\\\/]%', '', $feather->request->post('language'));
         if (!file_exists(PUN_ROOT.'lang/'.$user['language'].'/common.php')) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -205,5 +205,5 @@ function insert_user($user)
 
     pun_setcookie($new_uid, $password_hash, time() + $pun_config['o_timeout_visit']);
 
-    redirect('index.php', $lang_register['Reg complete']);
+    redirect(get_base_url(), $lang_register['Reg complete']);
 }

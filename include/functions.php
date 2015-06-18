@@ -1431,7 +1431,7 @@ function maintenance_message()
 //
 // Display $message and redirect user to $destination_url
 //
-function redirect($destination_url, $message)
+function redirect($destination_url, $message = null)
 {
     global $feather;
 
