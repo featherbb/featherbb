@@ -91,7 +91,7 @@ if (isset($_POST['form_sent'])) {
         // If it's a reply
         if ($tid) {
             // Insert the reply, get the new_pid
-            $new = insert_reply($post, $tid, $cur_posting);
+            $new = insert_reply($post, $tid, $cur_posting, $is_subscribed);
 
             // Should we send out notifications?
             if ($pun_config['o_topic_subscriptions'] == '1') {

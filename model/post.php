@@ -182,7 +182,7 @@ function setup_variables($post_data, $errors, $is_admmod, $user_field)
 }
 
 // Insert a reply
-function insert_reply($post, $tid, $cur_posting)
+function insert_reply($post, $tid, $cur_posting, $is_subscribed)
 {
     global $db, $pun_user, $pun_config;
 	
