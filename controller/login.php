@@ -78,6 +78,11 @@ namespace controller{
 			
 			define('PUN_QUIET_VISIT', 1);
 			
+			if (!$pun_user['is_guest']) {
+				header('Location: index.php');
+				exit;
+			}
+			
 			// Load the login.php language file
 			require PUN_ROOT.'lang/'.$pun_user['language'].'/login.php';
 			
@@ -107,6 +112,11 @@ namespace controller{
 			global $feather, $lang_common, $lang_login, $pun_config, $pun_user, $pun_start, $db;
 			
 			define('PUN_QUIET_VISIT', 1);
+			
+			if (!$pun_user['is_guest']) {
+				header('Location: index.php');
+				exit;
+			}
 			
 			// Load the login.php language file
 			require PUN_ROOT.'lang/'.$pun_user['language'].'/login.php';
