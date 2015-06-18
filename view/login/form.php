@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_common['Login'] ?></span></h2>
 	<div class="box">
-		<form id="login" method="post" action="login.php?action=in" onsubmit="return process_form(this)">
+		<form id="login" method="post" action="<?php echo get_link('login/action/in/') ?>" onsubmit="return process_form(this)">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_login['Login legend'] ?></legend>
@@ -31,7 +31,7 @@ if (!defined('PUN')) {
 						</div>
 
 						<p class="clearb"><?php echo $lang_login['Login info'] ?></p>
-						<p class="actions"><span><a href="register.php" tabindex="5"><?php echo $lang_login['Not registered'] ?></a></span> <span><a href="login.php?action=forget" tabindex="6"><?php echo $lang_login['Forgotten pass'] ?></a></span></p>
+						<p class="actions"><span><a href="<?php echo get_link('register/') ?>" tabindex="5"><?php echo $lang_login['Not registered'] ?></a></span> <span><a href="<?php echo get_link('login/action/forget/') ?>" tabindex="6"><?php echo $lang_login['Forgotten pass'] ?></a></span></p>
 					</div>
 				</fieldset>
 			</div>

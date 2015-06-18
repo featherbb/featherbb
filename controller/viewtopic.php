@@ -109,9 +109,7 @@ namespace controller{
 			
 			$post_data = print_posts($id, $start_from, $cur_topic, $is_admmod);
 			
-			if ($pun_user['is_guest']) {
-				session_start();
-			}
+			session_start();
 			
 			$feather->render('viewtopic.php', array(
 				'id' => $id,

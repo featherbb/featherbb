@@ -30,3 +30,9 @@ $feather->get('/post/:pid(/)', '\controller\Viewtopic:viewpost')->conditions(arr
 $feather->get('/userlist(/)', '\controller\Userlist:display');
 $feather->get('/userlist/username/:username/group/:group/sort/:sort/dir/:dir(/)', '\controller\Userlist:display')->conditions(array('group' => '[0-9]+'));
 $feather->get('/userlist/username/:username/group/:group/sort/:sort/dir/:dir/page/:page(/)', '\controller\Userlist:display')->conditions(array('group' => '[0-9]+'));
+
+// Login
+$feather->get('/login(/)', '\controller\Login:display');
+$feather->post('/login/action/in(/)', '\controller\Login:logmein');
+$feather->map('/login/action/forget(/)', '\controller\Login:forget')->via('GET', 'POST');
+$feather->get('/logout/id/:id/token/:token(/)', '\controller\Login:logmeout');

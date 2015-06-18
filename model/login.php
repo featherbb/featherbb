@@ -7,13 +7,13 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function login($post_data)
+function login($feather)
 {
     global $db, $db_type, $pun_config, $lang_login;
     
-    $form_username = pun_trim($post_data['req_username']);
-    $form_password = pun_trim($post_data['req_password']);
-    $save_pass = isset($post_data['save_pass']);
+    $form_username = pun_trim($feather->request->post('req_username'));
+    $form_password = pun_trim($feather->request->post('req_password'));
+    $save_pass = $feather->request->post('save_pass');
 
     $username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$db->escape($form_username).'\')';
 
@@ -75,15 +75,16 @@ function login($post_data)
     set_tracked_topics(null);
 
     // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
-    $redirect_url = validate_redirect($post_data['redirect_url'], 'index.php');
+    $redirect_url = validate_redirect($feather->request->post('redirect_url'), get_base_url());
 
     redirect(pun_htmlspecialchars($redirect_url), $lang_login['Login redirect']);
 }
 
-function logout($get_data)
+function logout($id, $token)
 {
     global $db, $pun_user, $lang_login;
-    if ($pun_user['is_guest'] || !isset($get_data['id']) || $get_data['id'] != $pun_user['id'] || !isset($get_data['csrf_token']) || $get_data['csrf_token'] != pun_hash($pun_user['id'].pun_hash(get_remote_address()))) {
+	
+    if ($pun_user['is_guest'] || !isset($id) || $id != $pun_user['id'] || !isset($token) || $token != pun_hash($pun_user['id'].pun_hash(get_remote_address()))) {
         header('Location: index.php');
         exit;
     }
@@ -98,26 +99,25 @@ function logout($get_data)
 
     pun_setcookie(1, pun_hash(uniqid(rand(), true)), time() + 31536000);
 
-    redirect('index.php', $lang_login['Logout redirect']);
+    redirect(get_base_url(), $lang_login['Logout redirect']);
 }
 
-function password_forgotten($post_data)
+function password_forgotten($feather)
 {
-    global $db, $pun_user, $pun_config, $lang_login;
+    global $db, $pun_user, $pun_config, $lang_common, $lang_login;
     
     if (!$pun_user['is_guest']) {
         header('Location: index.php');
         exit;
-    }
-    
+    }    
     // Start with a clean slate
     $errors = array();
 
-    if (isset($post_data['form_sent'])) {
+    if ($feather->request()->isPost()) {
         require PUN_ROOT.'include/email.php';
 
         // Validate the email address
-        $email = strtolower(pun_trim($post_data['req_email']));
+        $email = strtolower(pun_trim($feather->request->post('req_email')));
         if (!is_valid_email($email)) {
             $errors[] = $lang_common['Invalid email'];
         }
