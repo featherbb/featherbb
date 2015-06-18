@@ -961,7 +961,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 //
 function message($message, $no_back_link = false, $http_status = null)
 {
-    global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user;
+    global $feather, $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user;
 
     // Did we receive a custom header?
     if (!is_null($http_status)) {
@@ -974,23 +974,42 @@ function message($message, $no_back_link = false, $http_status = null)
 			define('PUN_ACTIVE_PAGE', 'index');
 		}
         require PUN_ROOT.'header.php';
+		
+		$feather->render('header.php', array(
+			'lang_common' => $lang_common,
+			'page_title' => $page_title,
+			'p' => '',
+			'pun_user' => $pun_user,
+			'pun_config' => $pun_config,
+			'_SERVER'	=>	$_SERVER,
+			'required_fields'	=>	null,
+			'page_head'		=>	'',
+			'navlinks'		=>	$navlinks,
+			'page_info'		=>	'',
+			'db'		=>	$db,
+			)
+		);
     }
 
-    ?>
+	$feather->render('message.php', array(
+		'lang_common' => $lang_common,
+		'message'	=>	$message,
+		'no_back_link'	=>	$no_back_link,
+		)
+	);
 
-<div id="msg" class="block">
-	<h2><span><?php echo $lang_common['Info'] ?></span></h2>
-	<div class="box">
-		<div class="inbox">
-			<p><?php echo $message ?></p>
-<?php if (!$no_back_link): ?>			<p><a href="javascript: history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
-<?php endif;
-    ?>		</div>
-	</div>
-</div>
-<?php
-
+	$feather->render('footer.php', array(
+		'lang_common' => $lang_common,
+		'pun_user' => $pun_user,
+		'pun_config' => $pun_config,
+		'pun_start' => $pun_start,
+		'footer_style' => '',
+		)
+	);
+	
     require PUN_ROOT.'footer.php';
+	
+	$feather->stop();
 }
 
 
@@ -1414,134 +1433,9 @@ function maintenance_message()
 //
 function redirect($destination_url, $message)
 {
-    global $db, $pun_config, $lang_common, $pun_user;
+    global $feather;
 
-    // Prefix with base_url (unless there's already a valid URI)
-    if (strpos($destination_url, 'http://') !== 0 && strpos($destination_url, 'https://') !== 0 && strpos($destination_url, '/') !== 0) {
-        $destination_url = get_base_url(true).'/'.$destination_url;
-    }
-
-    // Do a little spring cleaning
-    $destination_url = preg_replace('%([\r\n])|(\%0[ad])|(;\s*data\s*:)%i', '', $destination_url);
-
-    // If the delay is 0 seconds, we might as well skip the redirect all together
-    if ($pun_config['o_redirect_delay'] == '0') {
-        $db->end_transaction();
-        $db->close();
-
-        header('Location: '.str_replace('&amp;', '&', $destination_url));
-        exit;
-    }
-
-    // Send no-cache headers
-    header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
-    // Send the Content-type header in case the web server is setup to send something else
-    header('Content-type: text/html; charset=utf-8');
-
-    if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/redirect.tpl')) {
-        $tpl_file = PUN_ROOT.'style/'.$pun_user['style'].'/redirect.tpl';
-        $tpl_inc_dir = PUN_ROOT.'style/'.$pun_user['style'].'/';
-    } else {
-        $tpl_file = PUN_ROOT.'include/template/redirect.tpl';
-        $tpl_inc_dir = PUN_ROOT.'include/user/';
-    }
-
-    $tpl_redir = file_get_contents($tpl_file);
-
-    // START SUBST - <pun_include "*">
-    preg_match_all('%<pun_include "([^/\\\\]*?)\.(php[45]?|inc|html?|txt)">%i', $tpl_redir, $pun_includes, PREG_SET_ORDER);
-
-    foreach ($pun_includes as $cur_include) {
-        ob_start();
-
-        // Allow for overriding user includes, too.
-        if (file_exists($tpl_inc_dir.$cur_include[1].'.'.$cur_include[2])) {
-            require $tpl_inc_dir.$cur_include[1].'.'.$cur_include[2];
-        } elseif (file_exists(PUN_ROOT.'include/user/'.$cur_include[1].'.'.$cur_include[2])) {
-            require PUN_ROOT.'include/user/'.$cur_include[1].'.'.$cur_include[2];
-        } else {
-            error(sprintf($lang_common['Pun include error'], htmlspecialchars($cur_include[0]), basename($tpl_file)));
-        }
-
-        $tpl_temp = ob_get_contents();
-        $tpl_redir = str_replace($cur_include[0], $tpl_temp, $tpl_redir);
-        ob_end_clean();
-    }
-    // END SUBST - <pun_include "*">
-
-
-    // START SUBST - <pun_language>
-    $tpl_redir = str_replace('<pun_language>', $lang_common['lang_identifier'], $tpl_redir);
-    // END SUBST - <pun_language>
-
-
-    // START SUBST - <pun_content_direction>
-    $tpl_redir = str_replace('<pun_content_direction>', $lang_common['lang_direction'], $tpl_redir);
-    // END SUBST - <pun_content_direction>
-
-
-    // START SUBST - <pun_head>
-    ob_start();
-
-    $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_common['Redirecting']);
-
-    ?>
-<meta http-equiv="refresh" content="<?php echo $pun_config['o_redirect_delay'] ?>;URL=<?php echo $destination_url ?>" />
-<title><?php echo generate_page_title($page_title) ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $pun_user['style'].'.css' ?>" />
-<?php
-
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_redir = str_replace('<pun_head>', $tpl_temp, $tpl_redir);
-    ob_end_clean();
-    // END SUBST - <pun_head>
-
-
-    // START SUBST - <pun_redir_main>
-    ob_start();
-
-    ?>
-<div class="block">
-	<h2><?php echo $lang_common['Redirecting'] ?></h2>
-	<div class="box">
-		<div class="inbox">
-			<p><?php echo $message.'<br /><br /><a href="'.$destination_url.'">'.$lang_common['Click redirect'].'</a>' ?></p>
-		</div>
-	</div>
-</div>
-<?php
-
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_redir = str_replace('<pun_redir_main>', $tpl_temp, $tpl_redir);
-    ob_end_clean();
-    // END SUBST - <pun_redir_main>
-
-
-    // START SUBST - <pun_footer>
-    ob_start();
-
-    // End the transaction
-    $db->end_transaction();
-
-    // Display executed queries (if enabled)
-    if (defined('PUN_SHOW_QUERIES')) {
-        display_saved_queries();
-    }
-
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_redir = str_replace('<pun_footer>', $tpl_temp, $tpl_redir);
-    ob_end_clean();
-    // END SUBST - <pun_footer>
-
-
-    // Close the db connection (and free up any result data)
-    $db->close();
-
-    exit($tpl_redir);
+	$feather->redirect($destination_url);
 }
 
 
