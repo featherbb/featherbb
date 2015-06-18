@@ -95,7 +95,7 @@ if ($pun_user['is_guest']) {
         $links[] = '<li id="navadmin"'.((PUN_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.$lang_common['Admin'].'</a></li>';
     }
 
-    $links[] = '<li id="navlogout"><a href="'.get_link('/logout/'.$pun_user['id'].'/'.pun_hash($pun_user['id'].pun_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
+    $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$pun_user['id'].'/token/'.pun_hash($pun_user['id'].pun_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
 }
 
 // Are there any additional navlinks we should insert into the array before imploding it?
@@ -137,15 +137,15 @@ if ($pun_user['is_guest']) {
     }
 
     if ($pun_user['g_read_board'] == '1' && $pun_user['g_search'] == '1') {
-        $page_topicsearches[] = '<a href="'.get_link('/search/show-replies/').'" title="'.$lang_common['Show posted topics'].'">'.$lang_common['Posted topics'].'</a>';
-        $page_topicsearches[] = '<a href="'.get_link('/search/show-new/').'" title="'.$lang_common['Show new posts'].'">'.$lang_common['New posts header'].'</a>';
+        $page_topicsearches[] = '<a href="'.get_link('search/show-replies/').'" title="'.$lang_common['Show posted topics'].'">'.$lang_common['Posted topics'].'</a>';
+        $page_topicsearches[] = '<a href="'.get_link('search/show-new/').'" title="'.$lang_common['Show new posts'].'">'.$lang_common['New posts header'].'</a>';
     }
 }
 
 // Quick searches
 if ($pun_user['g_read_board'] == '1' && $pun_user['g_search'] == '1') {
-    $page_topicsearches[] = '<a href="'.get_link('/search/show-recent/').'" title="'.$lang_common['Show active topics'].'">'.$lang_common['Active topics'].'</a>';
-    $page_topicsearches[] = '<a href="'.get_link('/search/show-unanswered/').'" title="'.$lang_common['Show unanswered topics'].'">'.$lang_common['Unanswered topics'].'</a>';
+    $page_topicsearches[] = '<a href="'.get_link('search/show-recent/').'" title="'.$lang_common['Show active topics'].'">'.$lang_common['Active topics'].'</a>';
+    $page_topicsearches[] = '<a href="'.get_link('search/show-unanswered/').'" title="'.$lang_common['Show unanswered topics'].'">'.$lang_common['Unanswered topics'].'</a>';
 }
 
 
