@@ -28,35 +28,60 @@ function get_info_post($tid, $fid)
 }
 
 // Checks the post for errors before posting
-function check_errors_before_post($fid, $post_data, $errors, $user_field)
+function check_errors_before_post($fid, $tid, $qid, $pid, $page, $feather, $errors)
 {
-    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $lang_antispam, $lang_antispam_questions, $pd;
+    global $db, $pun_user, $pun_config, $lang_post, $lang_common, $lang_prof_reg, $lang_register, $lang_antispam, $lang_antispam_questions, $pd;
 	
 	// Antispam feature
 	if ($pun_user['is_guest']) {
-		$question = isset($post_data['captcha_q']) ? trim($post_data['captcha_q']) : '';
-		$answer = isset($post_data['captcha']) ? strtoupper(trim($post_data['captcha'])) : '';
+		
+        // It's a guest, so we have to validate the username
+        $errors = check_username(pun_trim($feather->request->post('req_username')), $errors);
+		
+		$question = !empty($feather->request->post('captcha_q')) ? trim($feather->request->post('captcha_q')) : '';
+		$answer = !empty($feather->request->post('captcha')) ? strtoupper(trim($feather->request->post('captcha'))) : '';
 		$lang_antispam_questions_array = array();
 		
 		foreach ($lang_antispam_questions as $k => $v) {
 		  $lang_antispam_questions_array[md5($k)] = strtoupper($v);
 		}
+		
 		if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
 		  $errors[] = $lang_antispam['Robot test fail'];
 		}
 	}
     
     // Flood protection
-    if (!isset($post_data['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood']) {
+    if (empty($feather->request->post('preview')) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood']) {
         $errors[] = sprintf($lang_post['Flood start'], $pun_user['g_post_flood'], $pun_user['g_post_flood'] - (time() - $pun_user['last_post']));
     }
+	
+	if ($tid) {
+		$result = $db->query('SELECT subject, num_replies FROM '.$db->prefix.'topics WHERE id='.$tid) or error('Unable to get subject', __FILE__, __LINE__, $db->error());
+		$subject_tid = $db->result($result);
+		if (!$db->num_rows($result)) {
+			message($lang_common['Bad request'], false, '404 Not Found');
+		}
+		$url_subject = url_friendly($subject_tid);
+	}
+	else {
+		$url_subject = '';
+	}
 
     // Make sure they got here from the site
-    confirm_referrer(array('post.php', 'viewtopic.php'));
+    confirm_referrer(array(
+		get_link_r('post/new-topic/'.$fid.'/'),
+		get_link_r('post/reply/'.$tid.'/'),
+		get_link_r('post/reply/'.$tid.'/quote/'.$qid.'/'),
+		get_link_r('topic/'.$tid.'/'.$url_subject.'/'),
+		get_link_r('topic/'.$tid.'/'.$url_subject.'/page/'.$page.'/'),
+		get_link_r('post/'.$pid.'/#p'.$pid),
+		)
+	);
 
     // If it's a new topic
     if ($fid) {
-        $subject = pun_trim($post_data['req_subject']);
+        $subject = pun_trim($feather->request->post('req_subject'));
 
         if ($pun_config['o_censoring'] == '1') {
             $censored_subject = pun_trim(censor_words($subject));
@@ -78,17 +103,13 @@ function check_errors_before_post($fid, $post_data, $errors, $user_field)
         $username = $pun_user['username'];
         $email = $pun_user['email'];
     }
-    // Otherwise it should be in $post_data
+    // Otherwise it should be in $feather ($_POST)
     else {
-        $username = pun_trim($post_data[$user_field]);
-        $email = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $post_data['req_email'] : $post_data['email']));
+        $email = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $feather->request->post('req_email') : $feather->request->post('email')));
 
         // Load the register.php/prof_reg.php language files
         require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
         require PUN_ROOT.'lang/'.$pun_user['language'].'/register.php';
-
-        // It's a guest, so we have to validate the username
-        check_username($username);
 
         if ($pun_config['p_force_guest_email'] == '1' || $email != '') {
             require PUN_ROOT.'include/email.php';
@@ -109,7 +130,7 @@ function check_errors_before_post($fid, $post_data, $errors, $user_field)
     }
 
     // Clean up message from POST
-    $orig_message = $message = pun_linebreaks(pun_trim($post_data['req_message']));
+    $orig_message = $message = pun_linebreaks(pun_trim($feather->request->post('req_message')));
 
     // Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
     if (strlen($message) > PUN_MAX_POSTSIZE) {
@@ -141,7 +162,7 @@ function check_errors_before_post($fid, $post_data, $errors, $user_field)
 }
 
 // If the previous check went OK, setup some variables used later
-function setup_variables($post_data, $errors, $is_admmod, $user_field)
+function setup_variables($feather, $errors, $is_admmod)
 {
     global $pun_user, $pun_config;
     
@@ -151,21 +172,21 @@ function setup_variables($post_data, $errors, $is_admmod, $user_field)
         $post['username'] = $pun_user['username'];
         $post['email'] = $pun_user['email'];
     }
-    // Otherwise it should be in $post_data
+    // Otherwise it should be in $feather ($_POST)
     else {
-        $post['username'] = pun_trim($post_data[$user_field]);
-        $post['email'] = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $post_data['req_email'] : $post_data['email']));
+        $post['username'] = pun_trim($feather->request->post('req_username'));
+        $post['email'] = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $feather->request->post('req_email') : $feather->request->post('email')));
     }
     
-	if(isset($post_data['req_subject'])) {
-		$post['subject'] = pun_trim($post_data['req_subject']);
+	if (!empty($feather->request->post('req_subject'))) {
+		$post['subject'] = pun_trim($feather->request->post('req_subject'));
 	}
     
-    $post['hide_smilies'] = isset($post_data['hide_smilies']) ? '1' : '0';
-    $post['subscribe'] = isset($post_data['subscribe']) ? '1' : '0';
-    $post['stick_topic'] = isset($post_data['stick_topic']) && $is_admmod ? '1' : '0';
+    $post['hide_smilies'] = !empty($feather->request->post('hide_smilies')) ? '1' : '0';
+    $post['subscribe'] = !empty($feather->request->post('subscribe')) ? '1' : '0';
+    $post['stick_topic'] = !empty($feather->request->post('stick_topic')) && $is_admmod ? '1' : '0';
     
-    $post['message']  = pun_linebreaks(pun_trim($post_data['req_message']));
+    $post['message']  = pun_linebreaks(pun_trim($feather->request->post('req_message')));
     
     // Validate BBCode syntax
     if ($pun_config['p_message_bbcode'] == '1') {
@@ -265,7 +286,7 @@ function send_notifications_reply($tid, $cur_posting, $new_pid)
                     $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
                     $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                     $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                    $mail_message = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message);
+                    $mail_message = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
                     $mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid, $mail_message);
                     $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
@@ -273,7 +294,7 @@ function send_notifications_reply($tid, $cur_posting, $new_pid)
                     $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                     $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                     $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                    $mail_message_full = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message_full);
+                    $mail_message_full = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message_full);
                     $mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid, $mail_message_full);
                     $mail_message_full = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message_full);
 
@@ -378,7 +399,7 @@ function send_notifications_new_topic($post, $cur_posting, $new_tid)
                     $mail_message = str_replace('<topic_subject>', $pun_config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message);
                     $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                     $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                    $mail_message = str_replace('<topic_url>', get_base_url().'/viewtopic.php?id='.$new_tid, $mail_message);
+                    $mail_message = str_replace('<topic_url>', get_link('topic/'.$new_tid.'/'), $mail_message);
                     $mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'], $mail_message);
                     $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
@@ -387,7 +408,7 @@ function send_notifications_new_topic($post, $cur_posting, $new_tid)
                     $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                     $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                     $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                    $mail_message_full = str_replace('<topic_url>', get_base_url().'/viewtopic.php?id='.$new_tid, $mail_message_full);
+                    $mail_message_full = str_replace('<topic_url>', get_link('topic/'.$new_tid.'/'), $mail_message_full);
                     $mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'], $mail_message_full);
                     $mail_message_full = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message_full);
 
@@ -429,7 +450,7 @@ function warn_banned_user($post, $new_pid)
 
     $mail_message = str_replace('<username>', $post['username'], $mail_message);
     $mail_message = str_replace('<email>', $post['email'], $mail_message);
-    $mail_message = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message);
+    $mail_message = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
     $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
     pun_mail($pun_config['o_mailing_list'], $mail_subject, $mail_message);
@@ -461,7 +482,7 @@ function increment_post_count($post, $new_tid)
 // If we are quoting a message
 function get_quote_message($qid, $tid)
 {
-    global $db, $pun_config;
+    global $db, $pun_config, $lang_common;
 
     if ($qid < 1) {
         message($lang_common['Bad request'], false, '404 Not Found');
@@ -520,7 +541,9 @@ function get_quote_message($qid, $tid)
 					$q_poster = pun_htmlspecialchars(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
 					$q_poster = '"'. $q_poster .'#'. $qid .'"';
 				}
-			} else $q_poster = $q_poster .'#'. $qid;
+			} else {
+				$q_poster = $q_poster .'#'. $qid;
+			}
 			$quote = '[quote='. $q_poster .']'.$q_message.'[/quote]'."\n";
 		}
 		else {
@@ -531,7 +554,7 @@ function get_quote_message($qid, $tid)
 }
 
 // Get the current state of checkboxes
-function get_checkboxes($post_data, $fid, $is_admmod, $is_subscribed)
+function get_checkboxes($feather, $fid, $is_admmod, $is_subscribed)
 {
     global $pun_user, $lang_post, $lang_common, $pun_config;
 	
@@ -539,20 +562,20 @@ function get_checkboxes($post_data, $fid, $is_admmod, $is_subscribed)
     
     $checkboxes = array();
     if ($fid && $is_admmod) {
-        $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.(isset($post_data['stick_topic']) ? ' checked="checked"' : '').' />'.$lang_common['Stick topic'].'<br /></label>';
+        $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.(!empty($feather->request->post('stick_topic')) ? ' checked="checked"' : '').' />'.$lang_common['Stick topic'].'<br /></label>';
     }
 
     if (!$pun_user['is_guest']) {
         if ($pun_config['o_smilies'] == '1') {
-            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(isset($post_data['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(!empty($feather->request->post('hide_smilies')) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
         }
 
         if ($pun_config['o_topic_subscriptions'] == '1') {
             $subscr_checked = false;
 
             // If it's a preview
-            if (isset($post_data['preview'])) {
-                $subscr_checked = isset($post_data['subscribe']) ? true : false;
+            if (!empty($feather->request->post('preview'))) {
+                $subscr_checked = (!empty($feather->request->post('subscribe'))) ? true : false;
             }
             // If auto subscribed
             elseif ($pun_user['auto_notify']) {
@@ -566,7 +589,7 @@ function get_checkboxes($post_data, $fid, $is_admmod, $is_subscribed)
             $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? $lang_post['Stay subscribed'] : $lang_post['Subscribe']).'<br /></label>';
         }
     } elseif ($pun_config['o_smilies'] == '1') {
-        $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(isset($post_data['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+        $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(!empty($feather->request->post('hide_smilies')) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
     }
     
     return $checkboxes;

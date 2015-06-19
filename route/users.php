@@ -20,10 +20,8 @@ $feather->get('/forum/:id(/)', '\controller\Viewforum:display')->conditions(arra
 $feather->get('/topic/:id/:name/page/:page(/)', '\controller\Viewtopic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'));
 $feather->get('/topic/:id/:name(/)', '\controller\Viewtopic:display')->conditions(array('id' => '[0-9]+'));
 $feather->get('/topic/:id(/)', '\controller\Viewtopic:display')->conditions(array('id' => '[0-9]+'));
-
 //$feather->get('/topic/:id/:name/action/:action(/)', '\controller\Viewtopic:action');
 $feather->get('/topic/:id/action/:action(/)', '\controller\Viewtopic:action')->conditions(array('id' => '[0-9]+'));
-
 $feather->get('/post/:pid(/)', '\controller\Viewtopic:viewpost')->conditions(array('pid' => '[0-9]+'));
 
 // Userlist
@@ -41,3 +39,7 @@ $feather->get('/logout/id/:id/token/:token(/)', '\controller\Login:logmeout')->c
 $feather->get('/register(/)', '\controller\Register:rules');
 $feather->map('/register/agree(/)', '\controller\Register:display')->via('GET', 'POST');
 $feather->get('/register/cancel(/)', '\controller\Register:cancel');
+
+// Post
+$feather->map('/post/new-topic/:fid(/)', '\controller\Post:newpost')->conditions(array('fid' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/post/reply/:tid(/)(/quote/:qid)(/)', '\controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST');
