@@ -92,7 +92,7 @@ function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
     
     if ($closed == '0') {
         if (($post_replies == '' && $pun_user['g_post_replies'] == '1') || $post_replies == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?tid='.$topic_id.'">'.$lang_topic['Post reply'].'</a></p>'."\n";
+            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/reply/'.$topic_id.'/').'">'.$lang_topic['Post reply'].'</a></p>'."\n";
         } else {
             $post_link = '';
         }
@@ -100,7 +100,7 @@ function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
         $post_link = $lang_topic['Topic closed'];
 
         if ($is_admmod) {
-            $post_link .= ' / <a href="post.php?tid='.$topic_id.'">'.$lang_topic['Post reply'].'</a>';
+            $post_link .= ' / <a href="'.get_link('post/reply/'.$topic_id.'/').'">'.$lang_topic['Post reply'].'</a>';
         }
 
         $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
@@ -310,7 +310,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
                 }
 
                 if (($cur_topic['post_replies'] == '' && $pun_user['g_post_replies'] == '1') || $cur_topic['post_replies'] == '1') {
-                    $cur_post['post_actions'][] = '<li class="postquote"><span><a href="post.php?tid='.$topic_id.'&amp;qid='.$cur_post['id'].'">'.$lang_topic['Quote'].'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.$lang_topic['Quote'].'</a></span></li>';
                 }
             }
         } else {

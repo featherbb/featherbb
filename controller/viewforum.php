@@ -46,7 +46,7 @@ namespace controller{
 
 			// Can we or can we not post new topics?
 			if (($cur_forum['post_topics'] == '' && $pun_user['g_post_topics'] == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
-				$post_link = "\t\t\t".'<p class="postlink conr"><a href="post.php?fid='.$id.'">'.$lang_forum['Post topic'].'</a></p>'."\n";
+				$post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/new-topic/'.$id.'/').'">'.$lang_forum['Post topic'].'</a></p>'."\n";
 			} else {
 				$post_link = '';
 			}

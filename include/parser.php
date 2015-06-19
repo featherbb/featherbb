@@ -756,8 +756,7 @@ function _parse_bbcode_callback($matches) {
 				$attribute = preg_replace('/\s*#\d++$/S', '', $attribute); // Strip post id from attribute.
 				$attribute .= ' '. $lang_common['wrote'];  // Append language-specific "wrote:".
 				if ($pd['config']['quote_links']) {
-					$attribute = ' <a href="'. get_base_url(TRUE) .'/viewtopic.php?pid='.
-					$m[1] .'#p'. $m[1] . '">'. $attribute .'</a>';
+					$attribute = ' <a href="'. get_link('post/'.$m[1].'/#p'.$m[1]) .'">'. $attribute .'</a>';
 				}
 			} else $attribute .= ' '. $lang_common['wrote']; // If no post id, just add "wrote:".
 		}
