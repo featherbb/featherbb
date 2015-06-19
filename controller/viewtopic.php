@@ -11,7 +11,7 @@ namespace controller{
     
     class Viewtopic{
 		
-        function display($id = null, $name = null, $page = null){
+        function display($id = null, $name = null, $page = null, $pid = null){
 			
 			global $feather, $lang_common, $lang_post, $lang_topic, $pun_config, $pun_user, $pun_start, $db, $pd;
 			
@@ -113,6 +113,7 @@ namespace controller{
 			
 			$feather->render('viewtopic.php', array(
 				'id' => $id,
+				'p' => $p,
 				'post_data' => $post_data,
 				'lang_common' => $lang_common,
 				'lang_topic' => $lang_topic,
@@ -126,6 +127,7 @@ namespace controller{
 				'start_from' => $start_from,
 				'session' => $_SESSION,
 				'lang_antispam' => $lang_antispam,
+				'pid' => $pid,
 				'quickpost'		=>	$quickpost,
 				'index_questions'		=>	$index_questions,
 				'lang_antispam_questions'		=>	$lang_antispam_questions,
@@ -160,7 +162,7 @@ namespace controller{
 			
 			$post = redirect_to_post($pid);
 			
-			return Viewtopic::display($post['topic_id'], null, $post['get_p']); // TODO: $this->
+			return Viewtopic::display($post['topic_id'], null, $post['get_p'], $pid); // TODO: $this->
 		}
 		
 		function action($id, $action) {

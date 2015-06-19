@@ -985,7 +985,7 @@ function message($message, $no_back_link = false, $http_status = null)
 			'required_fields'	=>	null,
 			'page_head'		=>	'',
 			'navlinks'		=>	$navlinks,
-			'page_info'		=>	'',
+			'page_info'		=>	$page_info,
 			'db'		=>	$db,
 			)
 		);
@@ -2203,6 +2203,23 @@ function get_link($link, $args = null)
 			$gen_link = str_replace('$'.($i + 1), $args[$i], $gen_link);
 		$gen_link = $base_url.'/'.$gen_link;
 	}
+
+	return $gen_link;
+}
+
+// Generate link to another page on the forum for the referrer function
+function get_link_r($link)
+{
+	global $pun_config;
+
+	if (in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
+		$base_url = '';
+	}
+	else {
+		$base_url = 'index.php';
+	}
+
+	$gen_link = $base_url.$link;
 
 	return $gen_link;
 }
