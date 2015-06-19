@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function check_for_errors($feather, $user_field)
+function check_for_errors($feather)
 {
     global $db, $pun_user, $pun_config, $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
     
@@ -22,7 +22,7 @@ function check_for_errors($feather, $user_field)
     }
 
 
-    $user['username'] = pun_trim($feather->request->post($user_field));
+    $user['username'] = pun_trim($feather->request->post('req_user'));
     $user['email1'] = strtolower(pun_trim($feather->request->post('req_email1')));
 
     if ($pun_config['o_regs_verify'] == '1') {

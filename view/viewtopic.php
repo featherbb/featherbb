@@ -40,7 +40,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
+	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -126,26 +126,22 @@ if ($quickpost) {
 <div id="quickpost" class="blockform">
 	<h2><span><?php echo $lang_topic['Quick post'] ?></span></h2>
 	<div class="box">
-		<form id="quickpostform" method="post" action="post.php?tid=<?php echo $id ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+		<form id="quickpostform" method="post" action="<?php echo get_link('post/reply/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_common['Write message legend'] ?></legend>
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
+						<input type="hidden" name="pid" value="<?php echo pun_htmlspecialchars($pid) ?>" />
+						<input type="hidden" name="page" value="<?php echo pun_htmlspecialchars($p) ?>" />
 <?php if ($pun_config['o_topic_subscriptions'] == '1' && ($pun_user['auto_notify'] == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif;
-    ?>
-<?php
 
 if ($pun_user['is_guest']) {
     $email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
     $email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
-	if (!isset($session['user_field'])) {
-		$session['user_field'] = random_pass(8);
-	}
-
-    ?>
-						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo $session['user_field'] ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+?>
+						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<label class="conl<?php echo($pun_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php

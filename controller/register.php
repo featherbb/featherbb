@@ -38,16 +38,10 @@ namespace controller{
 			if ($pun_config['o_regs_allow'] == '0' || !empty($feather->request->post('username')) || !empty($feather->request->post('password'))) {
 				message($lang_register['No new regs']);
 			}
-			
-			// Simple anti-spam system: generate a new name for user field
-			session_start();
-			if (!isset($_SESSION['user_field'])) {
-				$_SESSION['user_field'] = random_pass(8);
-			}
 
 			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_register['Register']);
-			$required_fields = array($_SESSION['user_field'] => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2', 'captcha' => $lang_antispam['Robot title']);
-			$focus_element = array('register', $_SESSION['user_field']);
+			$required_fields = array('req_user' => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2', 'captcha' => $lang_antispam['Robot title']);
+			$focus_element = array('register', 'req_user');
 
 			if (!defined('PUN_ACTIVE_PAGE')) {
 				define('PUN_ACTIVE_PAGE', 'register');
@@ -59,11 +53,10 @@ namespace controller{
 			$user['errors'] = '';
 
 			if ($feather->request()->isPost()) {
-				$user = check_for_errors($feather, $_SESSION['user_field']);
+				$user = check_for_errors($feather);
 
 				// Did everything go according to plan? Insert the user
 				if (empty($user['errors'])) {
-					session_destroy();
 					insert_user($user);
 				}
 			}
@@ -93,7 +86,6 @@ namespace controller{
 				'lang_antispam' => $lang_antispam,
 				'lang_antispam_questions'	=>	$lang_antispam_questions,
 				'index_questions'	=>	$index_questions,
-				'_SESSION'	=>	$_SESSION,
 				'feather'	=>	$feather,
 				)
 			);

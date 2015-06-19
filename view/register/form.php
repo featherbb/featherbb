@@ -52,8 +52,8 @@ if (!empty($errors)) {
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="username" value="" />
 						<input type="hidden" name="password" value="" />
-						<label class="required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo $_SESSION['user_field'] ?>" value="<?php if (!empty($feather->request->post($_SESSION['user_field']))) {
-    echo pun_htmlspecialchars($feather->request->post($_SESSION['user_field']));
+						<label class="required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_user" value="<?php if (!empty($feather->request->post('req_user'))) {
+    echo pun_htmlspecialchars($feather->request->post('req_user'));
 } ?>" size="25" maxlength="25" /><br /></label>
 					</div>
 				</fieldset>
