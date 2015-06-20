@@ -18,10 +18,6 @@ namespace controller{
 			if ($pun_user['g_read_board'] == '0') {
 				message($lang_common['No view'], false, '403 Forbidden');
 			}
-			
-			if ($id < 1) {
-				message($lang_common['Bad request'], false, '404 Not Found');
-			}
 
 			// Load the viewtopic.php language file
 			require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
@@ -142,6 +138,8 @@ namespace controller{
 				'pun_config' => $pun_config,
 				'pun_start' => $pun_start,
 				'footer_style' => 'viewtopic',
+				'forum_id' => $id,
+				'num_pages' => $num_pages,
 				)
 			);
 			
