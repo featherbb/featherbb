@@ -13,7 +13,7 @@ namespace controller{
 
         function editpost($id) {
 			
-			global $feather, $lang_common, $lang_prof_reg, $pun_config, $pun_user, $pun_start, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_prof_reg, $lang_register;
+			global $feather, $lang_common, $lang_prof_reg, $pun_config, $pun_user, $pun_start, $db, $lang_post, $lang_register;
 			
 			if ($pun_user['g_read_board'] == '0') {
 				message($lang_common['No view'], false, '403 Forbidden');

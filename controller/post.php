@@ -17,7 +17,7 @@ namespace controller{
 
         function newpost($fid = null, $tid = null, $qid = null) {
 			
-			global $feather, $lang_common, $lang_prof_reg, $pun_config, $pun_user, $pun_start, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_prof_reg, $lang_register;
+			global $feather, $lang_common, $lang_prof_reg, $pun_config, $pun_user, $pun_start, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
 			
 			// Load the post.php model file
 			require PUN_ROOT.'model/post.php';

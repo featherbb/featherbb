@@ -26,7 +26,7 @@ function handle_deletion($is_topic_post, $id, $tid, $fid)
     global $db, $lang_delete;
     
     // Make sure they got here from the site
-    confirm_referrer('delete.php');
+    confirm_referrer(get_link_r('delete/'.$id.'/'));
 
     require PUN_ROOT.'include/search_idx.php';
 
@@ -35,7 +35,7 @@ function handle_deletion($is_topic_post, $id, $tid, $fid)
         delete_topic($tid);
         update_forum($fid);
 
-        redirect('viewforum.php?id='.$fid, $lang_delete['Topic del redirect']);
+        redirect(get_link('forum/'.$fid.'/'), $lang_delete['Topic del redirect']);
     } else {
         // Delete just this one post
         delete_post($id, $tid);
@@ -45,6 +45,6 @@ function handle_deletion($is_topic_post, $id, $tid, $fid)
         $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' AND id < '.$id.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
         $post_id = $db->result($result);
 
-        redirect('viewtopic.php?pid='.$post_id.'#p'.$post_id, $lang_delete['Post del redirect']);
+        redirect(get_link('post/'.$post_id.'/#p'.$post_id), $lang_delete['Post del redirect']);
     }
 }

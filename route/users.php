@@ -46,3 +46,6 @@ $feather->map('/post/reply/:tid(/)(/quote/:qid)(/)', '\controller\Post:newreply'
 
 // Edit
 $feather->map('/edit/:id(/)', '\controller\Edit:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+
+// Delete
+$feather->map('/delete/:id(/)', '\controller\Delete:deletepost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');

@@ -17,8 +17,8 @@ if (!defined('PUN')) {
 	<div class="inbox">
 		<ul class="crumbs">
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $cur_post['fid'] ?>"><?php echo pun_htmlspecialchars($cur_post['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="viewtopic.php?pid=<?php echo $id ?>#p<?php echo $id ?>"><?php echo pun_htmlspecialchars($cur_post['subject']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_post['fid'].'/'.$cur_post['forum_name'].'/') ?>"><?php echo pun_htmlspecialchars($cur_post['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('post/'.$id.'/#p'.$id) ?>"><?php echo pun_htmlspecialchars($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_delete['Delete post'] ?></strong></li>
 		</ul>
 	</div>
@@ -27,7 +27,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_delete['Delete post'] ?></span></h2>
 	<div class="box">
-		<form method="post" action="delete.php?id=<?php echo $id ?>">
+		<form method="post" action="<?php echo get_link('delete/'.$id.'/') ?>">
 			<div class="inform">
 				<div class="forminfo">
 					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.pun_htmlspecialchars($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
