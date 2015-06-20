@@ -25,8 +25,6 @@ $feather->get('/post/:pid(/)', '\controller\Viewtopic:viewpost')->conditions(arr
 
 // Userlist
 $feather->get('/userlist(/)', '\controller\Userlist:display');
-$feather->get('/userlist/username/:username/group/:group/sort/:sort/dir/:dir(/)', '\controller\Userlist:display')->conditions(array('group' => '[0-9]+'));
-$feather->get('/userlist/username/:username/group/:group/sort/:sort/dir/:dir/page/:page(/)', '\controller\Userlist:display')->conditions(array('group' => '[0-9]+'));
 
 // Login
 $feather->get('/login(/)', '\controller\Login:display');
@@ -48,3 +46,6 @@ $feather->map('/edit/:id(/)', '\controller\Edit:editpost')->conditions(array('id
 
 // Delete
 $feather->map('/delete/:id(/)', '\controller\Delete:deletepost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+
+// Search
+$feather->get('/search(/)', '\controller\Search:display');

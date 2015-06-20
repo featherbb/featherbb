@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_search['User search'] ?></span></h2>
 	<div class="box">
-		<form id="userlist" method="get" action="userlist.php">
+		<form id="userlist" method="get" action="">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_ul['User find legend'] ?></legend>

@@ -11,7 +11,7 @@ namespace controller{
     
     class Userlist{
 
-        function display($username = null, $group = null, $sort = null, $dir = null, $page = null){
+        function display(){
 			
 			global $feather, $lang_common, $pun_config, $pun_user, $pun_start, $db;
 			
@@ -34,17 +34,17 @@ namespace controller{
 			// Determine if we are allowed to view post counts
 			$show_post_count = ($pun_config['o_show_post_count'] == '1' || $pun_user['is_admmod']) ? true : false;
 
-			$username = isset($username) && $pun_user['g_search_users'] == '1' ? pun_trim($username) : '';
-			$show_group = isset($group) ? intval($group) : -1;
-			$sort_by = isset($sort) && (in_array($sort, array('username', 'registered')) || ($sort == 'num_posts' && $show_post_count)) ? $sort : 'username';
-			$sort_dir = isset($dir) && $dir == 'DESC' ? 'DESC' : 'ASC';
+			$username = !empty($feather->request->get('username')) && $pun_user['g_search_users'] == '1' ? pun_trim($feather->request->get('username')) : '';
+			$show_group = !empty($feather->request->get('show_group')) ? intval($feather->request->get('show_group')) : -1;
+			$sort_by = !empty($feather->request->get('sort_by')) && (in_array($feather->request->get('sort_by'), array('username', 'registered')) || ($feather->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $feather->request->get('sort_by') : 'username';
+			$sort_dir = !empty($feather->request->get('sort_dir')) && $feather->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
 
 			$num_users = fetch_user_count($username, $show_group);
 
 			// Determine the user offset (based on $page)
 			$num_pages = ceil($num_users / 50);
 
-			$p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+			$p = (empty($feather->request->get('page')) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
 			$start_from = 50 * ($p - 1);
 
 			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_common['User list']);
@@ -87,9 +87,9 @@ namespace controller{
 				'lang_ul' => $lang_ul,
 				'pun_user' => $pun_user,
 				'username' => $username,
-				'show_group' => $group,
-				'sort_by' => $sort,
-				'sort_dir' => $dir,
+				'show_group' => $show_group,
+				'sort_by' => $sort_by,
+				'sort_dir' => $sort_dir,
 				'show_post_count' => $show_post_count,
 				'paging_links' => $paging_links,
 				'pun_config' => $pun_config,
