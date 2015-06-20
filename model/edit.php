@@ -23,16 +23,16 @@ function get_info_edit($id)
     return $cur_post;
 }
 
-function check_errors_before_edit($post_data, $can_edit_subject, $errors)
+function check_errors_before_edit($id, $feather, $can_edit_subject, $errors)
 {
     global $db, $pun_user, $pun_config, $lang_post, $pd;
     
     // Make sure they got here from the site
-    confirm_referrer('edit.php');
+    confirm_referrer(get_link_r('edit/'.$id.'/'));
 
     // If it's a topic it must contain a subject
     if ($can_edit_subject) {
-        $subject = pun_trim($post_data['req_subject']);
+        $subject = pun_trim($feather->request->post('req_subject'));
 
         if ($pun_config['o_censoring'] == '1') {
             $censored_subject = pun_trim(censor_words($subject));
@@ -50,7 +50,7 @@ function check_errors_before_edit($post_data, $can_edit_subject, $errors)
     }
 
     // Clean up message from POST
-    $message = pun_linebreaks(pun_trim($post_data['req_message']));
+    $message = pun_linebreaks(pun_trim($feather->request->post('req_message')));
 
     // Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
     if (strlen($message) > PUN_MAX_POSTSIZE) {
@@ -82,20 +82,20 @@ function check_errors_before_edit($post_data, $can_edit_subject, $errors)
 }
 
 // If the previous check went OK, setup some variables used later
-function setup_variables($post_data, $cur_post, $is_admmod, $can_edit_subject, $errors)
+function setup_variables($feather, $cur_post, $is_admmod, $can_edit_subject, $errors)
 {
     global $pun_config, $pd;
     
     $post = array();
     
-    $post['hide_smilies'] = isset($post_data['hide_smilies']) ? '1' : '0';
-    $post['stick_topic'] = isset($post_data['stick_topic']) ? '1' : '0';
+    $post['hide_smilies'] = !empty($feather->request->post('hide_smilies')) ? '1' : '0';
+    $post['stick_topic'] = !empty($feather->request->post('stick_topic')) ? '1' : '0';
     if (!$is_admmod) {
         $post['stick_topic'] = $cur_post['sticky'];
     }
     
     // Clean up message from POST
-    $post['message'] = pun_linebreaks(pun_trim($post_data['req_message']));
+    $post['message'] = pun_linebreaks(pun_trim($feather->request->post('req_message')));
     
     // Validate BBCode syntax
     if ($pun_config['p_message_bbcode'] == '1') {
@@ -108,17 +108,17 @@ function setup_variables($post_data, $cur_post, $is_admmod, $can_edit_subject, $
     
     // Get the subject
     if ($can_edit_subject) {
-        $post['subject'] = pun_trim($post_data['req_subject']);
+        $post['subject'] = pun_trim($feather->request->post('req_subject'));
     }
     
     return $post;
 }
 
-function edit_post($id, $can_edit_subject, $post, $cur_post, $post_data, $is_admmod)
+function edit_post($id, $can_edit_subject, $post, $cur_post, $feather, $is_admmod)
 {
     global $db, $pun_user;
     
-    $edited_sql = (!isset($post_data['silent']) || !$is_admmod) ? ', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\'' : '';
+    $edited_sql = (empty($feather->request->post('slient')) || !$is_admmod) ? ', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\'' : '';
 
     require PUN_ROOT.'include/search_idx.php';
 
@@ -136,14 +136,14 @@ function edit_post($id, $can_edit_subject, $post, $cur_post, $post_data, $is_adm
     $db->query('UPDATE '.$db->prefix.'posts SET message=\''.$db->escape($post['message']).'\', hide_smilies='.$post['hide_smilies'].$edited_sql.' WHERE id='.$id) or error('Unable to update post', __FILE__, __LINE__, $db->error());
 }
 
-function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $post_data, $cur_index)
+function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $feather, $cur_index)
 {
     global $lang_post, $lang_common, $pun_config;
     
     $checkboxes = array();
     
     if ($can_edit_subject && $is_admmod) {
-        if (isset($post_data['stick_topic']) || $cur_post['sticky'] == '1') {
+        if (!empty($feather->request->post('stick_topic')) || $cur_post['sticky'] == '1') {
             $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
         } else {
             $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
@@ -151,7 +151,7 @@ function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $post_data, $c
     }
 
     if ($pun_config['o_smilies'] == '1') {
-        if (isset($post_data['hide_smilies']) || $cur_post['hide_smilies'] == '1') {
+        if (!empty($feather->request->post('hide_smilies')) || $cur_post['hide_smilies'] == '1') {
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
         } else {
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
@@ -159,7 +159,7 @@ function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $post_data, $c
     }
 
     if ($is_admmod) {
-        if ((isset($post_data['form_sent']) && isset($post_data['silent'])) || !isset($post_data['form_sent'])) {
+        if ($feather->request()->isPost() && !empty($feather->request->post('silent')) || empty($feather->request()->isPost())) {
             $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Silent edit'].'<br /></label>';
         } else {
             $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Silent edit'].'<br /></label>';

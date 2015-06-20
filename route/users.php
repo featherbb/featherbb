@@ -43,3 +43,6 @@ $feather->get('/register/cancel(/)', '\controller\Register:cancel');
 // Post
 $feather->map('/post/new-topic/:fid(/)', '\controller\Post:newpost')->conditions(array('fid' => '[0-9]+'))->via('GET', 'POST');
 $feather->map('/post/reply/:tid(/)(/quote/:qid)(/)', '\controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST');
+
+// Edit
+$feather->map('/edit/:id(/)', '\controller\Edit:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');

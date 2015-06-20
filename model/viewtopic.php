@@ -305,7 +305,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
                         $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="delete.php?id='.$cur_post['id'].'">'.$lang_topic['Delete'].'</a></span></li>';
                     }
                     if ($pun_user['g_edit_posts'] == '1') {
-                        $cur_post['post_actions'][] = '<li class="postedit"><span><a href="edit.php?id='.$cur_post['id'].'">'.$lang_topic['Edit'].'</a></span></li>';
+                        $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
                     }
                 }
 
@@ -317,7 +317,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
             $cur_post['post_actions'][] = '<li class="postreport"><span><a href="misc.php?report='.$cur_post['id'].'">'.$lang_topic['Report'].'</a></span></li>';
             if ($pun_user['g_id'] == PUN_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
                 $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="delete.php?id='.$cur_post['id'].'">'.$lang_topic['Delete'].'</a></span></li>';
-                $cur_post['post_actions'][] = '<li class="postedit"><span><a href="edit.php?id='.$cur_post['id'].'">'.$lang_topic['Edit'].'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
             }
             $cur_post['post_actions'][] = '<li class="postquote"><span><a href="post.php?tid='.$topic_id.'&amp;qid='.$cur_post['id'].'">'.$lang_topic['Quote'].'</a></span></li>';
         }
