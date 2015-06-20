@@ -83,13 +83,13 @@ function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
     if (!$pun_user['is_guest']) {
         if ($subscriptions == 1) {
             if ($is_subscribed) {
-                $forum_actions[] = '<span>'.$lang_forum['Is subscribed'].' - </span><a href="misc.php?action=unsubscribe&amp;fid='.$forum_id.'">'.$lang_forum['Unsubscribe'].'</a>';
+                $forum_actions[] = '<span>'.$lang_forum['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Unsubscribe'].'</a>';
             } else {
-                $forum_actions[] = '<a href="misc.php?action=subscribe&amp;fid='.$forum_id.'">'.$lang_forum['Subscribe'].'</a>';
+                $forum_actions[] = '<a href="'.get_link('subscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Subscribe'].'</a>';
             }
         }
 
-        $forum_actions[] = '<a href="misc.php?action=markforumread&amp;fid='.$forum_id.'">'.$lang_common['Mark forum read'].'</a>';
+        $forum_actions[] = '<a href="'.get_link('mark-forum-read/'.$forum_id.'/').'">'.$lang_common['Mark forum read'].'</a>';
     }
     
     return $forum_actions;

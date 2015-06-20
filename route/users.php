@@ -54,6 +54,17 @@ $feather->get('/search/show/:show(/)', '\controller\Search:quicksearches');
 // Help
 $feather->get('/help(/)', '\controller\Help:display');
 
+// Misc
+$feather->get('/rules(/)', '\controller\Misc:rules');
+$feather->get('/mark-read(/)', '\controller\Misc:markread');
+$feather->get('/mark-forum-read/:id(/)', '\controller\Misc:markforumread')->conditions(array('id' => '[0-9]+'));
+$feather->map('/email/:id(/)', '\controller\Misc:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/report/:id(/)', '\controller\Misc:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+$feather->get('/subscribe/forum/:id(/)', '\controller\Misc:subscribeforum')->conditions(array('id' => '[0-9]+'));
+$feather->get('/unsubscribe/forum/:id(/)', '\controller\Misc:unsubscribeforum')->conditions(array('id' => '[0-9]+'));
+$feather->get('/subscribe/topic/:id(/)', '\controller\Misc:subscribetopic')->conditions(array('id' => '[0-9]+'));
+$feather->get('/unsubscribe/topic/:id(/)', '\controller\Misc:unsubscribetopic')->conditions(array('id' => '[0-9]+'));
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

@@ -140,9 +140,9 @@ function get_subscraction($is_subscribed, $topic_id)
     if (!$pun_user['is_guest'] && $pun_config['o_topic_subscriptions'] == '1') {
         if ($is_subscribed) {
             // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-            $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="misc.php?action=unsubscribe&amp;tid='.$topic_id.'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
+            $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/topic/'.$topic_id.'/').'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
         } else {
-            $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="misc.php?action=subscribe&amp;tid='.$topic_id.'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
+            $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.get_link('subscribe/topic/'.$topic_id.'/').'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
         }
     } else {
         $subscraction = '';
@@ -253,7 +253,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
                 if ((($cur_post['email_setting'] == '0' && !$pun_user['is_guest']) || $pun_user['is_admmod']) && $pun_user['g_send_email'] == '1') {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.pun_htmlspecialchars($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
                 } elseif ($cur_post['email_setting'] == '1' && !$pun_user['is_guest'] && $pun_user['g_send_email'] == '1') {
-                    $cur_post['user_contacts'][] = '<span class="email"><a href="misc.php?email='.$cur_post['poster_id'].'">'.$lang_common['Email'].'</a></span>';
+                    $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.$lang_common['Email'].'</a></span>';
                 }
 
                 if ($cur_post['url'] != '') {
@@ -296,7 +296,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
         // Generation post action array (quote, edit, delete etc.)
         if (!$is_admmod) {
             if (!$pun_user['is_guest']) {
-                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="misc.php?report='.$cur_post['id'].'">'.$lang_topic['Report'].'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
             }
 
             if ($cur_topic['closed'] == '0') {
@@ -314,12 +314,12 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
                 }
             }
         } else {
-            $cur_post['post_actions'][] = '<li class="postreport"><span><a href="misc.php?report='.$cur_post['id'].'">'.$lang_topic['Report'].'</a></span></li>';
+            $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
             if ($pun_user['g_id'] == PUN_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
                 $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                 $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
             }
-            $cur_post['post_actions'][] = '<li class="postquote"><span><a href="post.php?tid='.$topic_id.'&amp;qid='.$cur_post['id'].'">'.$lang_topic['Quote'].'</a></span></li>';
+            $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.$lang_topic['Quote'].'</a></span></li>';
         }
 
         // Perform the main parsing of the message (BBCode, smilies, censor words etc)

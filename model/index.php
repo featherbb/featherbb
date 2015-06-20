@@ -29,7 +29,7 @@ function get_forum_actions()
 
     // Display a "mark all as read" link
     if (!$pun_user['is_guest']) {
-        $forum_actions[] = '<a href="misc.php?action=markread">'.$lang_common['Mark all as read'].'</a>';
+        $forum_actions[] = '<a href="'.get_link('mark-read/').'">'.$lang_common['Mark all as read'].'</a>';
     }
     
     return $forum_actions;

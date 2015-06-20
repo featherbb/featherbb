@@ -13,7 +13,7 @@ namespace controller{
 
         function display($id, $name = null, $page = null){
 			
-			global $feather, $lang_common, $pun_config, $pun_user, $pun_start, $db;
+			global $feather, $lang_common, $lang_forum, $pun_config, $pun_user, $pun_start, $db;
 			
 			if ($pun_user['g_read_board'] == '0') {
 				message($lang_common['No view'], false, '403 Forbidden');
@@ -103,6 +103,7 @@ namespace controller{
 				'is_admmod' => $is_admmod,
 				'start_from' => $start_from,
 				'url_forum' => $url_forum,
+				'forum_actions' => $forum_actions,
 				)
 			);
 

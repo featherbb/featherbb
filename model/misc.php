@@ -30,15 +30,15 @@ function get_info_mail($recipient_id)
     return $mail;
 }
 
-function send_email($post_data)
+function send_email($feather, $mail, $id)
 {
-    global $db, $lang_misc, $pun_user;
+    global $db, $lang_misc, $pun_user, $pun_config;
     
-    confirm_referrer('misc.php');
+    confirm_referrer(get_link_r('email/'.$id.'/'));
 
     // Clean up message and subject from POST
-    $subject = pun_trim($post_data['req_subject']);
-    $message = pun_trim($post_data['req_message']);
+    $subject = pun_trim($feather->request->post('req_subject'));
+    $message = pun_trim($feather->request->post('req_message'));
 
     if ($subject == '') {
         message($lang_misc['No email subject']);
@@ -75,16 +75,16 @@ function send_email($post_data)
     $db->query('UPDATE '.$db->prefix.'users SET last_email_sent='.time().' WHERE id='.$pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
     // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent)
-    $redirect_url = validate_redirect($post_data['redirect_url'], 'index.php');
+    $redirect_url = validate_redirect($feather->request->post('redirect_url'), 'index.php');
 
     redirect(pun_htmlspecialchars($redirect_url), $lang_misc['Email sent redirect']);
 }
 
-function get_redirect_url($server_data, $recipient_id)
+function get_redirect_url($feather, $recipient_id)
 {
     // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
-    if (!empty($server_data['HTTP_REFERER'])) {
-        $redirect_url = validate_redirect($server_data['HTTP_REFERER'], null);
+    if (!empty($feather->request->getReferrer())) {
+        $redirect_url = validate_redirect($feather->request->getReferrer(), null);
     }
 
     if (!isset($redirect_url)) {
@@ -96,15 +96,15 @@ function get_redirect_url($server_data, $recipient_id)
     return $redirect_url;
 }
 
-function insert_report($post_data, $post_id)
+function insert_report($feather, $post_id)
 {
     global $db, $lang_misc, $pun_user, $lang_common, $pun_config;
     
     // Make sure they got here from the site
-    confirm_referrer('misc.php');
+    confirm_referrer(get_link_r('report/'.$post_id.'/'));
     
     // Clean up reason from POST
-    $reason = pun_linebreaks(pun_trim($post_data['req_reason']));
+    $reason = pun_linebreaks(pun_trim($feather->request->post('req_reason')));
     if ($reason == '') {
         message($lang_misc['No reason']);
     } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes
@@ -163,7 +163,7 @@ function insert_report($post_data, $post_id)
 
     $db->query('UPDATE '.$db->prefix.'users SET last_report_sent='.time().' WHERE id='.$pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
-    redirect('viewforum.php?id='.$forum_id, $lang_misc['Report redirect']);
+    redirect(get_link('forum/'.$forum_id.'/'.url_friendly($subject).'/'), $lang_misc['Report redirect']);
 }
 
 function get_info_report($post_id)
@@ -201,7 +201,7 @@ function subscribe_topic($topic_id)
 
     $db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$pun_user['id'].' ,'.$topic_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
 
-    redirect('viewtopic.php?id='.$topic_id, $lang_misc['Subscribe redirect']);
+    redirect(get_link('topic/'.$topic_id.'/'), $lang_misc['Subscribe redirect']);
 }
 
 function unsubscribe_topic($topic_id)
@@ -219,7 +219,7 @@ function unsubscribe_topic($topic_id)
 
     $db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE user_id='.$pun_user['id'].' AND topic_id='.$topic_id) or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
 
-    redirect('viewtopic.php?id='.$topic_id, $lang_misc['Unsubscribe redirect']);
+	redirect(get_link('topic/'.$topic_id.'/'), $lang_misc['Unsubscribe redirect']);
 }
 
 function unsubscribe_forum($forum_id)
@@ -237,7 +237,7 @@ function unsubscribe_forum($forum_id)
 
     $db->query('DELETE FROM '.$db->prefix.'forum_subscriptions WHERE user_id='.$pun_user['id'].' AND forum_id='.$forum_id) or error('Unable to remove subscription', __FILE__, __LINE__, $db->error());
 
-    redirect('viewforum.php?id='.$forum_id, $lang_misc['Unsubscribe redirect']);
+	redirect(get_link('forum/'.$forum_id.'/'), $lang_misc['Unsubscribe redirect']);
 }
 
 function subscribe_forum($forum_id)
@@ -261,5 +261,5 @@ function subscribe_forum($forum_id)
 
     $db->query('INSERT INTO '.$db->prefix.'forum_subscriptions (user_id, forum_id) VALUES('.$pun_user['id'].' ,'.$forum_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
 
-    redirect('viewforum.php?id='.$forum_id, $lang_misc['Subscribe redirect']);
+	redirect(get_link('forum/'.$forum_id.'/'), $lang_misc['Subscribe redirect']);
 }
