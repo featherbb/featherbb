@@ -115,6 +115,7 @@ namespace controller{
 				'pun_config' => $pun_config,
 				'pun_start' => $pun_start,
 				'footer_style' => 'viewforum',
+				'forum_id' => $id,
 				)
 			);
 			
