@@ -20,7 +20,6 @@ $feather->get('/forum/:id(/)', '\controller\Viewforum:display')->conditions(arra
 $feather->get('/topic/:id/:name/page/:page(/)', '\controller\Viewtopic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'));
 $feather->get('/topic/:id/:name(/)', '\controller\Viewtopic:display')->conditions(array('id' => '[0-9]+'));
 $feather->get('/topic/:id(/)', '\controller\Viewtopic:display')->conditions(array('id' => '[0-9]+'));
-//$feather->get('/topic/:id/:name/action/:action(/)', '\controller\Viewtopic:action');
 $feather->get('/topic/:id/action/:action(/)', '\controller\Viewtopic:action')->conditions(array('id' => '[0-9]+'));
 $feather->get('/post/:pid(/)', '\controller\Viewtopic:viewpost')->conditions(array('pid' => '[0-9]+'));
 

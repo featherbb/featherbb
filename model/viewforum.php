@@ -167,7 +167,7 @@ function print_topics($forum_id, $sort_by, $start_from)
                 $cur_topic['item_status'] .= ' inew';
                 $cur_topic['icon_type'] = 'icon icon-new';
                 $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
-                $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/action/new/').'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
+                $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
             } else {
                 $subject_new_posts = null;
             }
