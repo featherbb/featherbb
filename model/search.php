@@ -7,15 +7,15 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function get_search_results($get_data)
+function get_search_results($feather)
 {
-    global $db, $lang_common, $lang_search, $pun_user, $pun_config;
+    global $db, $db_type, $lang_common, $lang_search, $pun_user, $pun_config;
     
     $search = array();
     
-    $action = (isset($get_data['action'])) ? $get_data['action'] : null;
-    $forums = isset($get_data['forums']) ? (is_array($get_data['forums']) ? $get_data['forums'] : array_filter(explode(',', $get_data['forums']))) : (isset($get_data['forum']) ? array($get_data['forum']) : array());
-    $sort_dir = (isset($get_data['sort_dir']) && $get_data['sort_dir'] == 'DESC') ? 'DESC' : 'ASC';
+    $action = (!empty($feather->request->get('action'))) ? $feather->request->get('action') : null;
+    $forums = !empty($feather->request->get('forums')) ? (is_array($feather->request->get('forums')) ? $feather->request->get('forums') : array_filter(explode(',', $feather->request->get('forums')))) : (!empty($feather->request->get('forums')) ? array($feather->request->get('forums')) : array());
+    $sort_dir = (!empty($feather->request->get('sort_dir')) && $feather->request->get('sort_dir') == 'DESC') ? 'DESC' : 'ASC';
 
     $forums = array_map('intval', $forums);
 
@@ -27,16 +27,16 @@ function get_search_results($get_data)
     }
 
     // If a search_id was supplied
-    if (isset($get_data['search_id'])) {
-        $search_id = intval($get_data['search_id']);
+    if (!empty($feather->request->get('search_id'))) {
+        $search_id = intval($feather->request->get('search_id'));
         if ($search_id < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
     }
     // If it's a regular search (keywords and/or author)
     elseif ($action == 'search') {
-        $keywords = (isset($get_data['keywords'])) ? utf8_strtolower(pun_trim($get_data['keywords'])) : null;
-        $author = (isset($get_data['author'])) ? utf8_strtolower(pun_trim($get_data['author'])) : null;
+        $keywords = (!empty($feather->request->get('keywords'))) ? utf8_strtolower(pun_trim($feather->request->get('keywords'))) : null;
+        $author = (!empty($feather->request->get('author'))) ? utf8_strtolower(pun_trim($feather->request->get('author'))) : null;
 
         if (preg_match('%^[\*\%]+$%', $keywords) || (pun_strlen(str_replace(array('*', '%'), '', $keywords)) < PUN_SEARCH_MIN_WORD && !is_cjk($keywords))) {
             $keywords = '';
@@ -54,13 +54,13 @@ function get_search_results($get_data)
             $author = str_replace('*', '%', $author);
         }
 
-        $show_as = (isset($get_data['show_as']) && $get_data['show_as'] == 'topics') ? 'topics' : 'posts';
-        $sort_by = (isset($get_data['sort_by'])) ? intval($get_data['sort_by']) : 0;
-        $search_in = (!isset($get_data['search_in']) || $get_data['search_in'] == '0') ? 0 : (($get_data['search_in'] == '1') ? 1 : -1);
+        $show_as = (!empty($feather->request->get('show_as')) && $feather->request->get('show_as') == 'topics') ? 'topics' : 'posts';
+        $sort_by = (!empty($feather->request->get('sort_by'))) ? intval($feather->request->get('sort_by')) : 0;
+        $search_in = (empty($feather->request->get('search_in')) || $feather->request->get('search_in') == '0') ? 0 : (($feather->request->get('search_in') == '1') ? 1 : -1);
     }
     // If it's a user search (by ID)
     elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
-        $user_id = (isset($get_data['user_id'])) ? intval($get_data['user_id']) : $pun_user['id'];
+        $user_id = (!empty($feather->request->get('user_id'))) ? intval($feather->request->get('user_id')) : $pun_user['id'];
         if ($user_id < 2) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -70,7 +70,7 @@ function get_search_results($get_data)
             message($lang_common['No permission'], false, '403 Forbidden');
         }
     } elseif ($action == 'show_recent') {
-        $interval = isset($get_data['value']) ? intval($get_data['value']) : 86400;
+        $interval = !empty($feather->request->get('value')) ? intval($feather->request->get('value')) : 86400;
     } elseif ($action == 'show_replies') {
         if ($pun_user['is_guest']) {
             message($lang_common['Bad request'], false, '404 Not Found');
@@ -258,13 +258,13 @@ function get_search_results($get_data)
             // If we searched for both keywords and author name we want the intersection between the results
             if ($author && $keywords) {
                 $search_ids = array_intersect_assoc($keyword_results, $author_results);
-                $search_type = array('both', array($keywords, pun_trim($get_data['author'])), implode(',', $forums), $search_in);
+                $search_type = array('both', array($keywords, pun_trim($feather->request->get('author'))), implode(',', $forums), $search_in);
             } elseif ($keywords) {
                 $search_ids = $keyword_results;
                 $search_type = array('keywords', $keywords, implode(',', $forums), $search_in);
             } else {
                 $search_ids = $author_results;
-                $search_type = array('author', pun_trim($get_data['author']), implode(',', $forums), $search_in);
+                $search_type = array('author', pun_trim($feather->request->get('author')), implode(',', $forums), $search_in);
             }
 
             unset($keyword_results, $author_results);
@@ -294,7 +294,7 @@ function get_search_results($get_data)
                     message($lang_common['No permission'], false, '403 Forbidden');
                 }
 
-                $result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$pun_user['last_visit'].' AND t.moved_to IS NULL'.(isset($get_data['fid']) ? ' AND t.forum_id='.intval($get_data['fid']) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$pun_user['last_visit'].' AND t.moved_to IS NULL'.(!empty($feather->request->get('fid')) ? ' AND t.forum_id='.intval($feather->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows($result);
 
                 if (!$num_hits) {
@@ -303,7 +303,7 @@ function get_search_results($get_data)
             }
             // If it's a search for recent posts (in a certain time interval)
             elseif ($action == 'show_recent') {
-                $result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.(time() - $interval).' AND t.moved_to IS NULL'.(isset($get_data['fid']) ? ' AND t.forum_id='.intval($get_data['fid']) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
+                $result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.(time() - $interval).' AND t.moved_to IS NULL'.(!empty($feather->request->get('fid')) ? ' AND t.forum_id='.intval($feather->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
                 $num_hits = $db->num_rows($result);
 
                 if (!$num_hits) {
@@ -414,16 +414,14 @@ function get_search_results($get_data)
             $db->close();
 
             // Redirect the user to the cached result page
-            header('Location: search.php?search_id='.$search_id);
+            header('Location: '.get_link('search/?search_id='.$search_id));
             exit;
         }
     }
 
-    $forum_actions = array();
-
     // If we're on the new posts search, display a "mark all as read" link
     if (!$pun_user['is_guest'] && $search_type[0] == 'action' && $search_type[1] == 'show_new') {
-        $forum_actions[] = '<a href="misc.php?action=markread">'.$lang_common['Mark all as read'].'</a>';
+        $search['forum_actions'][] = '<a href="misc.php?action=markread">'.$lang_common['Mark all as read'].'</a>';
     }
 
     // Fetch results to display
@@ -449,16 +447,16 @@ function get_search_results($get_data)
                 break;
         }
 
-        // Determine the topic or post offset (based on $get_data['p'])
+        // Determine the topic or post offset (based on $_GET['p'])
         $per_page = ($show_as == 'posts') ? $pun_user['disp_posts'] : $pun_user['disp_topics'];
         $num_pages = ceil($num_hits / $per_page);
 
-        $p = (!isset($get_data['p']) || $get_data['p'] <= 1 || $get_data['p'] > $num_pages) ? 1 : intval($get_data['p']);
+        $p = (empty($feather->request->get('p')) || $feather->request->get('p') <= 1 || $feather->request->get('p') > $num_pages) ? 1 : intval($feather->request->get('p'));
         $start_from = $per_page * ($p - 1);
         $search['start_from'] = $start_from;
 
         // Generate paging links
-        $search['paging_links'] = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'search.php?search_id='.$search_id);
+        $search['paging_links'] = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'search/?search_id='.$search_id);
 
         // throw away the first $start_from of $search_ids, only keep the top $per_page of $search_ids
         $search_ids = array_slice($search_ids, $start_from, $per_page);
@@ -479,9 +477,9 @@ function get_search_results($get_data)
 
         if ($search_type[0] == 'action') {
             if ($search_type[1] == 'show_user_topics') {
-                $search['crumbs_text']['search_type'] = '<a href="search.php?action=show_user_topics&amp;user_id='.$search_type[2].'">'.sprintf($lang_search['Quick search show_user_topics'], pun_htmlspecialchars($search['search_set'][0]['poster'])).'</a>';
+                $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/show/user_topics/user/'.$search_type[2].'/').'">'.sprintf($lang_search['Quick search show_user_topics'], pun_htmlspecialchars($search['search_set'][0]['poster'])).'</a>';
             } elseif ($search_type[1] == 'show_user_posts') {
-                $search['crumbs_text']['search_type'] = '<a href="search.php?action=show_user_posts&amp;user_id='.$search_type[2].'">'.sprintf($lang_search['Quick search show_user_posts'], pun_htmlspecialchars($search['search_set'][0]['pposter'])).'</a>';
+                $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/show/user_posts/user/'.$search_type[2].'/').'">'.sprintf($lang_search['Quick search show_user_posts'], pun_htmlspecialchars($search['search_set'][0]['pposter'])).'</a>';
             } elseif ($search_type[1] == 'show_subscriptions') {
                 // Fetch username of subscriber
                 $subscriber_id = $search_type[2];
@@ -493,9 +491,10 @@ function get_search_results($get_data)
                     message($lang_common['Bad request'], false, '404 Not Found');
                 }
 
-                $search['crumbs_text']['search_type'] = '<a href="search.php?action=show_subscriptions&amp;user_id='.$subscriber_id.'">'.sprintf($lang_search['Quick search show_subscriptions'], pun_htmlspecialchars($subscriber_name)).'</a>';
+                $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/show/subscriptions/user/'.$subscriber_id.'/').'">'.sprintf($lang_search['Quick search show_subscriptions'], pun_htmlspecialchars($subscriber_name)).'</a>';
             } else {
-                $search['crumbs_text']['search_type'] = '<a href="search.php?action='.$search_type[1].'">'.$lang_search['Quick search '.$search_type[1]].'</a>';
+				$search_url = str_replace('_', '/', $search_type[1]);
+                $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/'.$search_url.'/').'">'.$lang_search['Quick search '.$search_type[1]].'</a>';
             }
         } else {
             $keywords = $author = '';
@@ -511,7 +510,7 @@ function get_search_results($get_data)
                 $search['crumbs_text']['search_type'] = sprintf($lang_search['By user show as '.$show_as], pun_htmlspecialchars($author));
             }
 
-            $search['crumbs_text']['search_type'] = '<a href="search.php?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as.'">'.$search['crumbs_text']['search_type'].'</a>';
+            $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
         }
     }
     
@@ -520,9 +519,9 @@ function get_search_results($get_data)
     return $search;
 }
 
-function display_search_results($search)
+function display_search_results($search, $feather)
 {
-    global $pun_config, $pun_user, $lang_forum, $lang_common, $lang_topic, $lang_search;
+    global $pun_config, $pun_user, $lang_forum, $lang_common, $lang_topic, $lang_search, $pd;
     
     // Get topic/forum tracking data
     if (!$pun_user['is_guest']) {
@@ -532,7 +531,8 @@ function display_search_results($search)
     $post_count = $topic_count = 0;
 
     foreach ($search['search_set'] as $cur_search) {
-        $forum = '<a href="viewforum.php?id='.$cur_search['forum_id'].'">'.pun_htmlspecialchars($cur_search['forum_name']).'</a>';
+        $forum = '<a href="'.get_link('forum/'.$cur_search['forum_id'].'/'.url_friendly($cur_search['forum_name']).'/').'">'.pun_htmlspecialchars($cur_search['forum_name']).'</a>';
+		$url_topic = url_friendly($cur_search['subject']);
 
         if ($pun_config['o_censoring'] == '1') {
             $cur_search['subject'] = censor_words($cur_search['subject']);
@@ -559,21 +559,30 @@ function display_search_results($search)
             $pposter = pun_htmlspecialchars($cur_search['pposter']);
 
             if ($cur_search['poster_id'] > 1 && $pun_user['g_view_users'] == '1') {
-                    $cur_search['pposter_disp'] = '<strong><a href="profile.php?id='.$cur_search['poster_id'].'">'.$pposter.'</a></strong>';
+                    $cur_search['pposter_disp'] = '<strong><a href="'.get_link('user/'.$cur_search['poster_id'].'/').'">'.$pposter.'</a></strong>';
 			}
             else {
 				$cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
             }
             
-            // Load the search.php view posts file
-            require PUN_ROOT.'view/search/posts.php';
+			$feather->render('search/posts.php', array(
+				'post_count' => $post_count,
+				'url_topic' => $url_topic,
+				'cur_search' => $cur_search,
+				'forum' => $forum,
+				'lang_common' => $lang_common,
+				'lang_search' => $lang_search,
+				'lang_topic' => $lang_topic,
+				)
+			);
+			
         } else {
             ++$topic_count;
             $status_text = array();
             $cur_search['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
             $cur_search['icon_type'] = 'icon';
 
-            $subject = '<a href="viewtopic.php?id='.$cur_search['tid'].'">'.pun_htmlspecialchars($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['poster']).'</span>';
+            $subject = '<a href="'.get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['poster']).'</span>';
 
             if ($cur_search['sticky'] == '1') {
                 $cur_search['item_status'] .= ' isticky';
@@ -589,7 +598,7 @@ function display_search_results($search)
                 $cur_search['item_status'] .= ' inew';
                 $cur_search['icon_type'] = 'icon icon-new';
                 $subject = '<strong>'.$subject.'</strong>';
-                $subject_new_posts = '<span class="newtext">[ <a href="viewtopic.php?id='.$cur_search['tid'].'&amp;action=new" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
+                $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_search['tid'].'/action/new/').'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
             } else {
                 $subject_new_posts = null;
             }
@@ -600,7 +609,7 @@ function display_search_results($search)
             $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / $pun_user['disp_posts']);
 
             if ($num_pages_topic > 1) {
-                $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'viewtopic.php?id='.$cur_search['tid']).' ]</span>';
+				$subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
             } else {
                 $subject_multipage = null;
             }
@@ -610,9 +619,23 @@ function display_search_results($search)
                 $subject .= !empty($subject_new_posts) ? ' '.$subject_new_posts : '';
                 $subject .= !empty($subject_multipage) ? ' '.$subject_multipage : '';
             }
+			
+			if (!isset($cur_search['start_from'])) {
+				$start_from = 0;
+			}
+			else {
+				$start_from = $cur_search['start_from'];
+			}
             
-            // Load the search.php view topics file
-            require PUN_ROOT.'view/search/topics.php';
+			$feather->render('search/topics.php', array(
+				'cur_search' => $cur_search,
+				'start_from' => $start_from,
+				'topic_count' => $topic_count,
+				'subject' => $subject,
+				'forum' => $forum,
+				'lang_common' => $lang_common,
+				)
+			);
         }
     }
 }

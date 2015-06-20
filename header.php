@@ -137,15 +137,15 @@ if ($pun_user['is_guest']) {
     }
 
     if ($pun_user['g_read_board'] == '1' && $pun_user['g_search'] == '1') {
-        $page_topicsearches[] = '<a href="'.get_link('search/show-replies/').'" title="'.$lang_common['Show posted topics'].'">'.$lang_common['Posted topics'].'</a>';
-        $page_topicsearches[] = '<a href="'.get_link('search/show-new/').'" title="'.$lang_common['Show new posts'].'">'.$lang_common['New posts header'].'</a>';
+        $page_topicsearches[] = '<a href="'.get_link('search/show/replies/').'" title="'.$lang_common['Show posted topics'].'">'.$lang_common['Posted topics'].'</a>';
+        $page_topicsearches[] = '<a href="'.get_link('search/show/new/').'" title="'.$lang_common['Show new posts'].'">'.$lang_common['New posts header'].'</a>';
     }
 }
 
 // Quick searches
 if ($pun_user['g_read_board'] == '1' && $pun_user['g_search'] == '1') {
-    $page_topicsearches[] = '<a href="'.get_link('search/show-recent/').'" title="'.$lang_common['Show active topics'].'">'.$lang_common['Active topics'].'</a>';
-    $page_topicsearches[] = '<a href="'.get_link('search/show-unanswered/').'" title="'.$lang_common['Show unanswered topics'].'">'.$lang_common['Unanswered topics'].'</a>';
+    $page_topicsearches[] = '<a href="'.get_link('search/show/recent/').'" title="'.$lang_common['Show active topics'].'">'.$lang_common['Active topics'].'</a>';
+    $page_topicsearches[] = '<a href="'.get_link('search/show/unanswered/').'" title="'.$lang_common['Show unanswered topics'].'">'.$lang_common['Unanswered topics'].'</a>';
 }
 
 

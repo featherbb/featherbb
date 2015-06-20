@@ -49,3 +49,4 @@ $feather->map('/delete/:id(/)', '\controller\Delete:deletepost')->conditions(arr
 
 // Search
 $feather->get('/search(/)', '\controller\Search:display');
+$feather->get('/search/show/:show(/)', '\controller\Search:quicksearches');

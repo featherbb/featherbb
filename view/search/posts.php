@@ -22,7 +22,7 @@ if (!defined('PUN')) {
 } ?>">
 <h2><span><span class="conr">#<?php echo($search['start_from'] + $post_count) ?></span> <span><?php if ($cur_search['pid'] != $cur_search['first_post_id']) {
     echo $lang_topic['Re'].' ';
-} ?><?php echo $forum ?></span> <span>»&#160;<a href="viewtopic.php?id=<?php echo $cur_search['tid'] ?>"><?php echo pun_htmlspecialchars($cur_search['subject']) ?></a></span> <span>»&#160;<a href="viewtopic.php?pid=<?php echo $cur_search['pid'].'#p'.$cur_search['pid'] ?>"><?php echo format_time($cur_search['pposted']) ?></a></span></span></h2>
+} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo pun_htmlspecialchars($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo get_link('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo format_time($cur_search['pposted']) ?></a></span></span></h2>
 <div class="box">
 	<div class="inbox">
 		<div class="postbody">
@@ -46,8 +46,8 @@ if (!defined('PUN')) {
 		<div class="postfoot clearb">
 			<div class="postfootright">
 				<ul>
-					<li><span><a href="viewtopic.php?id=<?php echo $cur_search['tid'] ?>"><?php echo $lang_search['Go to topic'] ?></a></span></li>
-					<li><span><a href="viewtopic.php?pid=<?php echo $cur_search['pid'].'#p'.$cur_search['pid'] ?>"><?php echo $lang_search['Go to post'] ?></a></span></li>
+					<li><span><a href="<?php echo get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo $lang_search['Go to topic'] ?></a></span></li>
+					<li><span><a href="<?php echo get_link('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo $lang_search['Go to post'] ?></a></span></li>
 				</ul>
 			</div>
 		</div>

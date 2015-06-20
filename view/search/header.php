@@ -16,8 +16,8 @@ if (!defined('PUN')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="search.php"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
+			<li><a href="<?php get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('search/') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $search['crumbs_text']['search_type'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
