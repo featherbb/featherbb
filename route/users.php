@@ -50,3 +50,8 @@ $feather->map('/delete/:id(/)', '\controller\Delete:deletepost')->conditions(arr
 // Search
 $feather->get('/search(/)', '\controller\Search:display');
 $feather->get('/search/show/:show(/)', '\controller\Search:quicksearches');
+
+// 404 not found
+$feather->notFound(function () use ($lang_common) {
+    message($lang_common['Bad request'], false, '404 Not Found');
+});
