@@ -82,7 +82,6 @@ namespace controller{
 				'pun_user' => $pun_user,
 				'pun_config' => $pun_config,
 				'_SERVER'	=>	$_SERVER,
-				//'required_fields'	=>	$required_fields,
 				'page_head'		=>	$page_head,
 				'navlinks'		=>	$navlinks,
 				'page_info'		=>	$page_info,
