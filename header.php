@@ -127,12 +127,12 @@ if ($pun_user['is_guest']) {
             $result_header = $db->query('SELECT 1 FROM '.$db->prefix.'reports WHERE zapped IS NULL') or error('Unable to fetch reports info', __FILE__, __LINE__, $db->error());
 
             if ($db->result($result_header)) {
-                $page_statusinfo[] = '<li class="reportlink"><span><strong><a href="'.get_link('/admin/reports/').'">'.$lang_common['New reports'].'</a></strong></span></li>';
+                $page_statusinfo[] = '<li class="reportlink"><span><strong><a href="'.get_link('admin/reports/').'">'.$lang_common['New reports'].'</a></strong></span></li>';
             }
         }
 
         if ($pun_config['o_maintenance'] == '1') {
-            $page_statusinfo[] = '<li class="maintenancelink"><span><strong><a href="'.get_link('/admin/maintenance/').'">'.$lang_common['Maintenance mode enabled'].'</a></strong></span></li>';
+            $page_statusinfo[] = '<li class="maintenancelink"><span><strong><a href="'.get_link('admin/maintenance/').'">'.$lang_common['Maintenance mode enabled'].'</a></strong></span></li>';
         }
     }
 
