@@ -14,129 +14,37 @@ if (!defined('PUN')) {
 
 // Make sure we have a usable language pack for admin.
 if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/admin_common.php')) {
-    $admin_language = $pun_user['language'];
+    $admin_language = $pun_user['language'].'/admin/';
 } elseif (file_exists(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/admin_common.php')) {
-    $admin_language = $pun_config['o_default_lang'];
+    $admin_language = $pun_config['o_default_lang'].'/admin/';
 } else {
-    $admin_language = 'English';
+    $admin_language = 'English/admin/';
 }
 
 // Attempt to load the admin_common language file
-require PUN_ROOT.'lang/'.$admin_language.'/admin_common.php';
+require PUN_ROOT.'lang/'.$admin_language.'/common.php';
 
 //
 // Display the admin navigation menu
 //
 function generate_admin_menu($page = '')
 {
-    global $pun_config, $pun_user, $lang_admin_common;
+    global $feather, $pun_config, $pun_user, $lang_admin_common;
 
     $is_admin = $pun_user['g_id'] == PUN_ADMIN ? true : false;
-
-    ?>
-<div id="adminconsole" class="block2col">
-	<div id="adminmenu" class="blockmenu">
-		<h2><span><?php echo $lang_admin_common['Moderator menu'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li<?php if ($page == 'index') {
-    echo ' class="isactive"';
-}
-    ?>><a href="admin_index.php"><?php echo $lang_admin_common['Index'] ?></a></li>
-					<li<?php if ($page == 'users') {
-    echo ' class="isactive"';
-}
-    ?>><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
-<?php if ($is_admin || $pun_user['g_mod_ban_users'] == '1'): ?>					<li<?php if ($page == 'bans') {
-    echo ' class="isactive"';
-}
-    ?>><a href="admin_bans.php"><?php echo $lang_admin_common['Bans'] ?></a></li>
-<?php endif;
-    if ($is_admin || $pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
-    echo ' class="isactive"';
-}
-    ?>><a href="admin_reports.php"><?php echo $lang_admin_common['Reports'] ?></a></li>
-<?php endif;
-    ?>				</ul>
-			</div>
-		</div>
-<?php
-
-    if ($is_admin) {
-        ?>
-		<h2 class="block2"><span><?php echo $lang_admin_common['Admin menu'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li<?php if ($page == 'options') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_options.php"><?php echo $lang_admin_common['Options'] ?></a></li>
-					<li<?php if ($page == 'permissions') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_permissions.php"><?php echo $lang_admin_common['Permissions'] ?></a></li>
-					<li<?php if ($page == 'categories') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_categories.php"><?php echo $lang_admin_common['Categories'] ?></a></li>
-					<li<?php if ($page == 'forums') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_forums.php"><?php echo $lang_admin_common['Forums'] ?></a></li>
-					<li<?php if ($page == 'groups') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_groups.php"><?php echo $lang_admin_common['User groups'] ?></a></li>
-					<li<?php if ($page == 'censoring') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_censoring.php"><?php echo $lang_admin_common['Censoring'] ?></a></li>
-					<li<?php if ($page == 'parser') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_parser.php"><?php echo $lang_admin_common['Parser'] ?></a></li>
-					<li<?php if ($page == 'maintenance') {
-    echo ' class="isactive"';
-}
-        ?>><a href="admin_maintenance.php"><?php echo $lang_admin_common['Maintenance'] ?></a></li>
-				</ul>
-			</div>
-		</div>
-<?php
-
-    }
-
+	
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);
 
-    // Did we find any plugins?
-    if (!empty($plugins)) {
-        ?>
-		<h2 class="block2"><span><?php echo $lang_admin_common['Plugins menu'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-<?php
-
-        foreach ($plugins as $plugin_name => $plugin) {
-            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="admin_loader.php?plugin='.$plugin_name.'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
-        }
-
-        ?>
-				</ul>
-			</div>
-		</div>
-<?php
-
-    }
-
-    ?>
-	</div>
-
-<?php
-
+	$feather->render('admin/menu.php', array(
+		'page'	=>	$page,
+		'is_admin'	=>	$is_admin,
+		'lang_admin_common'	=>	$lang_admin_common,
+		'pun_config'	=>	$pun_config,
+		'pun_user'	=>	$pun_user,
+		'plugins'	=>	$plugins,
+		)
+	);
 }
 
 //
