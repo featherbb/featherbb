@@ -36,14 +36,14 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban'])) {
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
     $focus_element = array('bans2', 'ban_user');
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('bans');
 
     // Load the admin_bans.php view file
     require PUN_ROOT.'view/admin_bans/add_ban.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 // Add/edit a ban (stage 2)
@@ -71,24 +71,24 @@ elseif (isset($_GET['find_ban'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans'], $lang_admin_bans['Results head']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
     
     $ban_data = print_bans($ban_info['conditions'], $ban_info['order_by'], $ban_info['direction'], $start_from);
 
     // Load the admin_bans.php view file
     require PUN_ROOT.'view/admin_bans/search_ban.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
 $focus_element = array('bans', 'new_ban_user');
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('bans');
 
 // Load the admin_bans.php view file
 require PUN_ROOT.'view/admin_bans/admin_bans.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

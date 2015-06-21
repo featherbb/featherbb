@@ -920,7 +920,7 @@ function message($message, $no_back_link = false, $http_status = null)
 		if(!defined('PUN_ACTIVE_PAGE')) {
 			define('PUN_ACTIVE_PAGE', 'index');
 		}
-        require PUN_ROOT.'header.php';
+        require PUN_ROOT.'include/header.php';
 		
 		$feather->render('header.php', array(
 			'lang_common' => $lang_common,
@@ -954,7 +954,7 @@ function message($message, $no_back_link = false, $http_status = null)
 		)
 	);
 	
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 	
 	$feather->stop();
 }

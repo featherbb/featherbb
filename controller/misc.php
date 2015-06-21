@@ -56,7 +56,7 @@ namespace controller{
 				)
 			);
 
-			require PUN_ROOT.'footer.php';
+			require PUN_ROOT.'include/footer.php';
 
         }
 		
@@ -216,7 +216,7 @@ namespace controller{
 				define('PUN_ACTIVE_PAGE', 'email');
 			}
 			
-			require PUN_ROOT.'header.php';
+			require PUN_ROOT.'include/header.php';
 			
 			$feather->render('header.php', array(
 				'lang_common' => $lang_common,
@@ -250,7 +250,7 @@ namespace controller{
 				)
 			);
 
-			require PUN_ROOT.'footer.php';
+			require PUN_ROOT.'include/footer.php';
 
         }
 		
@@ -287,7 +287,7 @@ namespace controller{
 				define('PUN_ACTIVE_PAGE', 'report');
 			}
 			
-			require PUN_ROOT.'header.php';
+			require PUN_ROOT.'include/header.php';
 
 			$feather->render('header.php', array(
 				'lang_common' => $lang_common,
@@ -321,7 +321,7 @@ namespace controller{
 				)
 			);
 
-			require PUN_ROOT.'footer.php';
+			require PUN_ROOT.'include/footer.php';
 
         }
     }

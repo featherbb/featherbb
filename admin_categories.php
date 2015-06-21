@@ -48,14 +48,14 @@ elseif (isset($_POST['del_cat']) || isset($_POST['del_cat_comply'])) {
 
         $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
         define('PUN_ACTIVE_PAGE', 'admin');
-        require PUN_ROOT.'header.php';
+        require PUN_ROOT.'include/header.php';
 
         generate_admin_menu('categories');
 
         // Load the admin_categories.php view file
         require PUN_ROOT.'view/admin_categories/delete_category.php';
 
-        require PUN_ROOT.'footer.php';
+        require PUN_ROOT.'include/footer.php';
     }
 } elseif (isset($_POST['update'])) {
     // Change position and name of the categories
@@ -74,11 +74,11 @@ $cat_list = get_cat_list();
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('categories');
 
 // Load the admin_categories.php view file
 require PUN_ROOT.'view/admin_categories/admin_categories.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

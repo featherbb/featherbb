@@ -47,14 +47,14 @@ if (isset($_GET['ip_stats'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 	
 	$ip_data = get_ip_stats($ip_stats, $start_from);
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/search_ip.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -80,14 +80,14 @@ if (isset($_GET['show_users'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 	
 	$info = get_info_poster($ip, $start_from);
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/show_users.php';
 	
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -102,14 +102,14 @@ elseif (isset($_POST['move_users']) || isset($_POST['move_users_comply'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Move users']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('users');
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/move_users.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -124,14 +124,14 @@ elseif (isset($_POST['delete_users']) || isset($_POST['delete_users_comply'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('users');
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/delete_users.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -147,14 +147,14 @@ elseif (isset($_POST['ban_users']) || isset($_POST['ban_users_comply'])) {
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
     $focus_element = array('bans2', 'ban_message');
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('users');
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/ban_users.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 	
 }
 
@@ -184,23 +184,23 @@ elseif (isset($_GET['find_user'])) {
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
     $page_head = array('js' => '<script type="text/javascript" src="common.js"></script>');
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/find_users.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 	
 } else {
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users']);
     $focus_element = array('find_user', 'form[username]');
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('users');
 
     // Load the admin_users.php view file
     require PUN_ROOT.'view/admin_users/admin_users.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }

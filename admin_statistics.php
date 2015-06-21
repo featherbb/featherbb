@@ -58,11 +58,11 @@ $php_accelerator = get_php_accelerator();
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Server statistics']);
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('index');
 
 // Load the admin_index.php view file
 require PUN_ROOT.'view/admin_statistics.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

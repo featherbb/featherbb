@@ -55,14 +55,14 @@ if ($action == 'prune') {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Prune']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('maintenance');
 
 	// Load the admin_maintenance.php view file
 	require PUN_ROOT.'view/admin_maintenance/prune.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
     exit;
 }
 
@@ -75,11 +75,11 @@ if ($db->num_rows($result)) {
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Maintenance']);
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('maintenance');
 
 // Load the admin_maintenance.php view file
 require PUN_ROOT.'view/admin_maintenance/admin_maintenance.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

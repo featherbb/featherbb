@@ -29,7 +29,7 @@ namespace controller{
 				define('PUN_ACTIVE_PAGE', 'index');
 			}
 			
-			require PUN_ROOT.'header.php';
+			require PUN_ROOT.'include/header.php';
 			
 			// Load the index.php model file
 			require PUN_ROOT.'model/index.php';
@@ -68,7 +68,7 @@ namespace controller{
 				)
 			);
 			
-			require PUN_ROOT.'footer.php';
+			require PUN_ROOT.'include/footer.php';
         }
     }
 }

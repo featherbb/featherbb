@@ -175,11 +175,11 @@ if (isset($_POST['form_sent']))
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Parser']);
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('parser');
 
 // Load the admin_parser.php view file
 require PUN_ROOT.'view/admin_parser.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

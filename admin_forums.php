@@ -48,14 +48,14 @@ elseif (isset($_GET['del_forum'])) {
 
         $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
         define('PUN_ACTIVE_PAGE', 'admin');
-        require PUN_ROOT.'header.php';
+        require PUN_ROOT.'include/header.php';
 
         generate_admin_menu('forums');
 
         // Load the admin_forums.php view file
         require PUN_ROOT.'view/admin_forums/delete_forum.php';
 
-        require PUN_ROOT.'footer.php';
+        require PUN_ROOT.'include/footer.php';
     }
 }
 
@@ -84,19 +84,19 @@ elseif (isset($_GET['edit_forum'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
     define('PUN_ACTIVE_PAGE', 'admin');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     generate_admin_menu('forums');
 
     // Load the admin_forums.php view file
     require PUN_ROOT.'view/admin_forums/permissions.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('forums');
 
@@ -110,4 +110,4 @@ $cur_category = 0;
 // Load the admin_forums.php view file
 require PUN_ROOT.'view/admin_forums/admin_forums.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

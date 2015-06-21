@@ -82,7 +82,7 @@ namespace controller{
 				define('PUN_ACTIVE_PAGE', 'viewtopic');
 			}
 			
-			require PUN_ROOT.'header.php';
+			require PUN_ROOT.'include/header.php';
 			
 			$feather->render('header.php', array(
 				'lang_common' => $lang_common,
@@ -148,7 +148,7 @@ namespace controller{
 				$db->query('UPDATE '.$db->prefix.'topics SET num_views=num_views+1 WHERE id='.$id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 			}
 			
-			require PUN_ROOT.'footer.php';
+			require PUN_ROOT.'include/footer.php';
         }
 		
 		function viewpost($pid) {

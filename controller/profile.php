@@ -58,7 +58,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 				if (!defined('PUN_ACTIVE_PAGE')) {
 					define('PUN_ACTIVE_PAGE', 'profile');
 				}
-				require PUN_ROOT.'header.php';
+				require PUN_ROOT.'include/header.php';
 				
 				$feather->render('header.php', array(
 					'lang_common' => $lang_common,
@@ -132,7 +132,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 				if (!defined('PUN_ACTIVE_PAGE')) {
 					define('PUN_ACTIVE_PAGE', 'profile');
 				}
-				require PUN_ROOT.'header.php';
+				require PUN_ROOT.'include/header.php';
 				
 				$feather->render('header.php', array(
 					'lang_common' => $lang_common,
@@ -164,7 +164,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					)
 				);
 
-				require PUN_ROOT.'footer.php';
+				require PUN_ROOT.'include/footer.php';
 			} else {
 				if (!$section || $section == 'essentials') {
 					$user_disp = edit_essentials($id, $user);
@@ -174,7 +174,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -215,7 +215,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -244,7 +244,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -292,7 +292,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -324,7 +324,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -353,7 +353,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -388,7 +388,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					if (!defined('PUN_ACTIVE_PAGE')) {
 						define('PUN_ACTIVE_PAGE', 'profile');
 					}
-					require PUN_ROOT.'header.php';
+					require PUN_ROOT.'include/header.php';
 					
 					$feather->render('header.php', array(
 						'lang_common' => $lang_common,
@@ -425,7 +425,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					)
 				);
 
-				require PUN_ROOT.'footer.php';
+				require PUN_ROOT.'include/footer.php';
 			}
 
 		}
@@ -465,7 +465,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 				if (!defined('PUN_ACTIVE_PAGE')) {
 					define('PUN_ACTIVE_PAGE', 'profile');
 				}
-				require PUN_ROOT.'header.php';
+				require PUN_ROOT.'include/header.php';
 				
 				$feather->render('header.php', array(
 					'lang_common' => $lang_common,
@@ -498,7 +498,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					)
 				);
 
-				require PUN_ROOT.'footer.php';
+				require PUN_ROOT.'include/footer.php';
 			} elseif ($action == 'change_email') {
 				change_email($id, $feather);
 
@@ -508,7 +508,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 				if (!defined('PUN_ACTIVE_PAGE')) {
 					define('PUN_ACTIVE_PAGE', 'profile');
 				}
-				require PUN_ROOT.'header.php';
+				require PUN_ROOT.'include/header.php';
 				
 				$feather->render('header.php', array(
 					'lang_common' => $lang_common,
@@ -540,7 +540,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					)
 				);
 
-				require PUN_ROOT.'footer.php';
+				require PUN_ROOT.'include/footer.php';
 			} elseif ($action == 'upload_avatar' || $action == 'upload_avatar2') {
 				if ($pun_config['o_avatars'] == '0') {
 					message($lang_profile['Avatars disabled']);
@@ -560,7 +560,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 				if (!defined('PUN_ACTIVE_PAGE')) {
 					define('PUN_ACTIVE_PAGE', 'profile');
 				}
-				require PUN_ROOT.'header.php';
+				require PUN_ROOT.'include/header.php';
 				
 				$feather->render('header.php', array(
 					'lang_common' => $lang_common,
@@ -594,7 +594,7 @@ if (!empty($feather->request->post('update_group_membership'))) {
 					)
 				);
 
-				require PUN_ROOT.'footer.php';
+				require PUN_ROOT.'include/footer.php';
 			} elseif ($action == 'delete_avatar') {
 				if ($pun_user['id'] != $id && !$pun_user['is_admmod']) {
 					message($lang_common['No permission'], false, '403 Forbidden');

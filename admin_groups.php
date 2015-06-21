@@ -38,14 +38,14 @@ if (isset($_POST['add_group']) || isset($_GET['edit_group'])) {
 	$required_fields = array('req_title' => $lang_admin_groups['Group title label']);
 	$focus_element = array('groups2', 'req_title');
 	define('PUN_ACTIVE_PAGE', 'admin');
-	require PUN_ROOT.'header.php';
+	require PUN_ROOT.'include/header.php';
 
 	generate_admin_menu('groups');
 
 	// Load the admin_groups.php view file
 	require PUN_ROOT.'view/admin_groups/add_edit_group.php';
 
-	require PUN_ROOT.'footer.php';
+	require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -89,14 +89,14 @@ else if (isset($_GET['del_group'])) {
 
 			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 			define('PUN_ACTIVE_PAGE', 'admin');
-			require PUN_ROOT.'header.php';
+			require PUN_ROOT.'include/header.php';
 
 			generate_admin_menu('groups');
 
 			// Load the admin_groups.php view file
 			require PUN_ROOT.'view/admin_groups/confirm_delete.php';
 
-			require PUN_ROOT.'footer.php';
+			require PUN_ROOT.'include/footer.php';
 		}
 	}
 	
@@ -104,24 +104,24 @@ else if (isset($_GET['del_group'])) {
 
 	$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 	define('PUN_ACTIVE_PAGE', 'admin');
-	require PUN_ROOT.'header.php';
+	require PUN_ROOT.'include/header.php';
 
 	generate_admin_menu('groups');
 
 	// Load the admin_groups.php view file
 	require PUN_ROOT.'view/admin_groups/delete_group.php';
 
-	require PUN_ROOT.'footer.php';
+	require PUN_ROOT.'include/footer.php';
 }
 
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 define('PUN_ACTIVE_PAGE', 'admin');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 generate_admin_menu('groups');
 
 // Load the admin_groups.php view file
 require PUN_ROOT.'view/admin_groups/admin_groups.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';

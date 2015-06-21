@@ -57,24 +57,24 @@ if (isset($_GET['tid'])) {
 
         $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
         define('PUN_ACTIVE_PAGE', 'index');
-        require PUN_ROOT.'header.php';
+        require PUN_ROOT.'include/header.php';
 
         // Load the moderate.php view file
         require PUN_ROOT.'view/moderate/delete_posts.php';
 
-        require PUN_ROOT.'footer.php';
+        require PUN_ROOT.'include/footer.php';
     } elseif (isset($_POST['split_posts']) || isset($_POST['split_posts_comply'])) {
         $posts = split_posts($_POST, $tid, $fid);
 
         $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
         $focus_element = array('subject','new_subject');
         define('PUN_ACTIVE_PAGE', 'index');
-        require PUN_ROOT.'header.php';
+        require PUN_ROOT.'include/header.php';
         
         // Load the moderate.php view file
         require PUN_ROOT.'view/moderate/split_posts.php';
 
-        require PUN_ROOT.'footer.php';
+        require PUN_ROOT.'include/footer.php';
     }
 
     // Show the moderate posts view
@@ -104,14 +104,14 @@ if (isset($_GET['tid'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), pun_htmlspecialchars($cur_topic['forum_name']), pun_htmlspecialchars($cur_topic['subject']));
     define('PUN_ACTIVE_PAGE', 'index');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     $post_data = display_posts_view($tid, $start_from);
     
     // Load the moderate.php view file
     require PUN_ROOT.'view/moderate/posts_view.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -143,12 +143,12 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
     define('PUN_ACTIVE_PAGE', 'index');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
     
     // Load the moderate.php view file
     require PUN_ROOT.'view/moderate/move_topics.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 // Merge two or more topics
@@ -164,12 +164,12 @@ elseif (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply'])) {
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
     define('PUN_ACTIVE_PAGE', 'index');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
     
     // Load the moderate.php view file
     require PUN_ROOT.'view/moderate/merge_topics.php';
     
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 // Delete one or more topics
@@ -185,12 +185,12 @@ elseif (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply']))
 
     $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
     define('PUN_ACTIVE_PAGE', 'index');
-    require PUN_ROOT.'header.php';
+    require PUN_ROOT.'include/header.php';
 
     // Load the moderate.php view file
     require PUN_ROOT.'view/moderate/delete_topics.php';
 
-    require PUN_ROOT.'footer.php';
+    require PUN_ROOT.'include/footer.php';
 }
 
 
@@ -285,11 +285,11 @@ $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.pa
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), pun_htmlspecialchars($cur_forum['forum_name']));
 define('PUN_ACTIVE_PAGE', 'index');
-require PUN_ROOT.'header.php';
+require PUN_ROOT.'include/header.php';
 
 $topic_data = display_topics($fid, $sort_by, $start_from);
 
 // Load the moderate.php view file
 require PUN_ROOT.'view/moderate/moderator_forum.php';
 
-require PUN_ROOT.'footer.php';
+require PUN_ROOT.'include/footer.php';
