@@ -34,7 +34,7 @@ if (!defined('PUN'))
 <?php if ($install_file_exists) : ?>
 		<h2 class="block2"><span><?php echo $lang_admin_index['Alerts head'] ?></span></h2>
 		<div id="adalerts" class="box">
-			<p><?php printf($lang_admin_index['Install file exists'], '<a href="admin_index.php?action=remove_install_file">'.$lang_admin_index['Delete install file'].'</a>') ?></p>
+			<p><?php printf($lang_admin_index['Install file exists'], '<a href="'.get_link('admin/action/remove_install_file/').'">'.$lang_admin_index['Delete install file'].'</a>') ?></p>
 		</div>
 <?php endif; ?>
 
@@ -44,15 +44,15 @@ if (!defined('PUN'))
 				<dl>
 					<dt><?php echo $lang_admin_index['FeatherBB version label'] ?></dt>
 					<dd>
-						<?php printf($lang_admin_index['FeatherBB version data']."\n", $pun_config['o_cur_version'], '<a href="admin_index.php?action=check_upgrade">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
+						<?php printf($lang_admin_index['FeatherBB version data']."\n", $pun_config['o_cur_version'], '<a href="'.get_link('admin/action/check_upgrade/').'">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
 					</dd>
 					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
 					<dd>
-						<a href="admin_statistics.php"><?php echo $lang_admin_index['View server statistics'] ?></a>
+						<a href="<?php echo get_link('admin/stats/') ?>"><?php echo $lang_admin_index['View server statistics'] ?></a>
 					</dd>
 					<dt><?php echo $lang_admin_index['Support label'] ?></dt>
 					<dd>
-						<a href="http://FeatherBB.org/forums/index.php"><?php echo $lang_admin_index['Forum label'] ?></a> - <a href="http://FeatherBB.org/community/irc.html"><?php echo $lang_admin_index['IRC label'] ?></a>
+						<a href="http://FeatherBB.org/forums/index.php"><?php echo $lang_admin_index['Forum label'] ?></a> - <a href="http://gitter.im/featherbb/featherbb"><?php echo $lang_admin_index['IRC label'] ?></a>
 					</dd>
 				</dl>
 			</div>
