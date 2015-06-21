@@ -74,7 +74,7 @@ namespace controller{
 		
 		function logmein() {
 			
-			global $feather, $lang_common, $pun_config, $pun_user, $pun_start, $db;
+			global $feather, $lang_common, $lang_login, $pun_config, $pun_user, $pun_start, $db;
 			
 			define('PUN_QUIET_VISIT', 1);
 			
