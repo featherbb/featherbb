@@ -23,7 +23,7 @@ $feather = new \Slim\Slim([
 ]);
 
 // Load the routes
-require PUN_ROOT.'route/users.php';
+require PUN_ROOT.'include/routes.php';
 
 // Run it, baby!
 $feather->run();
