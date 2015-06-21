@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_profile['Change pass'] ?></span></h2>
 	<div class="box">
-		<form id="change_pass" method="post" action="profile.php?action=change_pass&amp;id=<?php echo $id ?>" onsubmit="return process_form(this)">
+		<form id="change_pass" method="post" action="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>" onsubmit="return process_form(this)">
 			<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
 				<fieldset>

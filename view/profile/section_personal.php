@@ -16,16 +16,16 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo pun_htmlspecialchars($user['username']).' - '.$lang_profile['Section personal'] ?></span></h2>
 	<div class="box">
-		<form id="profile2" method="post" action="profile.php?section=personal&amp;id=<?php echo $id ?>">
+		<form id="profile2" method="post" action="<?php echo get_link('user/'.$id.'/section/personal/') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Personal details legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label><?php echo $lang_profile['Realname'] ?><br /><input type="text" name="form[realname]" value="<?php echo pun_htmlspecialchars($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
+						<label><?php echo $lang_profile['Realname'] ?><br /><input type="text" name="form_realname" value="<?php echo pun_htmlspecialchars($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
 <?php if (isset($title_field)): ?>							<?php echo $title_field ?>
-<?php endif; ?>							<label><?php echo $lang_profile['Location'] ?><br /><input type="text" name="form[location]" value="<?php echo pun_htmlspecialchars($user['location']) ?>" size="30" maxlength="30" /><br /></label>
-<?php if ($pun_user['g_post_links'] == '1' || $pun_user['g_id'] == PUN_ADMIN) : ?>							<label><?php echo $lang_profile['Website'] ?><br /><input type="text" name="form[url]" value="<?php echo pun_htmlspecialchars($user['url']) ?>" size="50" maxlength="80" /><br /></label>
+<?php endif; ?>							<label><?php echo $lang_profile['Location'] ?><br /><input type="text" name="form_location" value="<?php echo pun_htmlspecialchars($user['location']) ?>" size="30" maxlength="30" /><br /></label>
+<?php if ($pun_user['g_post_links'] == '1' || $pun_user['g_id'] == PUN_ADMIN) : ?>							<label><?php echo $lang_profile['Website'] ?><br /><input type="text" name="form_url" value="<?php echo pun_htmlspecialchars($user['url']) ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>
 					</div>
 				</fieldset>

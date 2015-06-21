@@ -153,7 +153,7 @@ function password_forgotten($feather)
 
                     // Do the user specific replacements to the template
                     $cur_mail_message = str_replace('<username>', $cur_hit['username'], $mail_message);
-                    $cur_mail_message = str_replace('<activation_url>', get_base_url().'/profile.php?id='.$cur_hit['id'].'&action=change_pass&key='.$new_password_key, $cur_mail_message);
+                    $cur_mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
                     $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
 
                     pun_mail($email, $mail_subject, $cur_mail_message);
@@ -176,8 +176,8 @@ function get_redirect_url($server_data)
     }
 
     if (!isset($redirect_url)) {
-        $redirect_url = get_base_url(true).'/index.php';
-    } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
+        $redirect_url = get_base_url();
+    } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) { // TODO
         $redirect_url .= '#p'.$matches[1];
     }
 

@@ -65,6 +65,10 @@ $feather->get('/unsubscribe/forum/:id(/)', '\controller\Misc:unsubscribeforum')-
 $feather->get('/subscribe/topic/:id(/)', '\controller\Misc:subscribetopic')->conditions(array('id' => '[0-9]+'));
 $feather->get('/unsubscribe/topic/:id(/)', '\controller\Misc:unsubscribetopic')->conditions(array('id' => '[0-9]+'));
 
+// Profile
+$feather->map('/user/:id(/section/:section)(/)', '\controller\Profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/user/:id(/action/:action)(/)', '\controller\Profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

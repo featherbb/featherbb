@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo pun_htmlspecialchars($user['username']).' - '.$lang_profile['Section display'] ?></span></h2>
 	<div class="box">
-		<form id="profile5" method="post" action="profile.php?section=display&amp;id=<?php echo $id ?>">
+		<form id="profile5" method="post" action="<?php echo get_link('user/'.$id.'/section/display/') ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 
@@ -24,7 +24,7 @@ if (!defined('PUN')) {
 
     // Only display the style selection box if there's more than one style available
     if (count($styles) == 1) {
-        echo "\t\t\t".'<div><input type="hidden" name="form[style]" value="'.$styles[0].'" /></div>'."\n";
+        echo "\t\t\t".'<div><input type="hidden" name="form_style" value="'.$styles[0].'" /></div>'."\n";
     } elseif (count($styles) > 1) {
         ?>
 			<div class="inform">
@@ -32,7 +32,7 @@ if (!defined('PUN')) {
 					<legend><?php echo $lang_profile['Style legend'] ?></legend>
 					<div class="infldset">
 						<label><?php echo $lang_profile['Styles'] ?><br />
-						<select name="form[style]">
+						<select name="form_style">
 <?php
 
         foreach ($styles as $temp) {
@@ -61,19 +61,19 @@ if (!defined('PUN')) {
 					<div class="infldset">
 						<p><?php echo $lang_profile['Post display info'] ?></p>
 						<div class="rbox">
-<?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form[show_smilies]" value="1"<?php if ($user['show_smilies'] == '1') {
+<?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show smilies'] ?><br /></label>
-<?php endif; if ($pun_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form[show_sig]" value="1"<?php if ($user['show_sig'] == '1') {
+<?php endif; if ($pun_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show sigs'] ?><br /></label>
-<?php endif; if ($pun_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form[show_avatars]" value="1"<?php if ($user['show_avatars'] == '1') {
+<?php endif; if ($pun_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show avatars'] ?><br /></label>
-<?php endif; if ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form[show_img]" value="1"<?php if ($user['show_img'] == '1') {
+<?php endif; if ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img" value="1"<?php if ($user['show_img'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show images'] ?><br /></label>
-<?php endif; if ($pun_config['o_signatures'] == '1' && $pun_config['p_sig_bbcode'] == '1' && $pun_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form[show_img_sig]" value="1"<?php if ($user['show_img_sig'] == '1') {
+<?php endif; if ($pun_config['o_signatures'] == '1' && $pun_config['p_sig_bbcode'] == '1' && $pun_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user['show_img_sig'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show images sigs'] ?><br /></label>
 <?php endif; ?>
@@ -86,8 +86,8 @@ if (!defined('PUN')) {
 				<fieldset>
 					<legend><?php echo $lang_profile['Pagination legend'] ?></legend>
 					<div class="infldset">
-						<label class="conl"><?php echo $lang_profile['Topics per page'] ?><br /><input type="text" name="form[disp_topics]" value="<?php echo $user['disp_topics'] ?>" size="6" maxlength="2" /><br /></label>
-						<label class="conl"><?php echo $lang_profile['Posts per page'] ?><br /><input type="text" name="form[disp_posts]" value="<?php echo $user['disp_posts'] ?>" size="6" maxlength="2" /><br /></label>
+						<label class="conl"><?php echo $lang_profile['Topics per page'] ?><br /><input type="text" name="form_disp_topics" value="<?php echo $user['disp_topics'] ?>" size="6" maxlength="2" /><br /></label>
+						<label class="conl"><?php echo $lang_profile['Posts per page'] ?><br /><input type="text" name="form_disp_posts" value="<?php echo $user['disp_posts'] ?>" size="6" maxlength="2" /><br /></label>
 						<p class="clearb"><?php echo $lang_profile['Paginate info'] ?> <?php echo $lang_profile['Leave blank'] ?></p>
 					</div>
 				</fieldset>

@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_profile['Change email'] ?></span></h2>
 	<div class="box">
-		<form id="change_email" method="post" action="profile.php?action=change_email&amp;id=<?php echo $id ?>" onsubmit="return process_form(this)">
+		<form id="change_email" method="post" action="<?php echo get_link('user/'.$id.'/action/change_email') ?>" onsubmit="return process_form(this)">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Email legend'] ?></legend>

@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo pun_htmlspecialchars($user['username']).' - '.$lang_profile['Section privacy'] ?></span></h2>
 	<div class="box">
-		<form id="profile6" method="post" action="profile.php?section=privacy&amp;id=<?php echo $id ?>">
+		<form id="profile6" method="post" action="<?php echo get_link('user/'.$id.'/section/privacy/') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_prof_reg['Privacy options legend'] ?></legend>
@@ -24,13 +24,13 @@ if (!defined('PUN')) {
 						<input type="hidden" name="form_sent" value="1" />
 						<p><?php echo $lang_prof_reg['Email setting info'] ?></p>
 						<div class="rbox">
-							<label><input type="radio" name="form[email_setting]" value="0"<?php if ($user['email_setting'] == '0') {
+							<label><input type="radio" name="form_email_setting" value="0"<?php if ($user['email_setting'] == '0') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_prof_reg['Email setting 1'] ?><br /></label>
-							<label><input type="radio" name="form[email_setting]" value="1"<?php if ($user['email_setting'] == '1') {
+							<label><input type="radio" name="form_email_setting" value="1"<?php if ($user['email_setting'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_prof_reg['Email setting 2'] ?><br /></label>
-							<label><input type="radio" name="form[email_setting]" value="2"<?php if ($user['email_setting'] == '2') {
+							<label><input type="radio" name="form_email_setting" value="2"<?php if ($user['email_setting'] == '2') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_prof_reg['Email setting 3'] ?><br /></label>
 						</div>
@@ -42,10 +42,10 @@ if (!defined('PUN')) {
 					<legend><?php echo $lang_profile['Subscription legend'] ?></legend>
 					<div class="infldset">
 						<div class="rbox">
-							<label><input type="checkbox" name="form[notify_with_post]" value="1"<?php if ($user['notify_with_post'] == '1') {
+							<label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user['notify_with_post'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Notify full'] ?><br /></label>
-<?php if ($pun_config['o_topic_subscriptions'] == '1'): ?>								<label><input type="checkbox" name="form[auto_notify]" value="1"<?php if ($user['auto_notify'] == '1') {
+<?php if ($pun_config['o_topic_subscriptions'] == '1'): ?>								<label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['auto_notify'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Auto notify full'] ?><br /></label>
 <?php endif; ?>

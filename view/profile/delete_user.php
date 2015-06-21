@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_profile['Confirm delete user'] ?></span></h2>
 	<div class="box">
-		<form id="confirm_del_user" method="post" action="profile.php?id=<?php echo $id ?>">
+		<form id="confirm_del_user" method="post" action="<?php echo get_link('user/'.$id.'/') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Confirm delete legend'] ?></legend>

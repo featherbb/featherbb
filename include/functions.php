@@ -533,59 +533,6 @@ function update_users_online()
 
 
 //
-// Display the profile navigation menu
-//
-function generate_profile_menu($page = '')
-{
-    global $lang_profile, $pun_config, $pun_user, $id;
-
-    ?>
-<div id="profile" class="block2col">
-	<div class="blockmenu">
-		<h2><span><?php echo $lang_profile['Profile menu'] ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li<?php if ($page == 'essentials') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=essentials&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section essentials'] ?></a></li>
-					<li<?php if ($page == 'personal') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=personal&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section personal'] ?></a></li>
-					<li<?php if ($page == 'messaging') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=messaging&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section messaging'] ?></a></li>
-<?php if ($pun_config['o_avatars'] == '1' || $pun_config['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=personality&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section personality'] ?></a></li>
-<?php endif;
-    ?>					<li<?php if ($page == 'display') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=display&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section display'] ?></a></li>
-					<li<?php if ($page == 'privacy') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=privacy&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section privacy'] ?></a></li>
-<?php if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && $pun_user['g_mod_ban_users'] == '1')): ?>					<li<?php if ($page == 'admin') {
-    echo ' class="isactive"';
-}
-    ?>><a href="profile.php?section=admin&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Section admin'] ?></a></li>
-<?php endif;
-    ?>				</ul>
-			</div>
-		</div>
-	</div>
-<?php
-
-}
-
-
-//
 // Outputs markup to display a user's avatar
 //
 function generate_avatar_markup($user_id)

@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_profile['Upload avatar'] ?></span></h2>
 	<div class="box">
-		<form id="upload_avatar" method="post" enctype="multipart/form-data" action="profile.php?action=upload_avatar2&amp;id=<?php echo $id ?>" onsubmit="return process_form(this)">
+		<form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?php echo get_link('user/'.$id.'/action/upload_avatar2/') ?>" onsubmit="return process_form(this)">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Upload avatar legend'] ?></legend>

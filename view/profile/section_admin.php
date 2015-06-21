@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo pun_htmlspecialchars($user['username']).' - '.$lang_profile['Section admin'] ?></span></h2>
 		<div class="box">
-			<form id="profile7" method="post" action="profile.php?section=admin&amp;id=<?php echo $id ?>">
+			<form id="profile7" method="post" action="<?php echo get_link('user/'.$id.'/section/admin/') ?>">
 				<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
 					<fieldset>

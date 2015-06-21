@@ -16,14 +16,14 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo pun_htmlspecialchars($user['username']).' - '.$lang_profile['Section essentials'] ?></span></h2>
 	<div class="box">
-		<form id="profile1" method="post" action="profile.php?section=essentials&amp;id=<?php echo $id ?>" onsubmit="return process_form(this)">
+		<form id="profile1" method="post" action="<?php echo get_link('user/'.$id.'/section/essentials/') ?>" onsubmit="return process_form(this)">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Username and pass legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<?php echo $user_disp['username_field'] ?>
-<?php if ($pun_user['id'] == $id || $pun_user['g_id'] == PUN_ADMIN || ($user['g_moderator'] == '0' && $pun_user['g_mod_change_passwords'] == '1')): ?>							<p class="actions"><span><a href="profile.php?action=change_pass&amp;id=<?php echo $id ?>"><?php echo $lang_profile['Change pass'] ?></a></span></p>
+<?php if ($pun_user['id'] == $id || $pun_user['g_id'] == PUN_ADMIN || ($user['g_moderator'] == '0' && $pun_user['g_mod_change_passwords'] == '1')): ?>							<p class="actions"><span><a href="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>"><?php echo $lang_profile['Change pass'] ?></a></span></p>
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>
@@ -41,7 +41,7 @@ if (!defined('PUN')) {
 					<div class="infldset">
 						<p><?php echo $lang_prof_reg['Time zone info'] ?></p>
 						<label><?php echo $lang_prof_reg['Time zone']."\n" ?>
-						<br /><select name="form[timezone]">
+						<br /><select name="form_timezone">
 							<option value="-12"<?php if ($user['timezone'] == -12) {
     echo ' selected="selected"';
 } ?>><?php echo $lang_prof_reg['UTC-12:00'] ?></option>
@@ -165,13 +165,13 @@ if (!defined('PUN')) {
 						</select>
 						<br /></label>
 						<div class="rbox">
-							<label><input type="checkbox" name="form[dst]" value="1"<?php if ($user['dst'] == '1') {
+							<label><input type="checkbox" name="form_dst" value="1"<?php if ($user['dst'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_prof_reg['DST'] ?><br /></label>
 						</div>
 						<label><?php echo $lang_prof_reg['Time format'] ?>
 
-						<br /><select name="form[time_format]">
+						<br /><select name="form_time_format">
 <?php
                             foreach (array_unique($forum_time_formats) as $key => $time_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
@@ -189,7 +189,7 @@ if (!defined('PUN')) {
 						<br /></label>
 						<label><?php echo $lang_prof_reg['Date format'] ?>
 
-						<br /><select name="form[date_format]">
+						<br /><select name="form_date_format">
 <?php
                             foreach (array_unique($forum_date_formats) as $key => $date_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
@@ -214,7 +214,7 @@ if (!defined('PUN')) {
     if (count($languages) > 1) {
         ?>
 						<label><?php echo $lang_prof_reg['Language'] ?>
-						<br /><select name="form[language]">
+						<br /><select name="form_language">
 <?php
 
         foreach ($languages as $temp) {
@@ -252,4 +252,6 @@ if (!defined('PUN')) {
 			<p class="buttons"><input type="submit" name="update" value="<?php echo $lang_common['Submit'] ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
 		</form>
 	</div>
+</div>
+	<div class="clearer"></div>
 </div>
