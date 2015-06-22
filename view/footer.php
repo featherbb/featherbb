@@ -21,24 +21,35 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
     if ($footer_style == 'viewforum') {
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.$lang_forum['Mod controls'].'</strong></dt>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;p='.$p.'">'.$lang_common['Moderate forum'].'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/forum/'.$forum_id.'/page/'.$p.'/').'">'.$lang_common['Moderate forum'].'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
     } elseif ($footer_style == 'viewtopic') {
+		
+		if (isset($pid))
+			$parameter = 'param/'.$pid.'/';
+		elseif (isset($p) && $p != 1)
+			$parameter = 'param/'.$p.'/';
+		else
+			$parameter = '';
+		
+		
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.$lang_topic['Mod controls'].'</strong></dt>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;tid='.$id.'&amp;p='.$p.'">'.$lang_common['Moderate topic'].'</a>'.($num_pages > 1 ? ' (<a href="moderate.php?fid='.$forum_id.'&amp;tid='.$id.'&amp;action=all">'.$lang_common['All'].'</a>)' : '').'</span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;move_topics='.$id.'">'.$lang_common['Move topic'].'</a></span></dd>'."\n";
+		// TODO: all
+        //echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/param/'.$p).'">'.$lang_common['Moderate topic'].'</a>'.($num_pages > 1 ? ' (<a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/'.$parameter.'/all/').'">'.$lang_common['All'].'</a>)' : '').'</span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/page/'.$p.'/').'">'.$lang_common['Moderate topic'].'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/move/'.$parameter).'">'.$lang_common['Move topic'].'</a></span></dd>'."\n";
 
         if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;open='.$id.'">'.$lang_common['Open topic'].'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/open/'.$parameter).'">'.$lang_common['Open topic'].'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;close='.$id.'">'.$lang_common['Close topic'].'</a></span></dd>'."\n";
+			echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/close/'.$parameter).'">'.$lang_common['Close topic'].'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;unstick='.$id.'">'.$lang_common['Unstick topic'].'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/unstick/'.$parameter).'">'.$lang_common['Unstick topic'].'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;stick='.$id.'">'.$lang_common['Stick topic'].'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/stick/'.$parameter).'">'.$lang_common['Stick topic'].'</a></span></dd>'."\n";
         }
 
         echo "\t\t\t".'</dl>'."\n";

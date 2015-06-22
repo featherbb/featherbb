@@ -17,8 +17,8 @@ if (!defined('PUN')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $fid ?>"><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></a></strong></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_misc['Moderate'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -28,7 +28,8 @@ if (!defined('PUN')) {
 	</div>
 </div>
 
-<form method="post" action="moderate.php?fid=<?php echo $fid ?>">
+<form method="post" action="<?php echo get_link('moderate/forum/'.$id.'/') ?>">
+<input type="hidden" name="page" value="<?php echo pun_htmlspecialchars($p) ?>" />
 <div id="vf" class="blocktable">
 	<h2><span><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></span></h2>
 	<div class="box">
@@ -89,8 +90,8 @@ if (!defined('PUN')) {
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $fid ?>"><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></a></strong></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_misc['Moderate'] ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

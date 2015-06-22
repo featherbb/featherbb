@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_misc['Split posts'] ?></span></h2>
 	<div class="box">
-		<form id="subject" method="post" action="moderate.php?fid=<?php echo $fid ?>&amp;tid=<?php echo $tid ?>">
+		<form id="subject" method="post" action="<?php echo get_link('moderate/topic/'.$id.'/') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_misc['Confirm split legend'] ?></legend>
@@ -25,7 +25,7 @@ if (!defined('PUN')) {
 						<label class="required"><strong><?php echo $lang_misc['New subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
 						<label><?php echo $lang_misc['Move to'] ?>
 						<br /><select name="move_to_forum">
-								<?php get_forum_list_split(); ?>
+								<?php get_forum_list_split($id); ?>
 							</optgroup>
 						</select>
 						<br /></label>

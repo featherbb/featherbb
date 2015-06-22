@@ -133,12 +133,16 @@ namespace controller{
 			);
 			
 			$feather->render('footer.php', array(
+				'id' => $id,
+				'p' => $p,
+				'pid' => $pid,
 				'lang_common' => $lang_common,
 				'pun_user' => $pun_user,
 				'pun_config' => $pun_config,
 				'pun_start' => $pun_start,
 				'footer_style' => 'viewtopic',
-				'forum_id' => $id,
+				'forum_id' => $cur_topic['forum_id'],
+				'feather' => $feather,
 				'num_pages' => $num_pages,
 				)
 			);

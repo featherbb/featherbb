@@ -17,7 +17,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics'] ?></span></h2>
 	<div class="box">
-		<form method="post" action="moderate.php?fid=<?php echo $fid ?>">
+		<form method="post" action="">
 			<div class="inform">
 			<input type="hidden" name="topics" value="<?php echo $topics ?>" />
 				<fieldset>
@@ -25,7 +25,7 @@ if (!defined('PUN')) {
 					<div class="infldset">
 						<label><?php echo $lang_misc['Move to'] ?>
 						<br /><select name="move_to_forum">
-								<?php get_forum_list_move(); ?>
+								<?php get_forum_list_move($id); ?>
 							</optgroup>
 						</select>
 						<br /></label>

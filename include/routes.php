@@ -65,6 +65,13 @@ $feather->get('/unsubscribe/topic/:id(/)', '\controller\Misc:unsubscribetopic')-
 $feather->map('/user/:id(/section/:section)(/)', '\controller\Profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 $feather->map('/user/:id(/action/:action)(/)', '\controller\Profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 
+// Moderate
+$feather->get('/moderate/forum/:id(/:name)(/page/:page)(/)', '\controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'));
+$feather->get('/moderate/get-host/post/:pid(/)', '\controller\Moderate:gethostpost')->conditions(array('pid' => '[0-9]+'));
+$feather->map('/moderate/topic/:id/forum/:fid/action/:action(/param/:param)(/)', '\controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'param' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/moderate/topic/:id/forum/:fid/action/:action(/page/:param)(/)', '\controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'param' => '[0-9]+'))->via('GET', 'POST');
+$feather->post('/moderate/forum/:fid(/page/:page)(/)', '\controller\Moderate:dealposts')->conditions(array('fid' => '[0-9]+', 'page' => '[0-9]+'));
+
 // Admin index
 $feather->get('/admin(/action/:action)(/)', '\controller\admin\Index:display');
 

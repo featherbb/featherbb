@@ -8,31 +8,33 @@
  */
  
  
-function display_ip_address($get_data)
+function display_ip_info($feather)
 {
     global $db, $lang_common, $lang_misc, $pun_user;
     
-    // Is get_host an IP address or a post ID?
-    if (@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $_GET['get_host']) || @preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%', $_GET['get_host'])) {
-        $ip = $_GET['get_host'];
-    } else {
-        $get_host = intval($_GET['get_host']);
-        if ($get_host < 1) {
-            message($lang_common['Bad request'], false, '404 Not Found');
-        }
-
-        $result = $db->query('SELECT poster_ip FROM '.$db->prefix.'posts WHERE id='.$get_host) or error('Unable to fetch post IP address', __FILE__, __LINE__, $db->error());
-        if (!$db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
-        }
-
-        $ip = $db->result($result);
-    }
+    $ip = $feather->request->get('get_host');
 
     // Load the misc.php language file
     require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
-    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="admin_users.php?show_users='.$ip.'">'.$lang_misc['Show more users'].'</a>');
+    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
+}
+
+function display_ip_address_post($pid)
+{
+    global $db, $lang_common, $lang_misc, $pun_user;
+
+	$result = $db->query('SELECT poster_ip FROM '.$db->prefix.'posts WHERE id='.$pid) or error('Unable to fetch post IP address', __FILE__, __LINE__, $db->error());
+	if (!$db->num_rows($result)) {
+		message($lang_common['Bad request'], false, '404 Not Found');
+	}
+
+	$ip = $db->result($result);
+
+    // Load the misc.php language file
+    require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
+
+    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
 }
 
 function get_moderators($fid)
@@ -61,17 +63,17 @@ function get_topic_info($fid, $tid)
     return $cur_topic;
 }
 
-function delete_posts($post_data, $tid, $fid)
+function delete_posts($feather, $tid, $fid)
 {
     global $db, $lang_common, $lang_misc, $pun_user;
     
-    $posts = isset($post_data['posts']) ? $post_data['posts'] : array();
+    $posts = !empty($feather->request->post('posts')) ? $feather->request->post('posts') : array();
     if (empty($posts)) {
         message($lang_misc['No posts selected']);
     }
 
-    if (isset($post_data['delete_posts_comply'])) {
-        confirm_referrer('moderate.php');
+    if (!empty($feather->request->post('delete_posts_comply'))) {
+        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
         if (@preg_match('%[^0-9,]%', $posts)) {
             message($lang_common['Bad request'], false, '404 Not Found');
@@ -103,29 +105,29 @@ function delete_posts($post_data, $tid, $fid)
 
         update_forum($fid);
 
-        redirect('viewtopic.php?id='.$tid, $lang_misc['Delete posts redirect']);
+        redirect(get_link('topic/'.$tid.'/'), $lang_misc['Delete posts redirect']);
     }
     
     return $posts;
 }
 
-function split_posts($post_data, $tid, $fid)
+function split_posts($feather, $tid, $fid)
 {
     global $db, $lang_common, $lang_misc, $pun_user;
     
-    $posts = isset($post_data['posts']) ? $post_data['posts'] : array();
+    $posts = !empty($feather->request->post('posts')) ? $feather->request->post('posts') : array();
     if (empty($posts)) {
         message($lang_misc['No posts selected']);
     }
 
-    if (isset($post_data['split_posts_comply'])) {
-        confirm_referrer('moderate.php');
+    if (!empty($feather->request->post('split_posts_comply'))) {
+        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
         if (@preg_match('%[^0-9,]%', $posts)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $move_to_forum = isset($post_data['move_to_forum']) ? intval($post_data['move_to_forum']) : 0;
+		$move_to_forum = !empty($feather->request->post('move_to_forum')) ? intval($feather->request->post('move_to_forum')) : 0;
         if ($move_to_forum < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -149,7 +151,7 @@ function split_posts($post_data, $tid, $fid)
         require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
 
         // Check subject
-        $new_subject = isset($post_data['new_subject']) ? pun_trim($post_data['new_subject']) : '';
+        $new_subject = !empty($feather->request->post('new_subject')) ? pun_trim($feather->request->post('new_subject')) : '';
 
         if ($new_subject == '') {
             message($lang_post['No subject']);
@@ -184,13 +186,13 @@ function split_posts($post_data, $tid, $fid)
         update_forum($fid);
         update_forum($move_to_forum);
 
-        redirect('viewtopic.php?id='.$new_tid, $lang_misc['Split posts redirect']);
+		redirect(get_link('topic/'.$new_tid.'/'), $lang_misc['Split posts redirect']);
     }
     
     return $posts;
 }
 
-function get_forum_list_split()
+function get_forum_list_split($id)
 {
     global $db, $pun_user;
     
@@ -209,11 +211,11 @@ function get_forum_list_split()
             $cur_category = $cur_forum['cid'];
         }
 
-        echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"'.($fid == $cur_forum['fid'] ? ' selected="selected"' : '').'>'.pun_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
+        echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"'.($id == $cur_forum['fid'] ? ' selected="selected"' : '').'>'.pun_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
     }
 }
 
-function get_forum_list_move()
+function get_forum_list_move($id)
 {
     global $db, $pun_user;
     
@@ -232,7 +234,7 @@ function get_forum_list_move()
             $cur_category = $cur_forum['cid'];
         }
 
-        if ($cur_forum['fid'] != $fid) {
+        if ($cur_forum['fid'] != $id) {
             echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
         }
     }
@@ -240,7 +242,7 @@ function get_forum_list_move()
 
 function display_posts_view($tid, $start_from)
 {
-    global $db, $pun_user, $pun_config, $re_list, $smilies;
+    global $db, $pun_user, $pun_config, $pd, $lang_topic;
     
     $post_data = array();
     
@@ -265,7 +267,7 @@ function display_posts_view($tid, $start_from)
         // If the poster is a registered user
         if ($cur_post['poster_id'] > 1) {
             if ($pun_user['g_view_users'] == '1') {
-                $cur_post['poster_disp'] = '<a href="profile.php?id='.$cur_post['poster_id'].'">'.pun_htmlspecialchars($cur_post['poster']).'</a>';
+                $cur_post['poster_disp'] = '<a href="profile.php?id='.get_link('user/'.$cur_post['poster_id'].'/').'">'.pun_htmlspecialchars($cur_post['poster']).'</a>';
             } else {
                 $cur_post['poster_disp'] = pun_htmlspecialchars($cur_post['poster']);
             }
@@ -293,17 +295,18 @@ function display_posts_view($tid, $start_from)
     return $post_data;
 }
 
-function move_topics_to($post_data, $tid, $fid)
+function move_topics_to($feather, $fid)
 {
     global $db, $lang_common, $lang_misc, $pun_user;
-    confirm_referrer('moderate.php');
+	
+    confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
-    if (@preg_match('%[^0-9,]%', $post_data['topics'])) {
+    if (@preg_match('%[^0-9,]%', $feather->request->post('topics'))) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
 
-    $topics = explode(',', $post_data['topics']);
-    $move_to_forum = isset($post_data['move_to_forum']) ? intval($post_data['move_to_forum']) : 0;
+    $topics = explode(',', $feather->request->post('topics'));
+    $move_to_forum = !empty($feather->request->post('move_to_forum')) ? intval($feather->request->post('move_to_forum')) : 0;
     if (empty($topics) || $move_to_forum < 1) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
@@ -328,7 +331,7 @@ function move_topics_to($post_data, $tid, $fid)
     $db->query('UPDATE '.$db->prefix.'topics SET forum_id='.$move_to_forum.' WHERE id IN('.implode(',', $topics).')') or error('Unable to move topics', __FILE__, __LINE__, $db->error());
 
     // Should we create redirect topics?
-    if (isset($post_data['with_redirect'])) {
+    if (!empty($feather->request->post('with_redirect'))) {
         foreach ($topics as $cur_topic) {
             // Fetch info for the redirect topic
             $result = $db->query('SELECT poster, subject, posted, last_post FROM '.$db->prefix.'topics WHERE id='.$cur_topic) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
@@ -343,12 +346,12 @@ function move_topics_to($post_data, $tid, $fid)
     update_forum($move_to_forum); // Update the forum TO which the topic was moved
 
     $redirect_msg = (count($topics) > 1) ? $lang_misc['Move topics redirect'] : $lang_misc['Move topic redirect'];
-    redirect('viewforum.php?id='.$move_to_forum, $redirect_msg);
+    redirect(get_link('forum/'.$move_to_forum.'/'), $redirect_msg);
 }
 
 function check_move_possible()
 {
-    global $db, $pun_user;
+    global $db, $pun_user, $lang_misc;
     
     $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
     if ($db->num_rows($result) < 2) {
@@ -356,17 +359,17 @@ function check_move_possible()
     }
 }
 
-function merge_topics($post_data, $fid)
+function merge_topics($feather, $fid)
 {
     global $db, $lang_common, $lang_misc;
     
-    confirm_referrer('moderate.php');
+    confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
-    if (@preg_match('%[^0-9,]%', $post_data['topics'])) {
+    if (@preg_match('%[^0-9,]%', $feather->request->post('topics'))) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
 
-    $topics = explode(',', $post_data['topics']);
+    $topics = explode(',', $feather->request->post('topics'));
     if (count($topics) < 2) {
         message($lang_misc['Not enough topics selected']);
     }
@@ -384,7 +387,7 @@ function merge_topics($post_data, $fid)
     $query = 'UPDATE '.$db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
 
     // Should we create redirect topics?
-    if (isset($post_data['with_redirect'])) {
+    if (!empty($feather->request->post('with_redirect'))) {
         $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
     }
 
@@ -408,7 +411,7 @@ function merge_topics($post_data, $fid)
     }
 
     // Without redirection the old topics are removed
-    if (!isset($post_data['with_redirect'])) {
+    if (empty($feather->request->post('with_redirect'))) {
         $db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND id != '.$merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $db->error());
     }
 
@@ -425,13 +428,13 @@ function merge_topics($post_data, $fid)
 
     // Update the forum FROM which the topic was moved and redirect
     update_forum($fid);
-    redirect('viewforum.php?id='.$fid, $lang_misc['Merge topics redirect']);
+	redirect(get_link('forum/'.$fid.'/'), $lang_misc['Merge topics redirect']);
 }
 
 function delete_topics($topics, $fid)
 {
     global $db, $lang_misc, $lang_common, $pun_user;
-    confirm_referrer('moderate.php');
+    confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
     if (@preg_match('%[^0-9,]%', $topics)) {
         message($lang_common['Bad request'], false, '404 Not Found');
@@ -478,7 +481,7 @@ function delete_topics($topics, $fid)
 
     update_forum($fid);
 
-    redirect('viewforum.php?id='.$fid, $lang_misc['Delete topics redirect']);
+	redirect(get_link('forum/'.$fid.'/'), $lang_misc['Delete topics redirect']);
 }
 
 function get_forum_info($fid)
@@ -545,9 +548,10 @@ function display_topics($fid, $sort_by, $start_from)
             $status_text = array();
             $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
             $cur_topic['icon_type'] = 'icon';
+			$url_topic = url_friendly($cur_topic['subject']);
 
             if (is_null($cur_topic['moved_to'])) {
-                $cur_topic['last_post_disp'] = '<a href="viewtopic.php?pid='.$cur_topic['last_post_id'].'#p'.$cur_topic['last_post_id'].'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['last_poster']).'</span>';
+                $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['last_poster']).'</span>';
                 $cur_topic['ghost_topic'] = false;
             } else {
                 $cur_topic['last_post_disp'] = '- - -';
@@ -564,13 +568,13 @@ function display_topics($fid, $sort_by, $start_from)
             }
 
             if ($cur_topic['moved_to'] != 0) {
-                $cur_topic['subject_disp'] = '<a href="viewtopic.php?id='.$cur_topic['moved_to'].'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
                 $status_text[] = '<span class="movedtext">'.$lang_forum['Moved'].'</span>';
                 $cur_topic['item_status'] .= ' imoved';
             } elseif ($cur_topic['closed'] == '0') {
-                $cur_topic['subject_disp'] = '<a href="viewtopic.php?id='.$cur_topic['id'].'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
             } else {
-                $cur_topic['subject_disp'] = '<a href="viewtopic.php?id='.$cur_topic['id'].'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
                 $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
                 $cur_topic['item_status'] .= ' iclosed';
             }
@@ -579,7 +583,7 @@ function display_topics($fid, $sort_by, $start_from)
                 $cur_topic['item_status'] .= ' inew';
                 $cur_topic['icon_type'] = 'icon icon-new';
                 $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
-                $subject_new_posts = '<span class="newtext">[ <a href="viewtopic.php?id='.$cur_topic['id'].'&amp;action=new" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
+                $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
             } else {
                 $subject_new_posts = null;
             }
@@ -590,7 +594,7 @@ function display_topics($fid, $sort_by, $start_from)
             $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
 
             if ($num_pages_topic > 1) {
-                $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'viewtopic.php?id='.$cur_topic['id']).' ]</span>';
+                $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
             } else {
                 $subject_multipage = null;
             }

@@ -57,7 +57,7 @@ function check_errors_before_post($fid, $tid, $qid, $pid, $page, $feather, $erro
     }
 	
 	if ($tid) {
-		$result = $db->query('SELECT subject, num_replies FROM '.$db->prefix.'topics WHERE id='.$tid) or error('Unable to get subject', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT subject FROM '.$db->prefix.'topics WHERE id='.$tid) or error('Unable to get subject', __FILE__, __LINE__, $db->error());
 		$subject_tid = $db->result($result);
 		if (!$db->num_rows($result)) {
 			message($lang_common['Bad request'], false, '404 Not Found');

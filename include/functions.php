@@ -891,7 +891,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 			if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4))
 				$pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
 
-			$pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'p$1', $num_pages, $args).'">'.forum_number_format($num_pages).'</a>';
+			$pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', $num_pages, $args).'">'.forum_number_format($num_pages).'</a>';
 		}
 
 		// Add a next page link

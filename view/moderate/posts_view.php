@@ -16,9 +16,9 @@ if (!defined('PUN')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $fid ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="viewtopic.php?id=<?php echo $tid ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$fid.'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_misc['Moderate'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -28,7 +28,7 @@ if (!defined('PUN')) {
 	</div>
 </div>
 
-<form method="post" action="moderate.php?fid=<?php echo $fid ?>&amp;tid=<?php echo $tid ?>">
+<form method="post" action="">
 <?php
 $post_count = 0; // Keep track of post numbers
 foreach ($post_data as $post) {
@@ -41,7 +41,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-		<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="viewtopic.php?pid=<?php echo $post['id'].'#p'.$post['id'] ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
+		<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<div class="postbody">
@@ -83,9 +83,9 @@ foreach ($post_data as $post) {
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $fid ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="viewtopic.php?id=<?php echo $tid ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$fid.'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_misc['Moderate'] ?></strong></li>
 		</ul>
 		<div class="clearer"></div>
