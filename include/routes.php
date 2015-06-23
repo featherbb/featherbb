@@ -81,6 +81,9 @@ $feather->get('/admin/bans/delete/:id(/)', '\controller\admin\Bans:delete')->con
 $feather->map('/admin/bans/edit/:id(/)', '\controller\admin\Bans:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 $feather->map('/admin/bans/add(/)', '\controller\admin\Bans:add')->via('GET', 'POST');
 
+// Admin options
+$feather->map('/admin/options(/)', '\controller\admin\Options:display')->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

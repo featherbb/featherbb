@@ -7,72 +7,72 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function update_options($post_data)
+function update_options($feather)
 {
 	global $db, $lang_admin_options, $lang_common, $pun_config;
 	
-    confirm_referrer('admin_options.php', $lang_admin_options['Bad HTTP Referer message']);
+    confirm_referrer(get_link_r('admin/options/'), $lang_admin_options['Bad HTTP Referer message']);
 
     $form = array(
-        'board_title'            => pun_trim($post_data['form']['board_title']),
-        'board_desc'            => pun_trim($post_data['form']['board_desc']),
-        'base_url'                => pun_trim($post_data['form']['base_url']),
-        'default_timezone'        => floatval($post_data['form']['default_timezone']),
-        'default_dst'            => $post_data['form']['default_dst'] != '1' ? '0' : '1',
-        'default_lang'            => pun_trim($post_data['form']['default_lang']),
-        'default_style'            => pun_trim($post_data['form']['default_style']),
-        'time_format'            => pun_trim($post_data['form']['time_format']),
-        'date_format'            => pun_trim($post_data['form']['date_format']),
-        'timeout_visit'            => (intval($post_data['form']['timeout_visit']) > 0) ? intval($post_data['form']['timeout_visit']) : 1,
-        'timeout_online'        => (intval($post_data['form']['timeout_online']) > 0) ? intval($post_data['form']['timeout_online']) : 1,
-        'redirect_delay'        => (intval($post_data['form']['redirect_delay']) >= 0) ? intval($post_data['form']['redirect_delay']) : 0,
-        'show_version'            => $post_data['form']['show_version'] != '1' ? '0' : '1',
-        'show_user_info'        => $post_data['form']['show_user_info'] != '1' ? '0' : '1',
-        'show_post_count'        => $post_data['form']['show_post_count'] != '1' ? '0' : '1',
-        'smilies'                => $post_data['form']['smilies'] != '1' ? '0' : '1',
-        'smilies_sig'            => $post_data['form']['smilies_sig'] != '1' ? '0' : '1',
-        'make_links'            => $post_data['form']['make_links'] != '1' ? '0' : '1',
-        'topic_review'            => (intval($post_data['form']['topic_review']) >= 0) ? intval($post_data['form']['topic_review']) : 0,
-        'disp_topics_default'    => intval($post_data['form']['disp_topics_default']),
-        'disp_posts_default'    => intval($post_data['form']['disp_posts_default']),
-        'indent_num_spaces'        => (intval($post_data['form']['indent_num_spaces']) >= 0) ? intval($post_data['form']['indent_num_spaces']) : 0,
-        'quote_depth'            => (intval($post_data['form']['quote_depth']) > 0) ? intval($post_data['form']['quote_depth']) : 1,
-        'quickpost'                => $post_data['form']['quickpost'] != '1' ? '0' : '1',
-        'users_online'            => $post_data['form']['users_online'] != '1' ? '0' : '1',
-        'censoring'                => $post_data['form']['censoring'] != '1' ? '0' : '1',
-        'signatures'            => $post_data['form']['signatures'] != '1' ? '0' : '1',
-        'show_dot'                => $post_data['form']['show_dot'] != '1' ? '0' : '1',
-        'topic_views'            => $post_data['form']['topic_views'] != '1' ? '0' : '1',
-        'quickjump'                => $post_data['form']['quickjump'] != '1' ? '0' : '1',
-        'gzip'                    => $post_data['form']['gzip'] != '1' ? '0' : '1',
-        'search_all_forums'        => $post_data['form']['search_all_forums'] != '1' ? '0' : '1',
-        'additional_navlinks'    => pun_trim($post_data['form']['additional_navlinks']),
-        'feed_type'                => intval($post_data['form']['feed_type']),
-        'feed_ttl'                => intval($post_data['form']['feed_ttl']),
-        'report_method'            => intval($post_data['form']['report_method']),
-        'mailing_list'            => pun_trim($post_data['form']['mailing_list']),
-        'avatars'                => $post_data['form']['avatars'] != '1' ? '0' : '1',
-        'avatars_dir'            => pun_trim($post_data['form']['avatars_dir']),
-        'avatars_width'            => (intval($post_data['form']['avatars_width']) > 0) ? intval($post_data['form']['avatars_width']) : 1,
-        'avatars_height'        => (intval($post_data['form']['avatars_height']) > 0) ? intval($post_data['form']['avatars_height']) : 1,
-        'avatars_size'            => (intval($post_data['form']['avatars_size']) > 0) ? intval($post_data['form']['avatars_size']) : 1,
-        'admin_email'            => strtolower(pun_trim($post_data['form']['admin_email'])),
-        'webmaster_email'        => strtolower(pun_trim($post_data['form']['webmaster_email'])),
-        'forum_subscriptions'    => $post_data['form']['forum_subscriptions'] != '1' ? '0' : '1',
-        'topic_subscriptions'    => $post_data['form']['topic_subscriptions'] != '1' ? '0' : '1',
-        'smtp_host'                => pun_trim($post_data['form']['smtp_host']),
-        'smtp_user'                => pun_trim($post_data['form']['smtp_user']),
-        'smtp_ssl'                => $post_data['form']['smtp_ssl'] != '1' ? '0' : '1',
-        'regs_allow'            => $post_data['form']['regs_allow'] != '1' ? '0' : '1',
-        'regs_verify'            => $post_data['form']['regs_verify'] != '1' ? '0' : '1',
-        'regs_report'            => $post_data['form']['regs_report'] != '1' ? '0' : '1',
-        'rules'                    => $post_data['form']['rules'] != '1' ? '0' : '1',
-        'rules_message'            => pun_trim($post_data['form']['rules_message']),
-        'default_email_setting'    => intval($post_data['form']['default_email_setting']),
-        'announcement'            => $post_data['form']['announcement'] != '1' ? '0' : '1',
-        'announcement_message'    => pun_trim($post_data['form']['announcement_message']),
-        'maintenance'            => $post_data['form']['maintenance'] != '1' ? '0' : '1',
-        'maintenance_message'    => pun_trim($post_data['form']['maintenance_message']),
+        'board_title'            => pun_trim($feather->request->post('form_board_title')),
+        'board_desc'            => pun_trim($feather->request->post('form_board_desc')),
+        'base_url'                => pun_trim($feather->request->post('form_base_url')),
+        'default_timezone'        => floatval($feather->request->post('form_default_timezone')),
+        'default_dst'            => $feather->request->post('form_default_dst') != '1' ? '0' : '1',
+        'default_lang'            => pun_trim($feather->request->post('form_default_lang')),
+        'default_style'            => pun_trim($feather->request->post('form_default_style')),
+        'time_format'            => pun_trim($feather->request->post('form_time_format')),
+        'date_format'            => pun_trim($feather->request->post('form_date_format')),
+        'timeout_visit'            => (intval($feather->request->post('form_timeout_visit')) > 0) ? intval($feather->request->post('form_timeout_visit')) : 1,
+        'timeout_online'        => (intval($feather->request->post('form_timeout_online')) > 0) ? intval($feather->request->post('form_timeout_online')) : 1,
+        'redirect_delay'        => (intval($feather->request->post('form_redirect_delay')) >= 0) ? intval($feather->request->post('form_redirect_delay')) : 0,
+        'show_version'            => $feather->request->post('form_show_version') != '1' ? '0' : '1',
+        'show_user_info'        => $feather->request->post('form_show_user_info') != '1' ? '0' : '1',
+        'show_post_count'        => $feather->request->post('form_show_post_count') != '1' ? '0' : '1',
+        'smilies'                => $feather->request->post('form_smilies') != '1' ? '0' : '1',
+        'smilies_sig'            => $feather->request->post('form_smilies_sig') != '1' ? '0' : '1',
+        'make_links'            => $feather->request->post('form_make_links') != '1' ? '0' : '1',
+        'topic_review'            => (intval($feather->request->post('form_topic_review')) >= 0) ? intval($feather->request->post('form_topic_review')) : 0,
+        'disp_topics_default'    => intval($feather->request->post('form_disp_topics_default')),
+        'disp_posts_default'    => intval($feather->request->post('form_disp_posts_default')),
+        'indent_num_spaces'        => (intval($feather->request->post('form_indent_num_spaces')) >= 0) ? intval($feather->request->post('form_indent_num_spaces')) : 0,
+        'quote_depth'            => (intval($feather->request->post('form_quote_depth')) > 0) ? intval($feather->request->post('form_quote_depth')) : 1,
+        'quickpost'                => $feather->request->post('form_quickpost') != '1' ? '0' : '1',
+        'users_online'            => $feather->request->post('form_users_online') != '1' ? '0' : '1',
+        'censoring'                => $feather->request->post('form_censoring') != '1' ? '0' : '1',
+        'signatures'            => $feather->request->post('form_signatures') != '1' ? '0' : '1',
+        'show_dot'                => $feather->request->post('form_show_dot') != '1' ? '0' : '1',
+        'topic_views'            => $feather->request->post('form_topic_views') != '1' ? '0' : '1',
+        'quickjump'                => $feather->request->post('form_quickjump') != '1' ? '0' : '1',
+        'gzip'                    => $feather->request->post('form_gzip') != '1' ? '0' : '1',
+        'search_all_forums'        => $feather->request->post('form_search_all_forums') != '1' ? '0' : '1',
+        'additional_navlinks'    => pun_trim($feather->request->post('form_additional_navlinks')),
+        'feed_type'                => intval($feather->request->post('form_feed_type')),
+        'feed_ttl'                => intval($feather->request->post('form_feed_ttl')),
+        'report_method'            => intval($feather->request->post('form_report_method')),
+        'mailing_list'            => pun_trim($feather->request->post('form_mailing_list')),
+        'avatars'                => $feather->request->post('form_avatars') != '1' ? '0' : '1',
+        'avatars_dir'            => pun_trim($feather->request->post('form_avatars_dir')),
+        'avatars_width'            => (intval($feather->request->post('form_avatars_width')) > 0) ? intval($feather->request->post('form_avatars_width')) : 1,
+        'avatars_height'        => (intval($feather->request->post('form_avatars_height')) > 0) ? intval($feather->request->post('form_avatars_height')) : 1,
+        'avatars_size'            => (intval($feather->request->post('form_avatars_size')) > 0) ? intval($feather->request->post('form_avatars_size')) : 1,
+        'admin_email'            => strtolower(pun_trim($feather->request->post('form_admin_email'))),
+        'webmaster_email'        => strtolower(pun_trim($feather->request->post('form_webmaster_email'))),
+        'forum_subscriptions'    => $feather->request->post('form_forum_subscriptions') != '1' ? '0' : '1',
+        'topic_subscriptions'    => $feather->request->post('form_topic_subscriptions') != '1' ? '0' : '1',
+        'smtp_host'                => pun_trim($feather->request->post('form_smtp_host')),
+        'smtp_user'                => pun_trim($feather->request->post('form_smtp_user')),
+        'smtp_ssl'                => $feather->request->post('form_smtp_ssl') != '1' ? '0' : '1',
+        'regs_allow'            => $feather->request->post('form_regs_allow') != '1' ? '0' : '1',
+        'regs_verify'            => $feather->request->post('form_regs_verify') != '1' ? '0' : '1',
+        'regs_report'            => $feather->request->post('form_regs_report') != '1' ? '0' : '1',
+        'rules'                    => $feather->request->post('form_rules') != '1' ? '0' : '1',
+        'rules_message'            => pun_trim($feather->request->post('form_rules_message')),
+        'default_email_setting'    => intval($feather->request->post('form_default_email_setting')),
+        'announcement'            => $feather->request->post('form_announcement') != '1' ? '0' : '1',
+        'announcement_message'    => pun_trim($feather->request->post('form_announcement_message')),
+        'maintenance'            => $feather->request->post('form_maintenance') != '1' ? '0' : '1',
+        'maintenance_message'    => pun_trim($feather->request->post('form_maintenance_message')),
     );
 
     if ($form['board_title'] == '') {
@@ -136,9 +136,9 @@ function update_options($post_data)
     }
 
     // Change or enter a SMTP password
-    if (isset($post_data['form']['smtp_change_pass'])) {
-        $smtp_pass1 = isset($post_data['form']['smtp_pass1']) ? pun_trim($post_data['form']['smtp_pass1']) : '';
-        $smtp_pass2 = isset($post_data['form']['smtp_pass2']) ? pun_trim($post_data['form']['smtp_pass2']) : '';
+    if (!empty($feather->request->post('form_smtp_change_pass'))) {
+        $smtp_pass1 = !empty($feather->request->post('form_smtp_pass1')) ? pun_trim($feather->request->post('form_smtp_pass1')) : '';
+        $smtp_pass2 = !empty($feather->request->post('form_smtp_pass2')) ? pun_trim($feather->request->post('form_smtp_pass2')) : '';
 
         if ($smtp_pass1 == $smtp_pass2) {
             $form['smtp_pass'] = $smtp_pass1;
@@ -222,11 +222,13 @@ function update_options($post_data)
     generate_config_cache();
     clear_feed_cache();
 
-    redirect('admin_options.php', $lang_admin_options['Options updated redirect']);
+    redirect(get_link('admin/options/'), $lang_admin_options['Options updated redirect']);
 }
 
 function get_styles()
 {
+    global $pun_config;
+
 	$styles = forum_list_styles();
 
 	foreach ($styles as $temp) {
@@ -240,6 +242,8 @@ function get_styles()
 
 function get_times()
 {
+    global $pun_config, $lang_admin_options;
+
 	$times = array(5, 15, 30, 60);
 
 	foreach ($times as $time) {
