@@ -28,8 +28,8 @@ namespace controller\admin {
             // Load the admin_bans.php language file
             require PUN_ROOT . 'lang/' . $admin_language . '/bans.php';
 
-            // Load the admin_bans.php model file
-            require PUN_ROOT . 'model/admin_bans.php';
+            // Load the bans.php model file
+            require PUN_ROOT . 'model/admin/bans.php';
 
             // Display bans
             if (!empty($feather->request->get('find_ban'))) {
@@ -143,8 +143,8 @@ namespace controller\admin {
             // Load the admin_bans.php language file
             require PUN_ROOT . 'lang/' . $admin_language . '/bans.php';
 
-            // Load the admin_bans.php model file
-            require PUN_ROOT . 'model/admin_bans.php';
+            // Load the bans.php model file
+            require PUN_ROOT . 'model/admin/bans.php';
 
             if (!empty($feather->request->post('add_edit_ban'))) {
                 insert_ban($feather);
@@ -205,8 +205,8 @@ namespace controller\admin {
             // Load the admin_bans.php language file
             require PUN_ROOT . 'lang/' . $admin_language . '/bans.php';
 
-            // Load the admin_bans.php model file
-            require PUN_ROOT . 'model/admin_bans.php';
+            // Load the bans.php model file
+            require PUN_ROOT . 'model/admin/bans.php';
 
             // Remove the ban
             remove_ban($id);
@@ -227,8 +227,8 @@ namespace controller\admin {
             // Load the admin_bans.php language file
             require PUN_ROOT . 'lang/' . $admin_language . '/bans.php';
 
-            // Load the admin_bans.php model file
-            require PUN_ROOT . 'model/admin_bans.php';
+            // Load the bans.php model file
+            require PUN_ROOT . 'model/admin/bans.php';
 
             if (!empty($feather->request->post('add_edit_ban'))) {
                 insert_ban($feather);
