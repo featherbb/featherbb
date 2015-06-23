@@ -16,8 +16,8 @@ if (!defined('PUN')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_bans.php"><?php echo $lang_admin_common['Bans'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo $lang_admin_common['Bans'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_bans['Results head'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -55,8 +55,8 @@ if (!defined('PUN')) {
 					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? pun_htmlspecialchars($cur_ban['ip']) : '&#160;' ?></td>
 					<td class="tc4"><?php echo format_time($cur_ban['expire'], true) ?></td>
 					<td class="tc5"><?php echo($cur_ban['message'] != '') ? pun_htmlspecialchars($cur_ban['message']) : '&#160;' ?></td>
-					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="profile.php?id='.$cur_ban['ban_creator'].'">'.pun_htmlspecialchars($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
-					<td class="tcr"><?php echo '<a href="admin_bans.php?edit_ban='.$cur_ban['id'].'">'.$lang_admin_common['Edit'].'</a> | <a href="admin_bans.php?del_ban='.$cur_ban['id'].'">'.$lang_admin_common['Remove'].'</a>' ?></td>
+					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.get_link('user/'.$cur_ban['ban_creator'].'/').'">'.pun_htmlspecialchars($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
+					<td class="tcr"><?php echo '<a href="'.get_link('admin/bans/edit/'.$cur_ban['id'].'/').'">'.$lang_admin_common['Edit'].'</a> | <a href="'.get_link('admin/bans/delete/'.$cur_ban['id'].'/').'">'.$lang_admin_common['Remove'].'</a>' ?></td>
 				</tr>
 <?php
 
@@ -77,11 +77,11 @@ if (!defined('PUN')) {
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
-		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_bans.php"><?php echo $lang_admin_common['Bans'] ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo $lang_admin_bans['Results head'] ?></strong></li>
-		</ul>
+        <ul class="crumbs">
+            <li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+            <li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo $lang_admin_common['Bans'] ?></a></li>
+            <li><span>»&#160;</span><strong><?php echo $lang_admin_bans['Results head'] ?></strong></li>
+        </ul>
 		<div class="clearer"></div>
 	</div>
 </div>

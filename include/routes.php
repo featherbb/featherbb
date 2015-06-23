@@ -75,6 +75,12 @@ $feather->post('/moderate/forum/:fid(/page/:page)(/)', '\controller\Moderate:dea
 // Admin index
 $feather->get('/admin(/action/:action)(/)', '\controller\admin\Index:display');
 
+// Admin bans
+$feather->get('/admin/bans(/)', '\controller\admin\Bans:display');
+$feather->get('/admin/bans/delete/:id(/)', '\controller\admin\Bans:delete')->conditions(array('id' => '[0-9]+'));
+$feather->map('/admin/bans/edit/:id(/)', '\controller\admin\Bans:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/admin/bans/add(/)', '\controller\admin\Bans:add')->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

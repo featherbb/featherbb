@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_bans['Ban advanced head'] ?></span></h2>
 		<div class="box">
-			<form id="bans2" method="post" action="admin_bans.php">
+			<form id="bans2" method="post" action="">
 				<div class="inform">
 				<input type="hidden" name="mode" value="<?php echo $ban['mode'] ?>" />
 <?php if ($ban['mode'] == 'edit'): ?>				<input type="hidden" name="ban_id" value="<?php echo $ban['id'] ?>" />

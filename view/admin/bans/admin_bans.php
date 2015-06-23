@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_bans['New ban head'] ?></span></h2>
 		<div class="box">
-			<form id="bans" method="post" action="admin_bans.php?action=more">
+			<form id="bans" method="post" action="<?php echo get_link('admin/bans/add/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_bans['Add ban subhead'] ?></legend>
@@ -38,7 +38,7 @@ if (!defined('PUN')) {
 
 		<h2 class="block2"><span><?php echo $lang_admin_bans['Ban search head'] ?></span></h2>
 		<div class="box">
-			<form id="find_bans" method="get" action="admin_bans.php">
+			<form id="find_bans" method="get" action="<?php echo get_link('admin/bans/') ?>">
 				<p class="submittop"><input type="submit" name="find_ban" value="<?php echo $lang_admin_bans['Submit search'] ?>" tabindex="3" /></p>
 				<div class="inform">
 					<fieldset>
@@ -48,19 +48,19 @@ if (!defined('PUN')) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Username label'] ?></th>
-									<td><input type="text" name="form[username]" size="30" maxlength="25" tabindex="4" /></td>
+									<td><input type="text" name="username" size="30" maxlength="25" tabindex="4" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['IP label'] ?></th>
-									<td><input type="text" name="form[ip]" size="30" maxlength="255" tabindex="5" /></td>
+									<td><input type="text" name="ip" size="30" maxlength="255" tabindex="5" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['E-mail label'] ?></th>
-									<td><input type="text" name="form[email]" size="30" maxlength="80" tabindex="6" /></td>
+									<td><input type="text" name="email" size="30" maxlength="80" tabindex="6" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Message label'] ?></th>
-									<td><input type="text" name="form[message]" size="30" maxlength="255" tabindex="7" /></td>
+									<td><input type="text" name="message" size="30" maxlength="255" tabindex="7" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_bans['Expire after label'] ?></th>
@@ -80,7 +80,9 @@ if (!defined('PUN')) {
 											<option value="ip"><?php echo $lang_admin_bans['Order by ip'] ?></option>
 											<option value="email"><?php echo $lang_admin_bans['Order by e-mail'] ?></option>
 											<option value="expire"><?php echo $lang_admin_bans['Order by expire'] ?></option>
-										</select>&#160;&#160;&#160;<select name="direction" tabindex="11">
+										</select>
+                                        &#160;&#160;&#160;
+                                        <select name="direction" tabindex="11">
 											<option value="ASC" selected="selected"><?php echo $lang_admin_bans['Ascending'] ?></option>
 											<option value="DESC"><?php echo $lang_admin_bans['Descending'] ?></option>
 										</select>

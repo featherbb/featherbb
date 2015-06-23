@@ -14,7 +14,7 @@ namespace controller\admin{
         function display($action = null){
 			
 			global $feather, $lang_common, $lang_admin_common, $pun_config, $pun_user, $pun_start, $db;
-			
+
 			require PUN_ROOT.'include/common_admin.php';
 
 			if (!$pun_user['is_admmod']) {
