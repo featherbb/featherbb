@@ -21,9 +21,9 @@ if (!defined('PUN_ALLOW_INDEX')) {
 
 if (defined('PUN_ADMIN_CONSOLE')) {
     if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/base_admin.css')) {
-        echo '<link rel="stylesheet" type="text/css" href="style/'.$pun_user['style'].'/base_admin.css" />'."\n";
+        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$pun_user['style'].'/base_admin.css" />'."\n";
     } else {
-        echo '<link rel="stylesheet" type="text/css" href="style/imports/base_admin.css" />'."\n";
+        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
     }
 }
 
