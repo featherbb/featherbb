@@ -7,14 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-function add_word($post_data)
+function add_word($feather)
 {
     global $db, $lang_admin_censoring;
     
-    confirm_referrer('admin_censoring.php');
+    confirm_referrer(get_link_r('admin/censoring/'));
 
-    $search_for = pun_trim($post_data['new_search_for']);
-    $replace_with = pun_trim($post_data['new_replace_with']);
+    $search_for = pun_trim($feather->request->post('new_search_for'));
+    $replace_with = pun_trim($feather->request->post('new_replace_with'));
 
     if ($search_for == '') {
         message($lang_admin_censoring['Must enter word message']);
@@ -29,19 +29,19 @@ function add_word($post_data)
 
     generate_censoring_cache();
 
-    redirect('admin_censoring.php', $lang_admin_censoring['Word added redirect']);
+    redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word added redirect']);
 }
 
-function update_word($post_data)
+function update_word($feather)
 {
     global $db, $lang_admin_censoring;
     
-    confirm_referrer('admin_censoring.php');
+    confirm_referrer(get_link_r('admin/censoring/'));
 
-    $id = intval(key($post_data['update']));
+    $id = intval(key($feather->request->post('update')));
 
-    $search_for = pun_trim($post_data['search_for'][$id]);
-    $replace_with = pun_trim($post_data['replace_with'][$id]);
+    $search_for = pun_trim($feather->request->post('search_for')[$id]);
+    $replace_with = pun_trim($feather->request->post('replace_with')[$id]);
 
     if ($search_for == '') {
         message($lang_admin_censoring['Must enter word message']);
@@ -56,16 +56,16 @@ function update_word($post_data)
 
     generate_censoring_cache();
 
-    redirect('admin_censoring.php', $lang_admin_censoring['Word updated redirect']);
+    redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word updated redirect']);
 }
 
-function remove_word($post_data)
+function remove_word($feather)
 {
     global $db, $lang_admin_censoring;
     
-    confirm_referrer('admin_censoring.php');
+    confirm_referrer(get_link_r('admin/censoring/'));
 
-    $id = intval(key($post_data['remove']));
+    $id = intval(key($feather->request->post('remove')));
 
     $db->query('DELETE FROM '.$db->prefix.'censoring WHERE id='.$id) or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());
 
@@ -76,7 +76,7 @@ function remove_word($post_data)
 
     generate_censoring_cache();
 
-    redirect('admin_censoring.php',  $lang_admin_censoring['Word removed redirect']);
+    redirect(get_link('admin/censoring/'),  $lang_admin_censoring['Word removed redirect']);
 }
 
 function get_words()
