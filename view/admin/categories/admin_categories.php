@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_categories['Add categories head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_categories.php">
+			<form method="post" action="<?php echo get_link('admin/categories/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Add categories subhead'] ?></legend>
@@ -26,7 +26,7 @@ if (!defined('PUN')) {
 									<th scope="row"><?php echo $lang_admin_categories['Add category label'] ?><div><input type="submit" name="add_cat" value="<?php echo $lang_admin_categories['Add new submit'] ?>" tabindex="2" /></div></th>
 									<td>
 										<input type="text" name="new_cat_name" size="35" maxlength="80" tabindex="1" />
-										<span><?php printf($lang_admin_categories['Add category help'], '<a href="admin_forums.php">'.$lang_admin_common['Forums'].'</a>') ?></span>
+										<span><?php printf($lang_admin_categories['Add category help'], '<a href="'.get_link('admin/forums').'">'.$lang_admin_common['Forums'].'</a>') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -38,7 +38,7 @@ if (!defined('PUN')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Delete categories head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_categories.php">
+			<form method="post" action="<?php echo get_link('admin/categories/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Delete categories subhead'] ?></legend>
@@ -69,7 +69,7 @@ if (!defined('PUN')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Edit categories head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_categories.php">
+			<form method="post" action="<?php echo get_link('admin/categories/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Edit categories subhead'] ?></legend>

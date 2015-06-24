@@ -16,12 +16,12 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_censoring['Censoring head'] ?></span></h2>
 		<div class="box">
-			<form id="censoring" method="post" action="admin_censoring.php">
+			<form id="censoring" method="post" action="<?php echo get_link('admin/censoring/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_censoring['Add word subhead'] ?></legend>
 						<div class="infldset">
-							<p><?php echo $lang_admin_censoring['Add word info'].' '.($pun_config['o_censoring'] == '1' ? sprintf($lang_admin_censoring['Censoring enabled'], '<a href="admin_options.php#censoring">'.$lang_admin_common['Options'].'</a>') : sprintf($lang_admin_censoring['Censoring disabled'], '<a href="admin_options.php#censoring">'.$lang_admin_common['Options'].'</a>')) ?></p>
+							<p><?php echo $lang_admin_censoring['Add word info'].' '.($pun_config['o_censoring'] == '1' ? sprintf($lang_admin_censoring['Censoring enabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>') : sprintf($lang_admin_censoring['Censoring disabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>')) ?></p>
 							<table>
 							<thead>
 								<tr>

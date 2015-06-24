@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_categories['Delete category head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_categories.php">
+			<form method="post" action="<?php echo get_link('admin/categories') ?>">
 				<div class="inform">
 				<input type="hidden" name="cat_to_delete" value="<?php echo $cat_to_delete ?>" />
 					<fieldset>

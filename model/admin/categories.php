@@ -7,20 +7,20 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function add_category($post_data)
+function add_category($feather)
 {
     global $db, $lang_admin_categories;
     
-    confirm_referrer('admin_categories.php');
+    confirm_referrer(get_link_r('admin/categories/'));
 
-    $new_cat_name = pun_trim($post_data['new_cat_name']);
+    $new_cat_name = pun_trim($feather->request->post('new_cat_name'));
     if ($new_cat_name == '') {
         message($lang_admin_categories['Must enter name message']);
     }
 
     $db->query('INSERT INTO '.$db->prefix.'categories (cat_name) VALUES(\''.$db->escape($new_cat_name).'\')') or error('Unable to create category', __FILE__, __LINE__, $db->error());
 
-    redirect('admin_categories.php', $lang_admin_categories['Category added redirect']);
+    redirect(get_link('admin/categories/'), $lang_admin_categories['Category added redirect']);
 }
 
 function delete_category($cat_to_delete)
@@ -64,7 +64,7 @@ function delete_category($cat_to_delete)
 
     generate_quickjump_cache();
 
-    redirect('admin_categories.php', $lang_admin_categories['Category deleted redirect']);
+    redirect(get_link('admin/categories/'), $lang_admin_categories['Category deleted redirect']);
 }
 
 function get_category_name($cat_to_delete)
@@ -103,7 +103,7 @@ function update_categories($categories)
 
     generate_quickjump_cache();
 
-    redirect('admin_categories.php', $lang_admin_categories['Categories updated redirect']);
+    redirect(get_link('admin/categories/'), $lang_admin_categories['Categories updated redirect']);
 }
 
 function get_cat_list()
