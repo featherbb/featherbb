@@ -24,7 +24,7 @@ if (!defined('PUN'))
 <?php if ($pun_user['g_id'] == PUN_ADMIN): ?>					<dt><?php echo $lang_admin_index['Environment label'] ?></dt>
 					<dd>
 						<?php printf($lang_admin_index['Environment data OS'], PHP_OS) ?><br />
-						<?php printf($lang_admin_index['Environment data version'], phpversion(), '<a href="admin_statistics.php?action=phpinfo">'.$lang_admin_index['Show info'].'</a>') ?><br />
+						<?php printf($lang_admin_index['Environment data version'], phpversion(), '<a href="'.get_link('admin/phpinfo/').'">'.$lang_admin_index['Show info'].'</a>') ?><br />
 						<?php printf($lang_admin_index['Environment data acc']."\n", $php_accelerator) ?>
 					</dd>
 					<dt><?php echo $lang_admin_index['Database label'] ?></dt>
