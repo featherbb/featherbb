@@ -7,13 +7,13 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function update_permissions($post_data)
+function update_permissions($feather)
 {
 	global $db, $lang_admin_permissions, $pun_config;
 	
-    confirm_referrer('admin_permissions.php');
+    confirm_referrer(get_link_r('admin/permissions/'));
 
-    $form = array_map('intval', $post_data['form']);
+    $form = array_map('intval', $feather->request->post('form'));
 
     foreach ($form as $key => $input) {
         // Make sure the input is never a negative value
@@ -34,5 +34,5 @@ function update_permissions($post_data)
 
     generate_config_cache();
 
-    redirect('admin_permissions.php', $lang_admin_permissions['Perms updated redirect']);
+    redirect(get_link('admin/permissions/'), $lang_admin_permissions['Perms updated redirect']);
 }

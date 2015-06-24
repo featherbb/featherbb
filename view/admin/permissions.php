@@ -15,7 +15,7 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_permissions['Permissions head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_permissions.php">
+			<form method="post" action="<?php echo get_link('admin/permissions/') ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="form_sent" value="1" />
