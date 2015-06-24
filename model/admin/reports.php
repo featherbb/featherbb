@@ -7,13 +7,13 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function zap_report($post_data)
+function zap_report($feather)
 {
 	global $db, $lang_admin_reports, $pun_user;
 
-	confirm_referrer('admin_reports.php');
+	confirm_referrer(get_link_r('admin/reports/'));
 
-    $zap_id = intval(key($post_data['zap_id']));
+    $zap_id = intval(key($feather->request->post('zap_id')));
 
     $result = $db->query('SELECT zapped FROM '.$db->prefix.'reports WHERE id='.$zap_id) or error('Unable to fetch report info', __FILE__, __LINE__, $db->error());
     $zapped = $db->result($result);
@@ -29,7 +29,7 @@ function zap_report($post_data)
         $db->query('DELETE FROM '.$db->prefix.'reports WHERE zapped <= '.$zapped_threshold) or error('Unable to delete old read reports', __FILE__, __LINE__, $db->error());
     }
 
-    redirect('admin_reports.php', $lang_admin_reports['Report zapped redirect']);
+    redirect(get_link('admin/reports/'), $lang_admin_reports['Report zapped redirect']);
 }
 
 function check_reports()

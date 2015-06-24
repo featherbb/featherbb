@@ -15,11 +15,8 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_reports['New reports head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_reports.php?action=zap">
+			<form method="post" action="<?php echo get_link('admin/reports/') ?>">
 <?php
-
-$is_report = check_reports();
-
 if ($is_report) {
 	$report_data = get_reports();
     foreach($report_data as $report) {
@@ -68,8 +65,6 @@ if ($is_report) {
 		<div class="box">
 			<div class="fakeform">
 <?php
-
-$is_report_zapped = check_zapped_reports();
 
 if ($is_report_zapped) {
 	$report_zapped_data = get_zapped_reports();
