@@ -84,6 +84,22 @@ $feather->map('/admin/bans/add(/)', '\controller\admin\Bans:add')->via('GET', 'P
 // Admin options
 $feather->map('/admin/options(/)', '\controller\admin\Options:display')->via('GET', 'POST');
 
+// Admin categories
+$feather->map('/admin/categories(/)', '\controller\admin\Categories:display')->via('GET', 'POST');
+
+// Admin censoring
+$feather->map('/admin/censoring(/)', '\controller\admin\Censoring:display')->via('GET', 'POST');
+
+// Admin reports
+$feather->map('/admin/reports(/)', '\controller\admin\Reports:display')->via('GET', 'POST');
+
+// Admin permissions
+$feather->map('/admin/permissions(/)', '\controller\admin\Permissions:display')->via('GET', 'POST');
+
+// Admin statistics
+$feather->get('/admin/statistics(/)', '\controller\admin\Statistics:display');
+$feather->get('/admin/phpinfo(/)', '\controller\admin\Statistics:phpinfo');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');
