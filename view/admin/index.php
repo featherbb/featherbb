@@ -48,7 +48,7 @@ if (!defined('PUN'))
 					</dd>
 					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
 					<dd>
-						<a href="<?php echo get_link('admin/stats/') ?>"><?php echo $lang_admin_index['View server statistics'] ?></a>
+						<a href="<?php echo get_link('admin/statistics/') ?>"><?php echo $lang_admin_index['View server statistics'] ?></a>
 					</dd>
 					<dt><?php echo $lang_admin_index['Support label'] ?></dt>
 					<dd>

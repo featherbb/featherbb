@@ -422,7 +422,7 @@ if (!defined('PUN'))
 										<label class="conl"><input type="radio" name="form_censoring" value="0"<?php if ($pun_config['o_censoring'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
-										<span class="clearb"><?php printf($lang_admin_options['Censor words help'], '<a href="admin_censoring.php">'.$lang_admin_common['Censoring'].'</a>') ?></span>
+										<span class="clearb"><?php printf($lang_admin_options['Censor words help'], '<a href="'.get_link('admin/censoring/').'">'.$lang_admin_common['Censoring'].'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>

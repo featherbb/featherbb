@@ -55,7 +55,7 @@ if (!defined('PUN')) {
 					<li<?php if ($page == 'permissions') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/permissions') ?>"><?php echo $lang_admin_common['Permissions'] ?></a></li>
+        ?>><a href="<?php echo get_link('admin/permissions/') ?>"><?php echo $lang_admin_common['Permissions'] ?></a></li>
 					<li<?php if ($page == 'categories') {
     echo ' class="isactive"';
 }
