@@ -100,6 +100,11 @@ $feather->map('/admin/permissions(/)', '\controller\admin\Permissions:display')-
 $feather->get('/admin/statistics(/)', '\controller\admin\Statistics:display');
 $feather->get('/admin/phpinfo(/)', '\controller\admin\Statistics:phpinfo');
 
+// Admin forums
+$feather->map('/admin/forums(/)', '\controller\admin\Forums:display')->via('GET', 'POST');
+$feather->map('/admin/forums/delete/:id(/)', '\controller\admin\Forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/admin/forums/edit/:id(/)', '\controller\admin\Forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

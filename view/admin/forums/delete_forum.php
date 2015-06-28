@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_forums['Confirm delete head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_forums.php?del_forum=<?php echo $forum_id ?>">
+			<form method="post" action="<?php echo get_link('admin/forums/delete/'.$forum_id.'/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Confirm delete subhead'] ?></legend>

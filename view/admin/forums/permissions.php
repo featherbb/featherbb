@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_forums['Edit forum head'] ?></span></h2>
 		<div class="box">
-			<form id="edit_forum" method="post" action="admin_forums.php?edit_forum=<?php echo $forum_id ?>">
+			<form id="edit_forum" method="post" action="<?php echo get_link('admin/forums/edit/'.$forum_id.'/') ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>
@@ -35,7 +35,7 @@ if (!defined('PUN')) {
 									<th scope="row"><?php echo $lang_admin_forums['Category label'] ?></th>
 									<td>
 										<select name="cat_id" tabindex="3">
-											<?php get_categories($cur_forum); ?>
+											<?php get_categories_permissions($cur_forum); ?>
 										</select>
 									</td>
 								</tr>
@@ -79,10 +79,6 @@ if (!defined('PUN')) {
 							</thead>
 							<tbody>
 <?php
-    $perm_data = get_permissions($forum_id);
-
-    $cur_index = 7;
-
     foreach ($perm_data as $perm) {
         ?>
 								<tr>

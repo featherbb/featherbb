@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_forums['Add forum head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_forums.php?action=adddel">
+			<form method="post" action="<?php echo get_link('admin/forums/') ?>">
 <?php
 if ($is_forum) {
 ?>
@@ -61,7 +61,7 @@ if (!empty($forum_data)) {
     ?>
 		<h2 class="block2"><span><?php echo $lang_admin_forums['Edit forums head'] ?></span></h2>
 		<div class="box">
-			<form id="edforum" method="post" action="admin_forums.php?action=edit">
+			<form id="edforum" method="post" action="<?php echo get_link('admin/forums/') ?>">
 				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" /></p>
 <?php
     foreach ($forum_data as $forum) {
@@ -93,7 +93,7 @@ if (!empty($forum_data)) {
 
         ?>
 								<tr>
-									<td class="tcl"><a href="admin_forums.php?edit_forum=<?php echo $forum['fid'] ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Edit link'] ?></a> | <a href="admin_forums.php?del_forum=<?php echo $forum['fid'] ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Delete link'] ?></a></td>
+									<td class="tcl"><a href="<?php echo get_link('admin/forums/edit/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Edit link'] ?></a> | <a href="<?php echo get_link('admin/forums/delete/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Delete link'] ?></a></td>
 									<td class="tc2"><input type="text" name="position[<?php echo $forum['fid'] ?>]" size="3" maxlength="3" value="<?php echo $forum['disp_position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
 									<td class="tcr"><strong><?php echo pun_htmlspecialchars($forum['forum_name']) ?></strong></td>
 								</tr>

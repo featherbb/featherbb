@@ -7,13 +7,13 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function add_forum($post_data)
+function add_forum($feather)
 {
     global $db, $lang_admin_forums, $lang_common;
     
-    confirm_referrer('admin_forums.php');
+    confirm_referrer(get_link_r('admin/forums/'));
 
-    $add_to_cat = intval($post_data['add_to_cat']);
+    $add_to_cat = intval($feather->request->post('add_to_cat'));
     if ($add_to_cat < 1) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
@@ -28,14 +28,19 @@ function add_forum($post_data)
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php?edit_forum='.$new_fid, $lang_admin_forums['Forum added redirect']);
+    redirect(get_link('admin/forums/edit/'.$new_fid.'/'), $lang_admin_forums['Forum added redirect']);
 }
 
-function delete_forum($post_data, $forum_id)
+function delete_forum($forum_id)
 {
     global $db, $lang_admin_forums;
-    
+
+    confirm_referrer(get_link_r('admin/forums/delete/'.$forum_id.'/'));
+
     @set_time_limit(0);
+
+    // Load the maintenance.php model file for prune function
+    require PUN_ROOT . 'model/admin/maintenance.php';
 
     // Prune all posts and topics
     prune($forum_id, 1, -1);
@@ -66,7 +71,7 @@ function delete_forum($post_data, $forum_id)
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php', $lang_admin_forums['Forum deleted redirect']);
+    redirect(get_link('admin/forums/'), $lang_admin_forums['Forum deleted redirect']);
 }
 
 function get_forum_name($forum_id)
@@ -79,13 +84,13 @@ function get_forum_name($forum_id)
     return $forum_name;
 }
 
-function update_positions($post_data)
+function update_positions($feather)
 {
     global $db, $lang_admin_forums;
-    
-    confirm_referrer('admin_forums.php');
 
-    foreach ($post_data['position'] as $forum_id => $disp_position) {
+    confirm_referrer(get_link_r('admin/forums/'));
+
+    foreach ($feather->request->post('position') as $forum_id => $disp_position) {
         $disp_position = trim($disp_position);
         if ($disp_position == '' || preg_match('%[^0-9]%', $disp_position)) {
             message($lang_admin_forums['Must be integer message']);
@@ -101,21 +106,21 @@ function update_positions($post_data)
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php', $lang_admin_forums['Forums updated redirect']);
+    redirect(get_link('admin/forums/'), $lang_admin_forums['Forums updated redirect']);
 }
 
-function update_permissions($post_data, $forum_id)
+function update_permissions($feather, $forum_id)
 {
     global $db, $lang_admin_forums, $lang_common;
     
-    confirm_referrer('admin_forums.php');
+    confirm_referrer(get_link_r('admin/forums/edit/'.$forum_id.'/'));
 
     // Start with the forum details
-    $forum_name = pun_trim($post_data['forum_name']);
-    $forum_desc = pun_linebreaks(pun_trim($post_data['forum_desc']));
-    $cat_id = intval($post_data['cat_id']);
-    $sort_by = intval($post_data['sort_by']);
-    $redirect_url = isset($post_data['redirect_url']) ? pun_trim($post_data['redirect_url']) : null;
+    $forum_name = pun_trim($feather->request->post('forum_name'));
+    $forum_desc = pun_linebreaks(pun_trim($feather->request->post('forum_desc')));
+    $cat_id = intval($feather->request->post('cat_id'));
+    $sort_by = intval($feather->request->post('sort_by'));
+    $redirect_url = !empty($feather->request->post('redirect_url')) ? pun_trim($feather->request->post('redirect_url')) : null;
 
     if ($forum_name == '') {
         message($lang_admin_forums['Must enter name message']);
@@ -131,15 +136,15 @@ function update_permissions($post_data, $forum_id)
     $db->query('UPDATE '.$db->prefix.'forums SET forum_name=\''.$db->escape($forum_name).'\', forum_desc='.$forum_desc.', redirect_url='.$redirect_url.', sort_by='.$sort_by.', cat_id='.$cat_id.' WHERE id='.$forum_id) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 
     // Now let's deal with the permissions
-    if (isset($post_data['read_forum_old'])) {
+    if (!empty($feather->request->post('read_forum_old'))) {
         $result = $db->query('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM '.$db->prefix.'groups WHERE g_id!='.PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
         while ($cur_group = $db->fetch_assoc($result)) {
-            $read_forum_new = ($cur_group['g_read_board'] == '1') ? isset($post_data['read_forum_new'][$cur_group['g_id']]) ? '1' : '0' : intval($post_data['read_forum_old'][$cur_group['g_id']]);
-            $post_replies_new = isset($post_data['post_replies_new'][$cur_group['g_id']]) ? '1' : '0';
-            $post_topics_new = isset($post_data['post_topics_new'][$cur_group['g_id']]) ? '1' : '0';
+            $read_forum_new = ($cur_group['g_read_board'] == '1') ? !empty($feather->request->post('read_forum_new')[$cur_group['g_id']]) ? '1' : '0' : intval($feather->request->post('read_forum_new')[$cur_group['g_id']]);
+            $post_replies_new = !empty($feather->request->post('post_replies_new')[$cur_group['g_id']]) ? '1' : '0';
+            $post_topics_new = !empty($feather->request->post('post_topics_new')[$cur_group['g_id']]) ? '1' : '0';
 
             // Check if the new settings differ from the old
-            if ($read_forum_new != $post_data['read_forum_old'][$cur_group['g_id']] || $post_replies_new != $post_data['post_replies_old'][$cur_group['g_id']] || $post_topics_new != $post_data['post_topics_old'][$cur_group['g_id']]) {
+            if ($read_forum_new != $feather->request->post('read_forum_old')[$cur_group['g_id']] || $post_replies_new != $feather->request->post('post_replies_old')[$cur_group['g_id']] || $post_topics_new != $feather->request->post('post_topics_old')[$cur_group['g_id']]) {
                 // If the new settings are identical to the default settings for this group, delete its row in forum_perms
                 if ($read_forum_new == '1' && $post_replies_new == $cur_group['g_post_replies'] && $post_topics_new == $cur_group['g_post_topics']) {
                     $db->query('DELETE FROM '.$db->prefix.'forum_perms WHERE group_id='.$cur_group['g_id'].' AND forum_id='.$forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
@@ -161,14 +166,14 @@ function update_permissions($post_data, $forum_id)
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php', $lang_admin_forums['Forum updated redirect']);
+    redirect(get_link('admin/forums/edit/'.$forum_id.'/'), $lang_admin_forums['Forum updated redirect']);
 }
 
 function revert_permissions($forum_id)
 {
     global $db, $lang_admin_forums;
-    
-    confirm_referrer('admin_forums.php');
+
+    confirm_referrer(get_link_r('admin/forums/edit/'.$forum_id.'/'));
 
     $db->query('DELETE FROM '.$db->prefix.'forum_perms WHERE forum_id='.$forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
 
@@ -179,7 +184,7 @@ function revert_permissions($forum_id)
 
     generate_quickjump_cache();
 
-    redirect('admin_forums.php?edit_forum='.$forum_id, $lang_admin_forums['Perms reverted redirect']);
+    redirect(get_link('admin/forums/edit/'.$forum_id.'/'), $lang_admin_forums['Perms reverted redirect']);
 }
 
 function get_forum_info($forum_id)
@@ -196,7 +201,7 @@ function get_forum_info($forum_id)
     return $cur_forum;
 }
 
-function get_categories($cur_forum)
+function get_categories_permissions($cur_forum)
 {
     global $db;
     
