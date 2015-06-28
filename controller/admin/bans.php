@@ -108,7 +108,7 @@ namespace controller\admin {
                 )
             );
 
-            generate_admin_menu('index');
+            generate_admin_menu('bans');
 
             $feather->render('admin/bans/admin_bans.php', array(
                     'lang_admin_bans' => $lang_admin_bans,
