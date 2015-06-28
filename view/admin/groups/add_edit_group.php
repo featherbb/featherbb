@@ -15,11 +15,11 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_groups['Group settings head'] ?></span></h2>
 		<div class="box">
-			<form id="groups2" method="post" action="admin_groups.php" onsubmit="return process_form(this)">
+			<form id="groups2" method="post" action="" onsubmit="return process_form(this)">
 				<p class="submittop"><input type="submit" name="add_edit_group" value="<?php echo $lang_admin_common['Save'] ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="mode" value="<?php echo $group['mode'] ?>" />
-<?php if ($group['mode'] == 'edit'): ?>					<input type="hidden" name="group_id" value="<?php echo $group['id'] ?>" />
+<?php if ($group['mode'] == 'edit'): ?>					<input type="hidden" name="group_id" value="<?php echo $id ?>" />
 <?php endif; ?><?php if ($group['mode'] == 'add'): ?>					<input type="hidden" name="base_group" value="<?php echo $group['base_group'] ?>" />
 <?php endif; ?>					<fieldset>
 						<legend><?php echo $lang_admin_groups['Group settings subhead'] ?></legend>
@@ -44,7 +44,7 @@ if (!defined('PUN'))
 									<td>
 										<select name="promote_next_group" tabindex="3">
 											<option value="0"><?php echo $lang_admin_groups['Disable promotion'] ?></option>
-											<?php get_group_list($groups); ?>
+											<?php get_group_list($groups, $group); ?>
 										</select>
 										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo pun_htmlspecialchars($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
 										<span><?php printf($lang_admin_groups['Promote users help'], $lang_admin_groups['Disable promotion']) ?></span>

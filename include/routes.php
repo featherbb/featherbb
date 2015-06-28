@@ -105,6 +105,12 @@ $feather->map('/admin/forums(/)', '\controller\admin\Forums:display')->via('GET'
 $feather->map('/admin/forums/delete/:id(/)', '\controller\admin\Forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 $feather->map('/admin/forums/edit/:id(/)', '\controller\admin\Forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 
+// Admin groups
+$feather->map('/admin/groups(/)', '\controller\admin\Groups:display')->via('GET', 'POST');
+$feather->map('/admin/groups/add(/)', '\controller\admin\Groups:addedit')->via('GET', 'POST');
+$feather->map('/admin/groups/edit/:id(/)', '\controller\admin\Groups:addedit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+$feather->map('/admin/groups/delete/:id(/)', '\controller\admin\Groups:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

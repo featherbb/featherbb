@@ -15,9 +15,9 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_groups['Group delete head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_groups.php?del_group=<?php echo $group_id ?>">
+			<form method="post" action="<?php echo get_link('admin/groups/delete/'.$id.'/') ?>">
 				<div class="inform">
-				<input type="hidden" name="group_to_delete" value="<?php echo $group_id ?>" />
+				<input type="hidden" name="group_to_delete" value="<?php echo get_link('admin/groups/delete/'.$id.'/') ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Confirm delete subhead'] ?></legend>
 						<div class="infldset">

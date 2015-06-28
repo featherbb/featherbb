@@ -15,9 +15,9 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_groups['Add groups head'] ?></span></h2>
 		<div class="box">
-			<form id="groups" method="post" action="admin_groups.php">
 				<div class="inform">
 					<fieldset>
+                        <form id="groups" method="post" action="<?php echo get_link('admin/groups/add/') ?>">
 						<legend><?php echo $lang_admin_groups['Add group subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
@@ -45,10 +45,12 @@ foreach ($groups as $cur_group) {
 								</tr>
 							</table>
 						</div>
+                        </form>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
+                        <form id="groups" method="post" action="<?php echo get_link('admin/groups/') ?>">
 						<legend><?php echo $lang_admin_groups['Default group subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
@@ -76,9 +78,9 @@ foreach ($groups as $cur_group) {
 								</tr>
 							</table>
 						</div>
+                        </form>
 					</fieldset>
 				</div>
-			</form>
 		</div>
 
 		<h2 class="block2"><span><?php echo $lang_admin_groups['Existing groups head'] ?></span></h2>
@@ -91,11 +93,8 @@ foreach ($groups as $cur_group) {
 							<p><?php echo $lang_admin_groups['Edit groups info'] ?></p>
 							<table>
 <?php
-
-$cur_index = 5;
-
 foreach ($groups as $cur_group) {
-	echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="admin_groups.php?edit_group='.$cur_group['g_id'].'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Edit link'].'</a>'.(($cur_group['g_id'] > PUN_MEMBER) ? ' | <a href="admin_groups.php?del_group='.$cur_group['g_id'].'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Delete link'].'</a>' : '').'</th><td>'.pun_htmlspecialchars($cur_group['g_title']).'</td></tr>'."\n";
+	echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.get_link('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Edit link'].'</a>'.(($cur_group['g_id'] > PUN_MEMBER) ? ' | <a href="'.get_link('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Delete link'].'</a>' : '').'</th><td>'.pun_htmlspecialchars($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>

@@ -15,7 +15,7 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_groups['Delete group head'] ?></span></h2>
 		<div class="box">
-			<form id="groups" method="post" action="admin_groups.php?del_group=<?php echo $group_id ?>">
+			<form id="groups" method="post" action="<?php echo get_link('admin/groups/delete/'.$id.'/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Move users subhead'] ?></legend>
@@ -23,7 +23,7 @@ if (!defined('PUN'))
 							<p><?php printf($lang_admin_groups['Move users info'], pun_htmlspecialchars($group_info['title']), forum_number_format($group_info['members'])) ?></p>
 							<label><?php echo $lang_admin_groups['Move users label'] ?>
 							<select name="move_to_group">
-								<?php get_group_list_delete($group_id); ?>
+								<?php get_group_list_delete($id); ?>
 							</select>
 							<br /></label>
 						</div>
