@@ -97,7 +97,7 @@ if (!defined('PUN')) {
 <?php
 
         foreach ($plugins as $plugin_name => $plugin) {
-            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="admin_loader.php?plugin='.$plugin_name.'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
+            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="'.get_link('admin/loader/?plugin='.$plugin_name).'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
         }
 
         ?>

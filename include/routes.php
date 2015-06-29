@@ -111,6 +111,9 @@ $feather->map('/admin/groups/add(/)', '\controller\admin\Groups:addedit')->via('
 $feather->map('/admin/groups/edit/:id(/)', '\controller\admin\Groups:addedit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 $feather->map('/admin/groups/delete/:id(/)', '\controller\admin\Groups:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 
+// Admin plugins
+$feather->map('/admin/loader(/)', '\controller\admin\Plugins:display')->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');
