@@ -114,6 +114,9 @@ $feather->map('/admin/groups/delete/:id(/)', '\controller\admin\Groups:delete')-
 // Admin plugins
 $feather->map('/admin/loader(/)', '\controller\admin\Plugins:display')->via('GET', 'POST');
 
+// Admin maintenance
+$feather->map('/admin/maintenance(/)', '\controller\admin\Maintenance:display')->via('GET', 'POST');
+
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
     message($lang_common['Bad request'], false, '404 Not Found');

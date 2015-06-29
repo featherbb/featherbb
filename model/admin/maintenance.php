@@ -7,12 +7,11 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
-function rebuild($get_data)
+function rebuild($feather)
 {
 	global $db, $db_type, $lang_admin_maintenance;
 	
-	$per_page = isset($get_data['i_per_page']) ? intval($get_data['i_per_page']) : 0;
-    $start_at = isset($get_data['i_start_at']) ? intval($get_data['i_start_at']) : 0;
+	$per_page = !empty($feather->request->get('i_per_page')) ? intval($feather->request->get('i_per_page')) : 0;
 
     // Check per page is > 0
     if ($per_page < 1) {
@@ -22,9 +21,9 @@ function rebuild($get_data)
     @set_time_limit(0);
 
     // If this is the first cycle of posts we empty the search index before we proceed
-    if (isset($get_data['i_empty_index'])) {
+    if (!empty($feather->request->get('i_empty_index'))) {
         // This is the only potentially "dangerous" thing we can do here, so we check the referer
-        confirm_referrer('admin_maintenance.php');
+        confirm_referrer(get_link_r('admin/maintenance/'));
 
         $db->truncate_table('search_matches') or error('Unable to empty search index match table', __FILE__, __LINE__, $db->error());
         $db->truncate_table('search_words') or error('Unable to empty search index words table', __FILE__, __LINE__, $db->error());
@@ -44,14 +43,14 @@ function rebuild($get_data)
     }
 }
 
-function get_query_str($get_data)
+function get_query_str($feather)
 {
 	global $db, $lang_admin_maintenance;
 	
     $query_str = '';
-	
-	$per_page = isset($get_data['i_per_page']) ? intval($get_data['i_per_page']) : 0;
-	$start_at = isset($get_data['i_start_at']) ? intval($get_data['i_start_at']) : 0;
+
+    $per_page = !empty($feather->request->get('i_per_page')) ? intval($feather->request->get('i_per_page')) : 0;
+    $start_at = !empty($feather->request->get('i_start_at')) ? intval($feather->request->get('i_start_at')) : 0;
 
     require PUN_ROOT.'include/search_idx.php';
 
@@ -131,13 +130,13 @@ function prune($forum_id, $prune_sticky, $prune_date)
     }
 }
 
-function prune_comply($post_data, $prune_from, $prune_sticky)
+function prune_comply($feather, $prune_from, $prune_sticky)
 {
 	global $db, $lang_admin_maintenance;
 	
-	confirm_referrer('admin_maintenance.php');
+	confirm_referrer(get_link_r('admin/maintenance/'));
 
-	$prune_days = intval($post_data['prune_days']);
+	$prune_days = intval(!empty($feather->request->post('prune_days')));
 	$prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
 	@set_time_limit(0);
@@ -170,16 +169,16 @@ function prune_comply($post_data, $prune_from, $prune_sticky)
 		$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
 	}
 
-	redirect('admin_maintenance.php', $lang_admin_maintenance['Posts pruned redirect']);
+	redirect(get_link('admin/maintenance/'), $lang_admin_maintenance['Posts pruned redirect']);
 }
 
-function get_info_prune($post_data, $prune_sticky, $prune_from)
+function get_info_prune($feather, $prune_sticky, $prune_from)
 {
 	global $db, $lang_admin_maintenance;
 	
 	$prune = array();
 	
-    $prune['days'] = pun_trim($_POST['req_prune_days']);
+    $prune['days'] = pun_trim($feather->request->post('req_prune_days'));
     if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
         message($lang_admin_maintenance['Days must be integer message']);
     }

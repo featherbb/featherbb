@@ -15,13 +15,13 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_maintenance['Maintenance head'] ?></span></h2>
 		<div class="box">
-			<form method="get" action="admin_maintenance.php">
+			<form method="get" action="<?php echo get_link('admin/maintenance/') ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="rebuild" />
 					<fieldset>
 						<legend><?php echo $lang_admin_maintenance['Rebuild index subhead'] ?></legend>
 						<div class="infldset">
-							<p><?php printf($lang_admin_maintenance['Rebuild index info'], '<a href="admin_options.php#maintenance">'.$lang_admin_common['Maintenance mode'].'</a>') ?></p>
+							<p><?php printf($lang_admin_maintenance['Rebuild index info'], '<a href="'.get_link('admin/options/#maintenance').'">'.$lang_admin_common['Maintenance mode'].'</a>') ?></p>
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_maintenance['Posts per cycle label'] ?></th>
@@ -51,7 +51,7 @@ if (!defined('PUN'))
 				</div>
 			</form>
 
-			<form method="post" action="admin_maintenance.php" onsubmit="return process_form(this)">
+			<form method="post" action="<?php echo get_link('admin/maintenance/') ?>" onsubmit="return process_form(this)">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
 					<fieldset>
@@ -85,7 +85,7 @@ if (!defined('PUN'))
 									</td>
 								</tr>
 							</table>
-							<p class="topspace"><?php printf($lang_admin_maintenance['Prune info'], '<a href="admin_options.php#maintenance">'.$lang_admin_common['Maintenance mode'].'</a>') ?></p>
+							<p class="topspace"><?php printf($lang_admin_maintenance['Prune info'], '<a href="'.get_link('admin/options/#maintenance').'">'.$lang_admin_common['Maintenance mode'].'</a>') ?></p>
 							<div class="fsetsubmit"><input type="submit" name="prune" value="<?php echo $lang_admin_common['Prune'] ?>" tabindex="8" /></div>
 						</div>
 					</fieldset>
