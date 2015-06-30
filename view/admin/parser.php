@@ -15,7 +15,7 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_parser['Parser head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="admin_parser.php" enctype="multipart/form-data">
+			<form method="post" action="<?php echo get_link('admin/parser/') ?>" enctype="multipart/form-data">
 				<p class="submittop">
 					<input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" />
 					<input type="submit" name="reset" value="<?php echo $lang_admin_parser['reset defaults'] ?>" />
@@ -66,15 +66,15 @@ if (!defined('PUN'))
 								<tr>
 									<th scope="row"><?php echo $lang_admin_parser['valid_imgs'] ?></th>
 									<td colspan="2">
-										<input type="radio" name="config[valid_imgs]" value="1"<?php if ($config['valid_imgs']) echo ' checked="checked"'; if (!ini_get('allow_url_fopen')) echo(' disabled="disabled" title="'. htmlspecialchars($lang_admin_parser['unavailable']) .'"'); ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>
-										<input type="radio" name="config[valid_imgs]" value="0"<?php if (!$config['valid_imgs']) echo ' checked="checked"'; if (!ini_get('allow_url_fopen')) echo(' disabled="disabled" title="'. htmlspecialchars($lang_admin_parser['unavailable']) .'"'); ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+										<input type="radio" name="config[valid_imgs]" value="1"<?php if ($config['valid_imgs']) echo ' checked="checked"'; if (!ini_get('allow_url_fopen')) echo(' disabled="disabled" title="'. pun_htmlspecialchars($lang_admin_parser['unavailable']) .'"'); ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>
+										<input type="radio" name="config[valid_imgs]" value="0"<?php if (!$config['valid_imgs']) echo ' checked="checked"'; if (!ini_get('allow_url_fopen')) echo(' disabled="disabled" title="'. pun_htmlspecialchars($lang_admin_parser['unavailable']) .'"'); ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
 									</td>
 									<td><?php echo $lang_admin_parser['valid_imgs help'] ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_parser['max_size'] ?></th>
 									<td colspan="2">
-										<input type="text" name="config[max_size]" size="10" maxlength="8" value="<?php echo($config['max_size'])?>"<?php if (!ini_get('allow_url_fopen')) echo(' disabled="disabled" title="'. htmlspecialchars($lang_admin_parser['unavailable']) .'"'); ?> />
+										<input type="text" name="config[max_size]" size="10" maxlength="8" value="<?php echo($config['max_size'])?>"<?php if (!ini_get('allow_url_fopen')) echo(' disabled="disabled" title="'. pun_htmlspecialchars($lang_admin_parser['unavailable']) .'"'); ?> />
 									</td>
 									<td><span><?php echo $lang_admin_parser['max_size help'] ?></span></td>
 								</tr>
@@ -131,8 +131,6 @@ if (!defined('PUN'))
 							</thead>
 							<tbody>
 <?php
-	$smiley_files = get_smiley_files();
-	$i = -1;
 	foreach($smilies as $key => $value) {
 		$i++;
 		$oldfile = $value['file'];
