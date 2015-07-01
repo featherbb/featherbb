@@ -15,8 +15,8 @@ if (!defined('PUN'))
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -44,10 +44,10 @@ if (!defined('PUN'))
         foreach ($ip_data as $ip) {
             ?>
 				<tr>
-					<td class="tcl"><a href="moderate.php?get_host=<?php echo pun_htmlspecialchars($ip['poster_ip']) ?>"><?php echo pun_htmlspecialchars($ip['poster_ip']) ?></a></td>
+					<td class="tcl"><a href="<?php echo get_link('moderate/get-host/ip/'.pun_htmlspecialchars($ip['poster_ip']).'/') ?>"><?php echo pun_htmlspecialchars($ip['poster_ip']) ?></a></td>
 					<td class="tc2"><?php echo format_time($ip['last_used']) ?></td>
 					<td class="tc3"><?php echo $ip['used_times'] ?></td>
-					<td class="tcr"><a href="admin_users.php?show_users=<?php echo pun_htmlspecialchars($ip['poster_ip']) ?>"><?php echo $lang_admin_users['Results find more link'] ?></a></td>
+					<td class="tcr"><a href="<?php echo get_link('admin/users/show-users/ip/'.$ip['poster_ip'].'/') ?>"><?php echo $lang_admin_users['Results find more link'] ?></a></td>
 				</tr>
 <?php
 
@@ -69,8 +69,8 @@ if (!defined('PUN'))
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

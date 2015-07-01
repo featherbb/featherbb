@@ -13,7 +13,7 @@ namespace controller\admin{
 
         function display(){
 			
-			global $feather, $lang_common, $lang_admin_common, $pun_config, $pun_user, $pun_start, $db;
+			global $feather, $lang_common, $lang_admin_common, $lang_admin_categories, $pun_config, $pun_user, $pun_start, $db;
 
 			require PUN_ROOT.'include/common_admin.php';
 

@@ -15,8 +15,8 @@ if (!defined('PUN'))
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -50,12 +50,12 @@ if (!defined('PUN'))
             if (isset($info['user_data'][$cur_poster['poster_id']])) {
                 ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="profile.php?id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
+					<td class="tcl"><?php echo '<a href="'.get_link('user/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
 					<td class="tc2"><a href="mailto:<?php echo pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?php echo pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
 					<td class="tc3"><?php echo get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
 					<td class="tc4"><?php echo forum_number_format($info['user_data'][$cur_poster['poster_id']]['num_posts']) ?></td>
 					<td class="tc5"><?php echo($info['user_data'][$cur_poster['poster_id']]['admin_note'] != '') ? pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="admin_users.php?ip_stats='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
+					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
 				</tr>
 <?php
 
@@ -90,8 +90,8 @@ if (!defined('PUN'))
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

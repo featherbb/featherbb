@@ -15,8 +15,8 @@ if (!defined('PUN'))
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/index/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -27,7 +27,7 @@ if (!defined('PUN'))
 </div>
 
 
-<form id="search-users-form" action="admin_users.php" method="post">
+<form id="search-users-form" action="<?php echo get_link('admin/users/') ?>" method="post">
 <div id="users2" class="blocktable">
 	<h2><span><?php echo $lang_admin_users['Results head'] ?></span></h2>
 	<div class="box">
@@ -54,12 +54,12 @@ if (!defined('PUN'))
         foreach ($user_data as $user) {
             ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="profile.php?id='.$user['id'].'">'.pun_htmlspecialchars($user['username']).'</a>' ?></td>
+					<td class="tcl"><?php echo '<a href="'.get_link('user/'.$user['id'].'/').'">'.pun_htmlspecialchars($user['username']).'</a>' ?></td>
 					<td class="tc2"><a href="mailto:<?php echo pun_htmlspecialchars($user['email']) ?>"><?php echo pun_htmlspecialchars($user['email']) ?></a></td>
 					<td class="tc3"><?php echo $user['user_title'] ?></td>
 					<td class="tc4"><?php echo forum_number_format($user['num_posts']) ?></td>
 					<td class="tc5"><?php echo($user['admin_note'] != '') ? pun_htmlspecialchars($user['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="admin_users.php?ip_stats='.$user['id'].'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$user['id'].'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
+					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$user['id'].'/').'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$user['id'].'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
 <?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?php echo $user['id'] ?>]" value="1" /></td>
 <?php endif;
             ?>
@@ -90,8 +90,8 @@ if (!defined('PUN'))
     ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="admin_index.php"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="admin_users.php"><?php echo $lang_admin_common['Users'] ?></a></li>
+			<li><a href="<?php echo get_link('admin/index/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

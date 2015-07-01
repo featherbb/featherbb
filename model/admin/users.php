@@ -79,16 +79,16 @@ function get_info_poster($ip, $start_from)
 	return $info;
 }
 
-function move_users($post_data)
+function move_users($feather)
 {
 	global $db, $lang_admin_users;
 	
-    confirm_referrer('admin_users.php');
+    confirm_referrer(get_link_r('admin/users/'));
 	
 	$move = array();
 
-    if (isset($post_data['users'])) {
-        $move['user_ids'] = is_array($post_data['users']) ? array_keys($post_data['users']) : explode(',', $post_data['users']);
+    if (!empty($feather->request->post('users'))) {
+        $move['user_ids'] = is_array($feather->request->post('users')) ? array_keys($feather->request->post('users')) : explode(',', $feather->request->post('users'));
         $move['user_ids'] = array_map('intval', $move['user_ids']);
 
         // Delete invalid IDs
@@ -113,8 +113,8 @@ function move_users($post_data)
         $move['all_groups'][$row[0]] = $row[1];
     }
 
-    if (isset($post_data['move_users_comply'])) {
-        $new_group = isset($post_data['new_group']) && isset($move['all_groups'][$post_data['new_group']]) ? $post_data['new_group'] : message($lang_admin_users['Invalid group message']);
+    if (!empty($feather->request->post('move_users_comply'))) {
+        $new_group = !empty($feather->request->post('new_group')) && isset($move['all_groups'][$feather->request->post('new_group')]) ? $feather->request->post('new_group') : message($lang_admin_users['Invalid group message']);
 
         // Is the new group a moderator group?
         $result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$new_group) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
@@ -158,20 +158,20 @@ function move_users($post_data)
         // Change user group
         $db->query('UPDATE '.$db->prefix.'users SET group_id='.$new_group.' WHERE id IN ('.implode(',', $move['user_ids']).')') or error('Unable to change user group', __FILE__, __LINE__, $db->error());
 
-        redirect('admin_users.php', $lang_admin_users['Users move redirect']);
+        redirect(get_link('admin/users/'), $lang_admin_users['Users move redirect']);
     }
 	
 	return $move;
 }
 
-function delete_users($post_data)
+function delete_users($feather)
 {
 	global $db, $lang_admin_users;
 	
-    confirm_referrer('admin_users.php');
+    confirm_referrer(get_link_r('admin/users/'));
 
-    if (isset($post_data['users'])) {
-        $user_ids = is_array($post_data['users']) ? array_keys($post_data['users']) : explode(',', $post_data['users']);
+    if (!empty($feather->request->post('users'))) {
+        $user_ids = is_array($feather->request->post('users')) ? array_keys($feather->request->post('users')) : explode(',', $feather->request->post('users'));
         $user_ids = array_map('intval', $user_ids);
 
         // Delete invalid IDs
@@ -190,7 +190,7 @@ function delete_users($post_data)
         message($lang_admin_users['No delete admins message']);
     }
 
-    if (isset($post_data['delete_users_comply'])) {
+    if (!empty($feather->request->post('delete_users_comply'))) {
         // Fetch user groups
         $user_groups = array();
         $result = $db->query('SELECT id, group_id FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $user_ids).')') or error('Unable to fetch user groups', __FILE__, __LINE__, $db->error());
@@ -232,7 +232,7 @@ function delete_users($post_data)
         $db->query('DELETE FROM '.$db->prefix.'online WHERE user_id IN ('.implode(',', $user_ids).')') or error('Unable to remove users from online list', __FILE__, __LINE__, $db->error());
 
         // Should we delete all posts made by these users?
-        if (isset($post_data['delete_posts'])) {
+        if (!empty($feather->request->post('delete_posts'))) {
             require PUN_ROOT.'include/search_idx.php';
             @set_time_limit(0);
 
@@ -272,20 +272,20 @@ function delete_users($post_data)
 
         generate_users_info_cache();
 
-        redirect('admin_users.php', $lang_admin_users['Users delete redirect']);
+        redirect(get_link('admin/users/'), $lang_admin_users['Users delete redirect']);
     }
 	
 	return $user_ids;
 }
 
-function ban_users($post_data)
+function ban_users($feather)
 {
 	global $db, $lang_admin_users, $pun_user;
 	
-    confirm_referrer('admin_users.php');
+    confirm_referrer(get_link_r('admin/users/'));
 
-    if (isset($post_data['users'])) {
-        $user_ids = is_array($post_data['users']) ? array_keys($post_data['users']) : explode(',', $post_data['users']);
+    if (!empty($feather->request->post('users'))) {
+        $user_ids = is_array($feather->request->post('users')) ? array_keys($feather->request->post('users')) : explode(',', $feather->request->post('users'));
         $user_ids = array_map('intval', $user_ids);
 
         // Delete invalid IDs
@@ -310,10 +310,10 @@ function ban_users($post_data)
         message($lang_admin_users['No ban mods message']);
     }
 
-    if (isset($post_data['ban_users_comply'])) {
-        $ban_message = pun_trim($post_data['ban_message']);
-        $ban_expire = pun_trim($post_data['ban_expire']);
-        $ban_the_ip = isset($post_data['ban_the_ip']) ? intval($post_data['ban_the_ip']) : 0;
+    if (!empty($feather->request->post('ban_users_comply'))) {
+        $ban_message = pun_trim($feather->request->post('ban_message'));
+        $ban_expire = pun_trim($feather->request->post('ban_expire'));
+        $ban_the_ip = !empty($feather->request->post('ban_the_ip')) ? intval($feather->request->post('ban_the_ip')) : 0;
 
         if ($ban_expire != '' && $ban_expire != 'Never') {
             $ban_expire = strtotime($ban_expire.' GMT');
@@ -365,34 +365,34 @@ function ban_users($post_data)
 
         generate_bans_cache();
 
-        redirect('admin_users.php', $lang_admin_users['Users banned redirect']);
+        redirect(get_link('admin/users/'), $lang_admin_users['Users banned redirect']);
     }
 	
 	return $user_ids;
 }
 
-function get_user_search($get_data)
+function get_user_search($feather)
 {
 	global $db, $db_type;
 	
-    $form = isset($_GET['form']) ? $_GET['form'] : array();
+    $form = !empty($feather->request->get('form')) ? $feather->request->get('form') : array();
 	
 	$search = array();
 
     // trim() all elements in $form
     $form = array_map('pun_trim', $form);
 
-    $posts_greater = isset($_GET['posts_greater']) ? pun_trim($_GET['posts_greater']) : '';
-    $posts_less = isset($_GET['posts_less']) ? pun_trim($_GET['posts_less']) : '';
-    $last_post_after = isset($_GET['last_post_after']) ? pun_trim($_GET['last_post_after']) : '';
-    $last_post_before = isset($_GET['last_post_before']) ? pun_trim($_GET['last_post_before']) : '';
-    $last_visit_after = isset($_GET['last_visit_after']) ? pun_trim($_GET['last_visit_after']) : '';
-    $last_visit_before = isset($_GET['last_visit_before']) ? pun_trim($_GET['last_visit_before']) : '';
-    $registered_after = isset($_GET['registered_after']) ? pun_trim($_GET['registered_after']) : '';
-    $registered_before = isset($_GET['registered_before']) ? pun_trim($_GET['registered_before']) : '';
-    $order_by = $search['order_by'] = isset($_GET['order_by']) && in_array($_GET['order_by'], array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $_GET['order_by'] : 'username';
-    $direction = $search['direction'] = isset($_GET['direction']) && $_GET['direction'] == 'DESC' ? 'DESC' : 'ASC';
-    $user_group = isset($_GET['user_group']) ? intval($_GET['user_group']) : -1;
+    $posts_greater = !empty($feather->request->get('posts_greater')) ? pun_trim($feather->request->get('posts_greater')) : '';
+    $posts_less = !empty($feather->request->get('posts_less')) ? pun_trim($feather->request->get('posts_less')) : '';
+    $last_post_after = !empty($feather->request->get('last_post_after')) ? pun_trim($feather->request->get('last_post_after')) : '';
+    $last_post_before = !empty($feather->request->get('last_post_before')) ? pun_trim($feather->request->get('last_post_before')) : '';
+    $last_visit_after = !empty($feather->request->get('last_visit_after')) ? pun_trim($feather->request->get('last_visit_after')) : '';
+    $last_visit_before = !empty($feather->request->get('last_visit_before')) ? pun_trim($feather->request->get('last_visit_before')) : '';
+    $registered_after = !empty($feather->request->get('registered_after')) ? pun_trim($feather->request->get('registered_after')) : '';
+    $registered_before = !empty($feather->request->get('registered_before')) ? pun_trim($feather->request->get('registered_before')) : '';
+    $order_by = $search['order_by'] = !empty($feather->request->get('order_by')) && in_array($_GET['order_by'], array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $feather->request->get('order_by') : 'username';
+    $direction = $search['direction'] = !empty($feather->request->get('direction')) && $feather->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
+    $user_group = !empty($feather->request->get('user_group')) ? intval($feather->request->get('user_group')) : -1;
 
     $search['query_str'][] = 'order_by='.$order_by;
     $search['query_str'][] = 'direction='.$direction;

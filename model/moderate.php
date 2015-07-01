@@ -8,16 +8,14 @@
  */
  
  
-function display_ip_info($feather)
+function display_ip_info($ip)
 {
-    global $db, $lang_common, $lang_misc, $pun_user;
-    
-    $ip = $feather->request->get('get_host');
+    global $lang_misc, $pun_user;
 
     // Load the misc.php language file
     require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
-    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
+    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
 }
 
 function display_ip_address_post($pid)
@@ -34,7 +32,7 @@ function display_ip_address_post($pid)
     // Load the misc.php language file
     require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
-    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
+    message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
 }
 
 function get_moderators($fid)

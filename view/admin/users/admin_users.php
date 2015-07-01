@@ -15,7 +15,7 @@ if (!defined('PUN'))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_users['User search head'] ?></span></h2>
 		<div class="box">
-			<form id="find_user" method="get" action="admin_users.php">
+			<form id="find_user" method="get" action="<?php echo get_link('admin/users/') ?>">
 				<p class="submittop"><input type="submit" name="find_user" value="<?php echo $lang_admin_users['Submit search'] ?>" tabindex="1" /></p>
 				<div class="inform">
 					<fieldset>
@@ -149,7 +149,7 @@ if (!defined('PUN'))
 
 		<h2 class="block2"><span><?php echo $lang_admin_users['IP search head'] ?></span></h2>
 		<div class="box">
-			<form method="get" action="admin_users.php">
+			<form method="get" action="<?php echo get_link('admin/users/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_users['IP search subhead'] ?></legend>

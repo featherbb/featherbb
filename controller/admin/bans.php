@@ -15,7 +15,7 @@ namespace controller\admin {
         function display()
         {
 
-            global $feather, $lang_common, $lang_admin_common, $lang_admin_index, $pun_config, $pun_user, $pun_start, $db;
+            global $feather, $lang_common, $lang_admin_common, $lang_admin_bans, $pun_config, $pun_user, $pun_start, $db;
 
             define('PUN_ADMIN_CONSOLE', 1);
 

@@ -13,7 +13,7 @@ namespace controller{
 		
         function gethostpost($pid){
 			
-			global $feather, $lang_common, $lang_forum, $lang_misc, $pun_config, $pun_user, $pun_start, $db;
+			global $lang_common, $pun_user;
 			
 			if ($pun_user['g_read_board'] == '0') {
 				message($lang_common['No view'], false, '403 Forbidden');
@@ -36,10 +36,36 @@ namespace controller{
 
 			display_ip_address_post($pid);
 		}
+
+        function gethostip($ip){
+
+            global $lang_common, $pun_user;
+
+            if ($pun_user['g_read_board'] == '0') {
+                message($lang_common['No view'], false, '403 Forbidden');
+            }
+
+            // Load the viewforum.php language file
+            require PUN_ROOT.'lang/'.$pun_user['language'].'/forum.php';
+
+            // Load the misc.php language file
+            require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
+
+            // Load the moderate.php model file
+            require PUN_ROOT.'model/moderate.php';
+
+            // This particular function doesn't require forum-based moderator access. It can be used
+            // by all moderators and admins
+            if (!$pun_user['is_admmod']) {
+                message($lang_common['No permission'], false, '403 Forbidden');
+            }
+
+            display_ip_info($ip);
+        }
 		
         function moderatetopic($id = null, $fid = null, $action = null, $param = null){
 			
-			global $feather, $lang_common, $lang_forum, $lang_topic, $lang_misc, $pun_config, $pun_user, $pun_start, $db;
+			global $feather, $lang_common, $lang_topic, $lang_misc, $pun_config, $pun_user, $pun_start, $db;
 			
 			if ($pun_user['g_read_board'] == '0') {
 				message($lang_common['No view'], false, '403 Forbidden');

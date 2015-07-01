@@ -68,6 +68,7 @@ $feather->map('/user/:id(/action/:action)(/)', '\controller\Profile:action')->co
 // Moderate
 $feather->get('/moderate/forum/:id(/:name)(/page/:page)(/)', '\controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'));
 $feather->get('/moderate/get-host/post/:pid(/)', '\controller\Moderate:gethostpost')->conditions(array('pid' => '[0-9]+'));
+$feather->get('/moderate/get-host/ip/:ip(/)', '\controller\Moderate:gethostip');
 $feather->map('/moderate/topic/:id/forum/:fid/action/:action(/param/:param)(/)', '\controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'param' => '[0-9]+'))->via('GET', 'POST');
 $feather->map('/moderate/topic/:id/forum/:fid/action/:action(/page/:param)(/)', '\controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'param' => '[0-9]+'))->via('GET', 'POST');
 $feather->post('/moderate/forum/:fid(/page/:page)(/)', '\controller\Moderate:dealposts')->conditions(array('fid' => '[0-9]+', 'page' => '[0-9]+'));
@@ -119,6 +120,11 @@ $feather->map('/admin/maintenance(/)', '\controller\admin\Maintenance:display')-
 
 // Admin parser
 $feather->map('/admin/parser(/)', '\controller\admin\Parser:display')->via('GET', 'POST');
+
+// Admin users
+$feather->map('/admin/users(/)', '\controller\admin\Users:display')->via('GET', 'POST');
+$feather->get('/admin/users/ip-stats/id/:id(/)', '\controller\admin\Users:ipstats')->conditions(array('id' => '[0-9]+'));
+$feather->get('/admin/users/show-users/ip/:ip(/)', '\controller\admin\Users:showusers');
 
 // 404 not found
 $feather->notFound(function () use ($lang_common) {

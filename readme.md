@@ -14,7 +14,7 @@ than welcome to join the development :-)
 
 * A webserver
 * PHP 5.3.0 or later
-* A database such as MySQL 4.1.2 or later, PostgreSQL 7.0 or later, or SQLite 2
+* A database such as MySQL 4.1.2 or later, PostgreSQL 7.0 or later, SQLite 2 or later
 
 ## Recommendations
 
