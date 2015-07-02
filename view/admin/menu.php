@@ -27,12 +27,12 @@ if (!defined('PUN')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
-<?php if ($is_admin || $pun_user['g_mod_ban_users'] == '1'): ?>					<li<?php if ($page == 'bans') {
+<?php if ($is_admin || $feather_user['g_mod_ban_users'] == '1'): ?>					<li<?php if ($page == 'bans') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php echo $lang_admin_common['Bans'] ?></a></li>
 <?php endif;
-    if ($is_admin || $pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
+    if ($is_admin || $feather_config['o_report_method'] == '0' || $feather_config['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php echo $lang_admin_common['Reports'] ?></a></li>

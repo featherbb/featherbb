@@ -9,9 +9,9 @@
  
 function zap_report($feather)
 {
-	global $db, $lang_admin_reports, $pun_user;
+    global $db, $lang_admin_reports, $feather_user;
 
-	confirm_referrer(get_link_r('admin/reports/'));
+    confirm_referrer(get_link_r('admin/reports/'));
 
     $zap_id = intval(key($feather->request->post('zap_id')));
 
@@ -19,7 +19,7 @@ function zap_report($feather)
     $zapped = $db->result($result);
 
     if ($zapped == '') {
-        $db->query('UPDATE '.$db->prefix.'reports SET zapped='.time().', zapped_by='.$pun_user['id'].' WHERE id='.$zap_id) or error('Unable to zap report', __FILE__, __LINE__, $db->error());
+        $db->query('UPDATE '.$db->prefix.'reports SET zapped='.time().', zapped_by='.$feather_user['id'].' WHERE id='.$zap_id) or error('Unable to zap report', __FILE__, __LINE__, $db->error());
     }
 
     // Delete old reports (which cannot be viewed anyway)
@@ -62,46 +62,46 @@ function check_zapped_reports()
 
 function get_reports()
 {
-	global $db, $lang_admin_reports;
-	
-	$report_data = array();
-	
-	$result = $db->query('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.created, r.message, p.id AS pid, t.subject, f.forum_name, u.username AS reporter FROM '.$db->prefix.'reports AS r LEFT JOIN '.$db->prefix.'posts AS p ON r.post_id=p.id LEFT JOIN '.$db->prefix.'topics AS t ON r.topic_id=t.id LEFT JOIN '.$db->prefix.'forums AS f ON r.forum_id=f.id LEFT JOIN '.$db->prefix.'users AS u ON r.reported_by=u.id WHERE r.zapped IS NULL ORDER BY created DESC') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
-	
+    global $db, $lang_admin_reports;
+    
+    $report_data = array();
+    
+    $result = $db->query('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.created, r.message, p.id AS pid, t.subject, f.forum_name, u.username AS reporter FROM '.$db->prefix.'reports AS r LEFT JOIN '.$db->prefix.'posts AS p ON r.post_id=p.id LEFT JOIN '.$db->prefix.'topics AS t ON r.topic_id=t.id LEFT JOIN '.$db->prefix.'forums AS f ON r.forum_id=f.id LEFT JOIN '.$db->prefix.'users AS u ON r.reported_by=u.id WHERE r.zapped IS NULL ORDER BY created DESC') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
+    
     while ($cur_report = $db->fetch_assoc($result)) {
-        $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="profile.php?id='.$cur_report['reported_by'].'">'.pun_htmlspecialchars($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
-        $forum = ($cur_report['forum_name'] != '') ? '<span><a href="viewforum.php?id='.$cur_report['forum_id'].'">'.pun_htmlspecialchars($cur_report['forum_name']).'</a></span>' : '<span>'.$lang_admin_reports['Deleted'].'</span>';
-        $topic = ($cur_report['subject'] != '') ? '<span>»&#160;<a href="viewtopic.php?id='.$cur_report['topic_id'].'">'.pun_htmlspecialchars($cur_report['subject']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
+        $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="'.get_link('users/'.$cur_report['reported_by'].'/').'">'.pun_htmlspecialchars($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
+        $forum = ($cur_report['forum_name'] != '') ? '<span><a href="'.get_link('forum/'.$cur_report['forum_id'].'/'.url_friendly($cur_report['forum_name']).'/').'">'.pun_htmlspecialchars($cur_report['forum_name']).'</a></span>' : '<span>'.$lang_admin_reports['Deleted'].'</span>';
+        $topic = ($cur_report['subject'] != '') ? '<span>»&#160;<a href="'.get_link('forum/'.$cur_report['topic_id'].'/'.url_friendly($cur_report['subject'])).'">'.pun_htmlspecialchars($cur_report['subject']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
         $cur_report['post'] = str_replace("\n", '<br />', pun_htmlspecialchars($cur_report['message']));
-        $post_id = ($cur_report['pid'] != '') ? '<span>»&#160;<a href="viewtopic.php?pid='.$cur_report['pid'].'#p'.$cur_report['pid'].'">'.sprintf($lang_admin_reports['Post ID'], $cur_report['pid']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
+        $post_id = ($cur_report['pid'] != '') ? '<span>»&#160;<a href="'.get_link('post/'.$cur_report['pid'].'/#p'.$cur_report['pid']).'">'.sprintf($lang_admin_reports['Post ID'], $cur_report['pid']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
         $cur_report['report_location'] = array($forum, $topic, $post_id);
-		
-		$report_data[] = $cur_report;
-	}
-	
-	return $report_data;
+        
+        $report_data[] = $cur_report;
+    }
+    
+    return $report_data;
 }
 
 function get_zapped_reports()
 {
-	global $db, $lang_admin_reports;
-	
-	$report_zapped_data = array();
-	
-	$result = $db->query('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.message, r.zapped, r.zapped_by AS zapped_by_id, p.id AS pid, t.subject, f.forum_name, u.username AS reporter, u2.username AS zapped_by FROM '.$db->prefix.'reports AS r LEFT JOIN '.$db->prefix.'posts AS p ON r.post_id=p.id LEFT JOIN '.$db->prefix.'topics AS t ON r.topic_id=t.id LEFT JOIN '.$db->prefix.'forums AS f ON r.forum_id=f.id LEFT JOIN '.$db->prefix.'users AS u ON r.reported_by=u.id LEFT JOIN '.$db->prefix.'users AS u2 ON r.zapped_by=u2.id WHERE r.zapped IS NOT NULL ORDER BY zapped DESC LIMIT 10') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
-	
+    global $db, $lang_admin_reports;
+    
+    $report_zapped_data = array();
+    
+    $result = $db->query('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.message, r.zapped, r.zapped_by AS zapped_by_id, p.id AS pid, t.subject, f.forum_name, u.username AS reporter, u2.username AS zapped_by FROM '.$db->prefix.'reports AS r LEFT JOIN '.$db->prefix.'posts AS p ON r.post_id=p.id LEFT JOIN '.$db->prefix.'topics AS t ON r.topic_id=t.id LEFT JOIN '.$db->prefix.'forums AS f ON r.forum_id=f.id LEFT JOIN '.$db->prefix.'users AS u ON r.reported_by=u.id LEFT JOIN '.$db->prefix.'users AS u2 ON r.zapped_by=u2.id WHERE r.zapped IS NOT NULL ORDER BY zapped DESC LIMIT 10') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());
+    
     while ($cur_report = $db->fetch_assoc($result)) {
-        $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="profile.php?id='.$cur_report['reported_by'].'">'.pun_htmlspecialchars($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
-        $forum = ($cur_report['forum_name'] != '') ? '<span><a href="viewforum.php?id='.$cur_report['forum_id'].'">'.pun_htmlspecialchars($cur_report['forum_name']).'</a></span>' : '<span>'.$lang_admin_reports['Deleted'].'</span>';
-        $topic = ($cur_report['subject'] != '') ? '<span>»&#160;<a href="viewtopic.php?id='.$cur_report['topic_id'].'">'.pun_htmlspecialchars($cur_report['subject']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
+        $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="'.get_link('users/'.$cur_report['reported_by'].'/').'">'.pun_htmlspecialchars($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
+        $forum = ($cur_report['forum_name'] != '') ? '<span><a href="'.get_link('forum/'.$cur_report['forum_id'].'/'.url_friendly($cur_report['forum_name']).'/').'">'.pun_htmlspecialchars($cur_report['forum_name']).'</a></span>' : '<span>'.$lang_admin_reports['Deleted'].'</span>';
+        $topic = ($cur_report['subject'] != '') ? '<span>»&#160;<a href="'.get_link('forum/'.$cur_report['topic_id'].'/'.url_friendly($cur_report['subject'])).'">'.pun_htmlspecialchars($cur_report['subject']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
         $cur_report['post'] = str_replace("\n", '<br />', pun_htmlspecialchars($cur_report['message']));
-        $post_id = ($cur_report['pid'] != '') ? '<span>»&#160;<a href="viewtopic.php?pid='.$cur_report['pid'].'#p'.$cur_report['pid'].'">'.sprintf($lang_admin_reports['Post ID'], $cur_report['pid']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
-        $cur_report['zapped_by_disp'] = ($cur_report['zapped_by'] != '') ? '<a href="profile.php?id='.$cur_report['zapped_by_id'].'">'.pun_htmlspecialchars($cur_report['zapped_by']).'</a>' : $lang_admin_reports['NA'];
+        $post_id = ($cur_report['pid'] != '') ? '<span>»&#160;<a href="'.get_link('post/'.$cur_report['pid'].'/#p'.$cur_report['pid']).'">'.sprintf($lang_admin_reports['Post ID'], $cur_report['pid']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
+        $cur_report['zapped_by_disp'] = ($cur_report['zapped_by'] != '') ? '<a href="'.get_link('user/'.$cur_report['zapped_by_id'].'/').'">'.pun_htmlspecialchars($cur_report['zapped_by']).'</a>' : $lang_admin_reports['NA'];
         $cur_report['zapped_by_disp'] = ($cur_report['zapped_by'] != '') ? '<strong>'.pun_htmlspecialchars($cur_report['zapped_by']).'</strong>' : $lang_admin_reports['NA'];
         $cur_report['report_location'] = array($forum, $topic, $post_id);
-		
-		$report_zapped_data[] = $cur_report;
-	}
-	
-	return $report_zapped_data;
+        
+        $report_zapped_data[] = $cur_report;
+    }
+    
+    return $report_zapped_data;
 }

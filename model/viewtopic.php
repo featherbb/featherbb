@@ -10,7 +10,7 @@
 // Redirects to a post in particular
 function redirect_to_post($post_id)
 {
-    global $db, $pun_user, $lang_common;
+    global $db, $feather_user, $lang_common;
     
     $result = $db->query('SELECT topic_id, posted FROM '.$db->prefix.'posts WHERE id='.$post_id) or error('Unable to fetch topic ID', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows($result)) {
@@ -23,7 +23,7 @@ function redirect_to_post($post_id)
     $result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id='.$post['topic_id'].' AND posted<'.$posted) or error('Unable to count previous posts', __FILE__, __LINE__, $db->error());
     $num_posts = $db->result($result) + 1;
     
-    $post['get_p'] = ceil($num_posts / $pun_user['disp_posts']);
+    $post['get_p'] = ceil($num_posts / $feather_user['disp_posts']);
 
     return $post;
 }
@@ -31,14 +31,14 @@ function redirect_to_post($post_id)
 // Redirects to new posts or last post
 function handle_actions($topic_id, $action)
 {
-    global $db, $pun_user;
+    global $db, $feather_user;
     
     // If action=new, we redirect to the first new post (if any)
     if ($action == 'new') {
-        if (!$pun_user['is_guest']) {
+        if (!$feather_user['is_guest']) {
             // We need to check if this topic has been viewed recently by the user
             $tracked_topics = get_tracked_topics();
-            $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $pun_user['last_visit'];
+            $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $feather_user['last_visit'];
 
             $result = $db->query('SELECT MIN(id) FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id.' AND posted>'.$last_viewed) or error('Unable to fetch first new post info', __FILE__, __LINE__, $db->error());
             $first_new_post_id = $db->result($result);
@@ -68,12 +68,12 @@ function handle_actions($topic_id, $action)
 // Gets some info about the topic
 function get_info_topic($id)
 {
-    global $db, $pun_user, $lang_common;
+    global $db, $feather_user, $lang_common;
     
-    if (!$pun_user['is_guest']) {
-        $result = $db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, s.user_id AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$pun_user['id'].') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+    if (!$feather_user['is_guest']) {
+        $result = $db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, s.user_id AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$feather_user['id'].') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
     } else {
-        $result = $db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, 0 AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+        $result = $db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, 0 AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
     }
 
     if (!$db->num_rows($result)) {
@@ -88,10 +88,10 @@ function get_info_topic($id)
 // Generates the post link
 function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
 {
-    global $db, $pun_user, $lang_topic;
+    global $db, $feather_user, $lang_topic;
     
     if ($closed == '0') {
-        if (($post_replies == '' && $pun_user['g_post_replies'] == '1') || $post_replies == '1' || $is_admmod) {
+        if (($post_replies == '' && $feather_user['g_post_replies'] == '1') || $post_replies == '1' || $is_admmod) {
             $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/reply/'.$topic_id.'/').'">'.$lang_topic['Post reply'].'</a></p>'."\n";
         } else {
             $post_link = '';
@@ -112,17 +112,17 @@ function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
 // Should we display the quickpost?
 function is_quickpost($post_replies, $closed, $is_admmod)
 {
-    global $pun_config, $pun_user, $lang_common;
+    global $feather_config, $feather_user, $lang_common;
     
     $quickpost = false;
-    if ($pun_config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $pun_user['g_post_replies'] == '1')) && ($closed == '0' || $is_admmod)) {
+    if ($feather_config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $feather_user['g_post_replies'] == '1')) && ($closed == '0' || $is_admmod)) {
         // Load the post.php language file
-        require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/post.php';
 
         $required_fields = array('req_message' => $lang_common['Message']);
-        if ($pun_user['is_guest']) {
+        if ($feather_user['is_guest']) {
             $required_fields['req_username'] = $lang_post['Guest name'];
-            if ($pun_config['p_force_guest_email'] == '1') {
+            if ($feather_config['p_force_guest_email'] == '1') {
                 $required_fields['req_email'] = $lang_common['Email'];
             }
         }
@@ -135,9 +135,9 @@ function is_quickpost($post_replies, $closed, $is_admmod)
 // Subscraction link
 function get_subscraction($is_subscribed, $topic_id)
 {
-    global $pun_user, $pun_config, $lang_topic;
+    global $feather_user, $feather_config, $lang_topic;
     
-    if (!$pun_user['is_guest'] && $pun_config['o_topic_subscriptions'] == '1') {
+    if (!$feather_user['is_guest'] && $feather_config['o_topic_subscriptions'] == '1') {
         if ($is_subscribed) {
             // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
             $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/topic/'.$topic_id.'/').'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
@@ -154,22 +154,23 @@ function get_subscraction($is_subscribed, $topic_id)
 // Adds relationship meta tags
 function get_page_head($topic_id, $num_pages, $p, $url_topic)
 {
-    global $pun_config, $lang_common;
+    global $feather_config, $lang_common;
     
     $page_head = array();
-	$page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
+    $page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
 
-	if ($num_pages > 1)
-	{
-		if ($p > 1)
-			$page_head['prev'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p - 1).'/').'" rel="prev" />';
-		if ($p < $num_pages)
-			$page_head['next'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p + 1).'/').'" rel="next" />';
-	}
+    if ($num_pages > 1) {
+        if ($p > 1) {
+            $page_head['prev'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p - 1).'/').'" rel="prev" />';
+        }
+        if ($p < $num_pages) {
+            $page_head['next'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p + 1).'/').'" rel="next" />';
+        }
+    }
 
-    if ($pun_config['o_feed_type'] == '1') {
+    if ($feather_config['o_feed_type'] == '1') {
         $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.$lang_common['RSS topic feed'].'" />';
-    } elseif ($pun_config['o_feed_type'] == '2') {
+    } elseif ($feather_config['o_feed_type'] == '2') {
         $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.$lang_common['Atom topic feed'].'" />';
     }
     
@@ -179,14 +180,14 @@ function get_page_head($topic_id, $num_pages, $p, $url_topic)
 // Prints the posts
 function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 {
-    global $db, $pun_user, $pun_config, $lang_topic, $lang_common, $pd;
+    global $db, $feather_user, $feather_config, $lang_topic, $lang_common, $pd;
     
     $post_data = array();
     
     $post_count = 0; // Keep track of post numbers
 
     // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-    $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id.' ORDER BY id LIMIT '.$start_from.','.$pun_user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id.' ORDER BY id LIMIT '.$start_from.','.$feather_user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $db->error());
 
     $post_ids = array();
     for ($i = 0;$cur_post_id = $db->result($result, $i);$i++) {
@@ -210,7 +211,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 
         // If the poster is a registered user
         if ($cur_post['poster_id'] > 1) {
-            if ($pun_user['g_view_users'] == '1') {
+            if ($feather_user['g_view_users'] == '1') {
                 $cur_post['username_formatted'] = '<a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/">'.pun_htmlspecialchars($cur_post['username']).'</a>';
             } else {
                 $cur_post['username_formatted'] = pun_htmlspecialchars($cur_post['username']);
@@ -218,14 +219,14 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 
             $cur_post['user_title_formatted'] = get_title($cur_post);
 
-            if ($pun_config['o_censoring'] == '1') {
+            if ($feather_config['o_censoring'] == '1') {
                 $cur_post['user_title_formatted'] = censor_words($cur_post['user_title_formatted']);
             }
 
             // Format the online indicator
             $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
 
-            if ($pun_config['o_avatars'] == '1' && $pun_user['show_avatars'] != '0') {
+            if ($feather_config['o_avatars'] == '1' && $feather_user['show_avatars'] != '0') {
                 if (isset($avatar_cache[$cur_post['poster_id']])) {
                     $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                 } else {
@@ -234,9 +235,9 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
             }
 
             // We only show location, register date, post count and the contact links if "Show user info" is enabled
-            if ($pun_config['o_show_user_info'] == '1') {
+            if ($feather_config['o_show_user_info'] == '1') {
                 if ($cur_post['location'] != '') {
-                    if ($pun_config['o_censoring'] == '1') {
+                    if ($feather_config['o_censoring'] == '1') {
                         $cur_post['location'] = censor_words($cur_post['location']);
                     }
 
@@ -245,19 +246,19 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
 
                 $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Registered'].' '.format_time($cur_post['registered'], true).'</span></dd>';
 
-                if ($pun_config['o_show_post_count'] == '1' || $pun_user['is_admmod']) {
+                if ($feather_config['o_show_post_count'] == '1' || $feather_user['is_admmod']) {
                     $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Posts'].' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
                 }
 
                 // Now let's deal with the contact links (Email and URL)
-                if ((($cur_post['email_setting'] == '0' && !$pun_user['is_guest']) || $pun_user['is_admmod']) && $pun_user['g_send_email'] == '1') {
+                if ((($cur_post['email_setting'] == '0' && !$feather_user['is_guest']) || $feather_user['is_admmod']) && $feather_user['g_send_email'] == '1') {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.pun_htmlspecialchars($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
-                } elseif ($cur_post['email_setting'] == '1' && !$pun_user['is_guest'] && $pun_user['g_send_email'] == '1') {
+                } elseif ($cur_post['email_setting'] == '1' && !$feather_user['is_guest'] && $feather_user['g_send_email'] == '1') {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.$lang_common['Email'].'</a></span>';
                 }
 
                 if ($cur_post['url'] != '') {
-                    if ($pun_config['o_censoring'] == '1') {
+                    if ($feather_config['o_censoring'] == '1') {
                         $cur_post['url'] = censor_words($cur_post['url']);
                     }
 
@@ -265,13 +266,13 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
                 }
             }
 
-            if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && $pun_user['g_mod_promote_users'] == '1')) {
+            if ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_promote_users'] == '1')) {
                 if ($cur_post['g_promote_next_group']) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.$lang_topic['Promote user'].'</a></span></dd>';
                 }
             }
 
-            if ($pun_user['is_admmod']) {
+            if ($feather_user['is_admmod']) {
                 $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.pun_htmlspecialchars($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
 
                 if ($cur_post['admin_note'] != '') {
@@ -284,38 +285,38 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
             $cur_post['username_formatted'] = pun_htmlspecialchars($cur_post['username']);
             $cur_post['user_title_formatted'] = get_title($cur_post);
 
-            if ($pun_user['is_admmod']) {
+            if ($feather_user['is_admmod']) {
                 $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.pun_htmlspecialchars($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
             }
 
-            if ($pun_config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$pun_user['is_guest'] && $pun_user['g_send_email'] == '1') {
+            if ($feather_config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$feather_user['is_guest'] && $feather_user['g_send_email'] == '1') {
                 $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.pun_htmlspecialchars($cur_post['poster_email']).'">'.$lang_common['Email'].'</a></span>';
             }
         }
 
         // Generation post action array (quote, edit, delete etc.)
         if (!$is_admmod) {
-            if (!$pun_user['is_guest']) {
+            if (!$feather_user['is_guest']) {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
             }
 
             if ($cur_topic['closed'] == '0') {
-                if ($cur_post['poster_id'] == $pun_user['id']) {
-                    if ((($start_from + $post_count) == 1 && $pun_user['g_delete_topics'] == '1') || (($start_from + $post_count) > 1 && $pun_user['g_delete_posts'] == '1')) {
+                if ($cur_post['poster_id'] == $feather_user['id']) {
+                    if ((($start_from + $post_count) == 1 && $feather_user['g_delete_topics'] == '1') || (($start_from + $post_count) > 1 && $feather_user['g_delete_posts'] == '1')) {
                         $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                     }
-                    if ($pun_user['g_edit_posts'] == '1') {
+                    if ($feather_user['g_edit_posts'] == '1') {
                         $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
                     }
                 }
 
-                if (($cur_topic['post_replies'] == '' && $pun_user['g_post_replies'] == '1') || $cur_topic['post_replies'] == '1') {
+                if (($cur_topic['post_replies'] == '' && $feather_user['g_post_replies'] == '1') || $cur_topic['post_replies'] == '1') {
                     $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.$lang_topic['Quote'].'</a></span></li>';
                 }
             }
         } else {
             $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
-            if ($pun_user['g_id'] == PUN_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
+            if ($feather_user['g_id'] == PUN_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
                 $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                 $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
             }
@@ -326,7 +327,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         // Do signature parsing/caching
-        if ($pun_config['o_signatures'] == '1' && $cur_post['signature'] != '' && $pun_user['show_sig'] != '0') {
+        if ($feather_config['o_signatures'] == '1' && $cur_post['signature'] != '' && $feather_user['show_sig'] != '0') {
             if (isset($avatar_cache[$cur_post['poster_id']])) {
                 $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
             } else {

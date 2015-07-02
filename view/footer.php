@@ -24,18 +24,18 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
         echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/forum/'.$forum_id.'/page/'.$p.'/').'">'.$lang_common['Moderate forum'].'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
     } elseif ($footer_style == 'viewtopic') {
-		
-		if (isset($pid))
-			$parameter = 'param/'.$pid.'/';
-		elseif (isset($p) && $p != 1)
-			$parameter = 'param/'.$p.'/';
-		else
-			$parameter = '';
-		
-		
+        if (isset($pid)) {
+            $parameter = 'param/'.$pid.'/';
+        } elseif (isset($p) && $p != 1) {
+            $parameter = 'param/'.$p.'/';
+        } else {
+            $parameter = '';
+        }
+        
+        
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.$lang_topic['Mod controls'].'</strong></dt>'."\n";
-		// TODO: all
+        // TODO: all
         //echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/param/'.$p).'">'.$lang_common['Moderate topic'].'</a>'.($num_pages > 1 ? ' (<a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/'.$parameter.'/all/').'">'.$lang_common['All'].'</a>)' : '').'</span></dd>'."\n";
         echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/page/'.$p.'/').'">'.$lang_common['Moderate topic'].'</a></span></dd>'."\n";
         echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/move/'.$parameter).'">'.$lang_common['Move topic'].'</a></span></dd>'."\n";
@@ -43,7 +43,7 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
         if ($cur_topic['closed'] == '1') {
             echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/open/'.$parameter).'">'.$lang_common['Open topic'].'</a></span></dd>'."\n";
         } else {
-			echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/close/'.$parameter).'">'.$lang_common['Close topic'].'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/close/'.$parameter).'">'.$lang_common['Close topic'].'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
@@ -65,19 +65,19 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
 echo "\t\t\t".'<div class="conl">'."\n";
 
 // Display the "Jump to" drop list
-if ($pun_config['o_quickjump'] == '1') {
+if ($feather_config['o_quickjump'] == '1') {
     // Load cached quick jump
-    if (file_exists(FORUM_CACHE_DIR.'cache_quickjump_'.$pun_user['g_id'].'.php')) {
-        include FORUM_CACHE_DIR.'cache_quickjump_'.$pun_user['g_id'].'.php';
+    if (file_exists(FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php')) {
+        include FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php';
     }
 
     if (!defined('PUN_QJ_LOADED')) {
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require PUN_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'include/cache.php';
         }
 
-        generate_quickjump_cache($pun_user['g_id']);
-        require FORUM_CACHE_DIR.'cache_quickjump_'.$pun_user['g_id'].'.php';
+        generate_quickjump_cache($feather_user['g_id']);
+        require FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php';
     }
 }
 
@@ -91,27 +91,27 @@ echo "\t\t\t".'</div>'."\n";
 $footer_style = isset($footer_style) ? $footer_style : null;
 
 if ($footer_style == 'index') {
-    if ($pun_config['o_feed_type'] == '1') {
+    if ($feather_config['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=rss">'.$lang_common['RSS active topics feed'].'</a></span></p>'."\n";
-    } elseif ($pun_config['o_feed_type'] == '2') {
+    } elseif ($feather_config['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=atom">'.$lang_common['Atom active topics feed'].'</a></span></p>'."\n";
     }
 } elseif ($footer_style == 'viewforum') {
-    if ($pun_config['o_feed_type'] == '1') {
+    if ($feather_config['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss">'.$lang_common['RSS forum feed'].'</a></span></p>'."\n";
-    } elseif ($pun_config['o_feed_type'] == '2') {
+    } elseif ($feather_config['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom">'.$lang_common['Atom forum feed'].'</a></span></p>'."\n";
     }
 } elseif ($footer_style == 'viewtopic') {
-    if ($pun_config['o_feed_type'] == '1') {
+    if ($feather_config['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=rss">'.$lang_common['RSS topic feed'].'</a></span></p>'."\n";
-    } elseif ($pun_config['o_feed_type'] == '2') {
+    } elseif ($feather_config['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=atom">'.$lang_common['Atom topic feed'].'</a></span></p>'."\n";
     }
 }
 
 ?>
-				<p id="poweredby"><?php printf($lang_common['Powered by'], '<a href="http://featherbb.org/">FeatherBB</a>'.(($pun_config['o_show_version'] == '1') ? ' '.$pun_config['o_cur_version'] : '')) ?></p>
+				<p id="poweredby"><?php printf($lang_common['Powered by'], '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather_config['o_show_version'] == '1') ? ' '.$feather_config['o_cur_version'] : '')) ?></p>
 			</div>
 			<div class="clearer"></div>
 		</div>
@@ -124,7 +124,7 @@ if (defined('PUN_DEBUG')) {
     echo '<p id="debugtime">[ ';
 
     // Calculate script generation time
-    $time_diff = sprintf('%.3f', get_microtime() - $pun_start);
+    $time_diff = sprintf('%.3f', get_microtime() - $feather_start);
     echo sprintf($lang_common['Querytime'], $time_diff, $db->get_num_queries());
 
     if (function_exists('memory_get_usage')) {

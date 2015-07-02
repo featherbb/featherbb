@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 <div class="linkst">
@@ -48,8 +49,6 @@ if (!defined('PUN'))
 			</thead>
 			<tbody>
 <?php
-	$user_data = print_users($search['conditions'], $search['order_by'], $search['direction'], $start_from);
-	
     if (!empty($user_data)) {
         foreach ($user_data as $user) {
             ?>
@@ -59,7 +58,7 @@ if (!defined('PUN'))
 					<td class="tc3"><?php echo $user['user_title'] ?></td>
 					<td class="tc4"><?php echo forum_number_format($user['num_posts']) ?></td>
 					<td class="tc5"><?php echo($user['admin_note'] != '') ? pun_htmlspecialchars($user['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$user['id'].'/').'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$user['id'].'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
+					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$user['id'].'/').'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
 <?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?php echo $user['id'] ?>]" value="1" /></td>
 <?php endif;
             ?>

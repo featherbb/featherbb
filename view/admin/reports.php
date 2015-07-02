@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 	<div class="blockform">
@@ -18,8 +19,7 @@ if (!defined('PUN'))
 			<form method="post" action="<?php echo get_link('admin/reports/') ?>">
 <?php
 if ($is_report) {
-	$report_data = get_reports();
-    foreach($report_data as $report) {
+    foreach ($report_data as $report) {
         ?>
 				<div class="inform">
 					<fieldset>
@@ -67,9 +67,7 @@ if ($is_report) {
 <?php
 
 if ($is_report_zapped) {
-	$report_zapped_data = get_zapped_reports();
-    foreach($report_zapped_data as $report) {
-
+    foreach ($report_zapped_data as $report) {
         ?>
 				<div class="inform">
 					<fieldset>

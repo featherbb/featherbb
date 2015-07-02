@@ -9,11 +9,11 @@
  
 function change_pass($id, $feather)
 {
-    global $db, $pun_user, $pun_config, $lang_profile, $lang_common, $lang_prof_reg;
+    global $db, $feather_user, $feather_config, $lang_profile, $lang_common, $lang_prof_reg;
     
-    if (!empty($feather->request->get('key'))) {
+    if ($feather->request->get('key')) {
         // If the user is already logged in we shouldn't be here :)
-        if (!$pun_user['is_guest']) {
+        if (!$feather_user['is_guest']) {
             header('Location: '.get_base_url());
             exit;
         }
@@ -24,7 +24,7 @@ function change_pass($id, $feather)
         $cur_user = $db->fetch_assoc($result);
 
         if ($key == '' || $key != $cur_user['activate_key']) {
-            message($lang_profile['Pass key bad'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.');
+            message($lang_profile['Pass key bad'].' <a href="mailto:'.pun_htmlspecialchars($feather_config['o_admin_email']).'">'.pun_htmlspecialchars($feather_config['o_admin_email']).'</a>.');
         } else {
             $db->query('UPDATE '.$db->prefix.'users SET password=\''.$db->escape($cur_user['activate_string']).'\', activate_string=NULL, activate_key=NULL'.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
 
@@ -33,10 +33,10 @@ function change_pass($id, $feather)
     }
 
     // Make sure we are allowed to change this user's password
-    if ($pun_user['id'] != $id) {
-        if (!$pun_user['is_admmod']) { // A regular user trying to change another user's password?
+    if ($feather_user['id'] != $id) {
+        if (!$feather_user['is_admmod']) { // A regular user trying to change another user's password?
             message($lang_common['No permission'], false, '403 Forbidden');
-        } elseif ($pun_user['g_moderator'] == '1') {
+        } elseif ($feather_user['g_moderator'] == '1') {
             // A moderator trying to change a user's password?
 
             $result = $db->query('SELECT u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
@@ -46,7 +46,7 @@ function change_pass($id, $feather)
 
             list($group_id, $is_moderator) = $db->fetch_row($result);
 
-            if ($pun_user['g_mod_edit_users'] == '0' || $pun_user['g_mod_change_passwords'] == '0' || $group_id == PUN_ADMIN || $is_moderator == '1') {
+            if ($feather_user['g_mod_edit_users'] == '0' || $feather_user['g_mod_change_passwords'] == '0' || $group_id == PUN_ADMIN || $is_moderator == '1') {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         }
@@ -56,7 +56,7 @@ function change_pass($id, $feather)
         // Make sure they got here from the site
         confirm_referrer(get_link_r('user/'.$id.'/action/change_pass/'));
 
-        $old_password = !empty($feather->request->post('req_old_password')) ? pun_trim($feather->request->post('req_old_password')) : '';
+        $old_password = $feather->request->post('req_old_password') ? pun_trim($feather->request->post('req_old_password')) : '';
         $new_password1 = pun_trim($feather->request->post('req_new_password1'));
         $new_password2 = pun_trim($feather->request->post('req_new_password2'));
 
@@ -75,7 +75,7 @@ function change_pass($id, $feather)
         if (!empty($cur_user['password'])) {
             $old_password_hash = pun_hash($old_password);
 
-            if ($cur_user['password'] == $old_password_hash || $pun_user['is_admmod']) {
+            if ($cur_user['password'] == $old_password_hash || $feather_user['is_admmod']) {
                 $authorized = true;
             }
         }
@@ -88,8 +88,8 @@ function change_pass($id, $feather)
 
         $db->query('UPDATE '.$db->prefix.'users SET password=\''.$new_password_hash.'\''.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
 
-        if ($pun_user['id'] == $id) {
-            pun_setcookie($pun_user['id'], $new_password_hash, time() + $pun_config['o_timeout_visit']);
+        if ($feather_user['id'] == $id) {
+            pun_setcookie($feather_user['id'], $new_password_hash, time() + $feather_config['o_timeout_visit']);
         }
 
         redirect(get_link('user/'.$id.'/section/essentials/'), $lang_profile['Pass updated redirect']);
@@ -98,13 +98,13 @@ function change_pass($id, $feather)
 
 function change_email($id, $feather)
 {
-    global $db, $pun_user, $pun_config, $lang_profile, $lang_common, $lang_prof_reg;
+    global $db, $feather_user, $feather_config, $lang_profile, $lang_common, $lang_prof_reg;
     
     // Make sure we are allowed to change this user's email
-    if ($pun_user['id'] != $id) {
-        if (!$pun_user['is_admmod']) { // A regular user trying to change another user's email?
+    if ($feather_user['id'] != $id) {
+        if (!$feather_user['is_admmod']) { // A regular user trying to change another user's email?
             message($lang_common['No permission'], false, '403 Forbidden');
-        } elseif ($pun_user['g_moderator'] == '1') {
+        } elseif ($feather_user['g_moderator'] == '1') {
             // A moderator trying to change a user's email?
 
             $result = $db->query('SELECT u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
@@ -114,34 +114,34 @@ function change_email($id, $feather)
 
             list($group_id, $is_moderator) = $db->fetch_row($result);
 
-            if ($pun_user['g_mod_edit_users'] == '0' || $group_id == PUN_ADMIN || $is_moderator == '1') {
+            if ($feather_user['g_mod_edit_users'] == '0' || $group_id == PUN_ADMIN || $is_moderator == '1') {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         }
     }
 
-    if (!empty($feather->request->get('key'))) {
+    if ($feather->request->get('key')) {
         $key = $feather->request->get('key');
 
         $result = $db->query('SELECT activate_string, activate_key FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch activation data', __FILE__, __LINE__, $db->error());
         list($new_email, $new_email_key) = $db->fetch_row($result);
 
         if ($key == '' || $key != $new_email_key) {
-            message($lang_profile['Email key bad'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.');
+            message($lang_profile['Email key bad'].' <a href="mailto:'.pun_htmlspecialchars($feather_config['o_admin_email']).'">'.pun_htmlspecialchars($feather_config['o_admin_email']).'</a>.');
         } else {
             $db->query('UPDATE '.$db->prefix.'users SET email=activate_string, activate_string=NULL, activate_key=NULL WHERE id='.$id) or error('Unable to update email address', __FILE__, __LINE__, $db->error());
 
             message($lang_profile['Email updated'], true);
         }
     } elseif ($feather->request()->isPost()) {
-        if (pun_hash($feather->request->post('req_password')) !== $pun_user['password']) {
+        if (pun_hash($feather->request->post('req_password')) !== $feather_user['password']) {
             message($lang_profile['Wrong pass']);
         }
             
         // Make sure they got here from the site
         confirm_referrer(get_link_r('user/'.$id.'/action/change_email/'));
 
-        require PUN_ROOT.'include/email.php';
+        require FEATHER_ROOT.'include/email.php';
 
         // Validate the email address
         $new_email = strtolower(pun_trim($feather->request->post('req_new_email')));
@@ -151,50 +151,50 @@ function change_email($id, $feather)
 
         // Check if it's a banned email address
         if (is_banned_email($new_email)) {
-            if ($pun_config['p_allow_banned_email'] == '0') {
+            if ($feather_config['p_allow_banned_email'] == '0') {
                 message($lang_prof_reg['Banned email']);
-            } elseif ($pun_config['o_mailing_list'] != '') {
+            } elseif ($feather_config['o_mailing_list'] != '') {
                 // Load the "banned email change" template
-                $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/banned_email_change.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$feather_user['language'].'/mail_templates/banned_email_change.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
                 $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-                $mail_message = str_replace('<username>', $pun_user['username'], $mail_message);
+                $mail_message = str_replace('<username>', $feather_user['username'], $mail_message);
                 $mail_message = str_replace('<email>', $new_email, $mail_message);
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
-                $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
-                pun_mail($pun_config['o_mailing_list'], $mail_subject, $mail_message);
+                pun_mail($feather_config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 
         // Check if someone else already has registered with that email address
         $result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE email=\''.$db->escape($new_email).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
         if ($db->num_rows($result)) {
-            if ($pun_config['p_allow_dupe_email'] == '0') {
+            if ($feather_config['p_allow_dupe_email'] == '0') {
                 message($lang_prof_reg['Dupe email']);
-            } elseif ($pun_config['o_mailing_list'] != '') {
+            } elseif ($feather_config['o_mailing_list'] != '') {
                 while ($cur_dupe = $db->fetch_assoc($result)) {
                     $dupe_list[] = $cur_dupe['username'];
                 }
 
                 // Load the "dupe email change" template
-                $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/dupe_email_change.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$feather_user['language'].'/mail_templates/dupe_email_change.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
                 $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-                $mail_message = str_replace('<username>', $pun_user['username'], $mail_message);
+                $mail_message = str_replace('<username>', $feather_user['username'], $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
-                $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
-                pun_mail($pun_config['o_mailing_list'], $mail_subject, $mail_message);
+                pun_mail($feather_config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 
@@ -204,38 +204,38 @@ function change_email($id, $feather)
         $db->query('UPDATE '.$db->prefix.'users SET activate_string=\''.$db->escape($new_email).'\', activate_key=\''.$new_email_key.'\' WHERE id='.$id) or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
 
         // Load the "activate email" template
-        $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/activate_email.tpl'));
+        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$feather_user['language'].'/mail_templates/activate_email.tpl'));
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
         $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
         $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-        $mail_message = str_replace('<username>', $pun_user['username'], $mail_message);
+        $mail_message = str_replace('<username>', $feather_user['username'], $mail_message);
         $mail_message = str_replace('<base_url>', get_base_url(), $mail_message);
         $mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
-        $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
+        $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
         pun_mail($new_email, $mail_subject, $mail_message);
 
-        message($lang_profile['Activate email sent'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.', true);
+        message($lang_profile['Activate email sent'].' <a href="mailto:'.pun_htmlspecialchars($feather_config['o_admin_email']).'">'.pun_htmlspecialchars($feather_config['o_admin_email']).'</a>.', true);
     }
 }
 
 function upload_avatar($id, $files_data)
 {
-    global $pun_config, $lang_profile;
+    global $feather_config, $lang_profile;
     
     if (!isset($files_data['req_file'])) {
         message($lang_profile['No file']);
     }
         
-	// Make sure they got here from the site
+    // Make sure they got here from the site
     confirm_referrer(array(
-		get_link_r('user/'.$id.'/action/upload_avatar/'),
-		get_link_r('user/'.$id.'/action/upload_avatar2/'),
-		)
-	);
+        get_link_r('user/'.$id.'/action/upload_avatar/'),
+        get_link_r('user/'.$id.'/action/upload_avatar2/'),
+        )
+    );
 
     $uploaded_file = $files_data['req_file'];
 
@@ -276,16 +276,16 @@ function upload_avatar($id, $files_data)
         }
 
         // Make sure the file isn't too big
-        if ($uploaded_file['size'] > $pun_config['o_avatars_size']) {
-            message($lang_profile['Too large'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
+        if ($uploaded_file['size'] > $feather_config['o_avatars_size']) {
+            message($lang_profile['Too large'].' '.forum_number_format($feather_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
         }
 
         // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-        if (!@move_uploaded_file($uploaded_file['tmp_name'], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp')) {
-            message($lang_profile['Move failed'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.');
+        if (!@move_uploaded_file($uploaded_file['tmp_name'], FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.'.tmp')) {
+            message($lang_profile['Move failed'].' <a href="mailto:'.pun_htmlspecialchars($feather_config['o_admin_email']).'">'.pun_htmlspecialchars($feather_config['o_admin_email']).'</a>.');
         }
 
-        list($width, $height, $type, ) = @getimagesize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+        list($width, $height, $type, ) = @getimagesize(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.'.tmp');
 
         // Determine type
         if ($type == IMAGETYPE_GIF) {
@@ -296,20 +296,20 @@ function upload_avatar($id, $files_data)
             $extension = '.png';
         } else {
             // Invalid type
-            @unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+            @unlink(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.'.tmp');
             message($lang_profile['Bad type']);
         }
 
         // Now check the width/height
-        if (empty($width) || empty($height) || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height']) {
-            @unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
-            message($lang_profile['Too wide or high'].' '.$pun_config['o_avatars_width'].'x'.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].'.');
+        if (empty($width) || empty($height) || $width > $feather_config['o_avatars_width'] || $height > $feather_config['o_avatars_height']) {
+            @unlink(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.'.tmp');
+            message($lang_profile['Too wide or high'].' '.$feather_config['o_avatars_width'].'x'.$feather_config['o_avatars_height'].' '.$lang_profile['pixels'].'.');
         }
 
         // Delete any old avatars and put the new one in place
         delete_avatar($id);
-        @rename(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.$extension);
-        @chmod(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.$extension, 0644);
+        @rename(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.'.tmp', FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.$extension);
+        @chmod(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$id.$extension, 0644);
     } else {
         message($lang_profile['Unknown failure']);
     }
@@ -332,7 +332,7 @@ function update_group_membership($id, $feather)
 
     // Regenerate the users info cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_users_info_cache();
@@ -374,7 +374,7 @@ function update_mod_forums($id, $feather)
     $result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     $username = $db->result($result);
 
-    $moderator_in = (!empty($feather->request->post('moderator_in'))) ? array_keys($feather->request->post('moderator_in')) : array();
+    $moderator_in = ($feather->request->post('moderator_in')) ? array_keys($feather->request->post('moderator_in')) : array();
 
     // Loop through all forums
     $result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
@@ -424,7 +424,7 @@ function promote_user($id, $feather)
     
     confirm_referrer('viewtopic.php');
 
-    $pid = !empty($feather->request->get('pid')) ? intval($feather->request->get('pid')) : 0;
+    $pid = $feather->request->get('pid') ? intval($feather->request->get('pid')) : 0;
 
     $sql = 'SELECT g.g_promote_next_group FROM '.$db->prefix.'groups AS g INNER JOIN '.$db->prefix.'users AS u ON u.group_id=g.g_id WHERE u.id='.$id.' AND g.g_promote_next_group>0';
     $result = $db->query($sql) or error('Unable to fetch promotion information', __FILE__, __LINE__, $db->error());
@@ -453,7 +453,7 @@ function delete_user($id, $feather)
         message($lang_profile['No delete admin message']);
     }
 
-    if (!empty($feather->request->post('delete_user_comply'))) {
+    if ($feather->request->post('delete_user_comply')) {
         // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
         $result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
         $group_mod = $db->result($result);
@@ -481,8 +481,8 @@ function delete_user($id, $feather)
         $db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$id) or error('Unable to remove user from online list', __FILE__, __LINE__, $db->error());
 
         // Should we delete all posts made by this user?
-        if (!empty($feather->request->post('delete_posts'))) {
-            require PUN_ROOT.'include/search_idx.php';
+        if ($feather->request->post('delete_posts')) {
+            require FEATHER_ROOT.'include/search_idx.php';
             @set_time_limit(0);
 
             // Find all posts made by this user
@@ -514,7 +514,7 @@ function delete_user($id, $feather)
 
         // Regenerate the users info cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require PUN_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'include/cache.php';
         }
 
         generate_users_info_cache();
@@ -545,20 +545,20 @@ function fetch_user_group($id)
 
 function update_profile($id, $info, $section, $feather)
 {
-    global $db, $lang_common, $lang_profile, $lang_prof_reg, $pun_config, $pun_user, $pd;
+    global $db, $lang_common, $lang_profile, $lang_prof_reg, $feather_config, $feather_user, $pd;
     
     // Make sure they got here from the site
     confirm_referrer(array(
-		get_link_r('user/'.$id.'/'),
-		get_link_r('user/'.$id.'/section/admin/'),
-		get_link_r('user/'.$id.'/section/essentials/'),
-		get_link_r('user/'.$id.'/section/privacy/'),
-		get_link_r('user/'.$id.'/section/messaging/'),
-		get_link_r('user/'.$id.'/section/display/'),
-		get_link_r('user/'.$id.'/section/personality/'),
-		get_link_r('user/'.$id.'/section/personal/'),
-		)
-	);
+        get_link_r('user/'.$id.'/'),
+        get_link_r('user/'.$id.'/section/admin/'),
+        get_link_r('user/'.$id.'/section/essentials/'),
+        get_link_r('user/'.$id.'/section/privacy/'),
+        get_link_r('user/'.$id.'/section/messaging/'),
+        get_link_r('user/'.$id.'/section/display/'),
+        get_link_r('user/'.$id.'/section/personality/'),
+        get_link_r('user/'.$id.'/section/personal/'),
+        )
+    );
 
     $username_updated = false;
 
@@ -568,13 +568,13 @@ function update_profile($id, $info, $section, $feather)
         {
             $form = array(
                 'timezone'        => floatval($feather->request->post('form_timezone')),
-                'dst'            => !empty($feather->request->post('form_dst')) ? '1' : '0',
+                'dst'            => $feather->request->post('form_dst') ? '1' : '0',
                 'time_format'    => intval($feather->request->post('form_time_format')),
                 'date_format'    => intval($feather->request->post('form_date_format')),
             );
 
             // Make sure we got a valid language string
-            if (!empty($feather->request->post('form_language'))) {
+            if ($feather->request->post('form_language')) {
                 $languages = forum_list_langs();
                 $form['language'] = pun_trim($feather->request->post('form_language'));
                 if (!in_array($form['language'], $languages)) {
@@ -582,18 +582,18 @@ function update_profile($id, $info, $section, $feather)
                 }
             }
 
-            if ($pun_user['is_admmod']) {
+            if ($feather_user['is_admmod']) {
                 $form['admin_note'] = pun_trim($feather->request->post('admin_note'));
 
                 // Are we allowed to change usernames?
-                if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && $pun_user['g_mod_rename_users'] == '1')) {
+                if ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_rename_users'] == '1')) {
                     $form['username'] = pun_trim($feather->request->post('req_username'));
 
                     if ($form['username'] != $info['old_username']) {
                         // Check username
-                        require PUN_ROOT.'lang/'.$pun_user['language'].'/register.php';
+                        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/register.php';
 
-						$errors = '';
+                        $errors = '';
                         $errors = check_username($form['username'], $errors, $id);
                         if (!empty($errors)) {
                             message($errors[0]);
@@ -604,13 +604,13 @@ function update_profile($id, $info, $section, $feather)
                 }
 
                 // We only allow administrators to update the post count
-                if ($pun_user['g_id'] == PUN_ADMIN) {
+                if ($feather_user['g_id'] == PUN_ADMIN) {
                     $form['num_posts'] = intval($feather->request->post('num_posts'));
                 }
             }
 
-            if ($pun_config['o_regs_verify'] == '0' || $pun_user['is_admmod']) {
-                require PUN_ROOT.'include/email.php';
+            if ($feather_config['o_regs_verify'] == '0' || $feather_user['is_admmod']) {
+                require FEATHER_ROOT.'include/email.php';
 
                 // Validate the email address
                 $form['email'] = strtolower(pun_trim($feather->request->post('req_email')));
@@ -625,13 +625,13 @@ function update_profile($id, $info, $section, $feather)
         case 'personal':
         {
             $form = array(
-                'realname'        => !empty($feather->request->post('form_realname')) ? pun_trim($feather->request->post('form_realname')) : '',
-                'url'            => !empty($feather->request->post('form_url')) ? pun_trim($feather->request->post('form_url')) : '',
-                'location'        => !empty($feather->request->post('form_location')) ? pun_trim($feather->request->post('form_location')) : '',
+                'realname'        => $feather->request->post('form_realname') ? pun_trim($feather->request->post('form_realname')) : '',
+                'url'            => $feather->request->post('form_url') ? pun_trim($feather->request->post('form_url')) : '',
+                'location'        => $feather->request->post('form_location') ? pun_trim($feather->request->post('form_location')) : '',
             );
 
             // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-            if ($pun_user['g_post_links'] == '1') {
+            if ($feather_user['g_post_links'] == '1') {
                 if ($form['url'] != '') {
                     $url = url_valid($form['url']);
 
@@ -649,9 +649,9 @@ function update_profile($id, $info, $section, $feather)
                 $form['url'] = '';
             }
 
-            if ($pun_user['g_id'] == PUN_ADMIN) {
+            if ($feather_user['g_id'] == PUN_ADMIN) {
                 $form['title'] = pun_trim($feather->request->post('title'));
-            } elseif ($pun_user['g_set_title'] == '1') {
+            } elseif ($feather_user['g_set_title'] == '1') {
                 $form['title'] = pun_trim($feather->request->post('title'));
 
                 if ($form['title'] != '') {
@@ -691,21 +691,21 @@ function update_profile($id, $info, $section, $feather)
             $form = array();
 
             // Clean up signature from POST
-            if ($pun_config['o_signatures'] == '1') {
+            if ($feather_config['o_signatures'] == '1') {
                 $form['signature'] = pun_linebreaks(pun_trim($feather->request->post('signature')));
 
                 // Validate signature
-                if (pun_strlen($form['signature']) > $pun_config['p_sig_length']) {
-                    message(sprintf($lang_prof_reg['Sig too long'], $pun_config['p_sig_length'], pun_strlen($form['signature']) - $pun_config['p_sig_length']));
-                } elseif (substr_count($form['signature'], "\n") > ($pun_config['p_sig_lines']-1)) {
-                    message(sprintf($lang_prof_reg['Sig too many lines'], $pun_config['p_sig_lines']));
-                } elseif ($form['signature'] && $pun_config['p_sig_all_caps'] == '0' && is_all_uppercase($form['signature']) && !$pun_user['is_admmod']) {
+                if (pun_strlen($form['signature']) > $feather_config['p_sig_length']) {
+                    message(sprintf($lang_prof_reg['Sig too long'], $feather_config['p_sig_length'], pun_strlen($form['signature']) - $feather_config['p_sig_length']));
+                } elseif (substr_count($form['signature'], "\n") > ($feather_config['p_sig_lines']-1)) {
+                    message(sprintf($lang_prof_reg['Sig too many lines'], $feather_config['p_sig_lines']));
+                } elseif ($form['signature'] && $feather_config['p_sig_all_caps'] == '0' && is_all_uppercase($form['signature']) && !$feather_user['is_admmod']) {
                     $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                 }
 
                 // Validate BBCode syntax
-                if ($pun_config['p_sig_bbcode'] == '1') {
-                    require PUN_ROOT.'include/parser.php';
+                if ($feather_config['p_sig_bbcode'] == '1') {
+                    require FEATHER_ROOT.'include/parser.php';
 
                     $errors = array();
 
@@ -725,11 +725,11 @@ function update_profile($id, $info, $section, $feather)
             $form = array(
                 'disp_topics'        => pun_trim($feather->request->post('form_disp_topics')),
                 'disp_posts'        => pun_trim($feather->request->post('form_disp_posts')),
-                'show_smilies'        => !empty($feather->request->post('form_show_smilies')) ? '1' : '0',
-                'show_img'            => !empty($feather->request->post('form_show_img')) ? '1' : '0',
-                'show_img_sig'        => !empty($feather->request->post('form_show_img_sig')) ? '1' : '0',
-                'show_avatars'        => !empty($feather->request->post('form_show_avatars')) ? '1' : '0',
-                'show_sig'            => !empty($feather->request->post('form_show_sig')) ? '1' : '0',
+                'show_smilies'        => $feather->request->post('form_show_smilies') ? '1' : '0',
+                'show_img'            => $feather->request->post('form_show_img') ? '1' : '0',
+                'show_img_sig'        => $feather->request->post('form_show_img_sig') ? '1' : '0',
+                'show_avatars'        => $feather->request->post('form_show_avatars') ? '1' : '0',
+                'show_sig'            => $feather->request->post('form_show_sig') ? '1' : '0',
             );
 
             if ($form['disp_topics'] != '') {
@@ -751,7 +751,7 @@ function update_profile($id, $info, $section, $feather)
             }
 
             // Make sure we got a valid style string
-            if (!empty($feather->request->post('form_style'))) {
+            if ($feather->request->post('form_style')) {
                 $styles = forum_list_styles();
                 $form['style'] = pun_trim($feather->request->post('form_style'));
                 if (!in_array($form['style'], $styles)) {
@@ -766,12 +766,12 @@ function update_profile($id, $info, $section, $feather)
         {
             $form = array(
                 'email_setting'            => intval($feather->request->post('form_email_setting')),
-                'notify_with_post'        => !empty($feather->request->post('form_notify_with_post')) ? '1' : '0',
-                'auto_notify'            => !empty($feather->request->post('form_auto_notify')) ? '1' : '0',
+                'notify_with_post'        => $feather->request->post('form_notify_with_post') ? '1' : '0',
+                'auto_notify'            => $feather->request->post('form_auto_notify') ? '1' : '0',
             );
 
             if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                $form['email_setting'] = $pun_config['o_default_email_setting'];
+                $form['email_setting'] = $feather_config['o_default_email_setting'];
             }
 
             break;
@@ -836,7 +836,7 @@ function update_profile($id, $info, $section, $feather)
 
         // Regenerate the users info cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require PUN_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'include/cache.php';
         }
 
         generate_users_info_cache();
@@ -866,7 +866,7 @@ function get_user_info($id)
 
 function parse_user_info($user)
 {
-    global $lang_common, $lang_profile, $pun_config, $pun_user;
+    global $lang_common, $lang_profile, $feather_config, $feather_user;
     
     $user_info = array();
 
@@ -875,27 +875,27 @@ function parse_user_info($user)
 
     $user_title_field = get_title($user);
     $user_info['personal'][] = '<dt>'.$lang_common['Title'].'</dt>';
-    $user_info['personal'][] = '<dd>'.(($pun_config['o_censoring'] == '1') ? censor_words($user_title_field) : $user_title_field).'</dd>';
+    $user_info['personal'][] = '<dd>'.(($feather_config['o_censoring'] == '1') ? censor_words($user_title_field) : $user_title_field).'</dd>';
 
     if ($user['realname'] != '') {
         $user_info['personal'][] = '<dt>'.$lang_profile['Realname'].'</dt>';
-        $user_info['personal'][] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
+        $user_info['personal'][] = '<dd>'.pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
     }
 
     if ($user['location'] != '') {
         $user_info['personal'][] = '<dt>'.$lang_profile['Location'].'</dt>';
-        $user_info['personal'][] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
+        $user_info['personal'][] = '<dd>'.pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
     }
 
     if ($user['url'] != '') {
-        $user['url'] = pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
+        $user['url'] = pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
         $user_info['personal'][] = '<dt>'.$lang_profile['Website'].'</dt>';
         $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
     }
 
-    if ($user['email_setting'] == '0' && !$pun_user['is_guest'] && $pun_user['g_send_email'] == '1') {
+    if ($user['email_setting'] == '0' && !$feather_user['is_guest'] && $feather_user['g_send_email'] == '1') {
         $user['email_field'] = '<a href="mailto:'.pun_htmlspecialchars($user['email']).'">'.pun_htmlspecialchars($user['email']).'</a>';
-    } elseif ($user['email_setting'] == '1' && !$pun_user['is_guest'] && $pun_user['g_send_email'] == '1') {
+    } elseif ($user['email_setting'] == '1' && !$feather_user['is_guest'] && $feather_user['g_send_email'] == '1') {
         $user['email_field'] = '<a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a>';
     } else {
         $user['email_field'] = '';
@@ -907,7 +907,7 @@ function parse_user_info($user)
 
     if ($user['jabber'] != '') {
         $user_info['messaging'][] = '<dt>'.$lang_profile['Jabber'].'</dt>';
-        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
+        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
     }
 
     if ($user['icq'] != '') {
@@ -917,20 +917,20 @@ function parse_user_info($user)
 
     if ($user['msn'] != '') {
         $user_info['messaging'][] = '<dt>'.$lang_profile['MSN'].'</dt>';
-        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
+        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
     }
 
     if ($user['aim'] != '') {
         $user_info['messaging'][] = '<dt>'.$lang_profile['AOL IM'].'</dt>';
-        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
+        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
     }
 
     if ($user['yahoo'] != '') {
         $user_info['messaging'][] = '<dt>'.$lang_profile['Yahoo'].'</dt>';
-        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
+        $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($feather_config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
     }
 
-    if ($pun_config['o_avatars'] == '1') {
+    if ($feather_config['o_avatars'] == '1') {
         $avatar_field = generate_avatar_markup($user['id']);
         if ($avatar_field != '') {
             $user_info['personality'][] = '<dt>'.$lang_profile['Avatar'].'</dt>';
@@ -938,7 +938,7 @@ function parse_user_info($user)
         }
     }
 
-    if ($pun_config['o_signatures'] == '1') {
+    if ($feather_config['o_signatures'] == '1') {
         if (isset($parsed_signature)) {
             $user_info['personality'][] = '<dt>'.$lang_profile['Signature'].'</dt>';
             $user_info['personality'][] = '<dd><div class="postsignature postmsg">'.$parsed_signature.'</div></dd>';
@@ -946,17 +946,17 @@ function parse_user_info($user)
     }
 
     $posts_field = '';
-    if ($pun_config['o_show_post_count'] == '1' || $pun_user['is_admmod']) {
+    if ($feather_config['o_show_post_count'] == '1' || $feather_user['is_admmod']) {
         $posts_field = forum_number_format($user['num_posts']);
     }
-    if ($pun_user['g_search'] == '1') {
+    if ($feather_user['g_search'] == '1') {
         $quick_searches = array();
         if ($user['num_posts'] > 0) {
-            $quick_searches[] = '<a href="'.get_link('search/show/user_topics/user/'.$user['id'].'/').'">'.$lang_profile['Show topics'].'</a>';
-            $quick_searches[] = '<a href="'.get_link('search/show/user_posts/user/'.$user['id'].'/').'">'.$lang_profile['Show posts'].'</a>';
+            $quick_searches[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.$lang_profile['Show topics'].'</a>';
+            $quick_searches[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.$lang_profile['Show posts'].'</a>';
         }
-        if ($pun_user['is_admmod'] && $pun_config['o_topic_subscriptions'] == '1') {
-            $quick_searches[] = '<a href="'.get_link('search/show/subscriptions/user/'.$user['id'].'/').'">'.$lang_profile['Show subscriptions'].'</a>';
+        if ($feather_user['is_admmod'] && $feather_config['o_topic_subscriptions'] == '1') {
+            $quick_searches[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.$lang_profile['Show subscriptions'].'</a>';
         }
 
         if (!empty($quick_searches)) {
@@ -981,12 +981,12 @@ function parse_user_info($user)
 
 function edit_essentials($id, $user)
 {
-    global $pun_user, $pun_config, $lang_profile, $lang_common;
+    global $feather_user, $feather_config, $lang_profile, $lang_common;
     
     $user_disp = array();
     
-    if ($pun_user['is_admmod']) {
-        if ($pun_user['g_id'] == PUN_ADMIN || $pun_user['g_mod_rename_users'] == '1') {
+    if ($feather_user['is_admmod']) {
+        if ($feather_user['g_id'] == PUN_ADMIN || $feather_user['g_mod_rename_users'] == '1') {
             $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.pun_htmlspecialchars($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], pun_htmlspecialchars($user['username'])).'</p>'."\n";
@@ -996,7 +996,7 @@ function edit_essentials($id, $user)
     } else {
         $user_disp['username_field'] = '<p>'.$lang_common['Username'].': '.pun_htmlspecialchars($user['username']).'</p>'."\n";
 
-        if ($pun_config['o_regs_verify'] == '1') {
+        if ($feather_config['o_regs_verify'] == '1') {
             $user_disp['email_field'] = '<p>'.sprintf($lang_profile['Email info'], pun_htmlspecialchars($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.$lang_profile['Change email'].'</a>').'</p>'."\n";
         } else {
             $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
@@ -1006,18 +1006,18 @@ function edit_essentials($id, $user)
     $user_disp['posts_field'] = '';
     $posts_actions = array();
 
-    if ($pun_user['g_id'] == PUN_ADMIN) {
+    if ($feather_user['g_id'] == PUN_ADMIN) {
         $user_disp['posts_field'] .= '<label>'.$lang_common['Posts'].'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-    } elseif ($pun_config['o_show_post_count'] == '1' || $pun_user['is_admmod']) {
+    } elseif ($feather_config['o_show_post_count'] == '1' || $feather_user['is_admmod']) {
         $posts_actions[] = sprintf($lang_profile['Posts info'], forum_number_format($user['num_posts']));
     }
 
-    if ($pun_user['g_search'] == '1' || $pun_user['g_id'] == PUN_ADMIN) {
-		$posts_actions[] = '<a href="'.get_link('search/show/user_topics/user/'.$id.'/').'">'.$lang_profile['Show topics'].'</a>';
-        $posts_actions[] = '<a href="'.get_link('search/show/user_posts/user/'.$id.'/').'">'.$lang_profile['Show posts'].'</a>';
+    if ($feather_user['g_search'] == '1' || $feather_user['g_id'] == PUN_ADMIN) {
+        $posts_actions[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.$lang_profile['Show topics'].'</a>';
+        $posts_actions[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.$lang_profile['Show posts'].'</a>';
 
-        if ($pun_config['o_topic_subscriptions'] == '1') {
-			$posts_actions[] = '<a href="'.get_link('search/show/subscriptions/user/'.$id.'/').'">'.$lang_profile['Show subscriptions'].'</a>';
+        if ($feather_config['o_topic_subscriptions'] == '1') {
+            $posts_actions[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$id).'">'.$lang_profile['Show subscriptions'].'</a>';
         }
     }
 
@@ -1028,12 +1028,12 @@ function edit_essentials($id, $user)
 
 function get_group_list($user)
 {
-    global $db, $pun_config;
+    global $db, $feather_config;
     
     $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.PUN_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
     while ($cur_group = $db->fetch_assoc($result)) {
-        if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $pun_config['o_default_user_group'] && $user['g_id'] == '')) {
+        if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $feather_config['o_default_user_group'] && $user['g_id'] == '')) {
             echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
@@ -1075,15 +1075,14 @@ function get_forum_list($id)
 //
 function generate_profile_menu($page = '', $id)
 {
-    global $feather, $lang_profile, $pun_config, $pun_user;
+    global $feather, $lang_profile, $feather_config, $feather_user;
 
-	$feather->render('profile/menu.php', array(
-		'lang_profile' => $lang_profile,
-		'id' => $id,
-		'pun_config' => $pun_config,
-		'pun_user' => $pun_user,
-		'page' => $page,
-		)
-	);
-
+    $feather->render('profile/menu.php', array(
+        'lang_profile' => $lang_profile,
+        'id' => $id,
+        'feather_config' => $feather_config,
+        'feather_user' => $feather_user,
+        'page' => $page,
+        )
+    );
 }

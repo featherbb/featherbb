@@ -32,7 +32,7 @@
  */
 namespace Slim\Middleware;
 
- /**
+/**
   * HTTP Method Override
   *
   * This is middleware for a Slim application that allows traditional

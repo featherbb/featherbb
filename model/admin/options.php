@@ -9,8 +9,8 @@
  
 function update_options($feather)
 {
-	global $db, $lang_admin_options, $lang_common, $pun_config;
-	
+    global $db, $lang_admin_options, $lang_common, $feather_config;
+    
     confirm_referrer(get_link_r('admin/options/'), $lang_admin_options['Bad HTTP Referer message']);
 
     $form = array(
@@ -112,7 +112,7 @@ function update_options($feather)
     }
 
 
-    require PUN_ROOT.'include/email.php';
+    require FEATHER_ROOT.'include/email.php';
 
     if (!is_valid_email($form['admin_email'])) {
         message($lang_admin_options['Invalid e-mail message']);
@@ -136,9 +136,9 @@ function update_options($feather)
     }
 
     // Change or enter a SMTP password
-    if (!empty($feather->request->post('form_smtp_change_pass'))) {
-        $smtp_pass1 = !empty($feather->request->post('form_smtp_pass1')) ? pun_trim($feather->request->post('form_smtp_pass1')) : '';
-        $smtp_pass2 = !empty($feather->request->post('form_smtp_pass2')) ? pun_trim($feather->request->post('form_smtp_pass2')) : '';
+    if ($feather->request->post('form_smtp_change_pass')) {
+        $smtp_pass1 = $feather->request->post('form_smtp_pass1') ? pun_trim($feather->request->post('form_smtp_pass1')) : '';
+        $smtp_pass2 = $feather->request->post('form_smtp_pass2') ? pun_trim($feather->request->post('form_smtp_pass2')) : '';
 
         if ($smtp_pass1 == $smtp_pass2) {
             $form['smtp_pass'] = $smtp_pass1;
@@ -203,7 +203,7 @@ function update_options($feather)
 
     foreach ($form as $key => $input) {
         // Only update values that have changed
-        if (array_key_exists('o_'.$key, $pun_config) && $pun_config['o_'.$key] != $input) {
+        if (array_key_exists('o_'.$key, $feather_config) && $feather_config['o_'.$key] != $input) {
             if ($input != '' || is_int($input)) {
                 $value = '\''.$db->escape($input).'\'';
             } else {
@@ -216,7 +216,7 @@ function update_options($feather)
 
     // Regenerate the config cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_config_cache();
@@ -227,26 +227,26 @@ function update_options($feather)
 
 function get_styles()
 {
-    global $pun_config;
+    global $feather_config;
 
-	$styles = forum_list_styles();
+    $styles = forum_list_styles();
 
-	foreach ($styles as $temp) {
-		if ($pun_config['o_default_style'] == $temp) {
-			echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
-		} else {
-			echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
-		}
-	}
+    foreach ($styles as $temp) {
+        if ($feather_config['o_default_style'] == $temp) {
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+        } else {
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+        }
+    }
 }
 
 function get_times()
 {
-    global $pun_config, $lang_admin_options;
+    global $feather_config, $lang_admin_options;
 
-	$times = array(5, 15, 30, 60);
+    $times = array(5, 15, 30, 60);
 
-	foreach ($times as $time) {
-		echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($pun_config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf($lang_admin_options['Minutes'], $time).'</option>'."\n";
-	}
+    foreach ($times as $time) {
+        echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($feather_config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf($lang_admin_options['Minutes'], $time).'</option>'."\n";
+    }
 }

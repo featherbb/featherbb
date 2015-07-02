@@ -17,7 +17,7 @@ if (!defined('PUN')) {
 	<div class="hd"><h2><span><?php echo $lang_register['Forum rules'] ?></span></h2></div>
 	<div class="box">
 		<div id="rules-block" class="inbox">
-			<div class="usercontent"><?php echo $pun_config['o_rules_message'] ?></div>
+			<div class="usercontent"><?php echo $feather_config['o_rules_message'] ?></div>
 		</div>
 	</div>
 </div>

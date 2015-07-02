@@ -14,7 +14,7 @@ define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2);
 define('UPDATE_TO_PARSER_REVISION', 2);
 
-define('MIN_PHP_VERSION', '4.4.0');
+define('MIN_PHP_VERSION', '5.3.0');
 define('MIN_MYSQL_VERSION', '4.1.2');
 define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);
@@ -36,11 +36,16 @@ if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_
     exit('You are running PHP version '.PHP_VERSION.'. FeatherBB '.UPDATE_TO.' requires at least PHP '.MIN_PHP_VERSION.' to run properly. You must upgrade your PHP installation before you can continue.');
 }
 
-define('PUN_ROOT', dirname(__FILE__).'/');
+define('FEATHER_ROOT', dirname(__FILE__).'/');
+
+// Move config file if needed
+if (file_exists(FEATHER_ROOT.'config.php')) {
+    rename(FEATHER_ROOT.'config.php', FEATHER_ROOT.'include/config.php');
+}
 
 // Attempt to load the configuration file config.php
-if (file_exists(PUN_ROOT.'config.php')) {
-    include PUN_ROOT.'config.php';
+if (file_exists(FEATHER_ROOT.'include/config.php')) {
+    include FEATHER_ROOT.'include/config.php';
 }
 
 // If we have the 1.3-legacy constant defined, define the proper 1.4 constant so we don't get an incorrect "need to install" message
@@ -60,10 +65,10 @@ if (!defined('PUN_DEBUG')) {
 }
 
 // Load the functions script
-require PUN_ROOT.'include/functions.php';
+require FEATHER_ROOT.'include/functions.php';
 
 // Load UTF-8 functions
-require PUN_ROOT.'include/utf8/utf8.php';
+require FEATHER_ROOT.'include/utf8/utf8.php';
 
 // Strip out "bad" UTF-8 characters
 forum_remove_bad_characters();
@@ -102,7 +107,7 @@ if (empty($cookie_name)) {
 
 // If the cache directory is not specified, we use the default setting
 if (!defined('FORUM_CACHE_DIR')) {
-    define('FORUM_CACHE_DIR', PUN_ROOT.'cache/');
+    define('FORUM_CACHE_DIR', FEATHER_ROOT.'cache/');
 }
 
 // Turn off PHP time limit
@@ -116,7 +121,7 @@ define('PUN_GUEST', 3);
 define('PUN_MEMBER', 4);
 
 // Load DB abstraction layer and try to connect
-require PUN_ROOT.'include/dblayer/common_db.php';
+require FEATHER_ROOT.'include/dblayer/common_db.php';
 
 // Check what the default character set is - since 1.2 didn't specify any we will use whatever the default was (usually latin1)
 $old_connection_charset = defined('FORUM_DEFAULT_CHARSET') ? FORUM_DEFAULT_CHARSET : $db->get_names();
@@ -127,21 +132,21 @@ $db->set_names('utf8');
 // Get the forum config
 $result = $db->query('SELECT * FROM '.$db->prefix.'config') or error('Unable to fetch config.', __FILE__, __LINE__, $db->error());
 while ($cur_config_item = $db->fetch_row($result)) {
-    $pun_config[$cur_config_item[0]] = $cur_config_item[1];
+    $feather_config[$cur_config_item[0]] = $cur_config_item[1];
 }
 
 // Load language file
-$default_lang = $pun_config['o_default_lang'];
+$default_lang = $feather_config['o_default_lang'];
 
-if (!file_exists(PUN_ROOT.'lang/'.$default_lang.'/update.php')) {
+if (!file_exists(FEATHER_ROOT.'lang/'.$default_lang.'/update.php')) {
     $default_lang = 'English';
 }
 
-require PUN_ROOT.'lang/'.$default_lang.'/common.php';
-require PUN_ROOT.'lang/'.$default_lang.'/update.php';
+require FEATHER_ROOT.'lang/'.$default_lang.'/common.php';
+require FEATHER_ROOT.'lang/'.$default_lang.'/update.php';
 
 // Check current version
-$cur_version = $pun_config['o_cur_version'];
+$cur_version = $feather_config['o_cur_version'];
 
 if (version_compare($cur_version, '1.2', '<')) {
     error(sprintf($lang_update['Version mismatch error'], $db_name));
@@ -172,15 +177,15 @@ switch ($db_type) {
 }
 
 // Check the database, search index and parser revision and the current version
-if (isset($pun_config['o_database_revision']) && $pun_config['o_database_revision'] >= UPDATE_TO_DB_REVISION &&
-        isset($pun_config['o_searchindex_revision']) && $pun_config['o_searchindex_revision'] >= UPDATE_TO_SI_REVISION &&
-        isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION &&
-        version_compare($pun_config['o_cur_version'], UPDATE_TO, '>=')) {
+if (isset($feather_config['o_database_revision']) && $feather_config['o_database_revision'] >= UPDATE_TO_DB_REVISION &&
+        isset($feather_config['o_searchindex_revision']) && $feather_config['o_searchindex_revision'] >= UPDATE_TO_SI_REVISION &&
+        isset($feather_config['o_parser_revision']) && $feather_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION &&
+        version_compare($feather_config['o_cur_version'], UPDATE_TO, '>=')) {
     error($lang_update['No update error']);
 }
 
-$default_style = $pun_config['o_default_style'];
-if (!file_exists(PUN_ROOT.'style/'.$default_style.'.css')) {
+$default_style = $feather_config['o_default_style'];
+if (!file_exists(FEATHER_ROOT.'style/'.$default_style.'.css')) {
     $default_style = 'FeatherBB';
 }
 
@@ -476,7 +481,7 @@ if (empty($stage)) {
         // Deal with newlines, tabs and multiple spaces
         $pattern = array("\t", '  ', '  ');
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
-        $message = str_replace($pattern, $replace, $pun_config['o_maintenance_message']);
+        $message = str_replace($pattern, $replace, $feather_config['o_maintenance_message']);
 
         ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $lang_common['lang_identifier'] ?>" lang="<?php echo $lang_common['lang_identifier'] ?>" dir="<?php echo $lang_common['lang_direction'] ?>">
@@ -554,7 +559,7 @@ if (empty($stage)) {
 						<p><?php echo $lang_update['Maintenance message info'] ?></p>
 						<div class="txtarea">
 							<label class="required"><strong><?php echo $lang_update['Maintenance message'] ?> <span><?php echo $lang_update['Required'] ?></span></strong><br />
-							<textarea name="req_maintenance_message" rows="4" cols="65"><?php echo pun_htmlspecialchars($pun_config['o_maintenance_message']) ?></textarea><br /></label>
+							<textarea name="req_maintenance_message" rows="4" cols="65"><?php echo pun_htmlspecialchars($feather_config['o_maintenance_message']) ?></textarea><br /></label>
 						</div>
 					</div>
 				</fieldset>
@@ -667,7 +672,7 @@ if (isset($_POST['req_db_pass'])) {
             $maintenance_message = pun_trim(pun_linebreaks($_POST['req_maintenance_message']));
         } else {
             // Load the admin_options.php language file
-            require PUN_ROOT.'lang/'.$default_lang.'/admin_options.php';
+            require FEATHER_ROOT.'lang/'.$default_lang.'/admin_options.php';
 
             $maintenance_message = $lang_admin_options['Default maintenance message'];
         }
@@ -676,7 +681,7 @@ if (isset($_POST['req_db_pass'])) {
 
         // Regenerate the config cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require PUN_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'include/cache.php';
         }
 
         generate_config_cache();
@@ -701,7 +706,7 @@ switch ($stage) {
         $query_str = '?stage=preparse_posts';
 
         // If we don't need to update the database, skip this stage
-        if (isset($pun_config['o_database_revision']) && $pun_config['o_database_revision'] >= UPDATE_TO_DB_REVISION) {
+        if (isset($feather_config['o_database_revision']) && $feather_config['o_database_revision'] >= UPDATE_TO_DB_REVISION) {
             break;
         }
 
@@ -742,68 +747,68 @@ switch ($stage) {
         $db->drop_field('groups', 'g_edit_subjects_interval');
 
         // Add database revision number
-        if (!array_key_exists('o_database_revision', $pun_config)) {
+        if (!array_key_exists('o_database_revision', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_database_revision\', \'0\')') or error('Unable to insert config value \'o_database_revision\'', __FILE__, __LINE__, $db->error());
         }
 
         // Add search index revision number
-        if (!array_key_exists('o_searchindex_revision', $pun_config)) {
+        if (!array_key_exists('o_searchindex_revision', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_searchindex_revision\', \'0\')') or error('Unable to insert config value \'o_searchindex_revision\'', __FILE__, __LINE__, $db->error());
         }
 
         // Add parser revision number
-        if (!array_key_exists('o_parser_revision', $pun_config)) {
+        if (!array_key_exists('o_parser_revision', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_parser_revision\', \'0\')') or error('Unable to insert config value \'o_parser_revision\'', __FILE__, __LINE__, $db->error());
         }
 
         // Add default email setting option
-        if (!array_key_exists('o_default_email_setting', $pun_config)) {
+        if (!array_key_exists('o_default_email_setting', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_default_email_setting\', \'1\')') or error('Unable to insert config value \'o_default_email_setting\'', __FILE__, __LINE__, $db->error());
         }
 
         // Make sure we have o_additional_navlinks (was added in 1.2.1)
-        if (!array_key_exists('o_additional_navlinks', $pun_config)) {
+        if (!array_key_exists('o_additional_navlinks', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_additional_navlinks\', \'\')') or error('Unable to insert config value \'o_additional_navlinks\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_topic_views
-        if (!array_key_exists('o_topic_views', $pun_config)) {
+        if (!array_key_exists('o_topic_views', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_topic_views\', \'1\')') or error('Unable to insert config value \'o_topic_views\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_signatures
-        if (!array_key_exists('o_signatures', $pun_config)) {
+        if (!array_key_exists('o_signatures', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_signatures\', \'1\')') or error('Unable to insert config value \'o_signatures\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_smtp_ssl
-        if (!array_key_exists('o_smtp_ssl', $pun_config)) {
+        if (!array_key_exists('o_smtp_ssl', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_smtp_ssl\', \'0\')') or error('Unable to insert config value \'o_smtp_ssl\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_default_dst
-        if (!array_key_exists('o_default_dst', $pun_config)) {
+        if (!array_key_exists('o_default_dst', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_default_dst\', \'0\')') or error('Unable to insert config value \'o_default_dst\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_quote_depth
-        if (!array_key_exists('o_quote_depth', $pun_config)) {
+        if (!array_key_exists('o_quote_depth', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_quote_depth\', \'3\')') or error('Unable to insert config value \'o_quote_depth\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_feed_type
-        if (!array_key_exists('o_feed_type', $pun_config)) {
+        if (!array_key_exists('o_feed_type', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_feed_type\', \'2\')') or error('Unable to insert config value \'o_feed_type\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert new config option o_feed_ttl
-        if (!array_key_exists('o_feed_ttl', $pun_config)) {
+        if (!array_key_exists('o_feed_ttl', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_feed_ttl\', \'0\')') or error('Unable to insert config value \'o_feed_ttl\'', __FILE__, __LINE__, $db->error());
         }
 
         // Insert config option o_base_url which was removed in 1.3
-        if (!array_key_exists('o_base_url', $pun_config)) {
-            // If it isn't in $pun_config['o_base_url'] it should be in $base_url, but just in-case it isn't we can make a guess at it
+        if (!array_key_exists('o_base_url', $feather_config)) {
+            // If it isn't in $feather_config['o_base_url'] it should be in $base_url, but just in-case it isn't we can make a guess at it
             if (!isset($base_url)) {
                 // Make an educated guess regarding base_url
                 $base_url  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';    // protocol
@@ -842,7 +847,7 @@ switch ($stage) {
                 $mod_gid = $db->insert_id();
             }
 
-            $member_gid = $pun_config['o_default_user_group'];
+            $member_gid = $feather_config['o_default_user_group'];
 
             // move the mod group to a temp place
             $db->query('UPDATE '.$db->prefix.'groups SET g_id = '.$temp_id.' WHERE g_id = '.$mod_gid) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
@@ -898,12 +903,12 @@ switch ($stage) {
         }
 
         // Server time zone is now simply the default time zone
-        if (!array_key_exists('o_default_timezone', $pun_config)) {
+        if (!array_key_exists('o_default_timezone', $feather_config)) {
             $db->query('UPDATE '.$db->prefix.'config SET conf_name = \'o_default_timezone\' WHERE conf_name = \'o_server_timezone\'') or error('Unable to update time zone config', __FILE__, __LINE__, $db->error());
         }
 
         // Increase visit timeout to 30 minutes (only if it hasn't been changed from the default)
-        if (!array_key_exists('o_database_revision', $pun_config) && $pun_config['o_timeout_visit'] == '600') {
+        if (!array_key_exists('o_database_revision', $feather_config) && $feather_config['o_timeout_visit'] == '600') {
             $db->query('UPDATE '.$db->prefix.'config SET conf_value = \'1800\' WHERE conf_name = \'o_timeout_visit\'') or error('Unable to update visit timeout config', __FILE__, __LINE__, $db->error());
         }
 
@@ -920,39 +925,39 @@ switch ($stage) {
         }
 
         // Replace obsolete p_mod_edit_users config setting with new per-group permission
-        if (array_key_exists('p_mod_edit_users', $pun_config)) {
+        if (array_key_exists('p_mod_edit_users', $feather_config)) {
             $db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name = \'p_mod_edit_users\'') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 
             $db->add_field('groups', 'g_mod_edit_users', 'TINYINT(1)', false, 0, 'g_moderator') or error('Unable to add g_mod_edit_users field', __FILE__, __LINE__, $db->error());
 
-            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_edit_users = '.$pun_config['p_mod_edit_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_edit_users = '.$feather_config['p_mod_edit_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
         }
 
         // Replace obsolete p_mod_rename_users config setting with new per-group permission
-        if (array_key_exists('p_mod_rename_users', $pun_config)) {
+        if (array_key_exists('p_mod_rename_users', $feather_config)) {
             $db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name = \'p_mod_rename_users\'') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 
             $db->add_field('groups', 'g_mod_rename_users', 'TINYINT(1)', false, 0, 'g_mod_edit_users') or error('Unable to add g_mod_rename_users field', __FILE__, __LINE__, $db->error());
 
-            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_rename_users = '.$pun_config['p_mod_rename_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_rename_users = '.$feather_config['p_mod_rename_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
         }
 
         // Replace obsolete p_mod_change_passwords config setting with new per-group permission
-        if (array_key_exists('p_mod_change_passwords', $pun_config)) {
+        if (array_key_exists('p_mod_change_passwords', $feather_config)) {
             $db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name = \'p_mod_change_passwords\'') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 
             $db->add_field('groups', 'g_mod_change_passwords', 'TINYINT(1)', false, 0, 'g_mod_rename_users') or error('Unable to add g_mod_change_passwords field', __FILE__, __LINE__, $db->error());
 
-            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_change_passwords = '.$pun_config['p_mod_change_passwords'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_change_passwords = '.$feather_config['p_mod_change_passwords'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
         }
 
         // Replace obsolete p_mod_ban_users config setting with new per-group permission
-        if (array_key_exists('p_mod_ban_users', $pun_config)) {
+        if (array_key_exists('p_mod_ban_users', $feather_config)) {
             $db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name = \'p_mod_ban_users\'') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 
             $db->add_field('groups', 'g_mod_ban_users', 'TINYINT(1)', false, 0, 'g_mod_change_passwords') or error('Unable to add g_mod_ban_users field', __FILE__, __LINE__, $db->error());
 
-            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_ban_users = '.$pun_config['p_mod_ban_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+            $db->query('UPDATE '.$db->prefix.'groups SET g_mod_ban_users = '.$feather_config['p_mod_ban_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
         }
 
         // We need to add a unique index to avoid users having multiple rows in the online table
@@ -1178,17 +1183,17 @@ switch ($stage) {
         }
 
         // Insert new config option o_forum_subscriptions
-        if (!array_key_exists('o_forum_subscriptions', $pun_config)) {
+        if (!array_key_exists('o_forum_subscriptions', $feather_config)) {
             $db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_forum_subscriptions\', \'1\')') or error('Unable to insert config value \'o_forum_subscriptions\'', __FILE__, __LINE__, $db->error());
         }
 
         // Rename config option o_subscriptions to o_topic_subscriptions
-        if (!array_key_exists('o_topic_subscriptions', $pun_config)) {
+        if (!array_key_exists('o_topic_subscriptions', $feather_config)) {
             $db->query('UPDATE '.$db->prefix.'config SET conf_name=\'o_topic_subscriptions\' WHERE conf_name=\'o_subscriptions\'') or error('Unable to rename config value \'o_subscriptions\'', __FILE__, __LINE__, $db->error());
         }
 
         // Change the default style if the old doesn't exist anymore
-        if ($pun_config['o_default_style'] != $default_style) {
+        if ($feather_config['o_default_style'] != $default_style) {
             $db->query('UPDATE '.$db->prefix.'config SET conf_value = \''.$db->escape($default_style).'\' WHERE conf_name = \'o_default_style\'') or error('Unable to update default style config', __FILE__, __LINE__, $db->error());
         }
 
@@ -1198,7 +1203,7 @@ switch ($stage) {
         }
 
         // Remove config option o_ranks
-        if (array_key_exists('o_ranks', $pun_config)) {
+        if (array_key_exists('o_ranks', $feather_config)) {
             $db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_ranks\'') or error('Unable to remove config value \'o_ranks\'', __FILE__, __LINE__, $db->error());
         }
 
@@ -1554,7 +1559,7 @@ switch ($stage) {
         if (isset($_POST['form_sent'])) {
             $errors = array();
 
-            require PUN_ROOT.'include/email.php';
+            require FEATHER_ROOT.'include/email.php';
 
             foreach ($_SESSION['dupe_users'] as $id => $cur_user) {
                 $errors[$id] = array();
@@ -1625,12 +1630,12 @@ switch ($stage) {
                     }
 
                     // Email the user alerting them of the change
-                    if (file_exists(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl')) {
-                        $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'));
-                    } elseif (file_exists(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/mail_templates/rename.tpl')) {
-                        $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/mail_templates/rename.tpl'));
+                    if (file_exists(FEATHER_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl')) {
+                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'));
+                    } elseif (file_exists(FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/mail_templates/rename.tpl')) {
+                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/mail_templates/rename.tpl'));
                     } else {
-                        $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/English/mail_templates/rename.tpl'));
+                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/English/mail_templates/rename.tpl'));
                     }
 
                     // The first row contains the subject
@@ -1638,11 +1643,11 @@ switch ($stage) {
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-                    $mail_subject = str_replace('<board_title>', $pun_config['o_board_title'], $mail_subject);
+                    $mail_subject = str_replace('<board_title>', $feather_config['o_board_title'], $mail_subject);
                     $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
                     $mail_message = str_replace('<old_username>', $old_username, $mail_message);
                     $mail_message = str_replace('<new_username>', $username, $mail_message);
-                    $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
                     pun_mail($cur_user['email'], $mail_subject, $mail_message);
 
@@ -1737,11 +1742,11 @@ foreach ($errors[$id] as $cur_error) {
         $query_str = '?stage=preparse_sigs';
 
         // If we don't need to parse the posts, skip this stage
-        if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION) {
+        if (isset($feather_config['o_parser_revision']) && $feather_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION) {
             break;
         }
 
-        require PUN_ROOT.'include/parser.php';
+        require FEATHER_ROOT.'include/parser.php';
 
         // Fetch posts to process this cycle
         $result = $db->query('SELECT id, message FROM '.$db->prefix.'posts WHERE id > '.$start_at.' ORDER BY id ASC LIMIT '.PER_PAGE) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
@@ -1772,11 +1777,11 @@ foreach ($errors[$id] as $cur_error) {
         $query_str = '?stage=rebuild_idx';
 
         // If we don't need to parse the sigs, skip this stage
-        if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION) {
+        if (isset($feather_config['o_parser_revision']) && $feather_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION) {
             break;
         }
 
-        require PUN_ROOT.'include/parser.php';
+        require FEATHER_ROOT.'include/parser.php';
 
         // Fetch users to process this cycle
         $result = $db->query('SELECT id, signature FROM '.$db->prefix.'users WHERE id > '.$start_at.' ORDER BY id ASC LIMIT '.PER_PAGE) or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
@@ -1806,7 +1811,7 @@ foreach ($errors[$id] as $cur_error) {
         $query_str = '?stage=finish';
 
         // If we don't need to update the search index, skip this stage
-        if (isset($pun_config['o_searchindex_revision']) && $pun_config['o_searchindex_revision'] >= UPDATE_TO_SI_REVISION) {
+        if (isset($feather_config['o_searchindex_revision']) && $feather_config['o_searchindex_revision'] >= UPDATE_TO_SI_REVISION) {
             break;
         }
 
@@ -1831,7 +1836,7 @@ foreach ($errors[$id] as $cur_error) {
             }
         }
 
-        require PUN_ROOT.'include/search_idx.php';
+        require FEATHER_ROOT.'include/search_idx.php';
 
         // Fetch posts to process this cycle
         $result = $db->query('SELECT p.id, p.message, t.subject, t.first_post_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id WHERE p.id > '.$start_at.' ORDER BY p.id ASC LIMIT '.PER_PAGE) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
@@ -1876,12 +1881,12 @@ foreach ($errors[$id] as $cur_error) {
         $db->query('UPDATE '.$db->prefix.'config SET conf_value = \''.UPDATE_TO_PARSER_REVISION.'\' WHERE conf_name = \'o_parser_revision\'') or error('Unable to update parser revision number', __FILE__, __LINE__, $db->error());
 
         // Check the default language still exists!
-        if (!file_exists(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/common.php')) {
+        if (!file_exists(FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/common.php')) {
             $db->query('UPDATE '.$db->prefix.'config SET conf_value = \'English\' WHERE conf_name = \'o_default_lang\'') or error('Unable to update default language', __FILE__, __LINE__, $db->error());
         }
 
         // Check the default style still exists!
-        if (!file_exists(PUN_ROOT.'style/'.$pun_config['o_default_style'].'.css')) {
+        if (!file_exists(FEATHER_ROOT.'style/'.$feather_config['o_default_style'].'.css')) {
             $db->query('UPDATE '.$db->prefix.'config SET conf_value = \'FeatherBB\' WHERE conf_name = \'o_default_style\'') or error('Unable to update default style', __FILE__, __LINE__, $db->error());
         }
 

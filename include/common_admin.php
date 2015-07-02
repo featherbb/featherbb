@@ -13,38 +13,38 @@ if (!defined('PUN')) {
 }
 
 // Make sure we have a usable language pack for admin.
-if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/admin_common.php')) {
-    $admin_language = $pun_user['language'].'/admin/';
-} elseif (file_exists(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/admin_common.php')) {
-    $admin_language = $pun_config['o_default_lang'].'/admin/';
+if (file_exists(FEATHER_ROOT.'lang/'.$feather_user['language'].'/admin_common.php')) {
+    $admin_language = $feather_user['language'].'/admin/';
+} elseif (file_exists(FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/admin_common.php')) {
+    $admin_language = $feather_config['o_default_lang'].'/admin/';
 } else {
     $admin_language = 'English/admin/';
 }
 
 // Attempt to load the admin_common language file
-require PUN_ROOT.'lang/'.$admin_language.'/common.php';
+require FEATHER_ROOT.'lang/'.$admin_language.'/common.php';
 
 //
 // Display the admin navigation menu
 //
 function generate_admin_menu($page = '')
 {
-    global $feather, $pun_config, $pun_user, $lang_admin_common;
+    global $feather, $feather_config, $feather_user, $lang_admin_common;
 
-    $is_admin = $pun_user['g_id'] == PUN_ADMIN ? true : false;
-	
+    $is_admin = $feather_user['g_id'] == PUN_ADMIN ? true : false;
+    
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);
 
-	$feather->render('admin/menu.php', array(
-		'page'	=>	$page,
-		'is_admin'	=>	$is_admin,
-		'lang_admin_common'	=>	$lang_admin_common,
-		'pun_config'	=>	$pun_config,
-		'pun_user'	=>	$pun_user,
-		'plugins'	=>	$plugins,
-		)
-	);
+    $feather->render('admin/menu.php', array(
+        'page'    =>    $page,
+        'is_admin'    =>    $is_admin,
+        'lang_admin_common'    =>    $lang_admin_common,
+        'feather_config'    =>    $feather_config,
+        'feather_user'    =>    $feather_user,
+        'plugins'    =>    $plugins,
+        )
+    );
 }
 
 //
@@ -52,24 +52,25 @@ function generate_admin_menu($page = '')
 //
 function forum_list_plugins($is_admin)
 {
-	$plugins = array();
+    $plugins = array();
 
-	$d = dir(PUN_ROOT.'plugins');
-	if (!$d) return $plugins; 
+    $d = dir(FEATHER_ROOT.'plugins');
+    if (!$d) {
+        return $plugins;
+    }
 
-	while (($entry = $d->read()) !== false)
-	{
-		if (!is_dir(PUN_ROOT.'plugins/'.$entry) && preg_match('%^AM?P_(\w+)\.php$%i', $entry))
-		{
-			$prefix = substr($entry, 0, strpos($entry, '_'));
+    while (($entry = $d->read()) !== false) {
+        if (!is_dir(FEATHER_ROOT.'plugins/'.$entry) && preg_match('%^AM?P_(\w+)\.php$%i', $entry)) {
+            $prefix = substr($entry, 0, strpos($entry, '_'));
 
-			if ($prefix == 'AMP' || ($is_admin && $prefix == 'AP'))
-				$plugins[$entry] = substr($entry, strlen($prefix) + 1, -4);
-		}
-	}
-	$d->close();
+            if ($prefix == 'AMP' || ($is_admin && $prefix == 'AP')) {
+                $plugins[$entry] = substr($entry, strlen($prefix) + 1, -4);
+            }
+        }
+    }
+    $d->close();
 
-	natcasesort($plugins);
+    natcasesort($plugins);
 
-	return $plugins;
+    return $plugins;
 }

@@ -10,12 +10,14 @@
  
 // Helper function returns array of smiley image files
 //   stored in the img/smilies directory.
-function get_smiley_files() {
-	$imgfiles = array();
-	$filelist = scandir(PUN_ROOT.'img/smilies');
-	foreach($filelist as $file) {
-		if (preg_match('/\.(?:png|gif|jpe?g)$/', $file))
-			$imgfiles[] = $file;
-	}
-	return $imgfiles;
+function get_smiley_files()
+{
+    $imgfiles = array();
+    $filelist = scandir(FEATHER_ROOT.'img/smilies');
+    foreach ($filelist as $file) {
+        if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {
+            $imgfiles[] = $file;
+        }
+    }
+    return $imgfiles;
 }

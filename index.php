@@ -12,18 +12,20 @@
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
-// Load FeatherBB
-define('PUN_ROOT', dirname(__FILE__).'/');
-require PUN_ROOT.'include/common.php';
+// Instantiate Slim
+$feather = new \Slim\Slim();
 
-// Instantiate Slim and specify where to load the views 
-$feather = new \Slim\Slim([
-    'templates.path' => get_path_view(),
-	'debug' => true, // As long as we're developing FeatherBB
-]);
+// Load FeatherBB
+define('FEATHER_ROOT', dirname(__FILE__).'/');
+require FEATHER_ROOT.'include/common.php';
 
 // Load the routes
-require PUN_ROOT.'include/routes.php';
+require FEATHER_ROOT.'include/routes.php';
+
+// Specify where to load the views
+$feather->config('templates.path', get_path_view());
+
+$feather->config('debug', true); // As long as we're developing FeatherBB
 
 // Run it, baby!
 $feather->run();

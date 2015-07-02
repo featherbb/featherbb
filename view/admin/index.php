@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 	<div class="block">
@@ -44,7 +45,7 @@ if (!defined('PUN'))
 				<dl>
 					<dt><?php echo $lang_admin_index['FeatherBB version label'] ?></dt>
 					<dd>
-						<?php printf($lang_admin_index['FeatherBB version data']."\n", $pun_config['o_cur_version'], '<a href="'.get_link('admin/action/check_upgrade/').'">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
+						<?php printf($lang_admin_index['FeatherBB version data']."\n", $feather_config['o_cur_version'], '<a href="'.get_link('admin/action/check_upgrade/').'">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
 					</dd>
 					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
 					<dd>

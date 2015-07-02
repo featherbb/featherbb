@@ -23,7 +23,7 @@ function add_forum($feather)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();
@@ -40,7 +40,7 @@ function delete_forum($forum_id)
     @set_time_limit(0);
 
     // Load the maintenance.php model file for prune function
-    require PUN_ROOT . 'model/admin/maintenance.php';
+    require FEATHER_ROOT . 'model/admin/maintenance.php';
 
     // Prune all posts and topics
     prune($forum_id, 1, -1);
@@ -66,7 +66,7 @@ function delete_forum($forum_id)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();
@@ -101,7 +101,7 @@ function update_positions($feather)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();
@@ -120,7 +120,7 @@ function update_permissions($feather, $forum_id)
     $forum_desc = pun_linebreaks(pun_trim($feather->request->post('forum_desc')));
     $cat_id = intval($feather->request->post('cat_id'));
     $sort_by = intval($feather->request->post('sort_by'));
-    $redirect_url = !empty($feather->request->post('redirect_url')) ? pun_trim($feather->request->post('redirect_url')) : null;
+    $redirect_url = $feather->request->post('redirect_url') ? pun_trim($feather->request->post('redirect_url')) : null;
 
     if ($forum_name == '') {
         message($lang_admin_forums['Must enter name message']);
@@ -136,12 +136,12 @@ function update_permissions($feather, $forum_id)
     $db->query('UPDATE '.$db->prefix.'forums SET forum_name=\''.$db->escape($forum_name).'\', forum_desc='.$forum_desc.', redirect_url='.$redirect_url.', sort_by='.$sort_by.', cat_id='.$cat_id.' WHERE id='.$forum_id) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 
     // Now let's deal with the permissions
-    if (!empty($feather->request->post('read_forum_old'))) {
+    if ($feather->request->post('read_forum_old')) {
         $result = $db->query('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM '.$db->prefix.'groups WHERE g_id!='.PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
         while ($cur_group = $db->fetch_assoc($result)) {
-            $read_forum_new = ($cur_group['g_read_board'] == '1') ? !empty($feather->request->post('read_forum_new')[$cur_group['g_id']]) ? '1' : '0' : intval($feather->request->post('read_forum_new')[$cur_group['g_id']]);
-            $post_replies_new = !empty($feather->request->post('post_replies_new')[$cur_group['g_id']]) ? '1' : '0';
-            $post_topics_new = !empty($feather->request->post('post_topics_new')[$cur_group['g_id']]) ? '1' : '0';
+            $read_forum_new = ($cur_group['g_read_board'] == '1') ? isset($feather->request->post('read_forum_new')[$cur_group['g_id']]) ? '1' : '0' : intval($feather->request->post('read_forum_new')[$cur_group['g_id']]);
+            $post_replies_new = (isset($feather->request->post('post_replies_new')[$cur_group['g_id']])) ? '1' : '0';
+            $post_topics_new = (isset($feather->request->post('post_topics_new')[$cur_group['g_id']])) ? '1' : '0';
 
             // Check if the new settings differ from the old
             if ($read_forum_new != $feather->request->post('read_forum_old')[$cur_group['g_id']] || $post_replies_new != $feather->request->post('post_replies_old')[$cur_group['g_id']] || $post_topics_new != $feather->request->post('post_topics_old')[$cur_group['g_id']]) {
@@ -161,7 +161,7 @@ function update_permissions($feather, $forum_id)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();
@@ -179,7 +179,7 @@ function revert_permissions($forum_id)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();

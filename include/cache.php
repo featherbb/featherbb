@@ -29,7 +29,7 @@ function generate_config_cache()
     }
 
     // Output config as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_CONFIG_LOADED\', 1);'."\n\n".'$pun_config = '.var_export($output, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'PUN_CONFIG_LOADED\', 1);'."\n\n".'$feather_config = '.var_export($output, true).';'."\n\n".'?>';
     fluxbb_write_cache_file('cache_config.php', $content);
 }
 
@@ -50,7 +50,7 @@ function generate_bans_cache()
     }
 
     // Output ban list as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_BANS_LOADED\', 1);'."\n\n".'$pun_bans = '.var_export($output, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'PUN_BANS_LOADED\', 1);'."\n\n".'$feather_bans = '.var_export($output, true).';'."\n\n".'?>';
     fluxbb_write_cache_file('cache_bans.php', $content);
 }
 
@@ -89,7 +89,7 @@ function generate_quickjump_cache($group_id = false)
             $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$group_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
             if ($db->num_rows($result)) {
-                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="viewforum.php">'."\n\t\t\t\t\t".'<div><label><span><?php echo $lang_common[\'Jump to\'] ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\'viewforum.php?id=\'+this.options[this.selectedIndex].value)">'."\n";
+                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="">'."\n\t\t\t\t\t".'<div><label><span><?php echo $lang_common[\'Jump to\'] ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\''.get_link('forum/').'\'+this.options[this.selectedIndex].value)">'."\n";
 
                 $cur_category = 0;
                 while ($cur_forum = $db->fetch_assoc($result)) {
@@ -105,7 +105,7 @@ function generate_quickjump_cache($group_id = false)
                     }
 
                     $redirect_tag = ($cur_forum['redirect_url'] != '') ? ' &gt;&gt;&gt;' : '';
-                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.pun_htmlspecialchars($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.pun_htmlspecialchars($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
                 }
 
                 $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php echo $lang_common[\'Go\'] ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
@@ -146,14 +146,14 @@ function generate_stopwords_cache()
 {
     $stopwords = array();
 
-    $d = dir(PUN_ROOT.'lang');
+    $d = dir(FEATHER_ROOT.'lang');
     while (($entry = $d->read()) !== false) {
         if ($entry{0} == '.') {
             continue;
         }
 
-        if (is_dir(PUN_ROOT.'lang/'.$entry) && file_exists(PUN_ROOT.'lang/'.$entry.'/stopwords.txt')) {
-            $stopwords = array_merge($stopwords, file(PUN_ROOT.'lang/'.$entry.'/stopwords.txt'));
+        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/stopwords.txt')) {
+            $stopwords = array_merge($stopwords, file(FEATHER_ROOT.'lang/'.$entry.'/stopwords.txt'));
         }
     }
     $d->close();
@@ -184,7 +184,7 @@ function generate_users_info_cache()
     $stats['last_user'] = $db->fetch_assoc($result);
 
     // Output users info as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_USERS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'feather_userS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
     fluxbb_write_cache_file('cache_users_info.php', $content);
 }
 
@@ -205,7 +205,7 @@ function generate_admins_cache()
     }
 
     // Output admin list as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_ADMINS_LOADED\', 1);'."\n\n".'$pun_admins = '.var_export($output, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'PUN_ADMINS_LOADED\', 1);'."\n\n".'$feather_admins = '.var_export($output, true).';'."\n\n".'?>';
     fluxbb_write_cache_file('cache_admins.php', $content);
 }
 

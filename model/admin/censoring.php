@@ -24,7 +24,7 @@ function add_word($feather)
 
     // Regenerate the censoring cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_censoring_cache();
@@ -51,7 +51,7 @@ function update_word($feather)
 
     // Regenerate the censoring cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_censoring_cache();
@@ -71,7 +71,7 @@ function remove_word($feather)
 
     // Regenerate the censoring cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_censoring_cache();

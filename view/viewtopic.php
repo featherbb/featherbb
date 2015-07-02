@@ -40,7 +40,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
+	<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -134,48 +134,49 @@ if ($quickpost) {
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="pid" value="<?php echo pun_htmlspecialchars($pid) ?>" />
 						<input type="hidden" name="page" value="<?php echo pun_htmlspecialchars($p) ?>" />
-<?php if ($pun_config['o_topic_subscriptions'] == '1' && ($pun_user['auto_notify'] == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
+<?php if ($feather_config['o_topic_subscriptions'] == '1' && ($feather_user['auto_notify'] == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
-if ($pun_user['is_guest']) {
-    $email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
-    $email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
-?>
+    if ($feather_user['is_guest']) {
+        $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
+        $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
+        ?>
 						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
-						<label class="conl<?php echo($pun_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+						<label class="conl<?php echo($feather_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php
 
     echo "\t\t\t\t\t\t".'<label class="required"><strong>'.$lang_common['Message'].' <span>'.$lang_common['Required'].'</span></strong><br />';
-} else {
-    echo "\t\t\t\t\t\t".'<label>';
-}
+    } else {
+        echo "\t\t\t\t\t\t".'<label>';
+    }
 
     ?>
 <textarea name="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($pun_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off'];
+							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($pun_config['p_message_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off'];
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off'];
+							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($pun_config['o_smilies'] == '1') ? $lang_common['on'] : $lang_common['off'];
+							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($feather_config['o_smilies'] == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
 						</ul>
 					</div>
 				</fieldset>
 			</div>
-			<?php if($pun_user['is_guest']) : ?>
+			<?php if ($feather_user['is_guest']) : ?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
 					<div class="infldset">
-						<p><?php echo $lang_antispam['Robot info']	?></p>
+						<p><?php echo $lang_antispam['Robot info']    ?></p>
 						<label class="required"><strong><?php
-							 $question = array_keys($lang_antispam_questions);
-							 $qencoded = md5($question[$index_questions]);
-							 echo sprintf($lang_antispam['Robot question'],$question[$index_questions]);?>
+                             $question = array_keys($lang_antispam_questions);
+    $qencoded = md5($question[$index_questions]);
+    echo sprintf($lang_antispam['Robot question'], $question[$index_questions]);
+    ?>
 							 <span><?php echo $lang_common['Required'] ?></span></strong>
 							 <br />
 							 <input	name="captcha" id="captcha"	type="text"	size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /><br />
@@ -183,7 +184,8 @@ if ($pun_user['is_guest']) {
 					</div>
 				</fieldset>
 			</div>
-			<?php endif; ?>
+			<?php endif;
+    ?>
 			<p class="buttons"><input type="submit" name="submit" tabindex="<?php echo $cur_index++ ?>" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_topic['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /></p>
 		</form>
 	</div>

@@ -16,7 +16,7 @@ if (!defined('PUN')) {
 <div class="blockform">
 	<h2><span><?php echo $lang_misc['Split posts'] ?></span></h2>
 	<div class="box">
-		<form id="subject" method="post" action="<?php echo get_link('moderate/topic/'.$id.'/') ?>">
+		<form id="subject" method="post" action="">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_misc['Confirm split legend'] ?></legend>

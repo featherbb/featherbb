@@ -18,7 +18,7 @@ if (!defined('PUN')) {
 	<div class="box">
 		<form id="profile4" method="post" action="<?php echo get_link('user/'.$id.'/section/personality/') ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
-<?php if ($pun_config['o_avatars'] == '1'): ?>				<div class="inform">
+<?php if ($feather_config['o_avatars'] == '1'): ?>				<div class="inform">
 				<fieldset id="profileavatar">
 					<legend><?php echo $lang_profile['Avatar legend'] ?></legend>
 					<div class="infldset">
@@ -28,20 +28,20 @@ if (!defined('PUN')) {
 					</div>
 				</fieldset>
 			</div>
-<?php endif; if ($pun_config['o_signatures'] == '1'): ?>				<div class="inform">
+<?php endif; if ($feather_config['o_signatures'] == '1'): ?>				<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Signature legend'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_profile['Signature info'] ?></p>
 						<div class="txtarea">
-							<label><?php printf($lang_profile['Sig max size'], forum_number_format($pun_config['p_sig_length']), $pun_config['p_sig_lines']) ?><br />
+							<label><?php printf($lang_profile['Sig max size'], forum_number_format($feather_config['p_sig_length']), $feather_config['p_sig_lines']) ?><br />
 							<textarea name="signature" rows="4" cols="65"><?php echo pun_htmlspecialchars($user['signature']) ?></textarea><br /></label>
 						</div>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($pun_config['p_sig_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($pun_config['p_sig_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($pun_config['p_sig_bbcode'] == '1' && $pun_config['p_sig_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($pun_config['o_smilies_sig'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather_config['p_sig_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($feather_config['o_smilies_sig'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 						</ul>
 						<?php echo $signature_preview ?>
 					</div>

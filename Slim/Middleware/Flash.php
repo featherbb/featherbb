@@ -32,7 +32,7 @@
  */
 namespace Slim\Middleware;
 
- /**
+/**
   * Flash
   *
   * This is middleware for a Slim application that enables
@@ -206,7 +206,4 @@ class Flash extends \Slim\Middleware implements \ArrayAccess, \IteratorAggregate
     {
         return count($this->getMessages());
     }
-
-
-
 }

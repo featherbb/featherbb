@@ -14,23 +14,23 @@ define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
-define('MIN_PHP_VERSION', '4.4.0');
+define('MIN_PHP_VERSION', '5.3.0');
 define('MIN_MYSQL_VERSION', '4.1.2');
 define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);
 define('PUN_SEARCH_MAX_WORD', 20);
 
 
-define('PUN_ROOT', dirname(__FILE__).'/');
+define('FEATHER_ROOT', dirname(__FILE__).'/');
 
 // Send the Content-type header in case the web server is setup to send something else
 header('Content-type: text/html; charset=utf-8');
 
 // Load the functions script
-require PUN_ROOT.'include/functions.php';
+require FEATHER_ROOT.'include/functions.php';
 
 // Load UTF-8 functions
-require PUN_ROOT.'include/utf8/utf8.php';
+require FEATHER_ROOT.'include/utf8/utf8.php';
 
 // Strip out "bad" UTF-8 characters
 forum_remove_bad_characters();
@@ -67,21 +67,21 @@ if (get_magic_quotes_gpc()) {
 
 
 // If we've been passed a default language, use it
-$install_lang = isset($_REQUEST['install_lang']) ? pun_trim($_REQUEST['install_lang']) : 'English';
+$install_lang = isset($_POST['install_lang']) ? pun_trim($_POST['install_lang']) : 'English';
 
 // Make sure we got a valid language string
 $install_lang = preg_replace('%[\.\\\/]%', '', $install_lang);
 
 // If such a language pack doesn't exist, or isn't up-to-date enough to translate this page, default to English
-if (!file_exists(PUN_ROOT.'lang/'.$install_lang.'/install.php')) {
+if (!file_exists(FEATHER_ROOT.'lang/'.$install_lang.'/install.php')) {
     $install_lang = 'English';
 }
 
-require PUN_ROOT.'lang/'.$install_lang.'/install.php';
+require FEATHER_ROOT.'lang/'.$install_lang.'/install.php';
 
-if (file_exists(PUN_ROOT.'config.php')) {
+if (file_exists(FEATHER_ROOT.'include/config.php')) {
     // Check to see whether FeatherBB is already installed
-    include PUN_ROOT.'config.php';
+    include FEATHER_ROOT.'include/config.php';
 
     // If we have the 1.3-legacy constant defined, define the proper 1.4 constant so we don't get an incorrect "need to install" message
     if (defined('FORUM')) {
@@ -99,7 +99,7 @@ define('PUN', 1);
 
 // If the cache directory is not specified, we use the default setting
 if (!defined('FORUM_CACHE_DIR')) {
-    define('FORUM_CACHE_DIR', PUN_ROOT.'cache/');
+    define('FORUM_CACHE_DIR', FEATHER_ROOT.'cache/');
 }
 
 // Make sure we are running at least MIN_PHP_VERSION
@@ -198,7 +198,7 @@ if (!isset($_POST['form_sent'])) {
     }
 
     // Validate email
-    require PUN_ROOT.'include/email.php';
+    require FEATHER_ROOT.'include/email.php';
 
     if (!is_valid_email($email)) {
         $alerts[] = $lang_install['Wrong email'];
@@ -225,8 +225,8 @@ if (!forum_is_writable(FORUM_CACHE_DIR)) {
 }
 
 // Check if default avatar directory is writable
-if (!forum_is_writable(PUN_ROOT.'img/avatars/')) {
-    $alerts[] = sprintf($lang_install['Alert avatar'], PUN_ROOT.'img/avatars/');
+if (!forum_is_writable(FEATHER_ROOT.'img/avatars/')) {
+    $alerts[] = sprintf($lang_install['Alert avatar'], FEATHER_ROOT.'img/avatars/');
 }
 
 if (!isset($_POST['form_sent']) || !empty($alerts)) {
@@ -251,9 +251,9 @@ if (!isset($_POST['form_sent']) || !empty($alerts)) {
     if (function_exists('sqlite_open')) {
         $db_extensions[] = array('sqlite', 'SQLite');
     }
-	if (class_exists('SQLite3')) {
-		$db_extensions[] = array('sqlite3', 'SQLite3');
-	}
+    if (class_exists('SQLite3')) {
+        $db_extensions[] = array('sqlite3', 'SQLite3');
+    }
     if (function_exists('pg_connect')) {
         $db_extensions[] = array('pgsql', 'PostgreSQL');
     }
@@ -528,32 +528,32 @@ function process_form(the_form)
     // Load the appropriate DB layer class
     switch ($db_type) {
         case 'mysql':
-            require PUN_ROOT.'include/dblayer/mysql.php';
+            require FEATHER_ROOT.'include/dblayer/mysql.php';
             break;
 
         case 'mysql_innodb':
-            require PUN_ROOT.'include/dblayer/mysql_innodb.php';
+            require FEATHER_ROOT.'include/dblayer/mysql_innodb.php';
             break;
 
         case 'mysqli':
-            require PUN_ROOT.'include/dblayer/mysqli.php';
+            require FEATHER_ROOT.'include/dblayer/mysqli.php';
             break;
 
         case 'mysqli_innodb':
-            require PUN_ROOT.'include/dblayer/mysqli_innodb.php';
+            require FEATHER_ROOT.'include/dblayer/mysqli_innodb.php';
             break;
 
         case 'pgsql':
-            require PUN_ROOT.'include/dblayer/pgsql.php';
+            require FEATHER_ROOT.'include/dblayer/pgsql.php';
             break;
 
         case 'sqlite':
-            require PUN_ROOT.'include/dblayer/sqlite.php';
+            require FEATHER_ROOT.'include/dblayer/sqlite.php';
             break;
-			
-		case 'sqlite3':
-			require PUN_ROOT.'include/dblayer/sqlite3.php';
-			break;
+            
+        case 'sqlite3':
+            require FEATHER_ROOT.'include/dblayer/sqlite3.php';
+            break;
 
         default:
             error(sprintf($lang_install['DB type not valid'], pun_htmlspecialchars($db_type)));
@@ -587,7 +587,7 @@ function process_form(the_form)
             break;
 
         case 'sqlite':
-		case 'sqlite3':
+        case 'sqlite3':
             if (strtolower($db_prefix) == 'sqlite_') {
                 error($lang_install['Prefix reserved']);
             }
@@ -1570,7 +1570,7 @@ function process_form(the_form)
     $avatars = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
 
     // Insert config data
-    $pun_config = array(
+    $feather_config = array(
         'o_cur_version'                => FORUM_VERSION,
         'o_database_revision'        => FORUM_DB_REVISION,
         'o_searchindex_revision'    => FORUM_SI_REVISION,
@@ -1650,7 +1650,7 @@ function process_form(the_form)
         'p_force_guest_email'        => 1
     );
 
-    foreach ($pun_config as $conf_name => $conf_value) {
+    foreach ($feather_config as $conf_name => $conf_value) {
         $db->query('INSERT INTO '.$db_prefix.'config (conf_name, conf_value) VALUES(\''.$conf_name.'\', '.(is_null($conf_value) ? 'NULL' : '\''.$db->escape($conf_value).'\'').')')
             or error('Unable to insert into table '.$db_prefix.'config. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
     }
@@ -1672,7 +1672,7 @@ function process_form(the_form)
         or error('Unable to insert into table '.$db_prefix.'posts. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
     // Index the test post so searching for it works
-    require PUN_ROOT.'include/search_idx.php';
+    require FEATHER_ROOT.'include/search_idx.php';
     update_search_index('post', 1, $message, $subject);
 
     $db->end_transaction();
@@ -1693,8 +1693,8 @@ function process_form(the_form)
 
     // Attempt to write config.php and serve it up for download if writing fails
     $written = false;
-    if (forum_is_writable(PUN_ROOT)) {
-        $fh = @fopen(PUN_ROOT.'config.php', 'wb');
+    if (forum_is_writable(FEATHER_ROOT)) {
+        $fh = @fopen(FEATHER_ROOT.'include/config.php', 'wb');
         if ($fh) {
             fwrite($fh, $config);
             fclose($fh);

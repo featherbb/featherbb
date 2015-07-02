@@ -344,7 +344,7 @@ class Response implements \ArrayAccess, \Countable, \IteratorAggregate
      * @param string $url    The redirect destination
      * @param int    $status The redirect HTTP status code
      */
-    public function redirect ($url, $status = 302)
+    public function redirect($url, $status = 302)
     {
         $this->setStatus($status);
         $this->headers->set('Location', $url);

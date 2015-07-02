@@ -31,7 +31,7 @@ if (!defined('PUN')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/messaging/') ?>"><?php echo $lang_profile['Section messaging'] ?></a></li>
-<?php if ($pun_config['o_avatars'] == '1' || $pun_config['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
+<?php if ($feather_config['o_avatars'] == '1' || $feather_config['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/personality/') ?>"><?php echo $lang_profile['Section personality'] ?></a></li>
@@ -44,7 +44,7 @@ if (!defined('PUN')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/privacy/') ?>"><?php echo $lang_profile['Section privacy'] ?></a></li>
-<?php if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && $pun_user['g_mod_ban_users'] == '1')): ?>					<li<?php if ($page == 'admin') {
+<?php if ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_ban_users'] == '1')): ?>					<li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/admin/') ?>"><?php echo $lang_profile['Section admin'] ?></a></li>

@@ -9,7 +9,7 @@
  
 function login($feather)
 {
-    global $db, $db_type, $pun_config, $lang_login;
+    global $db, $db_type, $feather_config, $lang_login;
     
     $form_username = pun_trim($feather->request->post('req_username'));
     $form_password = pun_trim($feather->request->post('req_password'));
@@ -55,11 +55,11 @@ function login($feather)
 
     // Update the status if this is the first time the user logged in
     if ($cur_user['group_id'] == PUN_UNVERIFIED) {
-        $db->query('UPDATE '.$db->prefix.'users SET group_id='.$pun_config['o_default_user_group'].' WHERE id='.$cur_user['id']) or error('Unable to update user status', __FILE__, __LINE__, $db->error());
+        $db->query('UPDATE '.$db->prefix.'users SET group_id='.$feather_config['o_default_user_group'].' WHERE id='.$cur_user['id']) or error('Unable to update user status', __FILE__, __LINE__, $db->error());
 
         // Regenerate the users info cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require PUN_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'include/cache.php';
         }
 
         generate_users_info_cache();
@@ -68,7 +68,7 @@ function login($feather)
     // Remove this user's guest entry from the online list
     $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 
-    $expire = ($save_pass == '1') ? time() + 1209600 : time() + $pun_config['o_timeout_visit'];
+    $expire = ($save_pass == '1') ? time() + 1209600 : time() + $feather_config['o_timeout_visit'];
     pun_setcookie($cur_user['id'], $form_password_hash, $expire);
 
     // Reset tracked topics
@@ -82,19 +82,19 @@ function login($feather)
 
 function logout($id, $token)
 {
-    global $db, $pun_user, $lang_login;
-	
-    if ($pun_user['is_guest'] || !isset($id) || $id != $pun_user['id'] || !isset($token) || $token != pun_hash($pun_user['id'].pun_hash(get_remote_address()))) {
+    global $db, $feather_user, $lang_login;
+    
+    if ($feather_user['is_guest'] || !isset($id) || $id != $feather_user['id'] || !isset($token) || $token != pun_hash($feather_user['id'].pun_hash(get_remote_address()))) {
         header('Location: index.php');
         exit;
     }
 
     // Remove user from "users online" list
-    $db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$pun_user['id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+    $db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$feather_user['id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 
     // Update last_visit (make sure there's something to update it with)
-    if (isset($pun_user['logged'])) {
-        $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+    if (isset($feather_user['logged'])) {
+        $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$feather_user['logged'].' WHERE id='.$feather_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
     }
 
     pun_setcookie(1, pun_hash(uniqid(rand(), true)), time() + 31536000);
@@ -104,17 +104,17 @@ function logout($id, $token)
 
 function password_forgotten($feather)
 {
-    global $db, $pun_user, $pun_config, $lang_common, $lang_login;
+    global $db, $feather_user, $feather_config, $lang_common, $lang_login;
     
-    if (!$pun_user['is_guest']) {
+    if (!$feather_user['is_guest']) {
         header('Location: index.php');
         exit;
-    }    
+    }
     // Start with a clean slate
     $errors = array();
 
     if ($feather->request()->isPost()) {
-        require PUN_ROOT.'include/email.php';
+        require FEATHER_ROOT.'include/email.php';
 
         // Validate the email address
         $email = strtolower(pun_trim($feather->request->post('req_email')));
@@ -128,7 +128,7 @@ function password_forgotten($feather)
 
             if ($db->num_rows($result)) {
                 // Load the "activate password" template
-                $mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/activate_password.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$feather_user['language'].'/mail_templates/activate_password.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -137,7 +137,7 @@ function password_forgotten($feather)
 
                 // Do the generic replacements first (they apply to all emails sent out here)
                 $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
-                $mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
                 // Loop through users we found
                 while ($cur_hit = $db->fetch_assoc($result)) {
@@ -159,7 +159,7 @@ function password_forgotten($feather)
                     pun_mail($email, $mail_subject, $cur_mail_message);
                 }
 
-                message($lang_login['Forget mail'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.', true);
+                message($lang_login['Forget mail'].' <a href="mailto:'.pun_htmlspecialchars($feather_config['o_admin_email']).'">'.pun_htmlspecialchars($feather_config['o_admin_email']).'</a>.', true);
             } else {
                 $errors[] = $lang_login['No email match'].' '.htmlspecialchars($email).'.';
             }

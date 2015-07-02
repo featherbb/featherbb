@@ -10,27 +10,27 @@
  
 function display_ip_info($ip)
 {
-    global $lang_misc, $pun_user;
+    global $lang_misc, $feather_user;
 
     // Load the misc.php language file
-    require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
+    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/misc.php';
 
     message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
 }
 
 function display_ip_address_post($pid)
 {
-    global $db, $lang_common, $lang_misc, $pun_user;
+    global $db, $lang_common, $lang_misc, $feather_user;
 
-	$result = $db->query('SELECT poster_ip FROM '.$db->prefix.'posts WHERE id='.$pid) or error('Unable to fetch post IP address', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result)) {
-		message($lang_common['Bad request'], false, '404 Not Found');
-	}
+    $result = $db->query('SELECT poster_ip FROM '.$db->prefix.'posts WHERE id='.$pid) or error('Unable to fetch post IP address', __FILE__, __LINE__, $db->error());
+    if (!$db->num_rows($result)) {
+        message($lang_common['Bad request'], false, '404 Not Found');
+    }
 
-	$ip = $db->result($result);
+    $ip = $db->result($result);
 
     // Load the misc.php language file
-    require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
+    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/misc.php';
 
     message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.$lang_misc['Show more users'].'</a>');
 }
@@ -48,10 +48,10 @@ function get_moderators($fid)
 
 function get_topic_info($fid, $tid)
 {
-    global $db, $pun_user;
+    global $db, $feather_user;
     
     // Fetch some info about the topic
-    $result = $db->query('SELECT t.subject, t.num_replies, t.first_post_id, f.id AS forum_id, forum_name FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid.' AND t.id='.$tid.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT t.subject, t.num_replies, t.first_post_id, f.id AS forum_id, forum_name FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid.' AND t.id='.$tid.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows($result)) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
@@ -61,24 +61,27 @@ function get_topic_info($fid, $tid)
     return $cur_topic;
 }
 
-function delete_posts($feather, $tid, $fid)
+function delete_posts($feather, $tid, $fid, $p = null)
 {
-    global $db, $lang_common, $lang_misc, $pun_user;
+    global $db, $lang_common, $lang_misc, $feather_user;
     
-    $posts = !empty($feather->request->post('posts')) ? $feather->request->post('posts') : array();
+    $posts = $feather->request->post('posts') ? $feather->request->post('posts') : array();
     if (empty($posts)) {
         message($lang_misc['No posts selected']);
     }
 
-    if (!empty($feather->request->post('delete_posts_comply'))) {
-        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
+    if ($feather->request->post('delete_posts_comply')) {
+        confirm_referrer(array(
+            get_link_r('moderate/forum/'.$fid.'/'),
+            get_link_r('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$p.'/'),
+        ));
 
         if (@preg_match('%[^0-9,]%', $posts)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         // Verify that the post IDs are valid
-        $admins_sql = ($pun_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
+        $admins_sql = ($feather_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
         $result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 
         if ($db->num_rows($result) != substr_count($posts, ',') + 1) {
@@ -88,7 +91,7 @@ function delete_posts($feather, $tid, $fid)
         // Delete the posts
         $db->query('DELETE FROM '.$db->prefix.'posts WHERE id IN('.$posts.')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
 
-        require PUN_ROOT.'include/search_idx.php';
+        require FEATHER_ROOT.'include/search_idx.php';
         strip_search_index($posts);
 
         // Get last_post, last_post_id, and last_poster for the topic after deletion
@@ -109,23 +112,26 @@ function delete_posts($feather, $tid, $fid)
     return $posts;
 }
 
-function split_posts($feather, $tid, $fid)
+function split_posts($feather, $tid, $fid, $p = null)
 {
-    global $db, $lang_common, $lang_misc, $pun_user;
+    global $db, $lang_common, $lang_misc, $feather_user;
     
-    $posts = !empty($feather->request->post('posts')) ? $feather->request->post('posts') : array();
+    $posts = $feather->request->post('posts') ? $feather->request->post('posts') : array();
     if (empty($posts)) {
         message($lang_misc['No posts selected']);
     }
 
-    if (!empty($feather->request->post('split_posts_comply'))) {
-        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
+    if ($feather->request->post('split_posts_comply')) {
+        confirm_referrer(array(
+            get_link_r('moderate/forum/'.$fid.'/'),
+            get_link_r('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$p.'/'),
+        ));
 
         if (@preg_match('%[^0-9,]%', $posts)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-		$move_to_forum = !empty($feather->request->post('move_to_forum')) ? intval($feather->request->post('move_to_forum')) : 0;
+        $move_to_forum = $feather->request->post('move_to_forum') ? intval($feather->request->post('move_to_forum')) : 0;
         if ($move_to_forum < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -140,16 +146,16 @@ function split_posts($feather, $tid, $fid)
         }
 
         // Verify that the move to forum ID is valid
-        $result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
+        $result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$feather_user['g_id'].' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
         if (!$db->num_rows($result)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         // Load the post.php language file
-        require PUN_ROOT.'lang/'.$pun_user['language'].'/post.php';
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/post.php';
 
         // Check subject
-        $new_subject = !empty($feather->request->post('new_subject')) ? pun_trim($feather->request->post('new_subject')) : '';
+        $new_subject = $feather->request->post('new_subject') ? pun_trim($feather->request->post('new_subject')) : '';
 
         if ($new_subject == '') {
             message($lang_post['No subject']);
@@ -184,7 +190,7 @@ function split_posts($feather, $tid, $fid)
         update_forum($fid);
         update_forum($move_to_forum);
 
-		redirect(get_link('topic/'.$new_tid.'/'), $lang_misc['Split posts redirect']);
+        redirect(get_link('topic/'.$new_tid.'/'), $lang_misc['Split posts redirect']);
     }
     
     return $posts;
@@ -192,9 +198,9 @@ function split_posts($feather, $tid, $fid)
 
 function get_forum_list_split($id)
 {
-    global $db, $pun_user;
+    global $db, $feather_user;
     
-    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
     $cur_category = 0;
     while ($cur_forum = $db->fetch_assoc($result)) {
@@ -215,9 +221,9 @@ function get_forum_list_split($id)
 
 function get_forum_list_move($id)
 {
-    global $db, $pun_user;
+    global $db, $feather_user;
     
-    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
     
     $cur_category = 0;
     while ($cur_forum = $db->fetch_assoc($result)) {
@@ -240,16 +246,16 @@ function get_forum_list_move($id)
 
 function display_posts_view($tid, $start_from)
 {
-    global $db, $pun_user, $pun_config, $pd, $lang_topic;
+    global $db, $feather_user, $feather_config, $pd, $lang_topic;
     
     $post_data = array();
     
-    require PUN_ROOT.'include/parser.php';
+    require FEATHER_ROOT.'include/parser.php';
 
     $post_count = 0; // Keep track of post numbers
 
     // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-    $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id LIMIT '.$start_from.','.$pun_user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id LIMIT '.$start_from.','.$feather_user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $db->error());
 
     $post_ids = array();
     for ($i = 0;$cur_post_id = $db->result($result, $i);$i++) {
@@ -264,7 +270,7 @@ function display_posts_view($tid, $start_from)
 
         // If the poster is a registered user
         if ($cur_post['poster_id'] > 1) {
-            if ($pun_user['g_view_users'] == '1') {
+            if ($feather_user['g_view_users'] == '1') {
                 $cur_post['poster_disp'] = '<a href="profile.php?id='.get_link('user/'.$cur_post['poster_id'].'/').'">'.pun_htmlspecialchars($cur_post['poster']).'</a>';
             } else {
                 $cur_post['poster_disp'] = pun_htmlspecialchars($cur_post['poster']);
@@ -274,7 +280,7 @@ function display_posts_view($tid, $start_from)
             $cur_post['username'] = $cur_post['poster'];
             $cur_post['user_title'] = get_title($cur_post);
 
-            if ($pun_config['o_censoring'] == '1') {
+            if ($feather_config['o_censoring'] == '1') {
                 $cur_post['user_title'] = censor_words($cur_post['user_title']);
             }
         }
@@ -295,8 +301,8 @@ function display_posts_view($tid, $start_from)
 
 function move_topics_to($feather, $fid)
 {
-    global $db, $lang_common, $lang_misc, $pun_user;
-	
+    global $db, $lang_common, $lang_misc, $feather_user;
+    
     confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
     if (@preg_match('%[^0-9,]%', $feather->request->post('topics'))) {
@@ -304,7 +310,7 @@ function move_topics_to($feather, $fid)
     }
 
     $topics = explode(',', $feather->request->post('topics'));
-    $move_to_forum = !empty($feather->request->post('move_to_forum')) ? intval($feather->request->post('move_to_forum')) : 0;
+    $move_to_forum = $feather->request->post('move_to_forum') ? intval($feather->request->post('move_to_forum')) : 0;
     if (empty($topics) || $move_to_forum < 1) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
@@ -317,7 +323,7 @@ function move_topics_to($feather, $fid)
     }
 
     // Verify that the move to forum ID is valid
-    $result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$pun_user['g_id'].' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT 1 FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.group_id='.$feather_user['g_id'].' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows($result)) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
@@ -329,7 +335,7 @@ function move_topics_to($feather, $fid)
     $db->query('UPDATE '.$db->prefix.'topics SET forum_id='.$move_to_forum.' WHERE id IN('.implode(',', $topics).')') or error('Unable to move topics', __FILE__, __LINE__, $db->error());
 
     // Should we create redirect topics?
-    if (!empty($feather->request->post('with_redirect'))) {
+    if ($feather->request->post('with_redirect')) {
         foreach ($topics as $cur_topic) {
             // Fetch info for the redirect topic
             $result = $db->query('SELECT poster, subject, posted, last_post FROM '.$db->prefix.'topics WHERE id='.$cur_topic) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
@@ -349,9 +355,9 @@ function move_topics_to($feather, $fid)
 
 function check_move_possible()
 {
-    global $db, $pun_user, $lang_misc;
+    global $db, $feather_user, $lang_misc;
     
-    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
     if ($db->num_rows($result) < 2) {
         message($lang_misc['Nowhere to move']);
     }
@@ -385,7 +391,7 @@ function merge_topics($feather, $fid)
     $query = 'UPDATE '.$db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
 
     // Should we create redirect topics?
-    if (!empty($feather->request->post('with_redirect'))) {
+    if ($feather->request->post('with_redirect')) {
         $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
     }
 
@@ -409,7 +415,7 @@ function merge_topics($feather, $fid)
     }
 
     // Without redirection the old topics are removed
-    if (empty($feather->request->post('with_redirect'))) {
+    if ($feather->request->post('with_redirect') != '') {
         $db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND id != '.$merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $db->error());
     }
 
@@ -426,19 +432,19 @@ function merge_topics($feather, $fid)
 
     // Update the forum FROM which the topic was moved and redirect
     update_forum($fid);
-	redirect(get_link('forum/'.$fid.'/'), $lang_misc['Merge topics redirect']);
+    redirect(get_link('forum/'.$fid.'/'), $lang_misc['Merge topics redirect']);
 }
 
 function delete_topics($topics, $fid)
 {
-    global $db, $lang_misc, $lang_common, $pun_user;
+    global $db, $lang_misc, $lang_common, $feather_user;
     confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
     if (@preg_match('%[^0-9,]%', $topics)) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
 
-    require PUN_ROOT.'include/search_idx.php';
+    require FEATHER_ROOT.'include/search_idx.php';
 
     // Verify that the topic IDs are valid
     $result = $db->query('SELECT 1 FROM '.$db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
@@ -448,7 +454,7 @@ function delete_topics($topics, $fid)
     }
 
     // Verify that the posts are not by admins
-    if ($pun_user['g_id'] != PUN_ADMIN) {
+    if ($feather_user['g_id'] != PUN_ADMIN) {
         $result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') AND poster_id IN('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $db->error());
         if ($db->num_rows($result)) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -479,14 +485,14 @@ function delete_topics($topics, $fid)
 
     update_forum($fid);
 
-	redirect(get_link('forum/'.$fid.'/'), $lang_misc['Delete topics redirect']);
+    redirect(get_link('forum/'.$fid.'/'), $lang_misc['Delete topics redirect']);
 }
 
 function get_forum_info($fid)
 {
-    global $db, $pun_user, $lang_common;
+    global $db, $feather_user, $lang_common;
     
-    $result = $db->query('SELECT f.forum_name, f.redirect_url, f.num_topics, f.sort_by FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT f.forum_name, f.redirect_url, f.num_topics, f.sort_by FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows($result)) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
@@ -518,17 +524,17 @@ function forum_sort_by($forum_sort)
 
 function display_topics($fid, $sort_by, $start_from)
 {
-    global $db, $pun_user, $pun_config, $lang_forum, $lang_common;
+    global $db, $feather_user, $feather_config, $lang_forum, $lang_common;
     
     $topic_data = array();
-	
-	// Get topic/forum tracking data
-	if (!$pun_user['is_guest']) {
-		$tracked_topics = get_tracked_topics();
-	}
+    
+    // Get topic/forum tracking data
+    if (!$feather_user['is_guest']) {
+        $tracked_topics = get_tracked_topics();
+    }
     
     // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-    $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$fid.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$pun_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$fid.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$feather_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
 
     // If there are topics in this forum
     if ($db->num_rows($result)) {
@@ -546,7 +552,7 @@ function display_topics($fid, $sort_by, $start_from)
             $status_text = array();
             $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
             $cur_topic['icon_type'] = 'icon';
-			$url_topic = url_friendly($cur_topic['subject']);
+            $url_topic = url_friendly($cur_topic['subject']);
 
             if (is_null($cur_topic['moved_to'])) {
                 $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['last_poster']).'</span>';
@@ -556,7 +562,7 @@ function display_topics($fid, $sort_by, $start_from)
                 $cur_topic['ghost_topic'] = true;
             }
 
-            if ($pun_config['o_censoring'] == '1') {
+            if ($feather_config['o_censoring'] == '1') {
                 $cur_topic['subject'] = censor_words($cur_topic['subject']);
             }
 
@@ -577,7 +583,7 @@ function display_topics($fid, $sort_by, $start_from)
                 $cur_topic['item_status'] .= ' iclosed';
             }
 
-            if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > $pun_user['last_visit'] && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
+            if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > $feather_user['last_visit'] && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
                 $cur_topic['item_status'] .= ' inew';
                 $cur_topic['icon_type'] = 'icon icon-new';
                 $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
@@ -589,7 +595,7 @@ function display_topics($fid, $sort_by, $start_from)
             // Insert the status text before the subject
             $cur_topic['subject_disp'] = implode(' ', $status_text).' '.$cur_topic['subject_disp'];
 
-            $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
+            $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $feather_user['disp_posts']);
 
             if ($num_pages_topic > 1) {
                 $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';

@@ -19,7 +19,7 @@ if (!defined('PUN')) {
 			<form method="post" action="<?php echo get_link('admin/forums/') ?>">
 <?php
 if ($is_forum) {
-?>
+    ?>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Create new subhead'] ?></legend>
@@ -29,7 +29,8 @@ if ($is_forum) {
 									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" name="add_forum" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
 									<td>
 										<select name="add_to_cat" tabindex="1">
-											<?php get_categories_add(); ?>
+											<?php get_categories_add();
+    ?>
 										</select>
 										<span><?php echo $lang_admin_forums['Add forum help'] ?></span>
 									</td>
@@ -39,8 +40,9 @@ if ($is_forum) {
 					</fieldset>
 				</div>
 <?php
+
 } else {
-?>
+    ?>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_common['None'] ?></legend>
@@ -72,7 +74,7 @@ if (!empty($forum_data)) {
             echo "\t\t\t\t\t\t\t".'</tbody>'."\n\t\t\t\t\t\t\t".'</table>'."\n\t\t\t\t\t\t".'</div>'."\n\t\t\t\t\t".'</fieldset>'."\n\t\t\t\t".'</div>'."\n";
         }
 
-?>
+            ?>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo pun_htmlspecialchars($forum['cat_name']) ?></legend>

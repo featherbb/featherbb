@@ -95,7 +95,7 @@ function validate_search_word($word, $idx)
 
         if (!defined('PUN_STOPWORDS_LOADED')) {
             if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require PUN_ROOT.'include/cache.php';
+                require FEATHER_ROOT.'include/cache.php';
             }
 
             generate_stopwords_cache();

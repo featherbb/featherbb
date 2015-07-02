@@ -13,15 +13,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $pun_user['style'].'.css' ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather_user['style'].'.css' ?>" />
 <?php
 if (!defined('PUN_ALLOW_INDEX')) {
     echo '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />'."\n";
 }
 
 if (defined('PUN_ADMIN_CONSOLE')) {
-    if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/base_admin.css')) {
-        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$pun_user['style'].'/base_admin.css" />'."\n";
+    if (file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'/base_admin.css')) {
+        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather_user['style'].'/base_admin.css" />'."\n";
     } else {
         echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
     }
@@ -82,20 +82,20 @@ endif;
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><a href="index.php"><?php echo pun_htmlspecialchars($pun_config['o_board_title']) ?></a></h1>
-			<div id="brddesc"><?php echo  $pun_config['o_board_desc'] ?></div>
+			<h1><a href="index.php"><?php echo pun_htmlspecialchars($feather_config['o_board_title']) ?></a></h1>
+			<div id="brddesc"><?php echo  $feather_config['o_board_desc'] ?></div>
 		</div>
 		<?php echo $navlinks ?>
 		<?php echo $page_info ?>
 	</div>
 </div>
 
-<?php if ($pun_user['g_read_board'] == '1' && $pun_config['o_announcement'] == '1') : ?>
+<?php if ($feather_user['g_read_board'] == '1' && $feather_config['o_announcement'] == '1') : ?>
 <div id="announce" class="block">
 	<div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
 	<div class="box">
 		<div id="announce-block" class="inbox">
-			<div class="usercontent"><?php echo $pun_config['o_announcement_message'] ?></div>
+			<div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
 		</div>
 	</div>
 </div>

@@ -41,7 +41,7 @@ if (!defined('PUN')) {
 						</select>
 						<br /></label>
 						<p class="clearl"><?php echo $lang_search['Search in info'] ?></p>
-<?php echo($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'] ? '<p>'.$lang_search['Search multiple forums info'].'</p>' : '') ?>
+<?php echo($feather_config['o_search_all_forums'] == '1' || $feather_user['is_admmod'] ? '<p>'.$lang_search['Search multiple forums info'].'</p>' : '') ?>
 					</div>
 				</fieldset>
 			</div>

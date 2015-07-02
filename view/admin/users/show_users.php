@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 <div class="linkst">
@@ -43,7 +44,7 @@ if (!defined('PUN'))
 			</thead>
 			<tbody>
 <?php
-	if ($info['num_posts']) {
+    if ($info['num_posts']) {
 
         // Loop through users and print out some info
         foreach ($info['posters'] as $cur_poster) {

@@ -59,7 +59,7 @@ function delete_category($cat_to_delete)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();
@@ -98,7 +98,7 @@ function update_categories($categories)
 
     // Regenerate the quick jump cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_quickjump_cache();

@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 	<div class="block">
@@ -21,7 +22,7 @@ if (!defined('PUN'))
 					<dd>
 						<?php printf($lang_admin_index['Server load data']."\n", $server_load, $num_online) ?>
 					</dd>
-<?php if ($pun_user['g_id'] == PUN_ADMIN): ?>					<dt><?php echo $lang_admin_index['Environment label'] ?></dt>
+<?php if ($feather_user['g_id'] == PUN_ADMIN): ?>					<dt><?php echo $lang_admin_index['Environment label'] ?></dt>
 					<dd>
 						<?php printf($lang_admin_index['Environment data OS'], PHP_OS) ?><br />
 						<?php printf($lang_admin_index['Environment data version'], phpversion(), '<a href="'.get_link('admin/phpinfo/').'">'.$lang_admin_index['Show info'].'</a>') ?><br />

@@ -7,72 +7,70 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace controller\admin{
-    
-    class Permissions{
+namespace controller\admin;
 
-        function display(){
-			
-			global $feather, $lang_common, $lang_admin_common, $lang_admin_permissions, $pun_config, $pun_user, $pun_start, $db;
+class permissions
+{
+    public function display()
+    {
+        global $feather, $lang_common, $lang_admin_common, $lang_admin_permissions, $feather_config, $feather_user, $feather_start, $db;
 
-			require PUN_ROOT.'include/common_admin.php';
+        require FEATHER_ROOT.'include/common_admin.php';
 
-			if (!$pun_user['is_admmod']) {
-				message($lang_common['No permission'], false, '403 Forbidden');
-			}
+        if (!$feather_user['is_admmod']) {
+            message($lang_common['No permission'], false, '403 Forbidden');
+        }
 
-            define('PUN_ADMIN_CONSOLE', 1);
+        define('PUN_ADMIN_CONSOLE', 1);
 
-            // Load the admin_options.php language file
-            require PUN_ROOT.'lang/'.$admin_language.'/permissions.php';
+        // Load the admin_options.php language file
+        require FEATHER_ROOT.'lang/'.$admin_language.'/permissions.php';
 
-            // Load the report.php model file
-            require PUN_ROOT.'model/admin/permissions.php';
-			
-			// Update permissions
-			if ($feather->request->isPost()) {
-				update_permissions($feather);
-			}
+        // Load the report.php model file
+        require FEATHER_ROOT.'model/admin/permissions.php';
 
-			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
-            if (!defined('PUN_ACTIVE_PAGE')) {
-                define('PUN_ACTIVE_PAGE', 'admin');
-            }
-            require PUN_ROOT.'include/header.php';
+                    // Update permissions
+                    if ($feather->request->isPost()) {
+                        update_permissions($feather);
+                    }
 
-            $feather->render('header.php', array(
-                    'lang_common' => $lang_common,
-                    'page_title' => $page_title,
-                    'pun_user' => $pun_user,
-                    'pun_config' => $pun_config,
-                    '_SERVER'	=>	$_SERVER,
-                    'navlinks'		=>	$navlinks,
-                    'page_info'		=>	$page_info,
-                    'db'		=>	$db,
-                    'p'		=>	'',
-                )
-            );
+        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
+        if (!defined('PUN_ACTIVE_PAGE')) {
+            define('PUN_ACTIVE_PAGE', 'admin');
+        }
+        require FEATHER_ROOT.'include/header.php';
 
-			generate_admin_menu('permissions');
-			
-            $feather->render('admin/permissions.php', array(
-                    'lang_admin_permissions'	=>	$lang_admin_permissions,
-                    'lang_admin_common'	=>	$lang_admin_common,
-                    'pun_config'	=>	$pun_config,
-                )
-            );
+        $feather->render('header.php', array(
+                'lang_common' => $lang_common,
+                'page_title' => $page_title,
+                'feather_user' => $feather_user,
+                'feather_config' => $feather_config,
+                '_SERVER'    =>    $_SERVER,
+                'navlinks'        =>    $navlinks,
+                'page_info'        =>    $page_info,
+                'db'        =>    $db,
+                'p'        =>    '',
+            )
+        );
 
-            $feather->render('footer.php', array(
-                    'lang_common' => $lang_common,
-                    'pun_user' => $pun_user,
-                    'pun_config' => $pun_config,
-                    'pun_start' => $pun_start,
-                    'footer_style' => 'index',
-                )
-            );
+        generate_admin_menu('permissions');
 
-            require PUN_ROOT.'include/footer.php';
+        $feather->render('admin/permissions.php', array(
+                'lang_admin_permissions'    =>    $lang_admin_permissions,
+                'lang_admin_common'    =>    $lang_admin_common,
+                'feather_config'    =>    $feather_config,
+            )
+        );
 
-		}
+        $feather->render('footer.php', array(
+                'lang_common' => $lang_common,
+                'feather_user' => $feather_user,
+                'feather_config' => $feather_config,
+                'feather_start' => $feather_start,
+                'footer_style' => 'index',
+            )
+        );
+
+        require FEATHER_ROOT.'include/footer.php';
     }
 }

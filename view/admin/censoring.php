@@ -21,7 +21,7 @@ if (!defined('PUN')) {
 					<fieldset>
 						<legend><?php echo $lang_admin_censoring['Add word subhead'] ?></legend>
 						<div class="infldset">
-							<p><?php echo $lang_admin_censoring['Add word info'].' '.($pun_config['o_censoring'] == '1' ? sprintf($lang_admin_censoring['Censoring enabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>') : sprintf($lang_admin_censoring['Censoring disabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>')) ?></p>
+							<p><?php echo $lang_admin_censoring['Add word info'].' '.($feather_config['o_censoring'] == '1' ? sprintf($lang_admin_censoring['Censoring enabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>') : sprintf($lang_admin_censoring['Censoring disabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>')) ?></p>
 							<table>
 							<thead>
 								<tr>

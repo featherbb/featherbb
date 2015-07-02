@@ -39,7 +39,7 @@ if (!defined('PUN')) {
 				<tr>
 					<th class="tcl" scope="col"><?php echo $lang_common['Topic'] ?></th>
 					<th class="tc2" scope="col"><?php echo $lang_common['Replies'] ?></th>
-<?php if ($pun_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo $lang_forum['Views'] ?></th>
+<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo $lang_forum['Views'] ?></th>
 <?php endif; ?>					<th class="tcr"><?php echo $lang_common['Last post'] ?></th>
 					<th class="tcmod" scope="col"><?php echo $lang_misc['Select'] ?></th>
 				</tr>
@@ -48,7 +48,7 @@ if (!defined('PUN')) {
 			
 			<?php
             $topic_count = 0;
-			$button_status = '';
+            $button_status = '';
             foreach ($topic_data as $topic) {
                 ++$topic_count;
                 ?>
@@ -62,7 +62,7 @@ if (!defined('PUN')) {
 						</div>
 					</td>
 					<td class="tc2"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_replies']) : '-' ?></td>
-<?php if ($pun_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_views']) : '-' ?></td>
+<?php if ($feather_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_views']) : '-' ?></td>
 <?php endif;
                 ?>					<td class="tcr"><?php echo $topic['last_post_disp'] ?></td>
 					<td class="tcmod"><input type="checkbox" name="topics[<?php echo $topic['id'] ?>]" value="1" /></td>
@@ -71,7 +71,7 @@ if (!defined('PUN')) {
 
             }
             if (empty($topic_data)):
-                $colspan = ($pun_config['o_topic_views'] == '1') ? 5 : 4;
+                $colspan = ($feather_config['o_topic_views'] == '1') ? 5 : 4;
                 $button_status = ' disabled="disabled"';
                 echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.$lang_forum['Empty forum'].'</td></tr>'."\n";
             endif;

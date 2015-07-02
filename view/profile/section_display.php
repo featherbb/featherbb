@@ -54,26 +54,26 @@ if (!defined('PUN')) {
     }
 
 ?>
-<?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1' || $pun_config['o_signatures'] == '1' || $pun_config['o_avatars'] == '1' || ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1')): ?>
+<?php if ($feather_config['o_smilies'] == '1' || $feather_config['o_smilies_sig'] == '1' || $feather_config['o_signatures'] == '1' || $feather_config['o_avatars'] == '1' || ($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1')): ?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Post display legend'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_profile['Post display info'] ?></p>
 						<div class="rbox">
-<?php if ($pun_config['o_smilies'] == '1' || $pun_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
+<?php if ($feather_config['o_smilies'] == '1' || $feather_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show smilies'] ?><br /></label>
-<?php endif; if ($pun_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {
+<?php endif; if ($feather_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show sigs'] ?><br /></label>
-<?php endif; if ($pun_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {
+<?php endif; if ($feather_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show avatars'] ?><br /></label>
-<?php endif; if ($pun_config['p_message_bbcode'] == '1' && $pun_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img" value="1"<?php if ($user['show_img'] == '1') {
+<?php endif; if ($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img" value="1"<?php if ($user['show_img'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show images'] ?><br /></label>
-<?php endif; if ($pun_config['o_signatures'] == '1' && $pun_config['p_sig_bbcode'] == '1' && $pun_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user['show_img_sig'] == '1') {
+<?php endif; if ($feather_config['o_signatures'] == '1' && $feather_config['p_sig_bbcode'] == '1' && $feather_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user['show_img_sig'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Show images sigs'] ?><br /></label>
 <?php endif; ?>

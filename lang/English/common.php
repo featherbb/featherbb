@@ -83,29 +83,29 @@ $lang_common = array(
 'Guest'                                =>    'Guest',
 
 // Stuff for include/parser.php
-'BBerr pcre'						=>	'(%s) Message is too long or too complex. Please shorten.',			// Error 1
-'BBerr unexpected attribute'		=>	'Unexpected attribute: "%1$s". (No attribute allowed for (%2$s).',	// Error 2
-'BBerr unrecognized attribute'		=>	'Unrecognized attribute: "%1$s", is not valid for (%2$s).',			// Error 3
-'BBerr bbcode attribute'			=>	'Attribute may NOT contain open or close bbcode tags',				// Error 4
-'BBerr missing attribute'			=>	'(%1$s) is missing a required attribute.',							// Error 5
-'BBerr nesting overflow'			=>	'(%1$s) tag nesting depth: %2$d exceeds allowable limit: %3$d.',	// Error 6
-'BBerr self-nesting'				=>	'(%s) was opened within itself, this is not allowed.',				// Error 7
-'BBerr invalid nesting'				=>	'(%1$s) was opened within (%2$s), this is not allowed.',			// Error 8
-'BBerr invalid parent'				=>	'(%1$s) cannot be within: (%2$s). Allowable parent tags: %3$s.',	// Error 9
-'BBerr Invalid URL name'			=>	'Invalid URL name: %s',												// Error 10
-'BBerr Invalid email address'		=>	'Invalid email address: %s',										// Error 10c
-'BBerr Invalid color'				=>	'Invalid color attribute: %s',										// Error 11
-'BBerr invalid content'				=>	'Invalid content, (%s) requires specific content.',					// Error 12
-'BBerr bad meta data'				=>	'Unable to retrieve image data from remote url: %s',				// Error 13
-'BBerr no file size'				=>	'Unable to determine remote file size.',							// Error 14
-'BBerr non image'					=>	'Remote url does not have Content-Type: "image".',					// Error 15
-'BBerr bad http response'			=>	'Bad HTTP response header: "%s"',									// Error 16
-'BBerr bad headers'					=>	'Unable to read remote image http headers.',						// Error 17
-'BBerr orphan close'				=>	'Orphan close tag: (/%s) is missing its open tag.',					// Error 18
-'BBerr orphan open'					=>	'Orphan open tag: (%s) is missing its close tag.',					// Error 19
+'BBerr pcre'                        =>    '(%s) Message is too long or too complex. Please shorten.',            // Error 1
+'BBerr unexpected attribute'        =>    'Unexpected attribute: "%1$s". (No attribute allowed for (%2$s).',    // Error 2
+'BBerr unrecognized attribute'        =>    'Unrecognized attribute: "%1$s", is not valid for (%2$s).',            // Error 3
+'BBerr bbcode attribute'            =>    'Attribute may NOT contain open or close bbcode tags',                // Error 4
+'BBerr missing attribute'            =>    '(%1$s) is missing a required attribute.',                            // Error 5
+'BBerr nesting overflow'            =>    '(%1$s) tag nesting depth: %2$d exceeds allowable limit: %3$d.',    // Error 6
+'BBerr self-nesting'                =>    '(%s) was opened within itself, this is not allowed.',                // Error 7
+'BBerr invalid nesting'                =>    '(%1$s) was opened within (%2$s), this is not allowed.',            // Error 8
+'BBerr invalid parent'                =>    '(%1$s) cannot be within: (%2$s). Allowable parent tags: %3$s.',    // Error 9
+'BBerr Invalid URL name'            =>    'Invalid URL name: %s',                                                // Error 10
+'BBerr Invalid email address'        =>    'Invalid email address: %s',                                        // Error 10c
+'BBerr Invalid color'                =>    'Invalid color attribute: %s',                                        // Error 11
+'BBerr invalid content'                =>    'Invalid content, (%s) requires specific content.',                    // Error 12
+'BBerr bad meta data'                =>    'Unable to retrieve image data from remote url: %s',                // Error 13
+'BBerr no file size'                =>    'Unable to determine remote file size.',                            // Error 14
+'BBerr non image'                    =>    'Remote url does not have Content-Type: "image".',                    // Error 15
+'BBerr bad http response'            =>    'Bad HTTP response header: "%s"',                                    // Error 16
+'BBerr bad headers'                    =>    'Unable to read remote image http headers.',                        // Error 17
+'BBerr orphan close'                =>    'Orphan close tag: (/%s) is missing its open tag.',                    // Error 18
+'BBerr orphan open'                    =>    'Orphan open tag: (%s) is missing its close tag.',                    // Error 19
 
-'BBmsg big image'					=>	'Big image',														// Msg 1
-'BBmsg images disabled'				=>	'Image display not currently enabled in this context',				// Msg 2
+'BBmsg big image'                    =>    'Big image',                                                        // Msg 1
+'BBmsg images disabled'                =>    'Image display not currently enabled in this context',                // Msg 2
 
 // Stuff for the navigator (top of every page)
 'Index'                                =>    'Index',

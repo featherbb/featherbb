@@ -32,7 +32,7 @@
  */
 namespace Slim\Http;
 
- /**
+/**
   * HTTP Headers
   *
   * @package Slim

@@ -37,7 +37,7 @@ if (!defined('PUN')) {
 					</div>
 				</fieldset>
 			</div>
-<?php if ($pun_config['o_forum_subscriptions'] == '1' || $pun_config['o_topic_subscriptions'] == '1'): ?>				<div class="inform">
+<?php if ($feather_config['o_forum_subscriptions'] == '1' || $feather_config['o_topic_subscriptions'] == '1'): ?>				<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Subscription legend'] ?></legend>
 					<div class="infldset">
@@ -45,7 +45,7 @@ if (!defined('PUN')) {
 							<label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user['notify_with_post'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Notify full'] ?><br /></label>
-<?php if ($pun_config['o_topic_subscriptions'] == '1'): ?>								<label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['auto_notify'] == '1') {
+<?php if ($feather_config['o_topic_subscriptions'] == '1'): ?>								<label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['auto_notify'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php echo $lang_profile['Auto notify full'] ?><br /></label>
 <?php endif; ?>

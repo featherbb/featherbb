@@ -17,7 +17,7 @@ if (!defined('FORUM_EOL')) {
     define('FORUM_EOL', PHP_EOL);
 }
 
-require PUN_ROOT.'include/utf8/utils/ascii.php';
+require FEATHER_ROOT.'include/utf8/utils/ascii.php';
 
 //
 // Validate an email address
@@ -37,9 +37,9 @@ function is_valid_email($email)
 //
 function is_banned_email($email)
 {
-    global $pun_bans;
+    global $feather_bans;
 
-    foreach ($pun_bans as $cur_ban) {
+    foreach ($feather_bans as $cur_ban) {
         if ($cur_ban['email'] != '' &&
             ($email == $cur_ban['email'] ||
             (strpos($cur_ban['email'], '@') === false && stristr($email, '@'.$cur_ban['email'])))) {
@@ -210,15 +210,15 @@ function bbcode2email($text, $wrap_length = 72)
 //
 function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
 {
-    global $pun_config, $lang_common;
+    global $feather_config, $lang_common;
 
     // Use \r\n for SMTP servers, the system's line ending for local mailers
-    $smtp = $pun_config['o_smtp_host'] != '';
+    $smtp = $feather_config['o_smtp_host'] != '';
     $EOL = $smtp ? "\r\n" : FORUM_EOL;
 
     // Default sender/return address
-    $from_name = sprintf($lang_common['Mailer'], $pun_config['o_board_title']);
-    $from_email = $pun_config['o_webmaster_email'];
+    $from_name = sprintf($lang_common['Mailer'], $feather_config['o_board_title']);
+    $from_email = $feather_config['o_webmaster_email'];
 
     // Do a little spring cleaning
     $to = pun_trim(preg_replace('%[\n\r]+%s', '', $to));
@@ -275,7 +275,7 @@ function server_parse($socket, $expected_response)
 //
 function smtp_mail($to, $subject, $message, $headers = '')
 {
-    global $pun_config;
+    global $feather_config;
     static $local_host;
 
     $recipients = explode(',', $to);
@@ -285,19 +285,19 @@ function smtp_mail($to, $subject, $message, $headers = '')
     $message = (substr($message, 0, 1) == '.' ? '.'.$message : $message);
 
     // Are we using port 25 or a custom port?
-    if (strpos($pun_config['o_smtp_host'], ':') !== false) {
-        list($smtp_host, $smtp_port) = explode(':', $pun_config['o_smtp_host']);
+    if (strpos($feather_config['o_smtp_host'], ':') !== false) {
+        list($smtp_host, $smtp_port) = explode(':', $feather_config['o_smtp_host']);
     } else {
-        $smtp_host = $pun_config['o_smtp_host'];
+        $smtp_host = $feather_config['o_smtp_host'];
         $smtp_port = 25;
     }
 
-    if ($pun_config['o_smtp_ssl'] == '1') {
+    if ($feather_config['o_smtp_ssl'] == '1') {
         $smtp_host = 'ssl://'.$smtp_host;
     }
 
     if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-        error('Could not connect to smtp host "'.$pun_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')', __FILE__, __LINE__);
+        error('Could not connect to smtp host "'.$feather_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')', __FILE__, __LINE__);
     }
 
     server_parse($socket, '220');
@@ -315,24 +315,24 @@ function smtp_mail($to, $subject, $message, $headers = '')
         }
     }
 
-    if ($pun_config['o_smtp_user'] != '' && $pun_config['o_smtp_pass'] != '') {
+    if ($feather_config['o_smtp_user'] != '' && $feather_config['o_smtp_pass'] != '') {
         fwrite($socket, 'EHLO '.$local_host."\r\n");
         server_parse($socket, '250');
 
         fwrite($socket, 'AUTH LOGIN'."\r\n");
         server_parse($socket, '334');
 
-        fwrite($socket, base64_encode($pun_config['o_smtp_user'])."\r\n");
+        fwrite($socket, base64_encode($feather_config['o_smtp_user'])."\r\n");
         server_parse($socket, '334');
 
-        fwrite($socket, base64_encode($pun_config['o_smtp_pass'])."\r\n");
+        fwrite($socket, base64_encode($feather_config['o_smtp_pass'])."\r\n");
         server_parse($socket, '235');
     } else {
         fwrite($socket, 'HELO '.$local_host."\r\n");
         server_parse($socket, '250');
     }
 
-    fwrite($socket, 'MAIL FROM: <'.$pun_config['o_webmaster_email'].'>'."\r\n");
+    fwrite($socket, 'MAIL FROM: <'.$feather_config['o_webmaster_email'].'>'."\r\n");
     server_parse($socket, '250');
 
     foreach ($recipients as $email) {

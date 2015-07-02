@@ -16,31 +16,31 @@ if (!defined('PUN')) {
 // Load the appropriate DB layer class
 switch ($db_type) {
     case 'mysql':
-        require_once PUN_ROOT.'include/dblayer/mysql.php';
+        require_once FEATHER_ROOT.'include/dblayer/mysql.php';
         break;
 
     case 'mysql_innodb':
-        require_once PUN_ROOT.'include/dblayer/mysql_innodb.php';
+        require_once FEATHER_ROOT.'include/dblayer/mysql_innodb.php';
         break;
 
     case 'mysqli':
-        require_once PUN_ROOT.'include/dblayer/mysqli.php';
+        require_once FEATHER_ROOT.'include/dblayer/mysqli.php';
         break;
 
     case 'mysqli_innodb':
-        require_once PUN_ROOT.'include/dblayer/mysqli_innodb.php';
+        require_once FEATHER_ROOT.'include/dblayer/mysqli_innodb.php';
         break;
 
     case 'pgsql':
-        require_once PUN_ROOT.'include/dblayer/pgsql.php';
+        require_once FEATHER_ROOT.'include/dblayer/pgsql.php';
         break;
 
     case 'sqlite':
-        require_once PUN_ROOT.'include/dblayer/sqlite.php';
+        require_once FEATHER_ROOT.'include/dblayer/sqlite.php';
         break;
-		
+        
     case 'sqlite3':
-        require_once PUN_ROOT.'include/dblayer/sqlite3.php';
+        require_once FEATHER_ROOT.'include/dblayer/sqlite3.php';
         break;
 
     default:

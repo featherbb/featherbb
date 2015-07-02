@@ -19,3 +19,6 @@ $db->end_transaction();
 
 // Close the db connection (and free up any result data)
 $db->close();
+
+// If we reached this far, we shouldn't execute more code
+$feather->stop();

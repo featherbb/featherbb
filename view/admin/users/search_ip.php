@@ -8,8 +8,9 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (!defined('PUN')) {
+    exit;
+}
 ?>
 
 <div class="linkst">
@@ -52,9 +53,9 @@ if (!defined('PUN'))
 <?php
 
         }
-		if (empty($ip_data)):
-			echo "\t\t\t\t".'<tr><td class="tcl" colspan="4">'.$lang_admin_users['Results no posts found'].'</td></tr>'."\n";
-		endif;
+        if (empty($ip_data)):
+            echo "\t\t\t\t".'<tr><td class="tcl" colspan="4">'.$lang_admin_users['Results no posts found'].'</td></tr>'."\n";
+        endif;
 
     ?>
 			</tbody>

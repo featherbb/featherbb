@@ -57,10 +57,10 @@
 
 define('PUN_QUIET_VISIT', 1);
 
-if (!defined('PUN_ROOT')) {
-    define('PUN_ROOT', dirname(__FILE__).'/');
+if (!defined('FEATHER_ROOT')) {
+    define('FEATHER_ROOT', dirname(__FILE__).'/');
 }
-require PUN_ROOT.'include/common.php';
+require FEATHER_ROOT.'include/common.php';
 
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
@@ -68,11 +68,11 @@ if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
 }
 
 // If we're a guest and we've sent a username/pass, we can try to authenticate using those details
-if ($pun_user['is_guest'] && isset($_SERVER['PHP_AUTH_USER'])) {
+if ($feather_user['is_guest'] && isset($_SERVER['PHP_AUTH_USER'])) {
     authenticate_user($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 }
 
-if ($pun_user['g_read_board'] == '0') {
+if ($feather_user['g_read_board'] == '0') {
     http_authenticate_user();
     exit($lang_common['No view']);
 }
@@ -97,13 +97,13 @@ switch ($action) {
 //
 function http_authenticate_user()
 {
-    global $pun_config, $pun_user;
+    global $feather_config, $feather_user;
 
-    if (!$pun_user['is_guest']) {
+    if (!$feather_user['is_guest']) {
         return;
     }
 
-    header('WWW-Authenticate: Basic realm="'.$pun_config['o_board_title'].' External Syndication"');
+    header('WWW-Authenticate: Basic realm="'.$feather_config['o_board_title'].' External Syndication"');
     header('HTTP/1.0 401 Unauthorized');
 }
 
@@ -113,7 +113,7 @@ function http_authenticate_user()
 //
 function output_rss($feed)
 {
-    global $lang_common, $pun_config;
+    global $lang_common, $feather_config;
 
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
@@ -130,8 +130,8 @@ function output_rss($feed)
     echo "\t\t".'<description><![CDATA['.escape_cdata($feed['description']).']]></description>'."\n";
     echo "\t\t".'<lastBuildDate>'.gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</lastBuildDate>'."\n";
 
-    if ($pun_config['o_show_version'] == '1') {
-        echo "\t\t".'<generator>FluxBB '.$pun_config['o_cur_version'].'</generator>'."\n";
+    if ($feather_config['o_show_version'] == '1') {
+        echo "\t\t".'<generator>FluxBB '.$feather_config['o_cur_version'].'</generator>'."\n";
     } else {
         echo "\t\t".'<generator>FluxBB</generator>'."\n";
     }
@@ -158,7 +158,7 @@ function output_rss($feed)
 //
 function output_atom($feed)
 {
-    global $lang_common, $pun_config;
+    global $lang_common, $feather_config;
 
     // Send XML/no cache headers
     header('Content-Type: application/atom+xml; charset=utf-8');
@@ -174,8 +174,8 @@ function output_atom($feed)
     echo "\t".'<link href="'.pun_htmlspecialchars($feed['link']).'"/>'."\n";
     echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
 
-    if ($pun_config['o_show_version'] == '1') {
-        echo "\t".'<generator version="'.$pun_config['o_cur_version'].'">FluxBB</generator>'."\n";
+    if ($feather_config['o_show_version'] == '1') {
+        echo "\t".'<generator version="'.$feather_config['o_cur_version'].'">FluxBB</generator>'."\n";
     } else {
         echo "\t".'<generator>FluxBB</generator>'."\n";
     }
@@ -216,7 +216,7 @@ function output_atom($feed)
 //
 function output_xml($feed)
 {
-    global $lang_common, $pun_config;
+    global $lang_common, $feather_config;
 
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
@@ -282,7 +282,7 @@ function output_html($feed)
 
 // Show recent discussions
 if ($action == 'feed') {
-    require PUN_ROOT.'include/parser.php';
+    require FEATHER_ROOT.'include/parser.php';
 
     // Determine what type of feed to output
     $type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
@@ -300,7 +300,7 @@ if ($action == 'feed') {
         $tid = intval($_GET['tid']);
 
         // Fetch topic subject
-        $result = $db->query('SELECT t.subject, t.first_post_id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id='.$tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+        $result = $db->query('SELECT t.subject, t.first_post_id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id='.$tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
         if (!$db->num_rows($result)) {
             http_authenticate_user();
             exit($lang_common['Bad request']);
@@ -308,13 +308,13 @@ if ($action == 'feed') {
 
         $cur_topic = $db->fetch_assoc($result);
 
-        if ($pun_config['o_censoring'] == '1') {
+        if ($feather_config['o_censoring'] == '1') {
             $cur_topic['subject'] = censor_words($cur_topic['subject']);
         }
 
         // Setup the feed
         $feed = array(
-            'title'        =>    $pun_config['o_board_title'].$lang_common['Title separator'].$cur_topic['subject'],
+            'title'        =>    $feather_config['o_board_title'].$lang_common['Title separator'].$cur_topic['subject'],
             'link'            =>    get_base_url(true).'/viewtopic.php?id='.$tid,
             'description'        =>    sprintf($lang_common['RSS description topic'], $cur_topic['subject']),
             'items'            =>    array(),
@@ -338,12 +338,12 @@ if ($action == 'feed') {
             );
 
             if ($cur_post['poster_id'] > 1) {
-                if ($cur_post['email_setting'] == '0' && !$pun_user['is_guest']) {
+                if ($cur_post['email_setting'] == '0' && !$feather_user['is_guest']) {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
                 $item['author']['uri'] = get_base_url(true).'/profile.php?id='.$cur_post['poster_id'];
-            } elseif ($cur_post['poster_email'] != '' && !$pun_user['is_guest']) {
+            } elseif ($cur_post['poster_email'] != '' && !$feather_user['is_guest']) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
 
@@ -368,7 +368,7 @@ if ($action == 'feed') {
 
             if (count($fids) == 1) {
                 // Fetch forum name
-                $result = $db->query('SELECT f.forum_name FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
+                $result = $db->query('SELECT f.forum_name FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
                 if ($db->num_rows($result)) {
                     $forum_name = $lang_common['Title separator'].$db->result($result);
                 }
@@ -386,8 +386,8 @@ if ($action == 'feed') {
         }
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
-        if ($pun_config['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
-            $cache_id = 'feed'.sha1($pun_user['g_id'].'|'.$lang_common['lang_identifier'].'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
+        if ($feather_config['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
+            $cache_id = 'feed'.sha1($feather_user['g_id'].'|'.$lang_common['lang_identifier'].'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
         // Load cached feed
@@ -399,17 +399,17 @@ if ($action == 'feed') {
         if (!isset($feed) || $cache_expire < $now) {
             // Setup the feed
             $feed = array(
-                'title'        =>    $pun_config['o_board_title'].$forum_name,
+                'title'        =>    $feather_config['o_board_title'].$forum_name,
                 'link'            =>    '/index.php',
-                'description'    =>    sprintf($lang_common['RSS description'], $pun_config['o_board_title']),
+                'description'    =>    sprintf($lang_common['RSS description'], $feather_config['o_board_title']),
                 'items'            =>    array(),
                 'type'            =>    'topics'
             );
 
             // Fetch $show topics
-            $result = $db->query('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'posts AS p ON p.id='.($order_posted ? 't.first_post_id' : 't.last_post_id').' INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL'.$forum_sql.' ORDER BY '.($order_posted ? 't.posted' : 't.last_post').' DESC LIMIT '.(isset($cache_id) ? 50 : $show)) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+            $result = $db->query('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'posts AS p ON p.id='.($order_posted ? 't.first_post_id' : 't.last_post_id').' INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL'.$forum_sql.' ORDER BY '.($order_posted ? 't.posted' : 't.last_post').' DESC LIMIT '.(isset($cache_id) ? 50 : $show)) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
             while ($cur_topic = $db->fetch_assoc($result)) {
-                if ($pun_config['o_censoring'] == '1') {
+                if ($feather_config['o_censoring'] == '1') {
                     $cur_topic['subject'] = censor_words($cur_topic['subject']);
                 }
 
@@ -427,12 +427,12 @@ if ($action == 'feed') {
                 );
 
                 if ($cur_topic['poster_id'] > 1) {
-                    if ($cur_topic['email_setting'] == '0' && !$pun_user['is_guest']) {
+                    if ($cur_topic['email_setting'] == '0' && !$feather_user['is_guest']) {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
                     $item['author']['uri'] = '/profile.php?id='.$cur_topic['poster_id'];
-                } elseif ($cur_topic['poster_email'] != '' && !$pun_user['is_guest']) {
+                } elseif ($cur_topic['poster_email'] != '' && !$feather_user['is_guest']) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
 
@@ -442,10 +442,10 @@ if ($action == 'feed') {
             // Output feed as PHP code
             if (isset($cache_id)) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require PUN_ROOT.'include/cache.php';
+                    require FEATHER_ROOT.'include/cache.php';
                 }
 
-                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($pun_config['o_feed_ttl'] * 60)).';'."\n\n".'?>';
+                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather_config['o_feed_ttl'] * 60)).';'."\n\n".'?>';
                 fluxbb_write_cache_file('cache_'.$cache_id.'.php', $content);
             }
         }
@@ -476,7 +476,7 @@ if ($action == 'feed') {
 // Show users online
 elseif ($action == 'online' || $action == 'online_full') {
     // Load the index.php language file
-    require PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/index.php';
+    require FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/index.php';
 
     // Fetch users online info and generate strings for output
     $num_guests = $num_users = 0;
@@ -484,9 +484,9 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     $result = $db->query('SELECT user_id, ident FROM '.$db->prefix.'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
 
-    while ($pun_user_online = $db->fetch_assoc($result)) {
-        if ($pun_user_online['user_id'] > 1) {
-            $users[] = ($pun_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$pun_user_online['user_id'].'">'.pun_htmlspecialchars($pun_user_online['ident']).'</a>' : pun_htmlspecialchars($pun_user_online['ident']);
+    while ($feather_user_online = $db->fetch_assoc($result)) {
+        if ($feather_user_online['user_id'] > 1) {
+            $users[] = ($feather_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$feather_user_online['user_id'].'">'.pun_htmlspecialchars($feather_user_online['ident']).'</a>' : pun_htmlspecialchars($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -513,16 +513,16 @@ elseif ($action == 'online' || $action == 'online_full') {
 // Show board statistics
 elseif ($action == 'stats') {
     // Load the index.php language file
-    require PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/index.php';
+    require FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/index.php';
 
     // Collect some statistics from the database
     if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
         include FORUM_CACHE_DIR.'cache_users_info.php';
     }
 
-    if (!defined('PUN_USERS_INFO_LOADED')) {
+    if (!defined('feather_userS_INFO_LOADED')) {
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require PUN_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'include/cache.php';
         }
 
         generate_users_info_cache();
@@ -539,7 +539,7 @@ elseif ($action == 'stats') {
     header('Pragma: public');
 
     echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf($lang_index['Newest user'], (($pun_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$stats['last_user']['id'].'">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>' : pun_htmlspecialchars($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf($lang_index['Newest user'], (($feather_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$stats['last_user']['id'].'">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>' : pun_htmlspecialchars($stats['last_user']['username']))).'<br />'."\n";
     echo sprintf($lang_index['No of topics'], forum_number_format($stats['total_topics'])).'<br />'."\n";
     echo sprintf($lang_index['No of posts'], forum_number_format($stats['total_posts'])).'<br />'."\n";
 

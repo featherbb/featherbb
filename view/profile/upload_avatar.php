@@ -22,9 +22,9 @@ if (!defined('PUN')) {
 					<legend><?php echo $lang_profile['Upload avatar legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $pun_config['o_avatars_size'] ?>" />
+						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather_config['o_avatars_size'] ?>" />
 						<label class="required"><strong><?php echo $lang_profile['File'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-						<p><?php echo $lang_profile['Avatar desc'].' '.$pun_config['o_avatars_width'].' x '.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].' '.$lang_common['and'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].' ('.file_size($pun_config['o_avatars_size']).').' ?></p>
+						<p><?php echo $lang_profile['Avatar desc'].' '.$feather_config['o_avatars_width'].' x '.$feather_config['o_avatars_height'].' '.$lang_profile['pixels'].' '.$lang_common['and'].' '.forum_number_format($feather_config['o_avatars_size']).' '.$lang_profile['bytes'].' ('.file_size($feather_config['o_avatars_size']).').' ?></p>
 					</div>
 				</fieldset>
 			</div>

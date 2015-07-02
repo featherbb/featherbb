@@ -22,7 +22,7 @@ if (!defined('PUN')) {
 					<fieldset>
 <?php
 
-        if ($pun_user['g_moderator'] == '1') {
+        if ($feather_user['g_moderator'] == '1') {
             ?>
 						<legend><?php echo $lang_profile['Delete ban legend'] ?></legend>
 						<div class="infldset">
@@ -33,7 +33,7 @@ if (!defined('PUN')) {
 <?php
 
         } else {
-            if ($pun_user['id'] != $id) {
+            if ($feather_user['id'] != $id) {
                 ?>
 						<legend><?php echo $lang_profile['Group membership legend'] ?></legend>
 						<div class="infldset">

@@ -9,9 +9,9 @@
  
 function rebuild($feather)
 {
-	global $db, $db_type, $lang_admin_maintenance;
-	
-	$per_page = !empty($feather->request->get('i_per_page')) ? intval($feather->request->get('i_per_page')) : 0;
+    global $db, $db_type, $lang_admin_maintenance;
+    
+    $per_page = $feather->request->get('i_per_page') ? intval($feather->request->get('i_per_page')) : 0;
 
     // Check per page is > 0
     if ($per_page < 1) {
@@ -21,7 +21,7 @@ function rebuild($feather)
     @set_time_limit(0);
 
     // If this is the first cycle of posts we empty the search index before we proceed
-    if (!empty($feather->request->get('i_empty_index'))) {
+    if ($feather->request->get('i_empty_index')) {
         // This is the only potentially "dangerous" thing we can do here, so we check the referer
         confirm_referrer(get_link_r('admin/maintenance/'));
 
@@ -45,14 +45,14 @@ function rebuild($feather)
 
 function get_query_str($feather)
 {
-	global $db, $lang_admin_maintenance;
-	
+    global $db, $lang_admin_maintenance;
+    
     $query_str = '';
 
-    $per_page = !empty($feather->request->get('i_per_page')) ? intval($feather->request->get('i_per_page')) : 0;
-    $start_at = !empty($feather->request->get('i_start_at')) ? intval($feather->request->get('i_start_at')) : 0;
+    $per_page = $feather->request->get('i_per_page') ? intval($feather->request->get('i_per_page')) : 0;
+    $start_at = $feather->request->get('i_start_at') ? intval($feather->request->get('i_start_at')) : 0;
 
-    require PUN_ROOT.'include/search_idx.php';
+    require FEATHER_ROOT.'include/search_idx.php';
 
     // Fetch posts to process this cycle
     $result = $db->query('SELECT p.id, p.message, t.subject, t.first_post_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id WHERE p.id >= '.$start_at.' ORDER BY p.id ASC LIMIT '.$per_page) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
@@ -81,8 +81,8 @@ function get_query_str($feather)
 
     $db->end_transaction();
     $db->close();
-	
-	return $query_str;
+    
+    return $query_str;
 }
 
 //
@@ -124,7 +124,7 @@ function prune($forum_id, $prune_sticky, $prune_date)
             $db->query('DELETE FROM '.$db->prefix.'posts WHERE id IN('.$post_ids.')') or error('Unable to prune posts', __FILE__, __LINE__, $db->error());
 
             // We removed a bunch of posts, so now we have to update the search index
-            require_once PUN_ROOT.'include/search_idx.php';
+            require_once FEATHER_ROOT.'include/search_idx.php';
             strip_search_index($post_ids);
         }
     }
@@ -132,52 +132,52 @@ function prune($forum_id, $prune_sticky, $prune_date)
 
 function prune_comply($feather, $prune_from, $prune_sticky)
 {
-	global $db, $lang_admin_maintenance;
-	
-	confirm_referrer(get_link_r('admin/maintenance/'));
+    global $db, $lang_admin_maintenance;
+    
+    confirm_referrer(get_link_r('admin/maintenance/'));
 
-	$prune_days = intval(!empty($feather->request->post('prune_days')));
-	$prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
+    $prune_days = intval($feather->request->post('prune_days'));
+    $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
-	@set_time_limit(0);
+    @set_time_limit(0);
 
-	if ($prune_from == 'all') {
-		$result = $db->query('SELECT id FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
-		$num_forums = $db->num_rows($result);
+    if ($prune_from == 'all') {
+        $result = $db->query('SELECT id FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+        $num_forums = $db->num_rows($result);
 
-		for ($i = 0; $i < $num_forums; ++$i) {
-			$fid = $db->result($result, $i);
+        for ($i = 0; $i < $num_forums; ++$i) {
+            $fid = $db->result($result, $i);
 
-			prune($fid, $prune_sticky, $prune_date);
-			update_forum($fid);
-		}
-	} else {
-		$prune_from = intval($prune_from);
-		prune($prune_from, $prune_sticky, $prune_date);
-		update_forum($prune_from);
-	}
+            prune($fid, $prune_sticky, $prune_date);
+            update_forum($fid);
+        }
+    } else {
+        $prune_from = intval($prune_from);
+        prune($prune_from, $prune_sticky, $prune_date);
+        update_forum($prune_from);
+    }
 
-	// Locate any "orphaned redirect topics" and delete them
-	$result = $db->query('SELECT t1.id FROM '.$db->prefix.'topics AS t1 LEFT JOIN '.$db->prefix.'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
-	$num_orphans = $db->num_rows($result);
+    // Locate any "orphaned redirect topics" and delete them
+    $result = $db->query('SELECT t1.id FROM '.$db->prefix.'topics AS t1 LEFT JOIN '.$db->prefix.'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
+    $num_orphans = $db->num_rows($result);
 
-	if ($num_orphans) {
-		for ($i = 0; $i < $num_orphans; ++$i) {
-			$orphans[] = $db->result($result, $i);
-		}
+    if ($num_orphans) {
+        for ($i = 0; $i < $num_orphans; ++$i) {
+            $orphans[] = $db->result($result, $i);
+        }
 
-		$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
-	}
+        $db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+    }
 
-	redirect(get_link('admin/maintenance/'), $lang_admin_maintenance['Posts pruned redirect']);
+    redirect(get_link('admin/maintenance/'), $lang_admin_maintenance['Posts pruned redirect']);
 }
 
 function get_info_prune($feather, $prune_sticky, $prune_from)
 {
-	global $db, $lang_admin_maintenance;
-	
-	$prune = array();
-	
+    global $db, $lang_admin_maintenance;
+    
+    $prune = array();
+    
     $prune['days'] = pun_trim($feather->request->post('req_prune_days'));
     if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
         message($lang_admin_maintenance['Days must be integer message']);
@@ -209,14 +209,14 @@ function get_info_prune($feather, $prune_sticky, $prune_from)
     if (!$prune['num_topics']) {
         message(sprintf($lang_admin_maintenance['No old topics message'], $prune['days']));
     }
-	
-	return $prune;
+    
+    return $prune;
 }
 
 function get_categories()
 {
-	global $db;
-	
+    global $db;
+    
     $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
     $cur_category = 0;

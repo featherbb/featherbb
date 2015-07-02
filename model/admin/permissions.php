@@ -9,8 +9,8 @@
  
 function update_permissions($feather)
 {
-	global $db, $lang_admin_permissions, $pun_config;
-	
+    global $db, $lang_admin_permissions, $feather_config;
+    
     confirm_referrer(get_link_r('admin/permissions/'));
 
     $form = array_map('intval', $feather->request->post('form'));
@@ -22,14 +22,14 @@ function update_permissions($feather)
         }
 
         // Only update values that have changed
-        if (array_key_exists('p_'.$key, $pun_config) && $pun_config['p_'.$key] != $input) {
+        if (array_key_exists('p_'.$key, $feather_config) && $feather_config['p_'.$key] != $input) {
             $db->query('UPDATE '.$db->prefix.'config SET conf_value='.$input.' WHERE conf_name=\'p_'.$db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
         }
     }
 
     // Regenerate the config cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_config_cache();

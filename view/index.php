@@ -94,13 +94,13 @@ endif;
 			<dl class="conl">
 				<dt><strong><?php echo $lang_index['User info'] ?></strong></dt>
 				<dd><span><?php printf($lang_index['Newest user'], $stats['newest_user']) ?></span></dd>
-				<?php if ($pun_config['o_users_online'] == 1) : ?>
+				<?php if ($feather_config['o_users_online'] == 1) : ?>
 				<dd><span><?php printf($lang_index['Users online'], '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>
 				<dd><span><?php printf($lang_index['Guests online'], '<strong>'.forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
 				<?php endif; ?>
 			</dl>
 			<?php
-            if ($pun_config['o_users_online'] == 1) :
+            if ($feather_config['o_users_online'] == 1) :
                 if ($online['num_users'] > 0) {
                     echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
                 } else {

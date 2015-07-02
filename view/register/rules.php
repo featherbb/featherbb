@@ -22,7 +22,7 @@ if (!defined('PUN')) {
 				<fieldset>
 					<legend><?php echo $lang_register['Rules legend'] ?></legend>
 					<div class="infldset">
-						<div class="usercontent"><?php echo $pun_config['o_rules_message'] ?></div>
+						<div class="usercontent"><?php echo $feather_config['o_rules_message'] ?></div>
 					</div>
 				</fieldset>
 			</div>

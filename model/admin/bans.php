@@ -14,7 +14,7 @@ function add_ban_info($feather)
     $ban = array();
     
     // If the ID of the user to ban was provided through GET (a link from profile.php)
-    if (!empty($feather->request->get('find_ban'))) {
+    if ($feather->request->get('find_ban')) {
         $ban['user_id'] = intval($feather->request->get('find_ban'));
         if ($ban['user_id'] < 2) {
             message($lang_common['Bad request'], false, '404 Not Found');
@@ -73,7 +73,7 @@ function add_ban_info($feather)
 
 function edit_ban_info($id)
 {
-    global $db, $lang_common, $pun_user;
+    global $db, $lang_common, $feather_user;
     
     $ban = array();
 
@@ -86,7 +86,7 @@ function edit_ban_info($id)
         message($lang_common['Bad request'], false, '404 Not Found');
     }
 
-    $diff = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
+    $diff = ($feather_user['timezone'] + $feather_user['dst']) * 3600;
     $ban['expire'] = ($ban['expire'] != '') ? gmdate('Y-m-d', $ban['expire'] + $diff) : '';
 
     $ban['mode'] = 'edit';
@@ -96,7 +96,7 @@ function edit_ban_info($id)
 
 function insert_ban($feather)
 {
-    global $db, $lang_admin_bans, $pun_user;
+    global $db, $lang_admin_bans, $feather_user;
 
     confirm_referrer(array(get_link_r('admin/bans/add/'), get_link_r('admin/bans/edit/'.$feather->request->post('ban_id').'/')));
 
@@ -170,7 +170,7 @@ function insert_ban($feather)
         $ban_ip = implode(' ', $addresses);
     }
 
-    require PUN_ROOT.'include/email.php';
+    require FEATHER_ROOT.'include/email.php';
     if ($ban_email != '' && !is_valid_email($ban_email)) {
         if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
             message($lang_admin_bans['Invalid e-mail message']);
@@ -184,7 +184,7 @@ function insert_ban($feather)
             message($lang_admin_bans['Invalid date message'].' '.$lang_admin_bans['Invalid date reasons']);
         }
 
-        $diff = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
+        $diff = ($feather_user['timezone'] + $feather_user['dst']) * 3600;
         $ban_expire -= $diff;
 
         if ($ban_expire <= time()) {
@@ -200,14 +200,14 @@ function insert_ban($feather)
     $ban_message = ($ban_message != '') ? '\''.$db->escape($ban_message).'\'' : 'NULL';
 
     if ($feather->request->post('mode') == 'add') {
-        $db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_user.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
+        $db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_user.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$feather_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
     } else {
         $db->query('UPDATE '.$db->prefix.'bans SET username='.$ban_user.', ip='.$ban_ip.', email='.$ban_email.', message='.$ban_message.', expire='.$ban_expire.' WHERE id='.intval($feather->request->post('ban_id'))) or error('Unable to update ban', __FILE__, __LINE__, $db->error());
     }
 
     // Regenerate the bans cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_bans_cache();
@@ -225,7 +225,7 @@ function remove_ban($ban_id)
 
     // Regenerate the bans cache
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require PUN_ROOT.'include/cache.php';
+        require FEATHER_ROOT.'include/cache.php';
     }
 
     generate_bans_cache();
@@ -242,10 +242,10 @@ function find_ban($feather)
     // trim() all elements in $form
     $ban_info['conditions'] = $ban_info['query_str'] = array();
 
-    $expire_after = !empty($feather->request->get('expire_after')) ? pun_trim($feather->request->get('expire_after')) : '';
-    $expire_before = !empty($feather->request->get('expire_before')) ? pun_trim($feather->request->get('expire_before')) : '';
-    $ban_info['order_by'] = !empty($feather->request->get('order_by')) && in_array($feather->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$feather->request->get('order_by') : 'b.username';
-    $ban_info['direction'] = !empty($feather->request->get('direction')) && $feather->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
+    $expire_after = $feather->request->get('expire_after') ? pun_trim($feather->request->get('expire_after')) : '';
+    $expire_before = $feather->request->get('expire_before') ? pun_trim($feather->request->get('expire_before')) : '';
+    $ban_info['order_by'] = $feather->request->get('order_by') && in_array($feather->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$feather->request->get('order_by') : 'b.username';
+    $ban_info['direction'] = $feather->request->get('direction') && $feather->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
 
     $ban_info['query_str'][] = 'order_by='.$ban_info['order_by'];
     $ban_info['query_str'][] = 'direction='.$ban_info['direction'];
@@ -274,22 +274,22 @@ function find_ban($feather)
 
     $like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
 
-    if (!empty($feather->request->get('username'))) {
+    if ($feather->request->get('username')) {
         $ban_info['conditions'][] = 'b.username ' . $like_command . ' \'' . $db->escape(str_replace('*', '%', $feather->request->get('username'))) . '\'';
         $ban_info['query_str'][] = 'username=' . urlencode($feather->request->get('username'));
     }
 
-    if (!empty($feather->request->get('ip'))) {
+    if ($feather->request->get('ip')) {
         $ban_info['conditions'][] = 'b.ip ' . $like_command . ' \'' . $db->escape(str_replace('*', '%', $feather->request->get('ip'))) . '\'';
         $ban_info['query_str'][] = 'ip=' . urlencode($feather->request->get('ip'));
     }
 
-    if (!empty($feather->request->get('email'))) {
+    if ($feather->request->get('email')) {
         $ban_info['conditions'][] = 'b.email ' . $like_command . ' \'' . $db->escape(str_replace('*', '%', $feather->request->get('email'))) . '\'';
         $ban_info['query_str'][] = 'email=' . urlencode($feather->request->get('email'));
     }
 
-    if (!empty($feather->request->get('message'))) {
+    if ($feather->request->get('message')) {
         $ban_info['conditions'][] = 'b.message ' . $like_command . ' \'' . $db->escape(str_replace('*', '%', $feather->request->get('message'))) . '\'';
         $ban_info['query_str'][] = 'message=' . urlencode($feather->request->get('message'));
     }
