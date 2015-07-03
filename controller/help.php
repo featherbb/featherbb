@@ -11,17 +11,22 @@ namespace controller;
 
 class help
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
 
-                    // Load the help.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/help.php';
+        // Load the help.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/help.php';
 
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_help['Help']);
@@ -32,7 +37,7 @@ class help
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'feather_user' => $feather_user,
@@ -45,13 +50,13 @@ class help
                             )
                     );
 
-        $feather->render('help.php', array(
+        $this->feather->render('help.php', array(
                             'lang_help' => $lang_help,
                             'lang_common' => $lang_common,
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

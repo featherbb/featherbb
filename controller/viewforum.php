@@ -11,9 +11,14 @@ namespace controller;
 
 class viewforum
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display($id, $name = null, $page = null)
     {
-        global $feather, $lang_common, $lang_forum, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_forum, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -72,7 +77,7 @@ $url_forum = url_friendly($cur_forum['forum_name']);
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -89,7 +94,7 @@ $url_forum = url_friendly($cur_forum['forum_name']);
                     // Print topics
                     $forum_data = print_topics($id, $sort_by, $start_from);
 
-        $feather->render('viewforum.php', array(
+        $this->feather->render('viewforum.php', array(
                             'id' => $id,
                             'forum_data' => $forum_data,
                             'lang_common' => $lang_common,
@@ -104,7 +109,7 @@ $url_forum = url_friendly($cur_forum['forum_name']);
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

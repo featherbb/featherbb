@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class bans
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_bans, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_bans, $feather_config, $feather_user, $feather_start, $db;
 
         define('PUN_ADMIN_CONSOLE', 1);
 
@@ -30,13 +35,13 @@ class bans
         require FEATHER_ROOT . 'model/admin/bans.php';
 
         // Display bans
-        if ($feather->request->get('find_ban')) {
-            $ban_info = find_ban($feather);
+        if ($this->feather->request->get('find_ban')) {
+            $ban_info = find_ban($this->feather);
 
             // Determine the ban offset (based on $_GET['p'])
             $num_pages = ceil($ban_info['num_bans'] / 50);
 
-            $p = (!$feather->request->get('p') || $feather->request->get('p') <= 1 || $feather->request->get('p') > $num_pages) ? 1 : intval($feather->request->get('p'));
+            $p = (!$this->feather->request->get('p') || $this->feather->request->get('p') <= 1 || $this->feather->request->get('p') > $num_pages) ? 1 : intval($this->feather->request->get('p'));
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
@@ -48,7 +53,7 @@ class bans
             }
             require FEATHER_ROOT . 'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                     'lang_common' => $lang_common,
                     'page_title' => $page_title,
                     'feather_user' => $feather_user,
@@ -63,14 +68,14 @@ class bans
                 )
             );
 
-            $feather->render('admin/bans/search_ban.php', array(
+            $this->feather->render('admin/bans/search_ban.php', array(
                     'lang_admin_bans' => $lang_admin_bans,
                     'lang_admin_common' => $lang_admin_common,
                     'ban_data' => print_bans($ban_info['conditions'], $ban_info['order_by'], $ban_info['direction'], $start_from),
                 )
             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                     'lang_common' => $lang_common,
                     'feather_user' => $feather_user,
                     'feather_config' => $feather_config,
@@ -90,7 +95,7 @@ class bans
         }
         require FEATHER_ROOT . 'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -106,13 +111,13 @@ class bans
 
         generate_admin_menu('bans');
 
-        $feather->render('admin/bans/admin_bans.php', array(
+        $this->feather->render('admin/bans/admin_bans.php', array(
                 'lang_admin_bans' => $lang_admin_bans,
                 'lang_admin_common' => $lang_admin_common,
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -126,7 +131,7 @@ class bans
 
     public function add()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_bans, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_bans, $feather_config, $feather_user, $feather_start, $db;
 
         define('PUN_ADMIN_CONSOLE', 1);
 
@@ -142,8 +147,8 @@ class bans
         // Load the bans.php model file
         require FEATHER_ROOT . 'model/admin/bans.php';
 
-        if ($feather->request->post('add_edit_ban')) {
-            insert_ban($feather);
+        if ($this->feather->request->post('add_edit_ban')) {
+            insert_ban($this->feather);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
@@ -154,7 +159,7 @@ class bans
         }
         require FEATHER_ROOT . 'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -170,14 +175,14 @@ class bans
 
         generate_admin_menu('bans');
 
-        $feather->render('admin/bans/add_ban.php', array(
+        $this->feather->render('admin/bans/add_ban.php', array(
                 'lang_admin_bans' => $lang_admin_bans,
                 'lang_admin_common' => $lang_admin_common,
-                'ban' => add_ban_info($feather),
+                'ban' => add_ban_info($this->feather),
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -191,7 +196,7 @@ class bans
 
     public function delete($id)
     {
-        global $feather, $lang_common, $lang_admin_common, $feather_config, $lang_admin_bans, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $feather_config, $lang_admin_bans, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
@@ -211,7 +216,7 @@ class bans
 
     public function edit($id)
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_bans, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_bans, $feather_config, $feather_user, $feather_start, $db;
 
         define('PUN_ADMIN_CONSOLE', 1);
 
@@ -227,8 +232,8 @@ class bans
         // Load the bans.php model file
         require FEATHER_ROOT . 'model/admin/bans.php';
 
-        if ($feather->request->post('add_edit_ban')) {
-            insert_ban($feather);
+        if ($this->feather->request->post('add_edit_ban')) {
+            insert_ban($this->feather);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
@@ -239,7 +244,7 @@ class bans
         }
         require FEATHER_ROOT . 'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -255,14 +260,14 @@ class bans
 
         generate_admin_menu('bans');
 
-        $feather->render('admin/bans/add_ban.php', array(
+        $this->feather->render('admin/bans/add_ban.php', array(
                 'lang_admin_bans' => $lang_admin_bans,
                 'lang_admin_common' => $lang_admin_common,
                 'ban' => edit_ban_info($id),
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,

@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class plugins
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -24,7 +29,7 @@ class plugins
         define('PUN_ADMIN_CONSOLE', 1);
 
             // The plugin to load should be supplied via GET
-            $plugin = $feather->request->get('plugin') ? $feather->request->get('plugin') : '';
+            $plugin = $this->feather->request->get('plugin') ? $this->feather->request->get('plugin') : '';
         if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -51,7 +56,7 @@ class plugins
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                     'lang_common' => $lang_common,
                     'page_title' => $page_title,
                     'feather_user' => $feather_user,
@@ -72,9 +77,9 @@ class plugins
             message(sprintf($lang_admin_common['Plugin failed message'], $plugin));
         }
 
-        $feather->render('admin/loader.php');
+        $this->feather->render('admin/loader.php');
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                     'lang_common' => $lang_common,
                     'feather_user' => $feather_user,
                     'feather_config' => $feather_config,

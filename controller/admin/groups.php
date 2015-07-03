@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class groups
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -32,8 +37,8 @@ class groups
         $groups = fetch_groups();
 
         // Set default group
-        if ($feather->request->isPost()) {
-            set_default_group($groups, $feather);
+        if ($this->feather->request->isPost()) {
+            set_default_group($groups, $this->feather);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
@@ -42,7 +47,7 @@ class groups
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -57,7 +62,7 @@ class groups
 
         generate_admin_menu('groups');
 
-        $feather->render('admin/groups/admin_groups.php', array(
+        $this->feather->render('admin/groups/admin_groups.php', array(
                 'lang_admin_groups'    =>    $lang_admin_groups,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'feather_config'    =>    $feather_config,
@@ -66,7 +71,7 @@ class groups
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -80,7 +85,7 @@ class groups
 
     public function delete($id)
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
@@ -115,8 +120,8 @@ class groups
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
         if (!$is_member || isset($_POST['del_group'])) {
-            if ($feather->request->post('del_group_comply') || $feather->request->post('del_group')) {
-                delete_group($feather, $id);
+            if ($this->feather->request->post('del_group_comply') || $this->feather->request->post('del_group')) {
+                delete_group($this->feather, $id);
             } else {
                 $group_title = get_group_title($id);
 
@@ -126,7 +131,7 @@ class groups
                 }
                 require FEATHER_ROOT.'include/header.php';
 
-                $feather->render('header.php', array(
+                $this->feather->render('header.php', array(
                         'lang_common' => $lang_common,
                         'page_title' => $page_title,
                         'feather_user' => $feather_user,
@@ -141,7 +146,7 @@ class groups
 
                 generate_admin_menu('groups');
 
-                $feather->render('admin/groups/confirm_delete.php', array(
+                $this->feather->render('admin/groups/confirm_delete.php', array(
                         'lang_admin_groups'    =>    $lang_admin_groups,
                         'lang_admin_common'    =>    $lang_admin_common,
                         'group_title'      =>  $group_title,
@@ -149,7 +154,7 @@ class groups
                     )
                 );
 
-                $feather->render('footer.php', array(
+                $this->feather->render('footer.php', array(
                         'lang_common' => $lang_common,
                         'feather_user' => $feather_user,
                         'feather_config' => $feather_config,
@@ -168,7 +173,7 @@ class groups
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -183,7 +188,7 @@ class groups
 
         generate_admin_menu('groups');
 
-        $feather->render('admin/groups/delete_group.php', array(
+        $this->feather->render('admin/groups/delete_group.php', array(
                 'lang_admin_groups'    =>    $lang_admin_groups,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'id'    => $id,
@@ -191,7 +196,7 @@ class groups
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -205,7 +210,7 @@ class groups
 
     public function addedit($id = '')
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -224,12 +229,12 @@ class groups
         $groups = fetch_groups();
 
         // Add/edit a group (stage 2)
-        if ($feather->request->post('add_edit_group')) {
-            add_edit_group($groups, $feather);
+        if ($this->feather->request->post('add_edit_group')) {
+            add_edit_group($groups, $this->feather);
         }
 
         // Add/edit a group (stage 1)
-        elseif ($feather->request->post('add_group') || isset($id)) {
+        elseif ($this->feather->request->post('add_group') || isset($id)) {
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
             $required_fields = array('req_title' => $lang_admin_groups['Group title label']);
             $focus_element = array('groups2', 'req_title');
@@ -238,7 +243,7 @@ class groups
             }
             require FEATHER_ROOT.'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                     'lang_common' => $lang_common,
                     'page_title' => $page_title,
                     'feather_user' => $feather_user,
@@ -255,17 +260,17 @@ class groups
 
             generate_admin_menu('groups');
 
-            $feather->render('admin/groups/add_edit_group.php', array(
+            $this->feather->render('admin/groups/add_edit_group.php', array(
                     'lang_admin_groups'    =>    $lang_admin_groups,
                     'lang_admin_common'    =>    $lang_admin_common,
                     'feather_config'    =>    $feather_config,
-                    'group'    =>    info_add_group($groups, $feather, $id),
+                    'group'    =>    info_add_group($groups, $this->feather, $id),
                     'groups'    =>    $groups,
                     'id'    => $id,
                 )
             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                     'lang_common' => $lang_common,
                     'feather_user' => $feather_user,
                     'feather_config' => $feather_config,

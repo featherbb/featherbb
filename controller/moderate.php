@@ -11,6 +11,11 @@ namespace controller;
 
 class moderate
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function gethostpost($pid)
     {
         global $lang_common, $feather_user;
@@ -65,7 +70,7 @@ class moderate
 
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
-        global $feather, $lang_common, $lang_topic, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_topic, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -87,7 +92,7 @@ class moderate
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            display_ip_address($feather);
+            display_ip_address($this->feather);
         }
 
                     // Make sure that only admmods allowed access this page
@@ -168,7 +173,7 @@ class moderate
                         }
                         require FEATHER_ROOT.'include/header.php';
 
-                        $feather->render('header.php', array(
+                        $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -182,7 +187,7 @@ class moderate
                                     )
                             );
 
-                        $feather->render('moderate/move_topics.php', array(
+                        $this->feather->render('moderate/move_topics.php', array(
                                     'action'    =>    'single',
                                     'id'    =>    $id,
                                     'topics'    =>    $id,
@@ -191,7 +196,7 @@ class moderate
                                     )
                             );
 
-                        $feather->render('footer.php', array(
+                        $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -208,8 +213,8 @@ class moderate
                     if ($action == 'moderate') {
 
                             // Delete one or more posts
-                            if ($feather->request->post('delete_posts') || $feather->request->post('delete_posts_comply')) {
-                                $posts = delete_posts($feather, $id, $fid, $p);
+                            if ($this->feather->request->post('delete_posts') || $this->feather->request->post('delete_posts_comply')) {
+                                $posts = delete_posts($this->feather, $id, $fid, $p);
 
                                 $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
                                 if (!defined('PUN_ACTIVE_PAGE')) {
@@ -217,7 +222,7 @@ class moderate
                                 }
                                 require FEATHER_ROOT.'include/header.php';
 
-                                $feather->render('header.php', array(
+                                $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -231,7 +236,7 @@ class moderate
                                             )
                                     );
 
-                                $feather->render('moderate/delete_posts.php', array(
+                                $this->feather->render('moderate/delete_posts.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_misc' => $lang_misc,
                                     'id' => $id,
@@ -239,7 +244,7 @@ class moderate
                                     )
                             );
 
-                                $feather->render('footer.php', array(
+                                $this->feather->render('footer.php', array(
                                             'lang_common' => $lang_common,
                                             'feather_user' => $feather_user,
                                             'feather_config' => $feather_config,
@@ -251,8 +256,8 @@ class moderate
 
                                 require FEATHER_ROOT.'include/footer.php';
                             }
-                        if ($feather->request->post('split_posts') || $feather->request->post('split_posts_comply')) {
-                            $posts = split_posts($feather, $id, $fid, $p);
+                        if ($this->feather->request->post('split_posts') || $this->feather->request->post('split_posts_comply')) {
+                            $posts = split_posts($this->feather, $id, $fid, $p);
 
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
                             $focus_element = array('subject','new_subject');
@@ -261,7 +266,7 @@ class moderate
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -275,7 +280,7 @@ class moderate
                                             )
                                     );
 
-                            $feather->render('moderate/split_posts.php', array(
+                            $this->feather->render('moderate/split_posts.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_misc' => $lang_misc,
                                     'id' => $id,
@@ -283,7 +288,7 @@ class moderate
                                     )
                             );
 
-                            $feather->render('footer.php', array(
+                            $this->feather->render('footer.php', array(
                                             'lang_common' => $lang_common,
                                             'feather_user' => $feather_user,
                                             'feather_config' => $feather_config,
@@ -321,7 +326,7 @@ class moderate
                         }
                         require FEATHER_ROOT.'include/header.php';
 
-                        $feather->render('header.php', array(
+                        $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -335,7 +340,7 @@ class moderate
                                     )
                             );
 
-                        $feather->render('moderate/posts_view.php', array(
+                        $this->feather->render('moderate/posts_view.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_topic' => $lang_topic,
                                     'lang_misc' => $lang_misc,
@@ -351,7 +356,7 @@ class moderate
                                     )
                             );
 
-                        $feather->render('footer.php', array(
+                        $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -367,7 +372,7 @@ class moderate
 
     public function display($id, $name = null, $page = null)
     {
-        global $feather, $lang_common, $lang_forum, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_forum, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -416,7 +421,7 @@ class moderate
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -432,7 +437,7 @@ class moderate
 
         $topic_data = display_topics($id, $sort_by, $start_from);
 
-        $feather->render('moderate/moderator_forum.php', array(
+        $this->feather->render('moderate/moderator_forum.php', array(
                             'lang_common' => $lang_common,
                             'lang_misc' => $lang_misc,
                             'id' => $id,
@@ -447,7 +452,7 @@ class moderate
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,
@@ -462,7 +467,7 @@ class moderate
 
     public function dealposts($fid)
     {
-        global $feather, $lang_common, $lang_forum, $lang_topic, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_forum, $lang_topic, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -486,12 +491,12 @@ class moderate
         }
 
             // Move one or more topics
-            if ($feather->request->post('move_topics') || $feather->request->post('move_topics_to')) {
-                if ($feather->request->post('move_topics_to')) {
-                    move_topics_to($feather, $fid);
+            if ($this->feather->request->post('move_topics') || $this->feather->request->post('move_topics_to')) {
+                if ($this->feather->request->post('move_topics_to')) {
+                    move_topics_to($this->feather, $fid);
                 }
 
-                $topics = $feather->request->post('topics') ? $feather->request->post('topics') : array();
+                $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
                 if (empty($topics)) {
                     message($lang_misc['No topics selected']);
                 }
@@ -507,7 +512,7 @@ class moderate
                 }
                 require FEATHER_ROOT.'include/header.php';
 
-                $feather->render('header.php', array(
+                $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -522,7 +527,7 @@ class moderate
                     );
 
 
-                $feather->render('moderate/move_topics.php', array(
+                $this->feather->render('moderate/move_topics.php', array(
                             'action'    =>    'multi',
                             'id'    =>    $fid,
                             'topics'    =>    $topics,
@@ -531,7 +536,7 @@ class moderate
                             )
                     );
 
-                $feather->render('footer.php', array(
+                $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,
@@ -545,12 +550,12 @@ class moderate
             }
 
             // Merge two or more topics
-            elseif ($feather->request->post('merge_topics') || $feather->request->post('merge_topics_comply')) {
-                if ($feather->request->post('merge_topics_comply')) {
-                    merge_topics($feather, $fid);
+            elseif ($this->feather->request->post('merge_topics') || $this->feather->request->post('merge_topics_comply')) {
+                if ($this->feather->request->post('merge_topics_comply')) {
+                    merge_topics($this->feather, $fid);
                 }
 
-                $topics = $feather->request->post('topics') ? $feather->request->post('topics') : array();
+                $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
                 if (count($topics) < 2) {
                     message($lang_misc['Not enough topics selected']);
                 }
@@ -561,7 +566,7 @@ class moderate
                 }
                 require FEATHER_ROOT.'include/header.php';
 
-                $feather->render('header.php', array(
+                $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -575,7 +580,7 @@ class moderate
                             )
                     );
 
-                $feather->render('moderate/merge_topics.php', array(
+                $this->feather->render('moderate/merge_topics.php', array(
                             'id'    =>    $fid,
                             'topics'    =>    $topics,
                             'lang_misc'    =>    $lang_misc,
@@ -583,7 +588,7 @@ class moderate
                             )
                     );
 
-                $feather->render('footer.php', array(
+                $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,
@@ -597,8 +602,8 @@ class moderate
             }
 
             // Delete one or more topics
-            elseif ($feather->request->post('delete_topics') || $feather->request->post('delete_topics_comply')) {
-                $topics = $feather->request->post('topics') ? $feather->request->post('topics') : array();
+            elseif ($this->feather->request->post('delete_topics') || $this->feather->request->post('delete_topics_comply')) {
+                $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
                 if (empty($topics)) {
                     message($lang_misc['No topics selected']);
                 }
@@ -613,7 +618,7 @@ class moderate
                 }
                 require FEATHER_ROOT.'include/header.php';
 
-                $feather->render('header.php', array(
+                $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -628,7 +633,7 @@ class moderate
                     );
 
 
-                $feather->render('moderate/delete_topics.php', array(
+                $this->feather->render('moderate/delete_topics.php', array(
                             'id'    =>    $fid,
                             'topics'    =>    $topics,
                             'lang_misc'    =>    $lang_misc,
@@ -636,7 +641,7 @@ class moderate
                             )
                     );
 
-                $feather->render('footer.php', array(
+                $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,
@@ -651,17 +656,17 @@ class moderate
 
 
             // Open or close one or more topics
-            elseif ($feather->request->post('open') || $feather->request->post('close')) {
-                $action = ($feather->request->post('open')) ? 0 : 1;
+            elseif ($this->feather->request->post('open') || $this->feather->request->post('close')) {
+                $action = ($this->feather->request->post('open')) ? 0 : 1;
 
                     // There could be an array of topic IDs in $_POST
-                    if ($feather->request->post('open') || $feather->request->post('close')) {
+                    if ($this->feather->request->post('open') || $this->feather->request->post('close')) {
                         confirm_referrer(array(
-                                    get_link_r('moderate/forum/'.$fid.'/page/'.$feather->request->post('page').'/'),
+                                    get_link_r('moderate/forum/'.$fid.'/page/'.$this->feather->request->post('page').'/'),
                                     get_link_r('moderate/forum/'.$fid.'/'),
                                     ));
 
-                        $topics = $feather->request->post('topics') ? @array_map('intval', @array_keys($feather->request->post('topics'))) : array();
+                        $topics = $this->feather->request->post('topics') ? @array_map('intval', @array_keys($this->feather->request->post('topics'))) : array();
                         if (empty($topics)) {
                             message($lang_misc['No topics selected']);
                         }

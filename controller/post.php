@@ -11,6 +11,11 @@ namespace controller;
 
 class post
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function newreply($fid = null, $tid = null, $qid = null)
     {
         Post::newpost('', $fid, $tid);
@@ -18,7 +23,7 @@ class post
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        global $feather, $lang_common, $lang_prof_reg, $feather_config, $feather_user, $feather_start, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
+        global $lang_common, $lang_prof_reg, $feather_config, $feather_user, $feather_start, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
 
         // Load the post.php model file
         require FEATHER_ROOT.'model/post.php';
@@ -34,7 +39,7 @@ class post
 $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
-        if ($feather->request->post('username')) {
+        if ($this->feather->request->post('username')) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
@@ -76,29 +81,29 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
         }
 
                     // Did someone just hit "Submit" or "Preview"?
-                    if ($feather->request()->isPost()) {
+                    if ($this->feather->request()->isPost()) {
 
                             // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
-                            if ($feather->request->post('pid')) {
-                                $pid = $feather->request->post('pid');
+                            if ($this->feather->request->post('pid')) {
+                                $pid = $this->feather->request->post('pid');
                             } else {
                                 $pid = '';
                             }
 
-                        if ($feather->request->post('page')) {
-                            $page = $feather->request->post('page');
+                        if ($this->feather->request->post('page')) {
+                            $page = $this->feather->request->post('page');
                         } else {
                             $page = '';
                         }
 
                             // Let's see if everything went right
-                            $errors = check_errors_before_post($fid, $tid, $qid, $pid, $page, $feather, $errors);
+                            $errors = check_errors_before_post($fid, $tid, $qid, $pid, $page, $this->feather, $errors);
 
                             // Setup some variables before post
-                            $post = setup_variables($feather, $errors, $is_admmod);
+                            $post = setup_variables($this->feather, $errors, $is_admmod);
 
                             // Did everything go according to plan?
-                            if (empty($errors) && !$feather->request->post('preview')) {
+                            if (empty($errors) && !$this->feather->request->post('preview')) {
                                 require FEATHER_ROOT.'include/search_idx.php';
 
                                     // If it's a reply
@@ -108,7 +113,7 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
 
                                             // Should we send out notifications?
                                             if ($feather_config['o_topic_subscriptions'] == '1') {
-                                                send_notifications_reply($tid, $cur_posting, $new['pid']);
+                                                send_notifications_reply($tid, $cur_posting, $new['pid'], $post);
                                             }
                                     }
                                     // If it's a new topic
@@ -179,7 +184,7 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'feather_user' => $feather_user,
@@ -195,7 +200,7 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
                     );
 
                     // Get the current state of checkboxes
-                    $checkboxes = get_checkboxes($feather, $fid, $is_admmod, $is_subscribed);
+                    $checkboxes = get_checkboxes($this->feather, $fid, $is_admmod, $is_subscribed);
 
                     // Check to see if the topic review is to be displayed
                     if ($tid && $feather_config['o_topic_review'] != '0') {
@@ -204,7 +209,7 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
                         $post_data = '';
                     }
 
-        $feather->render('post.php', array(
+        $this->feather->render('post.php', array(
                             'post' => $post,
                             'tid' => $tid,
                             'fid' => $fid,
@@ -218,7 +223,7 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
                             'index_questions' => $index_questions,
                             'checkboxes' => $checkboxes,
                             'cur_posting' => $cur_posting,
-                            'feather' => $feather,
+                            'feather' => $this->feather,
                             'action' => $action,
                             'form' => $form,
                             'post_data' => $post_data,
@@ -229,7 +234,7 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

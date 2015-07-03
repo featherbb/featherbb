@@ -11,48 +11,53 @@ namespace controller;
 
 class profile
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display($id, $section = null)
     {
-        global $feather, $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $feather_start, $db, $pd, $forum_time_formats, $forum_date_formats;
+        global $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $feather_start, $db, $pd, $forum_time_formats, $forum_date_formats;
 
-                    // Include UTF-8 function
-                    require FEATHER_ROOT.'include/utf8/substr_replace.php';
+        // Include UTF-8 function
+        require FEATHER_ROOT.'include/utf8/substr_replace.php';
         require FEATHER_ROOT.'include/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-                    require FEATHER_ROOT.'include/utf8/strcasecmp.php';
+        require FEATHER_ROOT.'include/utf8/strcasecmp.php';
 
-                    // Load the prof_reg.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/prof_reg.php';
+        // Load the prof_reg.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/prof_reg.php';
 
-                    // Load the profile.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/profile.php';
+        // Load the profile.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/profile.php';
 
-                    // Load the profile.php model file
-                    require FEATHER_ROOT.'model/profile.php';
+        // Load the profile.php model file
+        require FEATHER_ROOT.'model/profile.php';
 
-        if ($feather->request->post('update_group_membership')) {
+        if ($this->feather->request->post('update_group_membership')) {
             if ($feather_user['g_id'] > PUN_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            update_group_membership($id, $feather);
-        } elseif ($feather->request->post('update_forums')) {
+            update_group_membership($id, $this->feather);
+        } elseif ($this->feather->request->post('update_forums')) {
             if ($feather_user['g_id'] > PUN_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            update_mod_forums($id, $feather);
-        } elseif ($feather->request->post('ban')) {
+            update_mod_forums($id, $this->feather);
+        } elseif ($this->feather->request->post('ban')) {
             if ($feather_user['g_id'] != PUN_ADMIN && ($feather_user['g_moderator'] != '1' || $feather_user['g_mod_ban_users'] == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             ban_user($id);
-        } elseif ($feather->request->post('delete_user') || $feather->request->post('delete_user_comply')) {
+        } elseif ($this->feather->request->post('delete_user') || $this->feather->request->post('delete_user_comply')) {
             if ($feather_user['g_id'] > PUN_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            delete_user($id, $feather);
+            delete_user($id, $this->feather);
 
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Confirm delete user']);
             if (!defined('PUN_ACTIVE_PAGE')) {
@@ -60,7 +65,7 @@ class profile
             }
             require FEATHER_ROOT.'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -74,15 +79,15 @@ class profile
                                     )
                             );
 
-            $feather->render('profile/delete_user.php', array(
+            $this->feather->render('profile/delete_user.php', array(
                                     'lang_common' => $lang_common,
-                                    'username' => $username,
+                                    'username' => get_username($id),
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
                                     )
                             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -90,7 +95,10 @@ class profile
                                     'footer_style' => 'profile',
                                     )
                             );
-        } elseif ($feather->request->post('form_sent')) {
+            
+            require FEATHER_ROOT.'include/footer.php';
+            
+        } elseif ($this->feather->request->post('form_sent')) {
 
                             // Fetch the user group of the user we are editing
                             $info = fetch_user_group($id);
@@ -104,7 +112,7 @@ class profile
                                     message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            update_profile($id, $info, $section, $feather);
+            update_profile($id, $info, $section, $this->feather);
         }
 
         $user = get_user_info($id);
@@ -133,7 +141,7 @@ class profile
                         }
                         require FEATHER_ROOT.'include/header.php';
 
-                        $feather->render('header.php', array(
+                        $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -147,14 +155,14 @@ class profile
                                     )
                             );
 
-                        $feather->render('profile/view_profile.php', array(
+                        $this->feather->render('profile/view_profile.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_profile' => $lang_profile,
                                     'user_info' => $user_info,
                                     )
                             );
 
-                        $feather->render('footer.php', array(
+                        $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -175,7 +183,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -191,7 +199,7 @@ class profile
 
                             generate_profile_menu('essentials', $id);
 
-                            $feather->render('profile/section_essentials.php', array(
+                            $this->feather->render('profile/section_essentials.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'lang_prof_reg' => $lang_prof_reg,
@@ -214,7 +222,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -230,7 +238,7 @@ class profile
 
                             generate_profile_menu('personal', $id);
 
-                            $feather->render('profile/section_personal.php', array(
+                            $this->feather->render('profile/section_personal.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'user' => $user,
@@ -243,7 +251,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -259,7 +267,7 @@ class profile
 
                             generate_profile_menu('messaging', $id);
 
-                            $feather->render('profile/section_messaging.php', array(
+                            $this->feather->render('profile/section_messaging.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'user' => $user,
@@ -291,7 +299,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -307,7 +315,7 @@ class profile
 
                             generate_profile_menu('personality', $id);
 
-                            $feather->render('profile/section_personality.php', array(
+                            $this->feather->render('profile/section_personality.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'user_avatar' => $user_avatar,
@@ -323,7 +331,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -339,7 +347,7 @@ class profile
 
                             generate_profile_menu('display', $id);
 
-                            $feather->render('profile/section_display.php', array(
+                            $this->feather->render('profile/section_display.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'user' => $user,
@@ -352,7 +360,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -368,7 +376,7 @@ class profile
 
                             generate_profile_menu('privacy', $id);
 
-                            $feather->render('profile/section_privacy.php', array(
+                            $this->feather->render('profile/section_privacy.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'lang_prof_reg' => $lang_prof_reg,
@@ -387,7 +395,7 @@ class profile
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                             'lang_common' => $lang_common,
                                             'page_title' => $page_title,
                                             'p' => $p,
@@ -403,7 +411,7 @@ class profile
 
                             generate_profile_menu('admin', $id);
 
-                            $feather->render('profile/section_admin.php', array(
+                            $this->feather->render('profile/section_admin.php', array(
                                             'lang_common' => $lang_common,
                                             'lang_profile' => $lang_profile,
                                             'user' => $user,
@@ -413,7 +421,7 @@ class profile
                             message($lang_common['Bad request'], false, '404 Not Found');
                         }
 
-                        $feather->render('footer.php', array(
+                        $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -428,7 +436,7 @@ class profile
 
     public function action($id, $action)
     {
-        global $feather, $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $feather_start, $db;
 
                     // Include UTF-8 function
                     require FEATHER_ROOT.'include/utf8/substr_replace.php';
@@ -444,7 +452,7 @@ class profile
                     // Load the profile.php model file
                     require FEATHER_ROOT.'model/profile.php';
 
-        if ($action != 'change_pass' || !$feather->request->get('key')) {
+        if ($action != 'change_pass' || !$this->feather->request->get('key')) {
             if ($feather_user['g_read_board'] == '0') {
                 message($lang_common['No view'], false, '403 Forbidden');
             } elseif ($feather_user['g_view_users'] == '0' && ($feather_user['is_guest'] || $feather_user['id'] != $id)) {
@@ -453,7 +461,7 @@ class profile
         }
 
         if ($action == 'change_pass') {
-            change_pass($id, $feather);
+            change_pass($id, $this->feather);
 
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Change pass']);
             $required_fields = array('req_old_password' => $lang_profile['Old pass'], 'req_new_password1' => $lang_profile['New pass'], 'req_new_password2' => $lang_profile['Confirm new pass']);
@@ -463,7 +471,7 @@ class profile
             }
             require FEATHER_ROOT.'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -477,7 +485,7 @@ class profile
                                     )
                             );
 
-            $feather->render('profile/change_pass.php', array(
+            $this->feather->render('profile/change_pass.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'lang_profile' => $lang_profile,
@@ -485,7 +493,7 @@ class profile
                                     )
                             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -496,7 +504,7 @@ class profile
 
             require FEATHER_ROOT.'include/footer.php';
         } elseif ($action == 'change_email') {
-            change_email($id, $feather);
+            change_email($id, $this->feather);
 
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Change email']);
             $required_fields = array('req_new_email' => $lang_profile['New email'], 'req_password' => $lang_common['Password']);
@@ -506,7 +514,7 @@ class profile
             }
             require FEATHER_ROOT.'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -520,14 +528,14 @@ class profile
                                     )
                             );
 
-            $feather->render('profile/change_mail.php', array(
+            $this->feather->render('profile/change_mail.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
                                     )
                             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -546,7 +554,7 @@ class profile
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            if ($feather->request()->isPost()) {
+            if ($this->feather->request()->isPost()) {
                 upload_avatar($id, $_FILES);
             }
 
@@ -558,7 +566,7 @@ class profile
             }
             require FEATHER_ROOT.'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                                     'lang_common' => $lang_common,
                                     'page_title' => $page_title,
                                     'p' => $p,
@@ -572,7 +580,7 @@ class profile
                                     )
                             );
 
-            $feather->render('profile/upload_avatar.php', array(
+            $this->feather->render('profile/upload_avatar.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_profile' => $lang_profile,
                                     'feather_config' => $feather_config,
@@ -581,7 +589,7 @@ class profile
                                     )
                             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'feather_config' => $feather_config,
@@ -606,7 +614,7 @@ class profile
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            promote_user($id, $feather);
+            promote_user($id, $this->feather);
         } else {
             message($lang_common['Bad request'], false, '404 Not Found');
         }

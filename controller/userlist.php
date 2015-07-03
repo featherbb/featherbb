@@ -11,9 +11,14 @@ namespace controller;
 
 class userlist
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -21,30 +26,30 @@ class userlist
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-                    // Load the userlist.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/userlist.php';
+        // Load the userlist.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/userlist.php';
 
-                    // Load the search.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/search.php';
+        // Load the search.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/search.php';
 
-                    // Load the userlist.php model file
-                    require FEATHER_ROOT.'model/userlist.php';
+        // Load the userlist.php model file
+        require FEATHER_ROOT.'model/userlist.php';
 
 
-                    // Determine if we are allowed to view post counts
-                    $show_post_count = ($feather_config['o_show_post_count'] == '1' || $feather_user['is_admmod']) ? true : false;
+        // Determine if we are allowed to view post counts
+        $show_post_count = ($feather_config['o_show_post_count'] == '1' || $feather_user['is_admmod']) ? true : false;
 
-        $username = $feather->request->get('username') && $feather_user['g_search_users'] == '1' ? pun_trim($feather->request->get('username')) : '';
-        $show_group = $feather->request->get('show_group') ? intval($feather->request->get('show_group')) : -1;
-        $sort_by = $feather->request->get('sort_by') && (in_array($feather->request->get('sort_by'), array('username', 'registered')) || ($feather->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $feather->request->get('sort_by') : 'username';
-        $sort_dir = $feather->request->get('sort_dir') && $feather->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
+        $username = $this->feather->request->get('username') && $feather_user['g_search_users'] == '1' ? pun_trim($this->feather->request->get('username')) : '';
+        $show_group = $this->feather->request->get('show_group') ? intval($this->feather->request->get('show_group')) : -1;
+        $sort_by = $this->feather->request->get('sort_by') && (in_array($this->feather->request->get('sort_by'), array('username', 'registered')) || ($this->feather->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $this->feather->request->get('sort_by') : 'username';
+        $sort_dir = $this->feather->request->get('sort_dir') && $this->feather->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
 
         $num_users = fetch_user_count($username, $show_group);
 
                     // Determine the user offset (based on $page)
                     $num_pages = ceil($num_users / 50);
 
-        $p = (!$feather->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $p = (!$this->feather->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['User list']);
@@ -63,7 +68,7 @@ class userlist
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -81,7 +86,7 @@ class userlist
                     // Print the users
                     $userlist_data = print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count, $show_group);
 
-        $feather->render('userlist.php', array(
+        $this->feather->render('userlist.php', array(
                             'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'lang_ul' => $lang_ul,
@@ -97,7 +102,7 @@ class userlist
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

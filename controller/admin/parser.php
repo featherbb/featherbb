@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class parser
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_parser, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_parser, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -33,7 +38,7 @@ class parser
         $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
-        if ($feather->request->post('reset') || !file_exists($cache_file)) {
+        if ($this->feather->request->post('reset') || !file_exists($cache_file)) {
             require_once(FEATHER_ROOT.'include/bbcd_source.php');
             require_once(FEATHER_ROOT.'include/bbcd_compile.php');
             redirect(get_link('admin/parser/'), $lang_admin_parser['reset_success']);
@@ -46,11 +51,11 @@ class parser
         $config = $pd['config'];            // Local scratch copy of $config.
         $count = count($bbcd);
 
-        if ($feather->request->post('form_sent')) {
+        if ($this->feather->request->post('form_sent')) {
             confirm_referrer(get_link_r('admin/parser/'));
 
             // Upload new smiley image to img/smilies
-            if ($feather->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
+            if ($this->feather->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
                 $f = $_FILES['new_smiley'];
                 switch ($f['error']) {
                     case 0: // 0: Successful upload.
@@ -86,8 +91,8 @@ class parser
             }
 
             // Set new $config values:
-            if ($feather->request->post('config')) {
-                $pcfg = $feather->request->post('config');
+            if ($this->feather->request->post('config')) {
+                $pcfg = $this->feather->request->post('config');
 
                 if (isset($pcfg['textile'])) {
                     if ($pcfg['textile'] == '1') {
@@ -162,27 +167,27 @@ class parser
                     continue; // Skip last pseudo-tag
                 }
                 $tag =& $bbcd[$tagname];
-                if ($feather->request->post($tagname.'_in_post') && $feather->request->post($tagname.'_in_post') == '1') {
+                if ($this->feather->request->post($tagname.'_in_post') && $this->feather->request->post($tagname.'_in_post') == '1') {
                     $tag['in_post']    = true;
                 } else {
                     $tag['in_post']    = false;
                 }
-                if ($feather->request->post($tagname.'_in_sig') && $feather->request->post($tagname.'_in_sig') == '1') {
+                if ($this->feather->request->post($tagname.'_in_sig') && $this->feather->request->post($tagname.'_in_sig') == '1') {
                     $tag['in_sig']    = true;
                 } else {
                     $tag['in_sig']    = false;
                 }
-                if ($feather->request->post($tagname.'_depth_max') && preg_match('/^\d++$/', $feather->request->post($tagname.'_depth_max'))) {
-                    $tag['depth_max'] = (int)$feather->request->post($tagname.'_depth_max');
+                if ($this->feather->request->post($tagname.'_depth_max') && preg_match('/^\d++$/', $this->feather->request->post($tagname.'_depth_max'))) {
+                    $tag['depth_max'] = (int)$this->feather->request->post($tagname.'_depth_max');
                 }
             }
 
             // Set new $smilies values:
-            if ($feather->request->post('smiley_text') && is_array($feather->request->post('smiley_text')) &&
-                $feather->request->post('smiley_file') && is_array($feather->request->post('smiley_file')) &&
-                count($feather->request->post('smiley_text')) === count($feather->request->post('smiley_file'))) {
-                $stext = $feather->request->post('smiley_text');
-                $sfile = $feather->request->post('smiley_file');
+            if ($this->feather->request->post('smiley_text') && is_array($this->feather->request->post('smiley_text')) &&
+                $this->feather->request->post('smiley_file') && is_array($this->feather->request->post('smiley_file')) &&
+                count($this->feather->request->post('smiley_text')) === count($this->feather->request->post('smiley_file'))) {
+                $stext = $this->feather->request->post('smiley_text');
+                $sfile = $this->feather->request->post('smiley_file');
                 $len = count($stext);
                 $good = '';
                 $smilies = array();
@@ -204,7 +209,7 @@ class parser
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -219,7 +224,7 @@ class parser
 
         generate_admin_menu('parser');
 
-        $feather->render('admin/parser.php', array(
+        $this->feather->render('admin/parser.php', array(
                 'lang_admin_parser'    =>    $lang_admin_parser,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'smiley_files' => get_smiley_files(),
@@ -231,7 +236,7 @@ class parser
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,

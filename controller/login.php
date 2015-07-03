@@ -11,12 +11,17 @@ namespace controller;
 
 class login
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if (!$feather_user['is_guest']) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
 
@@ -39,7 +44,7 @@ class login
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'feather_user' => $feather_user,
@@ -53,14 +58,14 @@ class login
                             )
                     );
 
-        $feather->render('login/form.php', array(
+        $this->feather->render('login/form.php', array(
                             'lang_common' => $lang_common,
                             'lang_login' => $lang_login,
                             'redirect_url'    =>    $redirect_url,
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,
@@ -74,7 +79,7 @@ class login
 
     public function logmein()
     {
-        global $feather, $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
 
         define('PUN_QUIET_VISIT', 1);
 
@@ -83,33 +88,36 @@ class login
             exit;
         }
 
-                    // Load the login.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
+        // Load the login.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
 
-                    // Load the login.php model file
-                    require FEATHER_ROOT.'model/login.php';
+        // Load the login.php model file
+        require FEATHER_ROOT.'model/login.php';
 
-        login($feather);
+        login($this->feather);
     }
 
     public function logmeout($id, $token)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         define('PUN_QUIET_VISIT', 1);
 
-                    // Load the login.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
+        // Load the login.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
 
-                    // Load the login.php model file
-                    require FEATHER_ROOT.'model/login.php';
+        // Load the login.php model file
+        require FEATHER_ROOT.'model/login.php';
 
         logout($id, $token);
     }
 
     public function forget()
     {
-        global $feather, $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+        
+        // Get current instance
+        $this->feather = \Slim\Slim::getInstance();
 
         define('PUN_QUIET_VISIT', 1);
 
@@ -118,13 +126,13 @@ class login
             exit;
         }
 
-                    // Load the login.php language file
-                    require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
+        // Load the login.php language file
+        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
 
-                    // Load the login.php model file
-                    require FEATHER_ROOT.'model/login.php';
+        // Load the login.php model file
+        require FEATHER_ROOT.'model/login.php';
 
-        $errors = password_forgotten($feather);
+        $errors = password_forgotten($this->feather);
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_login['Request pass']);
         $required_fields = array('req_email' => $lang_common['Email']);
@@ -135,7 +143,7 @@ class login
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -150,14 +158,14 @@ class login
                             )
                     );
 
-        $feather->render('login/password_forgotten.php', array(
+        $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,
                             'lang_login'    =>    $lang_login,
                             'lang_common'    =>    $lang_common,
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

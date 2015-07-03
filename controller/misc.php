@@ -11,9 +11,14 @@ namespace controller;
 
 class misc
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function rules()
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_config['o_rules'] == '0' || ($feather_user['is_guest'] && $feather_user['g_read_board'] == '0' && $feather_config['o_regs_allow'] == '0')) {
             message($lang_common['Bad request'], false, '404 Not Found');
@@ -28,7 +33,7 @@ class misc
             define('PUN_ACTIVE_PAGE', 'rules');
         }
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -41,13 +46,13 @@ class misc
                 )
         );
 
-        $feather->render('misc/rules.php', array(
+        $this->feather->render('misc/rules.php', array(
                 'lang_register' => $lang_register,
                 'feather_config' => $feather_config,
                 )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -61,7 +66,7 @@ class misc
 
     public function markread()
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -83,7 +88,7 @@ class misc
 
     public function markforumread($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -104,7 +109,7 @@ class misc
 
     public function subscribeforum($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -121,7 +126,7 @@ class misc
 
     public function subscribetopic($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -138,7 +143,7 @@ class misc
 
     public function unsubscribeforum($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -155,7 +160,7 @@ class misc
 
     public function unsubscribetopic($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -172,7 +177,7 @@ class misc
 
     public function email($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest'] || $feather_user['g_send_email'] == '0') {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -195,8 +200,8 @@ class misc
         }
 
 
-        if ($feather->request()->isPost()) {
-            send_email($feather, $mail, $id);
+        if ($this->feather->request()->isPost()) {
+            send_email($this->feather, $mail, $id);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Send email to'].' '.pun_htmlspecialchars($mail['recipient']));
@@ -209,7 +214,7 @@ class misc
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -224,14 +229,14 @@ class misc
                 )
         );
 
-        $feather->render('misc/email.php', array(
+        $this->feather->render('misc/email.php', array(
                 'lang_misc' => $lang_misc,
                 'id' => $id,
                 'mail' => $mail,
                 )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -245,7 +250,7 @@ class misc
 
     public function report($id)
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
 
         if ($feather_user['is_guest']) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -257,8 +262,8 @@ class misc
         // Load the misc.php model file
         require FEATHER_ROOT.'model/misc.php';
 
-        if ($feather->request()->isPost()) {
-            insert_report($feather, $id);
+        if ($this->feather->request()->isPost()) {
+            insert_report($this->feather, $id);
         }
 
         // Fetch some info about the post, the topic and the forum
@@ -278,7 +283,7 @@ class misc
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -293,7 +298,7 @@ class misc
                 )
         );
 
-        $feather->render('misc/report.php', array(
+        $this->feather->render('misc/report.php', array(
                 'lang_misc' => $lang_misc,
                 'id' => $id,
                 'lang_common' => $lang_common,
@@ -301,7 +306,7 @@ class misc
                 )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,

@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class forums
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
@@ -30,11 +35,11 @@ class forums
         require FEATHER_ROOT . 'model/admin/forums.php';
 
         // Add a "default" forum
-        if ($feather->request->post('add_forum')) {
-            add_forum($feather);
+        if ($this->feather->request->post('add_forum')) {
+            add_forum($this->feather);
         }  // Update forum positions
-        elseif ($feather->request->post('update_positions')) {
-            update_positions($feather);
+        elseif ($this->feather->request->post('update_positions')) {
+            update_positions($this->feather);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
@@ -43,7 +48,7 @@ class forums
         }
         require FEATHER_ROOT . 'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -58,7 +63,7 @@ class forums
 
         generate_admin_menu('forums');
 
-        $feather->render('admin/forums/admin_forums.php', array(
+        $this->feather->render('admin/forums/admin_forums.php', array(
                 'lang_admin_forums' => $lang_admin_forums,
                 'lang_admin_common' => $lang_admin_common,
                 'feather_config' => $feather_config,
@@ -69,7 +74,7 @@ class forums
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -84,7 +89,7 @@ class forums
 
     public function edit($id)
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
@@ -103,9 +108,9 @@ class forums
         // Update forum
 
         // Update group permissions for $forum_id
-        if ($feather->request->post('save')) {
-            update_permissions($feather, $id);
-        } elseif ($feather->request->post('revert_perms')) {
+        if ($this->feather->request->post('save')) {
+            update_permissions($this->feather, $id);
+        } elseif ($this->feather->request->post('revert_perms')) {
             revert_permissions($id);
         }
 
@@ -118,7 +123,7 @@ class forums
         }
         require FEATHER_ROOT . 'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -133,7 +138,7 @@ class forums
 
         generate_admin_menu('forums');
 
-        $feather->render('admin/forums/permissions.php', array(
+        $this->feather->render('admin/forums/permissions.php', array(
                 'lang_admin_forums' => $lang_admin_forums,
                 'lang_admin_common' => $lang_admin_common,
                 'feather_config' => $feather_config,
@@ -144,7 +149,7 @@ class forums
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
@@ -158,7 +163,7 @@ class forums
 
     public function delete($id)
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
@@ -174,7 +179,7 @@ class forums
         // Load the report.php model file
         require FEATHER_ROOT . 'model/admin/forums.php';
 
-        if ($feather->request->isPost()) { // Delete a forum with all posts
+        if ($this->feather->request->isPost()) { // Delete a forum with all posts
             delete_forum($id);
         } else {
             // If the user hasn't confirmed the delete
@@ -185,7 +190,7 @@ class forums
             }
             require FEATHER_ROOT . 'include/header.php';
 
-            $feather->render('header.php', array(
+            $this->feather->render('header.php', array(
                     'lang_common' => $lang_common,
                     'page_title' => $page_title,
                     'feather_user' => $feather_user,
@@ -200,7 +205,7 @@ class forums
 
             generate_admin_menu('forums');
 
-            $feather->render('admin/forums/delete_forum.php', array(
+            $this->feather->render('admin/forums/delete_forum.php', array(
                     'lang_admin_forums' => $lang_admin_forums,
                     'lang_admin_common' => $lang_admin_common,
                     'forum_name' => get_forum_name($id),
@@ -208,7 +213,7 @@ class forums
                 )
             );
 
-            $feather->render('footer.php', array(
+            $this->feather->render('footer.php', array(
                     'lang_common' => $lang_common,
                     'feather_user' => $feather_user,
                     'feather_config' => $feather_config,

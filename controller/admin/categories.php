@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class categories
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_categories, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_categories, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -30,20 +35,20 @@ class categories
         require FEATHER_ROOT.'model/admin/categories.php';
 
                     // Add a new category
-                    if ($feather->request->post('add_cat')) {
-                        add_category($feather);
+                    if ($this->feather->request->post('add_cat')) {
+                        add_category($this->feather);
                     }
 
                     // Delete a category
-                    elseif ($feather->request->post('del_cat') || $feather->request->post('del_cat_comply')) {
+                    elseif ($this->feather->request->post('del_cat') || $this->feather->request->post('del_cat_comply')) {
                         confirm_referrer(get_link_r('admin/categories/'));
 
-                        $cat_to_delete = intval($feather->request->post('cat_to_delete'));
+                        $cat_to_delete = intval($this->feather->request->post('cat_to_delete'));
                         if ($cat_to_delete < 1) {
                             message($lang_common['Bad request'], false, '404 Not Found');
                         }
 
-                        if ($feather->request->post('del_cat_comply')) { // Delete a category with all forums and posts
+                        if ($this->feather->request->post('del_cat_comply')) { // Delete a category with all forums and posts
                                     // Load the maintenance.php model file to get the prune() function
                                     require FEATHER_ROOT.'model/admin/maintenance.php';
 
@@ -57,7 +62,7 @@ class categories
                             }
                             require FEATHER_ROOT.'include/header.php';
 
-                            $feather->render('header.php', array(
+                            $this->feather->render('header.php', array(
                                                     'lang_common' => $lang_common,
                                                     'page_title' => $page_title,
                                                     'feather_user' => $feather_user,
@@ -72,7 +77,7 @@ class categories
 
                             generate_admin_menu('categories');
 
-                            $feather->render('admin/categories/delete_category.php', array(
+                            $this->feather->render('admin/categories/delete_category.php', array(
                                                     'lang_admin_categories'    =>    $lang_admin_categories,
                                                     'lang_admin_common'    =>    $lang_admin_common,
                                                     'cat_to_delete'    =>    $cat_to_delete,
@@ -80,7 +85,7 @@ class categories
                                             )
                                     );
 
-                            $feather->render('footer.php', array(
+                            $this->feather->render('footer.php', array(
                                                     'lang_common' => $lang_common,
                                                     'feather_user' => $feather_user,
                                                     'feather_config' => $feather_config,
@@ -91,11 +96,11 @@ class categories
 
                             require FEATHER_ROOT.'include/footer.php';
                         }
-                    } elseif ($feather->request->post('update')) {
+                    } elseif ($this->feather->request->post('update')) {
                         // Change position and name of the categories
                             confirm_referrer(get_link_r('admin/categories/'));
 
-                        $categories = $feather->request->post('cat');
+                        $categories = $this->feather->request->post('cat');
                         if (empty($categories)) {
                             message($lang_common['Bad request'], false, '404 Not Found');
                         }
@@ -109,7 +114,7 @@ class categories
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -124,14 +129,14 @@ class categories
 
         generate_admin_menu('categories');
 
-        $feather->render('admin/categories/admin_categories.php', array(
+        $this->feather->render('admin/categories/admin_categories.php', array(
                 'lang_admin_categories'    =>    $lang_admin_categories,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'cat_list'    =>    get_cat_list(),
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,

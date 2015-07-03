@@ -11,9 +11,14 @@ namespace controller;
 
 class register
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $feather_config, $feather_user, $feather_start, $db, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
+        global $lang_common, $feather_config, $feather_user, $feather_start, $db, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
 
         if (!$feather_user['is_guest']) {
             header('Location: index.php');
@@ -35,7 +40,7 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
-        if ($feather_config['o_regs_allow'] == '0' || $feather->request->post('username') || $feather->request->post('password')) {
+        if ($feather_config['o_regs_allow'] == '0' || $this->feather->request->post('username') || $this->feather->request->post('password')) {
             message($lang_register['No new regs']);
         }
 
@@ -52,18 +57,18 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
         $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : $feather_config['o_default_email_setting'];
         $user['errors'] = '';
 
-        if ($feather->request()->isPost()) {
-            $user = check_for_errors($feather);
+        if ($this->feather->request()->isPost()) {
+            $user = check_for_errors($this->feather);
 
-                            // Did everything go according to plan? Insert the user
-                            if (empty($user['errors'])) {
-                                insert_user($user);
-                            }
+            // Did everything go according to plan? Insert the user
+            if (empty($user['errors'])) {
+                insert_user($user);
+            }
         }
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'feather_user' => $feather_user,
@@ -77,7 +82,7 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
                             )
                     );
 
-        $feather->render('register/form.php', array(
+        $this->feather->render('register/form.php', array(
                             'errors' => $user['errors'],
                             'feather_config' => $feather_config,
                             'lang_register' => $lang_register,
@@ -86,11 +91,14 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions'    =>    $lang_antispam_questions,
                             'index_questions'    =>    $index_questions,
-                            'feather'    =>    $feather,
+                            'feather'    =>    $this->feather,
+                            'languages' => forum_list_langs(),
+                            'question' => array_keys($lang_antispam_questions),
+                            'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,
@@ -104,15 +112,13 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
 
     public function cancel()
     {
-        global $feather;
-
         redirect(get_base_url());
     }
 
     public function rules()
     { // TODO: fix $_GET w/ URL rewriting
 
-                    global $feather, $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+                    global $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
 
                     // If we are logged in, we shouldn't be here
                     if (!$feather_user['is_guest']) {
@@ -142,7 +148,7 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -157,13 +163,13 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
                             )
                     );
 
-        $feather->render('register/rules.php', array(
+        $this->feather->render('register/rules.php', array(
                             'lang_register'    =>    $lang_register,
                             'feather_config'    =>    $feather_config,
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class permissions
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_permissions, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_permissions, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -30,8 +35,8 @@ class permissions
         require FEATHER_ROOT.'model/admin/permissions.php';
 
                     // Update permissions
-                    if ($feather->request->isPost()) {
-                        update_permissions($feather);
+                    if ($this->feather->request->isPost()) {
+                        update_permissions($this->feather);
                     }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
@@ -40,7 +45,7 @@ class permissions
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -55,14 +60,14 @@ class permissions
 
         generate_admin_menu('permissions');
 
-        $feather->render('admin/permissions.php', array(
+        $this->feather->render('admin/permissions.php', array(
                 'lang_admin_permissions'    =>    $lang_admin_permissions,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'feather_config'    =>    $feather_config,
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,

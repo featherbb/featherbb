@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class censoring
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $lang_admin_censoring, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_censoring, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -30,18 +35,18 @@ class censoring
         require FEATHER_ROOT.'model/admin/censoring.php';
 
         // Add a censor word
-        if ($feather->request->post('add_word')) {
-            add_word($feather);
+        if ($this->feather->request->post('add_word')) {
+            add_word($this->feather);
         }
 
         // Update a censor word
-        elseif ($feather->request->post('update')) {
-            update_word($feather);
+        elseif ($this->feather->request->post('update')) {
+            update_word($this->feather);
         }
 
         // Remove a censor word
-        elseif ($feather->request->post('remove')) {
-            remove_word($feather);
+        elseif ($this->feather->request->post('remove')) {
+            remove_word($this->feather);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
@@ -51,7 +56,7 @@ class censoring
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -67,7 +72,7 @@ class censoring
 
         generate_admin_menu('censoring');
 
-        $feather->render('admin/censoring.php', array(
+        $this->feather->render('admin/censoring.php', array(
                 'lang_admin_censoring'    =>    $lang_admin_censoring,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'feather_config'    =>    $feather_config,
@@ -75,7 +80,7 @@ class censoring
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,

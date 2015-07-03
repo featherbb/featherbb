@@ -11,9 +11,14 @@ namespace controller;
 
 class search
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_search, $feather_config, $feather_user, $feather_start, $db, $pd;
+        global $lang_common, $lang_search, $feather_config, $feather_user, $feather_start, $db, $pd;
 
         // Load the search.php language file
         require FEATHER_ROOT.'lang/'.$feather_user['language'].'/search.php';
@@ -31,8 +36,8 @@ class search
         require FEATHER_ROOT.'include/search_idx.php';
 
         // Figure out what to do :-)
-        if ($feather->request->get('action') || ($feather->request->get('search_id'))) {
-            $search = get_search_results($feather);
+        if ($this->feather->request->get('action') || ($this->feather->request->get('search_id'))) {
+            $search = get_search_results($this->feather);
 
                 // We have results to display
                 if ($search['is_result']) {
@@ -44,7 +49,7 @@ class search
 
                     require FEATHER_ROOT.'include/header.php';
 
-                    $feather->render('header.php', array(
+                    $this->feather->render('header.php', array(
                                 'lang_common' => $lang_common,
                                 'page_title' => $page_title,
                                 'p' => $p,
@@ -59,7 +64,7 @@ class search
                                 )
                         );
 
-                    $feather->render('search/header.php', array(
+                    $this->feather->render('search/header.php', array(
                                 'lang_common' => $lang_common,
                                 'lang_search' => $lang_search,
                                 'search' => $search,
@@ -71,14 +76,14 @@ class search
                         require FEATHER_ROOT.'include/parser.php';
                     }
 
-                    display_search_results($search, $feather);
+                    display_search_results($search, $this->feather);
 
-                    $feather->render('search/footer.php', array(
+                    $this->feather->render('search/footer.php', array(
                                 'search' => $search,
                                 )
                         );
 
-                    $feather->render('footer.php', array(
+                    $this->feather->render('footer.php', array(
                                 'lang_common' => $lang_common,
                                 'feather_user' => $feather_user,
                                 'feather_config' => $feather_config,
@@ -103,7 +108,7 @@ class search
 
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                             'lang_common' => $lang_common,
                             'page_title' => $page_title,
                             'p' => $p,
@@ -118,7 +123,7 @@ class search
                             )
                     );
 
-        $feather->render('search/form.php', array(
+        $this->feather->render('search/form.php', array(
                             'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'feather_config' => $feather_config,
@@ -126,7 +131,7 @@ class search
                             )
                     );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                             'lang_common' => $lang_common,
                             'feather_user' => $feather_user,
                             'feather_config' => $feather_config,

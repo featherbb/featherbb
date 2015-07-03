@@ -11,9 +11,14 @@ namespace controller\admin;
 
 class options
 {
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+    
     public function display()
     {
-        global $feather, $lang_common, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -29,8 +34,8 @@ class options
         // Load the admin_options.php model file
         require FEATHER_ROOT.'model/admin/options.php';
 
-        if ($feather->request->isPost()) {
-            update_options($feather);
+        if ($this->feather->request->isPost()) {
+            update_options($this->feather);
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
@@ -39,7 +44,7 @@ class options
         }
         require FEATHER_ROOT.'include/header.php';
 
-        $feather->render('header.php', array(
+        $this->feather->render('header.php', array(
                 'lang_common' => $lang_common,
                 'page_title' => $page_title,
                 'feather_user' => $feather_user,
@@ -54,14 +59,14 @@ class options
 
         generate_admin_menu('options');
 
-        $feather->render('admin/options.php', array(
+        $this->feather->render('admin/options.php', array(
                 'lang_admin_options'    =>    $lang_admin_options,
                 'feather_config'    =>    $feather_config,
                 'feather_user'    =>    $feather_user,
             )
         );
 
-        $feather->render('footer.php', array(
+        $this->feather->render('footer.php', array(
                 'lang_common' => $lang_common,
                 'feather_user' => $feather_user,
                 'feather_config' => $feather_config,
