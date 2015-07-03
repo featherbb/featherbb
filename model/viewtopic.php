@@ -44,7 +44,7 @@ function handle_actions($topic_id, $action)
             $first_new_post_id = $db->result($result);
 
             if ($first_new_post_id) {
-                header('Location: '.get_base_url().'/post/'.$first_new_post_id.'#p'.$first_new_post_id);
+                header('Location: '.get_base_url().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
                 exit;
             }
         }
@@ -59,7 +59,7 @@ function handle_actions($topic_id, $action)
         $last_post_id = $db->result($result);
 
         if ($last_post_id) {
-            header('Location: '.get_base_url().'/post/'.$last_post_id.'#p'.$last_post_id);
+            header('Location: '.get_base_url().'/post/'.$last_post_id.'/#p'.$last_post_id);
             exit;
         }
     }
