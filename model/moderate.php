@@ -271,7 +271,7 @@ function display_posts_view($tid, $start_from)
         // If the poster is a registered user
         if ($cur_post['poster_id'] > 1) {
             if ($feather_user['g_view_users'] == '1') {
-                $cur_post['poster_disp'] = '<a href="profile.php?id='.get_link('user/'.$cur_post['poster_id'].'/').'">'.pun_htmlspecialchars($cur_post['poster']).'</a>';
+                $cur_post['poster_disp'] = '<a href="'.get_link('user/'.$cur_post['poster_id'].'/').'">'.pun_htmlspecialchars($cur_post['poster']).'</a>';
             } else {
                 $cur_post['poster_disp'] = pun_htmlspecialchars($cur_post['poster']);
             }

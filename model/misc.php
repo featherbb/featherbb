@@ -151,7 +151,7 @@ function insert_report($feather, $post_id)
             $mail_subject = str_replace('<forum_id>', $forum_id, $mail_subject);
             $mail_subject = str_replace('<topic_subject>', $subject, $mail_subject);
             $mail_message = str_replace('<username>', $feather_user['username'], $mail_message);
-            $mail_message = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$post_id.'#p'.$post_id, $mail_message);
+            $mail_message = str_replace('<post_url>', get_link('post/'.$post_id.'/#p'.$post_id), $mail_message);
             $mail_message = str_replace('<reason>', $reason, $mail_message);
             $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
