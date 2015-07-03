@@ -73,7 +73,7 @@ function check_errors_before_post($fid, $tid, $qid, $pid, $page, $feather, $erro
         get_link_r('post/reply/'.$tid.'/'),
         get_link_r('post/reply/'.$tid.'/quote/'.$qid.'/'),
         get_link_r('topic/'.$tid.'/'.$url_subject.'/'),
-                get_link_r('topic/'.$tid.'/'),
+        get_link_r('topic/'.$tid.'/'),
         get_link_r('topic/'.$tid.'/'.$url_subject.'/page/'.$page.'/'),
         get_link_r('post/'.$pid.'/#p'.$pid),
         )
@@ -242,7 +242,7 @@ function insert_reply($post, $tid, $cur_posting, $is_subscribed)
 }
 
 // Send notifications for replies
-function send_notifications_reply($tid, $cur_posting, $new_pid)
+function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
 {
     global $db, $feather_config, $feather_user;
     
@@ -256,6 +256,8 @@ function send_notifications_reply($tid, $cur_posting, $new_pid)
         require_once FEATHER_ROOT.'include/email.php';
 
         $notification_emails = array();
+        
+        $censored_message = pun_trim(censor_words($post['message']));
 
         if ($feather_config['o_censoring'] == '1') {
             $cleaned_message = bbcode2email($censored_message, -1);
