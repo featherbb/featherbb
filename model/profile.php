@@ -364,15 +364,24 @@ function update_group_membership($id, $feather)
     redirect(get_link('user/'.$id.'/section/admin/'), $lang_profile['Group membership redirect']);
 }
 
+function get_username($id)
+{
+    global $db;
+    
+    // Get the username of the user we are processing
+    $result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $username = $db->result($result);
+    
+    return $username;
+}
+
 function update_mod_forums($id, $feather)
 {
     global $db, $lang_profile;
     
     confirm_referrer(get_link_r('user/'.$id.'/section/admin/'));
 
-    // Get the username of the user we are processing
-    $result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-    $username = $db->result($result);
+    $username = get_username($id);
 
     $moderator_in = ($feather->request->post('moderator_in')) ? array_keys($feather->request->post('moderator_in')) : array();
 
@@ -422,7 +431,7 @@ function promote_user($id, $feather)
 {
     global $db, $lang_profile, $lang_common;
     
-    confirm_referrer('viewtopic.php');
+    confirm_referrer('viewtopic.php'); // TODO
 
     $pid = $feather->request->get('pid') ? intval($feather->request->get('pid')) : 0;
 
@@ -1075,7 +1084,9 @@ function get_forum_list($id)
 //
 function generate_profile_menu($page = '', $id)
 {
-    global $feather, $lang_profile, $feather_config, $feather_user;
+    global $lang_profile, $feather_config, $feather_user;
+    
+    $feather = \Slim\Slim::getInstance();
 
     $feather->render('profile/menu.php', array(
         'lang_profile' => $lang_profile,
