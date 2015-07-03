@@ -8,7 +8,7 @@
  */
 
 if (!defined('FEATHER_ROOT')) {
-    exit('The constant FEATHER_ROOT must be defined and point to a valid FluxBB installation root directory.');
+    exit('The constant FEATHER_ROOT must be defined and point to a valid FeatherBB installation root directory.');
 }
 
 // Define the version and database revision that this code was written for
@@ -60,7 +60,11 @@ if (!defined('PUN')) {
 }
 
 // Record the start time (will be used to calculate the generation time for the page)
+// To be removed
 $feather_start = get_microtime();
+
+// Inject start time to SlimFramweork
+$feather->start = get_microtime();
 
 // Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
 //error_reporting(E_ALL ^ E_NOTICE);
@@ -114,6 +118,15 @@ define('PUN_MEMBER', 4);
 // Load DB abstraction layer and connect
 require FEATHER_ROOT.'include/dblayer/common_db.php';
 
+ // Inject DB dependency into SlimFramework
+$feather->container->singleton('db', function () use ($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect) {
+    // Create the database adapter object (and open/connect to/select db)
+    return new DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect);
+});
+
+// Backward compatibility - to be removed soon
+$db = $feather->db;
+
 // Start a transaction
 $db->start_transaction();
 
@@ -122,7 +135,10 @@ if (file_exists(FORUM_CACHE_DIR.'cache_config.php')) {
     include FORUM_CACHE_DIR.'cache_config.php';
 }
 
-if (!defined('PUN_CONFIG_LOADED')) {
+// Inject config to SlimFramework
+$feather->config = $feather_config;
+
+if (!defined('FEATHER_CONFIG_LOADED')) {
     if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
         require FEATHER_ROOT.'include/cache.php';
     }
@@ -157,6 +173,9 @@ $forum_date_formats = array($feather_config['o_date_format'], 'Y-m-d', 'Y-d-m', 
 // Check/update/set cookie and fetch user info
 $feather_user = array();
 check_cookie($feather_user);
+
+// Inject user to SlimFramework
+$feather->user = $feather_user;
 
 // Attempt to load the common language file
 if (file_exists(FEATHER_ROOT.'lang/'.$feather_user['language'].'/common.php')) {
