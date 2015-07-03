@@ -21,4 +21,10 @@ $db->end_transaction();
 $db->close();
 
 // If we reached this far, we shouldn't execute more code
-$feather->stop();
+if (isset($this)) {
+    $this->feather->stop();
+}
+else {
+    $feather = \Slim\Slim::getInstance();
+    $feather->stop();
+}
