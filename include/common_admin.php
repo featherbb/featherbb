@@ -29,12 +29,14 @@ require FEATHER_ROOT.'lang/'.$admin_language.'/common.php';
 //
 function generate_admin_menu($page = '')
 {
-    global $feather, $feather_config, $feather_user, $lang_admin_common;
+    global $feather_config, $feather_user, $lang_admin_common;
 
     $is_admin = $feather_user['g_id'] == PUN_ADMIN ? true : false;
     
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);
+    
+    $feather = \Slim\Slim::getInstance();
 
     $feather->render('admin/menu.php', array(
         'page'    =>    $page,
