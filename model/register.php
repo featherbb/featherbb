@@ -137,7 +137,7 @@ function insert_user($user)
 
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<email>', $user['email1'], $mail_message);
-            $mail_message = str_replace('<profile_url>', get_base_url().'/profile.php?id='.$new_uid, $mail_message);
+            $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
             pun_mail($feather_config['o_mailing_list'], $mail_subject, $mail_message);
@@ -155,7 +155,7 @@ function insert_user($user)
 
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-            $mail_message = str_replace('<profile_url>', get_base_url().'/profile.php?id='.$new_uid, $mail_message);
+            $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
             pun_mail($feather_config['o_mailing_list'], $mail_subject, $mail_message);
@@ -173,8 +173,8 @@ function insert_user($user)
 
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
-            $mail_message = str_replace('<profile_url>', get_base_url().'/profile.php?id='.$new_uid, $mail_message);
-            $mail_message = str_replace('<admin_url>', get_base_url().'/profile.php?section=admin&id='.$new_uid, $mail_message);
+            $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
+            $mail_message = str_replace('<admin_url>', get_link('user/'.$new_uid.'/section/admin/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $feather_config['o_board_title'], $mail_message);
 
             pun_mail($feather_config['o_mailing_list'], $mail_subject, $mail_message);
