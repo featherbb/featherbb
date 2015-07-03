@@ -29,7 +29,7 @@ function generate_config_cache()
     }
 
     // Output config as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_CONFIG_LOADED\', 1);'."\n\n".'$feather_config = '.var_export($output, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'FEATHER_CONFIG_LOADED\', 1);'."\n\n".'$feather_config = '.var_export($output, true).';'."\n\n".'?>';
     fluxbb_write_cache_file('cache_config.php', $content);
 }
 
