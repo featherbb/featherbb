@@ -315,7 +315,7 @@ if ($action == 'feed') {
         // Setup the feed
         $feed = array(
             'title'        =>    $feather_config['o_board_title'].$lang_common['Title separator'].$cur_topic['subject'],
-            'link'            =>    get_base_url(true).'/viewtopic.php?id='.$tid,
+            'link'            =>    get_link('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
             'description'        =>    sprintf($lang_common['RSS description topic'], $cur_topic['subject']),
             'items'            =>    array(),
             'type'            =>    'posts'
@@ -329,7 +329,7 @@ if ($action == 'feed') {
             $item = array(
                 'id'            =>    $cur_post['id'],
                 'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : $lang_common['RSS reply'].$cur_topic['subject'],
-                'link'            =>    get_base_url(true).'/viewtopic.php?pid='.$cur_post['id'].'#p'.$cur_post['id'],
+                'link'            =>    get_link('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
                 'description'        =>    $cur_post['message'],
                 'author'        =>    array(
                     'name'    => $cur_post['poster'],
@@ -342,7 +342,7 @@ if ($action == 'feed') {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
-                $item['author']['uri'] = get_base_url(true).'/profile.php?id='.$cur_post['poster_id'];
+                $item['author']['uri'] = get_link('user/'.$cur_post['poster_id'].'/');
             } elseif ($cur_post['poster_email'] != '' && !$feather_user['is_guest']) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
@@ -418,7 +418,7 @@ if ($action == 'feed') {
                 $item = array(
                     'id'            =>    $cur_topic['id'],
                     'title'            =>    $cur_topic['subject'],
-                    'link'            =>    '/viewtopic.php?id='.$cur_topic['id'].($order_posted ? '' : '&action=new'),
+                    'link'            =>    get_link('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
                     'description'    =>    $cur_topic['message'],
                     'author'        =>    array(
                         'name'    => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
@@ -431,7 +431,7 @@ if ($action == 'feed') {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
-                    $item['author']['uri'] = '/profile.php?id='.$cur_topic['poster_id'];
+                    $item['author']['uri'] = get_link('user/'.$cur_topic['poster_id'].'/');
                 } elseif ($cur_topic['poster_email'] != '' && !$feather_user['is_guest']) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
@@ -486,7 +486,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     while ($feather_user_online = $db->fetch_assoc($result)) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = ($feather_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$feather_user_online['user_id'].'">'.pun_htmlspecialchars($feather_user_online['ident']).'</a>' : pun_htmlspecialchars($feather_user_online['ident']);
+            $users[] = ($feather_user['g_view_users'] == '1') ? '<a href="'.get_link('user/'.$feather_user_online['user_id'].'/').'">'.pun_htmlspecialchars($feather_user_online['ident']).'</a>' : pun_htmlspecialchars($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -539,7 +539,7 @@ elseif ($action == 'stats') {
     header('Pragma: public');
 
     echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf($lang_index['Newest user'], (($feather_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$stats['last_user']['id'].'">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>' : pun_htmlspecialchars($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf($lang_index['Newest user'], (($feather_user['g_view_users'] == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>' : pun_htmlspecialchars($stats['last_user']['username']))).'<br />'."\n";
     echo sprintf($lang_index['No of topics'], forum_number_format($stats['total_topics'])).'<br />'."\n";
     echo sprintf($lang_index['No of posts'], forum_number_format($stats['total_posts'])).'<br />'."\n";
 
