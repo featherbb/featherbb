@@ -89,9 +89,6 @@ if (!empty($errors)) {
 				</fieldset>
 			</div>
 <?php
-
-        $languages = forum_list_langs();
-
         // Only display the language selection box if there's more than one language available
         if (count($languages) > 1) {
             ?>
@@ -126,14 +123,7 @@ if (!empty($errors)) {
 					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_antispam['Robot info']    ?></p>
-						<label class="required"><strong><?php
-                             $question = array_keys($lang_antispam_questions);
-                             $qencoded = md5($question[$index_questions]);
-                             echo sprintf($lang_antispam['Robot question'], $question[$index_questions]);?>
-							 <span><?php echo $lang_common['Required'] ?></span></strong>
-							 <br />
-							 <input	name="captcha" id="captcha"	type="text"	size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /><br />
-						</label>
+						<label class="required"><strong><?php echo sprintf($lang_antispam['Robot question'], $question[$index_questions]) ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input name="captcha" id="captcha" type="text" size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /></label>
 					</div>
 				</fieldset>
 			</div>
