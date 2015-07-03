@@ -106,27 +106,27 @@ function add_edit_group($groups, $feather)
     }
 
     $moderator = $feather->request->post('moderator') && $feather->request->post('moderator') == '1' ? '1' : '0';
-    $mod_edit_users = $moderator == '1' && $feather->request->post('mod_edit_users') && $feather->request->post('mod_edit_users') == '1' ? '1' : '0';
-    $mod_rename_users = $moderator == '1' && $feather->request->post('mod_rename_users') && $feather->request->post('mod_rename_users') == '1' ? '1' : '0';
-    $mod_change_passwords = $moderator == '1' && $feather->request->post('mod_change_passwords') && $feather->request->post('mod_change_passwords') == '1' ? '1' : '0';
-    $mod_ban_users = $moderator == '1' && $feather->request->post('mod_ban_users') && $feather->request->post('mod_ban_users') == '1' ? '1' : '0';
-    $mod_promote_users = $moderator == '1' && $feather->request->post('mod_promote_users') && $feather->request->post('mod_promote_users') == '1' ? '1' : '0';
-    $read_board = $feather->request->post('read_board') ? $feather->request->post('read_board') : '1';
+    $mod_edit_users = $moderator == '1' && $feather->request->post('mod_edit_users') == '1' ? '1' : '0';
+    $mod_rename_users = $moderator == '1' && $feather->request->post('mod_rename_users') == '1' ? '1' : '0';
+    $mod_change_passwords = $moderator == '1' && $feather->request->post('mod_change_passwords') == '1' ? '1' : '0';
+    $mod_ban_users = $moderator == '1' && $feather->request->post('mod_ban_users') == '1' ? '1' : '0';
+    $mod_promote_users = $moderator == '1' && $feather->request->post('mod_promote_users') == '1' ? '1' : '0';
+    $read_board = ($feather->request->post('read_board') == 0) ? $feather->request->post('read_board') : '1';
     $view_users = ($feather->request->post('view_users') && $feather->request->post('view_users') == '1') || $is_admin_group ? '1' : '0';
-    $post_replies = $feather->request->post('post_replies') ? $feather->request->post('post_replies') : '1';
-    $post_topics = $feather->request->post('post_topics') ? $feather->request->post('post_topics') : '1';
-    $edit_posts = $feather->request->post('edit_posts') ? $feather->request->post('edit_posts') : ($is_admin_group) ? '1' : '0';
-    $delete_posts = $feather->request->post('delete_posts') ? $feather->request->post('delete_posts') : ($is_admin_group) ? '1' : '0';
-    $delete_topics = $feather->request->post('delete_topics') ? $feather->request->post('delete_topics') : ($is_admin_group) ? '1' : '0';
-    $post_links = $feather->request->post('post_links') ? $feather->request->post('post_links') : '1';
-    $set_title = $feather->request->post('set_title') ? $feather->request->post('set_title') : ($is_admin_group) ? '1' : '0';
-    $search = $feather->request->post('search') ? $feather->request->post('search') : '1';
-    $search_users = $feather->request->post('search_users') ? $feather->request->post('search_users') : '1';
+    $post_replies = ($feather->request->post('post_replies') == 0) ? $feather->request->post('post_replies') : '1';
+    $post_topics = ($feather->request->post('post_topics') == 0) ? $feather->request->post('post_topics') : '1';
+    $edit_posts = ($feather->request->post('edit_posts') == 0) ? $feather->request->post('edit_posts') : ($is_admin_group) ? '1' : '0';
+    $delete_posts = ($feather->request->post('delete_posts') == 0) ? $feather->request->post('delete_posts') : ($is_admin_group) ? '1' : '0';
+    $delete_topics = ($feather->request->post('delete_topics') == 0) ? $feather->request->post('delete_topics') : ($is_admin_group) ? '1' : '0';
+    $post_links = ($feather->request->post('post_links') == 0) ? $feather->request->post('post_links') : '1';
+    $set_title = ($feather->request->post('set_title') == 0) ? $feather->request->post('set_title') : ($is_admin_group) ? '1' : '0';
+    $search = ($feather->request->post('search') == 0) ? $feather->request->post('search') : '1';
+    $search_users = ($feather->request->post('search_users') == 0) ? $feather->request->post('search_users') : '1';
     $send_email = ($feather->request->post('send_email') && $feather->request->post('send_email') == '1') || $is_admin_group ? '1' : '0';
     $post_flood = ($feather->request->post('post_flood') && $feather->request->post('post_flood') >= 0) ? $feather->request->post('post_flood') : '0';
     $search_flood = ($feather->request->post('search_flood') && $feather->request->post('search_flood') >= 0) ? $feather->request->post('search_flood') : '0';
     $email_flood = ($feather->request->post('email_flood') && $feather->request->post('email_flood') >= 0) ? $feather->request->post('email_flood') : '0';
-    $report_flood = ($feather->request->post('report_flood') && $feather->request->post('report_flood') >= 0) ? $feather->request->post('report_flood') : '0';
+    $report_flood = ($feather->request->post('report_flood') >= 0) ? $feather->request->post('report_flood') : '0';
 
     if ($title == '') {
         message($lang_admin_groups['Must enter title message']);
