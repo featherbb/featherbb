@@ -26,6 +26,9 @@ function check_cookie(&$feather_user)
     global $db, $db_type, $feather_config, $cookie_name, $cookie_seed;
 
     $now = time();
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     // If the cookie is set and it matches the correct pattern, then read the values from it
     if (isset($_COOKIE[$cookie_name]) && preg_match('%^(\d+)\|([0-9a-fA-F]+)\|(\d+)\|([0-9a-fA-F]+)$%', $_COOKIE[$cookie_name], $matches)) {
@@ -50,6 +53,11 @@ function check_cookie(&$feather_user)
 
         // Check if there's a user with the user ID and password hash from the cookie
         $result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE u.id='.intval($cookie['user_id'])) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+        $feather->container->singleton('user', function () use ($db, $result) {
+            return $db->fetch_assoc($result);
+        });
+        
+        // Backward compatiblity
         $feather_user = $db->fetch_assoc($result);
 
         // If user authorisation failed
@@ -969,12 +977,14 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 function message($message, $no_back_link = false, $http_status = null)
 {
-    global $feather, $db, $lang_common, $feather_config, $feather_start, $tpl_main, $feather_user;
+    global $db, $lang_common, $feather_config, $feather_start, $tpl_main, $feather_user;
 
     // Did we receive a custom header?
     if (!is_null($http_status)) {
         header('HTTP/1.1 ' . $http_status);
     }
+    
+    $feather = \Slim\Slim::getInstance();
 
     if (!defined('PUN_HEADER')) {
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Info']);
