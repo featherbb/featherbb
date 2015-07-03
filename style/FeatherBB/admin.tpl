@@ -16,7 +16,7 @@
                     </div>
                     <div id="phone">
                         <pun_navlinks>
-						<pun_include "search.php">
+			<pun_include "search.php">
                     </div>
                 </div>
             </nav>
