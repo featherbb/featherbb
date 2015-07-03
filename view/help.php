@@ -46,14 +46,14 @@ if (!defined('PUN')) {
 		<p><code>[url=/help/]<?php echo $lang_help['This help page'] ?>[/url]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('/help') ?>"><?php echo $lang_help['This help page'] ?></a></samp></p>
 		<p><code>[email]myname@example.com[/email]</code> <?php echo $lang_help['produces'] ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
 		<p><code>[email=myname@example.com]<?php echo $lang_help['My email address'] ?>[/email]</code> <?php echo $lang_help['produces'] ?> <samp><a href="mailto:myname@example.com"><?php echo $lang_help['My email address'] ?></a></samp></p>
-		<p><code>[topic=1]<?php echo $lang_help['Test topic'] ?>[/topic]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/viewtopic.php?id=1') ?>"><?php echo $lang_help['Test topic'] ?></a></samp></p>
-		<p><code>[topic]1[/topic]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/viewtopic.php?id=1') ?>"><?php echo pun_htmlspecialchars(get_base_url(true).'/viewtopic.php?id=1') ?></a></samp></p>
-		<p><code>[post=1]<?php echo $lang_help['Test post'] ?>[/post]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/viewtopic.php?pid=1#p1') ?>"><?php echo $lang_help['Test post'] ?></a></samp></p>
-		<p><code>[post]1[/post]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/viewtopic.php?pid=1#p1') ?>"><?php echo pun_htmlspecialchars(get_base_url(true).'/viewtopic.php?pid=1#p1') ?></a></samp></p>
-		<p><code>[forum=1]<?php echo $lang_help['Test forum'] ?>[/forum]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/viewforum.php?id=1') ?>"><?php echo $lang_help['Test forum'] ?></a></samp></p>
-		<p><code>[forum]1[/forum]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/viewforum.php?id=1') ?>"><?php echo pun_htmlspecialchars(get_base_url(true).'/viewforum.php?id=1') ?></a></samp></p>
-		<p><code>[user=2]<?php echo $lang_help['Test user'] ?>[/user]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/profile.php?id=2') ?>"><?php echo $lang_help['Test user'] ?></a></samp></p>
-		<p><code>[user]2[/user]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo pun_htmlspecialchars(get_base_url(true).'/profile.php?id=2') ?>"><?php echo pun_htmlspecialchars(get_base_url(true).'/profile.php?id=2') ?></a></samp></p>
+		<p><code>[topic=1]<?php echo $lang_help['Test topic'] ?>[/topic]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('topic/1/') ?>"><?php echo $lang_help['Test topic'] ?></a></samp></p>
+		<p><code>[topic]1[/topic]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('topic/1/') ?>"><?php echo get_link('topic/1/') ?></a></samp></p>
+		<p><code>[post=1]<?php echo $lang_help['Test post'] ?>[/post]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('post/1/#p1') ?>"><?php echo $lang_help['Test post'] ?></a></samp></p>
+		<p><code>[post]1[/post]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('post/1/#p1') ?>"><?php echo get_link('post/1/#p1') ?></a></samp></p>
+		<p><code>[forum=1]<?php echo $lang_help['Test forum'] ?>[/forum]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('topic/1/') ?>"><?php echo $lang_help['Test forum'] ?></a></samp></p>
+		<p><code>[forum]1[/forum]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('forum/1/') ?>"><?php echo get_link('forum/1/') ?></a></samp></p>
+		<p><code>[user=2]<?php echo $lang_help['Test user'] ?>[/user]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('user/2/') ?>"><?php echo $lang_help['Test user'] ?></a></samp></p>
+		<p><code>[user]2[/user]</code> <?php echo $lang_help['produces'] ?> <samp><a href="<?php echo get_link('user/2/') ?>"><?php echo get_link('user/2/') ?></a></samp></p>
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php echo $lang_help['Images info'] ?></p>

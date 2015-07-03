@@ -78,10 +78,10 @@ function bbcode2email($text, $wrap_length = 72)
     $text = pun_trim($text, "\t\n ");
 
     $shortcut_urls = array(
-        'topic' => '/viewtopic.php?id=$1',
-        'post' => '/viewtopic.php?pid=$1#p$1',
-        'forum' => '/viewforum.php?id=$1',
-        'user' => '/profile.php?id=$1',
+        'topic' => '/topic/$1/',
+        'post' => '/post/$1/#p$1',
+        'forum' => '/forum/$1/',
+        'user' => '/user/$1/',
     );
 
     // Split code blocks and text so BBcode in codeblocks won't be touched
