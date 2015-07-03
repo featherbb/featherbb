@@ -93,6 +93,7 @@ $lang_common = array(
 'BBerr invalid nesting'                =>    '(%1$s) was opened within (%2$s), this is not allowed.',            // Error 8
 'BBerr invalid parent'                =>    '(%1$s) cannot be within: (%2$s). Allowable parent tags: %3$s.',    // Error 9
 'BBerr Invalid URL name'            =>    'Invalid URL name: %s',                                                // Error 10
+'BBerr cannot post URLs'            =>    'You are not allowed to post links',                                                // Error 10
 'BBerr Invalid email address'        =>    'Invalid email address: %s',                                        // Error 10c
 'BBerr Invalid color'                =>    'Invalid color attribute: %s',                                        // Error 11
 'BBerr invalid content'                =>    'Invalid content, (%s) requires specific content.',                    // Error 12

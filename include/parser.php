@@ -58,7 +58,7 @@ Parameters: (See the BBcode regex to see how each of these parameters are captur
 *********************************************************** */
 function _preparse_bbcode_callback($matches)
 {
-    global $lang_common, $errors, $pd;
+    global $lang_common, $feather_user, $errors, $pd;
 
     // Initialize some local variables. Use reference variables where possible.
     $tagname =& $matches[1];                                // BBCode tag name.
@@ -202,7 +202,10 @@ function _preparse_bbcode_callback($matches)
         // Sanitize contents which is (hopefully) a url link. Trim spaces.
         $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
         // Handle special case link to a
-        if (($m = url_valid($contents))) {
+        if ($feather_user['g_post_links'] != '1') {
+            $new_errors[] = $lang_common['BBerr cannot post URLs'];
+        }
+        else if (($m = url_valid($contents))) {
             $contents = $m['url']; // Fetch possibly more complete url address.
         } else { // Error #10a: 'Invalid URL name: %s'.
             $new_errors[] = sprintf($lang_common['BBerr Invalid URL name'], $contents);
