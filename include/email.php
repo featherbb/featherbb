@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -61,6 +61,57 @@ function encode_mail_text($str)
     }
 
     return '=?UTF-8?B?'.base64_encode($str).'?=';
+}
+
+//
+// Extract blocks from a text with a starting and ending string
+// This function always matches the most outer block so nesting is possible
+//
+function extract_blocks($text, $start, $end, $retab = true)
+{
+    global $feather_config;
+
+    $code = array();
+    $start_len = strlen($start);
+    $end_len = strlen($end);
+    $regex = '%(?:'.preg_quote($start, '%').'|'.preg_quote($end, '%').')%';
+    $matches = array();
+
+    if (preg_match_all($regex, $text, $matches)) {
+        $counter = $offset = 0;
+        $start_pos = $end_pos = false;
+
+        foreach ($matches[0] as $match) {
+            if ($match == $start) {
+                if ($counter == 0) {
+                    $start_pos = strpos($text, $start);
+                }
+                $counter++;
+            } elseif ($match == $end) {
+                $counter--;
+                if ($counter == 0) {
+                    $end_pos = strpos($text, $end, $offset + 1);
+                }
+                $offset = strpos($text, $end, $offset + 1);
+            }
+
+            if ($start_pos !== false && $end_pos !== false) {
+                $code[] = substr($text, $start_pos + $start_len,
+                    $end_pos - $start_pos - $start_len);
+                $text = substr_replace($text, "\1", $start_pos,
+                    $end_pos - $start_pos + $end_len);
+                $start_pos = $end_pos = false;
+                $offset = 0;
+            }
+        }
+    }
+
+    if ($feather_config['o_indent_num_spaces'] != 8 && $retab) {
+        $spaces = str_repeat(' ', $feather_config['o_indent_num_spaces']);
+        $text = str_replace("\t", $spaces, $text);
+    }
+
+    return array($code, $text);
 }
 
 
