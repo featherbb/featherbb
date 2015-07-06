@@ -14,19 +14,23 @@ class forums
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($feather_user['g_id'] != PUN_ADMIN) {
+        if ($feather_user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        define('PUN_ADMIN_CONSOLE', 1);
+        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // Load the admin_options.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
@@ -43,23 +47,10 @@ class forums
         }
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'admin');
-        }
-        require FEATHER_ROOT . 'include/header.php';
 
-        $this->feather->render('header.php', array(
-                'lang_common' => $lang_common,
-                'page_title' => $page_title,
-                'feather_user' => $feather_user,
-                'feather_config' => $feather_config,
-                '_SERVER' => $_SERVER,
-                'navlinks' => $navlinks,
-                'page_info' => $page_info,
-                'db' => $db,
-                'p' => '',
-            )
-        );
+        define('FEATHER_ACTIVE_PAGE', 'admin');
+
+        require FEATHER_ROOT . 'include/header.php';
 
         generate_admin_menu('forums');
 
@@ -74,30 +65,21 @@ class forums
             )
         );
 
-        $this->feather->render('footer.php', array(
-                'lang_common' => $lang_common,
-                'feather_user' => $feather_user,
-                'feather_config' => $feather_config,
-                'feather_start' => $feather_start,
-                'footer_style' => 'index',
-            )
-        );
-
         require FEATHER_ROOT . 'include/footer.php';
     }
 
 
     public function edit($id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($feather_user['g_id'] != PUN_ADMIN) {
+        if ($feather_user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        define('PUN_ADMIN_CONSOLE', 1);
+        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // Load the admin_options.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
@@ -118,23 +100,10 @@ class forums
         $cur_forum = get_forum_info($id);
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'admin');
-        }
-        require FEATHER_ROOT . 'include/header.php';
 
-        $this->feather->render('header.php', array(
-                'lang_common' => $lang_common,
-                'page_title' => $page_title,
-                'feather_user' => $feather_user,
-                'feather_config' => $feather_config,
-                '_SERVER' => $_SERVER,
-                'navlinks' => $navlinks,
-                'page_info' => $page_info,
-                'db' => $db,
-                'p' => '',
-            )
-        );
+        define('FEATHER_ACTIVE_PAGE', 'admin');
+
+        require FEATHER_ROOT . 'include/header.php';
 
         generate_admin_menu('forums');
 
@@ -149,29 +118,20 @@ class forums
             )
         );
 
-        $this->feather->render('footer.php', array(
-                'lang_common' => $lang_common,
-                'feather_user' => $feather_user,
-                'feather_config' => $feather_config,
-                'feather_start' => $feather_start,
-                'footer_style' => 'index',
-            )
-        );
-
         require FEATHER_ROOT . 'include/footer.php';
     }
 
     public function delete($id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_forums, $feather_config, $feather_user, $db;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($feather_user['g_id'] != PUN_ADMIN) {
+        if ($feather_user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        define('PUN_ADMIN_CONSOLE', 1);
+        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // Load the admin_options.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
@@ -185,23 +145,10 @@ class forums
             // If the user hasn't confirmed the delete
 
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
-            if (!defined('PUN_ACTIVE_PAGE')) {
-                define('PUN_ACTIVE_PAGE', 'admin');
-            }
-            require FEATHER_ROOT . 'include/header.php';
 
-            $this->feather->render('header.php', array(
-                    'lang_common' => $lang_common,
-                    'page_title' => $page_title,
-                    'feather_user' => $feather_user,
-                    'feather_config' => $feather_config,
-                    '_SERVER' => $_SERVER,
-                    'navlinks' => $navlinks,
-                    'page_info' => $page_info,
-                    'db' => $db,
-                    'p' => '',
-                )
-            );
+            define('FEATHER_ACTIVE_PAGE', 'admin');
+
+            require FEATHER_ROOT . 'include/header.php';
 
             generate_admin_menu('forums');
 
@@ -210,15 +157,6 @@ class forums
                     'lang_admin_common' => $lang_admin_common,
                     'forum_name' => get_forum_name($id),
                     'forum_id'  =>  $id,
-                )
-            );
-
-            $this->feather->render('footer.php', array(
-                    'lang_common' => $lang_common,
-                    'feather_user' => $feather_user,
-                    'feather_config' => $feather_config,
-                    'feather_start' => $feather_start,
-                    'footer_style' => 'index',
                 )
             );
 

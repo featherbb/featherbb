@@ -14,11 +14,15 @@ class register
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display()
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
+        global $lang_common, $feather_config, $feather_user, $db, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
 
         if (!$feather_user['is_guest']) {
             header('Location: index.php');
@@ -48,9 +52,7 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
         $required_fields = array('req_user' => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2', 'captcha' => $lang_antispam['Robot title']);
         $focus_element = array('register', 'req_user');
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'register');
-        }
+        define('FEATHER_ACTIVE_PAGE', 'register');
 
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $feather_config['o_default_timezone'];
         $user['dst'] = isset($user['dst']) ? $user['dst'] : $feather_config['o_default_dst'];
@@ -68,20 +70,6 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         require FEATHER_ROOT.'include/header.php';
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            'required_fields'    =>    $required_fields,
-                            'p'        =>    '',
-                            )
-                    );
-
         $this->feather->render('register/form.php', array(
                             'errors' => $user['errors'],
                             'feather_config' => $feather_config,
@@ -98,15 +86,6 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
                             )
                     );
 
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'index',
-                            )
-                    );
-
         require FEATHER_ROOT.'include/footer.php';
     }
 
@@ -118,7 +97,7 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
     public function rules()
     { // TODO: fix $_GET w/ URL rewriting
 
-                    global $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+                    global $lang_common, $lang_login, $feather_config, $feather_user, $db;
 
                     // If we are logged in, we shouldn't be here
                     if (!$feather_user['is_guest']) {
@@ -143,38 +122,13 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_register['Register'], $lang_register['Forum rules']);
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'register');
-        }
-        require FEATHER_ROOT.'include/header.php';
+        define('FEATHER_ACTIVE_PAGE', 'register');
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'required_fields'    =>    '',
-                            'page_head'        =>    '',
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
+        require FEATHER_ROOT.'include/header.php';
 
         $this->feather->render('register/rules.php', array(
                             'lang_register'    =>    $lang_register,
                             'feather_config'    =>    $feather_config,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => '',
                             )
                     );
 

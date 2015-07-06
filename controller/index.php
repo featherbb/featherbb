@@ -37,30 +37,14 @@ class index
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/index.php';
 
         $page_title = array(pun_htmlspecialchars($this->config['o_board_title']));
-        define('PUN_ALLOW_INDEX', 1);
+        define('FEATHER_ALLOW_INDEX', 1);
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'index');
-        }
-
-        require FEATHER_ROOT.'include/header.php';
-
+        define('FEATHER_ACTIVE_PAGE', 'index');
+        
         // Load the index.php model file
         require FEATHER_ROOT.'model/index.php';
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $this->user,
-                            'feather_config' => $this->config,
-                            '_SERVER'    =>    $_SERVER,
-                            'page_head'        =>    get_page_head(),
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $this->db,
-                            )
-                    );
+        require FEATHER_ROOT.'include/header.php';
 
         $this->feather->render('index.php', array(
                             'index_data' => print_categories_forums(),
@@ -72,16 +56,7 @@ class index
                             'forum_actions'        =>    get_forum_actions(),
                             )
                     );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $this->user,
-                            'feather_config' => $this->config,
-                            'feather_start' => $this->start,
-                            'footer_style' => 'index',
-                            )
-                    );
-
+        
         require FEATHER_ROOT.'include/footer.php';
     }
 }

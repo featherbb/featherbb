@@ -14,11 +14,15 @@ class delete
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function deletepost($id)
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db, $lang_post, $pd;
+        global $lang_common, $feather_config, $feather_user, $db, $lang_post, $pd;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -34,9 +38,9 @@ class delete
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
-                    // Sort out who the moderators are and if we are currently a moderator (or an admin)
-                    $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
+        // Sort out who the moderators are and if we are currently a moderator (or an admin)
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $is_admmod = ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
@@ -49,7 +53,7 @@ class delete
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        if ($is_admmod && $feather_user['g_id'] != PUN_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+        if ($is_admmod && $feather_user['g_id'] != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -64,25 +68,9 @@ class delete
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_delete['Delete post']);
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'delete');
-        }
+        define('FEATHER_ACTIVE_PAGE', 'delete');
 
         require FEATHER_ROOT.'include/header.php';
-
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            'focus_element'    =>    '',
-                            'p'        =>    '',
-                            )
-                    );
 
         require FEATHER_ROOT.'include/parser.php';
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
@@ -93,15 +81,6 @@ class delete
                             'cur_post' => $cur_post,
                             'id' => $id,
                             'is_topic_post' => $is_topic_post,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'post',
                             )
                     );
 

@@ -14,11 +14,15 @@ class edit
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function editpost($id)
     {
-        global $lang_common, $lang_prof_reg, $feather_config, $feather_user, $feather_start, $db, $lang_post, $lang_register;
+        global $lang_common, $lang_prof_reg, $feather_config, $feather_user, $db, $lang_post, $lang_register;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -32,7 +36,7 @@ class edit
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
 
         $can_edit_subject = $id == $cur_post['first_post_id'];
 
@@ -49,7 +53,7 @@ class edit
                         message($lang_common['No permission'], false, '403 Forbidden');
                     }
 
-        if ($is_admmod && $feather_user['g_id'] != PUN_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+        if ($is_admmod && $feather_user['g_id'] != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -83,26 +87,9 @@ class edit
         $required_fields = array('req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);
         $focus_element = array('edit', 'req_message');
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'edit');
-        }
+        define('FEATHER_ACTIVE_PAGE', 'edit');
 
         require FEATHER_ROOT.'include/header.php';
-
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            'required_fields'    =>    $required_fields,
-                            'focus_element'    =>    $focus_element,
-                            'p'        =>    '',
-                            )
-                    );
 
         if ($this->feather->request->post('preview')) {
             require_once FEATHER_ROOT.'include/parser.php';
@@ -126,15 +113,6 @@ class edit
                             'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
                             'post' => $post,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'post',
                             )
                     );
 

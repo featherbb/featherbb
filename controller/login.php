@@ -14,11 +14,15 @@ class login
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display()
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $db;
 
         if (!$feather_user['is_guest']) {
             header('Location: '.get_base_url());
@@ -38,25 +42,9 @@ class login
         $required_fields = array('req_username' => $lang_common['Username'], 'req_password' => $lang_common['Password']);
         $focus_element = array('login', 'req_username');
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'login');
-        }
+        define('FEATHER_ACTIVE_PAGE', 'login');
 
         require FEATHER_ROOT.'include/header.php';
-
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            'required_fields'    =>    $required_fields,
-                            'p'        =>    '',
-                            )
-                    );
 
         $this->feather->render('login/form.php', array(
                             'lang_common' => $lang_common,
@@ -65,23 +53,14 @@ class login
                             )
                     );
 
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'index',
-                            )
-                    );
-
         require FEATHER_ROOT.'include/footer.php';
     }
 
     public function logmein()
     {
-        global $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_login, $feather_config, $feather_user, $db;
 
-        define('PUN_QUIET_VISIT', 1);
+        define('FEATHER_QUIET_VISIT', 1);
 
         if (!$feather_user['is_guest']) {
             header('Location: index.php');
@@ -99,9 +78,9 @@ class login
 
     public function logmeout($id, $token)
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $db;
 
-        define('PUN_QUIET_VISIT', 1);
+        define('FEATHER_QUIET_VISIT', 1);
 
         // Load the login.php language file
         require FEATHER_ROOT.'lang/'.$feather_user['language'].'/login.php';
@@ -114,12 +93,12 @@ class login
 
     public function forget()
     {
-        global $lang_common, $lang_login, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_login, $feather_config, $feather_user, $db;
         
         // Get current instance
         $this->feather = \Slim\Slim::getInstance();
 
-        define('PUN_QUIET_VISIT', 1);
+        define('FEATHER_QUIET_VISIT', 1);
 
         if (!$feather_user['is_guest']) {
             header('Location: index.php');
@@ -138,39 +117,14 @@ class login
         $required_fields = array('req_email' => $lang_common['Email']);
         $focus_element = array('request_pass', 'req_email');
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'login');
-        }
-        require FEATHER_ROOT.'include/header.php';
+        define('FEATHER_ACTIVE_PAGE', 'login');
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'required_fields'    =>    $required_fields,
-                            'page_head'        =>    '',
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
+        require FEATHER_ROOT.'include/header.php';
 
         $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,
                             'lang_login'    =>    $lang_login,
                             'lang_common'    =>    $lang_common,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => '',
                             )
                     );
 

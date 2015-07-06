@@ -14,11 +14,15 @@ class profile
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display($id, $section = null)
     {
-        global $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $feather_start, $db, $pd, $forum_time_formats, $forum_date_formats;
+        global $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $db, $pd, $forum_time_formats, $forum_date_formats;
 
         // Include UTF-8 function
         require FEATHER_ROOT.'include/utf8/substr_replace.php';
@@ -35,64 +39,41 @@ class profile
         require FEATHER_ROOT.'model/profile.php';
 
         if ($this->feather->request->post('update_group_membership')) {
-            if ($feather_user['g_id'] > PUN_ADMIN) {
+            if ($feather_user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             update_group_membership($id, $this->feather);
         } elseif ($this->feather->request->post('update_forums')) {
-            if ($feather_user['g_id'] > PUN_ADMIN) {
+            if ($feather_user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             update_mod_forums($id, $this->feather);
         } elseif ($this->feather->request->post('ban')) {
-            if ($feather_user['g_id'] != PUN_ADMIN && ($feather_user['g_moderator'] != '1' || $feather_user['g_mod_ban_users'] == '0')) {
+            if ($feather_user['g_id'] != FEATHER_ADMIN && ($feather_user['g_moderator'] != '1' || $feather_user['g_mod_ban_users'] == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             ban_user($id);
         } elseif ($this->feather->request->post('delete_user') || $this->feather->request->post('delete_user_comply')) {
-            if ($feather_user['g_id'] > PUN_ADMIN) {
+            if ($feather_user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             delete_user($id, $this->feather);
 
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Confirm delete user']);
-            if (!defined('PUN_ACTIVE_PAGE')) {
-                define('PUN_ACTIVE_PAGE', 'profile');
-            }
-            require FEATHER_ROOT.'include/header.php';
 
-            $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+            require FEATHER_ROOT.'include/header.php';
 
             $this->feather->render('profile/delete_user.php', array(
                                     'lang_common' => $lang_common,
                                     'username' => get_username($id),
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
-                                    )
-                            );
-
-            $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'profile',
                                     )
                             );
             
@@ -105,9 +86,9 @@ class profile
 
             if ($feather_user['id'] != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
                                     (!$feather_user['is_admmod'] ||                                                                    // and we are not an admin or mod
-                                    ($feather_user['g_id'] != PUN_ADMIN &&                                                            // or we aren't an admin and ...
+                                    ($feather_user['g_id'] != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
                                     ($feather_user['g_mod_edit_users'] == '0' ||                                                    // mods aren't allowed to edit users
-                                    $info['group_id'] == PUN_ADMIN ||                                                                    // or the user is an admin
+                                    $info['group_id'] == FEATHER_ADMIN ||                                                                    // or the user is an admin
                                     $info['is_moderator'])))) {                                                                            // or the user is another mod
                                     message($lang_common['No permission'], false, '403 Forbidden');
             }
@@ -127,47 +108,24 @@ class profile
                     // View or edit?
                     if ($feather_user['id'] != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
                             (!$feather_user['is_admmod'] ||                                                                    // and we are not an admin or mod
-                            ($feather_user['g_id'] != PUN_ADMIN &&                                                            // or we aren't an admin and ...
+                            ($feather_user['g_id'] != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
                             ($feather_user['g_mod_edit_users'] == '0' ||                                                    // mods aren't allowed to edit users
-                            $user['g_id'] == PUN_ADMIN ||                                                                // or the user is an admin
+                            $user['g_id'] == FEATHER_ADMIN ||                                                                // or the user is an admin
                             $user['g_moderator'] == '1')))) {
                         // or the user is another mod
                             $user_info = parse_user_info($user);
 
                         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), sprintf($lang_profile['Users profile'], pun_htmlspecialchars($user['username'])));
-                        define('PUN_ALLOW_INDEX', 1);
-                        if (!defined('PUN_ACTIVE_PAGE')) {
-                            define('PUN_ACTIVE_PAGE', 'profile');
-                        }
-                        require FEATHER_ROOT.'include/header.php';
+                        define('FEATHER_ALLOW_INDEX', 1);
 
-                        $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+                        define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                        require FEATHER_ROOT.'include/header.php';
 
                         $this->feather->render('profile/view_profile.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_profile' => $lang_profile,
                                     'user_info' => $user_info,
-                                    )
-                            );
-
-                        $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'profile',
                                     )
                             );
 
@@ -178,24 +136,10 @@ class profile
 
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section essentials']);
                             $required_fields = array('req_username' => $lang_common['Username'], 'req_email' => $lang_common['Email']);
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('essentials', $id);
 
@@ -217,24 +161,10 @@ class profile
                             }
 
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section personal']);
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('personal', $id);
 
@@ -246,24 +176,10 @@ class profile
                                     );
                         } elseif ($section == 'messaging') {
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section messaging']);
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('messaging', $id);
 
@@ -294,24 +210,10 @@ class profile
                             }
 
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section personality']);
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('personality', $id);
 
@@ -326,24 +228,10 @@ class profile
                                     );
                         } elseif ($section == 'display') {
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section display']);
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('display', $id);
 
@@ -355,24 +243,10 @@ class profile
                                     );
                         } elseif ($section == 'privacy') {
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section privacy']);
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('privacy', $id);
 
@@ -390,24 +264,9 @@ class profile
 
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Section admin']);
 
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'profile');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
+                            define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            require FEATHER_ROOT.'include/header.php';
 
                             generate_profile_menu('admin', $id);
 
@@ -421,22 +280,13 @@ class profile
                             message($lang_common['Bad request'], false, '404 Not Found');
                         }
 
-                        $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'profile',
-                                    )
-                            );
-
                         require FEATHER_ROOT.'include/footer.php';
                     }
     }
 
     public function action($id, $action)
     {
-        global $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_prof_reg, $lang_profile, $feather_config, $feather_user, $db;
 
                     // Include UTF-8 function
                     require FEATHER_ROOT.'include/utf8/substr_replace.php';
@@ -466,39 +316,16 @@ class profile
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Change pass']);
             $required_fields = array('req_old_password' => $lang_profile['Old pass'], 'req_new_password1' => $lang_profile['New pass'], 'req_new_password2' => $lang_profile['Confirm new pass']);
             $focus_element = array('change_pass', ((!$feather_user['is_admmod']) ? 'req_old_password' : 'req_new_password1'));
-            if (!defined('PUN_ACTIVE_PAGE')) {
-                define('PUN_ACTIVE_PAGE', 'profile');
-            }
-            require FEATHER_ROOT.'include/header.php';
 
-            $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+            require FEATHER_ROOT.'include/header.php';
 
             $this->feather->render('profile/change_pass.php', array(
                                     'lang_common' => $lang_common,
                                     'feather_user' => $feather_user,
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
-                                    )
-                            );
-
-            $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'profile',
                                     )
                             );
 
@@ -509,38 +336,15 @@ class profile
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Change email']);
             $required_fields = array('req_new_email' => $lang_profile['New email'], 'req_password' => $lang_common['Password']);
             $focus_element = array('change_email', 'req_new_email');
-            if (!defined('PUN_ACTIVE_PAGE')) {
-                define('PUN_ACTIVE_PAGE', 'profile');
-            }
-            require FEATHER_ROOT.'include/header.php';
 
-            $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+            require FEATHER_ROOT.'include/header.php';
 
             $this->feather->render('profile/change_mail.php', array(
                                     'lang_common' => $lang_common,
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
-                                    )
-                            );
-
-            $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'profile',
                                     )
                             );
 
@@ -561,24 +365,10 @@ class profile
             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Profile'], $lang_profile['Upload avatar']);
             $required_fields = array('req_file' => $lang_profile['File']);
             $focus_element = array('upload_avatar', 'req_file');
-            if (!defined('PUN_ACTIVE_PAGE')) {
-                define('PUN_ACTIVE_PAGE', 'profile');
-            }
-            require FEATHER_ROOT.'include/header.php';
 
-            $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+            define('FEATHER_ACTIVE_PAGE', 'profile');
+
+            require FEATHER_ROOT.'include/header.php';
 
             $this->feather->render('profile/upload_avatar.php', array(
                                     'lang_common' => $lang_common,
@@ -586,15 +376,6 @@ class profile
                                     'feather_config' => $feather_config,
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
-                                    )
-                            );
-
-            $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'profile',
                                     )
                             );
 
@@ -610,7 +391,7 @@ class profile
 
             redirect(get_link('user/'.$id.'/section/personality/'), $lang_profile['Avatar deleted redirect']);
         } elseif ($action == 'promote') {
-            if ($feather_user['g_id'] != PUN_ADMIN && ($feather_user['g_moderator'] != '1' || $feather_user['g_mod_promote_users'] == '0')) {
+            if ($feather_user['g_id'] != FEATHER_ADMIN && ($feather_user['g_moderator'] != '1' || $feather_user['g_mod_promote_users'] == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 

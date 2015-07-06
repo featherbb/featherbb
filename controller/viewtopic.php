@@ -14,11 +14,15 @@ class viewtopic
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        global $lang_common, $lang_post, $lang_topic, $feather_config, $feather_user, $feather_start, $db, $pd;
+        global $lang_common, $lang_post, $lang_topic, $feather_config, $feather_user, $db, $pd;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -42,7 +46,7 @@ class viewtopic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
         if ($is_admmod) {
             $admin_ids = get_admin_ids();
         }
@@ -78,44 +82,24 @@ class viewtopic
 
         $subscraction = get_subscraction($cur_topic['is_subscribed'], $id);
 
-                    // Add relationship meta tags
-                    $page_head = get_page_head($id, $num_pages, $p, $url_topic);
+        // Add relationship meta tags
+        $page_head = get_page_head($id, $num_pages, $p, $url_topic);
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), pun_htmlspecialchars($cur_topic['forum_name']), pun_htmlspecialchars($cur_topic['subject']));
-        define('PUN_ALLOW_INDEX', 1);
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'viewtopic');
-        }
+        define('FEATHER_ALLOW_INDEX', 1);
+
+        define('FEATHER_ACTIVE_PAGE', 'viewtopic');
 
         require FEATHER_ROOT.'include/header.php';
-
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            //'required_fields'	=>	$required_fields,
-                            'page_head'        =>    $page_head,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
 
         $forum_id = $cur_topic['forum_id'];
 
         require FEATHER_ROOT.'include/parser.php';
 
-        $post_data = print_posts($id, $start_from, $cur_topic, $is_admmod);
-
-        session_start();
-
         $this->feather->render('viewtopic.php', array(
                             'id' => $id,
                             'p' => $p,
-                            'post_data' => $post_data,
+                            'post_data' => print_posts($id, $start_from, $cur_topic, $is_admmod),
                             'lang_common' => $lang_common,
                             'lang_topic' => $lang_topic,
                             'lang_post' => $lang_post,
@@ -126,7 +110,6 @@ class viewtopic
                             'paging_links' => $paging_links,
                             'post_link' => $post_link,
                             'start_from' => $start_from,
-                            'session' => $_SESSION,
                             'lang_antispam' => $lang_antispam,
                             'pid' => $pid,
                             'quickpost'        =>    $quickpost,
@@ -136,21 +119,9 @@ class viewtopic
                             'url_topic'        =>    $url_topic,
                             )
                     );
-
-        $this->feather->render('footer.php', array(
-                            'id' => $id,
-                            'p' => $p,
-                            'pid' => $pid,
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'viewtopic',
-                            'forum_id' => $cur_topic['forum_id'],
-                            'feather' => $this->feather,
-                            'num_pages' => $num_pages,
-                            )
-                    );
+        
+        $footer_style = 'viewtopic';
+        $forum_id = $cur_topic['forum_id'];
 
         // Increment "num_views" for topic
         if ($feather_config['o_topic_views'] == '1') {
@@ -162,7 +133,7 @@ class viewtopic
 
     public function viewpost($pid)
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $db;
 
         // Load the viewtopic.php model file
         require FEATHER_ROOT.'model/viewtopic.php';
@@ -174,7 +145,7 @@ class viewtopic
 
     public function action($id, $action)
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $db;
 
         // Load the viewtopic.php model file
         require FEATHER_ROOT.'model/viewtopic.php';

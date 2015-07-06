@@ -14,6 +14,10 @@ class moderate
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function gethostpost($pid)
@@ -70,7 +74,7 @@ class moderate
 
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
-        global $lang_common, $lang_topic, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_topic, $lang_misc, $feather_config, $feather_user, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -99,7 +103,7 @@ class moderate
                     $moderators = get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($feather_user['g_id'] != PUN_ADMIN && ($feather_user['g_moderator'] == '0' || !array_key_exists($feather_user['username'], $mods_array))) {
+        if ($feather_user['g_id'] != FEATHER_ADMIN && ($feather_user['g_moderator'] == '0' || !array_key_exists($feather_user['username'], $mods_array))) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -168,24 +172,10 @@ class moderate
                             check_move_possible();
 
                         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
-                        if (!defined('PUN_ACTIVE_PAGE')) {
-                            define('PUN_ACTIVE_PAGE', 'moderate');
-                        }
-                        require FEATHER_ROOT.'include/header.php';
 
-                        $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+                        define('FEATHER_ACTIVE_PAGE', 'moderate');
+ 
+                        require FEATHER_ROOT.'include/header.php';
 
                         $this->feather->render('moderate/move_topics.php', array(
                                     'action'    =>    'single',
@@ -195,16 +185,9 @@ class moderate
                                     'lang_common'    =>    $lang_common,
                                     )
                             );
-
-                        $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'moderate',
-                                    'forum_id' => $id,
-                                    )
-                            );
+                        
+                        $footer_style = 'moderate';
+                        $forum_id = $id;
 
                         require FEATHER_ROOT.'include/footer.php';
                     }
@@ -217,24 +200,10 @@ class moderate
                                 $posts = delete_posts($this->feather, $id, $fid, $p);
 
                                 $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
-                                if (!defined('PUN_ACTIVE_PAGE')) {
-                                    define('PUN_ACTIVE_PAGE', 'moderate');
-                                }
-                                require FEATHER_ROOT.'include/header.php';
 
-                                $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                                define('FEATHER_ACTIVE_PAGE', 'moderate');
+
+                                require FEATHER_ROOT.'include/header.php';
 
                                 $this->feather->render('moderate/delete_posts.php', array(
                                     'lang_common' => $lang_common,
@@ -244,15 +213,8 @@ class moderate
                                     )
                             );
 
-                                $this->feather->render('footer.php', array(
-                                            'lang_common' => $lang_common,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            'feather_start' => $feather_start,
-                                            'footer_style' => 'moderate',
-                                            'forum_id' => $id,
-                                            )
-                                    );
+                                $footer_style = 'moderate';
+                                $forum_id = $id;
 
                                 require FEATHER_ROOT.'include/footer.php';
                             }
@@ -261,24 +223,10 @@ class moderate
 
                             $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
                             $focus_element = array('subject','new_subject');
-                            if (!defined('PUN_ACTIVE_PAGE')) {
-                                define('PUN_ACTIVE_PAGE', 'moderate');
-                            }
-                            require FEATHER_ROOT.'include/header.php';
 
-                            $this->feather->render('header.php', array(
-                                            'lang_common' => $lang_common,
-                                            'page_title' => $page_title,
-                                            'p' => $p,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            '_SERVER'    =>    $_SERVER,
-                                            'page_head'        =>    '',
-                                            'navlinks'        =>    $navlinks,
-                                            'page_info'        =>    $page_info,
-                                            'db'        =>    $db,
-                                            )
-                                    );
+                            define('FEATHER_ACTIVE_PAGE', 'moderate');
+
+                            require FEATHER_ROOT.'include/header.php';
 
                             $this->feather->render('moderate/split_posts.php', array(
                                     'lang_common' => $lang_common,
@@ -288,15 +236,8 @@ class moderate
                                     )
                             );
 
-                            $this->feather->render('footer.php', array(
-                                            'lang_common' => $lang_common,
-                                            'feather_user' => $feather_user,
-                                            'feather_config' => $feather_config,
-                                            'feather_start' => $feather_start,
-                                            'footer_style' => 'moderate',
-                                            'forum_id' => $id,
-                                            )
-                                    );
+                            $footer_style = 'moderate';
+                            $forum_id = $id;
 
                             require FEATHER_ROOT.'include/footer.php';
                         }
@@ -321,24 +262,10 @@ class moderate
                         }
 
                         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), pun_htmlspecialchars($cur_topic['forum_name']), pun_htmlspecialchars($cur_topic['subject']));
-                        if (!defined('PUN_ACTIVE_PAGE')) {
-                            define('PUN_ACTIVE_PAGE', 'moderate');
-                        }
-                        require FEATHER_ROOT.'include/header.php';
 
-                        $this->feather->render('header.php', array(
-                                    'lang_common' => $lang_common,
-                                    'page_title' => $page_title,
-                                    'p' => $p,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    '_SERVER'    =>    $_SERVER,
-                                    'page_head'        =>    '',
-                                    'navlinks'        =>    $navlinks,
-                                    'page_info'        =>    $page_info,
-                                    'db'        =>    $db,
-                                    )
-                            );
+                        define('FEATHER_ACTIVE_PAGE', 'moderate');
+
+                        require FEATHER_ROOT.'include/header.php';
 
                         $this->feather->render('moderate/posts_view.php', array(
                                     'lang_common' => $lang_common,
@@ -356,23 +283,16 @@ class moderate
                                     )
                             );
 
-                        $this->feather->render('footer.php', array(
-                                    'lang_common' => $lang_common,
-                                    'feather_user' => $feather_user,
-                                    'feather_config' => $feather_config,
-                                    'feather_start' => $feather_start,
-                                    'footer_style' => 'moderate',
-                                    'forum_id' => $id,
-                                    )
-                            );
-
+                        $footer_style = 'moderate';
+                        $forum_id = $id;
+                        
                         require FEATHER_ROOT.'include/footer.php';
                     }
     }
 
     public function display($id, $name = null, $page = null)
     {
-        global $lang_common, $lang_forum, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_forum, $lang_misc, $feather_config, $feather_user, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -391,7 +311,7 @@ class moderate
                     $moderators = get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($feather_user['g_id'] != PUN_ADMIN && ($feather_user['g_moderator'] == '0' || !array_key_exists($feather_user['username'], $mods_array))) {
+        if ($feather_user['g_id'] != FEATHER_ADMIN && ($feather_user['g_moderator'] == '0' || !array_key_exists($feather_user['username'], $mods_array))) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -416,24 +336,10 @@ class moderate
                     $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'moderate/forum/'.$id.'/#');
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), pun_htmlspecialchars($cur_forum['forum_name']));
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'moderate');
-        }
-        require FEATHER_ROOT.'include/header.php';
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'page_head'        =>    '',
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
+        define('FEATHER_ACTIVE_PAGE', 'moderate');
+
+        require FEATHER_ROOT.'include/header.php';
 
         $topic_data = display_topics($id, $sort_by, $start_from);
 
@@ -452,22 +358,15 @@ class moderate
                             )
                     );
 
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'moderate',
-                            'forum_id' => $id,
-                            )
-                    );
+        $footer_style = 'moderate';
+        $forum_id = $id;
 
         require FEATHER_ROOT.'include/footer.php';
     }
 
     public function dealposts($fid)
     {
-        global $lang_common, $lang_forum, $lang_topic, $lang_misc, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_forum, $lang_topic, $lang_misc, $feather_config, $feather_user, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -486,7 +385,7 @@ class moderate
             $moderators = get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($feather_user['g_id'] != PUN_ADMIN && ($feather_user['g_moderator'] == '0' || !array_key_exists($feather_user['username'], $mods_array))) {
+        if ($feather_user['g_id'] != FEATHER_ADMIN && ($feather_user['g_moderator'] == '0' || !array_key_exists($feather_user['username'], $mods_array))) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -507,25 +406,10 @@ class moderate
                     check_move_possible();
 
                 $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
-                if (!defined('PUN_ACTIVE_PAGE')) {
-                    define('PUN_ACTIVE_PAGE', 'moderate');
-                }
+
+                define('FEATHER_ACTIVE_PAGE', 'moderate');
+
                 require FEATHER_ROOT.'include/header.php';
-
-                $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'page_head'        =>    '',
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
-
 
                 $this->feather->render('moderate/move_topics.php', array(
                             'action'    =>    'multi',
@@ -536,15 +420,8 @@ class moderate
                             )
                     );
 
-                $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'moderate',
-                            'forum_id' => $fid,
-                            )
-                    );
+                $footer_style = 'moderate';
+                $forum_id = $fid;
 
                 require FEATHER_ROOT.'include/footer.php';
             }
@@ -561,24 +438,10 @@ class moderate
                 }
 
                 $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
-                if (!defined('PUN_ACTIVE_PAGE')) {
-                    define('PUN_ACTIVE_PAGE', 'moderate');
-                }
-                require FEATHER_ROOT.'include/header.php';
 
-                $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'page_head'        =>    '',
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
+                define('FEATHER_ACTIVE_PAGE', 'moderate');
+
+                require FEATHER_ROOT.'include/header.php';
 
                 $this->feather->render('moderate/merge_topics.php', array(
                             'id'    =>    $fid,
@@ -588,15 +451,8 @@ class moderate
                             )
                     );
 
-                $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'moderate',
-                            'forum_id' => $fid,
-                            )
-                    );
+                $footer_style = 'moderate';
+                $forum_id = $fid;
 
                 require FEATHER_ROOT.'include/footer.php';
             }
@@ -613,25 +469,10 @@ class moderate
                 }
 
                 $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_misc['Moderate']);
-                if (!defined('PUN_ACTIVE_PAGE')) {
-                    define('PUN_ACTIVE_PAGE', 'moderate');
-                }
+
+                define('FEATHER_ACTIVE_PAGE', 'moderate');
+
                 require FEATHER_ROOT.'include/header.php';
-
-                $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'page_head'        =>    '',
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
-
 
                 $this->feather->render('moderate/delete_topics.php', array(
                             'id'    =>    $fid,
@@ -641,15 +482,8 @@ class moderate
                             )
                     );
 
-                $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'moderate',
-                            'forum_id' => $fid,
-                            )
-                    );
+                $footer_style = 'moderate';
+                $forum_id = $fid;
 
                 require FEATHER_ROOT.'include/footer.php';
             }

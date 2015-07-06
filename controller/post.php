@@ -14,6 +14,10 @@ class post
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function newreply($fid = null, $tid = null, $qid = null)
@@ -23,7 +27,7 @@ class post
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        global $lang_common, $lang_prof_reg, $feather_config, $feather_user, $feather_start, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
+        global $lang_common, $lang_prof_reg, $feather_config, $feather_user, $db, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
 
         // Load the post.php model file
         require FEATHER_ROOT.'model/post.php';
@@ -55,7 +59,7 @@ $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-$is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
+$is_admmod = ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
 
         // Do we have permission to post?
         if ((($tid && (($cur_posting['post_replies'] == '' && $feather_user['g_post_replies'] == '0') || $cur_posting['post_replies'] == '0')) ||
@@ -179,35 +183,19 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
         }
         $focus_element = array('post');
 
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'post');
-        }
+        define('FEATHER_ACTIVE_PAGE', 'post');
+
         require FEATHER_ROOT.'include/header.php';
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            'required_fields'    =>    $required_fields,
-                            'focus_element'    =>    $focus_element,
-                            'p'        =>    '',
-                            )
-                    );
+        // Get the current state of checkboxes
+        $checkboxes = get_checkboxes($this->feather, $fid, $is_admmod, $is_subscribed);
 
-                    // Get the current state of checkboxes
-                    $checkboxes = get_checkboxes($this->feather, $fid, $is_admmod, $is_subscribed);
-
-                    // Check to see if the topic review is to be displayed
-                    if ($tid && $feather_config['o_topic_review'] != '0') {
-                        $post_data = topic_review($tid);
-                    } else {
-                        $post_data = '';
-                    }
+        // Check to see if the topic review is to be displayed
+        if ($tid && $feather_config['o_topic_review'] != '0') {
+            $post_data = topic_review($tid);
+        } else {
+            $post_data = '';
+        }
 
         $this->feather->render('post.php', array(
                             'post' => $post,
@@ -231,15 +219,6 @@ $is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'
                             'url_topic' => $url_topic,
                             'quote' => $quote,
                             'errors'    =>    $errors,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'post',
                             )
                     );
 

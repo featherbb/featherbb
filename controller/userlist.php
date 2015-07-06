@@ -14,11 +14,15 @@ class userlist
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display()
     {
-        global $lang_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $feather_config, $feather_user, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -57,34 +61,15 @@ class userlist
             $focus_element = array('userlist', 'username');
         }
 
-                    // Generate paging links
-                    $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'userlist.php?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
+        // Generate paging links
+        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
 
-        define('PUN_ALLOW_INDEX', 1);
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'userlist');
-        }
+        define('FEATHER_ALLOW_INDEX', 1);
+
+        define('FEATHER_ACTIVE_PAGE', 'userlist');
 
         require FEATHER_ROOT.'include/header.php';
-
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            //'required_fields'	=>	$required_fields,
-                            //'page_head'		=>	get_page_head($id, $num_pages, $p),
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
-
-                    // Print the users
-                    $userlist_data = print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count, $show_group);
 
         $this->feather->render('userlist.php', array(
                             'lang_common' => $lang_common,
@@ -98,16 +83,7 @@ class userlist
                             'show_post_count' => $show_post_count,
                             'paging_links' => $paging_links,
                             'feather_config' => $feather_config,
-                            'userlist_data' => $userlist_data,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'userlist',
+                            'userlist_data' => print_users($username, $start_from, $sort_by, $sort_dir, $show_post_count, $show_group),
                             )
                     );
 

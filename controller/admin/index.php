@@ -14,11 +14,15 @@ class index
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display($action = null)
     {
-        global $lang_common, $lang_admin_common, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_admin_common, $feather_config, $feather_user, $db;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -60,23 +64,10 @@ class index
         $install_file_exists = is_file(FEATHER_ROOT.'install.php');
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Index']);
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'admin');
-        }
-        require FEATHER_ROOT.'include/header.php';
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            'p'        =>    '',
-                            )
-                    );
+        define('FEATHER_ACTIVE_PAGE', 'admin');
+
+        require FEATHER_ROOT.'include/header.php';
 
         generate_admin_menu('index');
 
@@ -84,15 +75,6 @@ class index
                             'lang_admin_index'    =>    $lang_admin_index,
                             'install_file_exists'    =>    $install_file_exists,
                             'feather_config'    =>    $feather_config,
-                            )
-                    );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'index',
                             )
                     );
 

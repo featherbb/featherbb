@@ -14,11 +14,15 @@ class viewforum
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
     
     public function display($id, $name = null, $page = null)
     {
-        global $lang_common, $lang_forum, $feather_config, $feather_user, $feather_start, $db;
+        global $lang_common, $lang_forum, $feather_config, $feather_user, $db;
 
         if ($feather_user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -45,7 +49,7 @@ class viewforum
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
-$is_admmod = ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
+$is_admmod = ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && array_key_exists($feather_user['username'], $mods_array))) ? true : false;
 
 $sort_by = sort_forum_by($cur_forum['sort_by']);
 
@@ -70,33 +74,17 @@ $url_forum = url_friendly($cur_forum['forum_name']);
 
 
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), pun_htmlspecialchars($cur_forum['forum_name']));
-        define('PUN_ALLOW_INDEX', 1);
-        if (!defined('PUN_ACTIVE_PAGE')) {
-            define('PUN_ACTIVE_PAGE', 'viewforum');
-        }
+        define('FEATHER_ALLOW_INDEX', 1);
 
-        require FEATHER_ROOT.'include/header.php';
+        define('FEATHER_ACTIVE_PAGE', 'viewforum');
+        
+        $page_head = get_page_head($id, $num_pages, $p, $url_forum);
 
-        $this->feather->render('header.php', array(
-                            'lang_common' => $lang_common,
-                            'page_title' => $page_title,
-                            'p' => $p,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            '_SERVER'    =>    $_SERVER,
-                            'page_head'        =>    get_page_head($id, $num_pages, $p, $url_forum),
-                            'navlinks'        =>    $navlinks,
-                            'page_info'        =>    $page_info,
-                            'db'        =>    $db,
-                            )
-                    );
-
-                    // Print topics
-                    $forum_data = print_topics($id, $sort_by, $start_from);
+        require FEATHER_ROOT.'include/header.php';    
 
         $this->feather->render('viewforum.php', array(
                             'id' => $id,
-                            'forum_data' => $forum_data,
+                            'forum_data' => print_topics($id, $sort_by, $start_from),
                             'lang_common' => $lang_common,
                             'lang_forum' => $lang_forum,
                             'cur_forum' => $cur_forum,
@@ -108,16 +96,9 @@ $url_forum = url_friendly($cur_forum['forum_name']);
                             'forum_actions' => $forum_actions,
                             )
                     );
-
-        $this->feather->render('footer.php', array(
-                            'lang_common' => $lang_common,
-                            'feather_user' => $feather_user,
-                            'feather_config' => $feather_config,
-                            'feather_start' => $feather_start,
-                            'footer_style' => 'viewforum',
-                            'forum_id' => $id,
-                            )
-                    );
+        
+        $footer_style = 'viewforum';
+        $forum_id = $id;
 
         require FEATHER_ROOT.'include/footer.php';
     }

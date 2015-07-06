@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -43,28 +43,28 @@ $p = isset($p) ? $p : null;
 $links = array();
 
 // Index should always be displayed
-$links[] = '<li id="navindex"'.((PUN_ACTIVE_PAGE == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.$lang_common['Index'].'</a></li>';
+$links[] = '<li id="navindex"'.((FEATHER_ACTIVE_PAGE == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.$lang_common['Index'].'</a></li>';
 
 if ($feather_user['g_read_board'] == '1' && $feather_user['g_view_users'] == '1') {
-    $links[] = '<li id="navuserlist"'.((PUN_ACTIVE_PAGE == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.$lang_common['User list'].'</a></li>';
+    $links[] = '<li id="navuserlist"'.((FEATHER_ACTIVE_PAGE == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.$lang_common['User list'].'</a></li>';
 }
 
 if ($feather_config['o_rules'] == '1' && (!$feather_user['is_guest'] || $feather_user['g_read_board'] == '1' || $feather_config['o_regs_allow'] == '1')) {
-    $links[] = '<li id="navrules"'.((PUN_ACTIVE_PAGE == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.$lang_common['Rules'].'</a></li>';
+    $links[] = '<li id="navrules"'.((FEATHER_ACTIVE_PAGE == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.$lang_common['Rules'].'</a></li>';
 }
 
 if ($feather_user['g_read_board'] == '1' && $feather_user['g_search'] == '1') {
-    $links[] = '<li id="navsearch"'.((PUN_ACTIVE_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.$lang_common['Search'].'</a></li>';
+    $links[] = '<li id="navsearch"'.((FEATHER_ACTIVE_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.$lang_common['Search'].'</a></li>';
 }
 
 if ($feather_user['is_guest']) {
-    $links[] = '<li id="navregister"'.((PUN_ACTIVE_PAGE == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.$lang_common['Register'].'</a></li>';
-    $links[] = '<li id="navlogin"'.((PUN_ACTIVE_PAGE == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.$lang_common['Login'].'</a></li>';
+    $links[] = '<li id="navregister"'.((FEATHER_ACTIVE_PAGE == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.$lang_common['Register'].'</a></li>';
+    $links[] = '<li id="navlogin"'.((FEATHER_ACTIVE_PAGE == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.$lang_common['Login'].'</a></li>';
 } else {
-    $links[] = '<li id="navprofile"'.((PUN_ACTIVE_PAGE == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$feather_user['id'].'/').'">'.$lang_common['Profile'].'</a></li>';
+    $links[] = '<li id="navprofile"'.((FEATHER_ACTIVE_PAGE == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$feather_user['id'].'/').'">'.$lang_common['Profile'].'</a></li>';
 
     if ($feather_user['is_admmod']) {
-        $links[] = '<li id="navadmin"'.((PUN_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.$lang_common['Admin'].'</a></li>';
+        $links[] = '<li id="navadmin"'.((FEATHER_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.$lang_common['Admin'].'</a></li>';
     }
 
     $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$feather_user['id'].'/token/'.pun_hash($feather_user['id'].pun_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
@@ -145,8 +145,35 @@ $page_info .= "\n\t\t\t".'<div class="clearer"></div>'."\n\t\t".'</div>';
 
 
 // START SUBST - <pun_main>
-ob_start();
 
-if (!defined('PUN_HEADER')) {
-    define('PUN_HEADER', 1);
+if (!defined('FEATHER_HEADER')) {
+    define('FEATHER_HEADER', 1);
+}
+
+// Render the header
+if (isset($this)) {
+
+    $page_title = isset($page_title) ? $page_title : pun_htmlspecialchars($this->config['o_board_title']);
+    
+    $page_head = isset($page_head) ? $page_head : null;
+    $focus_element = isset($page_head) ? $page_head : null;
+    $paging_links = isset($paging_links) ? $paging_links : null;
+    $required_fields = isset($required_fields) ? $required_fields : null;
+    
+    $this->feather->render('header.php', array(
+                            'lang_common' => $lang_common,
+                            'page_title' => $page_title,
+                            'focus_element' => $focus_element,
+                            'p' => $p,
+                            'feather_user' => $this->user,
+                            'feather_config' => $this->config,
+                            '_SERVER'    =>    $_SERVER,
+                            'page_head'        =>    $page_head,
+                            'navlinks'        =>    $navlinks,
+                            'page_info'        =>    $page_info,
+                            'paging_links' => $paging_links,
+                            'required_fields' => $required_fields,
+                            'db'        =>    $this->db,
+                            )
+                    );
 }
