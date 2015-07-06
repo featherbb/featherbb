@@ -76,7 +76,7 @@ function get_page_head($forum_id, $num_pages, $p, $url_forum)
 // Returns forum action
 function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
 {
-    global $feather_user, $feather_config, $lang_forum, $lang_common;
+    global $feather_user, $lang_forum, $lang_common;
     
     $forum_actions = array();
 
@@ -98,7 +98,7 @@ function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
 // Returns the elements needed to display topics
 function print_topics($forum_id, $sort_by, $start_from)
 {
-    global $db, $lang_common, $lang_index, $feather_user, $feather_config;
+    global $db, $lang_common, $lang_forum, $feather_user, $feather_config;
     
     // Get topic/forum tracking data
     if (!$feather_user['is_guest']) {
