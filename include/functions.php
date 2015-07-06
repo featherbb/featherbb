@@ -43,7 +43,7 @@ function check_cookie(&$feather_user)
     // If it has a non-guest user, and hasn't expired
     if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now) {
         // If the cookie has been tampered with
-        if (hash_hmac('sha1', $cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash') !== $cookie['cookie_hash']) {           
+        if (forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash') != $cookie['cookie_hash']) {
             $expire = $now + 31536000; // The cookie expires after a year
             pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
             set_default_user();
@@ -61,7 +61,7 @@ function check_cookie(&$feather_user)
         $feather_user = $db->fetch_assoc($result);
 
         // If user authorisation failed
-        if (!isset($feather_user['id']) || hash_hmac('sha1', $feather_user['password'], $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
+        if (!isset($feather_user['id']) || forum_hmac($feather_user['password'], $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
             $expire = $now + 31536000; // The cookie expires after a year
             pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
             set_default_user();
@@ -91,7 +91,7 @@ function check_cookie(&$feather_user)
         }
 
         // Define this if you want this visit to affect the online list and the users last visit data
-        if (!defined('FEATHER_QUIET_VISIT')) {
+        if (!defined('PUN_QUIET_VISIT')) {
             // Update the online list
             if (!$feather_user['logged']) {
                 $feather_user['logged'] = $now;
@@ -136,9 +136,41 @@ function check_cookie(&$feather_user)
         }
 
         $feather_user['is_guest'] = false;
-        $feather_user['is_admmod'] = $feather_user['g_id'] == FEATHER_ADMIN || $feather_user['g_moderator'] == '1';
+        $feather_user['is_admmod'] = $feather_user['g_id'] == PUN_ADMIN || $feather_user['g_moderator'] == '1';
     } else {
         set_default_user();
+    }
+}
+
+
+//
+// Converts the CDATA end sequence ]]> into ]]&gt;
+//
+function escape_cdata($str)
+{
+    return str_replace(']]>', ']]&gt;', $str);
+}
+
+
+//
+// Authenticates the provided username and password against the user database
+// $user can be either a user ID (integer) or a username (string)
+// $password can be either a plaintext password or a password hash including salt ($password_is_hash must be set accordingly)
+//
+function authenticate_user($user, $password, $password_is_hash = false)
+{
+    global $db, $feather_user;
+
+    // Check if there's a user matching $user and $password
+    $result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $feather_user = $db->fetch_assoc($result);
+
+    if (!isset($feather_user['id']) ||
+        ($password_is_hash && $password != $feather_user['password']) ||
+        (!$password_is_hash && pun_hash($password) != $feather_user['password'])) {
+        set_default_user();
+    } else {
+        $feather_user['is_guest'] = false;
     }
 }
 
@@ -221,7 +253,7 @@ function get_admin_ids()
         include FORUM_CACHE_DIR.'cache_admins.php';
     }
 
-    if (!defined('FEATHER_ADMINS_LOADED')) {
+    if (!defined('PUN_ADMINS_LOADED')) {
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
             require FEATHER_ROOT.'include/cache.php';
         }
@@ -286,6 +318,44 @@ function set_default_user()
 
 
 //
+// SHA1 HMAC with PHP 4 fallback
+//
+function forum_hmac($data, $key, $raw_output = false)
+{
+    if (function_exists('hash_hmac')) {
+        return hash_hmac('sha1', $data, $key, $raw_output);
+    }
+
+    // If key size more than blocksize then we hash it once
+    if (strlen($key) > 64) {
+        $key = pack('H*', sha1($key));
+    } // we have to use raw output here to match the standard
+
+    // Ensure we're padded to exactly one block boundary
+    $key = str_pad($key, 64, chr(0x00));
+
+    $hmac_opad = str_repeat(chr(0x5C), 64);
+    $hmac_ipad = str_repeat(chr(0x36), 64);
+
+    // Do inner and outer padding
+    for ($i = 0;$i < 64;$i++) {
+        $hmac_opad[$i] = $hmac_opad[$i] ^ $key[$i];
+        $hmac_ipad[$i] = $hmac_ipad[$i] ^ $key[$i];
+    }
+
+    // Finally, calculate the HMAC
+    $hash = sha1($hmac_opad.pack('H*', sha1($hmac_ipad.$data)));
+
+    // If we want raw output then we need to pack the final result
+    if ($raw_output) {
+        $hash = pack('H*', $hash);
+    }
+
+    return $hash;
+}
+
+
+//
 // Set a cookie, FluxBB style!
 // Wrapper for forum_setcookie
 //
@@ -293,7 +363,7 @@ function pun_setcookie($user_id, $password_hash, $expire)
 {
     global $cookie_name, $cookie_seed;
 
-    forum_setcookie($cookie_name, $user_id.'|'.hash_hmac('sha1', $password_hash, $cookie_seed.'_password_hash').'|'.$expire.'|'.hash_hmac('sha1', $user_id.'|'.$expire, $cookie_seed.'_cookie_hash'), $expire);
+    forum_setcookie($cookie_name, $user_id.'|'.forum_hmac($password_hash, $cookie_seed.'_password_hash').'|'.$expire.'|'.forum_hmac($user_id.'|'.$expire, $cookie_seed.'_cookie_hash'), $expire);
 }
 
 
@@ -719,7 +789,7 @@ function censor_words($text)
             include FORUM_CACHE_DIR.'cache_censoring.php';
         }
 
-        if (!defined('FEATHER_CENSOR_LOADED')) {
+        if (!defined('PUN_CENSOR_LOADED')) {
             if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
                 require FEATHER_ROOT.'include/cache.php';
             }
@@ -768,7 +838,7 @@ function get_title($user)
         $user_title = pun_htmlspecialchars($user['g_user_title']);
     }
     // If the user is a guest
-    elseif ($user['g_id'] == FEATHER_GUEST) {
+    elseif ($user['g_id'] == PUN_GUEST) {
         $user_title = $lang_common['Guest'];
     }
     // If nothing else helps, we assign the default
@@ -907,7 +977,7 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 function message($message, $no_back_link = false, $http_status = null)
 {
-    global $db, $lang_common, $feather_config, $tpl_main, $feather_user;
+    global $db, $lang_common, $feather_config, $feather_start, $tpl_main, $feather_user;
 
     // Did we receive a custom header?
     if (!is_null($http_status)) {
@@ -916,19 +986,19 @@ function message($message, $no_back_link = false, $http_status = null)
     
     $feather = \Slim\Slim::getInstance();
 
-    if (!defined('FEATHER_HEADER')) {
+    if (!defined('PUN_HEADER')) {
         $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Info']);
-
-        define('FEATHER_ACTIVE_PAGE', 'index');
-
+        if (!defined('PUN_ACTIVE_PAGE')) {
+            define('PUN_ACTIVE_PAGE', 'index');
+        }
         require FEATHER_ROOT.'include/header.php';
         
         $feather->render('header.php', array(
             'lang_common' => $lang_common,
             'page_title' => $page_title,
             'p' => '',
-            'feather_user' => $feather->user,
-            'feather_config' => $feather->config,
+            'feather_user' => $feather_user,
+            'feather_config' => $feather_config,
             '_SERVER'    =>    $_SERVER,
             'required_fields'    =>    null,
             'page_head'        =>    '',
@@ -948,9 +1018,9 @@ function message($message, $no_back_link = false, $http_status = null)
 
     $feather->render('footer.php', array(
         'lang_common' => $lang_common,
-        'feather_user' => $feather->user,
-        'feather_config' => $feather->config,
-        'feather_start' => $feather->start,
+        'feather_user' => $feather_user,
+        'feather_config' => $feather_config,
+        'feather_start' => $feather_start,
         'footer_style' => '',
         )
     );
@@ -1049,19 +1119,17 @@ function random_key($len, $readable = false, $hash = false)
 function confirm_referrer($scripts, $error_msg = false)
 {
     global $lang_common;
-    
-    $feather = \Slim\Slim::getInstance();
 
     if (!is_array($scripts)) {
         $scripts = array($scripts);
     }
 
     // There is no referrer
-    if ($feather->request->getReferrer() == '') {
+    if (empty($_SERVER['HTTP_REFERER'])) {
         message($error_msg ? $error_msg : $lang_common['Bad referrer']);
     }
 
-    $referrer = parse_url(strtolower($feather->request->getReferrer()));
+    $referrer = parse_url(strtolower($_SERVER['HTTP_REFERER']));
     // Remove www subdomain if it exists
     if (strpos($referrer['host'], 'www.') === 0) {
         $referrer['host'] = substr($referrer['host'], 4);
@@ -1152,9 +1220,23 @@ function pun_hash($str)
 //
 function get_remote_address()
 {
-    $feather = \Slim\Slim::getInstance();
-    
-    $remote_addr = $feather->request->getIp();
+    $remote_addr = $_SERVER['REMOTE_ADDR'];
+
+    // If we are behind a reverse proxy try to find the real users IP
+    if (defined('FORUM_BEHIND_REVERSE_PROXY')) {
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            // The general format of the field is:
+            // X-Forwarded-For: client1, proxy1, proxy2
+            // where the value is a comma+space separated list of IP addresses, the left-most being the farthest downstream client,
+            // and each successive proxy that passed the request adding the IP address where it received the request from.
+            $forwarded_for = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $forwarded_for = trim($forwarded_for[0]);
+
+            if (@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $forwarded_for) || @preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%', $forwarded_for)) {
+                $remote_addr = $forwarded_for;
+            }
+        }
+    }
 
     return $remote_addr;
 }
@@ -1346,7 +1428,7 @@ function maintenance_message()
 //
 function redirect($destination_url, $message = null)
 {
-    $feather = \Slim\Slim::getInstance();
+    global $feather;
 
     $feather->redirect($destination_url);
 }
@@ -1415,7 +1497,7 @@ H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADD
 	<div>
 <?php
 
-    if (defined('FEATHER_DEBUG') && !is_null($file) && !is_null($line)) {
+    if (defined('PUN_DEBUG') && !is_null($file) && !is_null($line)) {
         echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
 
         if ($db_error) {
@@ -1529,7 +1611,7 @@ function remove_bad_characters($array)
             "\xe2\x80\x85"    => ' ',        // FOUR-PER-EM SPACE					2005	*
             "\xe2\x80\x86"    => ' ',        // SIX-PER-EM SPACE						2006	*
             "\xe2\x80\x87"    => ' ',        // FIGURE SPACE							2007	*
-            "\xe2\x80\x88"    => ' ',        // FEATHERCTUATION SPACE					2008	*
+            "\xe2\x80\x88"    => ' ',        // PUNCTUATION SPACE					2008	*
             "\xe2\x80\x89"    => ' ',        // THIN SPACE							2009	*
             "\xe2\x80\x8a"    => ' ',        // HAIR SPACE							200A	*
             "\xE3\x80\x80"    => ' ',        // IDEOGRAPHIC SPACE					3000	*
@@ -1638,6 +1720,85 @@ function generate_stopwords_cache_id()
     }
 
     return sha1(implode('|', $hash));
+}
+
+
+//
+// Split text into chunks ($inside contains all text inside $start and $end, and $outside contains all text outside)
+//
+function split_text($text, $start, $end, $retab = true)
+{
+    global $feather_config;
+
+    $result = array(0 => array(), 1 => array()); // 0 = inside, 1 = outside
+
+    // split the text into parts
+    $parts = preg_split('%'.preg_quote($start, '%').'(.*)'.preg_quote($end, '%').'%Us', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $num_parts = count($parts);
+
+    // preg_split results in outside parts having even indices, inside parts having odd
+    for ($i = 0;$i < $num_parts;$i++) {
+        $result[1 - ($i % 2)][] = $parts[$i];
+    }
+
+    if ($feather_config['o_indent_num_spaces'] != 8 && $retab) {
+        $spaces = str_repeat(' ', $feather_config['o_indent_num_spaces']);
+        $result[1] = str_replace("\t", $spaces, $result[1]);
+    }
+
+    return $result;
+}
+
+
+//
+// Extract blocks from a text with a starting and ending string
+// This function always matches the most outer block so nesting is possible
+//
+function extract_blocks($text, $start, $end, $retab = true)
+{
+    global $feather_config;
+
+    $code = array();
+    $start_len = strlen($start);
+    $end_len = strlen($end);
+    $regex = '%(?:'.preg_quote($start, '%').'|'.preg_quote($end, '%').')%';
+    $matches = array();
+
+    if (preg_match_all($regex, $text, $matches)) {
+        $counter = $offset = 0;
+        $start_pos = $end_pos = false;
+
+        foreach ($matches[0] as $match) {
+            if ($match == $start) {
+                if ($counter == 0) {
+                    $start_pos = strpos($text, $start);
+                }
+                $counter++;
+            } elseif ($match == $end) {
+                $counter--;
+                if ($counter == 0) {
+                    $end_pos = strpos($text, $end, $offset + 1);
+                }
+                $offset = strpos($text, $end, $offset + 1);
+            }
+
+            if ($start_pos !== false && $end_pos !== false) {
+                $code[] = substr($text, $start_pos + $start_len,
+                    $end_pos - $start_pos - $start_len);
+                $text = substr_replace($text, "\1", $start_pos,
+                    $end_pos - $start_pos + $end_len);
+                $start_pos = $end_pos = false;
+                $offset = 0;
+            }
+        }
+    }
+
+    if ($feather_config['o_indent_num_spaces'] != 8 && $retab) {
+        $spaces = str_repeat(' ', $feather_config['o_indent_num_spaces']);
+        $text = str_replace("\t", $spaces, $text);
+    }
+
+    return array($code, $text);
 }
 
 
@@ -1929,8 +2090,67 @@ function dump()
 }
 
 //
-// Return the path to load the view file
+// Convert open urls into clickable links
 //
+function linkify($text)
+{
+    return preg_replace_callback('/ # Rev:20110220_1200 github.com\/jmrware\/LinkifyURL
+	# Match http & ftp URL that is not already linkified.
+	  # Alternative 1: URL delimited by (parentheses).
+	  (\()					   # $1	 "(" start delimiter.
+	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
+	  (\))					   # $3: ")" end delimiter.
+	| # Alternative 2: URL delimited by [square brackets].
+	  (\[)					   # $4: "[" start delimiter.
+	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
+	  (\])					   # $6: "]" end delimiter.
+	| # Alternative 3: URL delimited by {curly braces}.
+	  (\{)					   # $7: "{" start delimiter.
+	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
+	  (\})					   # $9: "}" end delimiter.
+	| # Alternative 4: URL delimited by <angle brackets>.
+	  (<|&(?:lt|\#60|\#x3c);)  # $10: "<" start delimiter (or HTML entity).
+	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
+	  (>|&(?:gt|\#62|\#x3e);)  # $12: ">" end delimiter (or HTML entity).
+	| # Alternative 5: URL not delimited by (), [], {} or <>.
+	  (						   # $13: Prefix proving URL not already linked.
+		(?: ^				   # Can be a beginning of line or string, or
+		| [^=\s\'"\]]		   # a non-"=", non-quote, non-"]", followed by
+		) \s*[\'"]?			   # optional whitespace and optional quote;
+	  | [^=\s]\s+			   # or... a non-equals sign followed by whitespace.
+	  )						   # End $13. Non-prelinkified-proof prefix.
+	  ( \b					   # $14: Other non-delimited URL.
+		(?:ht|f)tps?:\/\/	   # Required literal http, https, ftp or ftps prefix.
+		[a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]+ # All URI chars except "&" (normal*).
+		(?:					   # Either on a "&" or at the end of URI.
+		  (?!				   # Allow a "&" char only if not start of an...
+			&(?:gt|\#0*62|\#x0*3e);					 # HTML ">" entity, or
+		  | &(?:amp|apos|quot|\#0*3[49]|\#x0*2[27]); # a [&\'"] entity if
+			[.!&\',:?;]?		# followed by optional punctuation then
+			(?:[^a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]|$)	# a non-URI char or EOS.
+		  ) &				   # If neg-assertion true, match "&" (special).
+		  [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]* # More non-& URI chars (normal*).
+		)*					   # Unroll-the-loop (special normal*)*.
+		[a-z0-9\-_~$()*+=\/#[\]@%]	# Last char can\'t be [.!&\',;:?]
+	  )						   # End $14. Other non-delimited URL.
+	/imx', '_linkify_callback', $text);
+//	  $url_replace = '$1$4$7$10$13[url]$2$5$8$11$14[/url]$3$6$9$12';
+}
+function _linkify_callback($m)
+{ // Only linkify valid urls.
+    $url = $m[2] . $m[5] . $m[8] . $m[11] . $m[14];
+    if (is_array($u = url_valid($url))) {
+        if (preg_match('%\.(?:jpe?g|gif|png)$%Si', $u['path_abempty'])) {
+            return    $m[1].$m[4].$m[7].$m[10].$m[13] .'[img]'. $u['url'] .'[/img]'. $m[3].$m[6].$m[9].$m[12];
+        } else {
+            return    $m[1].$m[4].$m[7].$m[10].$m[13] .'[url]'. $u['url'] .'[/url]'. $m[3].$m[6].$m[9].$m[12];
+        }
+    } else {
+        return    $m[1].$m[4].$m[7].$m[10].$m[13].        $url.               $m[3].$m[6].$m[9].$m[12];
+    }
+}
+
+// Return the path to load the view file
 function get_path_view()
 {
     global $feather_user;
@@ -1942,10 +2162,8 @@ function get_path_view()
     }
 }
 
-//
 // Make a string safe to use in a URL
 // Inspired by (c) Panther <http://www.pantherforum.org/>
-//
 function url_friendly($str)
 {
     require FEATHER_ROOT.'include/url_replace.php';
@@ -1957,10 +2175,8 @@ function url_friendly($str)
     return $str;
 }
 
-//
 // Generate link to another page on the forum
 // Inspired by (c) Panther <http://www.pantherforum.org/>
-//
 function get_link($link, $args = null)
 {
     global $feather_config;
@@ -1986,9 +2202,7 @@ function get_link($link, $args = null)
     return $gen_link;
 }
 
-//
 // Generate link to another page on the forum for the referrer function
-//
 function get_link_r($link)
 {
     global $feather_config;
@@ -2004,11 +2218,8 @@ function get_link_r($link)
     return $gen_link;
 }
 
-
-//
 // Generate a hyperlink with parameters and anchor and a subsection such as a subpage
 // Inspired by (c) Panther <http://www.pantherforum.org/>
-//
 function get_sublink($link, $sublink, $subarg, $args = null)
 {
     $base_url = get_base_url();
