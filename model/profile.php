@@ -46,7 +46,7 @@ function change_pass($id, $feather)
 
             list($group_id, $is_moderator) = $db->fetch_row($result);
 
-            if ($feather_user['g_mod_edit_users'] == '0' || $feather_user['g_mod_change_passwords'] == '0' || $group_id == PUN_ADMIN || $is_moderator == '1') {
+            if ($feather_user['g_mod_edit_users'] == '0' || $feather_user['g_mod_change_passwords'] == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         }
@@ -114,7 +114,7 @@ function change_email($id, $feather)
 
             list($group_id, $is_moderator) = $db->fetch_row($result);
 
-            if ($feather_user['g_mod_edit_users'] == '0' || $group_id == PUN_ADMIN || $is_moderator == '1') {
+            if ($feather_user['g_mod_edit_users'] == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         }
@@ -337,7 +337,7 @@ function update_group_membership($id, $feather)
 
     generate_users_info_cache();
 
-    if ($old_group_id == PUN_ADMIN || $new_group_id == PUN_ADMIN) {
+    if ($old_group_id == FEATHER_ADMIN || $new_group_id == FEATHER_ADMIN) {
         generate_admins_cache();
     }
 
@@ -345,7 +345,7 @@ function update_group_membership($id, $feather)
     $new_group_mod = $db->result($result);
 
     // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-    if ($new_group_id != PUN_ADMIN && $new_group_mod != '1') {
+    if ($new_group_id != FEATHER_ADMIN && $new_group_mod != '1') {
         $result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
         while ($cur_forum = $db->fetch_assoc($result)) {
@@ -458,7 +458,7 @@ function delete_user($id, $feather)
     $result = $db->query('SELECT group_id, username FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     list($group_id, $username) = $db->fetch_row($result);
 
-    if ($group_id == PUN_ADMIN) {
+    if ($group_id == FEATHER_ADMIN) {
         message($lang_profile['No delete admin message']);
     }
 
@@ -467,7 +467,7 @@ function delete_user($id, $feather)
         $result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
         $group_mod = $db->result($result);
 
-        if ($group_id == PUN_ADMIN || $group_mod == '1') {
+        if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
             $result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
             while ($cur_forum = $db->fetch_assoc($result)) {
@@ -528,7 +528,7 @@ function delete_user($id, $feather)
 
         generate_users_info_cache();
 
-        if ($group_id == PUN_ADMIN) {
+        if ($group_id == FEATHER_ADMIN) {
             generate_admins_cache();
         }
 
@@ -595,7 +595,7 @@ function update_profile($id, $info, $section, $feather)
                 $form['admin_note'] = pun_trim($feather->request->post('admin_note'));
 
                 // Are we allowed to change usernames?
-                if ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_rename_users'] == '1')) {
+                if ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_rename_users'] == '1')) {
                     $form['username'] = pun_trim($feather->request->post('req_username'));
 
                     if ($form['username'] != $info['old_username']) {
@@ -613,7 +613,7 @@ function update_profile($id, $info, $section, $feather)
                 }
 
                 // We only allow administrators to update the post count
-                if ($feather_user['g_id'] == PUN_ADMIN) {
+                if ($feather_user['g_id'] == FEATHER_ADMIN) {
                     $form['num_posts'] = intval($feather->request->post('num_posts'));
                 }
             }
@@ -658,7 +658,7 @@ function update_profile($id, $info, $section, $feather)
                 $form['url'] = '';
             }
 
-            if ($feather_user['g_id'] == PUN_ADMIN) {
+            if ($feather_user['g_id'] == FEATHER_ADMIN) {
                 $form['title'] = pun_trim($feather->request->post('title'));
             } elseif ($feather_user['g_set_title'] == '1') {
                 $form['title'] = pun_trim($feather->request->post('title'));
@@ -827,7 +827,7 @@ function update_profile($id, $info, $section, $feather)
         $result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
         $group_mod = $db->result($result);
 
-        if ($group_id == PUN_ADMIN || $group_mod == '1') {
+        if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
             $result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
             while ($cur_forum = $db->fetch_assoc($result)) {
@@ -995,7 +995,7 @@ function edit_essentials($id, $user)
     $user_disp = array();
     
     if ($feather_user['is_admmod']) {
-        if ($feather_user['g_id'] == PUN_ADMIN || $feather_user['g_mod_rename_users'] == '1') {
+        if ($feather_user['g_id'] == FEATHER_ADMIN || $feather_user['g_mod_rename_users'] == '1') {
             $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.pun_htmlspecialchars($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], pun_htmlspecialchars($user['username'])).'</p>'."\n";
@@ -1015,13 +1015,13 @@ function edit_essentials($id, $user)
     $user_disp['posts_field'] = '';
     $posts_actions = array();
 
-    if ($feather_user['g_id'] == PUN_ADMIN) {
+    if ($feather_user['g_id'] == FEATHER_ADMIN) {
         $user_disp['posts_field'] .= '<label>'.$lang_common['Posts'].'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
     } elseif ($feather_config['o_show_post_count'] == '1' || $feather_user['is_admmod']) {
         $posts_actions[] = sprintf($lang_profile['Posts info'], forum_number_format($user['num_posts']));
     }
 
-    if ($feather_user['g_search'] == '1' || $feather_user['g_id'] == PUN_ADMIN) {
+    if ($feather_user['g_search'] == '1' || $feather_user['g_id'] == FEATHER_ADMIN) {
         $posts_actions[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.$lang_profile['Show topics'].'</a>';
         $posts_actions[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.$lang_profile['Show posts'].'</a>';
 
@@ -1039,7 +1039,7 @@ function get_group_list($user)
 {
     global $db, $feather_config;
     
-    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.PUN_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
     while ($cur_group = $db->fetch_assoc($result)) {
         if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $feather_config['o_default_user_group'] && $user['g_id'] == '')) {

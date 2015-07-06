@@ -8,7 +8,7 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 ?>
@@ -29,7 +29,7 @@ if (!defined('PUN')) {
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
+    if ($cur_group['g_id'] != FEATHER_ADMIN && $cur_group['g_id'] != FEATHER_GUEST) {
         if ($cur_group['g_id'] == $feather_config['o_default_user_group']) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
         } else {
@@ -61,7 +61,7 @@ foreach ($groups as $cur_group) {
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] > PUN_GUEST && $cur_group['g_moderator'] == 0) {
+    if ($cur_group['g_id'] > FEATHER_GUEST && $cur_group['g_moderator'] == 0) {
         if ($cur_group['g_id'] == $feather_config['o_default_user_group']) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
         } else {
@@ -93,7 +93,7 @@ foreach ($groups as $cur_group) {
 							<table>
 <?php
 foreach ($groups as $cur_group) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.get_link('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Edit link'].'</a>'.(($cur_group['g_id'] > PUN_MEMBER) ? ' | <a href="'.get_link('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Delete link'].'</a>' : '').'</th><td>'.pun_htmlspecialchars($cur_group['g_title']).'</td></tr>'."\n";
+    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.get_link('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Edit link'].'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.get_link('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Delete link'].'</a>' : '').'</th><td>'.pun_htmlspecialchars($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>

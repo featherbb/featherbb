@@ -45,8 +45,8 @@ function send_email($feather, $mail, $id)
     } elseif ($message == '') {
         message($lang_misc['No email message']);
     }
-    // Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
-    elseif (strlen($message) > PUN_MAX_POSTSIZE) {
+    // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+    elseif (strlen($message) > FEATHER_MAX_POSTSIZE) {
         message($lang_misc['Too long email message']);
     }
 

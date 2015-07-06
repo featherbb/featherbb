@@ -266,7 +266,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
                 }
             }
 
-            if ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_promote_users'] == '1')) {
+            if ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_promote_users'] == '1')) {
                 if ($cur_post['g_promote_next_group']) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.$lang_topic['Promote user'].'</a></span></dd>';
                 }
@@ -316,7 +316,7 @@ function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
             }
         } else {
             $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
-            if ($feather_user['g_id'] == PUN_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
+            if ($feather_user['g_id'] == FEATHER_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
                 $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                 $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
             }

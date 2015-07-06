@@ -102,13 +102,13 @@ function move_users($feather)
     }
 
     // Are we trying to batch move any admins?
-    $result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $move['user_ids']).') AND group_id='.PUN_ADMIN) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $move['user_ids']).') AND group_id='.FEATHER_ADMIN) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     if ($db->result($result) > 0) {
         message($lang_admin_users['No move admins message']);
     }
 
     // Fetch all user groups
-    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id NOT IN ('.PUN_GUEST.','.PUN_ADMIN.') ORDER BY g_title ASC') or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id NOT IN ('.FEATHER_GUEST.','.FEATHER_ADMIN.') ORDER BY g_title ASC') or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
     while ($row = $db->fetch_row($result)) {
         $move['all_groups'][$row[0]] = $row[1];
     }
@@ -140,7 +140,7 @@ function move_users($feather)
             }
         }
 
-        if (!empty($user_groups) && $new_group != PUN_ADMIN && $new_group_mod != '1') {
+        if (!empty($user_groups) && $new_group != FEATHER_ADMIN && $new_group_mod != '1') {
             // Fetch forum list and clean up their moderator list
             $result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
             while ($cur_forum = $db->fetch_assoc($result)) {
@@ -185,7 +185,7 @@ function delete_users($feather)
     }
 
     // Are we trying to delete any admins?
-    $result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $user_ids).') AND group_id='.PUN_ADMIN) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $user_ids).') AND group_id='.FEATHER_ADMIN) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
     if ($db->result($result) > 0) {
         message($lang_admin_users['No delete admins message']);
     }
@@ -299,7 +299,7 @@ function ban_users($feather)
     }
 
     // Are we trying to ban any admins?
-    $result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $user_ids).') AND group_id='.PUN_ADMIN) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'users WHERE id IN ('.implode(',', $user_ids).') AND group_id='.FEATHER_ADMIN) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
     if ($db->result($result) > 0) {
         message($lang_admin_users['No ban admins message']);
     }
@@ -502,7 +502,7 @@ function print_users($conditions, $order_by, $direction, $start_from)
             $cur_user['user_title'] = get_title($cur_user);
 
             // This script is a special case in that we want to display "Not verified" for non-verified users
-            if (($cur_user['g_id'] == '' || $cur_user['g_id'] == PUN_UNVERIFIED) && $cur_user['user_title'] != $lang_common['Banned']) {
+            if (($cur_user['g_id'] == '' || $cur_user['g_id'] == FEATHER_UNVERIFIED) && $cur_user['user_title'] != $lang_common['Banned']) {
                 $cur_user['user_title'] = '<span class="warntext">'.$lang_admin_users['Not verified'].'</span>';
             }
             
@@ -517,7 +517,7 @@ function get_group_list()
 {
     global $db;
     
-    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.PUN_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
     while ($cur_group = $db->fetch_assoc($result)) {
         echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";

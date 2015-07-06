@@ -52,9 +52,9 @@ function check_errors_before_edit($id, $feather, $can_edit_subject, $errors)
     // Clean up message from POST
     $message = pun_linebreaks(pun_trim($feather->request->post('req_message')));
 
-    // Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
-    if (strlen($message) > PUN_MAX_POSTSIZE) {
-        $errors[] = sprintf($lang_post['Too long message'], forum_number_format(PUN_MAX_POSTSIZE));
+    // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+    if (strlen($message) > FEATHER_MAX_POSTSIZE) {
+        $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
     } elseif ($feather_config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$feather_user['is_admmod']) {
         $errors[] = $lang_post['All caps message'];
     }

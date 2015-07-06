@@ -38,7 +38,7 @@ function get_search_results($feather)
         $keywords = ($feather->request->get('keywords')) ? utf8_strtolower(pun_trim($feather->request->get('keywords'))) : null;
         $author = ($feather->request->get('author')) ? utf8_strtolower(pun_trim($feather->request->get('author'))) : null;
 
-        if (preg_match('%^[\*\%]+$%', $keywords) || (pun_strlen(str_replace(array('*', '%'), '', $keywords)) < PUN_SEARCH_MIN_WORD && !is_cjk($keywords))) {
+        if (preg_match('%^[\*\%]+$%', $keywords) || (pun_strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !is_cjk($keywords))) {
             $keywords = '';
         }
 

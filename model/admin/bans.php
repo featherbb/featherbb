@@ -43,7 +43,7 @@ function add_ban_info($feather)
 
     // Make sure we're not banning an admin or moderator
     if (isset($group_id)) {
-        if ($group_id == PUN_ADMIN) {
+        if ($group_id == FEATHER_ADMIN) {
             message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban['ban_user'])));
         }
 
@@ -118,7 +118,7 @@ function insert_ban($feather)
         if ($db->num_rows($result)) {
             $group_id = $db->result($result);
 
-            if ($group_id == PUN_ADMIN) {
+            if ($group_id == FEATHER_ADMIN) {
                 message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban_user)));
             }
 

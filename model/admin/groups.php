@@ -48,7 +48,7 @@ function info_add_group($groups, $feather, $id)
 function get_group_list($groups, $group)
 {
     foreach ($groups as $cur_group) {
-        if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
+        if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != FEATHER_ADMIN && $cur_group['g_id'] != FEATHER_GUEST) {
             if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
                 echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
             } else {
@@ -62,10 +62,10 @@ function get_group_list_delete($group_id)
 {
     global $db;
     
-    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.PUN_GUEST.' AND g_id!='.$group_id.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' AND g_id!='.$group_id.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
     while ($cur_group = $db->fetch_assoc($result)) {
-        if ($cur_group['g_id'] == PUN_MEMBER) {
+        if ($cur_group['g_id'] == FEATHER_MEMBER) {
             // Pre-select the pre-defined Members group
             echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
         } else {
@@ -90,7 +90,7 @@ function add_edit_group($groups, $feather)
     ));
 
     // Is this the admin group? (special rules apply)
-    $is_admin_group = ($feather->request->post('group_id') && $feather->request->post('group_id') == PUN_ADMIN) ? true : false;
+    $is_admin_group = ($feather->request->post('group_id') && $feather->request->post('group_id') == FEATHER_ADMIN) ? true : false;
 
     $title = pun_trim($feather->request->post('req_title'));
     $user_title = pun_trim($feather->request->post('user_title'));
@@ -98,7 +98,7 @@ function add_edit_group($groups, $feather)
     $promote_min_posts = $feather->request->post('promote_min_posts') ? intval($feather->request->post('promote_min_posts')) : '0';
     if ($feather->request->post('promote_next_group') &&
             isset($groups[$feather->request->post('promote_next_group')]) &&
-            !in_array($feather->request->post('promote_next_group'), array(PUN_ADMIN, PUN_GUEST)) &&
+            !in_array($feather->request->post('promote_next_group'), array(FEATHER_ADMIN, FEATHER_GUEST)) &&
             ($feather->request->post('group_id') || $feather->request->post('promote_next_group') != $feather->request->post('group_id'))) {
         $promote_next_group = $feather->request->post('promote_next_group');
     } else {
@@ -187,7 +187,7 @@ function set_default_group($groups, $feather)
     $group_id = intval($feather->request->post('default_group'));
 
     // Make sure it's not the admin or guest groups
-    if ($group_id == PUN_ADMIN || $group_id == PUN_GUEST) {
+    if ($group_id == FEATHER_ADMIN || $group_id == FEATHER_GUEST) {
         message($lang_common['Bad request'], false, '404 Not Found');
     }
 

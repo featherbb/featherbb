@@ -15,11 +15,11 @@
 <title><?php echo generate_page_title($page_title, $p) ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather_user['style'].'.css' ?>" />
 <?php
-if (!defined('PUN_ALLOW_INDEX')) {
+if (!defined('FEATHER_ALLOW_INDEX')) {
     echo '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />'."\n";
 }
 
-if (defined('PUN_ADMIN_CONSOLE')) {
+if (defined('FEATHER_ADMIN_CONSOLE')) {
     if (file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'/base_admin.css')) {
         echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather_user['style'].'/base_admin.css" />'."\n";
     } else {
@@ -75,7 +75,7 @@ endif;
 
 <body>
 
-<div id="pun<?php echo PUN_ACTIVE_PAGE ?>" class="pun">
+<div id="pun<?php echo FEATHER_ACTIVE_PAGE ?>" class="pun">
 <div class="top-box"></div>
 <div class="punwrap">
 

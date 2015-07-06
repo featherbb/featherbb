@@ -81,7 +81,7 @@ function delete_posts($feather, $tid, $fid, $p = null)
         }
 
         // Verify that the post IDs are valid
-        $admins_sql = ($feather_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
+        $admins_sql = ($feather_user['g_id'] != FEATHER_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
         $result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 
         if ($db->num_rows($result) != substr_count($posts, ',') + 1) {
@@ -454,7 +454,7 @@ function delete_topics($topics, $fid)
     }
 
     // Verify that the posts are not by admins
-    if ($feather_user['g_id'] != PUN_ADMIN) {
+    if ($feather_user['g_id'] != FEATHER_ADMIN) {
         $result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') AND poster_id IN('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $db->error());
         if ($db->num_rows($result)) {
             message($lang_common['No permission'], false, '403 Forbidden');

@@ -8,7 +8,7 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 ?>
@@ -39,10 +39,10 @@ if (!defined('PUN')) {
 									<th scope="row"><?php echo $lang_admin_groups['User title label'] ?></th>
 									<td>
 										<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo pun_htmlspecialchars($group['info']['g_user_title']) ?>" tabindex="2" />
-										<span><?php printf($lang_admin_groups['User title help'], ($group['info']['g_id'] != PUN_GUEST ? $lang_common['Member'] : $lang_common['Guest'])) ?></span>
+										<span><?php printf($lang_admin_groups['User title help'], ($group['info']['g_id'] != FEATHER_GUEST ? $lang_common['Member'] : $lang_common['Guest'])) ?></span>
 									</td>
 								</tr>
-<?php if ($group['info']['g_id'] != PUN_ADMIN): if ($group['info']['g_id'] != PUN_GUEST): ?>								<tr>
+<?php if ($group['info']['g_id'] != FEATHER_ADMIN): if ($group['info']['g_id'] != FEATHER_GUEST): ?>								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['Promote users label'] ?></th>
 									<td>
 										<select name="promote_next_group" tabindex="3">
@@ -173,7 +173,7 @@ if (!defined('PUN')) {
 										<span class="clearb"><?php echo $lang_admin_groups['Post topics help'] ?></span>
 									</td>
 								</tr>
-<?php if ($group['info']['g_id'] != PUN_GUEST): ?>								<tr>
+<?php if ($group['info']['g_id'] != FEATHER_GUEST): ?>								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['Edit posts label'] ?></th>
 									<td>
 										<label class="conl"><input type="radio" name="edit_posts" value="1"<?php if ($group['info']['g_edit_posts'] == '1') {
@@ -221,7 +221,7 @@ if (!defined('PUN')) {
 										<span class="clearb"><?php echo $lang_admin_groups['Post links help'] ?></span>
 									</td>
 								</tr>
-<?php if ($group['info']['g_id'] != PUN_GUEST): ?>								<tr>
+<?php if ($group['info']['g_id'] != FEATHER_GUEST): ?>								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['Set own title label'] ?></th>
 									<td>
 										<label class="conl"><input type="radio" name="set_title" value="1"<?php if ($group['info']['g_set_title'] == '1') {
@@ -257,7 +257,7 @@ if (!defined('PUN')) {
 										<span class="clearb"><?php echo $lang_admin_groups['User list search help'] ?></span>
 									</td>
 								</tr>
-<?php if ($group['info']['g_id'] != PUN_GUEST): ?>								<tr>
+<?php if ($group['info']['g_id'] != FEATHER_GUEST): ?>								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['Send e-mails label'] ?></th>
 									<td>
 										<label class="conl"><input type="radio" name="send_email" value="1"<?php if ($group['info']['g_send_email'] == '1') {
@@ -283,7 +283,7 @@ if (!defined('PUN')) {
 										<span><?php echo $lang_admin_groups['Search flood help'] ?></span>
 									</td>
 								</tr>
-<?php if ($group['info']['g_id'] != PUN_GUEST): ?>								<tr>
+<?php if ($group['info']['g_id'] != FEATHER_GUEST): ?>								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['E-mail flood label'] ?></th>
 									<td>
 										<input type="text" name="email_flood" size="5" maxlength="4" value="<?php echo $group['info']['g_email_flood'] ?>" tabindex="43" />

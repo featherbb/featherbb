@@ -8,7 +8,7 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -23,7 +23,7 @@ if (!defined('PUN')) {
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<?php echo $user_disp['username_field'] ?>
-<?php if ($feather_user['id'] == $id || $feather_user['g_id'] == PUN_ADMIN || ($user['g_moderator'] == '0' && $feather_user['g_mod_change_passwords'] == '1')): ?>							<p class="actions"><span><a href="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>"><?php echo $lang_profile['Change pass'] ?></a></span></p>
+<?php if ($feather_user['id'] == $id || $feather_user['g_id'] == FEATHER_ADMIN || ($user['g_moderator'] == '0' && $feather_user['g_mod_change_passwords'] == '1')): ?>							<p class="actions"><span><a href="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>"><?php echo $lang_profile['Change pass'] ?></a></span></p>
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>

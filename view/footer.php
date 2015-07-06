@@ -71,7 +71,7 @@ if ($feather_config['o_quickjump'] == '1') {
         include FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php';
     }
 
-    if (!defined('PUN_QJ_LOADED')) {
+    if (!defined('FEATHER_QJ_LOADED')) {
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
             require FEATHER_ROOT.'include/cache.php';
         }
@@ -86,9 +86,6 @@ echo "\t\t\t".'</div>'."\n";
 ?>
 			<div class="conr">
 <?php
-
-// If no footer style has been specified, we use the default (only copyright/debug info)
-$footer_style = isset($footer_style) ? $footer_style : null;
 
 if ($footer_style == 'index') {
     if ($feather_config['o_feed_type'] == '1') {
@@ -120,7 +117,7 @@ if ($footer_style == 'index') {
 <?php
 
 // Display debug info (if enabled/defined)
-if (defined('PUN_DEBUG')) {
+if (defined('FEATHER_DEBUG')) {
     echo '<p id="debugtime">[ ';
 
     // Calculate script generation time
@@ -138,7 +135,7 @@ if (defined('PUN_DEBUG')) {
     echo ' ]</p>'."\n";
 }
 // Display executed queries (if enabled)
-if (defined('PUN_SHOW_QUERIES')) {
+if (defined('FEATHER_SHOW_QUERIES')) {
     display_saved_queries();
 }
 ?>

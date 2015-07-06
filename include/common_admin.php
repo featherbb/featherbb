@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -31,7 +31,7 @@ function generate_admin_menu($page = '')
 {
     global $feather_config, $feather_user, $lang_admin_common;
 
-    $is_admin = $feather_user['g_id'] == PUN_ADMIN ? true : false;
+    $is_admin = $feather_user['g_id'] == FEATHER_ADMIN ? true : false;
     
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);

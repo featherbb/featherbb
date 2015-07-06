@@ -54,7 +54,7 @@ function login($feather)
     }
 
     // Update the status if this is the first time the user logged in
-    if ($cur_user['group_id'] == PUN_UNVERIFIED) {
+    if ($cur_user['group_id'] == FEATHER_UNVERIFIED) {
         $db->query('UPDATE '.$db->prefix.'users SET group_id='.$feather_config['o_default_user_group'].' WHERE id='.$cur_user['id']) or error('Unable to update user status', __FILE__, __LINE__, $db->error());
 
         // Regenerate the users info cache

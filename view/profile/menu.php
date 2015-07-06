@@ -8,7 +8,7 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -44,7 +44,7 @@ if (!defined('PUN')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/privacy/') ?>"><?php echo $lang_profile['Section privacy'] ?></a></li>
-<?php if ($feather_user['g_id'] == PUN_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_ban_users'] == '1')): ?>					<li<?php if ($page == 'admin') {
+<?php if ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_ban_users'] == '1')): ?>					<li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/admin/') ?>"><?php echo $lang_profile['Section admin'] ?></a></li>

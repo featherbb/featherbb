@@ -8,7 +8,7 @@
  */
  
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -61,7 +61,7 @@ if (!defined('PUN')) {
 				</div>
 <?php
 
-            if ($user['g_moderator'] == '1' || $user['g_id'] == PUN_ADMIN) {
+            if ($user['g_moderator'] == '1' || $user['g_id'] == FEATHER_ADMIN) {
                 ?>
 				<div class="inform">
 					<fieldset>
