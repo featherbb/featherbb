@@ -132,9 +132,9 @@ function check_errors_before_post($fid, $tid, $qid, $pid, $page, $feather, $erro
     // Clean up message from POST
     $orig_message = $message = pun_linebreaks(pun_trim($feather->request->post('req_message')));
 
-    // Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
-    if (strlen($message) > PUN_MAX_POSTSIZE) {
-        $errors[] = sprintf($lang_post['Too long message'], forum_number_format(PUN_MAX_POSTSIZE));
+    // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+    if (strlen($message) > FEATHER_MAX_POSTSIZE) {
+        $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
     } elseif ($feather_config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$feather_user['is_admmod']) {
         $errors[] = $lang_post['All caps message'];
     }
@@ -481,14 +481,36 @@ function increment_post_count($post, $new_tid)
     }
 }
 
+//
+// Split text into chunks ($inside contains all text inside $start and $end, and $outside contains all text outside)
+//
+function split_text($text, $start, $end, $retab = true)
+{
+    global $feather_config;
+
+    $result = array(0 => array(), 1 => array()); // 0 = inside, 1 = outside
+
+    // split the text into parts
+    $parts = preg_split('%'.preg_quote($start, '%').'(.*)'.preg_quote($end, '%').'%Us', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $num_parts = count($parts);
+
+    // preg_split results in outside parts having even indices, inside parts having odd
+    for ($i = 0;$i < $num_parts;$i++) {
+        $result[1 - ($i % 2)][] = $parts[$i];
+    }
+
+    if ($feather_config['o_indent_num_spaces'] != 8 && $retab) {
+        $spaces = str_repeat(' ', $feather_config['o_indent_num_spaces']);
+        $result[1] = str_replace("\t", $spaces, $result[1]);
+    }
+
+    return $result;
+}
+
 // If we are quoting a message
 function get_quote_message($qid, $tid)
 {
     global $db, $feather_config, $lang_common;
-
-    if ($qid < 1) {
-        message($lang_common['Bad request'], false, '404 Not Found');
-    }
 
     $result = $db->query('SELECT poster, message FROM '.$db->prefix.'posts WHERE id='.$qid.' AND topic_id='.$tid) or error('Unable to fetch quote info', __FILE__, __LINE__, $db->error());
     if (!$db->num_rows($result)) {

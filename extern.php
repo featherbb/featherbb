@@ -55,7 +55,7 @@
 
 -----------------------------------------------------------------------------*/
 
-define('PUN_QUIET_VISIT', 1);
+define('FEATHER_QUIET_VISIT', 1);
 
 if (!defined('FEATHER_ROOT')) {
     define('FEATHER_ROOT', dirname(__FILE__).'/');
@@ -75,6 +75,36 @@ if ($feather_user['is_guest'] && isset($_SERVER['PHP_AUTH_USER'])) {
 if ($feather_user['g_read_board'] == '0') {
     http_authenticate_user();
     exit($lang_common['No view']);
+}
+
+//
+// Converts the CDATA end sequence ]]> into ]]&gt;
+//
+function escape_cdata($str)
+{
+    return str_replace(']]>', ']]&gt;', $str);
+}
+
+//
+// Authenticates the provided username and password against the user database
+// $user can be either a user ID (integer) or a username (string)
+// $password can be either a plaintext password or a password hash including salt ($password_is_hash must be set accordingly)
+//
+function authenticate_user($user, $password, $password_is_hash = false)
+{
+    global $db, $feather_user;
+
+    // Check if there's a user matching $user and $password
+    $result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $feather_user = $db->fetch_assoc($result);
+
+    if (!isset($feather_user['id']) ||
+        ($password_is_hash && $password != $feather_user['password']) ||
+        (!$password_is_hash && pun_hash($password) != $feather_user['password'])) {
+        set_default_user();
+    } else {
+        $feather_user['is_guest'] = false;
+    }
 }
 
 $action = isset($_GET['action']) ? strtolower($_GET['action']) : 'feed';
@@ -446,7 +476,7 @@ if ($action == 'feed') {
                 }
 
                 $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather_config['o_feed_ttl'] * 60)).';'."\n\n".'?>';
-                fluxbb_write_cache_file('cache_'.$cache_id.'.php', $content);
+                featherbb_write_cache_file('cache_'.$cache_id.'.php', $content);
             }
         }
 
