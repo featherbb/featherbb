@@ -921,22 +921,11 @@ function message($message, $no_back_link = false, $http_status = null)
 
         define('FEATHER_ACTIVE_PAGE', 'index');
 
-        require FEATHER_ROOT.'include/header.php';
+        require_once FEATHER_ROOT.'controller/header.php';
         
-        $feather->render('header.php', array(
-            'lang_common' => $lang_common,
-            'page_title' => $page_title,
-            'p' => '',
-            'feather_user' => $feather->user,
-            'feather_config' => $feather->config,
-            '_SERVER'    =>    $_SERVER,
-            'required_fields'    =>    null,
-            'page_head'        =>    '',
-            'navlinks'        =>    $navlinks,
-            'page_info'        =>    $page_info,
-            'db'        =>    $db,
-            )
-        );
+        $header = new \controller\header();
+        
+        $header->display();
     }
 
     $feather->render('message.php', array(
@@ -945,17 +934,13 @@ function message($message, $no_back_link = false, $http_status = null)
         'no_back_link'    =>    $no_back_link,
         )
     );
-
-    $feather->render('footer.php', array(
-        'lang_common' => $lang_common,
-        'feather_user' => $feather->user,
-        'feather_config' => $feather->config,
-        'feather_start' => $feather->start,
-        'footer_style' => '',
-        )
-    );
     
-    require FEATHER_ROOT.'include/footer.php';
+    require_once FEATHER_ROOT.'controller/footer.php';
+    
+    $footer = new \controller\footer();
+
+    $footer->display();
+    
 }
 
 

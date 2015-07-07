@@ -18,15 +18,23 @@ class groups
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->header = new \controller\header();
+        $this->footer = new \controller\footer();
+        $this->model = new \model\admin\groups();
+    }
+
+    public function __autoload($class_name)
+    {
+        require FEATHER_ROOT . $class_name . '.php';
     }
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_groups;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($feather_user['g_id'] != FEATHER_ADMIN) {
+        if ($this->user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -35,43 +43,40 @@ class groups
         // Load the admin_groups.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/groups.php';
 
-        // Load the groups.php model file
-        require FEATHER_ROOT.'model/admin/groups.php';
-
-        $groups = fetch_groups();
+        $groups = $this->model->fetch_groups();
 
         // Set default group
         if ($this->feather->request->isPost()) {
-            set_default_group($groups, $this->feather);
+            $this->model->set_default_group($groups, $this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        require FEATHER_ROOT.'include/header.php';
+        $this->header->display();
 
         generate_admin_menu('groups');
 
         $this->feather->render('admin/groups/admin_groups.php', array(
                 'lang_admin_groups'    =>    $lang_admin_groups,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'feather_config'    =>    $feather_config,
+                'feather_config'    =>    $this->config,
                 'groups' => $groups,
                 'cur_index' => 5,
             )
         );
 
-        require FEATHER_ROOT.'include/footer.php';
+        $this->footer->display();
     }
 
     public function delete($id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_groups;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($feather_user['g_id'] != FEATHER_ADMIN) {
+        if ($this->user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -79,9 +84,6 @@ class groups
 
         // Load the admin_groups.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/groups.php';
-
-        // Load the groups.php model file
-        require FEATHER_ROOT . 'model/admin/groups.php';
 
         confirm_referrer(array(
             get_link_r('admin/groups/'),
@@ -93,25 +95,25 @@ class groups
         }
 
         // Make sure we don't remove the default group
-        if ($id == $feather_config['o_default_user_group']) {
+        if ($id == $this->config['o_default_user_group']) {
             message($lang_admin_groups['Cannot remove default message']);
         }
 
         // Check if this group has any members
-        $is_member = check_members($id);
+        $is_member = $this->model->check_members($id);
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
-        if (!$is_member || isset($_POST['del_group'])) {
+        if (!$is_member || $feather->request->post('del_group')) {
             if ($this->feather->request->post('del_group_comply') || $this->feather->request->post('del_group')) {
-                delete_group($this->feather, $id);
+                $this->model->delete_group($this->feather, $id);
             } else {
                 $group_title = get_group_title($id);
 
-                $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+                $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
                 define('FEATHER_ACTIVE_PAGE', 'admin');
 
-                require FEATHER_ROOT.'include/header.php';
+                $this->header->display();
 
                 generate_admin_menu('groups');
 
@@ -123,15 +125,15 @@ class groups
                     )
                 );
 
-                require FEATHER_ROOT.'include/footer.php';
+                $this->footer->display();
             }
         }
 
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        require FEATHER_ROOT.'include/header.php';
+        $this->header->display();
 
         generate_admin_menu('groups');
 
@@ -139,20 +141,20 @@ class groups
                 'lang_admin_groups'    =>    $lang_admin_groups,
                 'lang_admin_common'    =>    $lang_admin_common,
                 'id'    => $id,
-                'group_info'      =>  get_title_members($id),
+                'group_info'      =>  $this->model->get_title_members($id),
             )
         );
 
-        require FEATHER_ROOT.'include/footer.php';
+        $this->footer->display();
     }
 
     public function addedit($id = '')
     {
-        global $lang_common, $lang_admin_common, $lang_admin_groups, $feather_config, $feather_user, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_groups;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($feather_user['g_id'] != FEATHER_ADMIN) {
+        if ($this->user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -161,39 +163,36 @@ class groups
         // Load the admin_groups.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/groups.php';
 
-        // Load the groups.php model file
-        require FEATHER_ROOT.'model/admin/groups.php';
-
-        $groups = fetch_groups();
+        $groups = $this->model->fetch_groups();
 
         // Add/edit a group (stage 2)
         if ($this->feather->request->post('add_edit_group')) {
-            add_edit_group($groups, $this->feather);
+            $this->model->add_edit_group($groups, $this->feather);
         }
 
         // Add/edit a group (stage 1)
         elseif ($this->feather->request->post('add_group') || isset($id)) {
-            $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+            $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
             $required_fields = array('req_title' => $lang_admin_groups['Group title label']);
             $focus_element = array('groups2', 'req_title');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
-            require FEATHER_ROOT.'include/header.php';
+            $this->header->display();
 
             generate_admin_menu('groups');
 
             $this->feather->render('admin/groups/add_edit_group.php', array(
                     'lang_admin_groups'    =>    $lang_admin_groups,
                     'lang_admin_common'    =>    $lang_admin_common,
-                    'feather_config'    =>    $feather_config,
-                    'group'    =>    info_add_group($groups, $this->feather, $id),
+                    'feather_config'    =>    $this->config,
+                    'group'    =>    $this->model->info_add_group($groups, $this->feather, $id),
                     'groups'    =>    $groups,
                     'id'    => $id,
                 )
             );
 
-            require FEATHER_ROOT.'include/footer.php';
+            $this->footer->display();
         }
     }
 }

@@ -18,15 +18,23 @@ class censoring
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->header = new \controller\header();
+        $this->footer = new \controller\footer();
+        $this->model = new \model\admin\censoring();
+    }
+
+    public function __autoload($class_name)
+    {
+        require FEATHER_ROOT . $class_name . '.php';
     }
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_censoring, $feather_config, $feather_user, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_censoring;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($feather_user['g_id'] != FEATHER_ADMIN) {
+        if ($this->user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -35,41 +43,38 @@ class censoring
         // Load the admin_options.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/censoring.php';
 
-        // Load the categories.php model file
-        require FEATHER_ROOT.'model/admin/censoring.php';
-
         // Add a censor word
         if ($this->feather->request->post('add_word')) {
-            add_word($this->feather);
+            $this->model->add_word($this->feather);
         }
 
         // Update a censor word
         elseif ($this->feather->request->post('update')) {
-            update_word($this->feather);
+            $this->model->update_word($this->feather);
         }
 
         // Remove a censor word
         elseif ($this->feather->request->post('remove')) {
-            remove_word($this->feather);
+            $this->model->remove_word($this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
+        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
         $focus_element = array('censoring', 'new_search_for');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        require FEATHER_ROOT.'include/header.php';
+        $this->header->display();
 
         generate_admin_menu('censoring');
 
         $this->feather->render('admin/censoring.php', array(
                 'lang_admin_censoring'    =>    $lang_admin_censoring,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'feather_config'    =>    $feather_config,
-                'word_data'    =>    get_words(),
+                'feather_config'    =>    $this->config,
+                'word_data'    =>    $this->model->get_words(),
             )
         );
 
-        require FEATHER_ROOT.'include/footer.php';
+        $this->footer->display();
     }
 }

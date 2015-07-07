@@ -38,9 +38,7 @@ if (!defined('FEATHER')) {
 						<legend><?php echo $lang_profile['Group membership legend'] ?></legend>
 						<div class="infldset">
 							<select id="group_id" name="group_id">
-<?php
-                            get_group_list($user);
-                ?>
+                                                            <?php echo $group_list ?>
 							</select>
 							<input type="submit" name="update_group_membership" value="<?php echo $lang_profile['Save'] ?>" />
 						</div>
@@ -68,9 +66,7 @@ if (!defined('FEATHER')) {
 						<legend><?php echo $lang_profile['Set mods legend'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_profile['Moderator in info'] ?></p>
-<?php
-                                get_forum_list($id);
-                ?>
+                                                        <?php echo $forum_list ?>
 								</div>
 							</div>
 							<br class="clearb" /><input type="submit" name="update_forums" value="<?php echo $lang_profile['Update forums'] ?>" />

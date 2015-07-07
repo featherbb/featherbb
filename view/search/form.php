@@ -32,7 +32,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_search['Search in legend'] ?></legend>
 					<div class="infldset">
-					<?php get_list_forums(); ?>
+					<?php echo $forums ?>
 						<label class="conl"><?php echo $lang_search['Search in']."\n" ?>
 						<br /><select id="search_in" name="search_in">
 							<option value="0"><?php echo $lang_search['Message and subject'] ?></option>

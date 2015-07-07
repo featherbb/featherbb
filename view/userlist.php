@@ -27,7 +27,7 @@ if (!defined('FEATHER')) {
 							<option value="-1"<?php if ($show_group == -1) {
     echo ' selected="selected"';
 } ?>><?php echo $lang_ul['All users'] ?></option>
-<?php generate_dropdown_menu($show_group); ?>
+<?php echo $dropdown_menu ?>
 						</select>
 						<br /></label>
 						<label class="conl"><?php echo $lang_search['Sort by']."\n" ?>

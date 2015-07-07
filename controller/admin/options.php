@@ -18,15 +18,23 @@ class options
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->header = new \controller\header();
+        $this->footer = new \controller\footer();
+        $this->model = new \model\admin\options();
+    }
+
+    public function __autoload($class_name)
+    {
+        require FEATHER_ROOT . $class_name . '.php';
     }
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $feather_config, $feather_user, $db;
+        global $lang_common, $lang_admin_common;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($feather_user['g_id'] != FEATHER_ADMIN) {
+        if ($this->user['g_id'] != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -35,28 +43,28 @@ class options
         // Load the admin_options.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/options.php';
 
-        // Load the admin_options.php model file
-        require FEATHER_ROOT.'model/admin/options.php';
-
         if ($this->feather->request->isPost()) {
-            update_options($this->feather);
+            $this->model->update_options($this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
+        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        require FEATHER_ROOT.'include/header.php';
+        $this->header->display();
 
         generate_admin_menu('options');
 
         $this->feather->render('admin/options.php', array(
                 'lang_admin_options'    =>    $lang_admin_options,
-                'feather_config'    =>    $feather_config,
-                'feather_user'    =>    $feather_user,
+                'feather_config'    =>    $this->config,
+                'feather_user'    =>    $this->user,
+                'languages' => forum_list_langs(),
+                'styles' => $this->model->get_styles(),
+                'times' => $this->model->get_times(),
             )
         );
 
-        require FEATHER_ROOT.'include/footer.php';
+        $this->footer->display();
     }
 }

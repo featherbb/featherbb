@@ -79,7 +79,7 @@ if (!defined('FEATHER')) {
 									<td>
 										<select name="prune_from" tabindex="7">
 											<option value="all"><?php echo $lang_admin_maintenance['All forums'] ?></option>
-												<?php get_categories(); ?>
+												<?php echo $categories; ?>
 											</optgroup>
 										</select>
 										<span><?php echo $lang_admin_maintenance['Prune from help'] ?></span>

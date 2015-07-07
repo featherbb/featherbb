@@ -7,89 +7,103 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-function add_word($feather)
+namespace model\admin;
+
+class censoring
 {
-    global $db, $lang_admin_censoring;
-    
-    confirm_referrer(get_link_r('admin/censoring/'));
-
-    $search_for = pun_trim($feather->request->post('new_search_for'));
-    $replace_with = pun_trim($feather->request->post('new_replace_with'));
-
-    if ($search_for == '') {
-        message($lang_admin_censoring['Must enter word message']);
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
 
-    $db->query('INSERT INTO '.$db->prefix.'censoring (search_for, replace_with) VALUES (\''.$db->escape($search_for).'\', \''.$db->escape($replace_with).'\')') or error('Unable to add censor word', __FILE__, __LINE__, $db->error());
+    public function add_word($feather)
+    {
+        global $lang_admin_censoring;
 
-    // Regenerate the censoring cache
-    if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require FEATHER_ROOT.'include/cache.php';
+        confirm_referrer(get_link_r('admin/censoring/'));
+
+        $search_for = pun_trim($feather->request->post('new_search_for'));
+        $replace_with = pun_trim($feather->request->post('new_replace_with'));
+
+        if ($search_for == '') {
+            message($lang_admin_censoring['Must enter word message']);
+        }
+
+        $this->db->query('INSERT INTO '.$this->db->prefix.'censoring (search_for, replace_with) VALUES (\''.$this->db->escape($search_for).'\', \''.$this->db->escape($replace_with).'\')') or error('Unable to add censor word', __FILE__, __LINE__, $this->db->error());
+
+        // Regenerate the censoring cache
+        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+            require FEATHER_ROOT.'include/cache.php';
+        }
+
+        generate_censoring_cache();
+
+        redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word added redirect']);
     }
 
-    generate_censoring_cache();
+    public function update_word($feather)
+    {
+        global $lang_admin_censoring;
 
-    redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word added redirect']);
-}
+        confirm_referrer(get_link_r('admin/censoring/'));
 
-function update_word($feather)
-{
-    global $db, $lang_admin_censoring;
-    
-    confirm_referrer(get_link_r('admin/censoring/'));
+        $id = intval(key($feather->request->post('update')));
 
-    $id = intval(key($feather->request->post('update')));
+        $search_for = pun_trim($feather->request->post('search_for')[$id]);
+        $replace_with = pun_trim($feather->request->post('replace_with')[$id]);
 
-    $search_for = pun_trim($feather->request->post('search_for')[$id]);
-    $replace_with = pun_trim($feather->request->post('replace_with')[$id]);
+        if ($search_for == '') {
+            message($lang_admin_censoring['Must enter word message']);
+        }
 
-    if ($search_for == '') {
-        message($lang_admin_censoring['Must enter word message']);
+        $this->db->query('UPDATE '.$this->db->prefix.'censoring SET search_for=\''.$this->db->escape($search_for).'\', replace_with=\''.$this->db->escape($replace_with).'\' WHERE id='.$id) or error('Unable to update censor word', __FILE__, __LINE__, $this->db->error());
+
+        // Regenerate the censoring cache
+        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+            require FEATHER_ROOT.'include/cache.php';
+        }
+
+        generate_censoring_cache();
+
+        redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word updated redirect']);
     }
 
-    $db->query('UPDATE '.$db->prefix.'censoring SET search_for=\''.$db->escape($search_for).'\', replace_with=\''.$db->escape($replace_with).'\' WHERE id='.$id) or error('Unable to update censor word', __FILE__, __LINE__, $db->error());
+    public function remove_word($feather)
+    {
+        global $lang_admin_censoring;
 
-    // Regenerate the censoring cache
-    if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require FEATHER_ROOT.'include/cache.php';
+        confirm_referrer(get_link_r('admin/censoring/'));
+
+        $id = intval(key($feather->request->post('remove')));
+
+        $this->db->query('DELETE FROM '.$this->db->prefix.'censoring WHERE id='.$id) or error('Unable to delete censor word', __FILE__, __LINE__, $this->db->error());
+
+        // Regenerate the censoring cache
+        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+            require FEATHER_ROOT.'include/cache.php';
+        }
+
+        generate_censoring_cache();
+
+        redirect(get_link('admin/censoring/'),  $lang_admin_censoring['Word removed redirect']);
     }
 
-    generate_censoring_cache();
-
-    redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word updated redirect']);
-}
-
-function remove_word($feather)
-{
-    global $db, $lang_admin_censoring;
-    
-    confirm_referrer(get_link_r('admin/censoring/'));
-
-    $id = intval(key($feather->request->post('remove')));
-
-    $db->query('DELETE FROM '.$db->prefix.'censoring WHERE id='.$id) or error('Unable to delete censor word', __FILE__, __LINE__, $db->error());
-
-    // Regenerate the censoring cache
-    if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-        require FEATHER_ROOT.'include/cache.php';
-    }
-
-    generate_censoring_cache();
-
-    redirect(get_link('admin/censoring/'),  $lang_admin_censoring['Word removed redirect']);
-}
-
-function get_words()
-{
-    global $db;
-    
-    $word_data = array();
-    
-    $result = $db->query('SELECT id, search_for, replace_with FROM '.$db->prefix.'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
+    public function get_words()
+    {
         
-    while ($cur_word = $db->fetch_assoc($result)) {
-        $word_data[] = $cur_word;
+
+        $word_data = array();
+
+        $result = $this->db->query('SELECT id, search_for, replace_with FROM '.$this->db->prefix.'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $this->db->error());
+
+        while ($cur_word = $this->db->fetch_assoc($result)) {
+            $word_data[] = $cur_word;
+        }
+
+        return $word_data;
     }
-    
-    return $word_data;
 }

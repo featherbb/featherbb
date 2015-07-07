@@ -190,9 +190,6 @@ if (!defined('FEATHER')) {
 									<td>
 										<select name="form_default_lang">
 <?php
-
-        $languages = forum_list_langs();
-
         foreach ($languages as $temp) {
             if ($feather_config['o_default_lang'] == $temp) {
                 echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
@@ -210,7 +207,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_options['Default style label'] ?></th>
 									<td>
 										<select name="form_default_style">
-											<?php get_styles(); ?>
+											<?php echo $styles; ?>
 										</select>
 										<span><?php echo $lang_admin_options['Default style help'] ?></span>
 									</td>
@@ -536,7 +533,7 @@ if (!defined('FEATHER')) {
 											<option value="0"<?php if ($feather_config['o_feed_ttl'] == '0') {
     echo ' selected="selected"';
 } ?>><?php echo $lang_admin_options['No cache'] ?></option>
-											<?php get_times(); ?>
+											<?php echo $times ?>
 										</select>
 										<span><?php echo $lang_admin_options['Feed TTL help'] ?></span>
 									</td>

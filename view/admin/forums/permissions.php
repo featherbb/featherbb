@@ -35,7 +35,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_forums['Category label'] ?></th>
 									<td>
 										<select name="cat_id" tabindex="3">
-											<?php get_categories_permissions($cur_forum); ?>
+											<?php echo $categories_perms ?>
 										</select>
 									</td>
 								</tr>

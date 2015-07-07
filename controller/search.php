@@ -18,38 +18,43 @@ class search
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->header = new \controller\header();
+        $this->footer = new \controller\footer();
+        $this->model = new \model\search();
+    }
+
+    public function __autoload($class_name)
+    {
+        require FEATHER_ROOT . $class_name . '.php';
     }
     
     public function display()
     {
-        global $lang_common, $lang_search, $feather_config, $feather_user, $db, $pd;
+        global $lang_common, $lang_search, $pd;
 
         // Load the search.php language file
-        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/search.php';
-        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user['language'].'/search.php';
+        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
 
-        if ($feather_user['g_read_board'] == '0') {
+        if ($this->user['g_read_board'] == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
-        } elseif ($feather_user['g_search'] == '0') {
+        } elseif ($this->user['g_search'] == '0') {
             message($lang_search['No search permission'], false, '403 Forbidden');
         }
-
-        // Load the search.php model file
-        require FEATHER_ROOT.'model/search.php';
 
         require FEATHER_ROOT.'include/search_idx.php';
 
         // Figure out what to do :-)
         if ($this->feather->request->get('action') || ($this->feather->request->get('search_id'))) {
-            $search = get_search_results($this->feather);
+            $search = $this->model->get_search_results($this->feather);
 
                 // We have results to display
                 if ($search['is_result']) {
-                    $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_search['Search results']);
+                    $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_search['Search results']);
 
                     define('FEATHER_ACTIVE_PAGE', 'search');
 
-                    require FEATHER_ROOT.'include/header.php';
+                    $this->header->display();
 
                     $this->feather->render('search/header.php', array(
                                 'lang_common' => $lang_common,
@@ -59,39 +64,40 @@ class search
                         );
 
                     if ($search['show_as'] == 'posts') {
-                        require FEATHER_ROOT.'lang/'.$feather_user['language'].'/topic.php';
+                        require FEATHER_ROOT.'lang/'.$this->user['language'].'/topic.php';
                         require FEATHER_ROOT.'include/parser.php';
                     }
 
-                    display_search_results($search, $this->feather);
+                    $this->model->display_search_results($search, $this->feather);
 
                     $this->feather->render('search/footer.php', array(
                                 'search' => $search,
                                 )
                         );
 
-                    require FEATHER_ROOT.'include/footer.php';
+                    $this->footer->display();
                 } else {
                     message($lang_search['No hits']);
                 }
         }
 
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_search['Search']);
+        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_search['Search']);
         $focus_element = array('search', 'keywords');
 
         define('FEATHER_ACTIVE_PAGE', 'search');
 
-        require FEATHER_ROOT.'include/header.php';
+        $this->header->display();
 
         $this->feather->render('search/form.php', array(
                             'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
-                            'feather_config' => $feather_config,
-                            'feather_user' => $feather_user,
+                            'feather_config' => $this->config,
+                            'feather_user' => $this->user,
+                            'forums' => $this->model->get_list_forums(),
                             )
                     );
 
-        require FEATHER_ROOT.'include/footer.php';
+        $this->footer->display();
     }
 
     public function quicksearches($show)

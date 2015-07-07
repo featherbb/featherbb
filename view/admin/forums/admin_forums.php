@@ -29,8 +29,7 @@ if ($is_forum) {
 									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" name="add_forum" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
 									<td>
 										<select name="add_to_cat" tabindex="1">
-											<?php get_categories_add();
-    ?>
+											<?php echo $categories_add ?>
 										</select>
 										<span><?php echo $lang_admin_forums['Add forum help'] ?></span>
 									</td>

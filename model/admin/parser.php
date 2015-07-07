@@ -7,17 +7,31 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
-// Helper function returns array of smiley image files
-//   stored in the img/smilies directory.
-function get_smiley_files()
+
+namespace model\admin;
+
+class parser
 {
-    $imgfiles = array();
-    $filelist = scandir(FEATHER_ROOT.'img/smilies');
-    foreach ($filelist as $file) {
-        if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {
-            $imgfiles[] = $file;
-        }
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+        $this->db = $this->feather->db;
+        $this->start = $this->feather->start;
+        $this->config = $this->feather->config;
+        $this->user = $this->feather->user;
     }
-    return $imgfiles;
+ 
+    // Helper public function returns array of smiley image files
+    //   stored in the img/smilies directory.
+    public function get_smiley_files()
+    {
+        $imgfiles = array();
+        $filelist = scandir(FEATHER_ROOT.'img/smilies');
+        foreach ($filelist as $file) {
+            if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {
+                $imgfiles[] = $file;
+            }
+        }
+        return $imgfiles;
+    }
 }

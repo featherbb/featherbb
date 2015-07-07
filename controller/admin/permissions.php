@@ -18,15 +18,23 @@ class permissions
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->header = new \controller\header();
+        $this->footer = new \controller\footer();
+        $this->model = new \model\admin\permissions();
+    }
+
+    public function __autoload($class_name)
+    {
+        require FEATHER_ROOT . $class_name . '.php';
     }
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_permissions, $feather_config, $feather_user, $db;
+        global $lang_common, $lang_admin_common, $lang_admin_permissions;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if (!$feather_user['is_admmod']) {
+        if (!$this->user['is_admmod']) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -35,29 +43,26 @@ class permissions
         // Load the admin_options.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/permissions.php';
 
-        // Load the report.php model file
-        require FEATHER_ROOT.'model/admin/permissions.php';
+        // Update permissions
+        if ($this->feather->request->isPost()) {
+            $this->model->update_permissions($this->feather);
+        }
 
-                    // Update permissions
-                    if ($this->feather->request->isPost()) {
-                        update_permissions($this->feather);
-                    }
-
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
+        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        require FEATHER_ROOT.'include/header.php';
+        $this->header->display();
 
         generate_admin_menu('permissions');
 
         $this->feather->render('admin/permissions.php', array(
                 'lang_admin_permissions'    =>    $lang_admin_permissions,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'feather_config'    =>    $feather_config,
+                'feather_config'    =>    $this->config,
             )
         );
 
-        require FEATHER_ROOT.'include/footer.php';
+        $this->footer->display();
     }
 }
