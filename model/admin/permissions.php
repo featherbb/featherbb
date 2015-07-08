@@ -18,6 +18,7 @@ class permissions
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function update_permissions($feather)
@@ -26,7 +27,7 @@ class permissions
 
         confirm_referrer(get_link_r('admin/permissions/'));
 
-        $form = array_map('intval', $feather->request->post('form'));
+        $form = array_map('intval', $this->request->post('form'));
 
         foreach ($form as $key => $input) {
             // Make sure the input is never a negative value

@@ -18,6 +18,7 @@ class censoring
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\censoring();
@@ -44,17 +45,17 @@ class censoring
         require FEATHER_ROOT.'lang/'.$admin_language.'/censoring.php';
 
         // Add a censor word
-        if ($this->feather->request->post('add_word')) {
+        if ($this->request->post('add_word')) {
             $this->model->add_word($this->feather);
         }
 
         // Update a censor word
-        elseif ($this->feather->request->post('update')) {
+        elseif ($this->request->post('update')) {
             $this->model->update_word($this->feather);
         }
 
         // Remove a censor word
-        elseif ($this->feather->request->post('remove')) {
+        elseif ($this->request->post('remove')) {
             $this->model->remove_word($this->feather);
         }
 

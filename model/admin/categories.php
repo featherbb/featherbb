@@ -18,6 +18,7 @@ class categories
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function add_category($feather)
@@ -26,7 +27,7 @@ class categories
 
         confirm_referrer(get_link_r('admin/categories/'));
 
-        $new_cat_name = pun_trim($feather->request->post('new_cat_name'));
+        $new_cat_name = pun_trim($this->request->post('new_cat_name'));
         if ($new_cat_name == '') {
             message($lang_admin_categories['Must enter name message']);
         }

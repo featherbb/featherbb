@@ -18,6 +18,7 @@ class register
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function check_for_errors($feather)
@@ -35,17 +36,17 @@ class register
         }
 
 
-        $user['username'] = pun_trim($feather->request->post('req_user'));
-        $user['email1'] = strtolower(pun_trim($feather->request->post('req_email1')));
+        $user['username'] = pun_trim($this->request->post('req_user'));
+        $user['email1'] = strtolower(pun_trim($this->request->post('req_email1')));
 
         if ($this->config['o_regs_verify'] == '1') {
-            $email2 = strtolower(pun_trim($feather->request->post('req_email2')));
+            $email2 = strtolower(pun_trim($this->request->post('req_email2')));
 
             $user['password1'] = random_pass(12);
             $password2 = $user['password1'];
         } else {
-            $user['password1'] = pun_trim($feather->request->post('req_password1'));
-            $password2 = pun_trim($feather->request->post('req_password2'));
+            $user['password1'] = pun_trim($this->request->post('req_password1'));
+            $password2 = pun_trim($this->request->post('req_password2'));
         }
 
         // Validate username and passwords
@@ -58,8 +59,8 @@ class register
         }
 
         // Antispam feature
-        $question = $feather->request->post('captcha_q') ? trim($feather->request->post('captcha_q')) : '';
-        $answer = $feather->request->post('captcha') ? strtoupper(trim($feather->request->post('captcha'))) : '';
+        $question = $this->request->post('captcha_q') ? trim($this->request->post('captcha_q')) : '';
+        $answer = $this->request->post('captcha') ? strtoupper(trim($this->request->post('captcha'))) : '';
         $lang_antispam_questions_array = array();
 
         foreach ($lang_antispam_questions as $k => $v) {
@@ -101,8 +102,8 @@ class register
         }
 
         // Make sure we got a valid language string
-        if ($feather->request->post('language')) {
-            $user['language'] = preg_replace('%[\.\\\/]%', '', $feather->request->post('language'));
+        if ($this->request->post('language')) {
+            $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }

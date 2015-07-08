@@ -18,6 +18,7 @@ class categories
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\categories();
@@ -44,20 +45,20 @@ class categories
         require FEATHER_ROOT.'lang/'.$admin_language.'/categories.php';
 
         // Add a new category
-        if ($this->feather->request->post('add_cat')) {
+        if ($this->request->post('add_cat')) {
             $this->model->add_category($this->feather);
         }
 
         // Delete a category
-        elseif ($this->feather->request->post('del_cat') || $this->feather->request->post('del_cat_comply')) {
+        elseif ($this->request->post('del_cat') || $this->request->post('del_cat_comply')) {
             confirm_referrer(get_link_r('admin/categories/'));
 
-            $cat_to_delete = intval($this->feather->request->post('cat_to_delete'));
+            $cat_to_delete = intval($this->request->post('cat_to_delete'));
             if ($cat_to_delete < 1) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
 
-            if ($this->feather->request->post('del_cat_comply')) { // Delete a category with all forums and posts
+            if ($this->request->post('del_cat_comply')) { // Delete a category with all forums and posts
 
                 $this->model->delete_category($cat_to_delete);
             } else {
@@ -81,11 +82,11 @@ class categories
 
                 $this->footer->display();
             }
-        } elseif ($this->feather->request->post('update')) {
+        } elseif ($this->request->post('update')) {
             // Change position and name of the categories
                 confirm_referrer(get_link_r('admin/categories/'));
 
-            $categories = $this->feather->request->post('cat');
+            $categories = $this->request->post('cat');
             if (empty($categories)) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }

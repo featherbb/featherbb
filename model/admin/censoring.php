@@ -18,6 +18,7 @@ class censoring
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
 
     public function add_word($feather)
@@ -26,8 +27,8 @@ class censoring
 
         confirm_referrer(get_link_r('admin/censoring/'));
 
-        $search_for = pun_trim($feather->request->post('new_search_for'));
-        $replace_with = pun_trim($feather->request->post('new_replace_with'));
+        $search_for = pun_trim($this->request->post('new_search_for'));
+        $replace_with = pun_trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
             message($lang_admin_censoring['Must enter word message']);
@@ -51,10 +52,10 @@ class censoring
 
         confirm_referrer(get_link_r('admin/censoring/'));
 
-        $id = intval(key($feather->request->post('update')));
+        $id = intval(key($this->request->post('update')));
 
-        $search_for = pun_trim($feather->request->post('search_for')[$id]);
-        $replace_with = pun_trim($feather->request->post('replace_with')[$id]);
+        $search_for = pun_trim($this->request->post('search_for')[$id]);
+        $replace_with = pun_trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
             message($lang_admin_censoring['Must enter word message']);
@@ -78,7 +79,7 @@ class censoring
 
         confirm_referrer(get_link_r('admin/censoring/'));
 
-        $id = intval(key($feather->request->post('remove')));
+        $id = intval(key($this->request->post('remove')));
 
         $this->db->query('DELETE FROM '.$this->db->prefix.'censoring WHERE id='.$id) or error('Unable to delete censor word', __FILE__, __LINE__, $this->db->error());
 

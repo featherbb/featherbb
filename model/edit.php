@@ -18,6 +18,7 @@ class edit
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
 
     // Fetch some info about the post, the topic and the forum
@@ -44,7 +45,7 @@ class edit
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
-            $subject = pun_trim($feather->request->post('req_subject'));
+            $subject = pun_trim($this->request->post('req_subject'));
 
             if ($this->config['o_censoring'] == '1') {
                 $censored_subject = pun_trim(censor_words($subject));
@@ -62,7 +63,7 @@ class edit
         }
 
         // Clean up message from POST
-        $message = pun_linebreaks(pun_trim($feather->request->post('req_message')));
+        $message = pun_linebreaks(pun_trim($this->request->post('req_message')));
 
         // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
@@ -100,14 +101,14 @@ class edit
 
         $post = array();
 
-        $post['hide_smilies'] = $feather->request->post('hide_smilies') ? '1' : '0';
-        $post['stick_topic'] = $feather->request->post('stick_topic') ? '1' : '0';
+        $post['hide_smilies'] = $this->request->post('hide_smilies') ? '1' : '0';
+        $post['stick_topic'] = $this->request->post('stick_topic') ? '1' : '0';
         if (!$is_admmod) {
             $post['stick_topic'] = $cur_post['sticky'];
         }
 
         // Clean up message from POST
-        $post['message'] = pun_linebreaks(pun_trim($feather->request->post('req_message')));
+        $post['message'] = pun_linebreaks(pun_trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -120,7 +121,7 @@ class edit
 
         // Get the subject
         if ($can_edit_subject) {
-            $post['subject'] = pun_trim($feather->request->post('req_subject'));
+            $post['subject'] = pun_trim($this->request->post('req_subject'));
         }
 
         return $post;
@@ -128,7 +129,7 @@ class edit
 
     public function edit_post($id, $can_edit_subject, $post, $cur_post, $feather, $is_admmod)
     {
-        $edited_sql = (!$feather->request->post('slient') || !$is_admmod) ? ', edited='.time().', edited_by=\''.$this->db->escape($this->user['username']).'\'' : '';
+        $edited_sql = (!$this->request->post('slient') || !$is_admmod) ? ', edited='.time().', edited_by=\''.$this->db->escape($this->user['username']).'\'' : '';
 
         require FEATHER_ROOT.'include/search_idx.php';
 
@@ -153,7 +154,7 @@ class edit
         $checkboxes = array();
 
         if ($can_edit_subject && $is_admmod) {
-            if ($feather->request->post('stick_topic') || $cur_post['sticky'] == '1') {
+            if ($this->request->post('stick_topic') || $cur_post['sticky'] == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
             } else {
                 $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
@@ -161,7 +162,7 @@ class edit
         }
 
         if ($this->config['o_smilies'] == '1') {
-            if ($feather->request->post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
+            if ($this->request->post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
             } else {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
@@ -169,7 +170,7 @@ class edit
         }
 
         if ($is_admmod) {
-            if ($feather->request()->isPost() && $feather->request->post('silent') || $feather->request()->isPost() == '') {
+            if ($feather->request()->isPost() && $this->request->post('silent') || $feather->request()->isPost() == '') {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Silent edit'].'<br /></label>';
             } else {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Silent edit'].'<br /></label>';

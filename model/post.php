@@ -18,6 +18,7 @@ class post
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     //  Get some info about the post
@@ -49,10 +50,10 @@ class post
         if ($this->user['is_guest']) {
 
             // It's a guest, so we have to validate the username
-            $errors = check_username(pun_trim($feather->request->post('req_username')), $errors);
+            $errors = check_username(pun_trim($this->request->post('req_username')), $errors);
 
-            $question = $feather->request->post('captcha_q') ? trim($feather->request->post('captcha_q')) : '';
-            $answer = $feather->request->post('captcha') ? strtoupper(trim($feather->request->post('captcha'))) : '';
+            $question = $this->request->post('captcha_q') ? trim($this->request->post('captcha_q')) : '';
+            $answer = $this->request->post('captcha') ? strtoupper(trim($this->request->post('captcha'))) : '';
             $lang_antispam_questions_array = array();
 
             foreach ($lang_antispam_questions as $k => $v) {
@@ -65,7 +66,7 @@ class post
         }
 
         // Flood protection
-        if ($feather->request->post('preview') != '' && $this->user['last_post'] != '' && (time() - $this->user['last_post']) < $this->user['g_post_flood']) {
+        if ($this->request->post('preview') != '' && $this->user['last_post'] != '' && (time() - $this->user['last_post']) < $this->user['g_post_flood']) {
             $errors[] = sprintf($lang_post['Flood start'], $this->user['g_post_flood'], $this->user['g_post_flood'] - (time() - $this->user['last_post']));
         }
 
@@ -94,7 +95,7 @@ class post
 
         // If it's a new topic
         if ($fid) {
-            $subject = pun_trim($feather->request->post('req_subject'));
+            $subject = pun_trim($this->request->post('req_subject'));
 
             if ($this->config['o_censoring'] == '1') {
                 $censored_subject = pun_trim(censor_words($subject));
@@ -118,7 +119,7 @@ class post
         }
         // Otherwise it should be in $feather ($_POST)
         else {
-            $email = strtolower(pun_trim(($this->config['p_force_guest_email'] == '1') ? $feather->request->post('req_email') : $feather->request->post('email')));
+            $email = strtolower(pun_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             // Load the register.php/prof_reg.php language files
             require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
@@ -143,7 +144,7 @@ class post
         }
 
         // Clean up message from POST
-        $orig_message = $message = pun_linebreaks(pun_trim($feather->request->post('req_message')));
+        $orig_message = $message = pun_linebreaks(pun_trim($this->request->post('req_message')));
 
         // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
@@ -185,19 +186,19 @@ class post
         }
         // Otherwise it should be in $feather ($_POST)
         else {
-            $post['username'] = pun_trim($feather->request->post('req_username'));
-            $post['email'] = strtolower(pun_trim(($this->config['p_force_guest_email'] == '1') ? $feather->request->post('req_email') : $feather->request->post('email')));
+            $post['username'] = pun_trim($this->request->post('req_username'));
+            $post['email'] = strtolower(pun_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
         }
 
-        if ($feather->request->post('req_subject')) {
-            $post['subject'] = pun_trim($feather->request->post('req_subject'));
+        if ($this->request->post('req_subject')) {
+            $post['subject'] = pun_trim($this->request->post('req_subject'));
         }
 
-        $post['hide_smilies'] = $feather->request->post('hide_smilies') ? '1' : '0';
-        $post['subscribe'] = $feather->request->post('subscribe') ? '1' : '0';
-        $post['stick_topic'] = $feather->request->post('stick_topic') && $is_admmod ? '1' : '0';
+        $post['hide_smilies'] = $this->request->post('hide_smilies') ? '1' : '0';
+        $post['subscribe'] = $this->request->post('subscribe') ? '1' : '0';
+        $post['stick_topic'] = $this->request->post('stick_topic') && $is_admmod ? '1' : '0';
 
-        $post['message']  = pun_linebreaks(pun_trim($feather->request->post('req_message')));
+        $post['message']  = pun_linebreaks(pun_trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -581,20 +582,20 @@ class post
 
         $checkboxes = array();
         if ($fid && $is_admmod) {
-            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.($feather->request->post('stick_topic') ? ' checked="checked"' : '').' />'.$lang_common['Stick topic'].'<br /></label>';
+            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('stick_topic') ? ' checked="checked"' : '').' />'.$lang_common['Stick topic'].'<br /></label>';
         }
 
         if (!$this->user['is_guest']) {
             if ($this->config['o_smilies'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($feather->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
             }
 
             if ($this->config['o_topic_subscriptions'] == '1') {
                 $subscr_checked = false;
 
                 // If it's a preview
-                if ($feather->request->post('preview')) {
-                    $subscr_checked = ($feather->request->post('subscribe')) ? true : false;
+                if ($this->request->post('preview')) {
+                    $subscr_checked = ($this->request->post('subscribe')) ? true : false;
                 }
                 // If auto subscribed
                 elseif ($this->user['auto_notify']) {
@@ -608,7 +609,7 @@ class post
                 $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? $lang_post['Stay subscribed'] : $lang_post['Subscribe']).'<br /></label>';
             }
         } elseif ($this->config['o_smilies'] == '1') {
-            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($feather->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
         }
 
         return $checkboxes;

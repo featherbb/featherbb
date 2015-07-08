@@ -18,6 +18,7 @@ class parser
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\parser();
@@ -47,7 +48,7 @@ class parser
         $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
-        if ($this->feather->request->post('reset') || !file_exists($cache_file)) {
+        if ($this->request->post('reset') || !file_exists($cache_file)) {
             require_once(FEATHER_ROOT.'include/bbcd_source.php');
             require_once(FEATHER_ROOT.'include/bbcd_compile.php');
             redirect(get_link('admin/parser/'), $lang_admin_parser['reset_success']);
@@ -60,11 +61,11 @@ class parser
         $config = $pd['config'];            // Local scratch copy of $config.
         $count = count($bbcd);
 
-        if ($this->feather->request->post('form_sent')) {
+        if ($this->request->post('form_sent')) {
             confirm_referrer(get_link_r('admin/parser/'));
 
             // Upload new smiley image to img/smilies
-            if ($this->feather->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
+            if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
                 $f = $_FILES['new_smiley'];
                 switch ($f['error']) {
                     case 0: // 0: Successful upload.
@@ -100,8 +101,8 @@ class parser
             }
 
             // Set new $config values:
-            if ($this->feather->request->post('config')) {
-                $pcfg = $this->feather->request->post('config');
+            if ($this->request->post('config')) {
+                $pcfg = $this->request->post('config');
 
                 if (isset($pcfg['textile'])) {
                     if ($pcfg['textile'] == '1') {
@@ -176,27 +177,27 @@ class parser
                     continue; // Skip last pseudo-tag
                 }
                 $tag =& $bbcd[$tagname];
-                if ($this->feather->request->post($tagname.'_in_post') && $this->feather->request->post($tagname.'_in_post') == '1') {
+                if ($this->request->post($tagname.'_in_post') && $this->request->post($tagname.'_in_post') == '1') {
                     $tag['in_post']    = true;
                 } else {
                     $tag['in_post']    = false;
                 }
-                if ($this->feather->request->post($tagname.'_in_sig') && $this->feather->request->post($tagname.'_in_sig') == '1') {
+                if ($this->request->post($tagname.'_in_sig') && $this->request->post($tagname.'_in_sig') == '1') {
                     $tag['in_sig']    = true;
                 } else {
                     $tag['in_sig']    = false;
                 }
-                if ($this->feather->request->post($tagname.'_depth_max') && preg_match('/^\d++$/', $this->feather->request->post($tagname.'_depth_max'))) {
-                    $tag['depth_max'] = (int)$this->feather->request->post($tagname.'_depth_max');
+                if ($this->request->post($tagname.'_depth_max') && preg_match('/^\d++$/', $this->request->post($tagname.'_depth_max'))) {
+                    $tag['depth_max'] = (int)$this->request->post($tagname.'_depth_max');
                 }
             }
 
             // Set new $smilies values:
-            if ($this->feather->request->post('smiley_text') && is_array($this->feather->request->post('smiley_text')) &&
-                $this->feather->request->post('smiley_file') && is_array($this->feather->request->post('smiley_file')) &&
-                count($this->feather->request->post('smiley_text')) === count($this->feather->request->post('smiley_file'))) {
-                $stext = $this->feather->request->post('smiley_text');
-                $sfile = $this->feather->request->post('smiley_file');
+            if ($this->request->post('smiley_text') && is_array($this->request->post('smiley_text')) &&
+                $this->request->post('smiley_file') && is_array($this->request->post('smiley_file')) &&
+                count($this->request->post('smiley_text')) === count($this->request->post('smiley_file'))) {
+                $stext = $this->request->post('smiley_text');
+                $sfile = $this->request->post('smiley_file');
                 $len = count($stext);
                 $good = '';
                 $smilies = array();

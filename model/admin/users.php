@@ -18,6 +18,7 @@ class users
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function get_num_ip($ip_stats)
@@ -90,8 +91,8 @@ class users
 
         $move = array();
 
-        if ($feather->request->post('users')) {
-            $move['user_ids'] = is_array($feather->request->post('users')) ? array_keys($feather->request->post('users')) : explode(',', $feather->request->post('users'));
+        if ($this->request->post('users')) {
+            $move['user_ids'] = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
             $move['user_ids'] = array_map('intval', $move['user_ids']);
 
             // Delete invalid IDs
@@ -116,8 +117,8 @@ class users
             $move['all_groups'][$row[0]] = $row[1];
         }
 
-        if ($feather->request->post('move_users_comply')) {
-            $new_group = $feather->request->post('new_group') && isset($move['all_groups'][$feather->request->post('new_group')]) ? $feather->request->post('new_group') : message($lang_admin_users['Invalid group message']);
+        if ($this->request->post('move_users_comply')) {
+            $new_group = $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ? $this->request->post('new_group') : message($lang_admin_users['Invalid group message']);
 
             // Is the new group a moderator group?
             $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$new_group) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
@@ -173,8 +174,8 @@ class users
 
         confirm_referrer(get_link_r('admin/users/'));
 
-        if ($feather->request->post('users')) {
-            $user_ids = is_array($feather->request->post('users')) ? array_keys($feather->request->post('users')) : explode(',', $feather->request->post('users'));
+        if ($this->request->post('users')) {
+            $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
             $user_ids = array_map('intval', $user_ids);
 
             // Delete invalid IDs
@@ -193,7 +194,7 @@ class users
             message($lang_admin_users['No delete admins message']);
         }
 
-        if ($feather->request->post('delete_users_comply')) {
+        if ($this->request->post('delete_users_comply')) {
             // Fetch user groups
             $user_groups = array();
             $result = $this->db->query('SELECT id, group_id FROM '.$this->db->prefix.'users WHERE id IN ('.implode(',', $user_ids).')') or error('Unable to fetch user groups', __FILE__, __LINE__, $this->db->error());
@@ -235,7 +236,7 @@ class users
             $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id IN ('.implode(',', $user_ids).')') or error('Unable to remove users from online list', __FILE__, __LINE__, $this->db->error());
 
             // Should we delete all posts made by these users?
-            if ($feather->request->post('delete_posts')) {
+            if ($this->request->post('delete_posts')) {
                 require FEATHER_ROOT.'include/search_idx.php';
                 @set_time_limit(0);
 
@@ -287,8 +288,8 @@ class users
 
         confirm_referrer(get_link_r('admin/users/'));
 
-        if ($feather->request->post('users')) {
-            $user_ids = is_array($feather->request->post('users')) ? array_keys($feather->request->post('users')) : explode(',', $feather->request->post('users'));
+        if ($this->request->post('users')) {
+            $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
             $user_ids = array_map('intval', $user_ids);
 
             // Delete invalid IDs
@@ -313,10 +314,10 @@ class users
             message($lang_admin_users['No ban mods message']);
         }
 
-        if ($feather->request->post('ban_users_comply')) {
-            $ban_message = pun_trim($feather->request->post('ban_message'));
-            $ban_expire = pun_trim($feather->request->post('ban_expire'));
-            $ban_the_ip = $feather->request->post('ban_the_ip') ? intval($feather->request->post('ban_the_ip')) : 0;
+        if ($this->request->post('ban_users_comply')) {
+            $ban_message = pun_trim($this->request->post('ban_message'));
+            $ban_expire = pun_trim($this->request->post('ban_expire'));
+            $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
 
             if ($ban_expire != '' && $ban_expire != 'Never') {
                 $ban_expire = strtotime($ban_expire.' GMT');
@@ -378,24 +379,24 @@ class users
     {
         global $db_type;
 
-        $form = $feather->request->get('form') ? $feather->request->get('form') : array();
+        $form = $this->request->get('form') ? $this->request->get('form') : array();
 
         $search = array();
 
         // trim() all elements in $form
         $form = array_map('pun_trim', $form);
 
-        $posts_greater = $feather->request->get('posts_greater') ? pun_trim($feather->request->get('posts_greater')) : '';
-        $posts_less = $feather->request->get('posts_less') ? pun_trim($feather->request->get('posts_less')) : '';
-        $last_post_after = $feather->request->get('last_post_after') ? pun_trim($feather->request->get('last_post_after')) : '';
-        $last_post_before = $feather->request->get('last_post_before') ? pun_trim($feather->request->get('last_post_before')) : '';
-        $last_visit_after = $feather->request->get('last_visit_after') ? pun_trim($feather->request->get('last_visit_after')) : '';
-        $last_visit_before = $feather->request->get('last_visit_before') ? pun_trim($feather->request->get('last_visit_before')) : '';
-        $registered_after = $feather->request->get('registered_after') ? pun_trim($feather->request->get('registered_after')) : '';
-        $registered_before = $feather->request->get('registered_before') ? pun_trim($feather->request->get('registered_before')) : '';
-        $order_by = $search['order_by'] = $feather->request->get('order_by') && in_array($_GET['order_by'], array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $feather->request->get('order_by') : 'username';
-        $direction = $search['direction'] = $feather->request->get('direction') && $feather->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
-        $user_group = $feather->request->get('user_group') ? intval($feather->request->get('user_group')) : -1;
+        $posts_greater = $this->request->get('posts_greater') ? pun_trim($this->request->get('posts_greater')) : '';
+        $posts_less = $this->request->get('posts_less') ? pun_trim($this->request->get('posts_less')) : '';
+        $last_post_after = $this->request->get('last_post_after') ? pun_trim($this->request->get('last_post_after')) : '';
+        $last_post_before = $this->request->get('last_post_before') ? pun_trim($this->request->get('last_post_before')) : '';
+        $last_visit_after = $this->request->get('last_visit_after') ? pun_trim($this->request->get('last_visit_after')) : '';
+        $last_visit_before = $this->request->get('last_visit_before') ? pun_trim($this->request->get('last_visit_before')) : '';
+        $registered_after = $this->request->get('registered_after') ? pun_trim($this->request->get('registered_after')) : '';
+        $registered_before = $this->request->get('registered_before') ? pun_trim($this->request->get('registered_before')) : '';
+        $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($_GET['order_by'], array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
+        $direction = $search['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
+        $user_group = $this->request->get('user_group') ? intval($this->request->get('user_group')) : -1;
 
         $search['query_str'][] = 'order_by='.$order_by;
         $search['query_str'][] = 'direction='.$direction;

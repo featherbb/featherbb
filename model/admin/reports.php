@@ -18,6 +18,7 @@ class reports
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function zap_report($feather)
@@ -26,7 +27,7 @@ class reports
 
         confirm_referrer(get_link_r('admin/reports/'));
 
-        $zap_id = intval(key($feather->request->post('zap_id')));
+        $zap_id = intval(key($this->request->post('zap_id')));
 
         $result = $this->db->query('SELECT zapped FROM '.$this->db->prefix.'reports WHERE id='.$zap_id) or error('Unable to fetch report info', __FILE__, __LINE__, $this->db->error());
         $zapped = $this->db->result($result);

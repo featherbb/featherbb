@@ -18,6 +18,7 @@ class groups
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\groups();
@@ -104,7 +105,7 @@ class groups
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
         if (!$is_member || $feather->request->post('del_group')) {
-            if ($this->feather->request->post('del_group_comply') || $this->feather->request->post('del_group')) {
+            if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
                 $this->model->delete_group($this->feather, $id);
             } else {
                 $group_title = get_group_title($id);
@@ -166,12 +167,12 @@ class groups
         $groups = $this->model->fetch_groups();
 
         // Add/edit a group (stage 2)
-        if ($this->feather->request->post('add_edit_group')) {
+        if ($this->request->post('add_edit_group')) {
             $this->model->add_edit_group($groups, $this->feather);
         }
 
         // Add/edit a group (stage 1)
-        elseif ($this->feather->request->post('add_group') || isset($id)) {
+        elseif ($this->request->post('add_group') || isset($id)) {
             $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
             $required_fields = array('req_title' => $lang_admin_groups['Group title label']);
             $focus_element = array('groups2', 'req_title');

@@ -18,6 +18,7 @@ class forums
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\forums();
@@ -44,10 +45,10 @@ class forums
         require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
 
         // Add a "default" forum
-        if ($this->feather->request->post('add_forum')) {
+        if ($this->request->post('add_forum')) {
             $this->model->add_forum($this->feather);
         }  // Update forum positions
-        elseif ($this->feather->request->post('update_positions')) {
+        elseif ($this->request->post('update_positions')) {
             $this->model->update_positions($this->feather);
         }
 
@@ -93,9 +94,9 @@ class forums
         // Update forum
 
         // Update group permissions for $forum_id
-        if ($this->feather->request->post('save')) {
+        if ($this->request->post('save')) {
             $this->model->update_permissions($this->feather, $id);
-        } elseif ($this->feather->request->post('revert_perms')) {
+        } elseif ($this->request->post('revert_perms')) {
             $this->model->revert_permissions($id);
         }
 

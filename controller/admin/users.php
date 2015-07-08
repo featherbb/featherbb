@@ -18,6 +18,7 @@ class users
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\users();
@@ -44,7 +45,7 @@ class users
         require FEATHER_ROOT . 'lang/' . $admin_language . '/users.php';
 
         // Move multiple users to other user groups
-        if ($this->feather->request->post('move_users') || $this->feather->request->post('move_users_comply')) {
+        if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
             if ($this->user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
@@ -71,7 +72,7 @@ class users
 
 
         // Delete multiple users
-        if ($this->feather->request->post('delete_users') || $this->feather->request->post('delete_users_comply')) {
+        if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
             if ($this->user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
@@ -98,7 +99,7 @@ class users
 
 
         // Ban multiple users
-        if ($this->feather->request->post('ban_users') || $this->feather->request->post('ban_users_comply')) {
+        if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
             if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
@@ -125,7 +126,7 @@ class users
         }
 
         // Display bans
-        if ($this->feather->request->get('find_user')) {
+        if ($this->request->get('find_user')) {
 
             // Return conditions and query string for the URL
             $search = $this->model->get_user_search($this->feather);
@@ -136,7 +137,7 @@ class users
             // Determine the user offset (based on $_GET['p'])
             $num_pages = ceil($num_users / 50);
 
-            $p = (!$this->feather->request->get('p') || $this->feather->request->get('p') <= 1 || $this->feather->request->get('p') > $num_pages) ? 1 : intval($this->feather->request->get('p'));
+            $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
@@ -210,7 +211,7 @@ class users
         // Determine the ip offset (based on $_GET['p'])
         $num_pages = ceil($num_ips / 50);
 
-        $p = (!$this->feather->request->get('p') || $this->feather->request->get('p') <= 1 || $this->feather->request->get('p') > $num_pages) ? 1 : intval($this->feather->request->get('p'));
+        $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
         // Generate paging links
@@ -259,7 +260,7 @@ class users
         // Determine the user offset (based on $_GET['p'])
         $num_pages = ceil($num_users / 50);
 
-        $p = (!$this->feather->request->get('p') || $this->feather->request->get('p') <= 1 || $this->feather->request->get('p') > $num_pages) ? 1 : intval($this->feather->request->get('p'));
+        $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
         // Generate paging links

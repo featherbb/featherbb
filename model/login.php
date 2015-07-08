@@ -18,15 +18,16 @@ class login
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function login($feather)
     {
         global $db_type, $lang_login;
 
-        $form_username = pun_trim($feather->request->post('req_username'));
-        $form_password = pun_trim($feather->request->post('req_password'));
-        $save_pass = $feather->request->post('save_pass');
+        $form_username = pun_trim($this->request->post('req_username'));
+        $form_password = pun_trim($this->request->post('req_password'));
+        $save_pass = $this->request->post('save_pass');
 
         $username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$this->db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$this->db->escape($form_username).'\')';
 
@@ -88,7 +89,7 @@ class login
         set_tracked_topics(null);
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
-        $redirect_url = validate_redirect($feather->request->post('redirect_url'), get_base_url());
+        $redirect_url = validate_redirect($this->request->post('redirect_url'), get_base_url());
 
         redirect(pun_htmlspecialchars($redirect_url), $lang_login['Login redirect']);
     }
@@ -130,7 +131,7 @@ class login
             require FEATHER_ROOT.'include/email.php';
 
             // Validate the email address
-            $email = strtolower(pun_trim($feather->request->post('req_email')));
+            $email = strtolower(pun_trim($this->request->post('req_email')));
             if (!is_valid_email($email)) {
                 $errors[] = $lang_common['Invalid email'];
             }

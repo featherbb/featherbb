@@ -18,6 +18,7 @@ class bans
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function add_ban_info($feather)
@@ -27,8 +28,8 @@ class bans
         $ban = array();
 
         // If the ID of the user to ban was provided through GET (a link from profile.php)
-        if ($feather->request->get('find_ban')) {
-            $ban['user_id'] = intval($feather->request->get('find_ban'));
+        if ($this->request->get('find_ban')) {
+            $ban['user_id'] = intval($this->request->get('find_ban'));
             if ($ban['user_id'] < 2) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -42,7 +43,7 @@ class bans
         } else {
             // Otherwise the username is in POST
 
-            $ban['ban_user'] = pun_trim($feather->request->post('new_ban_user'));
+            $ban['ban_user'] = pun_trim($this->request->post('new_ban_user'));
 
             if ($ban['ban_user'] != '') {
                 $result = $this->db->query('SELECT id, group_id, username, email FROM '.$this->db->prefix.'users WHERE username=\''.$this->db->escape($ban['ban_user']).'\' AND id>1') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
@@ -111,13 +112,13 @@ class bans
     {
         global $lang_admin_bans;
 
-        confirm_referrer(array(get_link_r('admin/bans/add/'), get_link_r('admin/bans/edit/'.$feather->request->post('ban_id').'/')));
+        confirm_referrer(array(get_link_r('admin/bans/add/'), get_link_r('admin/bans/edit/'.$this->request->post('ban_id').'/')));
 
-        $ban_user = pun_trim($feather->request->post('ban_user'));
-        $ban_ip = pun_trim($feather->request->post('ban_ip'));
-        $ban_email = strtolower(pun_trim($feather->request->post('ban_email')));
-        $ban_message = pun_trim($feather->request->post('ban_message'));
-        $ban_expire = pun_trim($feather->request->post('ban_expire'));
+        $ban_user = pun_trim($this->request->post('ban_user'));
+        $ban_ip = pun_trim($this->request->post('ban_ip'));
+        $ban_email = strtolower(pun_trim($this->request->post('ban_email')));
+        $ban_message = pun_trim($this->request->post('ban_message'));
+        $ban_expire = pun_trim($this->request->post('ban_expire'));
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
             message($lang_admin_bans['Must enter message']);
@@ -212,10 +213,10 @@ class bans
         $ban_email = ($ban_email != '') ? '\''.$this->db->escape($ban_email).'\'' : 'NULL';
         $ban_message = ($ban_message != '') ? '\''.$this->db->escape($ban_message).'\'' : 'NULL';
 
-        if ($feather->request->post('mode') == 'add') {
+        if ($this->request->post('mode') == 'add') {
             $this->db->query('INSERT INTO '.$this->db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_user.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$this->user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $this->db->error());
         } else {
-            $this->db->query('UPDATE '.$this->db->prefix.'bans SET username='.$ban_user.', ip='.$ban_ip.', email='.$ban_email.', message='.$ban_message.', expire='.$ban_expire.' WHERE id='.intval($feather->request->post('ban_id'))) or error('Unable to update ban', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('UPDATE '.$this->db->prefix.'bans SET username='.$ban_user.', ip='.$ban_ip.', email='.$ban_email.', message='.$ban_message.', expire='.$ban_expire.' WHERE id='.intval($this->request->post('ban_id'))) or error('Unable to update ban', __FILE__, __LINE__, $this->db->error());
         }
 
         // Regenerate the bans cache
@@ -255,10 +256,10 @@ class bans
         // trim() all elements in $form
         $ban_info['conditions'] = $ban_info['query_str'] = array();
 
-        $expire_after = $feather->request->get('expire_after') ? pun_trim($feather->request->get('expire_after')) : '';
-        $expire_before = $feather->request->get('expire_before') ? pun_trim($feather->request->get('expire_before')) : '';
-        $ban_info['order_by'] = $feather->request->get('order_by') && in_array($feather->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$feather->request->get('order_by') : 'b.username';
-        $ban_info['direction'] = $feather->request->get('direction') && $feather->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
+        $expire_after = $this->request->get('expire_after') ? pun_trim($this->request->get('expire_after')) : '';
+        $expire_before = $this->request->get('expire_before') ? pun_trim($this->request->get('expire_before')) : '';
+        $ban_info['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$this->request->get('order_by') : 'b.username';
+        $ban_info['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
 
         $ban_info['query_str'][] = 'order_by='.$ban_info['order_by'];
         $ban_info['query_str'][] = 'direction='.$ban_info['direction'];
@@ -287,24 +288,24 @@ class bans
 
         $like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
 
-        if ($feather->request->get('username')) {
-            $ban_info['conditions'][] = 'b.username ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $feather->request->get('username'))) . '\'';
-            $ban_info['query_str'][] = 'username=' . urlencode($feather->request->get('username'));
+        if ($this->request->get('username')) {
+            $ban_info['conditions'][] = 'b.username ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $this->request->get('username'))) . '\'';
+            $ban_info['query_str'][] = 'username=' . urlencode($this->request->get('username'));
         }
 
-        if ($feather->request->get('ip')) {
-            $ban_info['conditions'][] = 'b.ip ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $feather->request->get('ip'))) . '\'';
-            $ban_info['query_str'][] = 'ip=' . urlencode($feather->request->get('ip'));
+        if ($this->request->get('ip')) {
+            $ban_info['conditions'][] = 'b.ip ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $this->request->get('ip'))) . '\'';
+            $ban_info['query_str'][] = 'ip=' . urlencode($this->request->get('ip'));
         }
 
-        if ($feather->request->get('email')) {
-            $ban_info['conditions'][] = 'b.email ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $feather->request->get('email'))) . '\'';
-            $ban_info['query_str'][] = 'email=' . urlencode($feather->request->get('email'));
+        if ($this->request->get('email')) {
+            $ban_info['conditions'][] = 'b.email ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $this->request->get('email'))) . '\'';
+            $ban_info['query_str'][] = 'email=' . urlencode($this->request->get('email'));
         }
 
-        if ($feather->request->get('message')) {
-            $ban_info['conditions'][] = 'b.message ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $feather->request->get('message'))) . '\'';
-            $ban_info['query_str'][] = 'message=' . urlencode($feather->request->get('message'));
+        if ($this->request->get('message')) {
+            $ban_info['conditions'][] = 'b.message ' . $like_command . ' \'' . $this->db->escape(str_replace('*', '%', $this->request->get('message'))) . '\'';
+            $ban_info['query_str'][] = 'message=' . urlencode($this->request->get('message'));
         }
 
         // Fetch ban count

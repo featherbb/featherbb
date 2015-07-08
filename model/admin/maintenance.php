@@ -18,13 +18,14 @@ class maintenance
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function rebuild($feather)
     {
         global $db_type, $lang_admin_maintenance;
 
-        $per_page = $feather->request->get('i_per_page') ? intval($feather->request->get('i_per_page')) : 0;
+        $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
 
         // Check per page is > 0
         if ($per_page < 1) {
@@ -34,7 +35,7 @@ class maintenance
         @set_time_limit(0);
 
         // If this is the first cycle of posts we empty the search index before we proceed
-        if ($feather->request->get('i_empty_index')) {
+        if ($this->request->get('i_empty_index')) {
             // This is the only potentially "dangerous" thing we can do here, so we check the referer
             confirm_referrer(get_link_r('admin/maintenance/'));
 
@@ -62,8 +63,8 @@ class maintenance
 
         $query_str = '';
 
-        $per_page = $feather->request->get('i_per_page') ? intval($feather->request->get('i_per_page')) : 0;
-        $start_at = $feather->request->get('i_start_at') ? intval($feather->request->get('i_start_at')) : 0;
+        $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
+        $start_at = $this->request->get('i_start_at') ? intval($this->request->get('i_start_at')) : 0;
 
         require FEATHER_ROOT.'include/search_idx.php';
 
@@ -149,7 +150,7 @@ class maintenance
 
         confirm_referrer(get_link_r('admin/maintenance/'));
 
-        $prune_days = intval($feather->request->post('prune_days'));
+        $prune_days = intval($this->request->post('prune_days'));
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
         @set_time_limit(0);
@@ -191,7 +192,7 @@ class maintenance
 
         $prune = array();
 
-        $prune['days'] = pun_trim($feather->request->post('req_prune_days'));
+        $prune['days'] = pun_trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
             message($lang_admin_maintenance['Days must be integer message']);
         }

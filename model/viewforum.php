@@ -18,6 +18,7 @@ class viewforum
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     // Returns basic informations about the forum

@@ -18,6 +18,7 @@ class plugins
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\plugins();
@@ -41,7 +42,7 @@ class plugins
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         // The plugin to load should be supplied via GET
-        $plugin = $this->feather->request->get('plugin') ? $this->feather->request->get('plugin') : '';
+        $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : '';
         if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }

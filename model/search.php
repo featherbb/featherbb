@@ -18,6 +18,7 @@ class search
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
  
@@ -27,9 +28,9 @@ class search
 
         $search = array();
 
-        $action = ($feather->request->get('action')) ? $feather->request->get('action') : null;
-        $forums = $feather->request->get('forums') ? (is_array($feather->request->get('forums')) ? $feather->request->get('forums') : array_filter(explode(',', $feather->request->get('forums')))) : ($feather->request->get('forums') ? array($feather->request->get('forums')) : array());
-        $sort_dir = ($feather->request->get('sort_dir') && $feather->request->get('sort_dir') == 'DESC') ? 'DESC' : 'ASC';
+        $action = ($this->request->get('action')) ? $this->request->get('action') : null;
+        $forums = $this->request->get('forums') ? (is_array($this->request->get('forums')) ? $this->request->get('forums') : array_filter(explode(',', $this->request->get('forums')))) : ($this->request->get('forums') ? array($this->request->get('forums')) : array());
+        $sort_dir = ($this->request->get('sort_dir') && $this->request->get('sort_dir') == 'DESC') ? 'DESC' : 'ASC';
 
         $forums = array_map('intval', $forums);
 
@@ -41,16 +42,16 @@ class search
         }
 
         // If a search_id was supplied
-        if ($feather->request->get('search_id')) {
-            $search_id = intval($feather->request->get('search_id'));
+        if ($this->request->get('search_id')) {
+            $search_id = intval($this->request->get('search_id'));
             if ($search_id < 1) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
         }
         // If it's a regular search (keywords and/or author)
         elseif ($action == 'search') {
-            $keywords = ($feather->request->get('keywords')) ? utf8_strtolower(pun_trim($feather->request->get('keywords'))) : null;
-            $author = ($feather->request->get('author')) ? utf8_strtolower(pun_trim($feather->request->get('author'))) : null;
+            $keywords = ($this->request->get('keywords')) ? utf8_strtolower(pun_trim($this->request->get('keywords'))) : null;
+            $author = ($this->request->get('author')) ? utf8_strtolower(pun_trim($this->request->get('author'))) : null;
 
             if (preg_match('%^[\*\%]+$%', $keywords) || (pun_strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !is_cjk($keywords))) {
                 $keywords = '';
@@ -68,13 +69,13 @@ class search
                 $author = str_replace('*', '%', $author);
             }
 
-            $show_as = ($feather->request->get('show_as') && $feather->request->get('show_as') == 'topics') ? 'topics' : 'posts';
-            $sort_by = ($feather->request->get('sort_by')) ? intval($feather->request->get('sort_by')) : 0;
-            $search_in = (!$feather->request->get('search_in') || $feather->request->get('search_in') == '0') ? 0 : (($feather->request->get('search_in') == '1') ? 1 : -1);
+            $show_as = ($this->request->get('show_as') && $this->request->get('show_as') == 'topics') ? 'topics' : 'posts';
+            $sort_by = ($this->request->get('sort_by')) ? intval($this->request->get('sort_by')) : 0;
+            $search_in = (!$this->request->get('search_in') || $this->request->get('search_in') == '0') ? 0 : (($this->request->get('search_in') == '1') ? 1 : -1);
         }
         // If it's a user search (by ID)
         elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
-            $user_id = ($feather->request->get('user_id')) ? intval($feather->request->get('user_id')) : $this->user['id'];
+            $user_id = ($this->request->get('user_id')) ? intval($this->request->get('user_id')) : $this->user['id'];
             if ($user_id < 2) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -84,7 +85,7 @@ class search
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         } elseif ($action == 'show_recent') {
-            $interval = $feather->request->get('value') ? intval($feather->request->get('value')) : 86400;
+            $interval = $this->request->get('value') ? intval($this->request->get('value')) : 86400;
         } elseif ($action == 'show_replies') {
             if ($this->user['is_guest']) {
                 message($lang_common['Bad request'], false, '404 Not Found');
@@ -272,13 +273,13 @@ class search
                 // If we searched for both keywords and author name we want the intersection between the results
                 if ($author && $keywords) {
                     $search_ids = array_intersect_assoc($keyword_results, $author_results);
-                    $search_type = array('both', array($keywords, pun_trim($feather->request->get('author'))), implode(',', $forums), $search_in);
+                    $search_type = array('both', array($keywords, pun_trim($this->request->get('author'))), implode(',', $forums), $search_in);
                 } elseif ($keywords) {
                     $search_ids = $keyword_results;
                     $search_type = array('keywords', $keywords, implode(',', $forums), $search_in);
                 } else {
                     $search_ids = $author_results;
-                    $search_type = array('author', pun_trim($feather->request->get('author')), implode(',', $forums), $search_in);
+                    $search_type = array('author', pun_trim($this->request->get('author')), implode(',', $forums), $search_in);
                 }
 
                 unset($keyword_results, $author_results);
@@ -308,7 +309,7 @@ class search
                         message($lang_common['No permission'], false, '403 Forbidden');
                     }
 
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$this->user['last_visit'].' AND t.moved_to IS NULL'.($feather->request->get('fid') ? ' AND t.forum_id='.intval($feather->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
+                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$this->user['last_visit'].' AND t.moved_to IS NULL'.($this->request->get('fid') ? ' AND t.forum_id='.intval($this->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
                     $num_hits = $this->db->num_rows($result);
 
                     if (!$num_hits) {
@@ -317,7 +318,7 @@ class search
                 }
                 // If it's a search for recent posts (in a certain time interval)
                 elseif ($action == 'show_recent') {
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.(time() - $interval).' AND t.moved_to IS NULL'.($feather->request->get('fid') ? ' AND t.forum_id='.intval($feather->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
+                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.(time() - $interval).' AND t.moved_to IS NULL'.($this->request->get('fid') ? ' AND t.forum_id='.intval($this->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
                     $num_hits = $this->db->num_rows($result);
 
                     if (!$num_hits) {
@@ -465,7 +466,7 @@ class search
             $per_page = ($show_as == 'posts') ? $this->user['disp_posts'] : $this->user['disp_topics'];
             $num_pages = ceil($num_hits / $per_page);
 
-            $p = (!$feather->request->get('p') || $feather->request->get('p') <= 1 || $feather->request->get('p') > $num_pages) ? 1 : intval($feather->request->get('p'));
+            $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
             $start_from = $per_page * ($p - 1);
             $search['start_from'] = $start_from;
 

@@ -18,6 +18,7 @@ class moderate
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function display_ip_info($ip)
@@ -74,12 +75,12 @@ class moderate
     {
         global $lang_common, $lang_misc;
 
-        $posts = $feather->request->post('posts') ? $feather->request->post('posts') : array();
+        $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         if (empty($posts)) {
             message($lang_misc['No posts selected']);
         }
 
-        if ($feather->request->post('delete_posts_comply')) {
+        if ($this->request->post('delete_posts_comply')) {
             confirm_referrer(array(
                 get_link_r('moderate/forum/'.$fid.'/'),
                 get_link_r('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$p.'/'),
@@ -125,12 +126,12 @@ class moderate
     {
         global $lang_common, $lang_misc;
 
-        $posts = $feather->request->post('posts') ? $feather->request->post('posts') : array();
+        $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         if (empty($posts)) {
             message($lang_misc['No posts selected']);
         }
 
-        if ($feather->request->post('split_posts_comply')) {
+        if ($this->request->post('split_posts_comply')) {
             confirm_referrer(array(
                 get_link_r('moderate/forum/'.$fid.'/'),
                 get_link_r('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$p.'/'),
@@ -140,7 +141,7 @@ class moderate
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
 
-            $move_to_forum = $feather->request->post('move_to_forum') ? intval($feather->request->post('move_to_forum')) : 0;
+            $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
             if ($move_to_forum < 1) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -164,7 +165,7 @@ class moderate
             require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
 
             // Check subject
-            $new_subject = $feather->request->post('new_subject') ? pun_trim($feather->request->post('new_subject')) : '';
+            $new_subject = $this->request->post('new_subject') ? pun_trim($this->request->post('new_subject')) : '';
 
             if ($new_subject == '') {
                 message($lang_post['No subject']);
@@ -312,12 +313,12 @@ class moderate
 
         confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
-        if (@preg_match('%[^0-9,]%', $feather->request->post('topics'))) {
+        if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $topics = explode(',', $feather->request->post('topics'));
-        $move_to_forum = $feather->request->post('move_to_forum') ? intval($feather->request->post('move_to_forum')) : 0;
+        $topics = explode(',', $this->request->post('topics'));
+        $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
         if (empty($topics) || $move_to_forum < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -342,7 +343,7 @@ class moderate
         $this->db->query('UPDATE '.$this->db->prefix.'topics SET forum_id='.$move_to_forum.' WHERE id IN('.implode(',', $topics).')') or error('Unable to move topics', __FILE__, __LINE__, $this->db->error());
 
         // Should we create redirect topics?
-        if ($feather->request->post('with_redirect')) {
+        if ($this->request->post('with_redirect')) {
             foreach ($topics as $cur_topic) {
                 // Fetch info for the redirect topic
                 $result = $this->db->query('SELECT poster, subject, posted, last_post FROM '.$this->db->prefix.'topics WHERE id='.$cur_topic) or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
@@ -376,11 +377,11 @@ class moderate
 
         confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
 
-        if (@preg_match('%[^0-9,]%', $feather->request->post('topics'))) {
+        if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $topics = explode(',', $feather->request->post('topics'));
+        $topics = explode(',', $this->request->post('topics'));
         if (count($topics) < 2) {
             message($lang_misc['Not enough topics selected']);
         }
@@ -398,7 +399,7 @@ class moderate
         $query = 'UPDATE '.$this->db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
 
         // Should we create redirect topics?
-        if ($feather->request->post('with_redirect')) {
+        if ($this->request->post('with_redirect')) {
             $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
         }
 
@@ -422,7 +423,7 @@ class moderate
         }
 
         // Without redirection the old topics are removed
-        if ($feather->request->post('with_redirect') != '') {
+        if ($this->request->post('with_redirect') != '') {
             $this->db->query('DELETE FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND id != '.$merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $this->db->error());
         }
 

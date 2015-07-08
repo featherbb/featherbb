@@ -18,6 +18,7 @@ class groups
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function fetch_groups()
@@ -39,8 +40,8 @@ class groups
 
         $group = array();
 
-        if ($feather->request->post('add_group')) {
-            $group['base_group'] = intval($feather->request->post('base_group'));
+        if ($this->request->post('add_group')) {
+            $group['base_group'] = intval($this->request->post('base_group'));
             $group['info'] = $groups[$group['base_group']];
 
             $group['mode'] = 'add';
@@ -91,8 +92,8 @@ class groups
     {
         global $lang_admin_groups;
 
-        if ($feather->request->post('group_id')) {
-            $group_id = $feather->request->post('group_id');
+        if ($this->request->post('group_id')) {
+            $group_id = $this->request->post('group_id');
         } else {
             $group_id = 0;
         }
@@ -103,43 +104,43 @@ class groups
         ));
 
         // Is this the admin group? (special rules apply)
-        $is_admin_group = ($feather->request->post('group_id') && $feather->request->post('group_id') == FEATHER_ADMIN) ? true : false;
+        $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == FEATHER_ADMIN) ? true : false;
 
-        $title = pun_trim($feather->request->post('req_title'));
-        $user_title = pun_trim($feather->request->post('user_title'));
+        $title = pun_trim($this->request->post('req_title'));
+        $user_title = pun_trim($this->request->post('user_title'));
 
-        $promote_min_posts = $feather->request->post('promote_min_posts') ? intval($feather->request->post('promote_min_posts')) : '0';
-        if ($feather->request->post('promote_next_group') &&
-                isset($groups[$feather->request->post('promote_next_group')]) &&
-                !in_array($feather->request->post('promote_next_group'), array(FEATHER_ADMIN, FEATHER_GUEST)) &&
-                ($feather->request->post('group_id') || $feather->request->post('promote_next_group') != $feather->request->post('group_id'))) {
-            $promote_next_group = $feather->request->post('promote_next_group');
+        $promote_min_posts = $this->request->post('promote_min_posts') ? intval($this->request->post('promote_min_posts')) : '0';
+        if ($this->request->post('promote_next_group') &&
+                isset($groups[$this->request->post('promote_next_group')]) &&
+                !in_array($this->request->post('promote_next_group'), array(FEATHER_ADMIN, FEATHER_GUEST)) &&
+                ($this->request->post('group_id') || $this->request->post('promote_next_group') != $this->request->post('group_id'))) {
+            $promote_next_group = $this->request->post('promote_next_group');
         } else {
             $promote_next_group = '0';
         }
 
-        $moderator = $feather->request->post('moderator') && $feather->request->post('moderator') == '1' ? '1' : '0';
-        $mod_edit_users = $moderator == '1' && $feather->request->post('mod_edit_users') == '1' ? '1' : '0';
-        $mod_rename_users = $moderator == '1' && $feather->request->post('mod_rename_users') == '1' ? '1' : '0';
-        $mod_change_passwords = $moderator == '1' && $feather->request->post('mod_change_passwords') == '1' ? '1' : '0';
-        $mod_ban_users = $moderator == '1' && $feather->request->post('mod_ban_users') == '1' ? '1' : '0';
-        $mod_promote_users = $moderator == '1' && $feather->request->post('mod_promote_users') == '1' ? '1' : '0';
-        $read_board = ($feather->request->post('read_board') == 0) ? $feather->request->post('read_board') : '1';
-        $view_users = ($feather->request->post('view_users') && $feather->request->post('view_users') == '1') || $is_admin_group ? '1' : '0';
-        $post_replies = ($feather->request->post('post_replies') == 0) ? $feather->request->post('post_replies') : '1';
-        $post_topics = ($feather->request->post('post_topics') == 0) ? $feather->request->post('post_topics') : '1';
-        $edit_posts = ($feather->request->post('edit_posts') == 0) ? $feather->request->post('edit_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_posts = ($feather->request->post('delete_posts') == 0) ? $feather->request->post('delete_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_topics = ($feather->request->post('delete_topics') == 0) ? $feather->request->post('delete_topics') : ($is_admin_group) ? '1' : '0';
-        $post_links = ($feather->request->post('post_links') == 0) ? $feather->request->post('post_links') : '1';
-        $set_title = ($feather->request->post('set_title') == 0) ? $feather->request->post('set_title') : ($is_admin_group) ? '1' : '0';
-        $search = ($feather->request->post('search') == 0) ? $feather->request->post('search') : '1';
-        $search_users = ($feather->request->post('search_users') == 0) ? $feather->request->post('search_users') : '1';
-        $send_email = ($feather->request->post('send_email') && $feather->request->post('send_email') == '1') || $is_admin_group ? '1' : '0';
-        $post_flood = ($feather->request->post('post_flood') && $feather->request->post('post_flood') >= 0) ? $feather->request->post('post_flood') : '0';
-        $search_flood = ($feather->request->post('search_flood') && $feather->request->post('search_flood') >= 0) ? $feather->request->post('search_flood') : '0';
-        $email_flood = ($feather->request->post('email_flood') && $feather->request->post('email_flood') >= 0) ? $feather->request->post('email_flood') : '0';
-        $report_flood = ($feather->request->post('report_flood') >= 0) ? $feather->request->post('report_flood') : '0';
+        $moderator = $this->request->post('moderator') && $this->request->post('moderator') == '1' ? '1' : '0';
+        $mod_edit_users = $moderator == '1' && $this->request->post('mod_edit_users') == '1' ? '1' : '0';
+        $mod_rename_users = $moderator == '1' && $this->request->post('mod_rename_users') == '1' ? '1' : '0';
+        $mod_change_passwords = $moderator == '1' && $this->request->post('mod_change_passwords') == '1' ? '1' : '0';
+        $mod_ban_users = $moderator == '1' && $this->request->post('mod_ban_users') == '1' ? '1' : '0';
+        $mod_promote_users = $moderator == '1' && $this->request->post('mod_promote_users') == '1' ? '1' : '0';
+        $read_board = ($this->request->post('read_board') == 0) ? $this->request->post('read_board') : '1';
+        $view_users = ($this->request->post('view_users') && $this->request->post('view_users') == '1') || $is_admin_group ? '1' : '0';
+        $post_replies = ($this->request->post('post_replies') == 0) ? $this->request->post('post_replies') : '1';
+        $post_topics = ($this->request->post('post_topics') == 0) ? $this->request->post('post_topics') : '1';
+        $edit_posts = ($this->request->post('edit_posts') == 0) ? $this->request->post('edit_posts') : ($is_admin_group) ? '1' : '0';
+        $delete_posts = ($this->request->post('delete_posts') == 0) ? $this->request->post('delete_posts') : ($is_admin_group) ? '1' : '0';
+        $delete_topics = ($this->request->post('delete_topics') == 0) ? $this->request->post('delete_topics') : ($is_admin_group) ? '1' : '0';
+        $post_links = ($this->request->post('post_links') == 0) ? $this->request->post('post_links') : '1';
+        $set_title = ($this->request->post('set_title') == 0) ? $this->request->post('set_title') : ($is_admin_group) ? '1' : '0';
+        $search = ($this->request->post('search') == 0) ? $this->request->post('search') : '1';
+        $search_users = ($this->request->post('search_users') == 0) ? $this->request->post('search_users') : '1';
+        $send_email = ($this->request->post('send_email') && $this->request->post('send_email') == '1') || $is_admin_group ? '1' : '0';
+        $post_flood = ($this->request->post('post_flood') && $this->request->post('post_flood') >= 0) ? $this->request->post('post_flood') : '0';
+        $search_flood = ($this->request->post('search_flood') && $this->request->post('search_flood') >= 0) ? $this->request->post('search_flood') : '0';
+        $email_flood = ($this->request->post('email_flood') && $this->request->post('email_flood') >= 0) ? $this->request->post('email_flood') : '0';
+        $report_flood = ($this->request->post('report_flood') >= 0) ? $this->request->post('report_flood') : '0';
 
         if ($title == '') {
             message($lang_admin_groups['Must enter title message']);
@@ -147,7 +148,7 @@ class groups
 
         $user_title = ($user_title != '') ? '\''.$this->db->escape($user_title).'\'' : 'NULL';
 
-        if ($feather->request->post('mode') == 'add') {
+        if ($this->request->post('mode') == 'add') {
             $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'groups WHERE g_title=\''.$this->db->escape($title).'\'') or error('Unable to check group title collision', __FILE__, __LINE__, $this->db->error());
             if ($this->db->num_rows($result)) {
                 message(sprintf($lang_admin_groups['Title already exists message'], pun_htmlspecialchars($title)));
@@ -157,21 +158,21 @@ class groups
             $new_group_id = $this->db->insert_id();
 
             // Now lets copy the forum specific permissions from the group which this group is based on
-            $result = $this->db->query('SELECT forum_id, read_forum, post_replies, post_topics FROM '.$this->db->prefix.'forum_perms WHERE group_id='.$feather->request->post('base_group')) or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $this->db->error());
+            $result = $this->db->query('SELECT forum_id, read_forum, post_replies, post_topics FROM '.$this->db->prefix.'forum_perms WHERE group_id='.$this->request->post('base_group')) or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $this->db->error());
             while ($cur_forum_perm = $this->db->fetch_assoc($result)) {
                 $this->db->query('INSERT INTO '.$this->db->prefix.'forum_perms (group_id, forum_id, read_forum, post_replies, post_topics) VALUES('.$new_group_id.', '.$cur_forum_perm['forum_id'].', '.$cur_forum_perm['read_forum'].', '.$cur_forum_perm['post_replies'].', '.$cur_forum_perm['post_topics'].')') or error('Unable to insert group forum permissions', __FILE__, __LINE__, $this->db->error());
             }
         } else {
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'groups WHERE g_title=\''.$this->db->escape($title).'\' AND g_id!='.$feather->request->post('group_id')) or error('Unable to check group title collision', __FILE__, __LINE__, $this->db->error());
+            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'groups WHERE g_title=\''.$this->db->escape($title).'\' AND g_id!='.$this->request->post('group_id')) or error('Unable to check group title collision', __FILE__, __LINE__, $this->db->error());
             if ($this->db->num_rows($result)) {
                 message(sprintf($lang_admin_groups['Title already exists message'], pun_htmlspecialchars($title)));
             }
 
-            $this->db->query('UPDATE '.$this->db->prefix.'groups SET g_title=\''.$this->db->escape($title).'\', g_user_title='.$user_title.', g_promote_min_posts='.$promote_min_posts.', g_promote_next_group='.$promote_next_group.', g_moderator='.$moderator.', g_mod_edit_users='.$mod_edit_users.', g_mod_rename_users='.$mod_rename_users.', g_mod_change_passwords='.$mod_change_passwords.', g_mod_ban_users='.$mod_ban_users.', g_mod_promote_users='.$mod_promote_users.', g_read_board='.$read_board.', g_view_users='.$view_users.', g_post_replies='.$post_replies.', g_post_topics='.$post_topics.', g_edit_posts='.$edit_posts.', g_delete_posts='.$delete_posts.', g_delete_topics='.$delete_topics.', g_post_links='.$post_links.', g_set_title='.$set_title.', g_search='.$search.', g_search_users='.$search_users.', g_send_email='.$send_email.', g_post_flood='.$post_flood.', g_search_flood='.$search_flood.', g_email_flood='.$email_flood.', g_report_flood='.$report_flood.' WHERE g_id='.$feather->request->post('group_id')) or error('Unable to update group', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('UPDATE '.$this->db->prefix.'groups SET g_title=\''.$this->db->escape($title).'\', g_user_title='.$user_title.', g_promote_min_posts='.$promote_min_posts.', g_promote_next_group='.$promote_next_group.', g_moderator='.$moderator.', g_mod_edit_users='.$mod_edit_users.', g_mod_rename_users='.$mod_rename_users.', g_mod_change_passwords='.$mod_change_passwords.', g_mod_ban_users='.$mod_ban_users.', g_mod_promote_users='.$mod_promote_users.', g_read_board='.$read_board.', g_view_users='.$view_users.', g_post_replies='.$post_replies.', g_post_topics='.$post_topics.', g_edit_posts='.$edit_posts.', g_delete_posts='.$delete_posts.', g_delete_topics='.$delete_topics.', g_post_links='.$post_links.', g_set_title='.$set_title.', g_search='.$search.', g_search_users='.$search_users.', g_send_email='.$send_email.', g_post_flood='.$post_flood.', g_search_flood='.$search_flood.', g_email_flood='.$email_flood.', g_report_flood='.$report_flood.' WHERE g_id='.$this->request->post('group_id')) or error('Unable to update group', __FILE__, __LINE__, $this->db->error());
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
-                $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id = '.$promote_next_group.' WHERE group_id = '.$feather->request->post('group_id').' AND num_posts >= '.$promote_min_posts) or error('Unable to auto-promote existing users', __FILE__, __LINE__, $this->db->error());
+                $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id = '.$promote_next_group.' WHERE group_id = '.$this->request->post('group_id').' AND num_posts >= '.$promote_min_posts) or error('Unable to auto-promote existing users', __FILE__, __LINE__, $this->db->error());
             }
         }
 
@@ -180,11 +181,11 @@ class groups
             require FEATHER_ROOT.'include/cache.php';
         }
 
-        $group_id = $feather->request->post('mode') == 'add' ? $new_group_id : $feather->request->post('group_id');
+        $group_id = $this->request->post('mode') == 'add' ? $new_group_id : $this->request->post('group_id');
 
         generate_quickjump_cache($group_id);
 
-        if ($feather->request->post('mode') == 'edit') {
+        if ($this->request->post('mode') == 'edit') {
             redirect(get_link('admin/groups/'), $lang_admin_groups['Group edited redirect']);
         } else {
             redirect(get_link('admin/groups/'), $lang_admin_groups['Group added redirect']);
@@ -197,7 +198,7 @@ class groups
 
         confirm_referrer(get_link_r('admin/groups/'));
 
-        $group_id = intval($feather->request->post('default_group'));
+        $group_id = intval($this->request->post('default_group'));
 
         // Make sure it's not the admin or guest groups
         if ($group_id == FEATHER_ADMIN || $group_id == FEATHER_GUEST) {
@@ -240,8 +241,8 @@ class groups
     {
         global $lang_admin_groups;
 
-        if ($feather->request->post('del_group')) {
-            $move_to_group = intval($feather->request->post('move_to_group'));
+        if ($this->request->post('del_group')) {
+            $move_to_group = intval($this->request->post('move_to_group'));
             $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$move_to_group.' WHERE group_id='.$group_id) or error('Unable to move users into group', __FILE__, __LINE__, $this->db->error());
         }
 

@@ -18,6 +18,7 @@ class footer
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
 
     public function display($footer_style = null, $id = null, $p = null, $pid = null, $forum_id = null, $num_pages = null)

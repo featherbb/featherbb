@@ -18,6 +18,7 @@ class search
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\search();
@@ -45,7 +46,7 @@ class search
         require FEATHER_ROOT.'include/search_idx.php';
 
         // Figure out what to do :-)
-        if ($this->feather->request->get('action') || ($this->feather->request->get('search_id'))) {
+        if ($this->request->get('action') || ($this->request->get('search_id'))) {
             $search = $this->model->get_search_results($this->feather);
 
                 // We have results to display

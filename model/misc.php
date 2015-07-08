@@ -18,6 +18,7 @@ class misc
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function update_last_visit()
@@ -48,8 +49,8 @@ class misc
         confirm_referrer(get_link_r('email/'.$id.'/'));
 
         // Clean up message and subject from POST
-        $subject = pun_trim($feather->request->post('req_subject'));
-        $message = pun_trim($feather->request->post('req_message'));
+        $subject = pun_trim($this->request->post('req_subject'));
+        $message = pun_trim($this->request->post('req_message'));
 
         if ($subject == '') {
             message($lang_misc['No email subject']);
@@ -86,7 +87,7 @@ class misc
         $this->db->query('UPDATE '.$this->db->prefix.'users SET last_email_sent='.time().' WHERE id='.$this->user['id']) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent)
-        $redirect_url = validate_redirect($feather->request->post('redirect_url'), 'index.php');
+        $redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
         redirect(get_base_url(), $lang_misc['Email sent redirect']);
     }
@@ -94,8 +95,8 @@ class misc
     public function get_redirect_url($feather, $recipient_id)
     {
         // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
-        if ($feather->request->getReferrer()) {
-            $redirect_url = validate_redirect($feather->request->getReferrer(), null);
+        if ($this->request->getReferrer()) {
+            $redirect_url = validate_redirect($this->request->getReferrer(), null);
         }
 
         if (!isset($redirect_url)) {
@@ -115,7 +116,7 @@ class misc
         confirm_referrer(get_link_r('report/'.$post_id.'/'));
 
         // Clean up reason from POST
-        $reason = pun_linebreaks(pun_trim($feather->request->post('req_reason')));
+        $reason = pun_linebreaks(pun_trim($this->request->post('req_reason')));
         if ($reason == '') {
             message($lang_misc['No reason']);
         } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes

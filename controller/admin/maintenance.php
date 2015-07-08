@@ -18,6 +18,7 @@ class maintenance
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\maintenance();
@@ -44,10 +45,10 @@ class maintenance
         require FEATHER_ROOT.'lang/'.$admin_language.'/maintenance.php';
 
         $action = '';
-        if ($this->feather->request->post('action')) {
-            $action = $this->feather->request->post('action');
-        } elseif ($this->feather->request->get('action')) {
-            $action = $this->feather->request->get('action');
+        if ($this->request->post('action')) {
+            $action = $this->request->post('action');
+        } elseif ($this->request->get('action')) {
+            $action = $this->request->get('action');
         }
 
         if ($action == 'rebuild') {
@@ -67,10 +68,10 @@ class maintenance
         }
 
         if ($action == 'prune') {
-            $prune_from = pun_trim($this->feather->request->post('prune_from'));
-            $prune_sticky = intval($this->feather->request->post('prune_sticky'));
+            $prune_from = pun_trim($this->request->post('prune_from'));
+            $prune_sticky = intval($this->request->post('prune_sticky'));
 
-            if ($this->feather->request->post('prune_comply')) {
+            if ($this->request->post('prune_comply')) {
                 $this->model->prune_comply($this->feather, $prune_from, $prune_sticky);
             }
 

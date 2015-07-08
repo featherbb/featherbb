@@ -18,6 +18,7 @@ class bans
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\bans();
@@ -44,13 +45,13 @@ class bans
         require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
         // Display bans
-        if ($this->feather->request->get('find_ban')) {
+        if ($this->request->get('find_ban')) {
             $ban_info = $this->model->find_ban($this->feather);
 
             // Determine the ban offset (based on $_GET['p'])
             $num_pages = ceil($ban_info['num_bans'] / 50);
 
-            $p = (!$this->feather->request->get('p') || $this->feather->request->get('p') <= 1 || $this->feather->request->get('p') > $num_pages) ? 1 : intval($this->feather->request->get('p'));
+            $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
@@ -104,7 +105,7 @@ class bans
         // Load the admin_bans.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
-        if ($this->feather->request->post('add_edit_ban')) {
+        if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban($this->feather);
         }
 
@@ -159,7 +160,7 @@ class bans
         // Load the admin_bans.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
-        if ($this->feather->request->post('add_edit_ban')) {
+        if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban($this->feather);
         }
 

@@ -18,6 +18,7 @@ class moderate
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\moderate();
@@ -195,7 +196,7 @@ class moderate
         if ($action == 'moderate') {
 
                 // Delete one or more posts
-                if ($this->feather->request->post('delete_posts') || $this->feather->request->post('delete_posts_comply')) {
+                if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
                     $posts = delete_posts($this->feather, $id, $fid, $p);
 
                     $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
@@ -217,7 +218,7 @@ class moderate
 
                     $this->footer->display();
                 }
-            if ($this->feather->request->post('split_posts') || $this->feather->request->post('split_posts_comply')) {
+            if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
                 $posts = $this->model->split_posts($this->feather, $id, $fid, $p);
 
                 $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
@@ -381,12 +382,12 @@ class moderate
         }
 
         // Move one or more topics
-        if ($this->feather->request->post('move_topics') || $this->feather->request->post('move_topics_to')) {
-            if ($this->feather->request->post('move_topics_to')) {
+        if ($this->request->post('move_topics') || $this->request->post('move_topics_to')) {
+            if ($this->request->post('move_topics_to')) {
                 $this->model->move_topics_to($this->feather, $fid);
             }
 
-            $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
+            $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
                 message($lang_misc['No topics selected']);
             }
@@ -418,12 +419,12 @@ class moderate
         }
 
         // Merge two or more topics
-        elseif ($this->feather->request->post('merge_topics') || $this->feather->request->post('merge_topics_comply')) {
-            if ($this->feather->request->post('merge_topics_comply')) {
+        elseif ($this->request->post('merge_topics') || $this->request->post('merge_topics_comply')) {
+            if ($this->request->post('merge_topics_comply')) {
                 $this->model->merge_topics($this->feather, $fid);
             }
 
-            $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
+            $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (count($topics) < 2) {
                 message($lang_misc['Not enough topics selected']);
             }
@@ -449,8 +450,8 @@ class moderate
         }
 
         // Delete one or more topics
-        elseif ($this->feather->request->post('delete_topics') || $this->feather->request->post('delete_topics_comply')) {
-            $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
+        elseif ($this->request->post('delete_topics') || $this->request->post('delete_topics_comply')) {
+            $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
                 message($lang_misc['No topics selected']);
             }
@@ -481,17 +482,17 @@ class moderate
 
 
         // Open or close one or more topics
-        elseif ($this->feather->request->post('open') || $this->feather->request->post('close')) {
-            $action = ($this->feather->request->post('open')) ? 0 : 1;
+        elseif ($this->request->post('open') || $this->request->post('close')) {
+            $action = ($this->request->post('open')) ? 0 : 1;
 
             // There could be an array of topic IDs in $_POST
-            if ($this->feather->request->post('open') || $this->feather->request->post('close')) {
+            if ($this->request->post('open') || $this->request->post('close')) {
                 confirm_referrer(array(
-                            get_link_r('moderate/forum/'.$fid.'/page/'.$this->feather->request->post('page').'/'),
+                            get_link_r('moderate/forum/'.$fid.'/page/'.$this->request->post('page').'/'),
                             get_link_r('moderate/forum/'.$fid.'/'),
                             ));
 
-                $topics = $this->feather->request->post('topics') ? @array_map('intval', @array_keys($this->feather->request->post('topics'))) : array();
+                $topics = $this->request->post('topics') ? @array_map('intval', @array_keys($this->request->post('topics'))) : array();
                 if (empty($topics)) {
                     message($lang_misc['No topics selected']);
                 }

@@ -19,6 +19,7 @@ class index
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
     
     // Returns page head

@@ -18,20 +18,21 @@ class profile
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function change_pass($id, $feather)
     {
         global $lang_profile, $lang_common, $lang_prof_reg;
 
-        if ($feather->request->get('key')) {
+        if ($this->request->get('key')) {
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user['is_guest']) {
                 header('Location: '.get_base_url());
                 exit;
             }
 
-            $key = $feather->request->get('key');
+            $key = $this->request->get('key');
 
             $result = $this->db->query('SELECT * FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch new password', __FILE__, __LINE__, $this->db->error());
             $cur_user = $this->db->fetch_assoc($result);
@@ -69,9 +70,9 @@ class profile
             // Make sure they got here from the site
             confirm_referrer(get_link_r('user/'.$id.'/action/change_pass/'));
 
-            $old_password = $feather->request->post('req_old_password') ? pun_trim($feather->request->post('req_old_password')) : '';
-            $new_password1 = pun_trim($feather->request->post('req_new_password1'));
-            $new_password2 = pun_trim($feather->request->post('req_new_password2'));
+            $old_password = $this->request->post('req_old_password') ? pun_trim($this->request->post('req_old_password')) : '';
+            $new_password1 = pun_trim($this->request->post('req_new_password1'));
+            $new_password2 = pun_trim($this->request->post('req_new_password2'));
 
             if ($new_password1 != $new_password2) {
                 message($lang_prof_reg['Pass not match']);
@@ -133,8 +134,8 @@ class profile
             }
         }
 
-        if ($feather->request->get('key')) {
-            $key = $feather->request->get('key');
+        if ($this->request->get('key')) {
+            $key = $this->request->get('key');
 
             $result = $this->db->query('SELECT activate_string, activate_key FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch activation data', __FILE__, __LINE__, $this->db->error());
             list($new_email, $new_email_key) = $this->db->fetch_row($result);
@@ -147,7 +148,7 @@ class profile
                 message($lang_profile['Email updated'], true);
             }
         } elseif ($feather->request()->isPost()) {
-            if (pun_hash($feather->request->post('req_password')) !== $this->user['password']) {
+            if (pun_hash($this->request->post('req_password')) !== $this->user['password']) {
                 message($lang_profile['Wrong pass']);
             }
 
@@ -157,7 +158,7 @@ class profile
             require FEATHER_ROOT.'include/email.php';
 
             // Validate the email address
-            $new_email = strtolower(pun_trim($feather->request->post('req_new_email')));
+            $new_email = strtolower(pun_trim($this->request->post('req_new_email')));
             if (!is_valid_email($new_email)) {
                 message($lang_common['Invalid email']);
             }
@@ -336,7 +337,7 @@ class profile
 
         confirm_referrer(get_link_r('user/'.$id.'/section/admin/'));
 
-        $new_group_id = intval($feather->request->post('group_id'));
+        $new_group_id = intval($this->request->post('group_id'));
 
         $result = $this->db->query('SELECT group_id FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch user group', __FILE__, __LINE__, $this->db->error());
         $old_group_id = $this->db->result($result);
@@ -396,7 +397,7 @@ class profile
 
         $username = self::get_username($id);
 
-        $moderator_in = ($feather->request->post('moderator_in')) ? array_keys($feather->request->post('moderator_in')) : array();
+        $moderator_in = ($this->request->post('moderator_in')) ? array_keys($this->request->post('moderator_in')) : array();
 
         // Loop through all forums
         $result = $this->db->query('SELECT id, moderators FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
@@ -446,7 +447,7 @@ class profile
 
         confirm_referrer('viewtopic.php'); // TODO
 
-        $pid = $feather->request->get('pid') ? intval($feather->request->get('pid')) : 0;
+        $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
         $sql = 'SELECT g.g_promote_next_group FROM '.$this->db->prefix.'groups AS g INNER JOIN '.$this->db->prefix.'users AS u ON u.group_id=g.g_id WHERE u.id='.$id.' AND g.g_promote_next_group>0';
         $result = $this->db->query($sql) or error('Unable to fetch promotion information', __FILE__, __LINE__, $this->db->error());
@@ -475,7 +476,7 @@ class profile
             message($lang_profile['No delete admin message']);
         }
 
-        if ($feather->request->post('delete_user_comply')) {
+        if ($this->request->post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
             $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $this->db->error());
             $group_mod = $this->db->result($result);
@@ -503,7 +504,7 @@ class profile
             $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id='.$id) or error('Unable to remove user from online list', __FILE__, __LINE__, $this->db->error());
 
             // Should we delete all posts made by this user?
-            if ($feather->request->post('delete_posts')) {
+            if ($this->request->post('delete_posts')) {
                 require FEATHER_ROOT.'include/search_idx.php';
                 @set_time_limit(0);
 
@@ -589,27 +590,27 @@ class profile
             case 'essentials':
             {
                 $form = array(
-                    'timezone'        => floatval($feather->request->post('form_timezone')),
-                    'dst'            => $feather->request->post('form_dst') ? '1' : '0',
-                    'time_format'    => intval($feather->request->post('form_time_format')),
-                    'date_format'    => intval($feather->request->post('form_date_format')),
+                    'timezone'        => floatval($this->request->post('form_timezone')),
+                    'dst'            => $this->request->post('form_dst') ? '1' : '0',
+                    'time_format'    => intval($this->request->post('form_time_format')),
+                    'date_format'    => intval($this->request->post('form_date_format')),
                 );
 
                 // Make sure we got a valid language string
-                if ($feather->request->post('form_language')) {
+                if ($this->request->post('form_language')) {
                     $languages = forum_list_langs();
-                    $form['language'] = pun_trim($feather->request->post('form_language'));
+                    $form['language'] = pun_trim($this->request->post('form_language'));
                     if (!in_array($form['language'], $languages)) {
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
                 }
 
                 if ($this->user['is_admmod']) {
-                    $form['admin_note'] = pun_trim($feather->request->post('admin_note'));
+                    $form['admin_note'] = pun_trim($this->request->post('admin_note'));
 
                     // Are we allowed to change usernames?
                     if ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_rename_users'] == '1')) {
-                        $form['username'] = pun_trim($feather->request->post('req_username'));
+                        $form['username'] = pun_trim($this->request->post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
                             // Check username
@@ -627,7 +628,7 @@ class profile
 
                     // We only allow administrators to update the post count
                     if ($this->user['g_id'] == FEATHER_ADMIN) {
-                        $form['num_posts'] = intval($feather->request->post('num_posts'));
+                        $form['num_posts'] = intval($this->request->post('num_posts'));
                     }
                 }
 
@@ -635,7 +636,7 @@ class profile
                     require FEATHER_ROOT.'include/email.php';
 
                     // Validate the email address
-                    $form['email'] = strtolower(pun_trim($feather->request->post('req_email')));
+                    $form['email'] = strtolower(pun_trim($this->request->post('req_email')));
                     if (!is_valid_email($form['email'])) {
                         message($lang_common['Invalid email']);
                     }
@@ -647,9 +648,9 @@ class profile
             case 'personal':
             {
                 $form = array(
-                    'realname'        => $feather->request->post('form_realname') ? pun_trim($feather->request->post('form_realname')) : '',
-                    'url'            => $feather->request->post('form_url') ? pun_trim($feather->request->post('form_url')) : '',
-                    'location'        => $feather->request->post('form_location') ? pun_trim($feather->request->post('form_location')) : '',
+                    'realname'        => $this->request->post('form_realname') ? pun_trim($this->request->post('form_realname')) : '',
+                    'url'            => $this->request->post('form_url') ? pun_trim($this->request->post('form_url')) : '',
+                    'location'        => $this->request->post('form_location') ? pun_trim($this->request->post('form_location')) : '',
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
@@ -672,9 +673,9 @@ class profile
                 }
 
                 if ($this->user['g_id'] == FEATHER_ADMIN) {
-                    $form['title'] = pun_trim($feather->request->post('title'));
+                    $form['title'] = pun_trim($this->request->post('title'));
                 } elseif ($this->user['g_set_title'] == '1') {
-                    $form['title'] = pun_trim($feather->request->post('title'));
+                    $form['title'] = pun_trim($this->request->post('title'));
 
                     if ($form['title'] != '') {
                         // A list of words that the title may not contain
@@ -693,11 +694,11 @@ class profile
             case 'messaging':
             {
                 $form = array(
-                    'jabber'        => pun_trim($feather->request->post('form_jabber')),
-                    'icq'            => pun_trim($feather->request->post('form_icq')),
-                    'msn'            => pun_trim($feather->request->post('form_msn')),
-                    'aim'            => pun_trim($feather->request->post('form_aim')),
-                    'yahoo'            => pun_trim($feather->request->post('form_yahoo')),
+                    'jabber'        => pun_trim($this->request->post('form_jabber')),
+                    'icq'            => pun_trim($this->request->post('form_icq')),
+                    'msn'            => pun_trim($this->request->post('form_msn')),
+                    'aim'            => pun_trim($this->request->post('form_aim')),
+                    'yahoo'            => pun_trim($this->request->post('form_yahoo')),
                 );
 
                 // If the ICQ UIN contains anything other than digits it's invalid
@@ -714,7 +715,7 @@ class profile
 
                 // Clean up signature from POST
                 if ($this->config['o_signatures'] == '1') {
-                    $form['signature'] = pun_linebreaks(pun_trim($feather->request->post('signature')));
+                    $form['signature'] = pun_linebreaks(pun_trim($this->request->post('signature')));
 
                     // Validate signature
                     if (pun_strlen($form['signature']) > $this->config['p_sig_length']) {
@@ -745,13 +746,13 @@ class profile
             case 'display':
             {
                 $form = array(
-                    'disp_topics'        => pun_trim($feather->request->post('form_disp_topics')),
-                    'disp_posts'        => pun_trim($feather->request->post('form_disp_posts')),
-                    'show_smilies'        => $feather->request->post('form_show_smilies') ? '1' : '0',
-                    'show_img'            => $feather->request->post('form_show_img') ? '1' : '0',
-                    'show_img_sig'        => $feather->request->post('form_show_img_sig') ? '1' : '0',
-                    'show_avatars'        => $feather->request->post('form_show_avatars') ? '1' : '0',
-                    'show_sig'            => $feather->request->post('form_show_sig') ? '1' : '0',
+                    'disp_topics'        => pun_trim($this->request->post('form_disp_topics')),
+                    'disp_posts'        => pun_trim($this->request->post('form_disp_posts')),
+                    'show_smilies'        => $this->request->post('form_show_smilies') ? '1' : '0',
+                    'show_img'            => $this->request->post('form_show_img') ? '1' : '0',
+                    'show_img_sig'        => $this->request->post('form_show_img_sig') ? '1' : '0',
+                    'show_avatars'        => $this->request->post('form_show_avatars') ? '1' : '0',
+                    'show_sig'            => $this->request->post('form_show_sig') ? '1' : '0',
                 );
 
                 if ($form['disp_topics'] != '') {
@@ -773,9 +774,9 @@ class profile
                 }
 
                 // Make sure we got a valid style string
-                if ($feather->request->post('form_style')) {
+                if ($this->request->post('form_style')) {
                     $styles = forum_list_styles();
-                    $form['style'] = pun_trim($feather->request->post('form_style'));
+                    $form['style'] = pun_trim($this->request->post('form_style'));
                     if (!in_array($form['style'], $styles)) {
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
@@ -787,9 +788,9 @@ class profile
             case 'privacy':
             {
                 $form = array(
-                    'email_setting'            => intval($feather->request->post('form_email_setting')),
-                    'notify_with_post'        => $feather->request->post('form_notify_with_post') ? '1' : '0',
-                    'auto_notify'            => $feather->request->post('form_auto_notify') ? '1' : '0',
+                    'email_setting'            => intval($this->request->post('form_email_setting')),
+                    'notify_with_post'        => $this->request->post('form_notify_with_post') ? '1' : '0',
+                    'auto_notify'            => $this->request->post('form_auto_notify') ? '1' : '0',
                 );
 
                 if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {

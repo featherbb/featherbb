@@ -19,6 +19,7 @@ class userlist
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     // Counts the numeber of user for a specific query

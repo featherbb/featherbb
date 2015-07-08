@@ -18,6 +18,7 @@ class profile
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\profile();
@@ -43,25 +44,25 @@ class profile
         // Load the profile.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/profile.php';
 
-        if ($this->feather->request->post('update_group_membership')) {
+        if ($this->request->post('update_group_membership')) {
             if ($this->user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             $this->model->update_group_membership($id, $this->feather);
-        } elseif ($this->feather->request->post('update_forums')) {
+        } elseif ($this->request->post('update_forums')) {
             if ($this->user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             $this->model->update_mod_forums($id, $this->feather);
-        } elseif ($this->feather->request->post('ban')) {
+        } elseif ($this->request->post('ban')) {
             if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             $this->model->ban_user($id);
-        } elseif ($this->feather->request->post('delete_user') || $this->feather->request->post('delete_user_comply')) {
+        } elseif ($this->request->post('delete_user') || $this->request->post('delete_user_comply')) {
             if ($this->user['g_id'] > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
@@ -84,7 +85,7 @@ class profile
             
             $this->footer->display();
             
-        } elseif ($this->feather->request->post('form_sent')) {
+        } elseif ($this->request->post('form_sent')) {
 
             // Fetch the user group of the user we are editing
             $info = $this->model->fetch_user_group($id);
@@ -312,7 +313,7 @@ class profile
         // Load the profile.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/profile.php';
 
-        if ($action != 'change_pass' || !$this->feather->request->get('key')) {
+        if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user['g_read_board'] == '0') {
                 message($lang_common['No view'], false, '403 Forbidden');
             } elseif ($this->user['g_view_users'] == '0' && ($this->user['is_guest'] || $this->user['id'] != $id)) {

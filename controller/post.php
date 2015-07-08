@@ -18,6 +18,7 @@ class post
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\post();
@@ -48,7 +49,7 @@ class post
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
-        if ($this->feather->request->post('username')) {
+        if ($this->request->post('username')) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
@@ -93,14 +94,14 @@ class post
         if ($this->feather->request()->isPost()) {
 
                 // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
-                if ($this->feather->request->post('pid')) {
-                    $pid = $this->feather->request->post('pid');
+                if ($this->request->post('pid')) {
+                    $pid = $this->request->post('pid');
                 } else {
                     $pid = '';
                 }
 
-            if ($this->feather->request->post('page')) {
-                $page = $this->feather->request->post('page');
+            if ($this->request->post('page')) {
+                $page = $this->request->post('page');
             } else {
                 $page = '';
             }
@@ -112,7 +113,7 @@ class post
                 $post = $this->model->setup_variables($this->feather, $errors, $is_admmod);
 
                 // Did everything go according to plan?
-                if (empty($errors) && !$this->feather->request->post('preview')) {
+                if (empty($errors) && !$this->request->post('preview')) {
                     require FEATHER_ROOT.'include/search_idx.php';
 
                         // If it's a reply

@@ -18,6 +18,7 @@ class viewtopic
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     // Redirects to a post in particular

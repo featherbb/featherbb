@@ -18,6 +18,7 @@ class edit
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\edit();
@@ -73,7 +74,7 @@ class edit
             $post = $this->model->setup_variables($this->feather, $cur_post, $is_admmod, $can_edit_subject, $errors);
 
             // Did everything go according to plan?
-            if (empty($errors) && !$this->feather->request->post('preview')) {
+            if (empty($errors) && !$this->request->post('preview')) {
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $this->feather, $is_admmod);
 
@@ -92,7 +93,7 @@ class edit
 
         $this->header->display();
 
-        if ($this->feather->request->post('preview')) {
+        if ($this->request->post('preview')) {
             require_once FEATHER_ROOT.'include/parser.php';
             $preview_message = parse_message($post['message'], $post['hide_smilies']);
         } else {

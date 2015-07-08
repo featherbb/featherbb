@@ -18,6 +18,7 @@ class register
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\register();
@@ -49,7 +50,7 @@ class register
 
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
-        if ($this->config['o_regs_allow'] == '0' || $this->feather->request->post('username') || $this->feather->request->post('password')) {
+        if ($this->config['o_regs_allow'] == '0' || $this->request->post('username') || $this->request->post('password')) {
             message($lang_register['No new regs']);
         }
 

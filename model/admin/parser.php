@@ -19,6 +19,7 @@ class parser
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     // Helper public function returns array of smiley image files

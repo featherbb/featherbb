@@ -18,6 +18,7 @@ class forums
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function add_forum($feather)
@@ -26,7 +27,7 @@ class forums
 
         confirm_referrer(get_link_r('admin/forums/'));
 
-        $add_to_cat = intval($feather->request->post('add_to_cat'));
+        $add_to_cat = intval($this->request->post('add_to_cat'));
         if ($add_to_cat < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -103,7 +104,7 @@ class forums
 
         confirm_referrer(get_link_r('admin/forums/'));
 
-        foreach ($feather->request->post('position') as $forum_id => $disp_position) {
+        foreach ($this->request->post('position') as $forum_id => $disp_position) {
             $disp_position = trim($disp_position);
             if ($disp_position == '' || preg_match('%[^0-9]%', $disp_position)) {
                 message($lang_admin_forums['Must be integer message']);
@@ -129,11 +130,11 @@ class forums
         confirm_referrer(get_link_r('admin/forums/edit/'.$forum_id.'/'));
 
         // Start with the forum details
-        $forum_name = pun_trim($feather->request->post('forum_name'));
-        $forum_desc = pun_linebreaks(pun_trim($feather->request->post('forum_desc')));
-        $cat_id = intval($feather->request->post('cat_id'));
-        $sort_by = intval($feather->request->post('sort_by'));
-        $redirect_url = $feather->request->post('redirect_url') ? pun_trim($feather->request->post('redirect_url')) : null;
+        $forum_name = pun_trim($this->request->post('forum_name'));
+        $forum_desc = pun_linebreaks(pun_trim($this->request->post('forum_desc')));
+        $cat_id = intval($this->request->post('cat_id'));
+        $sort_by = intval($this->request->post('sort_by'));
+        $redirect_url = $this->request->post('redirect_url') ? pun_trim($this->request->post('redirect_url')) : null;
 
         if ($forum_name == '') {
             message($lang_admin_forums['Must enter name message']);
@@ -149,15 +150,15 @@ class forums
         $this->db->query('UPDATE '.$this->db->prefix.'forums SET forum_name=\''.$this->db->escape($forum_name).'\', forum_desc='.$forum_desc.', redirect_url='.$redirect_url.', sort_by='.$sort_by.', cat_id='.$cat_id.' WHERE id='.$forum_id) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
 
         // Now let's deal with the permissions
-        if ($feather->request->post('read_forum_old')) {
+        if ($this->request->post('read_forum_old')) {
             $result = $this->db->query('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
             while ($cur_group = $this->db->fetch_assoc($result)) {
-                $read_forum_new = ($cur_group['g_read_board'] == '1') ? isset($feather->request->post('read_forum_new')[$cur_group['g_id']]) ? '1' : '0' : intval($feather->request->post('read_forum_new')[$cur_group['g_id']]);
-                $post_replies_new = (isset($feather->request->post('post_replies_new')[$cur_group['g_id']])) ? '1' : '0';
-                $post_topics_new = (isset($feather->request->post('post_topics_new')[$cur_group['g_id']])) ? '1' : '0';
+                $read_forum_new = ($cur_group['g_read_board'] == '1') ? isset($this->request->post('read_forum_new')[$cur_group['g_id']]) ? '1' : '0' : intval($this->request->post('read_forum_new')[$cur_group['g_id']]);
+                $post_replies_new = (isset($this->request->post('post_replies_new')[$cur_group['g_id']])) ? '1' : '0';
+                $post_topics_new = (isset($this->request->post('post_topics_new')[$cur_group['g_id']])) ? '1' : '0';
 
                 // Check if the new settings differ from the old
-                if ($read_forum_new != $feather->request->post('read_forum_old')[$cur_group['g_id']] || $post_replies_new != $feather->request->post('post_replies_old')[$cur_group['g_id']] || $post_topics_new != $feather->request->post('post_topics_old')[$cur_group['g_id']]) {
+                if ($read_forum_new != $this->request->post('read_forum_old')[$cur_group['g_id']] || $post_replies_new != $this->request->post('post_replies_old')[$cur_group['g_id']] || $post_topics_new != $this->request->post('post_topics_old')[$cur_group['g_id']]) {
                     // If the new settings are identical to the default settings for this group, delete its row in forum_perms
                     if ($read_forum_new == '1' && $post_replies_new == $cur_group['g_post_replies'] && $post_topics_new == $cur_group['g_post_topics']) {
                         $this->db->query('DELETE FROM '.$this->db->prefix.'forum_perms WHERE group_id='.$cur_group['g_id'].' AND forum_id='.$forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $this->db->error());

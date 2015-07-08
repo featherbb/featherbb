@@ -18,6 +18,7 @@ class delete
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
+        $this->request = $this->feather->request;
     }
  
     public function get_info_delete($id)
