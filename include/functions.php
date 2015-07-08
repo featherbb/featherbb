@@ -45,7 +45,7 @@ function check_cookie(&$feather_user)
         // If the cookie has been tampered with
         if (hash_hmac('sha1', $cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash') !== $cookie['cookie_hash']) {           
             $expire = $now + 31536000; // The cookie expires after a year
-            pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
+            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
             set_default_user();
 
             return;
@@ -63,7 +63,7 @@ function check_cookie(&$feather_user)
         // If user authorisation failed
         if (!isset($feather_user['id']) || hash_hmac('sha1', $feather_user['password'], $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
             $expire = $now + 31536000; // The cookie expires after a year
-            pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
+            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
             set_default_user();
 
             return;
@@ -71,7 +71,7 @@ function check_cookie(&$feather_user)
 
         // Send a new, updated cookie with a new expiration timestamp
         $expire = ($cookie['expiration_time'] > $now + $feather_config['o_timeout_visit']) ? $now + 1209600 : $now + $feather_config['o_timeout_visit'];
-        pun_setcookie($feather_user['id'], $feather_user['password'], $expire);
+        feather_setcookie($feather_user['id'], $feather_user['password'], $expire);
 
         // Set a default language if the user selected language no longer exists
         if (!file_exists(FEATHER_ROOT.'lang/'.$feather_user['language'])) {
@@ -289,7 +289,7 @@ function set_default_user()
 // Set a cookie, FluxBB style!
 // Wrapper for forum_setcookie
 //
-function pun_setcookie($user_id, $password_hash, $expire)
+function feather_setcookie($user_id, $password_hash, $expire)
 {
     global $cookie_name, $cookie_seed;
 
@@ -372,7 +372,7 @@ function check_bans()
 
         if ($is_banned) {
             $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($feather_user['username']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
-            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.pun_htmlspecialchars($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.pun_htmlspecialchars($feather_config['o_admin_email']).'">'.pun_htmlspecialchars($feather_config['o_admin_email']).'</a>.', true);
+            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_htmlspecialchars($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_htmlspecialchars($feather_config['o_admin_email']).'">'.feather_htmlspecialchars($feather_config['o_admin_email']).'</a>.', true);
         }
     }
 
@@ -401,9 +401,9 @@ function check_username($username, $errors, $exclude_id = null)
     $username = preg_replace('%\s+%s', ' ', $username);
 
     // Validate username
-    if (pun_strlen($username) < 2) {
+    if (feather_strlen($username) < 2) {
         $errors[] = $lang_prof_reg['Username too short'];
-    } elseif (pun_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+    } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
         $errors[] = $lang_prof_reg['Username too long'];
     } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest'])) {
         $errors[] = $lang_prof_reg['Username guest'];
@@ -427,7 +427,7 @@ function check_username($username, $errors, $exclude_id = null)
 
     if ($db->num_rows($result)) {
         $busy = $db->result($result);
-        $errors[] = $lang_register['Username dupe 1'].' '.pun_htmlspecialchars($busy).'. '.$lang_register['Username dupe 2'];
+        $errors[] = $lang_register['Username dupe 1'].' '.feather_htmlspecialchars($busy).'. '.$lang_register['Username dupe 2'];
     }
 
     // Check username for any banned usernames
@@ -484,7 +484,7 @@ function generate_avatar_markup($user_id)
         $path = $feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
         if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.pun_htmlspecialchars(get_base_url(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+            $avatar_markup = '<img src="'.feather_htmlspecialchars(get_base_url(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -757,7 +757,7 @@ function get_title($user)
 
     // If the user has a custom title
     if ($user['title'] != '') {
-        $user_title = pun_htmlspecialchars($user['title']);
+        $user_title = feather_htmlspecialchars($user['title']);
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
@@ -765,7 +765,7 @@ function get_title($user)
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
-        $user_title = pun_htmlspecialchars($user['g_user_title']);
+        $user_title = feather_htmlspecialchars($user['g_user_title']);
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
@@ -917,7 +917,7 @@ function message($message, $no_back_link = false, $http_status = null)
     $feather = \Slim\Slim::getInstance();
 
     if (!defined('FEATHER_HEADER')) {
-        $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Info']);
+        $page_title = array(feather_htmlspecialchars($feather_config['o_board_title']), $lang_common['Info']);
 
         define('FEATHER_ACTIVE_PAGE', 'index');
 
@@ -1126,7 +1126,7 @@ function random_pass($len)
 //
 // Compute a hash of $str
 //
-function pun_hash($str)
+function feather_hash($str)
 {
     return sha1($str);
 }
@@ -1148,7 +1148,7 @@ function get_remote_address()
 //
 // Calls htmlspecialchars with a few options already set
 //
-function pun_htmlspecialchars($str)
+function feather_htmlspecialchars($str)
 {
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
@@ -1157,7 +1157,7 @@ function pun_htmlspecialchars($str)
 //
 // Calls htmlspecialchars_decode with a few options already set
 //
-function pun_htmlspecialchars_decode($str)
+function feather_htmlspecialchars_decode($str)
 {
     if (function_exists('htmlspecialchars_decode')) {
         return htmlspecialchars_decode($str, ENT_QUOTES);
@@ -1177,7 +1177,7 @@ function pun_htmlspecialchars_decode($str)
 //
 // A wrapper for utf8_strlen for compatibility
 //
-function pun_strlen($str)
+function feather_strlen($str)
 {
     return utf8_strlen($str);
 }
@@ -1186,7 +1186,7 @@ function pun_strlen($str)
 //
 // Convert \r\n and \r to \n
 //
-function pun_linebreaks($str)
+function feather_linebreaks($str)
 {
     return str_replace(array("\r\n", "\r"), "\n", $str);
 }
@@ -1195,7 +1195,7 @@ function pun_linebreaks($str)
 //
 // A wrapper for utf8_trim for compatibility
 //
-function pun_trim($str, $charlist = false)
+function feather_trim($str, $charlist = false)
 {
     return is_string($str) ? utf8_trim($str, $charlist) : '';
 }
@@ -1282,7 +1282,7 @@ function maintenance_message()
     // START SUBST - <pun_head>
     ob_start();
 
-    $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), $lang_common['Maintenance']);
+    $page_title = array(feather_htmlspecialchars($feather_config['o_board_title']), $lang_common['Maintenance']);
 
     ?>
 <title><?php echo generate_page_title($page_title) ?></title>
@@ -1382,7 +1382,7 @@ function error($message, $file = null, $line = null, $db_error = false)
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<?php $page_title = array(pun_htmlspecialchars($feather_config['o_board_title']), 'Error') ?>
+<?php $page_title = array(feather_htmlspecialchars($feather_config['o_board_title']), 'Error') ?>
 <title><?php echo generate_page_title($page_title) ?></title>
 <style type="text/css">
 <!--
@@ -1404,10 +1404,10 @@ H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADD
         echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
 
         if ($db_error) {
-            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.pun_htmlspecialchars($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
+            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.feather_htmlspecialchars($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
 
             if ($db_error['error_sql'] != '') {
-                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.pun_htmlspecialchars($db_error['error_sql'])."\n";
+                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.feather_htmlspecialchars($db_error['error_sql'])."\n";
             }
         }
     } else {
@@ -1875,7 +1875,7 @@ function display_saved_queries()
         ?>
 				<tr>
 					<td class="tcl"><?php echo($cur_query[1] != 0) ? $cur_query[1] : '&#160;' ?></td>
-					<td class="tcr"><?php echo pun_htmlspecialchars($cur_query[0]) ?></td>
+					<td class="tcr"><?php echo feather_htmlspecialchars($cur_query[0]) ?></td>
 				</tr>
 <?php
 
@@ -1937,7 +1937,7 @@ function url_friendly($str)
 
     $str = strtr($str, $url_replace);
     $str = strtolower(utf8_decode($str));
-    $str = pun_trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+    $str = feather_trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
 
     return $str;
 }

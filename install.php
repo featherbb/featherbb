@@ -67,7 +67,7 @@ if (get_magic_quotes_gpc()) {
 
 
 // If we've been passed a default language, use it
-$install_lang = isset($_POST['install_lang']) ? pun_trim($_POST['install_lang']) : 'English';
+$install_lang = isset($_POST['install_lang']) ? feather_trim($_POST['install_lang']) : 'English';
 
 // Make sure we got a valid language string
 $install_lang = preg_replace('%[\.\\\/]%', '', $install_lang);
@@ -155,20 +155,20 @@ if (!isset($_POST['form_sent'])) {
     $default_style = 'FeatherBB';
 } else {
     $db_type = $_POST['req_db_type'];
-    $db_host = pun_trim($_POST['req_db_host']);
-    $db_name = pun_trim($_POST['req_db_name']);
-    $db_username = pun_trim($_POST['db_username']);
-    $db_password = pun_trim($_POST['db_password']);
-    $db_prefix = pun_trim($_POST['db_prefix']);
-    $username = pun_trim($_POST['req_username']);
-    $email = strtolower(pun_trim($_POST['req_email']));
-    $password1 = pun_trim($_POST['req_password1']);
-    $password2 = pun_trim($_POST['req_password2']);
-    $title = pun_trim($_POST['req_title']);
-    $description = pun_trim($_POST['desc']);
-    $base_url = pun_trim($_POST['req_base_url']);
-    $default_lang = pun_trim($_POST['req_default_lang']);
-    $default_style = pun_trim($_POST['req_default_style']);
+    $db_host = feather_trim($_POST['req_db_host']);
+    $db_name = feather_trim($_POST['req_db_name']);
+    $db_username = feather_trim($_POST['db_username']);
+    $db_password = feather_trim($_POST['db_password']);
+    $db_prefix = feather_trim($_POST['db_prefix']);
+    $username = feather_trim($_POST['req_username']);
+    $email = strtolower(feather_trim($_POST['req_email']));
+    $password1 = feather_trim($_POST['req_password1']);
+    $password2 = feather_trim($_POST['req_password2']);
+    $title = feather_trim($_POST['req_title']);
+    $description = feather_trim($_POST['desc']);
+    $base_url = feather_trim($_POST['req_base_url']);
+    $default_lang = feather_trim($_POST['req_default_lang']);
+    $default_style = feather_trim($_POST['req_default_style']);
     $alerts = array();
 
     // Make sure base_url doesn't end with a slash
@@ -177,9 +177,9 @@ if (!isset($_POST['form_sent'])) {
     }
 
     // Validate username and passwords
-    if (pun_strlen($username) < 2) {
+    if (feather_strlen($username) < 2) {
         $alerts[] = $lang_install['Username 1'];
-    } elseif (pun_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+    } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
         $alerts[] = $lang_install['Username 2'];
     } elseif (!strcasecmp($username, 'Guest')) {
         $alerts[] = $lang_install['Username 3'];
@@ -191,7 +191,7 @@ if (!isset($_POST['form_sent'])) {
         $alerts[] = $lang_install['Username 6'];
     }
 
-    if (pun_strlen($password1) < 6) {
+    if (feather_strlen($password1) < 6) {
         $alerts[] = $lang_install['Short password'];
     } elseif ($password1 != $password2) {
         $alerts[] = $lang_install['Passwords not match'];
@@ -362,7 +362,7 @@ function process_form(the_form)
 		<h2><span><?php echo sprintf($lang_install['Install'], FORUM_VERSION) ?></span></h2>
 		<div class="box">
 			<form id="install" method="post" action="install.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
-			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo pun_htmlspecialchars($install_lang) ?>" /></div>
+			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo feather_htmlspecialchars($install_lang) ?>" /></div>
 				<div class="inform">
 	<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
 						<h3><?php echo $lang_install['Errors'] ?></h3>
@@ -409,7 +409,7 @@ function process_form(the_form)
 						<legend><?php echo $lang_install['Database hostname'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_install['Info 3'] ?></p>
-							<label class="required"><strong><?php echo $lang_install['Database server hostname'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo pun_htmlspecialchars($db_host) ?>" size="50" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Database server hostname'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo feather_htmlspecialchars($db_host) ?>" size="50" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
@@ -418,7 +418,7 @@ function process_form(the_form)
 						<legend><?php echo $lang_install['Database enter name'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_install['Info 4'] ?></p>
-							<label class="required"><strong><?php echo $lang_install['Database name'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo pun_htmlspecialchars($db_name) ?>" size="30" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Database name'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo feather_htmlspecialchars($db_name) ?>" size="30" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
@@ -427,7 +427,7 @@ function process_form(the_form)
 						<legend><?php echo $lang_install['Database enter informations'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_install['Info 5'] ?></p>
-							<label class="conl"><?php echo $lang_install['Database username'] ?><br /><input type="text" name="db_username" value="<?php echo pun_htmlspecialchars($db_username) ?>" size="30" /><br /></label>
+							<label class="conl"><?php echo $lang_install['Database username'] ?><br /><input type="text" name="db_username" value="<?php echo feather_htmlspecialchars($db_username) ?>" size="30" /><br /></label>
 							<label class="conl"><?php echo $lang_install['Database password'] ?><br /><input type="password" name="db_password" size="30" /><br /></label>
 							<div class="clearer"></div>
 						</div>
@@ -438,7 +438,7 @@ function process_form(the_form)
 						<legend><?php echo $lang_install['Database enter prefix'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_install['Info 6'] ?></p>
-							<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
+							<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo feather_htmlspecialchars($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
@@ -451,11 +451,11 @@ function process_form(the_form)
 						<legend><?php echo $lang_install['Administration setup'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_install['Info 8'] ?></p>
-							<label class="required"><strong><?php echo $lang_install['Administrator username'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Administrator username'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php echo feather_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
 							<label class="conl required"><strong><?php echo $lang_install['Password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
 							<label class="conl required"><strong><?php echo $lang_install['Confirm password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
 							<div class="clearer"></div>
-							<label class="required"><strong><?php echo $lang_install['Administrator email'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo pun_htmlspecialchars($email) ?>" size="50" maxlength="80" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Administrator email'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo feather_htmlspecialchars($email) ?>" size="50" maxlength="80" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
@@ -467,9 +467,9 @@ function process_form(the_form)
 					<fieldset>
 						<legend><?php echo $lang_install['General information'] ?></legend>
 						<div class="infldset">
-							<label class="required"><strong><?php echo $lang_install['Board title'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo pun_htmlspecialchars($title) ?>" size="60" maxlength="255" /><br /></label>
-							<label><?php echo $lang_install['Board description'] ?><br /><input id="desc" type="text" name="desc" value="<?php echo pun_htmlspecialchars($description) ?>" size="60" maxlength="255" /><br /></label>
-							<label class="required"><strong><?php echo $lang_install['Base URL'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo pun_htmlspecialchars($base_url) ?>" size="60" maxlength="100" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Board title'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo feather_htmlspecialchars($title) ?>" size="60" maxlength="255" /><br /></label>
+							<label><?php echo $lang_install['Board description'] ?><br /><input id="desc" type="text" name="desc" value="<?php echo feather_htmlspecialchars($description) ?>" size="60" maxlength="255" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Base URL'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo feather_htmlspecialchars($base_url) ?>" size="60" maxlength="100" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
@@ -556,7 +556,7 @@ function process_form(the_form)
             break;
 
         default:
-            error(sprintf($lang_install['DB type not valid'], pun_htmlspecialchars($db_type)));
+            error(sprintf($lang_install['DB type not valid'], feather_htmlspecialchars($db_type)));
     }
 
     // Create the database object (and connect/select db)
@@ -1563,7 +1563,7 @@ function process_form(the_form)
     $db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email) VALUES(3, \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\')')
         or error('Unable to add guest user. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-    $db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email, language, style, num_posts, last_post, registered, registration_ip, last_visit) VALUES(1, \''.$db->escape($username).'\', \''.pun_hash($password1).'\', \''.$email.'\', \''.$db->escape($default_lang).'\', \''.$db->escape($default_style).'\', 1, '.$now.', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')')
+    $db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email, language, style, num_posts, last_post, registered, registration_ip, last_visit) VALUES(1, \''.$db->escape($username).'\', \''.feather_hash($password1).'\', \''.$email.'\', \''.$db->escape($default_lang).'\', \''.$db->escape($default_style).'\', 1, '.$now.', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')')
         or error('Unable to add administrator user. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
     // Enable/disable avatars depending on file_uploads setting in PHP configuration
@@ -1748,17 +1748,17 @@ if (!$written) {
     ?>" />
 				<input type="hidden" name="db_host" value="<?php echo $db_host;
     ?>" />
-				<input type="hidden" name="db_name" value="<?php echo pun_htmlspecialchars($db_name);
+				<input type="hidden" name="db_name" value="<?php echo feather_htmlspecialchars($db_name);
     ?>" />
-				<input type="hidden" name="db_username" value="<?php echo pun_htmlspecialchars($db_username);
+				<input type="hidden" name="db_username" value="<?php echo feather_htmlspecialchars($db_username);
     ?>" />
-				<input type="hidden" name="db_password" value="<?php echo pun_htmlspecialchars($db_password);
+				<input type="hidden" name="db_password" value="<?php echo feather_htmlspecialchars($db_password);
     ?>" />
-				<input type="hidden" name="db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix);
+				<input type="hidden" name="db_prefix" value="<?php echo feather_htmlspecialchars($db_prefix);
     ?>" />
-				<input type="hidden" name="cookie_name" value="<?php echo pun_htmlspecialchars($cookie_name);
+				<input type="hidden" name="cookie_name" value="<?php echo feather_htmlspecialchars($cookie_name);
     ?>" />
-				<input type="hidden" name="cookie_seed" value="<?php echo pun_htmlspecialchars($cookie_seed);
+				<input type="hidden" name="cookie_seed" value="<?php echo feather_htmlspecialchars($cookie_seed);
     ?>" />
 
 <?php if (!empty($alerts)): ?>				<div class="forminfo error-info">

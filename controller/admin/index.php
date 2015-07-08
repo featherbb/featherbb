@@ -71,7 +71,7 @@ class index
 
         $install_file_exists = is_file(FEATHER_ROOT.'install.php');
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Index']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Index']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

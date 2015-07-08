@@ -225,9 +225,9 @@ class viewtopic
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if ($this->user['g_view_users'] == '1') {
-                    $cur_post['username_formatted'] = '<a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/">'.pun_htmlspecialchars($cur_post['username']).'</a>';
+                    $cur_post['username_formatted'] = '<a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/">'.feather_htmlspecialchars($cur_post['username']).'</a>';
                 } else {
-                    $cur_post['username_formatted'] = pun_htmlspecialchars($cur_post['username']);
+                    $cur_post['username_formatted'] = feather_htmlspecialchars($cur_post['username']);
                 }
 
                 $cur_post['user_title_formatted'] = get_title($cur_post);
@@ -254,7 +254,7 @@ class viewtopic
                             $cur_post['location'] = censor_words($cur_post['location']);
                         }
 
-                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['From'].' '.pun_htmlspecialchars($cur_post['location']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['From'].' '.feather_htmlspecialchars($cur_post['location']).'</span></dd>';
                     }
 
                     $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Registered'].' '.format_time($cur_post['registered'], true).'</span></dd>';
@@ -265,7 +265,7 @@ class viewtopic
 
                     // Now let's deal with the contact links (Email and URL)
                     if ((($cur_post['email_setting'] == '0' && !$this->user['is_guest']) || $this->user['is_admmod']) && $this->user['g_send_email'] == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.pun_htmlspecialchars($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_htmlspecialchars($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.$lang_common['Email'].'</a></span>';
                     }
@@ -275,7 +275,7 @@ class viewtopic
                             $cur_post['url'] = censor_words($cur_post['url']);
                         }
 
-                        $cur_post['user_contacts'][] = '<span class="website"><a href="'.pun_htmlspecialchars($cur_post['url']).'" rel="nofollow">'.$lang_topic['Website'].'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="website"><a href="'.feather_htmlspecialchars($cur_post['url']).'" rel="nofollow">'.$lang_topic['Website'].'</a></span>';
                     }
                 }
 
@@ -286,24 +286,24 @@ class viewtopic
                 }
 
                 if ($this->user['is_admmod']) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.pun_htmlspecialchars($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.feather_htmlspecialchars($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
-                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Note'].' <strong>'.pun_htmlspecialchars($cur_post['admin_note']).'</strong></span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Note'].' <strong>'.feather_htmlspecialchars($cur_post['admin_note']).'</strong></span></dd>';
                     }
                 }
             }
             // If the poster is a guest (or a user that has been deleted)
             else {
-                $cur_post['username_formatted'] = pun_htmlspecialchars($cur_post['username']);
+                $cur_post['username_formatted'] = feather_htmlspecialchars($cur_post['username']);
                 $cur_post['user_title_formatted'] = get_title($cur_post);
 
                 if ($this->user['is_admmod']) {
-                    $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.pun_htmlspecialchars($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.feather_htmlspecialchars($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
-                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.pun_htmlspecialchars($cur_post['poster_email']).'">'.$lang_common['Email'].'</a></span>';
+                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_htmlspecialchars($cur_post['poster_email']).'">'.$lang_common['Email'].'</a></span>';
                 }
             }
 

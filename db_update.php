@@ -559,7 +559,7 @@ if (empty($stage)) {
 						<p><?php echo $lang_update['Maintenance message info'] ?></p>
 						<div class="txtarea">
 							<label class="required"><strong><?php echo $lang_update['Maintenance message'] ?> <span><?php echo $lang_update['Required'] ?></span></strong><br />
-							<textarea name="req_maintenance_message" rows="4" cols="65"><?php echo pun_htmlspecialchars($feather_config['o_maintenance_message']) ?></textarea><br /></label>
+							<textarea name="req_maintenance_message" rows="4" cols="65"><?php echo feather_htmlspecialchars($feather_config['o_maintenance_message']) ?></textarea><br /></label>
 						</div>
 					</div>
 				</fieldset>
@@ -632,7 +632,7 @@ $lock_error = false;
 
 // Generate or fetch the UID - this confirms we have a valid admin
 if (isset($_POST['req_db_pass'])) {
-    $req_db_pass = strtolower(pun_trim($_POST['req_db_pass']));
+    $req_db_pass = strtolower(feather_trim($_POST['req_db_pass']));
 
     switch ($db_type) {
         // For SQLite we compare against the database file name, since the password is left blank
@@ -653,7 +653,7 @@ if (isset($_POST['req_db_pass'])) {
     }
 
     // Generate a unique id to identify this session, only if this is a valid session
-    $uid = pun_hash($req_db_pass.'|'.uniqid(rand(), true));
+    $uid = feather_hash($req_db_pass.'|'.uniqid(rand(), true));
     if ($lock) { // We already have a lock file
         $lock_error = true;
     } else {
@@ -669,7 +669,7 @@ if (isset($_POST['req_db_pass'])) {
 
         // Update maintenance message
         if ($_POST['req_maintenance_message'] != '') {
-            $maintenance_message = pun_trim(pun_linebreaks($_POST['req_maintenance_message']));
+            $maintenance_message = feather_trim(feather_linebreaks($_POST['req_maintenance_message']));
         } else {
             // Load the admin_options.php language file
             require FEATHER_ROOT.'lang/'.$default_lang.'/admin_options.php';
@@ -687,7 +687,7 @@ if (isset($_POST['req_db_pass'])) {
         generate_config_cache();
     }
 } elseif (isset($_GET['uid'])) {
-    $uid = pun_trim($_GET['uid']);
+    $uid = feather_trim($_GET['uid']);
     if (!$lock || $lock != $uid) { // The lock doesn't exist or doesn't match the given UID
         $lock_error = true;
     }
@@ -1564,11 +1564,11 @@ switch ($stage) {
             foreach ($_SESSION['dupe_users'] as $id => $cur_user) {
                 $errors[$id] = array();
 
-                $username = pun_trim($_POST['dupe_users'][$id]);
+                $username = feather_trim($_POST['dupe_users'][$id]);
 
-                if (pun_strlen($username) < 2) {
+                if (feather_strlen($username) < 2) {
                     $errors[$id][] = $lang_update['Username too short error'];
-                } elseif (pun_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+                } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
                     $errors[$id][] = $lang_update['Username too long error'];
                 } elseif (!strcasecmp($username, 'Guest')) {
                     $errors[$id][] = $lang_update['Username Guest reserved error'];
@@ -1584,7 +1584,7 @@ switch ($stage) {
 
                 if ($db->num_rows($result)) {
                     $busy = $db->result($result);
-                    $errors[$id][] = sprintf($lang_update['Username duplicate error'], pun_htmlspecialchars($busy));
+                    $errors[$id][] = sprintf($lang_update['Username duplicate error'], feather_htmlspecialchars($busy));
                 }
 
                 if (empty($errors[$id])) {
@@ -1691,12 +1691,12 @@ switch ($stage) {
                 ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo pun_htmlspecialchars($cur_user['username']);
+					<legend><?php echo feather_htmlspecialchars($cur_user['username']);
                 ?></legend>
 					<div class="infldset">
 						<label class="required"><strong><?php echo $lang_update['New username'] ?> <span><?php echo $lang_update['Required'] ?></span></strong><br /><input type="text" name="<?php echo 'dupe_users['.$id.']';
                 ?>" value="<?php if (isset($_POST['dupe_users'][$id])) {
-    echo pun_htmlspecialchars($_POST['dupe_users'][$id]);
+    echo feather_htmlspecialchars($_POST['dupe_users'][$id]);
 }
                 ?>" size="25" maxlength="25" /><br /></label>
 					</div>

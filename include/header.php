@@ -67,7 +67,7 @@ if ($feather_user['is_guest']) {
         $links[] = '<li id="navadmin"'.((FEATHER_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.$lang_common['Admin'].'</a></li>';
     }
 
-    $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$feather_user['id'].'/token/'.pun_hash($feather_user['id'].pun_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
+    $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$feather_user['id'].'/token/'.feather_hash($feather_user['id'].feather_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
 }
 
 // Are there any additional navlinks we should insert into the array before imploding it?
@@ -91,7 +91,7 @@ $page_statusinfo = $page_topicsearches = array();
 if ($feather_user['is_guest']) {
     $page_statusinfo = '<p class="conl">'.$lang_common['Not logged in'].'</p>';
 } else {
-    $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.pun_htmlspecialchars($feather_user['username']).'</strong></span></li>';
+    $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.feather_htmlspecialchars($feather_user['username']).'</strong></span></li>';
     $page_statusinfo[] = '<li><span>'.sprintf($lang_common['Last visit'], format_time($feather_user['last_visit'])).'</span></li>';
 
     if ($feather_user['is_admmod']) {
@@ -153,7 +153,7 @@ if (!defined('FEATHER_HEADER')) {
 // Render the header
 if (isset($this)) {
 
-    $page_title = isset($page_title) ? $page_title : pun_htmlspecialchars($this->config['o_board_title']);
+    $page_title = isset($page_title) ? $page_title : feather_htmlspecialchars($this->config['o_board_title']);
     
     $page_head = isset($page_head) ? $page_head : null;
     $focus_element = isset($page_head) ? $page_head : null;

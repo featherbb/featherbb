@@ -20,8 +20,8 @@ $cur_index = 1;
 	<div class="inbox">
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_post['fid'].'/'.url_friendly($cur_post['forum_name']).'/') ?>"><?php echo pun_htmlspecialchars($cur_post['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$cur_post['tid'].'/'.url_friendly($cur_post['subject']).'/') ?>"><?php echo pun_htmlspecialchars($cur_post['subject']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_post['fid'].'/'.url_friendly($cur_post['forum_name']).'/') ?>"><?php echo feather_htmlspecialchars($cur_post['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$cur_post['tid'].'/'.url_friendly($cur_post['subject']).'/') ?>"><?php echo feather_htmlspecialchars($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_post['Edit post'] ?></strong></li>
 		</ul>
 	</div>
@@ -77,9 +77,9 @@ endif;
 					<input type="hidden" name="form_sent" value="1" />
 					<div class="infldset txtarea">
 <?php if ($can_edit_subject): ?>						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" value="<?php echo pun_htmlspecialchars($feather->request->post('req_subject') ? $feather->request->post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
+						<input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" value="<?php echo feather_htmlspecialchars($feather->request->post('req_subject') ? $feather->request->post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo pun_htmlspecialchars($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
+						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo feather_htmlspecialchars($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
 						<ul class="bblinks">
 							<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>

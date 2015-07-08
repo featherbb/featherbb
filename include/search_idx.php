@@ -117,7 +117,7 @@ function validate_search_word($word, $idx)
     $word = str_replace(array('%', '*'), '', $word);
 
     // Check the word is within the min/max length
-    $num_chars = pun_strlen($word);
+    $num_chars = feather_strlen($word);
     return $num_chars >= FEATHER_SEARCH_MIN_WORD && $num_chars <= FEATHER_SEARCH_MAX_WORD;
 }
 

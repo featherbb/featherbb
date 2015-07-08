@@ -49,7 +49,7 @@ class reports
             $this->model->zap_report($this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Reports']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Reports']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

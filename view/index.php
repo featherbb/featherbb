@@ -29,7 +29,7 @@ foreach ($index_data as $forum) {
 	<?php endif;
     ?>
 	<div id="idx<?php echo $forum['cid'] ?>" class="blocktable">
-	<h2><span><?php echo pun_htmlspecialchars($forum['cat_name']) ?></span></h2>
+	<h2><span><?php echo feather_htmlspecialchars($forum['cat_name']) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>

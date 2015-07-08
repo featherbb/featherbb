@@ -93,7 +93,7 @@ class forums
         
 
         $result = $this->db->query('SELECT forum_name FROM '.$this->db->prefix.'forums WHERE id='.$forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
-        $forum_name = pun_htmlspecialchars($this->db->result($result));
+        $forum_name = feather_htmlspecialchars($this->db->result($result));
 
         return $forum_name;
     }
@@ -130,11 +130,11 @@ class forums
         confirm_referrer(get_link_r('admin/forums/edit/'.$forum_id.'/'));
 
         // Start with the forum details
-        $forum_name = pun_trim($this->request->post('forum_name'));
-        $forum_desc = pun_linebreaks(pun_trim($this->request->post('forum_desc')));
+        $forum_name = feather_trim($this->request->post('forum_name'));
+        $forum_desc = feather_linebreaks(feather_trim($this->request->post('forum_desc')));
         $cat_id = intval($this->request->post('cat_id'));
         $sort_by = intval($this->request->post('sort_by'));
-        $redirect_url = $this->request->post('redirect_url') ? pun_trim($this->request->post('redirect_url')) : null;
+        $redirect_url = $this->request->post('redirect_url') ? feather_trim($this->request->post('redirect_url')) : null;
 
         if ($forum_name == '') {
             message($lang_admin_forums['Must enter name message']);
@@ -224,7 +224,7 @@ class forums
         $result = $this->db->query('SELECT id, cat_name FROM '.$this->db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $this->db->error());
         while ($cur_cat = $this->db->fetch_assoc($result)) {
             $selected = ($cur_cat['id'] == $cur_forum['cat_id']) ? ' selected="selected"' : '';
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'"'.$selected.'>'.pun_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'"'.$selected.'>'.feather_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
         }
         
         return $output;
@@ -239,7 +239,7 @@ class forums
         $result = $this->db->query('SELECT id, cat_name FROM '.$this->db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $this->db->error());
 
         while ($cur_cat = $this->db->fetch_assoc($result)) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.pun_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.feather_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
         }
         
         return $output;

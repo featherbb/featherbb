@@ -165,11 +165,11 @@ class moderate
             require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
 
             // Check subject
-            $new_subject = $this->request->post('new_subject') ? pun_trim($this->request->post('new_subject')) : '';
+            $new_subject = $this->request->post('new_subject') ? feather_trim($this->request->post('new_subject')) : '';
 
             if ($new_subject == '') {
                 message($lang_post['No subject']);
-            } elseif (pun_strlen($new_subject) > 70) {
+            } elseif (feather_strlen($new_subject) > 70) {
                 message($lang_post['Too long subject']);
             }
 
@@ -220,11 +220,11 @@ class moderate
                     echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                echo "\t\t\t\t\t\t\t".'<optgroup label="'.pun_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
+                echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
                 $cur_category = $cur_forum['cid'];
             }
 
-            echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"'.($id == $cur_forum['fid'] ? ' selected="selected"' : '').'>'.pun_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
+            echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"'.($id == $cur_forum['fid'] ? ' selected="selected"' : '').'>'.feather_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
         }
     }
 
@@ -242,12 +242,12 @@ class moderate
                     echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                echo "\t\t\t\t\t\t\t".'<optgroup label="'.pun_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
+                echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
                 $cur_category = $cur_forum['cid'];
             }
 
             if ($cur_forum['fid'] != $id) {
-                echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
+                echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.feather_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
             }
         }
     }
@@ -279,9 +279,9 @@ class moderate
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if ($this->user['g_view_users'] == '1') {
-                    $cur_post['poster_disp'] = '<a href="'.get_link('user/'.$cur_post['poster_id'].'/').'">'.pun_htmlspecialchars($cur_post['poster']).'</a>';
+                    $cur_post['poster_disp'] = '<a href="'.get_link('user/'.$cur_post['poster_id'].'/').'">'.feather_htmlspecialchars($cur_post['poster']).'</a>';
                 } else {
-                    $cur_post['poster_disp'] = pun_htmlspecialchars($cur_post['poster']);
+                    $cur_post['poster_disp'] = feather_htmlspecialchars($cur_post['poster']);
                 }
 
                 // get_title() requires that an element 'username' be present in the array
@@ -294,7 +294,7 @@ class moderate
             }
             // If the poster is a guest (or a user that has been deleted)
             else {
-                $cur_post['poster_disp'] = pun_htmlspecialchars($cur_post['poster']);
+                $cur_post['poster_disp'] = feather_htmlspecialchars($cur_post['poster']);
                 $cur_post['user_title'] = $lang_topic['Guest'];
             }
 
@@ -563,7 +563,7 @@ class moderate
                 $url_topic = url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -580,13 +580,13 @@ class moderate
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.feather_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.$lang_forum['Moved'].'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.pun_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_htmlspecialchars($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }

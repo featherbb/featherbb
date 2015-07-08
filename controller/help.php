@@ -42,7 +42,7 @@ class help
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/help.php';
 
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_help['Help']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_help['Help']);
 
         define('FEATHER_ACTIVE_PAGE', 'help');
 

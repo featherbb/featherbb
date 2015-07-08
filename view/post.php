@@ -18,10 +18,10 @@ if (!defined('FEATHER')) {
 	<div class="inbox">
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_posting['id'].'/'.$url_forum.'/') ?>"><?php echo pun_htmlspecialchars($cur_posting['forum_name']) ?></a></li>
-<?php if ($feather->request->post('req_subject')): ?>			<li><span>»&#160;</span><?php echo pun_htmlspecialchars($feather->request->post('req_subject')) ?></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_posting['id'].'/'.$url_forum.'/') ?>"><?php echo feather_htmlspecialchars($cur_posting['forum_name']) ?></a></li>
+<?php if ($feather->request->post('req_subject')): ?>			<li><span>»&#160;</span><?php echo feather_htmlspecialchars($feather->request->post('req_subject')) ?></li>
 <?php endif; ?>
-<?php if (isset($cur_posting['subject'])): ?>			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$tid.'/'.$url_topic.'/') ?>"><?php echo pun_htmlspecialchars($cur_posting['subject']) ?></a></li>
+<?php if (isset($cur_posting['subject'])): ?>			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$tid.'/'.$url_topic.'/') ?>"><?php echo feather_htmlspecialchars($cur_posting['subject']) ?></a></li>
 <?php endif; ?>			<li><span>»&#160;</span><strong><?php echo $action ?></strong></li>
 		</ul>
 	</div>
@@ -94,11 +94,11 @@ if ($feather_user['is_guest']) {
     $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
     ?>
 						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php if ($feather->request->post('req_username')) {
-    echo pun_htmlspecialchars($post['username']);
+    echo feather_htmlspecialchars($post['username']);
 }
     ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<label class="conl<?php echo($feather_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" value="<?php if ($feather->request->post($email_form_name)) {
-    echo pun_htmlspecialchars($post['email']);
+    echo feather_htmlspecialchars($post['email']);
 }
     ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
@@ -107,10 +107,10 @@ if ($feather_user['is_guest']) {
 }
 if ($fid): ?>
 						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if ($feather->request->post('req_subject')) {
-    echo pun_htmlspecialchars($post['subject']);
+    echo feather_htmlspecialchars($post['subject']);
 } ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? pun_linebreaks(pun_trim(pun_htmlspecialchars($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
+						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? feather_linebreaks(feather_trim(feather_htmlspecialchars($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open (this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
@@ -181,7 +181,7 @@ if ($tid && $feather_config['o_topic_review'] != '0') :
 			<div class="postbody">
 				<div class="postleft">
 					<dl>
-						<dt><strong><?php echo pun_htmlspecialchars($post['poster']) ?></strong></dt>
+						<dt><strong><?php echo feather_htmlspecialchars($post['poster']) ?></strong></dt>
 						<dd><span><?php echo format_time($post['posted']) ?></span></dd>
 					</dl>
 				</div>

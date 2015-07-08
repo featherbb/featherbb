@@ -25,11 +25,11 @@ if (!defined('FEATHER')) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_forums['Forum name label'] ?></th>
-									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?>" tabindex="1" /></td>
+									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo feather_htmlspecialchars($cur_forum['forum_name']) ?>" tabindex="1" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_forums['Forum description label'] ?></th>
-									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo pun_htmlspecialchars($cur_forum['forum_desc']) ?></textarea></td>
+									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo feather_htmlspecialchars($cur_forum['forum_desc']) ?></textarea></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_forums['Category label'] ?></th>
@@ -57,7 +57,7 @@ if (!defined('FEATHER')) {
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_forums['Redirect label'] ?></th>
-									<td><?php echo($cur_forum['num_topics']) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.pun_htmlspecialchars($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
+									<td><?php echo($cur_forum['num_topics']) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.feather_htmlspecialchars($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>
@@ -82,7 +82,7 @@ if (!defined('FEATHER')) {
     foreach ($perm_data as $perm) {
         ?>
 								<tr>
-									<th class="atcl"><?php echo pun_htmlspecialchars($perm['g_title']) ?></th>
+									<th class="atcl"><?php echo feather_htmlspecialchars($perm['g_title']) ?></th>
 									<td<?php if (!$perm['read_forum_def']) {
     echo ' class="nodefault"';
 }

@@ -72,7 +72,7 @@ class delete
         }
 
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_delete['Delete post']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_delete['Delete post']);
 
         define('FEATHER_ACTIVE_PAGE', 'delete');
 

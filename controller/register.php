@@ -54,7 +54,7 @@ class register
             message($lang_register['No new regs']);
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_register['Register']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_register['Register']);
         $required_fields = array('req_user' => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2', 'captcha' => $lang_antispam['Robot title']);
         $focus_element = array('register', 'req_user');
 
@@ -126,7 +126,7 @@ class register
             redirect(get_link('register/agree/'));
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_register['Register'], $lang_register['Forum rules']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_register['Register'], $lang_register['Forum rules']);
 
         define('FEATHER_ACTIVE_PAGE', 'register');
 

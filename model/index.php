@@ -131,12 +131,12 @@ class index
 
             // Is this a redirect forum?
             if ($cur_forum['redirect_url'] != '') {
-                $cur_forum['forum_field'] = '<h3><span class="redirtext">'.$lang_index['Link to'].'</span> <a href="'.pun_htmlspecialchars($cur_forum['redirect_url']).'" title="'.$lang_index['Link to'].' '.pun_htmlspecialchars($cur_forum['redirect_url']).'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</a></h3>';
+                $cur_forum['forum_field'] = '<h3><span class="redirtext">'.$lang_index['Link to'].'</span> <a href="'.feather_htmlspecialchars($cur_forum['redirect_url']).'" title="'.$lang_index['Link to'].' '.feather_htmlspecialchars($cur_forum['redirect_url']).'">'.feather_htmlspecialchars($cur_forum['forum_name']).'</a></h3>';
                 $cur_forum['num_topics_formatted'] = $cur_forum['num_posts_formatted'] = '-';
                 $cur_forum['item_status'] .= ' iredirect';
                 $cur_forum['icon_type'] = 'icon';
             } else {
-                $cur_forum['forum_field'] = '<h3><a href="'.get_link('forum/'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name'])).'/'.'">'.pun_htmlspecialchars($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
+                $cur_forum['forum_field'] = '<h3><a href="'.get_link('forum/'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name'])).'/'.'">'.feather_htmlspecialchars($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
                 $cur_forum['num_topics_formatted'] = $cur_forum['num_topics'];
                 $cur_forum['num_posts_formatted'] = $cur_forum['num_posts'];
             }
@@ -147,7 +147,7 @@ class index
 
             // If there is a last_post/last_poster
             if ($cur_forum['last_post'] != '') {
-                $cur_forum['last_post_formatted'] = '<a href="'.get_link('post/'.$cur_forum['last_post_id'].'/#p'.$cur_forum['last_post_id']).'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_forum['last_poster']).'</span>';
+                $cur_forum['last_post_formatted'] = '<a href="'.get_link('post/'.$cur_forum['last_post_id'].'/#p'.$cur_forum['last_post_id']).'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_forum['last_poster']).'</span>';
             } elseif ($cur_forum['redirect_url'] != '') {
                 $cur_forum['last_post_formatted'] = '- - -';
             } else {
@@ -160,9 +160,9 @@ class index
 
                 foreach ($mods_array as $mod_username => $mod_id) {
                     if ($this->user['g_view_users'] == '1') {
-                        $moderators[] = '<a href="'.get_link('user/'.$mod_id.'/').'">'.pun_htmlspecialchars($mod_username).'</a>';
+                        $moderators[] = '<a href="'.get_link('user/'.$mod_id.'/').'">'.feather_htmlspecialchars($mod_username).'</a>';
                     } else {
-                        $moderators[] = pun_htmlspecialchars($mod_username);
+                        $moderators[] = feather_htmlspecialchars($mod_username);
                     }
                 }
 
@@ -198,9 +198,9 @@ class index
         list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $this->db->fetch_row($result));
 
         if ($this->user['g_view_users'] == '1') {
-            $stats['newest_user'] = '<a href="'.get_link('user/'.$stats['last_user']['id']).'/">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>';
+            $stats['newest_user'] = '<a href="'.get_link('user/'.$stats['last_user']['id']).'/">'.feather_htmlspecialchars($stats['last_user']['username']).'</a>';
         } else {
-            $stats['newest_user'] = pun_htmlspecialchars($stats['last_user']['username']);
+            $stats['newest_user'] = feather_htmlspecialchars($stats['last_user']['username']);
         }
 
         return $stats;
@@ -217,9 +217,9 @@ class index
         while ($this->user_online = $this->db->fetch_assoc($result)) {
             if ($this->user_online['user_id'] > 1) {
                 if ($this->user['g_view_users'] == '1') {
-                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('user/'.$this->user_online['user_id']).'/">'.pun_htmlspecialchars($this->user_online['ident']).'</a>';
+                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('user/'.$this->user_online['user_id']).'/">'.feather_htmlspecialchars($this->user_online['ident']).'</a>';
                 } else {
-                    $online['users'][] = "\n\t\t\t\t".'<dd>'.pun_htmlspecialchars($this->user_online['ident']);
+                    $online['users'][] = "\n\t\t\t\t".'<dd>'.feather_htmlspecialchars($this->user_online['ident']);
                 }
             } else {
                 ++$num_guests;

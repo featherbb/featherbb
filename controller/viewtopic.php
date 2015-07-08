@@ -94,7 +94,7 @@ class viewtopic
         // Add relationship meta tags
         $page_head = $this->model->get_page_head($id, $num_pages, $p, $url_topic);
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), pun_htmlspecialchars($cur_topic['forum_name']), pun_htmlspecialchars($cur_topic['subject']));
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), feather_htmlspecialchars($cur_topic['forum_name']), feather_htmlspecialchars($cur_topic['subject']));
         define('FEATHER_ALLOW_INDEX', 1);
 
         define('FEATHER_ACTIVE_PAGE', 'viewtopic');

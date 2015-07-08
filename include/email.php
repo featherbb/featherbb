@@ -126,7 +126,7 @@ function bbcode2email($text, $wrap_length = 72)
         $base_url = get_base_url();
     }
 
-    $text = pun_trim($text, "\t\n ");
+    $text = feather_trim($text, "\t\n ");
 
     $shortcut_urls = array(
         'topic' => '/topic/$1/',
@@ -272,12 +272,12 @@ function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name 
     $from_email = $feather_config['o_webmaster_email'];
 
     // Do a little spring cleaning
-    $to = pun_trim(preg_replace('%[\n\r]+%s', '', $to));
-    $subject = pun_trim(preg_replace('%[\n\r]+%s', '', $subject));
-    $from_email = pun_trim(preg_replace('%[\n\r:]+%s', '', $from_email));
-    $from_name = pun_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
-    $reply_to_email = pun_trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
-    $reply_to_name = pun_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
+    $to = feather_trim(preg_replace('%[\n\r]+%s', '', $to));
+    $subject = feather_trim(preg_replace('%[\n\r]+%s', '', $subject));
+    $from_email = feather_trim(preg_replace('%[\n\r:]+%s', '', $from_email));
+    $from_name = feather_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
+    $reply_to_email = feather_trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
+    $reply_to_name = feather_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
 
     // Set up some headers to take advantage of UTF-8
     $from = '"'.encode_mail_text($from_name).'" <'.$from_email.'>';
@@ -293,7 +293,7 @@ function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name 
     }
 
     // Make sure all linebreaks are LF in message (and strip out any NULL bytes)
-    $message = str_replace("\0", '', pun_linebreaks($message));
+    $message = str_replace("\0", '', feather_linebreaks($message));
     $message = str_replace("\n", $EOL, $message);
     
     $mailer = $smtp ? 'smtp_mail' : 'mail';

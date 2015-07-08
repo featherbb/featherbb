@@ -49,7 +49,7 @@ class permissions
             $this->model->update_permissions($this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

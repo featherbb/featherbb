@@ -38,7 +38,7 @@ class profile
             $cur_user = $this->db->fetch_assoc($result);
 
             if ($key == '' || $key != $cur_user['activate_key']) {
-                message($lang_profile['Pass key bad'].' <a href="mailto:'.pun_htmlspecialchars($this->config['o_admin_email']).'">'.pun_htmlspecialchars($this->config['o_admin_email']).'</a>.');
+                message($lang_profile['Pass key bad'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.');
             } else {
                 $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$this->db->escape($cur_user['activate_string']).'\', activate_string=NULL, activate_key=NULL'.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $this->db->error());
 
@@ -70,14 +70,14 @@ class profile
             // Make sure they got here from the site
             confirm_referrer(get_link_r('user/'.$id.'/action/change_pass/'));
 
-            $old_password = $this->request->post('req_old_password') ? pun_trim($this->request->post('req_old_password')) : '';
-            $new_password1 = pun_trim($this->request->post('req_new_password1'));
-            $new_password2 = pun_trim($this->request->post('req_new_password2'));
+            $old_password = $this->request->post('req_old_password') ? feather_trim($this->request->post('req_old_password')) : '';
+            $new_password1 = feather_trim($this->request->post('req_new_password1'));
+            $new_password2 = feather_trim($this->request->post('req_new_password2'));
 
             if ($new_password1 != $new_password2) {
                 message($lang_prof_reg['Pass not match']);
             }
-            if (pun_strlen($new_password1) < 6) {
+            if (feather_strlen($new_password1) < 6) {
                 message($lang_prof_reg['Pass too short']);
             }
 
@@ -87,7 +87,7 @@ class profile
             $authorized = false;
 
             if (!empty($cur_user['password'])) {
-                $old_password_hash = pun_hash($old_password);
+                $old_password_hash = feather_hash($old_password);
 
                 if ($cur_user['password'] == $old_password_hash || $this->user['is_admmod']) {
                     $authorized = true;
@@ -98,12 +98,12 @@ class profile
                 message($lang_profile['Wrong pass']);
             }
 
-            $new_password_hash = pun_hash($new_password1);
+            $new_password_hash = feather_hash($new_password1);
 
             $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$new_password_hash.'\''.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $this->db->error());
 
             if ($this->user['id'] == $id) {
-                pun_setcookie($this->user['id'], $new_password_hash, time() + $this->config['o_timeout_visit']);
+                feather_setcookie($this->user['id'], $new_password_hash, time() + $this->config['o_timeout_visit']);
             }
 
             redirect(get_link('user/'.$id.'/section/essentials/'), $lang_profile['Pass updated redirect']);
@@ -141,14 +141,14 @@ class profile
             list($new_email, $new_email_key) = $this->db->fetch_row($result);
 
             if ($key == '' || $key != $new_email_key) {
-                message($lang_profile['Email key bad'].' <a href="mailto:'.pun_htmlspecialchars($this->config['o_admin_email']).'">'.pun_htmlspecialchars($this->config['o_admin_email']).'</a>.');
+                message($lang_profile['Email key bad'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.');
             } else {
                 $this->db->query('UPDATE '.$this->db->prefix.'users SET email=activate_string, activate_string=NULL, activate_key=NULL WHERE id='.$id) or error('Unable to update email address', __FILE__, __LINE__, $this->db->error());
 
                 message($lang_profile['Email updated'], true);
             }
         } elseif ($feather->request()->isPost()) {
-            if (pun_hash($this->request->post('req_password')) !== $this->user['password']) {
+            if (feather_hash($this->request->post('req_password')) !== $this->user['password']) {
                 message($lang_profile['Wrong pass']);
             }
 
@@ -158,7 +158,7 @@ class profile
             require FEATHER_ROOT.'include/email.php';
 
             // Validate the email address
-            $new_email = strtolower(pun_trim($this->request->post('req_new_email')));
+            $new_email = strtolower(feather_trim($this->request->post('req_new_email')));
             if (!is_valid_email($new_email)) {
                 message($lang_common['Invalid email']);
             }
@@ -232,7 +232,7 @@ class profile
 
             pun_mail($new_email, $mail_subject, $mail_message);
 
-            message($lang_profile['Activate email sent'].' <a href="mailto:'.pun_htmlspecialchars($this->config['o_admin_email']).'">'.pun_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
+            message($lang_profile['Activate email sent'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
         }
     }
 
@@ -296,7 +296,7 @@ class profile
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
             if (!@move_uploaded_file($uploaded_file['tmp_name'], FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
-                message($lang_profile['Move failed'].' <a href="mailto:'.pun_htmlspecialchars($this->config['o_admin_email']).'">'.pun_htmlspecialchars($this->config['o_admin_email']).'</a>.');
+                message($lang_profile['Move failed'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.');
             }
 
             list($width, $height, $type, ) = @getimagesize(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
@@ -599,18 +599,18 @@ class profile
                 // Make sure we got a valid language string
                 if ($this->request->post('form_language')) {
                     $languages = forum_list_langs();
-                    $form['language'] = pun_trim($this->request->post('form_language'));
+                    $form['language'] = feather_trim($this->request->post('form_language'));
                     if (!in_array($form['language'], $languages)) {
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
                 }
 
                 if ($this->user['is_admmod']) {
-                    $form['admin_note'] = pun_trim($this->request->post('admin_note'));
+                    $form['admin_note'] = feather_trim($this->request->post('admin_note'));
 
                     // Are we allowed to change usernames?
                     if ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_rename_users'] == '1')) {
-                        $form['username'] = pun_trim($this->request->post('req_username'));
+                        $form['username'] = feather_trim($this->request->post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
                             // Check username
@@ -636,7 +636,7 @@ class profile
                     require FEATHER_ROOT.'include/email.php';
 
                     // Validate the email address
-                    $form['email'] = strtolower(pun_trim($this->request->post('req_email')));
+                    $form['email'] = strtolower(feather_trim($this->request->post('req_email')));
                     if (!is_valid_email($form['email'])) {
                         message($lang_common['Invalid email']);
                     }
@@ -648,9 +648,9 @@ class profile
             case 'personal':
             {
                 $form = array(
-                    'realname'        => $this->request->post('form_realname') ? pun_trim($this->request->post('form_realname')) : '',
-                    'url'            => $this->request->post('form_url') ? pun_trim($this->request->post('form_url')) : '',
-                    'location'        => $this->request->post('form_location') ? pun_trim($this->request->post('form_location')) : '',
+                    'realname'        => $this->request->post('form_realname') ? feather_trim($this->request->post('form_realname')) : '',
+                    'url'            => $this->request->post('form_url') ? feather_trim($this->request->post('form_url')) : '',
+                    'location'        => $this->request->post('form_location') ? feather_trim($this->request->post('form_location')) : '',
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
@@ -673,9 +673,9 @@ class profile
                 }
 
                 if ($this->user['g_id'] == FEATHER_ADMIN) {
-                    $form['title'] = pun_trim($this->request->post('title'));
+                    $form['title'] = feather_trim($this->request->post('title'));
                 } elseif ($this->user['g_set_title'] == '1') {
-                    $form['title'] = pun_trim($this->request->post('title'));
+                    $form['title'] = feather_trim($this->request->post('title'));
 
                     if ($form['title'] != '') {
                         // A list of words that the title may not contain
@@ -694,11 +694,11 @@ class profile
             case 'messaging':
             {
                 $form = array(
-                    'jabber'        => pun_trim($this->request->post('form_jabber')),
-                    'icq'            => pun_trim($this->request->post('form_icq')),
-                    'msn'            => pun_trim($this->request->post('form_msn')),
-                    'aim'            => pun_trim($this->request->post('form_aim')),
-                    'yahoo'            => pun_trim($this->request->post('form_yahoo')),
+                    'jabber'        => feather_trim($this->request->post('form_jabber')),
+                    'icq'            => feather_trim($this->request->post('form_icq')),
+                    'msn'            => feather_trim($this->request->post('form_msn')),
+                    'aim'            => feather_trim($this->request->post('form_aim')),
+                    'yahoo'            => feather_trim($this->request->post('form_yahoo')),
                 );
 
                 // If the ICQ UIN contains anything other than digits it's invalid
@@ -715,11 +715,11 @@ class profile
 
                 // Clean up signature from POST
                 if ($this->config['o_signatures'] == '1') {
-                    $form['signature'] = pun_linebreaks(pun_trim($this->request->post('signature')));
+                    $form['signature'] = feather_linebreaks(feather_trim($this->request->post('signature')));
 
                     // Validate signature
-                    if (pun_strlen($form['signature']) > $this->config['p_sig_length']) {
-                        message(sprintf($lang_prof_reg['Sig too long'], $this->config['p_sig_length'], pun_strlen($form['signature']) - $this->config['p_sig_length']));
+                    if (feather_strlen($form['signature']) > $this->config['p_sig_length']) {
+                        message(sprintf($lang_prof_reg['Sig too long'], $this->config['p_sig_length'], feather_strlen($form['signature']) - $this->config['p_sig_length']));
                     } elseif (substr_count($form['signature'], "\n") > ($this->config['p_sig_lines']-1)) {
                         message(sprintf($lang_prof_reg['Sig too many lines'], $this->config['p_sig_lines']));
                     } elseif ($form['signature'] && $this->config['p_sig_all_caps'] == '0' && is_all_uppercase($form['signature']) && !$this->user['is_admmod']) {
@@ -746,8 +746,8 @@ class profile
             case 'display':
             {
                 $form = array(
-                    'disp_topics'        => pun_trim($this->request->post('form_disp_topics')),
-                    'disp_posts'        => pun_trim($this->request->post('form_disp_posts')),
+                    'disp_topics'        => feather_trim($this->request->post('form_disp_topics')),
+                    'disp_posts'        => feather_trim($this->request->post('form_disp_posts')),
                     'show_smilies'        => $this->request->post('form_show_smilies') ? '1' : '0',
                     'show_img'            => $this->request->post('form_show_img') ? '1' : '0',
                     'show_img_sig'        => $this->request->post('form_show_img_sig') ? '1' : '0',
@@ -776,7 +776,7 @@ class profile
                 // Make sure we got a valid style string
                 if ($this->request->post('form_style')) {
                     $styles = forum_list_styles();
-                    $form['style'] = pun_trim($this->request->post('form_style'));
+                    $form['style'] = feather_trim($this->request->post('form_style'));
                     if (!in_array($form['style'], $styles)) {
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
@@ -894,7 +894,7 @@ class profile
         $user_info = array();
 
         $user_info['personal'][] = '<dt>'.$lang_common['Username'].'</dt>';
-        $user_info['personal'][] = '<dd>'.pun_htmlspecialchars($user['username']).'</dd>';
+        $user_info['personal'][] = '<dd>'.feather_htmlspecialchars($user['username']).'</dd>';
 
         $user_title_field = get_title($user);
         $user_info['personal'][] = '<dt>'.$lang_common['Title'].'</dt>';
@@ -902,22 +902,22 @@ class profile
 
         if ($user['realname'] != '') {
             $user_info['personal'][] = '<dt>'.$lang_profile['Realname'].'</dt>';
-            $user_info['personal'][] = '<dd>'.pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
+            $user_info['personal'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
             $user_info['personal'][] = '<dt>'.$lang_profile['Location'].'</dt>';
-            $user_info['personal'][] = '<dd>'.pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
+            $user_info['personal'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
-            $user['url'] = pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
+            $user['url'] = feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
             $user_info['personal'][] = '<dt>'.$lang_profile['Website'].'</dt>';
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
         if ($user['email_setting'] == '0' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
-            $user['email_field'] = '<a href="mailto:'.pun_htmlspecialchars($user['email']).'">'.pun_htmlspecialchars($user['email']).'</a>';
+            $user['email_field'] = '<a href="mailto:'.feather_htmlspecialchars($user['email']).'">'.feather_htmlspecialchars($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
             $user['email_field'] = '<a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a>';
         } else {
@@ -930,7 +930,7 @@ class profile
 
         if ($user['jabber'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['Jabber'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
         }
 
         if ($user['icq'] != '') {
@@ -940,17 +940,17 @@ class profile
 
         if ($user['msn'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['MSN'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
         }
 
         if ($user['aim'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['AOL IM'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
         }
 
         if ($user['yahoo'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['Yahoo'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.pun_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
         if ($this->config['o_avatars'] == '1') {
@@ -1010,17 +1010,17 @@ class profile
 
         if ($this->user['is_admmod']) {
             if ($this->user['g_id'] == FEATHER_ADMIN || $this->user['g_mod_rename_users'] == '1') {
-                $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.pun_htmlspecialchars($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
+                $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.feather_htmlspecialchars($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
-                $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], pun_htmlspecialchars($user['username'])).'</p>'."\n";
+                $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], feather_htmlspecialchars($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.pun_htmlspecialchars($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.feather_htmlspecialchars($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a></span></p>'."\n";
         } else {
-            $user_disp['username_field'] = '<p>'.$lang_common['Username'].': '.pun_htmlspecialchars($user['username']).'</p>'."\n";
+            $user_disp['username_field'] = '<p>'.$lang_common['Username'].': '.feather_htmlspecialchars($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf($lang_profile['Email info'], pun_htmlspecialchars($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.$lang_profile['Change email'].'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf($lang_profile['Email info'], feather_htmlspecialchars($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.$lang_profile['Change email'].'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
@@ -1058,9 +1058,9 @@ class profile
 
         while ($cur_group = $this->db->fetch_assoc($result)) {
             if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $this->config['o_default_user_group'] && $user['g_id'] == '')) {
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
             }
         }
         
@@ -1088,13 +1088,13 @@ class profile
                     $output .= "\n\t\t\t\t\t\t\t".'</div>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t\t".'<div class="conl">'."\n\t\t\t\t\t\t\t\t".'<p><strong>'.pun_htmlspecialchars($cur_forum['cat_name']).'</strong></p>'."\n\t\t\t\t\t\t\t\t".'<div class="rbox">';
+                $output .= "\t\t\t\t\t\t\t".'<div class="conl">'."\n\t\t\t\t\t\t\t\t".'<p><strong>'.feather_htmlspecialchars($cur_forum['cat_name']).'</strong></p>'."\n\t\t\t\t\t\t\t\t".'<div class="rbox">';
                 $cur_category = $cur_forum['cid'];
             }
 
             $moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
-            $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.pun_htmlspecialchars($cur_forum['forum_name']).'<br /></label>'."\n";
+            $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.feather_htmlspecialchars($cur_forum['forum_name']).'<br /></label>'."\n";
         }
         
         return $output;

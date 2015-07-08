@@ -36,23 +36,23 @@ class register
         }
 
 
-        $user['username'] = pun_trim($this->request->post('req_user'));
-        $user['email1'] = strtolower(pun_trim($this->request->post('req_email1')));
+        $user['username'] = feather_trim($this->request->post('req_user'));
+        $user['email1'] = strtolower(feather_trim($this->request->post('req_email1')));
 
         if ($this->config['o_regs_verify'] == '1') {
-            $email2 = strtolower(pun_trim($this->request->post('req_email2')));
+            $email2 = strtolower(feather_trim($this->request->post('req_email2')));
 
             $user['password1'] = random_pass(12);
             $password2 = $user['password1'];
         } else {
-            $user['password1'] = pun_trim($this->request->post('req_password1'));
-            $password2 = pun_trim($this->request->post('req_password2'));
+            $user['password1'] = feather_trim($this->request->post('req_password1'));
+            $password2 = feather_trim($this->request->post('req_password2'));
         }
 
         // Validate username and passwords
         $user['errors'] = check_username($user['username'], $user['errors']);
 
-        if (pun_strlen($user['password1']) < 6) {
+        if (feather_strlen($user['password1']) < 6) {
             $user['errors'][] = $lang_prof_reg['Pass too short'];
         } elseif ($user['password1'] != $password2) {
             $user['errors'][] = $lang_prof_reg['Pass not match'];
@@ -122,7 +122,7 @@ class register
         $now = time();
 
         $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : FEATHER_UNVERIFIED;
-        $password_hash = pun_hash($user['password1']);
+        $password_hash = feather_hash($user['password1']);
 
         // Add the user
         $this->db->query('INSERT INTO '.$this->db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$this->db->escape($user['username']).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$this->db->escape($user['email1']).'\', '.$this->config['o_default_email_setting'].', '.$this->config['o_default_timezone'].' , 0, \''.$this->db->escape($user['language']).'\', \''.$this->config['o_default_style'].'\', '.$now.', \''.$this->db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $this->db->error());
@@ -214,10 +214,10 @@ class register
 
             pun_mail($user['email1'], $mail_subject, $mail_message);
 
-            message($lang_register['Reg email'].' <a href="mailto:'.pun_htmlspecialchars($this->config['o_admin_email']).'">'.pun_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
+            message($lang_register['Reg email'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
         }
 
-        pun_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
+        feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
 
         redirect(get_base_url(), $lang_register['Reg complete']);
     }

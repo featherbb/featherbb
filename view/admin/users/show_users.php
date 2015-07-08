@@ -51,11 +51,11 @@ if (!defined('FEATHER')) {
             if (isset($info['user_data'][$cur_poster['poster_id']])) {
                 ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="'.get_link('user/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
-					<td class="tc2"><a href="mailto:<?php echo pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?php echo pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
+					<td class="tcl"><?php echo '<a href="'.get_link('user/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.feather_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
+					<td class="tc2"><a href="mailto:<?php echo feather_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?php echo feather_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
 					<td class="tc3"><?php echo get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
 					<td class="tc4"><?php echo forum_number_format($info['user_data'][$cur_poster['poster_id']]['num_posts']) ?></td>
-					<td class="tc5"><?php echo($info['user_data'][$cur_poster['poster_id']]['admin_note'] != '') ? pun_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
+					<td class="tc5"><?php echo($info['user_data'][$cur_poster['poster_id']]['admin_note'] != '') ? feather_htmlspecialchars($info['user_data'][$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
 					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
 				</tr>
 <?php
@@ -63,7 +63,7 @@ if (!defined('FEATHER')) {
             } else {
                 ?>
 				<tr>
-					<td class="tcl"><?php echo pun_htmlspecialchars($cur_poster['poster']) ?></td>
+					<td class="tcl"><?php echo feather_htmlspecialchars($cur_poster['poster']) ?></td>
 					<td class="tc2">&#160;</td>
 					<td class="tc3"><?php echo $lang_admin_users['Results guest'] ?></td>
 					<td class="tc4">&#160;</td>

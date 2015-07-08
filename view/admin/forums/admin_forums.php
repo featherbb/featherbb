@@ -76,7 +76,7 @@ if (!empty($forum_data)) {
             ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo pun_htmlspecialchars($forum['cat_name']) ?></legend>
+						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo feather_htmlspecialchars($forum['cat_name']) ?></legend>
 						<div class="infldset">
 							<table>
 							<thead>
@@ -96,7 +96,7 @@ if (!empty($forum_data)) {
 								<tr>
 									<td class="tcl"><a href="<?php echo get_link('admin/forums/edit/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Edit link'] ?></a> | <a href="<?php echo get_link('admin/forums/delete/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Delete link'] ?></a></td>
 									<td class="tc2"><input type="text" name="position[<?php echo $forum['fid'] ?>]" size="3" maxlength="3" value="<?php echo $forum['disp_position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
-									<td class="tcr"><strong><?php echo pun_htmlspecialchars($forum['forum_name']) ?></strong></td>
+									<td class="tcr"><strong><?php echo feather_htmlspecialchars($forum['forum_name']) ?></strong></td>
 								</tr>
 <?php
 

@@ -192,7 +192,7 @@ class maintenance
 
         $prune = array();
 
-        $prune['days'] = pun_trim($this->request->post('req_prune_days'));
+        $prune['days'] = feather_trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
             message($lang_admin_maintenance['Days must be integer message']);
         }
@@ -212,7 +212,7 @@ class maintenance
 
             // Fetch the forum name (just for cosmetic reasons)
             $result = $this->db->query('SELECT forum_name FROM '.$this->db->prefix.'forums WHERE id='.$prune_from) or error('Unable to fetch forum name', __FILE__, __LINE__, $this->db->error());
-            $prune['forum'] = '"'.pun_htmlspecialchars($this->db->result($result)).'"';
+            $prune['forum'] = '"'.feather_htmlspecialchars($this->db->result($result)).'"';
         } else {
             $prune['forum'] = $lang_admin_maintenance['All forums'];
         }
@@ -244,11 +244,11 @@ class maintenance
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                $output .=  "\t\t\t\t\t\t\t\t\t\t\t".'<optgroup label="'.pun_htmlspecialchars($forum['cat_name']).'">'."\n";
+                $output .=  "\t\t\t\t\t\t\t\t\t\t\t".'<optgroup label="'.feather_htmlspecialchars($forum['cat_name']).'">'."\n";
                 $cur_category = $forum['cid'];
             }
 
-            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.pun_htmlspecialchars($forum['forum_name']).'</option>'."\n";
+            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.feather_htmlspecialchars($forum['forum_name']).'</option>'."\n";
         }
         
         return $output;

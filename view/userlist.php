@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_ul['User find legend'] ?></legend>
 					<div class="infldset">
-<?php if ($feather_user['g_search_users'] == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if ($feather_user['g_search_users'] == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo feather_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php echo $lang_ul['User group']."\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == -1) {
@@ -87,7 +87,7 @@ if (!defined('FEATHER')) {
             foreach ($userlist_data as $user) {
                 ?>
 					<tr>
-						<td class="tcl"><?php echo '<a href="'.get_link('user/'.$user['id'].'/').'">'.pun_htmlspecialchars($user['username']).'</a>' ?></td>
+						<td class="tcl"><?php echo '<a href="'.get_link('user/'.$user['id'].'/').'">'.feather_htmlspecialchars($user['username']).'</a>' ?></td>
 						<td class="tc2"><?php echo get_title($user) ?></td>
 	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo forum_number_format($user['num_posts']) ?></td>
 	<?php endif;

@@ -59,7 +59,7 @@ class censoring
             $this->model->remove_word($this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
         $focus_element = array('censoring', 'new_search_for');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');

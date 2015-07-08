@@ -25,8 +25,8 @@ class login
     {
         global $db_type, $lang_login;
 
-        $form_username = pun_trim($this->request->post('req_username'));
-        $form_password = pun_trim($this->request->post('req_password'));
+        $form_username = feather_trim($this->request->post('req_username'));
+        $form_password = feather_trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
 
         $username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$this->db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$this->db->escape($form_username).'\')';
@@ -37,7 +37,7 @@ class login
         $authorized = false;
 
         if (!empty($cur_user['password'])) {
-            $form_password_hash = pun_hash($form_password); // Will result in a SHA-1 hash
+            $form_password_hash = feather_hash($form_password); // Will result in a SHA-1 hash
 
             // If there is a salt in the database we have upgraded from 1.3-legacy though haven't yet logged in
             if (!empty($cur_user['salt'])) {
@@ -83,7 +83,7 @@ class login
         $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE ident=\''.$this->db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $this->db->error());
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
-        pun_setcookie($cur_user['id'], $form_password_hash, $expire);
+        feather_setcookie($cur_user['id'], $form_password_hash, $expire);
 
         // Reset tracked topics
         set_tracked_topics(null);
@@ -91,14 +91,14 @@ class login
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
         $redirect_url = validate_redirect($this->request->post('redirect_url'), get_base_url());
 
-        redirect(pun_htmlspecialchars($redirect_url), $lang_login['Login redirect']);
+        redirect(feather_htmlspecialchars($redirect_url), $lang_login['Login redirect']);
     }
 
     public function logout($id, $token)
     {
         global $lang_login;
 
-        if ($this->user['is_guest'] || !isset($id) || $id != $this->user['id'] || !isset($token) || $token != pun_hash($this->user['id'].pun_hash(get_remote_address()))) {
+        if ($this->user['is_guest'] || !isset($id) || $id != $this->user['id'] || !isset($token) || $token != feather_hash($this->user['id'].feather_hash(get_remote_address()))) {
             header('Location: index.php');
             exit;
         }
@@ -111,7 +111,7 @@ class login
             $this->db->query('UPDATE '.$this->db->prefix.'users SET last_visit='.$this->user['logged'].' WHERE id='.$this->user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $this->db->error());
         }
 
-        pun_setcookie(1, pun_hash(uniqid(rand(), true)), time() + 31536000);
+        feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
 
         redirect(get_base_url(), $lang_login['Logout redirect']);
     }
@@ -131,7 +131,7 @@ class login
             require FEATHER_ROOT.'include/email.php';
 
             // Validate the email address
-            $email = strtolower(pun_trim($this->request->post('req_email')));
+            $email = strtolower(feather_trim($this->request->post('req_email')));
             if (!is_valid_email($email)) {
                 $errors[] = $lang_common['Invalid email'];
             }
@@ -163,7 +163,7 @@ class login
                         $new_password = random_pass(12);
                         $new_password_key = random_pass(8);
 
-                        $this->db->query('UPDATE '.$this->db->prefix.'users SET activate_string=\''.pun_hash($new_password).'\', activate_key=\''.$new_password_key.'\', last_email_sent = '.time().' WHERE id='.$cur_hit['id']) or error('Unable to update activation data', __FILE__, __LINE__, $this->db->error());
+                        $this->db->query('UPDATE '.$this->db->prefix.'users SET activate_string=\''.feather_hash($new_password).'\', activate_key=\''.$new_password_key.'\', last_email_sent = '.time().' WHERE id='.$cur_hit['id']) or error('Unable to update activation data', __FILE__, __LINE__, $this->db->error());
 
                         // Do the user specific replacements to the template
                         $cur_mail_message = str_replace('<username>', $cur_hit['username'], $mail_message);
@@ -173,7 +173,7 @@ class login
                         pun_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    message($lang_login['Forget mail'].' <a href="mailto:'.pun_htmlspecialchars($this->config['o_admin_email']).'">'.pun_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
+                    message($lang_login['Forget mail'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
                 } else {
                     $errors[] = $lang_login['No email match'].' '.htmlspecialchars($email).'.';
                 }

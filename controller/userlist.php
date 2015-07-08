@@ -49,7 +49,7 @@ class userlist
         // Determine if we are allowed to view post counts
         $show_post_count = ($this->config['o_show_post_count'] == '1' || $this->user['is_admmod']) ? true : false;
 
-        $username = $this->request->get('username') && $this->user['g_search_users'] == '1' ? pun_trim($this->request->get('username')) : '';
+        $username = $this->request->get('username') && $this->user['g_search_users'] == '1' ? feather_trim($this->request->get('username')) : '';
         $show_group = $this->request->get('show_group') ? intval($this->request->get('show_group')) : -1;
         $sort_by = $this->request->get('sort_by') && (in_array($this->request->get('sort_by'), array('username', 'registered')) || ($this->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $this->request->get('sort_by') : 'username';
         $sort_dir = $this->request->get('sort_dir') && $this->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
@@ -62,7 +62,7 @@ class userlist
         $p = (!$this->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_common['User list']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['User list']);
         if ($this->user['g_search_users'] == '1') {
             $focus_element = array('userlist', 'username');
         }

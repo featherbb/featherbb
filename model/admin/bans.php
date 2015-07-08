@@ -43,7 +43,7 @@ class bans
         } else {
             // Otherwise the username is in POST
 
-            $ban['ban_user'] = pun_trim($this->request->post('new_ban_user'));
+            $ban['ban_user'] = feather_trim($this->request->post('new_ban_user'));
 
             if ($ban['ban_user'] != '') {
                 $result = $this->db->query('SELECT id, group_id, username, email FROM '.$this->db->prefix.'users WHERE username=\''.$this->db->escape($ban['ban_user']).'\' AND id>1') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
@@ -58,14 +58,14 @@ class bans
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
             if ($group_id == FEATHER_ADMIN) {
-                message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban['ban_user'])));
+                message(sprintf($lang_admin_bans['User is admin message'], feather_htmlspecialchars($ban['ban_user'])));
             }
 
             $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
             $is_moderator_group = $this->db->result($result);
 
             if ($is_moderator_group) {
-                message(sprintf($lang_admin_bans['User is mod message'], pun_htmlspecialchars($ban['ban_user'])));
+                message(sprintf($lang_admin_bans['User is mod message'], feather_htmlspecialchars($ban['ban_user'])));
             }
         }
 
@@ -114,11 +114,11 @@ class bans
 
         confirm_referrer(array(get_link_r('admin/bans/add/'), get_link_r('admin/bans/edit/'.$this->request->post('ban_id').'/')));
 
-        $ban_user = pun_trim($this->request->post('ban_user'));
-        $ban_ip = pun_trim($this->request->post('ban_ip'));
-        $ban_email = strtolower(pun_trim($this->request->post('ban_email')));
-        $ban_message = pun_trim($this->request->post('ban_message'));
-        $ban_expire = pun_trim($this->request->post('ban_expire'));
+        $ban_user = feather_trim($this->request->post('ban_user'));
+        $ban_ip = feather_trim($this->request->post('ban_ip'));
+        $ban_email = strtolower(feather_trim($this->request->post('ban_email')));
+        $ban_message = feather_trim($this->request->post('ban_message'));
+        $ban_expire = feather_trim($this->request->post('ban_expire'));
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
             message($lang_admin_bans['Must enter message']);
@@ -133,14 +133,14 @@ class bans
                 $group_id = $this->db->result($result);
 
                 if ($group_id == FEATHER_ADMIN) {
-                    message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban_user)));
+                    message(sprintf($lang_admin_bans['User is admin message'], feather_htmlspecialchars($ban_user)));
                 }
 
                 $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
                 $is_moderator_group = $this->db->result($result);
 
                 if ($is_moderator_group) {
-                    message(sprintf($lang_admin_bans['User is mod message'], pun_htmlspecialchars($ban_user)));
+                    message(sprintf($lang_admin_bans['User is mod message'], feather_htmlspecialchars($ban_user)));
                 }
             }
         }
@@ -149,7 +149,7 @@ class bans
         if ($ban_ip != '') {
             $ban_ip = preg_replace('%\s{2,}%S', ' ', $ban_ip);
             $addresses = explode(' ', $ban_ip);
-            $addresses = array_map('pun_trim', $addresses);
+            $addresses = array_map('feather_trim', $addresses);
 
             for ($i = 0; $i < count($addresses); ++$i) {
                 if (strpos($addresses[$i], ':') !== false) {
@@ -256,8 +256,8 @@ class bans
         // trim() all elements in $form
         $ban_info['conditions'] = $ban_info['query_str'] = array();
 
-        $expire_after = $this->request->get('expire_after') ? pun_trim($this->request->get('expire_after')) : '';
-        $expire_before = $this->request->get('expire_before') ? pun_trim($this->request->get('expire_before')) : '';
+        $expire_after = $this->request->get('expire_after') ? feather_trim($this->request->get('expire_after')) : '';
+        $expire_before = $this->request->get('expire_before') ? feather_trim($this->request->get('expire_before')) : '';
         $ban_info['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$this->request->get('order_by') : 'b.username';
         $ban_info['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
 

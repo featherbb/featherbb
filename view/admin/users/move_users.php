@@ -27,7 +27,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_users['New group label'] ?></th>
 									<td>
 										<select name="new_group" tabindex="1">
-<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo pun_htmlspecialchars($group) ?></option>
+<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo feather_htmlspecialchars($group) ?></option>
 <?php endforeach;
     ?>
 										</select>

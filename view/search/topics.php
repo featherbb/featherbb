@@ -25,5 +25,5 @@ if (!defined('FEATHER')) {
 	</td>
 	<td class="tc2"><?php echo $forum ?></td>
 	<td class="tc3"><?php echo forum_number_format($cur_search['num_replies']) ?></td>
-	<td class="tcr"><?php echo '<a href="'.get_link('post/'.$cur_search['last_post_id'].'/#p'.$cur_search['last_post_id']).'">'.format_time($cur_search['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['last_poster']) ?></span></td>
+	<td class="tcr"><?php echo '<a href="'.get_link('post/'.$cur_search['last_post_id'].'/#p'.$cur_search['last_post_id']).'">'.format_time($cur_search['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_search['last_poster']) ?></span></td>
 </tr>

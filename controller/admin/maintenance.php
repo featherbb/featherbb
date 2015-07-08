@@ -54,7 +54,7 @@ class maintenance
         if ($action == 'rebuild') {
             $this->model->rebuild($this->feather);
 
-            $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_maintenance['Rebuilding search index']);
+            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_maintenance['Rebuilding search index']);
 
             $this->feather->render('admin/maintenance/rebuild.php', array(
                     'lang_admin_maintenance'    =>    $lang_admin_maintenance,
@@ -68,14 +68,14 @@ class maintenance
         }
 
         if ($action == 'prune') {
-            $prune_from = pun_trim($this->request->post('prune_from'));
+            $prune_from = feather_trim($this->request->post('prune_from'));
             $prune_sticky = intval($this->request->post('prune_sticky'));
 
             if ($this->request->post('prune_comply')) {
                 $this->model->prune_comply($this->feather, $prune_from, $prune_sticky);
             }
 
-            $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Prune']);
+            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Prune']);
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -102,7 +102,7 @@ class maintenance
             $first_id = $this->db->result($result);
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Maintenance']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Maintenance']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

@@ -17,8 +17,8 @@ if (!defined('FEATHER')) {
 	<div class="inbox">
 		<ul class="crumbs">
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_post['fid'].'/'.$cur_post['forum_name'].'/') ?>"><?php echo pun_htmlspecialchars($cur_post['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('post/'.$id.'/#p'.$id) ?>"><?php echo pun_htmlspecialchars($cur_post['subject']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_post['fid'].'/'.$cur_post['forum_name'].'/') ?>"><?php echo feather_htmlspecialchars($cur_post['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('post/'.$id.'/#p'.$id) ?>"><?php echo feather_htmlspecialchars($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_delete['Delete post'] ?></strong></li>
 		</ul>
 	</div>
@@ -30,7 +30,7 @@ if (!defined('FEATHER')) {
 		<form method="post" action="<?php echo get_link('delete/'.$id.'/') ?>">
 			<div class="inform">
 				<div class="forminfo">
-					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.pun_htmlspecialchars($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
+					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.feather_htmlspecialchars($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
 					<p><?php echo($is_topic_post) ? '<strong>'.$lang_delete['Topic warning'].'</strong>' : '<strong>'.$lang_delete['Warning'].'</strong>' ?><br /><?php echo $lang_delete['Delete info'] ?></p>
 				</div>
 			</div>
@@ -46,7 +46,7 @@ if (!defined('FEATHER')) {
 				<div class="postbody">
 					<div class="postleft">
 						<dl>
-							<dt><strong><?php echo pun_htmlspecialchars($cur_post['poster']) ?></strong></dt>
+							<dt><strong><?php echo feather_htmlspecialchars($cur_post['poster']) ?></strong></dt>
 							<dd><span><?php echo format_time($cur_post['posted']) ?></span></dd>
 						</dl>
 					</div>

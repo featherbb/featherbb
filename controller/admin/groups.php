@@ -51,7 +51,7 @@ class groups
             $this->model->set_default_group($groups, $this->feather);
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -110,7 +110,7 @@ class groups
             } else {
                 $group_title = get_group_title($id);
 
-                $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
                 define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -130,7 +130,7 @@ class groups
             }
         }
 
-        $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -173,7 +173,7 @@ class groups
 
         // Add/edit a group (stage 1)
         elseif ($this->request->post('add_group') || isset($id)) {
-            $page_title = array(pun_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
+            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
             $required_fields = array('req_title' => $lang_admin_groups['Group title label']);
             $focus_element = array('groups2', 'req_title');
 

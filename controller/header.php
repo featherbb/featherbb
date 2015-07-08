@@ -75,7 +75,7 @@ class header
                 $links[] = '<li id="navadmin"'.((FEATHER_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.$lang_common['Admin'].'</a></li>';
             }
 
-            $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$this->user['id'].'/token/'.pun_hash($this->user['id'].pun_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
+            $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$this->user['id'].'/token/'.feather_hash($this->user['id'].feather_hash(get_remote_address()))).'/">'.$lang_common['Logout'].'</a></li>';
         }
 
         // Are there any additional navlinks we should insert into the array before imploding it?
@@ -99,7 +99,7 @@ class header
         if ($this->user['is_guest']) {
             $page_statusinfo = '<p class="conl">'.$lang_common['Not logged in'].'</p>';
         } else {
-            $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.pun_htmlspecialchars($this->user['username']).'</strong></span></li>';
+            $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.feather_htmlspecialchars($this->user['username']).'</strong></span></li>';
             $page_statusinfo[] = '<li><span>'.sprintf($lang_common['Last visit'], format_time($this->user['last_visit'])).'</span></li>';
 
             if ($this->user['is_admmod']) {
@@ -159,7 +159,7 @@ class header
         }
 
         // Render the header
-        $page_title = isset($page_title) ? $page_title : pun_htmlspecialchars($this->config['o_board_title']);
+        $page_title = isset($page_title) ? $page_title : feather_htmlspecialchars($this->config['o_board_title']);
         
         // Define $p if it's not set to avoid a PHP notice
         $p = isset($p) ? $p : null;

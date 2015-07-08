@@ -100,12 +100,12 @@ function generate_quickjump_cache($group_id = false)
                             $output .= "\t\t\t\t\t\t".'</optgroup>'."\n";
                         }
 
-                        $output .= "\t\t\t\t\t\t".'<optgroup label="'.pun_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
+                        $output .= "\t\t\t\t\t\t".'<optgroup label="'.feather_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
                         $cur_category = $cur_forum['cid'];
                     }
 
                     $redirect_tag = ($cur_forum['redirect_url'] != '') ? ' &gt;&gt;&gt;' : '';
-                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.pun_htmlspecialchars($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.feather_htmlspecialchars($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
                 }
 
                 $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php echo $lang_common[\'Go\'] ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
@@ -159,7 +159,7 @@ function generate_stopwords_cache()
     $d->close();
 
     // Tidy up and filter the stopwords
-    $stopwords = array_map('pun_trim', $stopwords);
+    $stopwords = array_map('feather_trim', $stopwords);
     $stopwords = array_filter($stopwords);
 
     // Output stopwords as PHP code
@@ -217,7 +217,7 @@ function featherbb_write_cache_file($file, $content)
 {
     $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
     if (!$fh) {
-        error('Unable to write cache file '.pun_htmlspecialchars($file).' to cache directory. Please make sure PHP has write access to the directory \''.pun_htmlspecialchars(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
+        error('Unable to write cache file '.feather_htmlspecialchars($file).' to cache directory. Please make sure PHP has write access to the directory \''.feather_htmlspecialchars(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
     }
 
     flock($fh, LOCK_EX);

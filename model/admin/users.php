@@ -315,8 +315,8 @@ class users
         }
 
         if ($this->request->post('ban_users_comply')) {
-            $ban_message = pun_trim($this->request->post('ban_message'));
-            $ban_expire = pun_trim($this->request->post('ban_expire'));
+            $ban_message = feather_trim($this->request->post('ban_message'));
+            $ban_expire = feather_trim($this->request->post('ban_expire'));
             $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
 
             if ($ban_expire != '' && $ban_expire != 'Never') {
@@ -384,16 +384,16 @@ class users
         $search = array();
 
         // trim() all elements in $form
-        $form = array_map('pun_trim', $form);
+        $form = array_map('feather_trim', $form);
 
-        $posts_greater = $this->request->get('posts_greater') ? pun_trim($this->request->get('posts_greater')) : '';
-        $posts_less = $this->request->get('posts_less') ? pun_trim($this->request->get('posts_less')) : '';
-        $last_post_after = $this->request->get('last_post_after') ? pun_trim($this->request->get('last_post_after')) : '';
-        $last_post_before = $this->request->get('last_post_before') ? pun_trim($this->request->get('last_post_before')) : '';
-        $last_visit_after = $this->request->get('last_visit_after') ? pun_trim($this->request->get('last_visit_after')) : '';
-        $last_visit_before = $this->request->get('last_visit_before') ? pun_trim($this->request->get('last_visit_before')) : '';
-        $registered_after = $this->request->get('registered_after') ? pun_trim($this->request->get('registered_after')) : '';
-        $registered_before = $this->request->get('registered_before') ? pun_trim($this->request->get('registered_before')) : '';
+        $posts_greater = $this->request->get('posts_greater') ? feather_trim($this->request->get('posts_greater')) : '';
+        $posts_less = $this->request->get('posts_less') ? feather_trim($this->request->get('posts_less')) : '';
+        $last_post_after = $this->request->get('last_post_after') ? feather_trim($this->request->get('last_post_after')) : '';
+        $last_post_before = $this->request->get('last_post_before') ? feather_trim($this->request->get('last_post_before')) : '';
+        $last_visit_after = $this->request->get('last_visit_after') ? feather_trim($this->request->get('last_visit_after')) : '';
+        $last_visit_before = $this->request->get('last_visit_before') ? feather_trim($this->request->get('last_visit_before')) : '';
+        $registered_after = $this->request->get('registered_after') ? feather_trim($this->request->get('registered_after')) : '';
+        $registered_before = $this->request->get('registered_before') ? feather_trim($this->request->get('registered_before')) : '';
         $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($_GET['order_by'], array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
         $direction = $search['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
         $user_group = $this->request->get('user_group') ? intval($this->request->get('user_group')) : -1;
@@ -520,7 +520,7 @@ class users
         $result = $this->db->query('SELECT g_id, g_title FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
 
         while ($cur_group = $this->db->fetch_assoc($result)) {
-            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.pun_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
         }
     }
 }

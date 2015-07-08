@@ -50,7 +50,7 @@ class post
         if ($this->user['is_guest']) {
 
             // It's a guest, so we have to validate the username
-            $errors = check_username(pun_trim($this->request->post('req_username')), $errors);
+            $errors = check_username(feather_trim($this->request->post('req_username')), $errors);
 
             $question = $this->request->post('captcha_q') ? trim($this->request->post('captcha_q')) : '';
             $answer = $this->request->post('captcha') ? strtoupper(trim($this->request->post('captcha'))) : '';
@@ -95,17 +95,17 @@ class post
 
         // If it's a new topic
         if ($fid) {
-            $subject = pun_trim($this->request->post('req_subject'));
+            $subject = feather_trim($this->request->post('req_subject'));
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = pun_trim(censor_words($subject));
+                $censored_subject = feather_trim(censor_words($subject));
             }
 
             if ($subject == '') {
                 $errors[] = $lang_post['No subject'];
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = $lang_post['No subject after censoring'];
-            } elseif (pun_strlen($subject) > 70) {
+            } elseif (feather_strlen($subject) > 70) {
                 $errors[] = $lang_post['Too long subject'];
             } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user['is_admmod']) {
                 $errors[] = $lang_post['All caps subject'];
@@ -119,7 +119,7 @@ class post
         }
         // Otherwise it should be in $feather ($_POST)
         else {
-            $email = strtolower(pun_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
+            $email = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             // Load the register.php/prof_reg.php language files
             require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
@@ -144,9 +144,9 @@ class post
         }
 
         // Clean up message from POST
-        $orig_message = $message = pun_linebreaks(pun_trim($this->request->post('req_message')));
+        $orig_message = $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
 
-        // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
             $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
         } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user['is_admmod']) {
@@ -164,7 +164,7 @@ class post
                 $errors[] = $lang_post['No message'];
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = pun_trim(censor_words($message));
+                $censored_message = feather_trim(censor_words($message));
 
                 if ($censored_message == '') {
                     $errors[] = $lang_post['No message after censoring'];
@@ -186,19 +186,19 @@ class post
         }
         // Otherwise it should be in $feather ($_POST)
         else {
-            $post['username'] = pun_trim($this->request->post('req_username'));
-            $post['email'] = strtolower(pun_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
+            $post['username'] = feather_trim($this->request->post('req_username'));
+            $post['email'] = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
         }
 
         if ($this->request->post('req_subject')) {
-            $post['subject'] = pun_trim($this->request->post('req_subject'));
+            $post['subject'] = feather_trim($this->request->post('req_subject'));
         }
 
         $post['hide_smilies'] = $this->request->post('hide_smilies') ? '1' : '0';
         $post['subscribe'] = $this->request->post('subscribe') ? '1' : '0';
         $post['stick_topic'] = $this->request->post('stick_topic') && $is_admmod ? '1' : '0';
 
-        $post['message']  = pun_linebreaks(pun_trim($this->request->post('req_message')));
+        $post['message']  = feather_linebreaks(feather_trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -265,7 +265,7 @@ class post
 
             $notification_emails = array();
 
-            $censored_message = pun_trim(censor_words($post['message']));
+            $censored_message = feather_trim(censor_words($post['message']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = bbcode2email($censored_message, -1);
@@ -547,7 +547,7 @@ class post
             $q_message = censor_words($q_message);
         }
 
-        $q_message = pun_htmlspecialchars($q_message);
+        $q_message = feather_htmlspecialchars($q_message);
 
         if ($this->config['p_message_bbcode'] == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
@@ -556,10 +556,10 @@ class post
                     // Check if we need to quote it.
                     // Post has special chars. Escape escapes and quotes then wrap in quotes.
                     if (strpos($q_poster, '"') !== false && strpos($q_poster, '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
-                        $q_poster = pun_htmlspecialchars(str_replace('\\', '\\\\', $q_poster));
+                        $q_poster = feather_htmlspecialchars(str_replace('\\', '\\\\', $q_poster));
                         $q_poster = '\''. $q_poster .'#'. $qid .'\'';
                     } else { // otherwise use double quotes.
-                        $q_poster = pun_htmlspecialchars(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
+                        $q_poster = feather_htmlspecialchars(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
                         $q_poster = '"'. $q_poster .'#'. $qid .'"';
                     }
                 } else {

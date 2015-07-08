@@ -45,17 +45,17 @@ class edit
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
-            $subject = pun_trim($this->request->post('req_subject'));
+            $subject = feather_trim($this->request->post('req_subject'));
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = pun_trim(censor_words($subject));
+                $censored_subject = feather_trim(censor_words($subject));
             }
 
             if ($subject == '') {
                 $errors[] = $lang_post['No subject'];
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = $lang_post['No subject after censoring'];
-            } elseif (pun_strlen($subject) > 70) {
+            } elseif (feather_strlen($subject) > 70) {
                 $errors[] = $lang_post['Too long subject'];
             } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user['is_admmod']) {
                 $errors[] = $lang_post['All caps subject'];
@@ -63,9 +63,9 @@ class edit
         }
 
         // Clean up message from POST
-        $message = pun_linebreaks(pun_trim($this->request->post('req_message')));
+        $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
 
-        // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
             $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
         } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user['is_admmod']) {
@@ -83,7 +83,7 @@ class edit
                 $errors[] = $lang_post['No message'];
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = pun_trim(censor_words($message));
+                $censored_message = feather_trim(censor_words($message));
 
                 if ($censored_message == '') {
                     $errors[] = $lang_post['No message after censoring'];
@@ -108,7 +108,7 @@ class edit
         }
 
         // Clean up message from POST
-        $post['message'] = pun_linebreaks(pun_trim($this->request->post('req_message')));
+        $post['message'] = feather_linebreaks(feather_trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -121,7 +121,7 @@ class edit
 
         // Get the subject
         if ($can_edit_subject) {
-            $post['subject'] = pun_trim($this->request->post('req_subject'));
+            $post['subject'] = feather_trim($this->request->post('req_subject'));
         }
 
         return $post;

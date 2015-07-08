@@ -27,21 +27,21 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Board title label'] ?></th>
 									<td>
-										<input type="text" name="form_board_title" size="50" maxlength="255" value="<?php echo pun_htmlspecialchars($feather_config['o_board_title']) ?>" />
+										<input type="text" name="form_board_title" size="50" maxlength="255" value="<?php echo feather_htmlspecialchars($feather_config['o_board_title']) ?>" />
 										<span><?php echo $lang_admin_options['Board title help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Board desc label'] ?></th>
 									<td>
-										<textarea name="form_board_desc" cols="60" rows="3"><?php echo pun_htmlspecialchars($feather_config['o_board_desc']) ?></textarea>
+										<textarea name="form_board_desc" cols="60" rows="3"><?php echo feather_htmlspecialchars($feather_config['o_board_desc']) ?></textarea>
 										<span><?php echo $lang_admin_options['Board desc help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Base URL label'] ?></th>
 									<td>
-										<input type="text" name="form_base_url" size="50" maxlength="100" value="<?php echo pun_htmlspecialchars($feather_config['o_base_url']) ?>" />
+										<input type="text" name="form_base_url" size="50" maxlength="100" value="<?php echo feather_htmlspecialchars($feather_config['o_base_url']) ?>" />
 										<span><?php echo $lang_admin_options['Base URL help'] ?></span>
 									</td>
 								</tr>
@@ -230,14 +230,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Time format label'] ?></th>
 									<td>
-										<input type="text" name="form_time_format" size="25" maxlength="25" value="<?php echo pun_htmlspecialchars($feather_config['o_time_format']) ?>" />
+										<input type="text" name="form_time_format" size="25" maxlength="25" value="<?php echo feather_htmlspecialchars($feather_config['o_time_format']) ?>" />
 										<span><?php printf($lang_admin_options['Time format help'], gmdate($feather_config['o_time_format'], $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.$lang_admin_options['PHP manual'].'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Date format label'] ?></th>
 									<td>
-										<input type="text" name="form_date_format" size="25" maxlength="25" value="<?php echo pun_htmlspecialchars($feather_config['o_date_format']) ?>" />
+										<input type="text" name="form_date_format" size="25" maxlength="25" value="<?php echo feather_htmlspecialchars($feather_config['o_date_format']) ?>" />
 										<span><?php printf($lang_admin_options['Date format help'], gmdate($feather_config['o_date_format'], $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.$lang_admin_options['PHP manual'].'</a>') ?></span>
 									</td>
 								</tr>
@@ -498,7 +498,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Menu items label'] ?></th>
 									<td>
-										<textarea name="form_additional_navlinks" rows="3" cols="55"><?php echo pun_htmlspecialchars($feather_config['o_additional_navlinks']) ?></textarea>
+										<textarea name="form_additional_navlinks" rows="3" cols="55"><?php echo feather_htmlspecialchars($feather_config['o_additional_navlinks']) ?></textarea>
 										<span><?php echo $lang_admin_options['Menu items help'] ?></span>
 									</td>
 								</tr>
@@ -565,7 +565,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Mailing list label'] ?></th>
 									<td>
-										<textarea name="form_mailing_list" rows="5" cols="55"><?php echo pun_htmlspecialchars($feather_config['o_mailing_list']) ?></textarea>
+										<textarea name="form_mailing_list" rows="5" cols="55"><?php echo feather_htmlspecialchars($feather_config['o_mailing_list']) ?></textarea>
 										<span><?php echo $lang_admin_options['Mailing list help'] ?></span>
 									</td>
 								</tr>
@@ -593,7 +593,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Upload directory label'] ?></th>
 									<td>
-										<input type="text" name="form_avatars_dir" size="35" maxlength="50" value="<?php echo pun_htmlspecialchars($feather_config['o_avatars_dir']) ?>" />
+										<input type="text" name="form_avatars_dir" size="35" maxlength="50" value="<?php echo feather_htmlspecialchars($feather_config['o_avatars_dir']) ?>" />
 										<span><?php echo $lang_admin_options['Upload directory help'] ?></span>
 									</td>
 								</tr>
@@ -630,14 +630,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Admin e-mail label'] ?></th>
 									<td>
-										<input type="text" name="form_admin_email" size="50" maxlength="80" value="<?php echo pun_htmlspecialchars($feather_config['o_admin_email']) ?>" />
+										<input type="text" name="form_admin_email" size="50" maxlength="80" value="<?php echo feather_htmlspecialchars($feather_config['o_admin_email']) ?>" />
 										<span><?php echo $lang_admin_options['Admin e-mail help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Webmaster e-mail label'] ?></th>
 									<td>
-										<input type="text" name="form_webmaster_email" size="50" maxlength="80" value="<?php echo pun_htmlspecialchars($feather_config['o_webmaster_email']) ?>" />
+										<input type="text" name="form_webmaster_email" size="50" maxlength="80" value="<?php echo feather_htmlspecialchars($feather_config['o_webmaster_email']) ?>" />
 										<span><?php echo $lang_admin_options['Webmaster e-mail help'] ?></span>
 									</td>
 								</tr>
@@ -668,14 +668,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['SMTP address label'] ?></th>
 									<td>
-										<input type="text" name="form_smtp_host" size="30" maxlength="100" value="<?php echo pun_htmlspecialchars($feather_config['o_smtp_host']) ?>" />
+										<input type="text" name="form_smtp_host" size="30" maxlength="100" value="<?php echo feather_htmlspecialchars($feather_config['o_smtp_host']) ?>" />
 										<span><?php echo $lang_admin_options['SMTP address help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['SMTP username label'] ?></th>
 									<td>
-										<input type="text" name="form_smtp_user" size="25" maxlength="50" value="<?php echo pun_htmlspecialchars($feather_config['o_smtp_user']) ?>" />
+										<input type="text" name="form_smtp_user" size="25" maxlength="50" value="<?php echo feather_htmlspecialchars($feather_config['o_smtp_user']) ?>" />
 										<span><?php echo $lang_admin_options['SMTP username help'] ?></span>
 									</td>
 								</tr>
@@ -683,7 +683,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_options['SMTP password label'] ?></th>
 									<td>
 										<label><input type="checkbox" name="form_smtp_change_pass" value="1" />&#160;<?php echo $lang_admin_options['SMTP change password help'] ?></label>
-<?php $smtp_pass = !empty($feather_config['o_smtp_pass']) ? random_key(pun_strlen($feather_config['o_smtp_pass']), true) : ''; ?>
+<?php $smtp_pass = !empty($feather_config['o_smtp_pass']) ? random_key(feather_strlen($feather_config['o_smtp_pass']), true) : ''; ?>
 										<input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
 										<input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
 										<span><?php echo $lang_admin_options['SMTP password help'] ?></span>
@@ -761,7 +761,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Rules label'] ?></th>
 									<td>
-										<textarea name="form_rules_message" rows="10" cols="55"><?php echo pun_htmlspecialchars($feather_config['o_rules_message']) ?></textarea>
+										<textarea name="form_rules_message" rows="10" cols="55"><?php echo feather_htmlspecialchars($feather_config['o_rules_message']) ?></textarea>
 										<span><?php echo $lang_admin_options['Rules help'] ?></span>
 									</td>
 								</tr>
@@ -804,7 +804,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Announcement message label'] ?></th>
 									<td>
-										<textarea name="form_announcement_message" rows="5" cols="55"><?php echo pun_htmlspecialchars($feather_config['o_announcement_message']) ?></textarea>
+										<textarea name="form_announcement_message" rows="5" cols="55"><?php echo feather_htmlspecialchars($feather_config['o_announcement_message']) ?></textarea>
 										<span><?php echo $lang_admin_options['Announcement message help'] ?></span>
 									</td>
 								</tr>
@@ -832,7 +832,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Maintenance message label'] ?></th>
 									<td>
-										<textarea name="form_maintenance_message" rows="5" cols="55"><?php echo pun_htmlspecialchars($feather_config['o_maintenance_message']) ?></textarea>
+										<textarea name="form_maintenance_message" rows="5" cols="55"><?php echo feather_htmlspecialchars($feather_config['o_maintenance_message']) ?></textarea>
 										<span><?php echo $lang_admin_options['Maintenance message help'] ?></span>
 									</td>
 								</tr>

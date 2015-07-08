@@ -27,8 +27,8 @@ class censoring
 
         confirm_referrer(get_link_r('admin/censoring/'));
 
-        $search_for = pun_trim($this->request->post('new_search_for'));
-        $replace_with = pun_trim($this->request->post('new_replace_with'));
+        $search_for = feather_trim($this->request->post('new_search_for'));
+        $replace_with = feather_trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
             message($lang_admin_censoring['Must enter word message']);
@@ -54,8 +54,8 @@ class censoring
 
         $id = intval(key($this->request->post('update')));
 
-        $search_for = pun_trim($this->request->post('search_for')[$id]);
-        $replace_with = pun_trim($this->request->post('replace_with')[$id]);
+        $search_for = feather_trim($this->request->post('search_for')[$id]);
+        $replace_with = feather_trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
             message($lang_admin_censoring['Must enter word message']);

@@ -49,15 +49,15 @@ class misc
         confirm_referrer(get_link_r('email/'.$id.'/'));
 
         // Clean up message and subject from POST
-        $subject = pun_trim($this->request->post('req_subject'));
-        $message = pun_trim($this->request->post('req_message'));
+        $subject = feather_trim($this->request->post('req_subject'));
+        $message = feather_trim($this->request->post('req_message'));
 
         if ($subject == '') {
             message($lang_misc['No email subject']);
         } elseif ($message == '') {
             message($lang_misc['No email message']);
         }
-        // Here we use strlen() not pun_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         elseif (strlen($message) > FEATHER_MAX_POSTSIZE) {
             message($lang_misc['Too long email message']);
         }
@@ -71,8 +71,8 @@ class misc
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
-        $mail_subject = pun_trim(substr($mail_tpl, 8, $first_crlf-8));
-        $mail_message = pun_trim(substr($mail_tpl, $first_crlf));
+        $mail_subject = feather_trim(substr($mail_tpl, 8, $first_crlf-8));
+        $mail_message = feather_trim(substr($mail_tpl, $first_crlf));
 
         $mail_subject = str_replace('<mail_subject>', $subject, $mail_subject);
         $mail_message = str_replace('<sender>', $this->user['username'], $mail_message);
@@ -116,7 +116,7 @@ class misc
         confirm_referrer(get_link_r('report/'.$post_id.'/'));
 
         // Clean up reason from POST
-        $reason = pun_linebreaks(pun_trim($this->request->post('req_reason')));
+        $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));
         if ($reason == '') {
             message($lang_misc['No reason']);
         } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes
