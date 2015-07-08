@@ -54,9 +54,9 @@ class userlist
 
         while ($cur_group = $this->db->fetch_assoc($result)) {
             if ($cur_group['g_id'] == $show_group) {
-                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             } else {
-                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             }
         }
         

@@ -31,14 +31,14 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_groups['Group title label'] ?></th>
 									<td>
 										<input type="text" name="req_title" size="25" maxlength="50" value="<?php if ($group['mode'] == 'edit') {
-    echo feather_htmlspecialchars($group['info']['g_title']);
+    echo feather_escape($group['info']['g_title']);
 } ?>" tabindex="1" />
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['User title label'] ?></th>
 									<td>
-										<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo feather_htmlspecialchars($group['info']['g_user_title']) ?>" tabindex="2" />
+										<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo feather_escape($group['info']['g_user_title']) ?>" tabindex="2" />
 										<span><?php printf($lang_admin_groups['User title help'], ($group['info']['g_id'] != FEATHER_GUEST ? $lang_common['Member'] : $lang_common['Guest'])) ?></span>
 									</td>
 								</tr>
@@ -49,7 +49,7 @@ if (!defined('FEATHER')) {
 											<option value="0"><?php echo $lang_admin_groups['Disable promotion'] ?></option>
 											<?php get_group_list($groups, $group); ?>
 										</select>
-										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo feather_htmlspecialchars($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
+										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo feather_escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
 										<span><?php printf($lang_admin_groups['Promote users help'], $lang_admin_groups['Disable promotion']) ?></span>
 									</td>
 								</tr>

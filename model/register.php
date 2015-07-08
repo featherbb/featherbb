@@ -214,7 +214,7 @@ class register
 
             pun_mail($user['email1'], $mail_subject, $mail_message);
 
-            message($lang_register['Reg email'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
+            message($lang_register['Reg email'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
 
         feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);

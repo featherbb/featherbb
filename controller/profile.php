@@ -69,7 +69,7 @@ class profile
 
             $this->model->delete_user($id, $this->feather);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Confirm delete user']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Confirm delete user']);
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -121,7 +121,7 @@ class profile
             // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), sprintf($lang_profile['Users profile'], feather_htmlspecialchars($user['username'])));
+            $page_title = array(feather_escape($this->config['o_board_title']), sprintf($lang_profile['Users profile'], feather_escape($user['username'])));
             define('FEATHER_ALLOW_INDEX', 1);
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
@@ -140,7 +140,7 @@ class profile
             if (!$section || $section == 'essentials') {
                 $user_disp = $this->model->edit_essentials($id, $user);
 
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section essentials']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section essentials']);
                 $required_fields = array('req_username' => $lang_common['Username'], 'req_email' => $lang_common['Email']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
@@ -163,10 +163,10 @@ class profile
                         );
             } elseif ($section == 'personal') {
                 if ($this->user['g_set_title'] == '1') {
-                    $title_field = '<label>'.$lang_common['Title'].' <em>('.$lang_profile['Leave blank'].')</em><br /><input type="text" name="title" value="'.feather_htmlspecialchars($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
+                    $title_field = '<label>'.$lang_common['Title'].' <em>('.$lang_profile['Leave blank'].')</em><br /><input type="text" name="title" value="'.feather_escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section personal']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section personal']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -182,7 +182,7 @@ class profile
                         );
                 
             } elseif ($section == 'messaging') {
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section messaging']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section messaging']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -217,7 +217,7 @@ class profile
                     $signature_preview = '<p>'.$lang_profile['No sig'].'</p>'."\n";
                 }
 
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section personality']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section personality']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -236,7 +236,7 @@ class profile
                         );
                 
             } elseif ($section == 'display') {
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section display']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section display']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -252,7 +252,7 @@ class profile
                         );
                 
             } elseif ($section == 'privacy') {
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section privacy']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section privacy']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -273,7 +273,7 @@ class profile
                     message($lang_common['Bad request'], false, '403 Forbidden');
                 }
 
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section admin']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Section admin']);
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -324,7 +324,7 @@ class profile
         if ($action == 'change_pass') {
             $this->model->change_pass($id, $this->feather);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Change pass']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Change pass']);
             $required_fields = array('req_old_password' => $lang_profile['Old pass'], 'req_new_password1' => $lang_profile['New pass'], 'req_new_password2' => $lang_profile['Confirm new pass']);
             $focus_element = array('change_pass', ((!$this->user['is_admmod']) ? 'req_old_password' : 'req_new_password1'));
 
@@ -344,7 +344,7 @@ class profile
         } elseif ($action == 'change_email') {
             $this->model->change_email($id, $this->feather);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Change email']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Change email']);
             $required_fields = array('req_new_email' => $lang_profile['New email'], 'req_password' => $lang_common['Password']);
             $focus_element = array('change_email', 'req_new_email');
 
@@ -373,7 +373,7 @@ class profile
                 $this->model->upload_avatar($id, $_FILES);
             }
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Upload avatar']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Upload avatar']);
             $required_fields = array('req_file' => $lang_profile['File']);
             $focus_element = array('upload_avatar', 'req_file');
 

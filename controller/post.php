@@ -182,7 +182,7 @@ class post
             $url_topic = '';
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $action);
+        $page_title = array(feather_escape($this->config['o_board_title']), $action);
         $required_fields = array('req_email' => $lang_common['Email'], 'req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);
         if ($this->user['is_guest']) {
             $required_fields['captcha'] = $lang_antispam['Robot title'];

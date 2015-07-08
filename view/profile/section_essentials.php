@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo feather_htmlspecialchars($user['username']).' - '.$lang_profile['Section essentials'] ?></span></h2>
+	<h2><span><?php echo feather_escape($user['username']).' - '.$lang_profile['Section essentials'] ?></span></h2>
 	<div class="box">
 		<form id="profile1" method="post" action="<?php echo get_link('user/'.$id.'/section/essentials/') ?>" onsubmit="return process_form(this)">
 			<div class="inform">
@@ -240,12 +240,12 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_profile['User activity'] ?></legend>
 					<div class="infldset">
-						<p><?php printf($lang_profile['Registered info'], format_time($user['registered'], true).(($feather_user['is_admmod']) ? ' (<a href="moderate.php?get_host='.feather_htmlspecialchars($user['registration_ip']).'">'.feather_htmlspecialchars($user['registration_ip']).'</a>)' : '')) ?></p>
+						<p><?php printf($lang_profile['Registered info'], format_time($user['registered'], true).(($feather_user['is_admmod']) ? ' (<a href="moderate.php?get_host='.feather_escape($user['registration_ip']).'">'.feather_escape($user['registration_ip']).'</a>)' : '')) ?></p>
 						<p><?php printf($lang_profile['Last post info'], format_time($user['last_post'])) ?></p>
 						<p><?php printf($lang_profile['Last visit info'], format_time($user['last_visit'])) ?></p>
 						<?php echo $user_disp['posts_field'] ?>
 <?php if ($feather_user['is_admmod']): ?>							<label><?php echo $lang_profile['Admin note'] ?><br />
-						<input id="admin_note" type="text" name="admin_note" value="<?php echo feather_htmlspecialchars($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
+						<input id="admin_note" type="text" name="admin_note" value="<?php echo feather_escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>

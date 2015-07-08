@@ -64,7 +64,7 @@ class categories
             } else {
                 // If the user hasn't confirmed the delete
 
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
 
                 define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -94,7 +94,7 @@ class categories
             $this->model->update_categories($categories);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

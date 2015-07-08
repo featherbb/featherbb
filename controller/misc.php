@@ -40,7 +40,7 @@ class misc
         // Load the register.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_register['Forum rules']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_register['Forum rules']);
 
         define('FEATHER_ACTIVE_PAGE', 'rules');
 
@@ -172,7 +172,7 @@ class misc
             $this->model->send_email($this->feather, $mail, $id);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Send email to'].' '.feather_htmlspecialchars($mail['recipient']));
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Send email to'].' '.feather_escape($mail['recipient']));
         $required_fields = array('req_subject' => $lang_misc['Email subject'], 'req_message' => $lang_misc['Email message']);
         $focus_element = array('email', 'req_subject');
 
@@ -212,7 +212,7 @@ class misc
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Report post']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Report post']);
         $required_fields = array('req_reason' => $lang_misc['Reason']);
         $focus_element = array('report', 'req_reason');
 

@@ -48,7 +48,7 @@ class options
             $this->model->update_options($this->feather);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

@@ -52,7 +52,7 @@ class users
 
             $move = $this->model->move_users($this->feather);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Move users']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Move users']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -79,7 +79,7 @@ class users
 
             $user_ids = $this->model->delete_users($this->feather);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
                 
@@ -106,7 +106,7 @@ class users
 
             $user_ids = $this->model->ban_users($this->feather);
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
             $focus_element = array('bans2', 'ban_message');
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
@@ -148,7 +148,7 @@ class users
             $can_ban = $this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_ban_users'] == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
             $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/include/common.js"></script>');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -171,7 +171,7 @@ class users
             $this->footer->display();
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users']);
         $focus_element = array('find_user', 'form[username]');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -217,7 +217,7 @@ class users
         // Generate paging links
         $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id);
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -266,7 +266,7 @@ class users
         // Generate paging links
         $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip);
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

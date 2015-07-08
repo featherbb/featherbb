@@ -44,7 +44,7 @@ class login
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->model->get_redirect_url($_SERVER);
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['Login']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Login']);
         $required_fields = array('req_username' => $lang_common['Username'], 'req_password' => $lang_common['Password']);
         $focus_element = array('login', 'req_username');
 
@@ -107,7 +107,7 @@ class login
 
         $errors = $this->model->password_forgotten($this->feather);
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_login['Request pass']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_login['Request pass']);
         $required_fields = array('req_email' => $lang_common['Email']);
         $focus_element = array('request_pass', 'req_email');
 

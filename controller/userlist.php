@@ -62,7 +62,7 @@ class userlist
         $p = (!$this->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_common['User list']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['User list']);
         if ($this->user['g_search_users'] == '1') {
             $focus_element = array('userlist', 'username');
         }

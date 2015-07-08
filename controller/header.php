@@ -99,7 +99,7 @@ class header
         if ($this->user['is_guest']) {
             $page_statusinfo = '<p class="conl">'.$lang_common['Not logged in'].'</p>';
         } else {
-            $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.feather_htmlspecialchars($this->user['username']).'</strong></span></li>';
+            $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.feather_escape($this->user['username']).'</strong></span></li>';
             $page_statusinfo[] = '<li><span>'.sprintf($lang_common['Last visit'], format_time($this->user['last_visit'])).'</span></li>';
 
             if ($this->user['is_admmod']) {
@@ -159,7 +159,7 @@ class header
         }
 
         // Render the header
-        $page_title = isset($page_title) ? $page_title : feather_htmlspecialchars($this->config['o_board_title']);
+        $page_title = isset($page_title) ? $page_title : feather_escape($this->config['o_board_title']);
         
         // Define $p if it's not set to avoid a PHP notice
         $p = isset($p) ? $p : null;

@@ -44,7 +44,7 @@ class statistics
         // Load the admin_index.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Server statistics']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Server statistics']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 

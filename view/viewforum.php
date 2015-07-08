@@ -17,7 +17,7 @@ if (!defined('FEATHER')) {
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>/"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_htmlspecialchars($cur_forum['forum_name']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -28,7 +28,7 @@ if (!defined('FEATHER')) {
 </div>
 
 <div id="vf" class="blocktable">
-	<h2><span><?php echo feather_htmlspecialchars($cur_forum['forum_name']) ?></span></h2>
+	<h2><span><?php echo feather_escape($cur_forum['forum_name']) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
@@ -92,7 +92,7 @@ if (!defined('FEATHER')) {
 		</div>
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>/"><?php echo $lang_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_htmlspecialchars($cur_forum['forum_name']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
 		<div class="clearer"></div>

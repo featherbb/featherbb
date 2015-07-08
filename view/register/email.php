@@ -15,7 +15,7 @@ if (!defined('FEATHER')) {
 ?>
 
 <div id="emailform" class="blockform">
-	<h2><span><?php echo $lang_misc['Send email to'] ?> <?php echo feather_htmlspecialchars($recipient) ?></span></h2>
+	<h2><span><?php echo $lang_misc['Send email to'] ?> <?php echo feather_escape($recipient) ?></span></h2>
 	<div class="box">
 		<form id="email" method="post" action="misc.php?email=<?php echo $recipient_id ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
 			<div class="inform">
@@ -23,7 +23,7 @@ if (!defined('FEATHER')) {
 					<legend><?php echo $lang_misc['Write email'] ?></legend>
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="redirect_url" value="<?php echo feather_htmlspecialchars($redirect_url) ?>" />
+						<input type="hidden" name="redirect_url" value="<?php echo feather_escape($redirect_url) ?>" />
 						<label class="required"><strong><?php echo $lang_misc['Email subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
 						<input class="longinput" type="text" name="req_subject" size="75" maxlength="70" tabindex="1" /><br /></label>
 						<label class="required"><strong><?php echo $lang_misc['Email message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />

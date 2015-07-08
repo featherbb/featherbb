@@ -38,7 +38,7 @@ class profile
             $cur_user = $this->db->fetch_assoc($result);
 
             if ($key == '' || $key != $cur_user['activate_key']) {
-                message($lang_profile['Pass key bad'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.');
+                message($lang_profile['Pass key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
                 $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$this->db->escape($cur_user['activate_string']).'\', activate_string=NULL, activate_key=NULL'.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $this->db->error());
 
@@ -141,7 +141,7 @@ class profile
             list($new_email, $new_email_key) = $this->db->fetch_row($result);
 
             if ($key == '' || $key != $new_email_key) {
-                message($lang_profile['Email key bad'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.');
+                message($lang_profile['Email key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
                 $this->db->query('UPDATE '.$this->db->prefix.'users SET email=activate_string, activate_string=NULL, activate_key=NULL WHERE id='.$id) or error('Unable to update email address', __FILE__, __LINE__, $this->db->error());
 
@@ -232,7 +232,7 @@ class profile
 
             pun_mail($new_email, $mail_subject, $mail_message);
 
-            message($lang_profile['Activate email sent'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
+            message($lang_profile['Activate email sent'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
     }
 
@@ -296,7 +296,7 @@ class profile
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
             if (!@move_uploaded_file($uploaded_file['tmp_name'], FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
-                message($lang_profile['Move failed'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.');
+                message($lang_profile['Move failed'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             }
 
             list($width, $height, $type, ) = @getimagesize(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
@@ -894,7 +894,7 @@ class profile
         $user_info = array();
 
         $user_info['personal'][] = '<dt>'.$lang_common['Username'].'</dt>';
-        $user_info['personal'][] = '<dd>'.feather_htmlspecialchars($user['username']).'</dd>';
+        $user_info['personal'][] = '<dd>'.feather_escape($user['username']).'</dd>';
 
         $user_title_field = get_title($user);
         $user_info['personal'][] = '<dt>'.$lang_common['Title'].'</dt>';
@@ -902,22 +902,22 @@ class profile
 
         if ($user['realname'] != '') {
             $user_info['personal'][] = '<dt>'.$lang_profile['Realname'].'</dt>';
-            $user_info['personal'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
+            $user_info['personal'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
             $user_info['personal'][] = '<dt>'.$lang_profile['Location'].'</dt>';
-            $user_info['personal'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
+            $user_info['personal'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
-            $user['url'] = feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
+            $user['url'] = feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
             $user_info['personal'][] = '<dt>'.$lang_profile['Website'].'</dt>';
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
         if ($user['email_setting'] == '0' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
-            $user['email_field'] = '<a href="mailto:'.feather_htmlspecialchars($user['email']).'">'.feather_htmlspecialchars($user['email']).'</a>';
+            $user['email_field'] = '<a href="mailto:'.feather_escape($user['email']).'">'.feather_escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
             $user['email_field'] = '<a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a>';
         } else {
@@ -930,7 +930,7 @@ class profile
 
         if ($user['jabber'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['Jabber'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
         }
 
         if ($user['icq'] != '') {
@@ -940,17 +940,17 @@ class profile
 
         if ($user['msn'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['MSN'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
         }
 
         if ($user['aim'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['AOL IM'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
         }
 
         if ($user['yahoo'] != '') {
             $user_info['messaging'][] = '<dt>'.$lang_profile['Yahoo'].'</dt>';
-            $user_info['messaging'][] = '<dd>'.feather_htmlspecialchars(($this->config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
         if ($this->config['o_avatars'] == '1') {
@@ -1010,17 +1010,17 @@ class profile
 
         if ($this->user['is_admmod']) {
             if ($this->user['g_id'] == FEATHER_ADMIN || $this->user['g_mod_rename_users'] == '1') {
-                $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.feather_htmlspecialchars($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
+                $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.feather_escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
-                $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], feather_htmlspecialchars($user['username'])).'</p>'."\n";
+                $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], feather_escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.feather_htmlspecialchars($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.feather_escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a></span></p>'."\n";
         } else {
-            $user_disp['username_field'] = '<p>'.$lang_common['Username'].': '.feather_htmlspecialchars($user['username']).'</p>'."\n";
+            $user_disp['username_field'] = '<p>'.$lang_common['Username'].': '.feather_escape($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf($lang_profile['Email info'], feather_htmlspecialchars($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.$lang_profile['Change email'].'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf($lang_profile['Email info'], feather_escape($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.$lang_profile['Change email'].'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
@@ -1058,9 +1058,9 @@ class profile
 
         while ($cur_group = $this->db->fetch_assoc($result)) {
             if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $this->config['o_default_user_group'] && $user['g_id'] == '')) {
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_htmlspecialchars($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             }
         }
         
@@ -1088,13 +1088,13 @@ class profile
                     $output .= "\n\t\t\t\t\t\t\t".'</div>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t\t".'<div class="conl">'."\n\t\t\t\t\t\t\t\t".'<p><strong>'.feather_htmlspecialchars($cur_forum['cat_name']).'</strong></p>'."\n\t\t\t\t\t\t\t\t".'<div class="rbox">';
+                $output .= "\t\t\t\t\t\t\t".'<div class="conl">'."\n\t\t\t\t\t\t\t\t".'<p><strong>'.feather_escape($cur_forum['cat_name']).'</strong></p>'."\n\t\t\t\t\t\t\t\t".'<div class="rbox">';
                 $cur_category = $cur_forum['cid'];
             }
 
             $moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
-            $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.feather_htmlspecialchars($cur_forum['forum_name']).'<br /></label>'."\n";
+            $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.feather_escape($cur_forum['forum_name']).'<br /></label>'."\n";
         }
         
         return $output;

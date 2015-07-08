@@ -22,7 +22,7 @@ if (!defined('FEATHER')) {
 } ?>">
 <h2><span><span class="conr">#<?php echo($search['start_from'] + $post_count) ?></span> <span><?php if ($cur_search['pid'] != $cur_search['first_post_id']) {
     echo $lang_topic['Re'].' ';
-} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo feather_htmlspecialchars($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo get_link('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo format_time($cur_search['pposted']) ?></a></span></span></h2>
+} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo get_link('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo format_time($cur_search['pposted']) ?></a></span></span></h2>
 <div class="box">
 	<div class="inbox">
 		<div class="postbody">

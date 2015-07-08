@@ -58,14 +58,14 @@ class bans
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
             if ($group_id == FEATHER_ADMIN) {
-                message(sprintf($lang_admin_bans['User is admin message'], feather_htmlspecialchars($ban['ban_user'])));
+                message(sprintf($lang_admin_bans['User is admin message'], feather_escape($ban['ban_user'])));
             }
 
             $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
             $is_moderator_group = $this->db->result($result);
 
             if ($is_moderator_group) {
-                message(sprintf($lang_admin_bans['User is mod message'], feather_htmlspecialchars($ban['ban_user'])));
+                message(sprintf($lang_admin_bans['User is mod message'], feather_escape($ban['ban_user'])));
             }
         }
 
@@ -133,14 +133,14 @@ class bans
                 $group_id = $this->db->result($result);
 
                 if ($group_id == FEATHER_ADMIN) {
-                    message(sprintf($lang_admin_bans['User is admin message'], feather_htmlspecialchars($ban_user)));
+                    message(sprintf($lang_admin_bans['User is admin message'], feather_escape($ban_user)));
                 }
 
                 $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
                 $is_moderator_group = $this->db->result($result);
 
                 if ($is_moderator_group) {
-                    message(sprintf($lang_admin_bans['User is mod message'], feather_htmlspecialchars($ban_user)));
+                    message(sprintf($lang_admin_bans['User is mod message'], feather_escape($ban_user)));
                 }
             }
         }

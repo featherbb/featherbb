@@ -171,7 +171,7 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -199,7 +199,7 @@ class moderate
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
                     $posts = delete_posts($this->feather, $id, $fid, $p);
 
-                    $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
+                    $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
                     define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -221,7 +221,7 @@ class moderate
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
                 $posts = $this->model->split_posts($this->feather, $id, $fid, $p);
 
-                $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
+                $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
                 $focus_element = array('subject','new_subject');
 
                 define('FEATHER_ACTIVE_PAGE', 'moderate');
@@ -261,7 +261,7 @@ class moderate
                 $cur_topic['subject'] = censor_words($cur_topic['subject']);
             }
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), feather_htmlspecialchars($cur_topic['forum_name']), feather_htmlspecialchars($cur_topic['subject']));
+            $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject']));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -332,7 +332,7 @@ class moderate
         // Generate paging links
         $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'moderate/forum/'.$id.'/#');
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), feather_htmlspecialchars($cur_forum['forum_name']));
+        $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name']));
 
         define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -397,7 +397,7 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -429,7 +429,7 @@ class moderate
                 message($lang_misc['Not enough topics selected']);
             }
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -460,7 +460,7 @@ class moderate
                 $this->model->delete_topics($topics, $fid);
             }
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 

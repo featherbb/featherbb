@@ -57,7 +57,7 @@ class bans
             // Generate paging links
             $paging_links = '<span class="pages-label">' . $lang_common['Pages'] . ' </span>' . paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str']));
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans'], $lang_admin_bans['Results head']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans'], $lang_admin_bans['Results head']);
             define('FEATHER_ACTIVE_PAGE', 'admin');
             
             $this->header->display($page_title, $p, '', $paging_links);
@@ -72,7 +72,7 @@ class bans
             $this->footer->display();
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
         $focus_element = array('bans', 'new_ban_user');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -109,7 +109,7 @@ class bans
             $this->model->insert_ban($this->feather);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
         $focus_element = array('bans2', 'ban_user');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -164,7 +164,7 @@ class bans
             $this->model->insert_ban($this->feather);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
         $focus_element = array('bans2', 'ban_user');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');

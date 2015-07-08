@@ -372,7 +372,7 @@ function check_bans()
 
         if ($is_banned) {
             $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($feather_user['username']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
-            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_htmlspecialchars($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_htmlspecialchars($feather_config['o_admin_email']).'">'.feather_htmlspecialchars($feather_config['o_admin_email']).'</a>.', true);
+            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true);
         }
     }
 
@@ -427,7 +427,7 @@ function check_username($username, $errors, $exclude_id = null)
 
     if ($db->num_rows($result)) {
         $busy = $db->result($result);
-        $errors[] = $lang_register['Username dupe 1'].' '.feather_htmlspecialchars($busy).'. '.$lang_register['Username dupe 2'];
+        $errors[] = $lang_register['Username dupe 1'].' '.feather_escape($busy).'. '.$lang_register['Username dupe 2'];
     }
 
     // Check username for any banned usernames
@@ -484,7 +484,7 @@ function generate_avatar_markup($user_id)
         $path = $feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
         if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.feather_htmlspecialchars(get_base_url(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+            $avatar_markup = '<img src="'.feather_escape(get_base_url(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -757,7 +757,7 @@ function get_title($user)
 
     // If the user has a custom title
     if ($user['title'] != '') {
-        $user_title = feather_htmlspecialchars($user['title']);
+        $user_title = feather_escape($user['title']);
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
@@ -765,7 +765,7 @@ function get_title($user)
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
-        $user_title = feather_htmlspecialchars($user['g_user_title']);
+        $user_title = feather_escape($user['g_user_title']);
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
@@ -917,7 +917,7 @@ function message($message, $no_back_link = false, $http_status = null)
     $feather = \Slim\Slim::getInstance();
 
     if (!defined('FEATHER_HEADER')) {
-        $page_title = array(feather_htmlspecialchars($feather_config['o_board_title']), $lang_common['Info']);
+        $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Info']);
 
         define('FEATHER_ACTIVE_PAGE', 'index');
 
@@ -1148,7 +1148,7 @@ function get_remote_address()
 //
 // Calls htmlspecialchars with a few options already set
 //
-function feather_htmlspecialchars($str)
+function feather_escape($str)
 {
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
@@ -1282,7 +1282,7 @@ function maintenance_message()
     // START SUBST - <pun_head>
     ob_start();
 
-    $page_title = array(feather_htmlspecialchars($feather_config['o_board_title']), $lang_common['Maintenance']);
+    $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Maintenance']);
 
     ?>
 <title><?php echo generate_page_title($page_title) ?></title>
@@ -1382,7 +1382,7 @@ function error($message, $file = null, $line = null, $db_error = false)
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<?php $page_title = array(feather_htmlspecialchars($feather_config['o_board_title']), 'Error') ?>
+<?php $page_title = array(feather_escape($feather_config['o_board_title']), 'Error') ?>
 <title><?php echo generate_page_title($page_title) ?></title>
 <style type="text/css">
 <!--
@@ -1404,10 +1404,10 @@ H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADD
         echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
 
         if ($db_error) {
-            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.feather_htmlspecialchars($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
+            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.feather_escape($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
 
             if ($db_error['error_sql'] != '') {
-                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.feather_htmlspecialchars($db_error['error_sql'])."\n";
+                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.feather_escape($db_error['error_sql'])."\n";
             }
         }
     } else {
@@ -1875,7 +1875,7 @@ function display_saved_queries()
         ?>
 				<tr>
 					<td class="tcl"><?php echo($cur_query[1] != 0) ? $cur_query[1] : '&#160;' ?></td>
-					<td class="tcr"><?php echo feather_htmlspecialchars($cur_query[0]) ?></td>
+					<td class="tcr"><?php echo feather_escape($cur_query[0]) ?></td>
 				</tr>
 <?php
 

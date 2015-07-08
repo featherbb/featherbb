@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div id="emailform" class="blockform">
-	<h2><span><?php echo $lang_misc['Send email to'] ?> <?php echo feather_htmlspecialchars($mail['recipient']) ?></span></h2>
+	<h2><span><?php echo $lang_misc['Send email to'] ?> <?php echo feather_escape($mail['recipient']) ?></span></h2>
 	<div class="box">
 		<form id="email" method="post" action="<?php echo get_link('email/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
 			<div class="inform">

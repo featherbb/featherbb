@@ -60,7 +60,7 @@ if (!empty($word_data)) {
 <?php
 
     foreach ($word_data as $word) {
-        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.feather_htmlspecialchars($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.feather_htmlspecialchars($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.$lang_admin_common['Update'].'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.$lang_admin_common['Remove'].'" /></td></tr>'."\n";
+        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.feather_escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.feather_escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.$lang_admin_common['Update'].'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.$lang_admin_common['Remove'].'" /></td></tr>'."\n";
     }
 
     ?>

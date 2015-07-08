@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Move users subhead'] ?></legend>
 						<div class="infldset">
-							<p><?php printf($lang_admin_groups['Move users info'], feather_htmlspecialchars($group_info['title']), forum_number_format($group_info['members'])) ?></p>
+							<p><?php printf($lang_admin_groups['Move users info'], feather_escape($group_info['title']), forum_number_format($group_info['members'])) ?></p>
 							<label><?php echo $lang_admin_groups['Move users label'] ?>
 							<select name="move_to_group">
 								<?php get_group_list_delete($id); ?>

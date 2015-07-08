@@ -547,7 +547,7 @@ class post
             $q_message = censor_words($q_message);
         }
 
-        $q_message = feather_htmlspecialchars($q_message);
+        $q_message = feather_escape($q_message);
 
         if ($this->config['p_message_bbcode'] == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
@@ -556,10 +556,10 @@ class post
                     // Check if we need to quote it.
                     // Post has special chars. Escape escapes and quotes then wrap in quotes.
                     if (strpos($q_poster, '"') !== false && strpos($q_poster, '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
-                        $q_poster = feather_htmlspecialchars(str_replace('\\', '\\\\', $q_poster));
+                        $q_poster = feather_escape(str_replace('\\', '\\\\', $q_poster));
                         $q_poster = '\''. $q_poster .'#'. $qid .'\'';
                     } else { // otherwise use double quotes.
-                        $q_poster = feather_htmlspecialchars(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
+                        $q_poster = feather_escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
                         $q_poster = '"'. $q_poster .'#'. $qid .'"';
                     }
                 } else {

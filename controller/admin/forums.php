@@ -52,7 +52,7 @@ class forums
             $this->model->update_positions($this->feather);
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -103,7 +103,7 @@ class forums
         // Fetch forum info
         $cur_forum = $this->model->get_forum_info($id);
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -146,7 +146,7 @@ class forums
         } else {
             // If the user hasn't confirmed the delete
 
-            $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 

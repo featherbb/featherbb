@@ -91,7 +91,7 @@ $page_statusinfo = $page_topicsearches = array();
 if ($feather_user['is_guest']) {
     $page_statusinfo = '<p class="conl">'.$lang_common['Not logged in'].'</p>';
 } else {
-    $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.feather_htmlspecialchars($feather_user['username']).'</strong></span></li>';
+    $page_statusinfo[] = '<li><span>'.$lang_common['Logged in as'].' <strong>'.feather_escape($feather_user['username']).'</strong></span></li>';
     $page_statusinfo[] = '<li><span>'.sprintf($lang_common['Last visit'], format_time($feather_user['last_visit'])).'</span></li>';
 
     if ($feather_user['is_admmod']) {
@@ -153,7 +153,7 @@ if (!defined('FEATHER_HEADER')) {
 // Render the header
 if (isset($this)) {
 
-    $page_title = isset($page_title) ? $page_title : feather_htmlspecialchars($this->config['o_board_title']);
+    $page_title = isset($page_title) ? $page_title : feather_escape($this->config['o_board_title']);
     
     $page_head = isset($page_head) ? $page_head : null;
     $focus_element = isset($page_head) ? $page_head : null;

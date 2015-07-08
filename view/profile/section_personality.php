@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo feather_htmlspecialchars($user['username']).' - '.$lang_profile['Section personality'] ?></span></h2>
+	<h2><span><?php echo feather_escape($user['username']).' - '.$lang_profile['Section personality'] ?></span></h2>
 	<div class="box">
 		<form id="profile4" method="post" action="<?php echo get_link('user/'.$id.'/section/personality/') ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
@@ -35,7 +35,7 @@ if (!defined('FEATHER')) {
 						<p><?php echo $lang_profile['Signature info'] ?></p>
 						<div class="txtarea">
 							<label><?php printf($lang_profile['Sig max size'], forum_number_format($feather_config['p_sig_length']), $feather_config['p_sig_lines']) ?><br />
-							<textarea name="signature" rows="4" cols="65"><?php echo feather_htmlspecialchars($user['signature']) ?></textarea><br /></label>
+							<textarea name="signature" rows="4" cols="65"><?php echo feather_escape($user['signature']) ?></textarea><br /></label>
 						</div>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>

@@ -85,7 +85,7 @@ class edit
         }
 
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_post['Edit post']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_post['Edit post']);
         $required_fields = array('req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);
         $focus_element = array('edit', 'req_message');
 

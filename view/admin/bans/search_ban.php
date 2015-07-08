@@ -50,12 +50,12 @@ if (!defined('FEATHER')) {
         foreach ($ban_data as $cur_ban) {
             ?>
 				<tr>
-					<td class="tcl"><?php echo($cur_ban['username'] != '') ? feather_htmlspecialchars($cur_ban['username']) : '&#160;' ?></td>
-					<td class="tc2"><?php echo($cur_ban['email'] != '') ? feather_htmlspecialchars($cur_ban['email']) : '&#160;' ?></td>
-					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? feather_htmlspecialchars($cur_ban['ip']) : '&#160;' ?></td>
+					<td class="tcl"><?php echo($cur_ban['username'] != '') ? feather_escape($cur_ban['username']) : '&#160;' ?></td>
+					<td class="tc2"><?php echo($cur_ban['email'] != '') ? feather_escape($cur_ban['email']) : '&#160;' ?></td>
+					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? feather_escape($cur_ban['ip']) : '&#160;' ?></td>
 					<td class="tc4"><?php echo format_time($cur_ban['expire'], true) ?></td>
-					<td class="tc5"><?php echo($cur_ban['message'] != '') ? feather_htmlspecialchars($cur_ban['message']) : '&#160;' ?></td>
-					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.get_link('user/'.$cur_ban['ban_creator'].'/').'">'.feather_htmlspecialchars($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
+					<td class="tc5"><?php echo($cur_ban['message'] != '') ? feather_escape($cur_ban['message']) : '&#160;' ?></td>
+					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.get_link('user/'.$cur_ban['ban_creator'].'/').'">'.feather_escape($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
 					<td class="tcr"><?php echo '<a href="'.get_link('admin/bans/edit/'.$cur_ban['id'].'/').'">'.$lang_admin_common['Edit'].'</a> | <a href="'.get_link('admin/bans/delete/'.$cur_ban['id'].'/').'">'.$lang_admin_common['Remove'].'</a>' ?></td>
 				</tr>
 <?php

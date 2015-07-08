@@ -82,7 +82,7 @@ endif;
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><a href="<?php echo get_base_url() ?>/"><?php echo feather_htmlspecialchars($feather_config['o_board_title']) ?></a></h1>
+			<h1><a href="<?php echo get_base_url() ?>/"><?php echo feather_escape($feather_config['o_board_title']) ?></a></h1>
 			<div id="brddesc"><?php echo  $feather_config['o_board_desc'] ?></div>
 		</div>
 		<?php echo $navlinks ?>

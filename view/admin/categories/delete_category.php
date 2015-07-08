@@ -22,7 +22,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Confirm delete subhead'] ?></legend>
 						<div class="infldset">
-							<p><?php printf($lang_admin_categories['Confirm delete info'], feather_htmlspecialchars($cat_name)) ?></p>
+							<p><?php printf($lang_admin_categories['Confirm delete info'], feather_escape($cat_name)) ?></p>
 							<p class="warntext"><?php echo $lang_admin_categories['Delete category warn'] ?></p>
 						</div>
 					</fieldset>

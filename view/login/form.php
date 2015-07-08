@@ -22,7 +22,7 @@ if (!defined('FEATHER')) {
 					<legend><?php echo $lang_login['Login legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="redirect_url" value="<?php echo feather_htmlspecialchars($redirect_url) ?>" />
+						<input type="hidden" name="redirect_url" value="<?php echo feather_escape($redirect_url) ?>" />
 						<label class="conl required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="1" /><br /></label>
 						<label class="conl required"><strong><?php echo $lang_common['Password'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password" size="25" tabindex="2" /><br /></label>
 

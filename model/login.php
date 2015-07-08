@@ -91,7 +91,7 @@ class login
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
         $redirect_url = validate_redirect($this->request->post('redirect_url'), get_base_url());
 
-        redirect(feather_htmlspecialchars($redirect_url), $lang_login['Login redirect']);
+        redirect(feather_escape($redirect_url), $lang_login['Login redirect']);
     }
 
     public function logout($id, $token)
@@ -173,7 +173,7 @@ class login
                         pun_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    message($lang_login['Forget mail'].' <a href="mailto:'.feather_htmlspecialchars($this->config['o_admin_email']).'">'.feather_htmlspecialchars($this->config['o_admin_email']).'</a>.', true);
+                    message($lang_login['Forget mail'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
                 } else {
                     $errors[] = $lang_login['No email match'].' '.htmlspecialchars($email).'.';
                 }

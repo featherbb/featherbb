@@ -93,7 +93,7 @@ class forums
         
 
         $result = $this->db->query('SELECT forum_name FROM '.$this->db->prefix.'forums WHERE id='.$forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
-        $forum_name = feather_htmlspecialchars($this->db->result($result));
+        $forum_name = feather_escape($this->db->result($result));
 
         return $forum_name;
     }
@@ -224,7 +224,7 @@ class forums
         $result = $this->db->query('SELECT id, cat_name FROM '.$this->db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $this->db->error());
         while ($cur_cat = $this->db->fetch_assoc($result)) {
             $selected = ($cur_cat['id'] == $cur_forum['cat_id']) ? ' selected="selected"' : '';
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'"'.$selected.'>'.feather_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'"'.$selected.'>'.feather_escape($cur_cat['cat_name']).'</option>'."\n";
         }
         
         return $output;
@@ -239,7 +239,7 @@ class forums
         $result = $this->db->query('SELECT id, cat_name FROM '.$this->db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $this->db->error());
 
         while ($cur_cat = $this->db->fetch_assoc($result)) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.feather_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.feather_escape($cur_cat['cat_name']).'</option>'."\n";
         }
         
         return $output;

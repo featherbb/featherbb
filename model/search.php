@@ -492,9 +492,9 @@ class search
 
             if ($search_type[0] == 'action') {
                 if ($search_type[1] == 'show_user_topics') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf($lang_search['Quick search show_user_topics'], feather_htmlspecialchars($search['search_set'][0]['poster'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf($lang_search['Quick search show_user_topics'], feather_escape($search['search_set'][0]['poster'])).'</a>';
                 } elseif ($search_type[1] == 'show_user_posts') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf($lang_search['Quick search show_user_posts'], feather_htmlspecialchars($search['search_set'][0]['pposter'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf($lang_search['Quick search show_user_posts'], feather_escape($search['search_set'][0]['pposter'])).'</a>';
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
@@ -506,7 +506,7 @@ class search
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
 
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf($lang_search['Quick search show_subscriptions'], feather_htmlspecialchars($subscriber_name)).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf($lang_search['Quick search show_subscriptions'], feather_escape($subscriber_name)).'</a>';
                 } else {
                     $search_url = str_replace('_', '/', $search_type[1]);
                     $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/'.$search_url.'/').'">'.$lang_search['Quick search '.$search_type[1]].'</a>';
@@ -516,13 +516,13 @@ class search
 
                 if ($search_type[0] == 'both') {
                     list($keywords, $author) = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By both show as '.$show_as], feather_htmlspecialchars($keywords), feather_htmlspecialchars($author));
+                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By both show as '.$show_as], feather_escape($keywords), feather_escape($author));
                 } elseif ($search_type[0] == 'keywords') {
                     $keywords = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By keywords show as '.$show_as], feather_htmlspecialchars($keywords));
+                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By keywords show as '.$show_as], feather_escape($keywords));
                 } elseif ($search_type[0] == 'author') {
                     $author = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By user show as '.$show_as], feather_htmlspecialchars($author));
+                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By user show as '.$show_as], feather_escape($author));
                 }
 
                 $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
@@ -546,7 +546,7 @@ class search
         $post_count = $topic_count = 0;
 
         foreach ($search['search_set'] as $cur_search) {
-            $forum = '<a href="'.get_link('forum/'.$cur_search['forum_id'].'/'.url_friendly($cur_search['forum_name']).'/').'">'.feather_htmlspecialchars($cur_search['forum_name']).'</a>';
+            $forum = '<a href="'.get_link('forum/'.$cur_search['forum_id'].'/'.url_friendly($cur_search['forum_name']).'/').'">'.feather_escape($cur_search['forum_name']).'</a>';
             $url_topic = url_friendly($cur_search['subject']);
 
             if ($this->config['o_censoring'] == '1') {
@@ -571,7 +571,7 @@ class search
                 }
 
                 $cur_search['message'] = parse_message($cur_search['message'], $cur_search['hide_smilies']);
-                $pposter = feather_htmlspecialchars($cur_search['pposter']);
+                $pposter = feather_escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && $this->user['g_view_users'] == '1') {
                     $cur_search['pposter_disp'] = '<strong><a href="'.get_link('user/'.$cur_search['poster_id'].'/').'">'.$pposter.'</a></strong>';
@@ -595,7 +595,7 @@ class search
                 $cur_search['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_search['icon_type'] = 'icon';
 
-                $subject = '<a href="'.get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.feather_htmlspecialchars($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_htmlspecialchars($cur_search['poster']).'</span>';
+                $subject = '<a href="'.get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.feather_escape($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_search['poster']).'</span>';
 
                 if ($cur_search['sticky'] == '1') {
                     $cur_search['item_status'] .= ' isticky';
@@ -676,12 +676,12 @@ class search
                         $output .= "\t\t\t\t\t\t\t".'</fieldset>'."\n";
                     }
 
-                    $output .= "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.feather_htmlspecialchars($cur_forum['cat_name']).'</span></legend>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.feather_escape($cur_forum['cat_name']).'</span></legend>'."\n";
                     $output .= "\t\t\t\t\t\t\t\t".'<div class="rbox">';
                     $cur_category = $cur_forum['cid'];
                 }
 
-                $output .= "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.$cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.feather_htmlspecialchars($cur_forum['forum_name']).'</label>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.$cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.feather_escape($cur_forum['forum_name']).'</label>'."\n";
             }
 
             if ($cur_category) {
@@ -707,11 +707,11 @@ class search
                         $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                     }
 
-                    $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.feather_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum['cat_name']).'">'."\n";
                     $cur_category = $cur_forum['cid'];
                 }
 
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.feather_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.feather_escape($cur_forum['forum_name']).'</option>'."\n";
             }
 
             $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";

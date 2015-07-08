@@ -51,7 +51,7 @@ class search
 
                 // We have results to display
                 if ($search['is_result']) {
-                    $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_search['Search results']);
+                    $page_title = array(feather_escape($this->config['o_board_title']), $lang_search['Search results']);
 
                     define('FEATHER_ACTIVE_PAGE', 'search');
 
@@ -82,7 +82,7 @@ class search
                 }
         }
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_search['Search']);
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_search['Search']);
         $focus_element = array('search', 'keywords');
 
         define('FEATHER_ACTIVE_PAGE', 'search');

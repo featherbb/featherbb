@@ -40,7 +40,7 @@ class index
         // Load the index.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/index.php';
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']));
+        $page_title = array(feather_escape($this->config['o_board_title']));
         define('FEATHER_ALLOW_INDEX', 1);
 
         define('FEATHER_ACTIVE_PAGE', 'index');

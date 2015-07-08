@@ -79,7 +79,7 @@ class viewforum
         $forum_actions = $this->model->get_forum_actions($id, $this->config['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
 
-        $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), feather_htmlspecialchars($cur_forum['forum_name']));
+        $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name']));
         define('FEATHER_ALLOW_INDEX', 1);
 
         define('FEATHER_ACTIVE_PAGE', 'viewforum');

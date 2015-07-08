@@ -559,7 +559,7 @@ if (empty($stage)) {
 						<p><?php echo $lang_update['Maintenance message info'] ?></p>
 						<div class="txtarea">
 							<label class="required"><strong><?php echo $lang_update['Maintenance message'] ?> <span><?php echo $lang_update['Required'] ?></span></strong><br />
-							<textarea name="req_maintenance_message" rows="4" cols="65"><?php echo feather_htmlspecialchars($feather_config['o_maintenance_message']) ?></textarea><br /></label>
+							<textarea name="req_maintenance_message" rows="4" cols="65"><?php echo feather_escape($feather_config['o_maintenance_message']) ?></textarea><br /></label>
 						</div>
 					</div>
 				</fieldset>
@@ -1584,7 +1584,7 @@ switch ($stage) {
 
                 if ($db->num_rows($result)) {
                     $busy = $db->result($result);
-                    $errors[$id][] = sprintf($lang_update['Username duplicate error'], feather_htmlspecialchars($busy));
+                    $errors[$id][] = sprintf($lang_update['Username duplicate error'], feather_escape($busy));
                 }
 
                 if (empty($errors[$id])) {
@@ -1691,12 +1691,12 @@ switch ($stage) {
                 ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo feather_htmlspecialchars($cur_user['username']);
+					<legend><?php echo feather_escape($cur_user['username']);
                 ?></legend>
 					<div class="infldset">
 						<label class="required"><strong><?php echo $lang_update['New username'] ?> <span><?php echo $lang_update['Required'] ?></span></strong><br /><input type="text" name="<?php echo 'dupe_users['.$id.']';
                 ?>" value="<?php if (isset($_POST['dupe_users'][$id])) {
-    echo feather_htmlspecialchars($_POST['dupe_users'][$id]);
+    echo feather_escape($_POST['dupe_users'][$id]);
 }
                 ?>" size="25" maxlength="25" /><br /></label>
 					</div>
