@@ -55,7 +55,7 @@ class search
 
                     define('FEATHER_ACTIVE_PAGE', 'search');
 
-                    $this->header->display();
+                    $this->header->display($page_title);
 
                     $this->feather->render('search/header.php', array(
                                 'lang_common' => $lang_common,
@@ -87,7 +87,7 @@ class search
 
         define('FEATHER_ACTIVE_PAGE', 'search');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element);
 
         $this->feather->render('search/form.php', array(
                             'lang_common' => $lang_common,

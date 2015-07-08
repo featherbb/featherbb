@@ -21,7 +21,7 @@ class header
         $this->request = $this->feather->request;
     }
 
-    public function display()
+    public function display($page_title = null, $p = null, $focus_element = null, $paging_links = null, $required_fields = null, $page_head = null)
     {
         global $lang_common;
         
@@ -165,7 +165,7 @@ class header
         $p = isset($p) ? $p : null;
 
         $page_head = isset($page_head) ? $page_head : null;
-        $focus_element = isset($page_head) ? $page_head : null;
+        $focus_element = isset($focus_element) ? $focus_element : null;
         $paging_links = isset($paging_links) ? $paging_links : null;
         $required_fields = isset($required_fields) ? $required_fields : null;
 

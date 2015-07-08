@@ -99,7 +99,7 @@ class viewtopic
 
         define('FEATHER_ACTIVE_PAGE', 'viewtopic');
 
-        $this->header->display();
+        $this->header->display($page_title, $p, '', $paging_links, null, $page_head);
 
         $forum_id = $cur_topic['forum_id'];
 

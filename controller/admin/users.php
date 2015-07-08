@@ -56,7 +56,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display();
+            $this->header->display($page_title);
 
             generate_admin_menu('users');
 
@@ -83,7 +83,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
                 
-            $this->header->display();
+            $this->header->display($page_title);
 
             generate_admin_menu('users');
 
@@ -111,7 +111,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display();
+            $this->header->display($page_title, '', $focus_element);
 
             generate_admin_menu('users');
 
@@ -153,7 +153,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
   
-            $this->header->display();
+            $this->header->display($page_title, $p, '', $paging_links, null, $page_head);
 
             $this->feather->render('admin/users/find_users.php', array(
                     'lang_admin_users' => $lang_admin_users,
@@ -176,7 +176,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element);
 
         generate_admin_menu('users');
 
@@ -221,7 +221,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display();
+        $this->header->display($page_title, $p, '', $paging_links);
 
         $this->feather->render('admin/users/search_ip.php', array(
                 'lang_admin_users' => $lang_admin_users,
@@ -270,7 +270,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display();
+        $this->header->display($page_title, $p, '', $paging_links);
 
         $this->feather->render('admin/users/show_users.php', array(
                 'lang_admin_users' => $lang_admin_users,

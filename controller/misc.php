@@ -178,7 +178,7 @@ class misc
 
         define('FEATHER_ACTIVE_PAGE', 'email');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         $this->feather->render('misc/email.php', array(
                 'lang_misc' => $lang_misc,
@@ -218,7 +218,7 @@ class misc
 
         define('FEATHER_ACTIVE_PAGE', 'report');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         $this->feather->render('misc/report.php', array(
                 'lang_misc' => $lang_misc,

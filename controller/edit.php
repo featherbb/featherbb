@@ -91,7 +91,7 @@ class edit
 
         define('FEATHER_ACTIVE_PAGE', 'edit');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         if ($this->request->post('preview')) {
             require_once FEATHER_ROOT.'include/parser.php';

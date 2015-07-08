@@ -191,7 +191,7 @@ class post
 
         define('FEATHER_ACTIVE_PAGE', 'post');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         // Get the current state of checkboxes
         $checkboxes = $this->model->get_checkboxes($this->feather, $fid, $is_admmod, $is_subscribed);

@@ -52,7 +52,7 @@ class options
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display();
+        $this->header->display($page_title);
 
         generate_admin_menu('options');
 

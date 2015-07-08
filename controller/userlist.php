@@ -74,7 +74,7 @@ class userlist
 
         define('FEATHER_ACTIVE_PAGE', 'userlist');
 
-        $this->header->display();
+        $this->header->display($page_title, $p, $focus_element, $paging_links);
 
         $this->feather->render('userlist.php', array(
                             'lang_common' => $lang_common,

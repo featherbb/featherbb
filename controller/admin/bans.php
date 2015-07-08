@@ -60,7 +60,7 @@ class bans
             $page_title = array(feather_htmlspecialchars($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans'], $lang_admin_bans['Results head']);
             define('FEATHER_ACTIVE_PAGE', 'admin');
             
-            $this->header->display();
+            $this->header->display($page_title, $p, '', $paging_links);
 
             $this->feather->render('admin/bans/search_ban.php', array(
                     'lang_admin_bans' => $lang_admin_bans,
@@ -77,7 +77,7 @@ class bans
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
         
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element);
 
         generate_admin_menu('bans');
 
@@ -114,7 +114,7 @@ class bans
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
         
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element);
 
         generate_admin_menu('bans');
 
@@ -169,7 +169,7 @@ class bans
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element);
 
         generate_admin_menu('bans');
 

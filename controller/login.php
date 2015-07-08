@@ -50,7 +50,7 @@ class login
 
         define('FEATHER_ACTIVE_PAGE', 'login');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         $this->feather->render('login/form.php', array(
                             'lang_common' => $lang_common,
@@ -113,7 +113,7 @@ class login
 
         define('FEATHER_ACTIVE_PAGE', 'login');
 
-        $this->header->display();
+        $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,

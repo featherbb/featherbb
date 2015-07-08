@@ -45,7 +45,7 @@ class index
 
         define('FEATHER_ACTIVE_PAGE', 'index');
 
-        $this->header->display();
+        $this->header->display($page_title);
 
         $this->feather->render('index.php', array(
                             'index_data' => $this->model->print_categories_forums(),
