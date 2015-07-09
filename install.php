@@ -26,6 +26,13 @@ define('FEATHER_ROOT', dirname(__FILE__).'/');
 // Send the Content-type header in case the web server is setup to send something else
 header('Content-type: text/html; charset=utf-8');
 
+// Load Slim Framework
+require 'Slim/Slim.php';
+\Slim\Slim::registerAutoloader();
+
+// Instantiate Slim
+$feather = new \Slim\Slim();
+
 // Load the functions script
 require FEATHER_ROOT.'include/functions.php';
 
@@ -1719,81 +1726,83 @@ function process_form(the_form)
 <div class="top-box"><div><!-- Top Corners --></div></div>
 <div class="punwrap">
 
-<div id="brdheader" class="block">
-	<div class="box">
-		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo $lang_install['FeatherBB Installation'] ?></span></h1>
-			<div id="brddesc"><p><?php echo $lang_install['FeatherBB has been installed'] ?></p></div>
-		</div>
-	</div>
-</div>
+<section class="container">
+    <div id="brdheader" class="block">
+            <div class="box">
+                    <div id="brdtitle" class="inbox">
+                            <h1><span><?php echo $lang_install['FeatherBB Installation'] ?></span></h1>
+                            <div id="brddesc"><p><?php echo $lang_install['FeatherBB has been installed'] ?></p></div>
+                    </div>
+            </div>
+    </div>
 
-<div id="brdmain">
+    <div id="brdmain">
 
-<div class="blockform">
-	<h2><span><?php echo $lang_install['Final instructions'] ?></span></h2>
-	<div class="box">
-<?php
+    <div class="blockform">
+            <h2><span><?php echo $lang_install['Final instructions'] ?></span></h2>
+            <div class="box">
+    <?php
 
-if (!$written) {
-    ?>
-		<form method="post" action="install.php">
-			<div class="inform">
-				<div class="forminfo">
-					<p><?php echo $lang_install['Info 17'] ?></p>
-					<p><?php echo $lang_install['Info 18'] ?></p>
-				</div>
-				<input type="hidden" name="generate_config" value="1" />
-				<input type="hidden" name="db_type" value="<?php echo $db_type;
-    ?>" />
-				<input type="hidden" name="db_host" value="<?php echo $db_host;
-    ?>" />
-				<input type="hidden" name="db_name" value="<?php echo feather_escape($db_name);
-    ?>" />
-				<input type="hidden" name="db_username" value="<?php echo feather_escape($db_username);
-    ?>" />
-				<input type="hidden" name="db_password" value="<?php echo feather_escape($db_password);
-    ?>" />
-				<input type="hidden" name="db_prefix" value="<?php echo feather_escape($db_prefix);
-    ?>" />
-				<input type="hidden" name="cookie_name" value="<?php echo feather_escape($cookie_name);
-    ?>" />
-				<input type="hidden" name="cookie_seed" value="<?php echo feather_escape($cookie_seed);
-    ?>" />
+    if (!$written) {
+        ?>
+                    <form method="post" action="install.php">
+                            <div class="inform">
+                                    <div class="forminfo">
+                                            <p><?php echo $lang_install['Info 17'] ?></p>
+                                            <p><?php echo $lang_install['Info 18'] ?></p>
+                                    </div>
+                                    <input type="hidden" name="generate_config" value="1" />
+                                    <input type="hidden" name="db_type" value="<?php echo $db_type;
+        ?>" />
+                                    <input type="hidden" name="db_host" value="<?php echo $db_host;
+        ?>" />
+                                    <input type="hidden" name="db_name" value="<?php echo feather_escape($db_name);
+        ?>" />
+                                    <input type="hidden" name="db_username" value="<?php echo feather_escape($db_username);
+        ?>" />
+                                    <input type="hidden" name="db_password" value="<?php echo feather_escape($db_password);
+        ?>" />
+                                    <input type="hidden" name="db_prefix" value="<?php echo feather_escape($db_prefix);
+        ?>" />
+                                    <input type="hidden" name="cookie_name" value="<?php echo feather_escape($cookie_name);
+        ?>" />
+                                    <input type="hidden" name="cookie_seed" value="<?php echo feather_escape($cookie_seed);
+        ?>" />
 
-<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
-					<ul class="error-list">
-<?php
+    <?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
+                                            <ul class="error-list">
+    <?php
 
-foreach ($alerts as $cur_alert) {
-    echo "\t\t\t\t\t".'<li>'.$cur_alert.'</li>'."\n";
-}
-    ?>
-					</ul>
-				</div>
-<?php endif;
-    ?>			</div>
-			<p class="buttons"><input type="submit" value="<?php echo $lang_install['Download config.php file'] ?>" /></p>
-		</form>
+    foreach ($alerts as $cur_alert) {
+        echo "\t\t\t\t\t".'<li>'.$cur_alert.'</li>'."\n";
+    }
+        ?>
+                                            </ul>
+                                    </div>
+    <?php endif;
+        ?>			</div>
+                            <p class="buttons"><input type="submit" value="<?php echo $lang_install['Download config.php file'] ?>" /></p>
+                    </form>
 
-<?php
+    <?php
 
-} else {
-    ?>
-		<div class="fakeform">
-			<div class="inform">
-				<div class="forminfo">
-					<p><?php echo $lang_install['FeatherBB fully installed'] ?></p>
-				</div>
-			</div>
-		</div>
-<?php
+    } else {
+        ?>
+                    <div class="fakeform">
+                            <div class="inform">
+                                    <div class="forminfo">
+                                            <p><?php echo $lang_install['FeatherBB fully installed'] ?></p>
+                                    </div>
+                            </div>
+                    </div>
+    <?php
 
-}
+    }
 
-    ?>
-	</div>
-</div>
+        ?>
+            </div>
+    </div>
+</section>
 
 </div>
 
