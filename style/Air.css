@@ -1254,7 +1254,7 @@ MAIN FORMS
 }
 
 
-#punhelp .box {
+#punhelp #brdmain .box {
 	border-style: solid;
 	border-width: 1px;
 	padding: 7px 12px;
@@ -1543,7 +1543,7 @@ html, body, .pun {
 	background: #ebf1f5;
 }
 
-#punmisc #rules .box, #punhelp .box {
+#punmisc #rules .box, #punhelp #brdmain .box {
 	border-color: #b9c5ce #d9e1e7;
 	background: #f6f9fc;
 }

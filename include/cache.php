@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -29,8 +29,8 @@ function generate_config_cache()
     }
 
     // Output config as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_CONFIG_LOADED\', 1);'."\n\n".'$pun_config = '.var_export($output, true).';'."\n\n".'?>';
-    fluxbb_write_cache_file('cache_config.php', $content);
+    $content = '<?php'."\n\n".'define(\'FEATHER_CONFIG_LOADED\', 1);'."\n\n".'$feather_config = '.var_export($output, true).';'."\n\n".'?>';
+    featherbb_write_cache_file('cache_config.php', $content);
 }
 
 
@@ -50,8 +50,8 @@ function generate_bans_cache()
     }
 
     // Output ban list as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_BANS_LOADED\', 1);'."\n\n".'$pun_bans = '.var_export($output, true).';'."\n\n".'?>';
-    fluxbb_write_cache_file('cache_bans.php', $content);
+    $content = '<?php'."\n\n".'define(\'FEATHER_BANS_LOADED\', 1);'."\n\n".'$feather_bans = '.var_export($output, true).';'."\n\n".'?>';
+    featherbb_write_cache_file('cache_bans.php', $content);
 }
 
 
@@ -83,13 +83,13 @@ function generate_quickjump_cache($group_id = false)
     // Loop through the groups in $groups and output the cache for each of them
     foreach ($groups as $group_id => $read_board) {
         // Output quick jump as PHP code
-        $output = '<?php'."\n\n".'if (!defined(\'PUN\')) exit;'."\n".'define(\'PUN_QJ_LOADED\', 1);'."\n".'$forum_id = isset($forum_id) ? $forum_id : 0;'."\n\n".'?>';
+        $output = '<?php'."\n\n".'if (!defined(\'FEATHER\')) exit;'."\n".'define(\'FEATHER_QJ_LOADED\', 1);'."\n".'$forum_id = isset($forum_id) ? $forum_id : 0;'."\n\n".'?>';
 
         if ($read_board == '1') {
             $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$group_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
             if ($db->num_rows($result)) {
-                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="viewforum.php">'."\n\t\t\t\t\t".'<div><label><span><?php echo $lang_common[\'Jump to\'] ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\'viewforum.php?id=\'+this.options[this.selectedIndex].value)">'."\n";
+                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="">'."\n\t\t\t\t\t".'<div><label><span><?php echo $lang_common[\'Jump to\'] ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\''.get_link('forum/').'\'+this.options[this.selectedIndex].value)">'."\n";
 
                 $cur_category = 0;
                 while ($cur_forum = $db->fetch_assoc($result)) {
@@ -100,19 +100,19 @@ function generate_quickjump_cache($group_id = false)
                             $output .= "\t\t\t\t\t\t".'</optgroup>'."\n";
                         }
 
-                        $output .= "\t\t\t\t\t\t".'<optgroup label="'.pun_htmlspecialchars($cur_forum['cat_name']).'">'."\n";
+                        $output .= "\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum['cat_name']).'">'."\n";
                         $cur_category = $cur_forum['cid'];
                     }
 
                     $redirect_tag = ($cur_forum['redirect_url'] != '') ? ' &gt;&gt;&gt;' : '';
-                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.pun_htmlspecialchars($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.feather_escape($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
                 }
 
                 $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php echo $lang_common[\'Go\'] ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
             }
         }
 
-        fluxbb_write_cache_file('cache_quickjump_'.$group_id.'.php', $output);
+        featherbb_write_cache_file('cache_quickjump_'.$group_id.'.php', $output);
     }
 }
 
@@ -134,8 +134,8 @@ function generate_censoring_cache()
     }
 
     // Output censored words as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_CENSOR_LOADED\', 1);'."\n\n".'$search_for = '.var_export($search_for, true).';'."\n\n".'$replace_with = '.var_export($replace_with, true).';'."\n\n".'?>';
-    fluxbb_write_cache_file('cache_censoring.php', $content);
+    $content = '<?php'."\n\n".'define(\'FEATHER_CENSOR_LOADED\', 1);'."\n\n".'$search_for = '.var_export($search_for, true).';'."\n\n".'$replace_with = '.var_export($replace_with, true).';'."\n\n".'?>';
+    featherbb_write_cache_file('cache_censoring.php', $content);
 }
 
 
@@ -146,25 +146,25 @@ function generate_stopwords_cache()
 {
     $stopwords = array();
 
-    $d = dir(PUN_ROOT.'lang');
+    $d = dir(FEATHER_ROOT.'lang');
     while (($entry = $d->read()) !== false) {
         if ($entry{0} == '.') {
             continue;
         }
 
-        if (is_dir(PUN_ROOT.'lang/'.$entry) && file_exists(PUN_ROOT.'lang/'.$entry.'/stopwords.txt')) {
-            $stopwords = array_merge($stopwords, file(PUN_ROOT.'lang/'.$entry.'/stopwords.txt'));
+        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/stopwords.txt')) {
+            $stopwords = array_merge($stopwords, file(FEATHER_ROOT.'lang/'.$entry.'/stopwords.txt'));
         }
     }
     $d->close();
 
     // Tidy up and filter the stopwords
-    $stopwords = array_map('pun_trim', $stopwords);
+    $stopwords = array_map('feather_trim', $stopwords);
     $stopwords = array_filter($stopwords);
 
     // Output stopwords as PHP code
-    $content = '<?php'."\n\n".'$cache_id = \''.generate_stopwords_cache_id().'\';'."\n".'if ($cache_id != generate_stopwords_cache_id()) return;'."\n\n".'define(\'PUN_STOPWORDS_LOADED\', 1);'."\n\n".'$stopwords = '.var_export($stopwords, true).';'."\n\n".'?>';
-    fluxbb_write_cache_file('cache_stopwords.php', $content);
+    $content = '<?php'."\n\n".'$cache_id = \''.generate_stopwords_cache_id().'\';'."\n".'if ($cache_id != generate_stopwords_cache_id()) return;'."\n\n".'define(\'FEATHER_STOPWORDS_LOADED\', 1);'."\n\n".'$stopwords = '.var_export($stopwords, true).';'."\n\n".'?>';
+    featherbb_write_cache_file('cache_stopwords.php', $content);
 }
 
 
@@ -177,15 +177,15 @@ function generate_users_info_cache()
 
     $stats = array();
 
-    $result = $db->query('SELECT COUNT(id)-1 FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT COUNT(id)-1 FROM '.$db->prefix.'users WHERE group_id!='.FEATHER_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
     $stats['total_users'] = $db->result($result);
 
-    $result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED.' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE group_id!='.FEATHER_UNVERIFIED.' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
     $stats['last_user'] = $db->fetch_assoc($result);
 
     // Output users info as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_USERS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
-    fluxbb_write_cache_file('cache_users_info.php', $content);
+    $content = '<?php'."\n\n".'define(\'feather_userS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
+    featherbb_write_cache_file('cache_users_info.php', $content);
 }
 
 
@@ -197,7 +197,7 @@ function generate_admins_cache()
     global $db;
 
     // Get admins from the DB
-    $result = $db->query('SELECT id FROM '.$db->prefix.'users WHERE group_id='.PUN_ADMIN) or error('Unable to fetch users info', __FILE__, __LINE__, $db->error());
+    $result = $db->query('SELECT id FROM '.$db->prefix.'users WHERE group_id='.FEATHER_ADMIN) or error('Unable to fetch users info', __FILE__, __LINE__, $db->error());
 
     $output = array();
     while ($row = $db->fetch_row($result)) {
@@ -205,19 +205,19 @@ function generate_admins_cache()
     }
 
     // Output admin list as PHP code
-    $content = '<?php'."\n\n".'define(\'PUN_ADMINS_LOADED\', 1);'."\n\n".'$pun_admins = '.var_export($output, true).';'."\n\n".'?>';
-    fluxbb_write_cache_file('cache_admins.php', $content);
+    $content = '<?php'."\n\n".'define(\'FEATHER_ADMINS_LOADED\', 1);'."\n\n".'$feather_admins = '.var_export($output, true).';'."\n\n".'?>';
+    featherbb_write_cache_file('cache_admins.php', $content);
 }
 
 
 //
 // Safely write out a cache file.
 //
-function fluxbb_write_cache_file($file, $content)
+function featherbb_write_cache_file($file, $content)
 {
     $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
     if (!$fh) {
-        error('Unable to write cache file '.pun_htmlspecialchars($file).' to cache directory. Please make sure PHP has write access to the directory \''.pun_htmlspecialchars(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
+        error('Unable to write cache file '.feather_escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.feather_escape(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
     }
 
     flock($fh, LOCK_EX);
@@ -228,7 +228,7 @@ function fluxbb_write_cache_file($file, $content)
     flock($fh, LOCK_UN);
     fclose($fh);
 
-    fluxbb_invalidate_cached_file(FORUM_CACHE_DIR.$file);
+    featherbb_invalidate_cached_file(FORUM_CACHE_DIR.$file);
 }
 
 
@@ -242,7 +242,7 @@ function clear_feed_cache()
         if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
             @unlink(FORUM_CACHE_DIR.$entry);
         }
-        fluxbb_invalidate_cached_file(FORUM_CACHE_DIR.$entry);
+        featherbb_invalidate_cached_file(FORUM_CACHE_DIR.$entry);
     }
     $d->close();
 }
@@ -251,7 +251,7 @@ function clear_feed_cache()
 //
 // Invalidate updated php files that are cached by an opcache
 //
-function fluxbb_invalidate_cached_file($file)
+function featherbb_invalidate_cached_file($file)
 {
     if (function_exists('opcache_invalidate')) {
         opcache_invalidate($file, true);

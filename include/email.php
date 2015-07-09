@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN')) {
+if (!defined('FEATHER')) {
     exit;
 }
 
@@ -17,7 +17,7 @@ if (!defined('FORUM_EOL')) {
     define('FORUM_EOL', PHP_EOL);
 }
 
-require PUN_ROOT.'include/utf8/utils/ascii.php';
+require FEATHER_ROOT.'include/utf8/utils/ascii.php';
 
 //
 // Validate an email address
@@ -37,9 +37,9 @@ function is_valid_email($email)
 //
 function is_banned_email($email)
 {
-    global $pun_bans;
+    global $feather_bans;
 
-    foreach ($pun_bans as $cur_ban) {
+    foreach ($feather_bans as $cur_ban) {
         if ($cur_ban['email'] != '' &&
             ($email == $cur_ban['email'] ||
             (strpos($cur_ban['email'], '@') === false && stristr($email, '@'.$cur_ban['email'])))) {
@@ -63,6 +63,57 @@ function encode_mail_text($str)
     return '=?UTF-8?B?'.base64_encode($str).'?=';
 }
 
+//
+// Extract blocks from a text with a starting and ending string
+// This function always matches the most outer block so nesting is possible
+//
+function extract_blocks($text, $start, $end, $retab = true)
+{
+    global $feather_config;
+
+    $code = array();
+    $start_len = strlen($start);
+    $end_len = strlen($end);
+    $regex = '%(?:'.preg_quote($start, '%').'|'.preg_quote($end, '%').')%';
+    $matches = array();
+
+    if (preg_match_all($regex, $text, $matches)) {
+        $counter = $offset = 0;
+        $start_pos = $end_pos = false;
+
+        foreach ($matches[0] as $match) {
+            if ($match == $start) {
+                if ($counter == 0) {
+                    $start_pos = strpos($text, $start);
+                }
+                $counter++;
+            } elseif ($match == $end) {
+                $counter--;
+                if ($counter == 0) {
+                    $end_pos = strpos($text, $end, $offset + 1);
+                }
+                $offset = strpos($text, $end, $offset + 1);
+            }
+
+            if ($start_pos !== false && $end_pos !== false) {
+                $code[] = substr($text, $start_pos + $start_len,
+                    $end_pos - $start_pos - $start_len);
+                $text = substr_replace($text, "\1", $start_pos,
+                    $end_pos - $start_pos + $end_len);
+                $start_pos = $end_pos = false;
+                $offset = 0;
+            }
+        }
+    }
+
+    if ($feather_config['o_indent_num_spaces'] != 8 && $retab) {
+        $spaces = str_repeat(' ', $feather_config['o_indent_num_spaces']);
+        $text = str_replace("\t", $spaces, $text);
+    }
+
+    return array($code, $text);
+}
+
 
 //
 // Make a post email safe
@@ -75,13 +126,13 @@ function bbcode2email($text, $wrap_length = 72)
         $base_url = get_base_url();
     }
 
-    $text = pun_trim($text, "\t\n ");
+    $text = feather_trim($text, "\t\n ");
 
     $shortcut_urls = array(
-        'topic' => '/viewtopic.php?id=$1',
-        'post' => '/viewtopic.php?pid=$1#p$1',
-        'forum' => '/viewforum.php?id=$1',
-        'user' => '/profile.php?id=$1',
+        'topic' => '/topic/$1/',
+        'post' => '/post/$1/#p$1',
+        'forum' => '/forum/$1/',
+        'user' => '/user/$1/',
     );
 
     // Split code blocks and text so BBcode in codeblocks won't be touched
@@ -210,23 +261,23 @@ function bbcode2email($text, $wrap_length = 72)
 //
 function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
 {
-    global $pun_config, $lang_common;
+    global $feather_config, $lang_common;
 
     // Use \r\n for SMTP servers, the system's line ending for local mailers
-    $smtp = $pun_config['o_smtp_host'] != '';
+    $smtp = $feather_config['o_smtp_host'] != '';
     $EOL = $smtp ? "\r\n" : FORUM_EOL;
 
     // Default sender/return address
-    $from_name = sprintf($lang_common['Mailer'], $pun_config['o_board_title']);
-    $from_email = $pun_config['o_webmaster_email'];
+    $from_name = sprintf($lang_common['Mailer'], $feather_config['o_board_title']);
+    $from_email = $feather_config['o_webmaster_email'];
 
     // Do a little spring cleaning
-    $to = pun_trim(preg_replace('%[\n\r]+%s', '', $to));
-    $subject = pun_trim(preg_replace('%[\n\r]+%s', '', $subject));
-    $from_email = pun_trim(preg_replace('%[\n\r:]+%s', '', $from_email));
-    $from_name = pun_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
-    $reply_to_email = pun_trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
-    $reply_to_name = pun_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
+    $to = feather_trim(preg_replace('%[\n\r]+%s', '', $to));
+    $subject = feather_trim(preg_replace('%[\n\r]+%s', '', $subject));
+    $from_email = feather_trim(preg_replace('%[\n\r:]+%s', '', $from_email));
+    $from_name = feather_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
+    $reply_to_email = feather_trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
+    $reply_to_name = feather_trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
 
     // Set up some headers to take advantage of UTF-8
     $from = '"'.encode_mail_text($from_name).'" <'.$from_email.'>';
@@ -242,7 +293,7 @@ function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name 
     }
 
     // Make sure all linebreaks are LF in message (and strip out any NULL bytes)
-    $message = str_replace("\0", '', pun_linebreaks($message));
+    $message = str_replace("\0", '', feather_linebreaks($message));
     $message = str_replace("\n", $EOL, $message);
     
     $mailer = $smtp ? 'smtp_mail' : 'mail';
@@ -275,7 +326,7 @@ function server_parse($socket, $expected_response)
 //
 function smtp_mail($to, $subject, $message, $headers = '')
 {
-    global $pun_config;
+    global $feather_config;
     static $local_host;
 
     $recipients = explode(',', $to);
@@ -285,19 +336,19 @@ function smtp_mail($to, $subject, $message, $headers = '')
     $message = (substr($message, 0, 1) == '.' ? '.'.$message : $message);
 
     // Are we using port 25 or a custom port?
-    if (strpos($pun_config['o_smtp_host'], ':') !== false) {
-        list($smtp_host, $smtp_port) = explode(':', $pun_config['o_smtp_host']);
+    if (strpos($feather_config['o_smtp_host'], ':') !== false) {
+        list($smtp_host, $smtp_port) = explode(':', $feather_config['o_smtp_host']);
     } else {
-        $smtp_host = $pun_config['o_smtp_host'];
+        $smtp_host = $feather_config['o_smtp_host'];
         $smtp_port = 25;
     }
 
-    if ($pun_config['o_smtp_ssl'] == '1') {
+    if ($feather_config['o_smtp_ssl'] == '1') {
         $smtp_host = 'ssl://'.$smtp_host;
     }
 
     if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-        error('Could not connect to smtp host "'.$pun_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')', __FILE__, __LINE__);
+        error('Could not connect to smtp host "'.$feather_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')', __FILE__, __LINE__);
     }
 
     server_parse($socket, '220');
@@ -315,24 +366,24 @@ function smtp_mail($to, $subject, $message, $headers = '')
         }
     }
 
-    if ($pun_config['o_smtp_user'] != '' && $pun_config['o_smtp_pass'] != '') {
+    if ($feather_config['o_smtp_user'] != '' && $feather_config['o_smtp_pass'] != '') {
         fwrite($socket, 'EHLO '.$local_host."\r\n");
         server_parse($socket, '250');
 
         fwrite($socket, 'AUTH LOGIN'."\r\n");
         server_parse($socket, '334');
 
-        fwrite($socket, base64_encode($pun_config['o_smtp_user'])."\r\n");
+        fwrite($socket, base64_encode($feather_config['o_smtp_user'])."\r\n");
         server_parse($socket, '334');
 
-        fwrite($socket, base64_encode($pun_config['o_smtp_pass'])."\r\n");
+        fwrite($socket, base64_encode($feather_config['o_smtp_pass'])."\r\n");
         server_parse($socket, '235');
     } else {
         fwrite($socket, 'HELO '.$local_host."\r\n");
         server_parse($socket, '250');
     }
 
-    fwrite($socket, 'MAIL FROM: <'.$pun_config['o_webmaster_email'].'>'."\r\n");
+    fwrite($socket, 'MAIL FROM: <'.$feather_config['o_webmaster_email'].'>'."\r\n");
     server_parse($socket, '250');
 
     foreach ($recipients as $email) {
