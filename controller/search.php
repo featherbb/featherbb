@@ -31,7 +31,7 @@ class search
     
     public function display()
     {
-        global $lang_common, $lang_search, $pd;
+        global $lang_common, $lang_search, $lang_forum, $lang_topic, $pd;
 
         // Load the search.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/search.php';
