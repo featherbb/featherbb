@@ -6,9 +6,27 @@
 
 FeatherBB is an open source forum application released under the GNU General Public
 Licence. It is free to download and use and will remain so. FeatherBB is a fork of
-FluxBB 1.5 designed to be simple and very lightweight, with modern features: MVC
-architecture, PDO, OOP (soon) and a plugin system (soon). Maybe more? You're more
-than welcome to join the development :-)
+FluxBB 1.5 based on Slim Framework and designed to be simple and very lightweight,
+with modern features: MVC architecture, PDO, OOP and a plugin system. Maybe more?
+You are more than welcome to join the development :-)
+
+## Changelog
+
+This is __FeatherBB v1.0.0 Beta__. It is intended for testing purposes only and not
+for use in a production environment. Please report all the bugs you may encounter to
+the forums or in the GitHub bug tracker.
+
+* Integration with Slim Framework v2.6.2
+* New parser
+* MVC architecture
+* URL rewriting
+* Routing system
+* Responsive default style
+* Database schema compatible with FluxBB
+* Antispam protection
+* Themes fully customizables
+* PHP 4 support dropped
+* PSR-2 compliant
 
 ## Requirements
 
