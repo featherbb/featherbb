@@ -541,7 +541,7 @@ function fetch_user_group($id)
 
 function update_profile($id, $info, $section, $post_data)
 {
-    global $db, $lang_common, $lang_profile, $pun_config, $pun_user, $pd;
+    global $db, $lang_common, $lang_profile, $pun_config, $pun_user, $re_list;
     
     // Make sure they got here from the site
     confirm_referrer('profile.php');
