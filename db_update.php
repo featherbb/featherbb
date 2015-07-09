@@ -24,12 +24,18 @@ define('FEATHER_SEARCH_MAX_WORD', 20);
 // but can be overridden using the below constant if required.
 //define('FORUM_DEFAULT_CHARSET', 'latin1');
 
-
 // The number of items to process per page view (lower this if the update script times out during UTF-8 conversion)
 define('PER_PAGE', 300);
 
 // Don't set to UTF-8 until after we've found out what the default character set is
 define('FORUM_NO_SET_NAMES', 1);
+
+// Load Slim Framework
+require 'Slim/Slim.php';
+\Slim\Slim::registerAutoloader();
+
+// Instantiate Slim
+$feather = new \Slim\Slim();
 
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
