@@ -394,7 +394,7 @@ class users
         $last_visit_before = $this->request->get('last_visit_before') ? feather_trim($this->request->get('last_visit_before')) : '';
         $registered_after = $this->request->get('registered_after') ? feather_trim($this->request->get('registered_after')) : '';
         $registered_before = $this->request->get('registered_before') ? feather_trim($this->request->get('registered_before')) : '';
-        $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($_GET['order_by'], array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
+        $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
         $direction = $search['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
         $user_group = $this->request->get('user_group') ? intval($this->request->get('user_group')) : -1;
 
