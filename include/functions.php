@@ -1916,11 +1916,14 @@ function dump()
 //
 // Return the path to load the view file
 //
-function get_path_view()
+function get_path_view($file = null)
 {
     global $feather_user;
     
-    if (is_dir('style/'.$feather_user['style'].'/view')) {
+    if ($file && is_file('style/'.$feather_user['style'])) {
+        return FEATHER_ROOT.'style/'.$feather_user['style'].'/view';
+    }
+    elseif (is_dir('style/'.$feather_user['style'].'/view')) {
         return FEATHER_ROOT.'style/'.$feather_user['style'].'/view';
     } else {
         return FEATHER_ROOT.'view';
