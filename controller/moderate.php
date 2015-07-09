@@ -456,7 +456,7 @@ class moderate
                 message($lang_misc['No topics selected']);
             }
 
-            if (isset($_POST['delete_topics_comply'])) {
+            if ($this->request->post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $fid);
             }
 
