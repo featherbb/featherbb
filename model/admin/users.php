@@ -83,7 +83,7 @@ class users
         return $info;
     }
 
-    public function move_users($feather)
+    public function move_users()
     {
         global $lang_admin_users;
 
@@ -168,7 +168,7 @@ class users
         return $move;
     }
 
-    public function delete_users($feather)
+    public function delete_users()
     {
         global $lang_admin_users;
 
@@ -282,7 +282,7 @@ class users
         return $user_ids;
     }
 
-    public function ban_users($feather)
+    public function ban_users()
     {
         global $lang_admin_users;
 
@@ -375,7 +375,7 @@ class users
         return $user_ids;
     }
 
-    public function get_user_search($feather)
+    public function get_user_search()
     {
         global $db_type;
 
@@ -517,10 +517,14 @@ class users
 
     public function get_group_list()
     {
+        $output = '';
+
         $result = $this->db->query('SELECT g_id, g_title FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
 
         while ($cur_group = $this->db->fetch_assoc($result)) {
-            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
         }
+
+        return $output;
     }
 }

@@ -21,7 +21,7 @@ class categories
         $this->request = $this->feather->request;
     }
  
-    public function add_category($feather)
+    public function add_category()
     {
         global $lang_admin_categories;
 

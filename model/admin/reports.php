@@ -21,7 +21,7 @@ class reports
         $this->request = $this->feather->request;
     }
  
-    public function zap_report($feather)
+    public function zap_report()
     {
         global $lang_admin_reports;
 

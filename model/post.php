@@ -42,7 +42,7 @@ class post
     }
 
     // Checks the post for errors before posting
-    public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $feather, $errors)
+    public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
     {
         global $lang_post, $lang_common, $lang_prof_reg, $lang_register, $lang_antispam, $lang_antispam_questions, $pd;
 
@@ -176,7 +176,7 @@ class post
     }
 
     // If the previous check went OK, setup some variables used later
-    public function setup_variables($feather, $errors, $is_admmod)
+    public function setup_variables($errors, $is_admmod)
     {
         $post = array();
 
@@ -574,7 +574,7 @@ class post
     }
 
     // Get the current state of checkboxes
-    public function get_checkboxes($feather, $fid, $is_admmod, $is_subscribed)
+    public function get_checkboxes($fid, $is_admmod, $is_subscribed)
     {
         global $lang_post, $lang_common;
 

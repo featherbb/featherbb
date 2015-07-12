@@ -21,7 +21,7 @@ class maintenance
         $this->request = $this->feather->request;
     }
  
-    public function rebuild($feather)
+    public function rebuild()
     {
         global $db_type, $lang_admin_maintenance;
 
@@ -57,7 +57,7 @@ class maintenance
         }
     }
 
-    public function get_query_str($feather)
+    public function get_query_str()
     {
         global $lang_admin_maintenance;
 
@@ -144,7 +144,7 @@ class maintenance
         }
     }
 
-    public function prune_comply($feather, $prune_from, $prune_sticky)
+    public function prune_comply($prune_from, $prune_sticky)
     {
         global $lang_admin_maintenance;
 
@@ -186,7 +186,7 @@ class maintenance
         redirect(get_link('admin/maintenance/'), $lang_admin_maintenance['Posts pruned redirect']);
     }
 
-    public function get_info_prune($feather, $prune_sticky, $prune_from)
+    public function get_info_prune($prune_sticky, $prune_from)
     {
         global $lang_admin_maintenance;
 

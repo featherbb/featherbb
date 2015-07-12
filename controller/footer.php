@@ -49,6 +49,7 @@ class footer
                             'forum_id' => $forum_id,
                             'num_pages' => $num_pages,
                             'feather' => $this->feather,
+                            'db' => $this->db,
                             )
                     );
 

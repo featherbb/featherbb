@@ -96,11 +96,11 @@ class moderate
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            $this->model->display_ip_address($this->feather);
+            $this->model->display_ip_address();
         }
 
         // Make sure that only admmods allowed access this page
-        $moderators = get_moderators($id);
+        $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] == '0' || !array_key_exists($this->user['username'], $mods_array))) {
@@ -197,7 +197,7 @@ class moderate
 
                 // Delete one or more posts
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
-                    $posts = delete_posts($this->feather, $id, $fid, $p);
+                    $posts = delete_posts($id, $fid, $p);
 
                     $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
@@ -219,7 +219,7 @@ class moderate
                     $this->footer->display();
                 }
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
-                $posts = $this->model->split_posts($this->feather, $id, $fid, $p);
+                $posts = $this->model->split_posts($id, $fid, $p);
 
                 $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
                 $focus_element = array('subject','new_subject');
@@ -384,7 +384,7 @@ class moderate
         // Move one or more topics
         if ($this->request->post('move_topics') || $this->request->post('move_topics_to')) {
             if ($this->request->post('move_topics_to')) {
-                $this->model->move_topics_to($this->feather, $fid);
+                $this->model->move_topics_to($fid);
             }
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
@@ -421,7 +421,7 @@ class moderate
         // Merge two or more topics
         elseif ($this->request->post('merge_topics') || $this->request->post('merge_topics_comply')) {
             if ($this->request->post('merge_topics_comply')) {
-                $this->model->merge_topics($this->feather, $fid);
+                $this->model->merge_topics($fid);
             }
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();

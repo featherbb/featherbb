@@ -21,7 +21,7 @@ class censoring
         $this->request = $this->feather->request;
     }
 
-    public function add_word($feather)
+    public function add_word()
     {
         global $lang_admin_censoring;
 
@@ -46,7 +46,7 @@ class censoring
         redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word added redirect']);
     }
 
-    public function update_word($feather)
+    public function update_word()
     {
         global $lang_admin_censoring;
 
@@ -73,7 +73,7 @@ class censoring
         redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word updated redirect']);
     }
 
-    public function remove_word($feather)
+    public function remove_word()
     {
         global $lang_admin_censoring;
 

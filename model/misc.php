@@ -43,7 +43,7 @@ class misc
         return $mail;
     }
 
-    public function send_email($feather, $mail, $id)
+    public function send_email($mail, $id)
     {
         
         confirm_referrer(get_link_r('email/'.$id.'/'));
@@ -92,7 +92,7 @@ class misc
         redirect(get_base_url(), $lang_misc['Email sent redirect']);
     }
 
-    public function get_redirect_url($feather, $recipient_id)
+    public function get_redirect_url($recipient_id)
     {
         // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
         if ($this->request->getReferrer()) {
@@ -108,7 +108,7 @@ class misc
         return $redirect_url;
     }
 
-    public function insert_report($feather, $post_id)
+    public function insert_report($post_id)
     {
         global $lang_misc, $lang_common;
 

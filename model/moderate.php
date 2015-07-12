@@ -71,7 +71,7 @@ class moderate
         return $cur_topic;
     }
 
-    public function delete_posts($feather, $tid, $fid, $p = null)
+    public function delete_posts($tid, $fid, $p = null)
     {
         global $lang_common, $lang_misc;
 
@@ -122,7 +122,7 @@ class moderate
         return $posts;
     }
 
-    public function split_posts($feather, $tid, $fid, $p = null)
+    public function split_posts($tid, $fid, $p = null)
     {
         global $lang_common, $lang_misc;
 
@@ -307,7 +307,7 @@ class moderate
         return $post_data;
     }
 
-    public function move_topics_to($feather, $fid)
+    public function move_topics_to($fid)
     {
         global $lang_common, $lang_misc;
 
@@ -371,7 +371,7 @@ class moderate
         }
     }
 
-    public function merge_topics($feather, $fid)
+    public function merge_topics($fid)
     {
         global $lang_common, $lang_misc;
 

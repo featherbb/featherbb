@@ -68,15 +68,15 @@ class edit
 
         if ($this->feather->request()->isPost()) {
             // Let's see if everything went right
-            $errors = $this->model->check_errors_before_edit($id, $this->feather, $can_edit_subject, $errors);
+            $errors = $this->model->check_errors_before_edit($id, $can_edit_subject, $errors);
 
             // Setup some variables before post
-            $post = $this->model->setup_variables($this->feather, $cur_post, $is_admmod, $can_edit_subject, $errors);
+            $post = $this->model->setup_variables($cur_post, $is_admmod, $can_edit_subject, $errors);
 
             // Did everything go according to plan?
             if (empty($errors) && !$this->request->post('preview')) {
                 // Edit the post
-                $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $this->feather, $is_admmod);
+                $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
                 redirect(get_link('post/'.$id.'/#p'.$id), $lang_post['Post redirect']);
             }
@@ -109,7 +109,7 @@ class edit
                             'id' => $id,
                             'feather_config' => $this->config,
                             'feather_user' => $this->user,
-                            'checkboxes' => $this->model->get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $this->feather, 1),
+                            'checkboxes' => $this->model->get_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                             'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
                             'post' => $post,

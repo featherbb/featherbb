@@ -50,7 +50,7 @@ class users
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            $move = $this->model->move_users($this->feather);
+            $move = $this->model->move_users();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Move users']);
 
@@ -77,7 +77,7 @@ class users
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            $user_ids = $this->model->delete_users($this->feather);
+            $user_ids = $this->model->delete_users();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
 
@@ -104,7 +104,7 @@ class users
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            $user_ids = $this->model->ban_users($this->feather);
+            $user_ids = $this->model->ban_users();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
             $focus_element = array('bans2', 'ban_message');
@@ -129,7 +129,7 @@ class users
         if ($this->request->get('find_user')) {
 
             // Return conditions and query string for the URL
-            $search = $this->model->get_user_search($this->feather);
+            $search = $this->model->get_user_search();
 
             // Fetch user count
             $num_users = $this->model->get_num_users_search($search['conditions']);
@@ -183,6 +183,7 @@ class users
         $this->feather->render('admin/users/admin_users.php', array(
                 'lang_admin_users' => $lang_admin_users,
                 'lang_admin_common' => $lang_admin_common,
+                'group_list' => $this->model->get_group_list(),
             )
         );
         

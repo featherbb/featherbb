@@ -34,7 +34,7 @@ class groups
         return $groups;
     }
 
-    public function info_add_group($groups, $feather, $id)
+    public function info_add_group($groups, $id)
     {
         global $lang_common;
 
@@ -88,7 +88,7 @@ class groups
         }
     }
 
-    public function add_edit_group($groups, $feather)
+    public function add_edit_group($groups)
     {
         global $lang_admin_groups;
 
@@ -192,7 +192,7 @@ class groups
         }
     }
 
-    public function set_default_group($groups, $feather)
+    public function set_default_group($groups)
     {
         global $lang_admin_groups, $lang_common;
 
@@ -237,7 +237,7 @@ class groups
         return $is_member;
     }
 
-    public function delete_group($feather, $group_id)
+    public function delete_group($group_id)
     {
         global $lang_admin_groups;
 

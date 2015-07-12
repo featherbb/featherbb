@@ -46,10 +46,10 @@ class forums
 
         // Add a "default" forum
         if ($this->request->post('add_forum')) {
-            $this->model->add_forum($this->feather);
+            $this->model->add_forum();
         }  // Update forum positions
         elseif ($this->request->post('update_positions')) {
-            $this->model->update_positions($this->feather);
+            $this->model->update_positions();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
@@ -95,7 +95,7 @@ class forums
 
         // Update group permissions for $forum_id
         if ($this->request->post('save')) {
-            $this->model->update_permissions($this->feather, $id);
+            $this->model->update_permissions($id);
         } elseif ($this->request->post('revert_perms')) {
             $this->model->revert_permissions($id);
         }

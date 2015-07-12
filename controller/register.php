@@ -34,7 +34,7 @@ class register
         global $lang_common, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
 
         if (!$this->user['is_guest']) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
 
@@ -66,7 +66,7 @@ class register
         $user['errors'] = '';
 
         if ($this->feather->request()->isPost()) {
-            $user = $this->model->check_for_errors($this->feather);
+            $user = $this->model->check_for_errors();
 
             // Did everything go according to plan? Insert the user
             if (empty($user['errors'])) {
@@ -103,11 +103,11 @@ class register
     public function rules()
     { // TODO: fix $_GET w/ URL rewriting
 
-        global $lang_common, $lang_login;
+        global $lang_common, $lang_login, $lang_register;
 
         // If we are logged in, we shouldn't be here
         if (!$this->user['is_guest']) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
 

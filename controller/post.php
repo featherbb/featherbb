@@ -107,10 +107,10 @@ class post
             }
 
                 // Let's see if everything went right
-                $errors = $this->model->check_errors_before_post($fid, $tid, $qid, $pid, $page, $this->feather, $errors);
+                $errors = $this->model->check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors);
 
                 // Setup some variables before post
-                $post = $this->model->setup_variables($this->feather, $errors, $is_admmod);
+                $post = $this->model->setup_variables($errors, $is_admmod);
 
                 // Did everything go according to plan?
                 if (empty($errors) && !$this->request->post('preview')) {
@@ -194,7 +194,7 @@ class post
         $this->header->display($page_title, '', $focus_element, '', $required_fields);
 
         // Get the current state of checkboxes
-        $checkboxes = $this->model->get_checkboxes($this->feather, $fid, $is_admmod, $is_subscribed);
+        $checkboxes = $this->model->get_checkboxes($fid, $is_admmod, $is_subscribed);
 
         // Check to see if the topic review is to be displayed
         if ($tid && $this->config['o_topic_review'] != '0') {

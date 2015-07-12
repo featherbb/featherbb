@@ -21,7 +21,7 @@ class bans
         $this->request = $this->feather->request;
     }
  
-    public function add_ban_info($feather)
+    public function add_ban_info()
     {
         global $lang_common, $lang_admin_bans;
 
@@ -108,7 +108,7 @@ class bans
         return $ban;
     }
 
-    public function insert_ban($feather)
+    public function insert_ban()
     {
         global $lang_admin_bans;
 
@@ -247,7 +247,7 @@ class bans
         redirect(get_link('admin/bans/'), $lang_admin_bans['Ban removed redirect']);
     }
 
-    public function find_ban($feather)
+    public function find_ban()
     {
         global $db_type;
 

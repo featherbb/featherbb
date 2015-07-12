@@ -21,7 +21,7 @@ class register
         $this->request = $this->feather->request;
     }
  
-    public function check_for_errors($feather)
+    public function check_for_errors()
     {
         global $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
 
@@ -209,7 +209,7 @@ class register
             $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<password>', $user['password1'], $mail_message);
-            $mail_message = str_replace('<login_url>', get_base_url().'/login.php', $mail_message);
+            $mail_message = str_replace('<login_url>', get_link('login/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
             pun_mail($user['email1'], $mail_subject, $mail_message);

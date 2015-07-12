@@ -36,7 +36,7 @@ class edit
         return $cur_post;
     }
 
-    public function check_errors_before_edit($id, $feather, $can_edit_subject, $errors)
+    public function check_errors_before_edit($id, $can_edit_subject, $errors)
     {
         global $lang_post, $pd;
 
@@ -95,7 +95,7 @@ class edit
     }
 
     // If the previous check went OK, setup some variables used later
-    public function setup_variables($feather, $cur_post, $is_admmod, $can_edit_subject, $errors)
+    public function setup_variables($cur_post, $is_admmod, $can_edit_subject, $errors)
     {
         global $pd;
 
@@ -127,7 +127,7 @@ class edit
         return $post;
     }
 
-    public function edit_post($id, $can_edit_subject, $post, $cur_post, $feather, $is_admmod)
+    public function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod)
     {
         $edited_sql = (!$this->request->post('slient') || !$is_admmod) ? ', edited='.time().', edited_by=\''.$this->db->escape($this->user['username']).'\'' : '';
 
@@ -147,7 +147,7 @@ class edit
         $this->db->query('UPDATE '.$this->db->prefix.'posts SET message=\''.$this->db->escape($post['message']).'\', hide_smilies='.$post['hide_smilies'].$edited_sql.' WHERE id='.$id) or error('Unable to update post', __FILE__, __LINE__, $this->db->error());
     }
 
-    public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $feather, $cur_index)
+    public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
     {
         global $lang_post, $lang_common;
 
@@ -170,7 +170,7 @@ class edit
         }
 
         if ($is_admmod) {
-            if ($feather->request()->isPost() && $this->request->post('silent') || $feather->request()->isPost() == '') {
+            if ($this->request()->isPost() && $this->request->post('silent') || $this->request()->isPost() == '') {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Silent edit'].'<br /></label>';
             } else {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Silent edit'].'<br /></label>';

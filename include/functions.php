@@ -1951,9 +1951,7 @@ function url_friendly($str)
 //
 function get_link($link, $args = null)
 {
-    global $feather_config;
-
-    if (in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
+    if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
         $base_url = get_base_url();
     } else {
         $base_url = get_base_url().'/index.php';
@@ -1979,9 +1977,7 @@ function get_link($link, $args = null)
 //
 function get_link_r($link)
 {
-    global $feather_config;
-
-    if (in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
+    if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
         $base_url = '';
     } else {
         $base_url = 'index.php';

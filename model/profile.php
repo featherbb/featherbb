@@ -21,7 +21,7 @@ class profile
         $this->request = $this->feather->request;
     }
  
-    public function change_pass($id, $feather)
+    public function change_pass($id)
     {
         global $lang_profile, $lang_common, $lang_prof_reg;
 
@@ -66,7 +66,7 @@ class profile
             }
         }
 
-        if ($feather->request()->isPost()) {
+        if ($this->request()->isPost()) {
             // Make sure they got here from the site
             confirm_referrer(get_link_r('user/'.$id.'/action/change_pass/'));
 
@@ -110,7 +110,7 @@ class profile
         }
     }
 
-    public function change_email($id, $feather)
+    public function change_email($id)
     {
         global $lang_profile, $lang_common, $lang_prof_reg;
 
@@ -147,7 +147,7 @@ class profile
 
                 message($lang_profile['Email updated'], true);
             }
-        } elseif ($feather->request()->isPost()) {
+        } elseif ($this->request()->isPost()) {
             if (feather_hash($this->request->post('req_password')) !== $this->user['password']) {
                 message($lang_profile['Wrong pass']);
             }
@@ -331,7 +331,7 @@ class profile
         redirect(get_link('user/'.$id.'/section/personality/'), $lang_profile['Avatar upload redirect']);
     }
 
-    public function update_group_membership($id, $feather)
+    public function update_group_membership($id)
     {
         global $lang_profile;
 
@@ -389,7 +389,7 @@ class profile
         return $username;
     }
 
-    public function update_mod_forums($id, $feather)
+    public function update_mod_forums($id)
     {
         global $lang_profile;
 
@@ -441,7 +441,7 @@ class profile
         }
     }
 
-    public function promote_user($id, $feather)
+    public function promote_user($id)
     {
         global $lang_profile, $lang_common;
 
@@ -462,7 +462,7 @@ class profile
         redirect(get_link('post/'.$pid.'/#p'.$pid), $lang_profile['User promote redirect']);
     }
 
-    public function delete_user($id, $feather)
+    public function delete_user($id)
     {
         global $lang_profile;
 
@@ -566,7 +566,7 @@ class profile
         return $info;
     }
 
-    public function update_profile($id, $info, $section, $feather)
+    public function update_profile($id, $info, $section)
     {
         global $lang_common, $lang_profile, $lang_prof_reg, $pd;
 
@@ -1069,8 +1069,6 @@ class profile
 
     public function get_forum_list($id)
     {
-        
-        
         $output = '';
 
         $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.moderators FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
@@ -1107,9 +1105,7 @@ class profile
     {
         global $lang_profile;
 
-        $feather = \Slim\Slim::getInstance();
-
-        $feather->render('profile/menu.php', array(
+        $this->feather->render('profile/menu.php', array(
             'lang_profile' => $lang_profile,
             'id' => $id,
             'feather_config' => $this->config,

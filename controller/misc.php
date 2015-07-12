@@ -169,7 +169,7 @@ class misc
 
 
         if ($this->feather->request()->isPost()) {
-            $this->model->send_email($this->feather, $mail, $id);
+            $this->model->send_email($mail, $id);
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Send email to'].' '.feather_escape($mail['recipient']));
@@ -202,7 +202,7 @@ class misc
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/misc.php';
 
         if ($this->feather->request()->isPost()) {
-            $this->model->insert_report($this->feather, $id);
+            $this->model->insert_report($id);
         }
 
         // Fetch some info about the post, the topic and the forum

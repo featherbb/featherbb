@@ -46,17 +46,17 @@ class censoring
 
         // Add a censor word
         if ($this->request->post('add_word')) {
-            $this->model->add_word($this->feather);
+            $this->model->add_word();
         }
 
         // Update a censor word
         elseif ($this->request->post('update')) {
-            $this->model->update_word($this->feather);
+            $this->model->update_word();
         }
 
         // Remove a censor word
         elseif ($this->request->post('remove')) {
-            $this->model->remove_word($this->feather);
+            $this->model->remove_word();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);

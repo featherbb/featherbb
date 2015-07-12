@@ -46,7 +46,7 @@ class bans
 
         // Display bans
         if ($this->request->get('find_ban')) {
-            $ban_info = $this->model->find_ban($this->feather);
+            $ban_info = $this->model->find_ban();
 
             // Determine the ban offset (based on $_GET['p'])
             $num_pages = ceil($ban_info['num_bans'] / 50);
@@ -106,7 +106,7 @@ class bans
         require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
         if ($this->request->post('add_edit_ban')) {
-            $this->model->insert_ban($this->feather);
+            $this->model->insert_ban();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
@@ -121,7 +121,7 @@ class bans
         $this->feather->render('admin/bans/add_ban.php', array(
                 'lang_admin_bans' => $lang_admin_bans,
                 'lang_admin_common' => $lang_admin_common,
-                'ban' => $this->model->add_ban_info($this->feather),
+                'ban' => $this->model->add_ban_info(),
             )
         );
 
@@ -161,7 +161,7 @@ class bans
         require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
         if ($this->request->post('add_edit_ban')) {
-            $this->model->insert_ban($this->feather);
+            $this->model->insert_ban();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);

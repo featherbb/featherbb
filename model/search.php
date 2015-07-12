@@ -22,7 +22,7 @@ class search
     }
  
  
-    public function get_search_results($feather)
+    public function get_search_results()
     {
         global $db_type, $lang_common, $lang_search;
 
@@ -534,7 +534,7 @@ class search
         return $search;
     }
 
-    public function display_search_results($search, $feather)
+    public function display_search_results($search)
     {
         global $lang_forum, $lang_common, $lang_topic, $lang_search, $pd;
 
@@ -579,7 +579,7 @@ class search
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
 
-                $feather->render('search/posts.php', array(
+                $this->feather->render('search/posts.php', array(
                     'post_count' => $post_count,
                     'url_topic' => $url_topic,
                     'cur_search' => $cur_search,
@@ -639,7 +639,7 @@ class search
                     $start_from = $cur_search['start_from'];
                 }
 
-                $feather->render('search/topics.php', array(
+                $this->feather->render('search/topics.php', array(
                     'cur_search' => $cur_search,
                     'start_from' => $start_from,
                     'topic_count' => $topic_count,

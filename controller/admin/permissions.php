@@ -46,7 +46,7 @@ class permissions
 
         // Update permissions
         if ($this->feather->request->isPost()) {
-            $this->model->update_permissions($this->feather);
+            $this->model->update_permissions();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);

@@ -69,14 +69,14 @@ class login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user['is_guest']) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
 
-        $this->model->login($this->feather);
+        $this->model->login();
     }
 
     public function logmeout($id, $token)
@@ -98,14 +98,14 @@ class login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user['is_guest']) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
 
-        $errors = $this->model->password_forgotten($this->feather);
+        $errors = $this->model->password_forgotten();
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_login['Request pass']);
         $required_fields = array('req_email' => $lang_common['Email']);

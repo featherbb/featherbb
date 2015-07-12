@@ -46,7 +46,7 @@ class categories
 
         // Add a new category
         if ($this->request->post('add_cat')) {
-            $this->model->add_category($this->feather);
+            $this->model->add_category();
         }
 
         // Delete a category

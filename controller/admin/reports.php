@@ -46,7 +46,7 @@ class reports
 
         // Zap a report
         if ($this->feather->request->isPost()) {
-            $this->model->zap_report($this->feather);
+            $this->model->zap_report();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Reports']);

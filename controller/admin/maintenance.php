@@ -52,7 +52,7 @@ class maintenance
         }
 
         if ($action == 'rebuild') {
-            $this->model->rebuild($this->feather);
+            $this->model->rebuild();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_maintenance['Rebuilding search index']);
 
@@ -62,7 +62,7 @@ class maintenance
                 )
             );
 
-            $query_str = $this->model->get_query_str($this->feather);
+            $query_str = $this->model->get_query_str();
 
             exit('<script type="text/javascript">window.location="'.get_link('admin/maintenance/').$query_str.'"</script><hr /><p>'.sprintf($lang_admin_maintenance['Javascript redirect failed'], '<a href="'.get_link('admin/maintenance/').$query_str.'">'.$lang_admin_maintenance['Click here'].'</a>').'</p>');
         }
@@ -72,7 +72,7 @@ class maintenance
             $prune_sticky = intval($this->request->post('prune_sticky'));
 
             if ($this->request->post('prune_comply')) {
-                $this->model->prune_comply($this->feather, $prune_from, $prune_sticky);
+                $this->model->prune_comply($prune_from, $prune_sticky);
             }
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Prune']);
@@ -88,7 +88,7 @@ class maintenance
                     'lang_admin_common'    =>    $lang_admin_common,
                     'prune_sticky'    =>    $prune_sticky,
                     'prune_from'    =>    $prune_from,
-                    'prune' => $this->model->get_info_prune($this->feather, $prune_sticky, $prune_from),
+                    'prune' => $this->model->get_info_prune($prune_sticky, $prune_from),
                 )
             );
 

@@ -106,7 +106,7 @@ class groups
         // If the group doesn't have any members or if we've already selected a group to move the members to
         if (!$is_member || $feather->request->post('del_group')) {
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
-                $this->model->delete_group($this->feather, $id);
+                $this->model->delete_group($id);
             } else {
                 $group_title = get_group_title($id);
 
@@ -187,7 +187,7 @@ class groups
                     'lang_admin_groups'    =>    $lang_admin_groups,
                     'lang_admin_common'    =>    $lang_admin_common,
                     'feather_config'    =>    $this->config,
-                    'group'    =>    $this->model->info_add_group($groups, $this->feather, $id),
+                    'group'    =>    $this->model->info_add_group($groups, $id),
                     'groups'    =>    $groups,
                     'id'    => $id,
                 )

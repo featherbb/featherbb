@@ -21,7 +21,7 @@ class options
         $this->request = $this->feather->request;
     }
  
-    public function update_options($feather)
+    public function update_options()
     {
         global $lang_admin_options, $lang_common;
 

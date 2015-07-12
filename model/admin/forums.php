@@ -21,7 +21,7 @@ class forums
         $this->request = $this->feather->request;
     }
  
-    public function add_forum($feather)
+    public function add_forum()
     {
         global $lang_admin_forums, $lang_common;
 
@@ -98,7 +98,7 @@ class forums
         return $forum_name;
     }
 
-    public function update_positions($feather)
+    public function update_positions()
     {
         global $lang_admin_forums;
 
@@ -123,7 +123,7 @@ class forums
         redirect(get_link('admin/forums/'), $lang_admin_forums['Forums updated redirect']);
     }
 
-    public function update_permissions($feather, $forum_id)
+    public function update_permissions($forum_id)
     {
         global $lang_admin_forums, $lang_common;
 

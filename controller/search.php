@@ -47,7 +47,7 @@ class search
 
         // Figure out what to do :-)
         if ($this->request->get('action') || ($this->request->get('search_id'))) {
-            $search = $this->model->get_search_results($this->feather);
+            $search = $this->model->get_search_results();
 
                 // We have results to display
                 if ($search['is_result']) {

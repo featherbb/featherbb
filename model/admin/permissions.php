@@ -21,7 +21,7 @@ class permissions
         $this->request = $this->feather->request;
     }
  
-    public function update_permissions($feather)
+    public function update_permissions()
     {
         global $lang_admin_permissions;
 
