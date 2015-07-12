@@ -377,7 +377,7 @@ class users
 
     public function get_user_search()
     {
-        global $db_type;
+        global $db_type, $lang_common, $lang_admin_users;
 
         $form = $this->request->get('form') ? $this->request->get('form') : array();
 
