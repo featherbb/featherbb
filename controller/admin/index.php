@@ -41,6 +41,8 @@ class index
         // Load the admin_index.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
 
+        define('FEATHER_ADMIN_CONSOLE', 1);
+
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
