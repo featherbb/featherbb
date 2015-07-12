@@ -21,7 +21,7 @@ class login
         $this->request = $this->feather->request;
     }
  
-    public function login($feather)
+    public function login()
     {
         global $db_type, $lang_login;
 
@@ -64,7 +64,7 @@ class login
         }
 
         if (!$authorized) {
-            message($lang_login['Wrong user/pass'].' <a href="login.php?action=forget">'.$lang_login['Forgotten pass'].'</a>');
+            message($lang_login['Wrong user/pass'].' <a href="'.get_link('login/action/forget/').'">'.$lang_login['Forgotten pass'].'</a>');
         }
 
         // Update the status if this is the first time the user logged in
@@ -99,7 +99,7 @@ class login
         global $lang_login;
 
         if ($this->user['is_guest'] || !isset($id) || $id != $this->user['id'] || !isset($token) || $token != feather_hash($this->user['id'].feather_hash(get_remote_address()))) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
 
@@ -116,18 +116,18 @@ class login
         redirect(get_base_url(), $lang_login['Logout redirect']);
     }
 
-    public function password_forgotten($feather)
+    public function password_forgotten()
     {
         global $lang_common, $lang_login;
 
         if (!$this->user['is_guest']) {
-            header('Location: index.php');
+            header('Location: '.get_base_url());
             exit;
         }
         // Start with a clean slate
         $errors = array();
 
-        if ($feather->request()->isPost()) {
+        if ($this->feather->request()->isPost()) {
             require FEATHER_ROOT.'include/email.php';
 
             // Validate the email address
