@@ -21,7 +21,6 @@ class help
         $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
-        $this->model = new \model\help();
     }
 
     public function __autoload($class_name)
