@@ -170,7 +170,7 @@ class edit
         }
 
         if ($is_admmod) {
-            if ($this->request()->isPost() && $this->request->post('silent') || $this->request()->isPost() == '') {
+            if ($this->request->isPost() && $this->request->post('silent') || $this->request->isPost() == '') {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Silent edit'].'<br /></label>';
             } else {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Silent edit'].'<br /></label>';

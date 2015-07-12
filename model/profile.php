@@ -66,7 +66,7 @@ class profile
             }
         }
 
-        if ($this->request()->isPost()) {
+        if ($this->request->isPost()) {
             // Make sure they got here from the site
             confirm_referrer(get_link_r('user/'.$id.'/action/change_pass/'));
 
@@ -147,7 +147,7 @@ class profile
 
                 message($lang_profile['Email updated'], true);
             }
-        } elseif ($this->request()->isPost()) {
+        } elseif ($this->request->isPost()) {
             if (feather_hash($this->request->post('req_password')) !== $this->user['password']) {
                 message($lang_profile['Wrong pass']);
             }
