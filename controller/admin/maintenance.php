@@ -79,7 +79,7 @@ class maintenance
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('maintenance');
 
@@ -106,7 +106,7 @@ class maintenance
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('maintenance');
 

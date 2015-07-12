@@ -73,7 +73,7 @@ class profile
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             $this->feather->render('profile/delete_user.php', array(
                                     'lang_common' => $lang_common,
@@ -126,7 +126,7 @@ class profile
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             $this->feather->render('profile/view_profile.php', array(
                         'lang_common' => $lang_common,
@@ -145,7 +145,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title, '', '', '', $required_fields);
+                $this->header->setTitle($page_title)->setRequiredFields($required_fields)->display();
 
                 $this->model->generate_profile_menu('essentials', $id);
 
@@ -170,7 +170,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 $this->model->generate_profile_menu('personal', $id);
 
@@ -186,7 +186,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 $this->model->generate_profile_menu('messaging', $id);
 
@@ -221,7 +221,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 $this->model->generate_profile_menu('personality', $id);
 
@@ -240,7 +240,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 $this->model->generate_profile_menu('display', $id);
 
@@ -256,7 +256,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 $this->model->generate_profile_menu('privacy', $id);
 
@@ -277,7 +277,7 @@ class profile
 
                 define('FEATHER_ACTIVE_PAGE', 'profile');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 $this->model->generate_profile_menu('admin', $id);
 
@@ -330,7 +330,7 @@ class profile
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
-            $this->header->display($page_title, '', $focus_element, '', $required_fields);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
             $this->feather->render('profile/change_pass.php', array(
                                     'lang_common' => $lang_common,
@@ -350,7 +350,7 @@ class profile
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
-            $this->header->display($page_title, '', $focus_element, '', $required_fields);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
             $this->feather->render('profile/change_mail.php', array(
                                     'lang_common' => $lang_common,
@@ -379,7 +379,7 @@ class profile
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
-            $this->header->display($page_title, '', $focus_element, '', $required_fields);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
             $this->feather->render('profile/upload_avatar.php', array(
                                     'lang_common' => $lang_common,

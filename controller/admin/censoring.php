@@ -64,7 +64,7 @@ class censoring
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, '', $focus_element);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
         generate_admin_menu('censoring');
 

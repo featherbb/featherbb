@@ -76,7 +76,7 @@ class delete
 
         define('FEATHER_ACTIVE_PAGE', 'delete');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         require FEATHER_ROOT.'include/parser.php';
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);

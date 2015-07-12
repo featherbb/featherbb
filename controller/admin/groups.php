@@ -55,7 +55,7 @@ class groups
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('groups');
 
@@ -114,7 +114,7 @@ class groups
 
                 define('FEATHER_ACTIVE_PAGE', 'admin');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 generate_admin_menu('groups');
 
@@ -134,7 +134,7 @@ class groups
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('groups');
 
@@ -179,7 +179,7 @@ class groups
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
-            $this->header->display($page_title, '', $focus_element, '', $required_fields);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
             generate_admin_menu('groups');
 

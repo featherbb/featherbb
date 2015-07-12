@@ -86,7 +86,7 @@ class viewforum
         
         $page_head = $this->model->get_page_head($id, $num_pages, $p, $url_forum);
 
-        $this->header->display($page_title, $p, '', $paging_links, null, $page_head);    
+        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
         $this->feather->render('viewforum.php', array(
                             'id' => $id,

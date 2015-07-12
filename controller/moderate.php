@@ -175,7 +175,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, $p);
+            $this->header->setTitle($page_title)->setPage($p)->display();
 
             $this->feather->render('moderate/move_topics.php', array(
                         'action'    =>    'single',
@@ -203,7 +203,7 @@ class moderate
 
                     define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-                    $this->header->display($page_title, $p);
+                    $this->header->setTitle($page_title)->setPage($p)->display();
 
                     $this->feather->render('moderate/delete_posts.php', array(
                         'lang_common' => $lang_common,
@@ -226,7 +226,7 @@ class moderate
 
                 define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-                $this->header->display($page_title, $p, $focus_element);
+                $this->header->setTitle($page_title)->setPage($p)->setFocusElement($focus_element)->display();
 
                 $this->feather->render('moderate/split_posts.php', array(
                         'lang_common' => $lang_common,
@@ -235,9 +235,6 @@ class moderate
                         'posts' => $posts,
                         )
                 );
-
-                $footer_style = 'moderate';
-                $forum_id = $id;
 
                 $this->footer->display();
             }
@@ -265,7 +262,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, $p, '', $paging_links);
+            $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
             $this->feather->render('moderate/posts_view.php', array(
                         'lang_common' => $lang_common,
@@ -336,7 +333,7 @@ class moderate
 
         define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-        $this->header->display($page_title, $p, '', $paging_links);
+        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('moderate/moderator_forum.php', array(
                             'lang_common' => $lang_common,
@@ -401,7 +398,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, $p);
+            $this->header->setTitle($page_title)->setPage($p)->display();
 
             $this->feather->render('moderate/move_topics.php', array(
                         'action'    =>    'multi',
@@ -433,7 +430,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, $p);
+            $this->header->setTitle($page_title)->setPage($p)->display();
 
             $this->feather->render('moderate/merge_topics.php', array(
                         'id'    =>    $fid,
@@ -464,7 +461,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, $p);
+            $this->header->setTitle($page_title)->setPage($p)->display();
 
             $this->feather->render('moderate/delete_topics.php', array(
                         'id'    =>    $fid,

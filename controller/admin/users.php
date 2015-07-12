@@ -56,7 +56,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('users');
 
@@ -83,7 +83,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
                 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('users');
 
@@ -111,7 +111,7 @@ class users
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, '', $focus_element);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
             generate_admin_menu('users');
 
@@ -152,8 +152,8 @@ class users
             $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/include/common.js"></script>');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
-  
-            $this->header->display($page_title, $p, '', $paging_links, null, $page_head);
+
+            $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
             $this->feather->render('admin/users/find_users.php', array(
                     'lang_admin_users' => $lang_admin_users,
@@ -176,7 +176,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, '', $focus_element);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
         generate_admin_menu('users');
 
@@ -222,7 +222,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, $p, '', $paging_links);
+        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/search_ip.php', array(
                 'lang_admin_users' => $lang_admin_users,
@@ -271,7 +271,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, $p, '', $paging_links);
+        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/show_users.php', array(
                 'lang_admin_users' => $lang_admin_users,

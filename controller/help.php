@@ -45,7 +45,7 @@ class help
 
         define('FEATHER_ACTIVE_PAGE', 'help');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         $this->feather->render('help.php', array(
                             'lang_help' => $lang_help,

@@ -21,7 +21,61 @@ class header
         $this->request = $this->feather->request;
     }
 
-    public function display($page_title = null, $p = null, $focus_element = null, $paging_links = null, $required_fields = null, $page_head = null)
+    private $title;
+
+    private $page;
+
+    private $focus_element;
+
+    private $paging_links;
+
+    private $required_fields;
+
+    private $page_head;
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function setPage($page)
+    {
+        $this->page = $page;
+
+        return $this;
+    }
+
+    public function setFocusElement($focus_element)
+    {
+        $this->focus_element = $focus_element;
+
+        return $this;
+    }
+
+    public function setPagingLinks($paging_links)
+    {
+        $this->paging_links = $paging_links;
+
+        return $this;
+    }
+
+    public function setRequiredFields($required_fields)
+    {
+        $this->required_fields = $required_fields;
+
+        return $this;
+    }
+
+    public function setPageHead($page_head)
+    {
+        $this->page_head = $page_head;
+
+        return $this;
+    }
+
+    public function display()
     {
         global $lang_common;
         
@@ -159,29 +213,29 @@ class header
         }
 
         // Render the header
-        $page_title = isset($page_title) ? $page_title : feather_escape($this->config['o_board_title']);
+        $this->title = isset($this->title) ? $this->title : feather_escape($this->config['o_board_title']);
         
         // Define $p if it's not set to avoid a PHP notice
-        $p = isset($p) ? $p : null;
+        $this->page = isset($this->page) ? $this->page : null;
 
-        $page_head = isset($page_head) ? $page_head : null;
-        $focus_element = isset($focus_element) ? $focus_element : null;
-        $paging_links = isset($paging_links) ? $paging_links : null;
-        $required_fields = isset($required_fields) ? $required_fields : null;
+        $this->page_head = isset($this->page_head) ? $this->page_head : null;
+        $this->focus_element = isset($this->focus_element) ? $this->focus_element : null;
+        $this->paging_links = isset($this->paging_links) ? $this->paging_links : null;
+        $this->required_fields = isset($this->required_fields) ? $this->required_fields : null;
 
         $this->feather->render('header.php', array(
                                 'lang_common' => $lang_common,
-                                'page_title' => $page_title,
-                                'focus_element' => $focus_element,
-                                'p' => $p,
+                                'page_title' => $this->title,
+                                'focus_element' => $this->focus_element,
+                                'p' => $this->page,
                                 'feather_user' => $this->user,
                                 'feather_config' => $this->config,
                                 '_SERVER'    =>    $_SERVER,
-                                'page_head'        =>    $page_head,
+                                'page_head'        =>    $this->page_head,
                                 'navlinks'        =>    $navlinks,
                                 'page_info'        =>    $page_info,
-                                'paging_links' => $paging_links,
-                                'required_fields' => $required_fields,
+                                'paging_links' => $this->paging_links,
+                                'required_fields' => $this->required_fields,
                                 'db'        =>    $this->db,
                                 )
                         );

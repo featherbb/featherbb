@@ -67,7 +67,7 @@ class plugins
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         // Attempt to load the plugin. We don't use @ here to suppress error messages,
         // because if we did and a parse error occurred in the plugin, we would only

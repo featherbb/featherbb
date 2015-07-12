@@ -74,7 +74,7 @@ class register
             }
         }
 
-        $this->header->display($page_title, '', $focus_element, '', $required_fields);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('register/form.php', array(
                             'errors' => $user['errors'],
@@ -130,7 +130,7 @@ class register
 
         define('FEATHER_ACTIVE_PAGE', 'register');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         $this->feather->render('register/rules.php', array(
                             'lang_register'    =>    $lang_register,
