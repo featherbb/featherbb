@@ -142,7 +142,7 @@ if (defined('FEATHER_SHOW_QUERIES')) {
 
 </section>
 
-<script src="<?php echo get_base_url() ?>/js/phone.min.js"></script>
+<script src="<?php echo get_base_url() ?>/style/FeatherBB/phone.min.js"></script>
 
 </body>
 </html>
