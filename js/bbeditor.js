@@ -18,7 +18,7 @@ var textarea;
 var content;
 document.write("<link href=\""+baseUrl+"/style/imports/bbeditor.css\" rel=\"stylesheet\" type=\"text/css\">");
 
-function edToolbar(obj) {
+function postEditorToolbar(obj) {
 	document.write("<div class=\"toolbar\">");
 	document.write("<img class=\"button\" src=\""+baseUrl+"/img/bbeditor/bold.gif\" name=\"btnBold\" title=\"Bold\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
 	document.write("<img class=\"button\" src=\""+baseUrl+"/img/bbeditor/italic.gif\" name=\"btnItalic\" title=\"Italic\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");

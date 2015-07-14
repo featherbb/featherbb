@@ -157,7 +157,7 @@ if ($quickpost) {
     var baseUrl = '<?php echo feather_escape(get_base_url(true)) ?>';
 </script>
 <script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
-<script>edToolbar('req_message');</script>
+<script>postEditorToolbar('req_message');</script>
 
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
