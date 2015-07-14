@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -167,11 +167,11 @@ if ($tid && $feather_config['o_topic_review'] != '0') :
 ?>
 <div id="postreview">
 	<h2><span><?php echo $lang_post['Topic review'] ?></span></h2>
-	
+
 	<?php
     // Set background switching on
     $post_count = 0;
-    
+
     foreach ($post_data as $post) {
         ++$post_count;
         ?>
@@ -199,6 +199,6 @@ if ($tid && $feather_config['o_topic_review'] != '0') :
 
     }
     ?>
-		
+
 </div>
 <?php endif;?>
