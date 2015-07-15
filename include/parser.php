@@ -333,8 +333,7 @@ function _preparse_bbcode_callback($matches)
         if ($tag['depth'] === 1) { // Check if not overly nested?
             if (($pd['ipass'] === 2) && $pd['config']['valid_imgs'] && url_valid($contents)) { // Valid URI?
                 // Yes. Fetch file headers containing file type and size ("Content-Type" and "Content-Length").
-                // ??? Should this call to get_headers have an @ in case of weird errors?
-                if (($http = get_headers($contents)) !== false && is_array($http)) {
+                if (($http = @get_headers($contents)) !== false && is_array($http)) {
                     if (preg_match('/\b200\s++OK\s*+$/i', $http[0])) { // Good response header?
                         for ($i = 1, $len = count($http); $i < $len; ++$i) { // Yes. Loop through HTTP response headers.
                             if (preg_match('/^\s*+Content-Length\s*+:\s*+(\d++)\s*+$/i', $http[$i], $m)) {
