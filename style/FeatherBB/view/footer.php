@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 ?>
 </div>
 
@@ -31,8 +31,8 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
         } else {
             $parameter = '';
         }
-        
-        
+
+
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.$lang_topic['Mod controls'].'</strong></dt>'."\n";
         // TODO: all
