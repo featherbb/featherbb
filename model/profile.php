@@ -919,7 +919,7 @@ class profile
         if ($user['email_setting'] == '0' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
             $user['email_field'] = '<a href="mailto:'.feather_escape($user['email']).'">'.feather_escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
-            $user['email_field'] = '<a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a>';
+            $user['email_field'] = '<a href="'.get_link('email/'.$user['id'].'/').'">'.$lang_common['Send email'].'</a>';
         } else {
             $user['email_field'] = '';
         }
