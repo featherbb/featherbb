@@ -28,7 +28,7 @@ class users
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         global $lang_common, $lang_admin_common, $lang_admin_users;
@@ -82,7 +82,7 @@ class users
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
-                
+
             $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('users');
@@ -186,7 +186,7 @@ class users
                 'group_list' => $this->model->get_group_list(),
             )
         );
-        
+
         $this->footer->display();
     }
 
@@ -280,7 +280,7 @@ class users
                 'info'   =>  $this->model->get_info_poster($ip, $start_from),
             )
         );
-        
+
         $this->footer->display();
     }
 }

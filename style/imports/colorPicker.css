@@ -1,0 +1,62 @@
+span.colorpicker {
+    position: absolute;
+    margin-top: 7px;
+    margin-left: 81px;
+    display: none;
+    padding: 12px;
+    background-color: #EEE;
+    border: 1px solid #BBB;
+    color: black;
+    text-decoration: none;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+span.colorpicker span {
+    float: left;
+    display: block;
+}
+span.colorpicker span.clear {
+    float: none;
+    clear: both;
+    border: 0;
+    overflow: hidden;
+    height: 0;
+    font-size: 0;
+}
+span.colorpicker span.colorbox {
+    float: left;
+    border: 0;
+    cursor: pointer;
+}
+span.colorbox b {
+    border: 0;
+    display: block;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+    overflow: hidden;
+    /*for IE6*/
+    border: 1px solid transparent;
+}
+span.colorbox b.selected {
+    border-left-color: #FFF;
+    border-top-color: #FFF;
+    border-right-color: #999;
+    border-bottom-color: #999;
+}
+span.colorpicker span.hexbox, .colorpicker span.bgbox {
+    font: normal 10px verdana;
+    height: 16px;
+    margin-bottom: 4px;
+}
+span.colorpicker span.hexbox {
+    margin-left: 12px;
+    color: black;
+    line-height: 16px;
+}
+span.colorpicker span.bgbox {
+    width: 20px;
+    border: 1px solid #666;
+}
