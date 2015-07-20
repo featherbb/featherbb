@@ -255,6 +255,9 @@ function get_admin_ids()
 function set_default_user()
 {
     global $db, $db_type, $feather_user, $feather_config;
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     $remote_addr = get_remote_address();
 
@@ -265,10 +268,23 @@ function set_default_user()
     }
 
     $feather_user = $db->fetch_assoc($result);
+    
+    $select = array('u.*', 'g.*', $feather->prefix.'online.logged', $feather->prefix.'online.last_post', $feather->prefix.'online.last_search');
+    $where = array('u.id' => '1');
+    
+    $result = ORM::for_table($feather->prefix.'users')
+        ->table_alias('u')
+        ->select_many($select)
+        ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+        ->left_outer_join($feather->prefix.'online', $feather->prefix.'online.ident = \''.$db->escape($remote_addr).'\'')
+        ->where($where)
+        ->find_result_set();
+    
+    foreach ($result as $feather->user);
 
     // Update online list
-    if (!$feather_user['logged']) {
-        $feather_user['logged'] = time();
+    if (!$feather->user->logged) {
+        $feather->user->logged = time();
 
         // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
         switch ($db_type) {
@@ -278,25 +294,25 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-                $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, \''.$db->escape($remote_addr).'\', '.$feather_user['logged'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, \''.$db->escape($remote_addr).'\', '.$feather->user->logged.')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                 break;
 
             default:
-                $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, \''.$db->escape($remote_addr).'\', '.$feather_user['logged'].' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, \''.$db->escape($remote_addr).'\', '.$feather->user->logged.' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                 break;
         }
     } else {
         $db->query('UPDATE '.$db->prefix.'online SET logged='.time().' WHERE ident=\''.$db->escape($remote_addr).'\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
     }
 
-    $feather_user['disp_topics'] = $feather_config['o_disp_topics_default'];
-    $feather_user['disp_posts'] = $feather_config['o_disp_posts_default'];
-    $feather_user['timezone'] = $feather_config['o_default_timezone'];
-    $feather_user['dst'] = $feather_config['o_default_dst'];
-    $feather_user['language'] = $feather_config['o_default_lang'];
-    $feather_user['style'] = $feather_config['o_default_style'];
-    $feather_user['is_guest'] = true;
-    $feather_user['is_admmod'] = false;
+    $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
+    $feather->user->disp_posts = $feather_config['o_disp_posts_default'];
+    $feather->user->timezone = $feather_config['o_default_timezone'];
+    $feather->user->dst = $feather_config['o_default_dst'];
+    $feather->user->language = $feather_config['o_default_lang'];
+    $feather->user->style = $feather_config['o_default_style'];
+    $feather->user->is_guest = true;
+    $feather->user->is_admmod = false;
 }
 
 
@@ -314,7 +330,7 @@ function feather_setcookie($user_id, $password_hash, $expire)
 
 //
 // Set a cookie, FluxBB style!
-//
+
 function forum_setcookie($name, $value, $expire)
 {
     global $cookie_path, $cookie_domain, $cookie_secure, $feather_config;
