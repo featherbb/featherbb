@@ -31,7 +31,7 @@ function postEditorToolbar(obj) {
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/bold.png\" name=\"btnBold\" title=\"Bold\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/italic.png\" name=\"btnItalic\" title=\"Italic\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/underline.png\" name=\"btnUnderline\" title=\"Underline\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\"Color\" onmouseover=\"toggleColorpicker()\"  onClick=\"OnCustomColorChanged()\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\"Color\" onClick=\"toggleColorpicker()\">");
 		document.write('<span class="toolbar-separator"></span>');
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-left.png\" name=\"btnLeft\" title=\"Left\" onClick=\"doAddTags('[left]','[/left]','" + obj + "')\">");
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-right.png\" name=\"btnRight\" title=\"Right\" onClick=\"doAddTags('[right]','[/right]','" + obj + "')\">");
