@@ -50,18 +50,33 @@ function check_cookie(&$feather_user)
 
             return;
         }
-
-        // Check if there's a user with the user ID and password hash from the cookie
-        $result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE u.id='.intval($cookie['user_id'])) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
-        $feather->container->singleton('user', function () use ($db, $result) {
-            return $db->fetch_assoc($result);
-        });
         
-        // Backward compatiblity
-        $feather_user = $db->fetch_assoc($result);
-
+        $select = array('u.*', 'g.*', 'o.logged', 'o.idle');
+        $where = array('u.id' => intval($cookie['user_id']));
+        
+        $result = ORM::for_table($feather->prefix.'users')
+            ->table_alias('u')
+            ->select_many($select)
+            ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+            ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
+            ->where($where)
+            ->find_result_set();
+        
+        foreach ($result as $feather->user);
+        
+        // Compatibility :-)
+        $result = ORM::for_table($feather->prefix.'users')
+            ->table_alias('u')
+            ->select_many($select)
+            ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+            ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
+            ->where($where)
+            ->find_array();
+            
+        $feather_user = $result[0];
+        
         // If user authorisation failed
-        if (!isset($feather_user['id']) || hash_hmac('sha1', $feather_user['password'], $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
+        if (!isset($feather->user->id) || hash_hmac('sha1', $feather->user->password, $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
             $expire = $now + 31536000; // The cookie expires after a year
             feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
             set_default_user();
@@ -71,30 +86,30 @@ function check_cookie(&$feather_user)
 
         // Send a new, updated cookie with a new expiration timestamp
         $expire = ($cookie['expiration_time'] > $now + $feather_config['o_timeout_visit']) ? $now + 1209600 : $now + $feather_config['o_timeout_visit'];
-        feather_setcookie($feather_user['id'], $feather_user['password'], $expire);
+        feather_setcookie($feather->user->id, $feather->user->password, $expire);
 
         // Set a default language if the user selected language no longer exists
-        if (!file_exists(FEATHER_ROOT.'lang/'.$feather_user['language'])) {
-            $feather_user['language'] = $feather_config['o_default_lang'];
+        if (!file_exists(FEATHER_ROOT.'lang/'.$feather->user->language)) {
+            $feather->user->language = $feather_config['o_default_lang'];
         }
 
         // Set a default style if the user selected style no longer exists
-        if (!file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'.css')) {
-            $feather_user['style'] = $feather_config['o_default_style'];
+        if (!file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'.css')) {
+            $feather->user->style = $feather_config['o_default_style'];
         }
 
-        if (!$feather_user['disp_topics']) {
-            $feather_user['disp_topics'] = $feather_config['o_disp_topics_default'];
+        if (!$feather->user->disp_topics) {
+            $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
         }
-        if (!$feather_user['disp_posts']) {
-            $feather_user['disp_posts'] = $feather_config['o_disp_posts_default'];
+        if (!$feather->user->disp_posts) {
+            $feather->user->disp_posts = $feather_config['o_disp_posts_default'];
         }
 
         // Define this if you want this visit to affect the online list and the users last visit data
         if (!defined('FEATHER_QUIET_VISIT')) {
             // Update the online list
-            if (!$feather_user['logged']) {
-                $feather_user['logged'] = $now;
+            if (!$feather->user->logged) {
+                $feather->user->logged = $now;
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
                 switch ($db_type) {
@@ -104,11 +119,11 @@ function check_cookie(&$feather_user)
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES('.$feather_user['id'].', \''.$db->escape($feather_user['username']).'\', '.$feather_user['logged'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                        $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES('.$feather->user->id.', \''.$db->escape($feather->user->username).'\', '.$feather->user->logged.')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                         break;
 
                     default:
-                        $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT '.$feather_user['id'].', \''.$db->escape($feather_user['username']).'\', '.$feather_user['logged'].' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$feather_user['id'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                        $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT '.$feather->user->id.', \''.$db->escape($feather->user->username).'\', '.$feather->user->logged.' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$feather->user->id.')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
                         break;
                 }
 
@@ -116,13 +131,13 @@ function check_cookie(&$feather_user)
                 set_tracked_topics(null);
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if ($feather_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                    $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$feather_user['logged'].' WHERE id='.$feather_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-                    $feather_user['last_visit'] = $feather_user['logged'];
+                if ($feather->user->logged < ($now-$feather_config['o_timeout_visit'])) {
+                    $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$feather->user->logged.' WHERE id='.$feather->user->id) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+                    $feather->user->last_visit = $feather->user->logged;
                 }
 
-                $idle_sql = ($feather_user['idle'] == '1') ? ', idle=0' : '';
-                $db->query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id='.$feather_user['id']) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+                $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
+                $db->query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id='.$feather->user->id) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
 
                 // Update tracked topics with the current expire time
                 if (isset($_COOKIE[$cookie_name.'_track'])) {
@@ -130,13 +145,13 @@ function check_cookie(&$feather_user)
                 }
             }
         } else {
-            if (!$feather_user['logged']) {
-                $feather_user['logged'] = $feather_user['last_visit'];
+            if (!$feather->user->logged) {
+                $feather->user->logged = $feather->user->last_visit;
             }
         }
 
-        $feather_user['is_guest'] = false;
-        $feather_user['is_admmod'] = $feather_user['g_id'] == FEATHER_ADMIN || $feather_user['g_moderator'] == '1';
+        $feather->user->is_guest = false;
+        $feather->user->is_admmod = $feather->user->g_id == FEATHER_ADMIN || $feather->user->g_moderator == '1';
     } else {
         set_default_user();
     }
@@ -325,9 +340,12 @@ function forum_setcookie($name, $value, $expire)
 function check_bans()
 {
     global $db, $feather_config, $lang_common, $feather_user, $feather_bans;
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     // Admins and moderators aren't affected
-    if ($feather_user['is_admmod'] || !$feather_bans) {
+    if ($feather->user->is_admmod || !$feather_bans) {
         return;
     }
 

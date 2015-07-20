@@ -54,7 +54,7 @@ class index
     // Detects if a "new" icon has to be displayed
     public function get_new_posts()
     {
-        $result = $this->db->query('SELECT f.id, f.last_post FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.last_post>'.$this->user['last_visit']) or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT f.id, f.last_post FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.last_post>'.$this->user->last_visit) or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
 
         if ($this->db->num_rows($result)) {
             $forums = $new_topics = array();

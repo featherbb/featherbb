@@ -121,6 +121,19 @@ $db = $feather->db;
 // Start a transaction
 $feather->db->start_transaction();
 
+// Include Idiorm
+require FEATHER_ROOT.'include/idiorm.php';
+
+// TODO: handle drivers
+ORM::configure('mysql:host='.$db_host.';dbname='.$db_name);
+ORM::configure('username', $db_username);
+ORM::configure('password', $db_password);
+ORM::configure('logging', true);
+ORM::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+
+// Inject DB prefix to SlimFramework
+$feather->prefix = $db_prefix;
+
 // Load cached config
 if (file_exists(FORUM_CACHE_DIR.'cache_config.php')) {
     include FORUM_CACHE_DIR.'cache_config.php';
@@ -165,18 +178,15 @@ $forum_date_formats = array($feather->config['o_date_format'], 'Y-m-d', 'Y-d-m',
 $feather_user = array();
 check_cookie($feather_user);
 
-// Inject user to SlimFramework
-$feather->user = $feather_user;
-
 // Attempt to load the common language file
-if (file_exists(FEATHER_ROOT.'lang/'.$feather->user['language'].'/common.php')) {
-    include FEATHER_ROOT.'lang/'.$feather->user['language'].'/common.php';
+if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php')) {
+    include FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php';
 } else {
-    error('There is no valid language pack \''.feather_escape($feather->user['language']).'\' installed. Please reinstall a language of that name');
+    error('There is no valid language pack \''.feather_escape($feather->user->language).'\' installed. Please reinstall a language of that name');
 }
 
 // Check if we are to display a maintenance message
-if ($feather->config['o_maintenance'] && $feather->user['g_id'] > FEATHER_ADMIN && !defined('FEATHER_TURN_OFF_MAINT')) {
+if ($feather->config['o_maintenance'] && $feather->user->g_id > FEATHER_ADMIN && !defined('FEATHER_TURN_OFF_MAINT')) {
     maintenance_message();
 }
 
@@ -201,7 +211,7 @@ check_bans();
 update_users_online();
 
 // Check to see if we logged in without a cookie being set
-if ($feather->user['is_guest'] && isset($_GET['login'])) {
+if ($feather->user->is_guest && isset($_GET['login'])) {
     message($lang_common['No cookie']);
 }
 
