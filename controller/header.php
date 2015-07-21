@@ -19,6 +19,7 @@ class header
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->model = new \model\header();
     }
 
     private $title;
@@ -158,9 +159,7 @@ class header
 
             if ($this->user->is_admmod) {
                 if ($this->config['o_report_method'] == '0' || $this->config['o_report_method'] == '2') {
-                    $result_header = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'reports WHERE zapped IS NULL') or error('Unable to fetch reports info', __FILE__, __LINE__, $this->db->error());
-
-                    if ($this->db->result($result_header)) {
+                    if ($this->model->get_reports()) {
                         $page_statusinfo[] = '<li class="reportlink"><span><strong><a href="'.get_link('admin/reports/').'">'.$lang_common['New reports'].'</a></strong></span></li>';
                     }
                 }

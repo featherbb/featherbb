@@ -131,9 +131,7 @@ class viewtopic
                     );
 
         // Increment "num_views" for topic
-        if ($this->config['o_topic_views'] == '1') {
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET num_views=num_views+1 WHERE id='.$id) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
-        }
+        $this->model->increment_views($id);
 
         $this->footer->display('viewtopic', $id, $p, $pid, $cur_topic['forum_id'], $num_pages);
     }

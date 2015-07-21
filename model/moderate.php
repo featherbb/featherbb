@@ -623,4 +623,38 @@ class moderate
 
         return $topic_data;
     }
+    
+    public function stick_topic($id, $fid)
+    {
+        $this->db->query('UPDATE '.$this->db->prefix.'topics SET sticky=\'1\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to stick topic', __FILE__, __LINE__, $this->db->error());
+    }
+
+    public function unstick_topic($id, $fid)
+    {
+        $this->db->query('UPDATE '.$this->db->prefix.'topics SET sticky=\'0\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to stick topic', __FILE__, __LINE__, $this->db->error());
+    }
+    
+    public function open_topic($id, $fid)
+    {
+        $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed=\'0\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+    }
+    
+    public function close_topic($id, $fid)
+    {
+        $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed=\'1\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+    }
+    
+    public function close_multiple_topics($action, $topics, $fid)
+    {
+        $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to close topics', __FILE__, __LINE__, $this->db->error());
+    }
+    
+    public function get_subject_tid($id)
+    {
+        $result = $this->db->query('SELECT subject FROM '.$this->db->prefix.'topics WHERE id='.$id) or error('Unable to get subject', __FILE__, __LINE__, $this->db->error());
+        if (!$this->db->num_rows($result)) {
+            message($lang_common['Bad request'], false, '404 Not Found');
+        }
+        return $this->db->result($result);
+    }
 }

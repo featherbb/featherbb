@@ -95,13 +95,6 @@ class maintenance
             $this->footer->display();
         }
 
-        // Get the first post ID from the db
-        $first_id = '';
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts ORDER BY id ASC LIMIT 1') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
-            $first_id = $this->db->result($result);
-        }
-
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Maintenance']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -113,7 +106,7 @@ class maintenance
         $this->feather->render('admin/maintenance/admin_maintenance.php', array(
                 'lang_admin_maintenance'    =>    $lang_admin_maintenance,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'first_id' => $first_id,
+                'first_id' => $this->model->get_first_id(),
                 'categories' => $this->model->get_categories(),
             )
         );

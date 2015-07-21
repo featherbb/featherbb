@@ -253,4 +253,15 @@ class maintenance
         
         return $output;
     }
+    
+    public function get_first_id()
+    {
+        $first_id = '';
+        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts ORDER BY id ASC LIMIT 1') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
+        if ($this->db->num_rows($result)) {
+            $first_id = $this->db->result($result);
+        }
+        
+        return $first_id;
+    }
 }

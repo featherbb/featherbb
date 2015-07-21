@@ -107,12 +107,7 @@ class moderate
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        $result = $this->db->query('SELECT subject FROM '.$this->db->prefix.'topics WHERE id='.$id) or error('Unable to get subject', __FILE__, __LINE__, $this->db->error());
-        $subject_tid = $this->db->result($result);
-        if (!$this->db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
-        }
-        $url_subject = url_friendly($subject_tid);
+        $url_subject = url_friendly($this->model->get_subject_tid($id));
         $url_referer = array(
                             get_link_r('topic/'.$id.'/'),
                             get_link_r('topic/'.$id.'/'.$url_subject.'/'),
@@ -124,8 +119,8 @@ class moderate
         if ($action == 'stick') {
             confirm_referrer($url_referer);
 
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET sticky=\'1\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to stick topic', __FILE__, __LINE__, $this->db->error());
-
+            $this->model->stick_topic($id, $fid);
+ 
             redirect(get_link('topic/'.$id.'/'), $lang_misc['Stick topic redirect']);
         }
 
@@ -134,7 +129,7 @@ class moderate
         if ($action == 'unstick') {
             confirm_referrer($url_referer);
 
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET sticky=\'0\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+            $this->model->unstick_topic($id, $fid);
 
             redirect(get_link('topic/'.$id.'/'), $lang_misc['Unstick topic redirect']);
         }
@@ -142,8 +137,8 @@ class moderate
         // Open a topic
         if ($action == 'open') {
             confirm_referrer($url_referer);
-
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed=\'0\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+            
+            $this->model->open_topic($id, $fid);
 
             redirect(get_link('topic/'.$id.'/'), $lang_misc['Unstick topic redirect']);
         }
@@ -152,7 +147,7 @@ class moderate
         if ($action == 'close') {
             confirm_referrer($url_referer);
 
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed=\'1\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+            $this->model->close_topic($id, $fid);
 
             redirect(get_link('topic/'.$id.'/'), $lang_misc['Unstick topic redirect']);
         }
@@ -197,7 +192,7 @@ class moderate
 
                 // Delete one or more posts
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
-                    $posts = delete_posts($id, $fid, $p);
+                    $posts = $this->model->delete_posts($id, $fid, $p);
 
                     $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
 
@@ -494,7 +489,7 @@ class moderate
                     message($lang_misc['No topics selected']);
                 }
 
-                $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to close topics', __FILE__, __LINE__, $this->db->error());
+                $this->model->close_multiple_topics($action, $topics, $fid);
 
                 $redirect_msg = ($action) ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
                 redirect(get_link('moderate/forum/'.$fid.'/'), $redirect_msg);
