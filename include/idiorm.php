@@ -1498,6 +1498,40 @@
         }
 
         /**
+         * Add simple ORDER BY clause
+         */
+        public function order_by($column_name)
+        {
+            return $this->_add_order_by($column_name, '');
+        }
+        
+        /**
+         * Add columns to the list of columns returned by the ORDER BY
+         * query. This defaults to '*'. Many columns can be supplied
+         * as either an array or as a list of parameters to the method.
+         *
+         * @example order_by_many('column', 'column2', 'column3');
+         * @example order_by_many(array('column' => 'DESC', 'column2' => 'ASC'), 'column4', 'column5');
+         *
+         * @return \ORM
+         */
+        public function order_by_many()
+        {
+            $order_name = func_get_args();
+            if (!empty($order_name)) {
+                $order_name = $this->_normalise_select_many_columns($order_name);
+                foreach ($order_name as $order_by => $dir) {
+                    if (is_numeric($order_by)) {
+                        $order_by = $dir;
+                        $dir = null;
+                    }
+                    $this->_add_order_by($order_by, $dir);
+                }
+            }
+            return $this;
+        }
+        
+        /**
          * Add an unquoted expression as an ORDER BY clause
          */
         public function order_by_expr($clause)
