@@ -33,19 +33,19 @@ class moderate
     {
         global $lang_common;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
         // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/misc.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
-        if (!$this->user['is_admmod']) {
+        if (!$this->user->is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -56,19 +56,19 @@ class moderate
     {
         global $lang_common;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
         // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/misc.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
-        if (!$this->user['is_admmod']) {
+        if (!$this->user->is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -79,20 +79,20 @@ class moderate
     {
         global $lang_common, $lang_topic, $lang_misc;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
         // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/misc.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
         if ($action == 'get_host') {
-            if (!$this->user['is_admmod']) {
+            if (!$this->user->is_admmod) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -103,7 +103,7 @@ class moderate
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] == '0' || !array_key_exists($this->user['username'], $mods_array))) {
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -160,11 +160,11 @@ class moderate
         $cur_topic = $this->model->get_topic_info($fid, $id);
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->user['disp_posts']);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->user->disp_posts);
 
         $p = (!isset($param) || $param <= 1 || $param > $num_pages) ? 1 : intval($param);
 
-        $start_from = $this->user['disp_posts'] * ($p - 1);
+        $start_from = $this->user->disp_posts * ($p - 1);
 
         // Move a topic - send a POST after
         if ($action == 'move') {
@@ -242,13 +242,13 @@ class moderate
                 // Show the moderate posts view
 
                 // Load the viewtopic.php language file
-                require FEATHER_ROOT.'lang/'.$this->user['language'].'/topic.php';
+                require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
 
                 // Used to disable the Move and Delete buttons if there are no replies to this topic
                 $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
 
                 /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
-                        $this->user['disp_posts'] = $cur_topic['num_replies'] + 1;
+                        $this->user->disp_posts = $cur_topic['num_replies'] + 1;
                 }*/
 
                 // Generate paging links
@@ -291,21 +291,21 @@ class moderate
     {
         global $lang_common, $lang_forum, $lang_misc;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
         // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/misc.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] == '0' || !array_key_exists($this->user['username'], $mods_array))) {
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -320,10 +320,10 @@ class moderate
         $sort_by = $this->model->forum_sort_by($cur_forum['sort_by']);
 
         // Determine the topic offset (based on $_GET['p'])
-        $num_pages = ceil($cur_forum['num_topics'] / $this->user['disp_topics']);
+        $num_pages = ceil($cur_forum['num_topics'] / $this->user->disp_topics);
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
-        $start_from = $this->user['disp_topics'] * ($p - 1);
+        $start_from = $this->user->disp_topics * ($p - 1);
         $url_forum = url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
@@ -360,21 +360,21 @@ class moderate
     {
         global $lang_common, $lang_forum, $lang_topic, $lang_misc;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
         // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/misc.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] == '0' || !array_key_exists($this->user['username'], $mods_array))) {
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 

@@ -33,18 +33,18 @@ class viewtopic
     {
         global $lang_common, $lang_post, $lang_topic, $pd;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
         // Load the viewtopic.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/topic.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
 
         // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/antispam.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Load the viewtopic.php model file
@@ -55,7 +55,7 @@ class viewtopic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && array_key_exists($this->user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
         if ($is_admmod) {
             $admin_ids = get_admin_ids();
         }
@@ -64,17 +64,17 @@ class viewtopic
         $post_link = $this->model->get_post_link($id, $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
 
         // Add/update this topic in our list of tracked topics
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $tracked_topics = get_tracked_topics();
             $tracked_topics['topics'][$id] = time();
             set_tracked_topics($tracked_topics);
         }
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->user['disp_posts']);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->user->disp_posts);
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
-        $start_from = $this->user['disp_posts'] * ($p - 1);
+        $start_from = $this->user->disp_posts * ($p - 1);
 
         $url_topic = url_friendly($cur_topic['subject']);
         $url_forum = url_friendly($cur_topic['forum_name']);

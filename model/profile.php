@@ -27,7 +27,7 @@ class profile
 
         if ($this->request->get('key')) {
             // If the user is already logged in we shouldn't be here :)
-            if (!$this->user['is_guest']) {
+            if (!$this->user->is_guest) {
                 header('Location: '.get_base_url());
                 exit;
             }
@@ -47,10 +47,10 @@ class profile
         }
 
         // Make sure we are allowed to change this user's password
-        if ($this->user['id'] != $id) {
-            if (!$this->user['is_admmod']) { // A regular user trying to change another user's password?
+        if ($this->user->id != $id) {
+            if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
                 message($lang_common['No permission'], false, '403 Forbidden');
-            } elseif ($this->user['g_moderator'] == '1') {
+            } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
                 $result = $this->db->query('SELECT u.group_id, g.g_moderator FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
@@ -60,7 +60,7 @@ class profile
 
                 list($group_id, $is_moderator) = $this->db->fetch_row($result);
 
-                if ($this->user['g_mod_edit_users'] == '0' || $this->user['g_mod_change_passwords'] == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
+                if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
                     message($lang_common['No permission'], false, '403 Forbidden');
                 }
             }
@@ -89,7 +89,7 @@ class profile
             if (!empty($cur_user['password'])) {
                 $old_password_hash = feather_hash($old_password);
 
-                if ($cur_user['password'] == $old_password_hash || $this->user['is_admmod']) {
+                if ($cur_user['password'] == $old_password_hash || $this->user->is_admmod) {
                     $authorized = true;
                 }
             }
@@ -102,8 +102,8 @@ class profile
 
             $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$new_password_hash.'\''.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $this->db->error());
 
-            if ($this->user['id'] == $id) {
-                feather_setcookie($this->user['id'], $new_password_hash, time() + $this->config['o_timeout_visit']);
+            if ($this->user->id == $id) {
+                feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
             }
 
             redirect(get_link('user/'.$id.'/section/essentials/'), $lang_profile['Pass updated redirect']);
@@ -115,10 +115,10 @@ class profile
         global $lang_profile, $lang_common, $lang_prof_reg;
 
         // Make sure we are allowed to change this user's email
-        if ($this->user['id'] != $id) {
-            if (!$this->user['is_admmod']) { // A regular user trying to change another user's email?
+        if ($this->user->id != $id) {
+            if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
                 message($lang_common['No permission'], false, '403 Forbidden');
-            } elseif ($this->user['g_moderator'] == '1') {
+            } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's email?
 
                 $result = $this->db->query('SELECT u.group_id, g.g_moderator FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
@@ -128,7 +128,7 @@ class profile
 
                 list($group_id, $is_moderator) = $this->db->fetch_row($result);
 
-                if ($this->user['g_mod_edit_users'] == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
+                if ($this->user->g_mod_edit_users == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
                     message($lang_common['No permission'], false, '403 Forbidden');
                 }
             }
@@ -148,7 +148,7 @@ class profile
                 message($lang_profile['Email updated'], true);
             }
         } elseif ($this->request->isPost()) {
-            if (feather_hash($this->request->post('req_password')) !== $this->user['password']) {
+            if (feather_hash($this->request->post('req_password')) !== $this->user->password) {
                 message($lang_profile['Wrong pass']);
             }
 
@@ -169,14 +169,14 @@ class profile
                     message($lang_prof_reg['Banned email']);
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-                    $mail_message = str_replace('<username>', $this->user['username'], $mail_message);
+                    $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
                     $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
@@ -196,14 +196,14 @@ class profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-                    $mail_message = str_replace('<username>', $this->user['username'], $mail_message);
+                    $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                     $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
@@ -218,14 +218,14 @@ class profile
             $this->db->query('UPDATE '.$this->db->prefix.'users SET activate_string=\''.$this->db->escape($new_email).'\', activate_key=\''.$new_email_key.'\' WHERE id='.$id) or error('Unable to update activation data', __FILE__, __LINE__, $this->db->error());
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
 
             // The first row contains the subject
             $first_crlf = strpos($mail_tpl, "\n");
             $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
             $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-            $mail_message = str_replace('<username>', $this->user['username'], $mail_message);
+            $mail_message = str_replace('<username>', $this->user->username, $mail_message);
             $mail_message = str_replace('<base_url>', get_base_url(), $mail_message);
             $mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
@@ -605,16 +605,16 @@ class profile
                     }
                 }
 
-                if ($this->user['is_admmod']) {
+                if ($this->user->is_admmod) {
                     $form['admin_note'] = feather_trim($this->request->post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_rename_users'] == '1')) {
+                    if ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_rename_users == '1')) {
                         $form['username'] = feather_trim($this->request->post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
                             // Check username
-                            require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+                            require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
                             $errors = '';
                             $errors = check_username($form['username'], $errors, $id);
@@ -627,12 +627,12 @@ class profile
                     }
 
                     // We only allow administrators to update the post count
-                    if ($this->user['g_id'] == FEATHER_ADMIN) {
+                    if ($this->user->g_id == FEATHER_ADMIN) {
                         $form['num_posts'] = intval($this->request->post('num_posts'));
                     }
                 }
 
-                if ($this->config['o_regs_verify'] == '0' || $this->user['is_admmod']) {
+                if ($this->config['o_regs_verify'] == '0' || $this->user->is_admmod) {
                     require FEATHER_ROOT.'include/email.php';
 
                     // Validate the email address
@@ -654,7 +654,7 @@ class profile
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-                if ($this->user['g_post_links'] == '1') {
+                if ($this->user->g_post_links == '1') {
                     if ($form['url'] != '') {
                         $url = url_valid($form['url']);
 
@@ -672,9 +672,9 @@ class profile
                     $form['url'] = '';
                 }
 
-                if ($this->user['g_id'] == FEATHER_ADMIN) {
+                if ($this->user->g_id == FEATHER_ADMIN) {
                     $form['title'] = feather_trim($this->request->post('title'));
-                } elseif ($this->user['g_set_title'] == '1') {
+                } elseif ($this->user->g_set_title == '1') {
                     $form['title'] = feather_trim($this->request->post('title'));
 
                     if ($form['title'] != '') {
@@ -722,7 +722,7 @@ class profile
                         message(sprintf($lang_prof_reg['Sig too long'], $this->config['p_sig_length'], feather_strlen($form['signature']) - $this->config['p_sig_length']));
                     } elseif (substr_count($form['signature'], "\n") > ($this->config['p_sig_lines']-1)) {
                         message(sprintf($lang_prof_reg['Sig too many lines'], $this->config['p_sig_lines']));
-                    } elseif ($form['signature'] && $this->config['p_sig_all_caps'] == '0' && is_all_uppercase($form['signature']) && !$this->user['is_admmod']) {
+                    } elseif ($form['signature'] && $this->config['p_sig_all_caps'] == '0' && is_all_uppercase($form['signature']) && !$this->user->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
 
@@ -916,9 +916,9 @@ class profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
+        if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.feather_escape($user['email']).'">'.feather_escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
+        } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="'.get_link('email/'.$user['id'].'/').'">'.$lang_common['Send email'].'</a>';
         } else {
             $user['email_field'] = '';
@@ -969,16 +969,16 @@ class profile
         }
 
         $posts_field = '';
-        if ($this->config['o_show_post_count'] == '1' || $this->user['is_admmod']) {
+        if ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
             $posts_field = forum_number_format($user['num_posts']);
         }
-        if ($this->user['g_search'] == '1') {
+        if ($this->user->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
                 $quick_searches[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.$lang_profile['Show topics'].'</a>';
                 $quick_searches[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.$lang_profile['Show posts'].'</a>';
             }
-            if ($this->user['is_admmod'] && $this->config['o_topic_subscriptions'] == '1') {
+            if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
                 $quick_searches[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.$lang_profile['Show subscriptions'].'</a>';
             }
 
@@ -1008,8 +1008,8 @@ class profile
 
         $user_disp = array();
 
-        if ($this->user['is_admmod']) {
-            if ($this->user['g_id'] == FEATHER_ADMIN || $this->user['g_mod_rename_users'] == '1') {
+        if ($this->user->is_admmod) {
+            if ($this->user->g_id == FEATHER_ADMIN || $this->user->g_mod_rename_users == '1') {
                 $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.feather_escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], feather_escape($user['username'])).'</p>'."\n";
@@ -1029,13 +1029,13 @@ class profile
         $user_disp['posts_field'] = '';
         $posts_actions = array();
 
-        if ($this->user['g_id'] == FEATHER_ADMIN) {
+        if ($this->user->g_id == FEATHER_ADMIN) {
             $user_disp['posts_field'] .= '<label>'.$lang_common['Posts'].'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif ($this->config['o_show_post_count'] == '1' || $this->user['is_admmod']) {
+        } elseif ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
             $posts_actions[] = sprintf($lang_profile['Posts info'], forum_number_format($user['num_posts']));
         }
 
-        if ($this->user['g_search'] == '1' || $this->user['g_id'] == FEATHER_ADMIN) {
+        if ($this->user->g_search == '1' || $this->user->g_id == FEATHER_ADMIN) {
             $posts_actions[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.$lang_profile['Show topics'].'</a>';
             $posts_actions[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.$lang_profile['Show posts'].'</a>';
 

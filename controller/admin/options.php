@@ -35,7 +35,7 @@ class options
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
+        if ($this->user->g_id != FEATHER_ADMIN) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 

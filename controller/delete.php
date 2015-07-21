@@ -33,7 +33,7 @@ class delete
     {
         global $lang_common, $lang_post, $pd;
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
         }
 
@@ -46,25 +46,25 @@ class delete
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && array_key_exists($this->user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if (($this->user['g_delete_posts'] == '0' ||
-                ($this->user['g_delete_topics'] == '0' && $is_topic_post) ||
-                $cur_post['poster_id'] != $this->user['id'] ||
+        if (($this->user->g_delete_posts == '0' ||
+                ($this->user->g_delete_topics == '0' && $is_topic_post) ||
+                $cur_post['poster_id'] != $this->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        if ($is_admmod && $this->user['g_id'] != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+        if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
         // Load the delete.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/delete.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/delete.php';
 
 
         if ($this->feather->request()->isPost()) {

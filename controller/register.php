@@ -33,19 +33,19 @@ class register
     {
         global $lang_common, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Load the register.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
         // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/antispam.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled
@@ -106,7 +106,7 @@ class register
         global $lang_common, $lang_login, $lang_register;
 
         // If we are logged in, we shouldn't be here
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
@@ -117,10 +117,10 @@ class register
         }
 
         // Load the register.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
         // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         if ($this->config['o_rules'] != '1') {
             redirect(get_link('register/agree/'));

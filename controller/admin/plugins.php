@@ -35,7 +35,7 @@ class plugins
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
+        if (!$this->user->is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -49,7 +49,7 @@ class plugins
 
         // AP_ == Admins only, AMP_ == admins and moderators
         $prefix = substr($plugin, 0, strpos($plugin, '_'));
-        if ($this->user['g_moderator'] == '1' && $prefix == 'AP') {
+        if ($this->user->g_moderator == '1' && $prefix == 'AP') {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 

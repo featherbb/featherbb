@@ -33,7 +33,7 @@ class reports
         $zapped = $this->db->result($result);
 
         if ($zapped == '') {
-            $this->db->query('UPDATE '.$this->db->prefix.'reports SET zapped='.time().', zapped_by='.$this->user['id'].' WHERE id='.$zap_id) or error('Unable to zap report', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('UPDATE '.$this->db->prefix.'reports SET zapped='.time().', zapped_by='.$this->user->id.' WHERE id='.$zap_id) or error('Unable to zap report', __FILE__, __LINE__, $this->db->error());
         }
 
         // Delete old reports (which cannot be viewed anyway)

@@ -33,13 +33,13 @@ class login
     {
         global $lang_common;
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->model->get_redirect_url($_SERVER);
@@ -68,13 +68,13 @@ class login
 
         define('FEATHER_QUIET_VISIT', 1);
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         $this->model->login();
     }
@@ -86,7 +86,7 @@ class login
         define('FEATHER_QUIET_VISIT', 1);
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         $this->model->logout($id, $token);
     }
@@ -97,13 +97,13 @@ class login
 
         define('FEATHER_QUIET_VISIT', 1);
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         $errors = $this->model->password_forgotten();
 

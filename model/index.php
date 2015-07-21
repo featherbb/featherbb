@@ -44,7 +44,7 @@ class index
         $forum_actions = array();
 
         // Display a "mark all as read" link
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $forum_actions[] = '<a href="'.get_link('mark-read/').'">'.$lang_common['Mark all as read'].'</a>';
         }
 
@@ -70,7 +70,7 @@ class index
                 if (empty($tracked_topics['topics'])) {
                     $new_topics = $forums;
                 } else {
-                    $result = $this->db->query('SELECT forum_id, id, last_post FROM '.$this->db->prefix.'topics WHERE forum_id IN('.implode(',', array_keys($forums)).') AND last_post>'.$this->user['last_visit'].' AND moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $this->db->error());
+                    $result = $this->db->query('SELECT forum_id, id, last_post FROM '.$this->db->prefix.'topics WHERE forum_id IN('.implode(',', array_keys($forums)).') AND last_post>'.$this->user->last_visit.' AND moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $this->db->error());
 
                     while ($cur_topic = $this->db->fetch_assoc($result)) {
                         if (!isset($new_topics[$cur_topic['forum_id']]) && (!isset($tracked_topics['forums'][$cur_topic['forum_id']]) || $tracked_topics['forums'][$cur_topic['forum_id']] < $forums[$cur_topic['forum_id']]) && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post'])) {
@@ -90,11 +90,11 @@ class index
         global $lang_common, $lang_index;
 
         // Get list of forums and topics with new posts since last visit
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $new_topics = self::get_new_posts();
         }
 
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
 
         $index_data = array();
 
@@ -159,7 +159,7 @@ class index
                 $moderators = array();
 
                 foreach ($mods_array as $mod_username => $mod_id) {
-                    if ($this->user['g_view_users'] == '1') {
+                    if ($this->user->g_view_users == '1') {
                         $moderators[] = '<a href="'.get_link('user/'.$mod_id.'/').'">'.feather_escape($mod_username).'</a>';
                     } else {
                         $moderators[] = feather_escape($mod_username);
@@ -197,7 +197,7 @@ class index
         $result = $this->db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$this->db->prefix.'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $this->db->error());
         list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $this->db->fetch_row($result));
 
-        if ($this->user['g_view_users'] == '1') {
+        if ($this->user->g_view_users == '1') {
             $stats['newest_user'] = '<a href="'.get_link('user/'.$stats['last_user']['id']).'/">'.feather_escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = feather_escape($stats['last_user']['username']);
@@ -216,7 +216,7 @@ class index
 
         while ($this->user_online = $this->db->fetch_assoc($result)) {
             if ($this->user_online['user_id'] > 1) {
-                if ($this->user['g_view_users'] == '1') {
+                if ($this->user->g_view_users == '1') {
                     $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('user/'.$this->user_online['user_id']).'/">'.feather_escape($this->user_online['ident']).'</a>';
                 } else {
                     $online['users'][] = "\n\t\t\t\t".'<dd>'.feather_escape($this->user_online['ident']);

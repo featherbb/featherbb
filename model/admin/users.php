@@ -326,7 +326,7 @@ class users
                     message($lang_admin_users['Invalid date message'].' '.$lang_admin_users['Invalid date reasons']);
                 }
 
-                $diff = ($this->user['timezone'] + $this->user['dst']) * 3600;
+                $diff = ($this->user->timezone + $this->user->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
@@ -359,7 +359,7 @@ class users
                 $ban_email = '\''.$this->db->escape($user_info[$user_id]['email']).'\'';
                 $ban_ip = ($ban_the_ip != 0) ? '\''.$this->db->escape($user_info[$user_id]['ip']).'\'' : 'NULL';
 
-                $this->db->query('INSERT INTO '.$this->db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_username.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$this->user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $this->db->error());
+                $this->db->query('INSERT INTO '.$this->db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_username.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$this->user->id.')') or error('Unable to add ban', __FILE__, __LINE__, $this->db->error());
             }
 
             // Regenerate the bans cache

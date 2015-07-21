@@ -37,7 +37,7 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
+        if (!$this->user->is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -46,7 +46,7 @@ class users
 
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
+            if ($this->user->g_id > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -73,7 +73,7 @@ class users
 
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
+            if ($this->user->g_id > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -100,7 +100,7 @@ class users
 
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
-            if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
+            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -144,8 +144,8 @@ class users
             $paging_links = '<span class="pages-label">' . $lang_common['Pages'] . ' </span>' . paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
-            $can_delete = $can_move = $this->user['g_id'] == FEATHER_ADMIN;
-            $can_ban = $this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_ban_users'] == '1');
+            $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
+            $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
@@ -199,7 +199,7 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
+        if (!$this->user->is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
@@ -244,7 +244,7 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
+        if (!$this->user->is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 

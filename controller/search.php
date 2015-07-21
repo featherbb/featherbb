@@ -34,12 +34,12 @@ class search
         global $lang_common, $lang_search, $lang_forum, $lang_topic, $pd;
 
         // Load the search.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/search.php';
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/forum.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/search.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
-        if ($this->user['g_read_board'] == '0') {
+        if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
-        } elseif ($this->user['g_search'] == '0') {
+        } elseif ($this->user->g_search == '0') {
             message($lang_search['No search permission'], false, '403 Forbidden');
         }
 
@@ -65,7 +65,7 @@ class search
                         );
 
                     if ($search['show_as'] == 'posts') {
-                        require FEATHER_ROOT.'lang/'.$this->user['language'].'/topic.php';
+                        require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
                         require FEATHER_ROOT.'include/parser.php';
                     }
 

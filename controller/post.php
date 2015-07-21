@@ -39,13 +39,13 @@ class post
         global $lang_common, $lang_prof_reg, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
 
         // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/antispam.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
@@ -65,25 +65,25 @@ class post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && array_key_exists($this->user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($tid && (($cur_posting['post_replies'] == '' && $this->user['g_post_replies'] == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($fid && (($cur_posting['post_topics'] == '' && $this->user['g_post_topics'] == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($tid && (($cur_posting['post_replies'] == '' && $this->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
+                ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
         // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
         // Start with a clean slate
         $errors = array();
 
         $post = '';
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
         } else {
             $required_fields['req_username'] = $lang_post['Guest name'];
@@ -138,12 +138,12 @@ class post
                         }
 
                         // If we previously found out that the email was banned
-                        if ($this->user['is_guest'] && isset($errors['banned_email']) && $this->config['o_mailing_list'] != '') {
+                        if ($this->user->is_guest && isset($errors['banned_email']) && $this->config['o_mailing_list'] != '') {
                             $this->model->warn_banned_user($post, $new['pid']);
                         }
 
                         // If the posting user is logged in, increment his/her post count
-                        if (!$this->user['is_guest']) {
+                        if (!$this->user->is_guest) {
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
@@ -184,7 +184,7 @@ class post
 
         $page_title = array(feather_escape($this->config['o_board_title']), $action);
         $required_fields = array('req_email' => $lang_common['Email'], 'req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);
-        if ($this->user['is_guest']) {
+        if ($this->user->is_guest) {
             $required_fields['captcha'] = $lang_antispam['Robot title'];
         }
         $focus_element = array('post');

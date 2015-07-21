@@ -39,31 +39,31 @@ class profile
         require FEATHER_ROOT.'include/utf8/strcasecmp.php';
 
         // Load the prof_reg.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         // Load the profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/profile.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/profile.php';
 
         if ($this->request->post('update_group_membership')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
+            if ($this->user->g_id > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             $this->model->update_group_membership($id, $this->feather);
         } elseif ($this->request->post('update_forums')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
+            if ($this->user->g_id > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             $this->model->update_mod_forums($id, $this->feather);
         } elseif ($this->request->post('ban')) {
-            if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
+            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
             $this->model->ban_user($id);
         } elseif ($this->request->post('delete_user') || $this->request->post('delete_user_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
+            if ($this->user->g_id > FEATHER_ADMIN) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -90,10 +90,10 @@ class profile
             // Fetch the user group of the user we are editing
             $info = $this->model->fetch_user_group($id);
 
-            if ($this->user['id'] != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
-                                    (!$this->user['is_admmod'] ||                                                                    // and we are not an admin or mod
-                                    ($this->user['g_id'] != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
-                                    ($this->user['g_mod_edit_users'] == '0' ||                                                    // mods aren't allowed to edit users
+            if ($this->user->id != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
+                                    (!$this->user->is_admmod ||                                                                    // and we are not an admin or mod
+                                    ($this->user->g_id != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
+                                    ($this->user->g_mod_edit_users == '0' ||                                                    // mods aren't allowed to edit users
                                     $info['group_id'] == FEATHER_ADMIN ||                                                                    // or the user is an admin
                                     $info['is_moderator'])))) {                                                                            // or the user is another mod
                                     message($lang_common['No permission'], false, '403 Forbidden');
@@ -112,10 +112,10 @@ class profile
         }
 
         // View or edit?
-        if ($this->user['id'] != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
-                (!$this->user['is_admmod'] ||                                                                    // and we are not an admin or mod
-                ($this->user['g_id'] != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
-                ($this->user['g_mod_edit_users'] == '0' ||                                                    // mods aren't allowed to edit users
+        if ($this->user->id != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
+                (!$this->user->is_admmod ||                                                                    // and we are not an admin or mod
+                ($this->user->g_id != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
+                ($this->user->g_mod_edit_users == '0' ||                                                    // mods aren't allowed to edit users
                 $user['g_id'] == FEATHER_ADMIN ||                                                                // or the user is an admin
                 $user['g_moderator'] == '1')))) {
             // or the user is another mod
@@ -162,7 +162,7 @@ class profile
                                 )
                         );
             } elseif ($section == 'personal') {
-                if ($this->user['g_set_title'] == '1') {
+                if ($this->user->g_set_title == '1') {
                     $title_field = '<label>'.$lang_common['Title'].' <em>('.$lang_profile['Leave blank'].')</em><br /><input type="text" name="title" value="'.feather_escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
@@ -269,7 +269,7 @@ class profile
                         );
                 
             } elseif ($section == 'admin') {
-                if (!$this->user['is_admmod'] || ($this->user['g_moderator'] == '1' && $this->user['g_mod_ban_users'] == '0')) {
+                if (!$this->user->is_admmod || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '0')) {
                     message($lang_common['Bad request'], false, '403 Forbidden');
                 }
 
@@ -308,15 +308,15 @@ class profile
         require FEATHER_ROOT.'include/utf8/strcasecmp.php';
 
         // Load the prof_reg.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         // Load the profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/profile.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/profile.php';
 
         if ($action != 'change_pass' || !$this->request->get('key')) {
-            if ($this->user['g_read_board'] == '0') {
+            if ($this->user->g_read_board == '0') {
                 message($lang_common['No view'], false, '403 Forbidden');
-            } elseif ($this->user['g_view_users'] == '0' && ($this->user['is_guest'] || $this->user['id'] != $id)) {
+            } elseif ($this->user->g_view_users == '0' && ($this->user->is_guest || $this->user->id != $id)) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         }
@@ -326,7 +326,7 @@ class profile
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Profile'], $lang_profile['Change pass']);
             $required_fields = array('req_old_password' => $lang_profile['Old pass'], 'req_new_password1' => $lang_profile['New pass'], 'req_new_password2' => $lang_profile['Confirm new pass']);
-            $focus_element = array('change_pass', ((!$this->user['is_admmod']) ? 'req_old_password' : 'req_new_password1'));
+            $focus_element = array('change_pass', ((!$this->user->is_admmod) ? 'req_old_password' : 'req_new_password1'));
 
             define('FEATHER_ACTIVE_PAGE', 'profile');
 
@@ -365,7 +365,7 @@ class profile
                 message($lang_profile['Avatars disabled']);
             }
 
-            if ($this->user['id'] != $id && !$this->user['is_admmod']) {
+            if ($this->user->id != $id && !$this->user->is_admmod) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -393,7 +393,7 @@ class profile
             $this->footer->display();
             
         } elseif ($action == 'delete_avatar') {
-            if ($this->user['id'] != $id && !$this->user['is_admmod']) {
+            if ($this->user->id != $id && !$this->user->is_admmod) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -403,7 +403,7 @@ class profile
 
             redirect(get_link('user/'.$id.'/section/personality/'), $lang_profile['Avatar deleted redirect']);
         } elseif ($action == 'promote') {
-            if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_promote_users'] == '0')) {
+            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 

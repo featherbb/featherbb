@@ -26,10 +26,10 @@ class viewforum
     {
         global $lang_common;
 
-        if (!$this->user['is_guest']) {
-            $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, s.user_id AS is_subscribed FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_subscriptions AS s ON (f.id=s.forum_id AND s.user_id='.$this->user['id'].') LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+        if (!$this->user->is_guest) {
+            $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, s.user_id AS is_subscribed FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_subscriptions AS s ON (f.id=s.forum_id AND s.user_id='.$this->user->id.') LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
         } else {
-            $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, 0 AS is_subscribed FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, 0 AS is_subscribed FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
         }
 
         if (!$this->db->num_rows($result)) {
@@ -94,7 +94,7 @@ class viewforum
 
         $forum_actions = array();
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             if ($subscriptions == 1) {
                 if ($is_subscribed) {
                     $forum_actions[] = '<span>'.$lang_forum['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Unsubscribe'].'</a>';
@@ -115,12 +115,12 @@ class viewforum
         global $lang_common, $lang_forum;
 
         // Get topic/forum tracking data
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $tracked_topics = get_tracked_topics();
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'topics WHERE forum_id='.$forum_id.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$this->user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'topics WHERE forum_id='.$forum_id.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$this->user->disp_topics) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $this->db->error());
 
         $forum_data = array();
 
@@ -132,12 +132,12 @@ class viewforum
             }
 
             // Fetch list of topics to display on this page
-            if ($this->user['is_guest'] || $this->config['o_show_dot'] == '0') {
+            if ($this->user->is_guest || $this->config['o_show_dot'] == '0') {
                 // Without "the dot"
                 $sql = 'SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC';
             } else {
                 // With "the dot"
-                $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'posts AS p ON t.id=p.topic_id AND p.poster_id='.$this->user['id'].' WHERE t.id IN('.implode(',', $topic_ids).') GROUP BY t.id'.($db_type == 'pgsql' ? ', t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to, p.poster_id' : '').' ORDER BY t.sticky DESC, t.'.$sort_by.', t.id DESC';
+                $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'posts AS p ON t.id=p.topic_id AND p.poster_id='.$this->user->id.' WHERE t.id IN('.implode(',', $topic_ids).') GROUP BY t.id'.($db_type == 'pgsql' ? ', t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to, p.poster_id' : '').' ORDER BY t.sticky DESC, t.'.$sort_by.', t.id DESC';
             }
 
             $result = $this->db->query($sql) or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
@@ -177,7 +177,7 @@ class viewforum
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 
-                if (!$this->user['is_guest'] && $cur_topic['last_post'] > $this->user['last_visit'] && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
+                if (!$this->user->is_guest && $cur_topic['last_post'] > $this->user->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
@@ -190,14 +190,14 @@ class viewforum
                 $cur_topic['subject_formatted'] = implode(' ', $status_text).' '.$cur_topic['subject_formatted'];
 
                 // Should we display the dot or not? :)
-                if (!$this->user['is_guest'] && $this->config['o_show_dot'] == '1') {
-                    if ($cur_topic['has_posted'] == $this->user['id']) {
+                if (!$this->user->is_guest && $this->config['o_show_dot'] == '1') {
+                    if ($cur_topic['has_posted'] == $this->user->id) {
                         $cur_topic['subject_formatted'] = '<strong class="ipost">·&#160;</strong>'.$cur_topic['subject_formatted'];
                         $cur_topic['item_status'] .= ' iposted';
                     }
                 }
 
-                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $this->user['disp_posts']);
+                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $this->user->disp_posts);
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').' ]</span>';

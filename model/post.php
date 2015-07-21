@@ -27,9 +27,9 @@ class post
         global $lang_common;
 
         if ($tid) {
-            $result = $this->db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.subject, t.closed, s.user_id AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') LEFT JOIN '.$this->db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$this->user['id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$tid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $result = $this->db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.subject, t.closed, s.user_id AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') LEFT JOIN '.$this->db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$this->user->id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$tid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
         } else {
-            $result = $this->db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $result = $this->db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
         }
 
         if (!$this->db->num_rows($result)) {
@@ -47,7 +47,7 @@ class post
         global $lang_post, $lang_common, $lang_prof_reg, $lang_register, $lang_antispam, $lang_antispam_questions, $pd;
 
         // Antispam feature
-        if ($this->user['is_guest']) {
+        if ($this->user->is_guest) {
 
             // It's a guest, so we have to validate the username
             $errors = check_username(feather_trim($this->request->post('req_username')), $errors);
@@ -66,8 +66,8 @@ class post
         }
 
         // Flood protection
-        if ($this->request->post('preview') != '' && $this->user['last_post'] != '' && (time() - $this->user['last_post']) < $this->user['g_post_flood']) {
-            $errors[] = sprintf($lang_post['Flood start'], $this->user['g_post_flood'], $this->user['g_post_flood'] - (time() - $this->user['last_post']));
+        if ($this->request->post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < $this->user->g_post_flood) {
+            $errors[] = sprintf($lang_post['Flood start'], $this->user->g_post_flood, $this->user->g_post_flood - (time() - $this->user->last_post));
         }
 
         if ($tid) {
@@ -107,23 +107,23 @@ class post
                 $errors[] = $lang_post['No subject after censoring'];
             } elseif (feather_strlen($subject) > 70) {
                 $errors[] = $lang_post['Too long subject'];
-            } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user['is_admmod']) {
+            } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
                 $errors[] = $lang_post['All caps subject'];
             }
         }
 
         // If the user is logged in we get the username and email from $this->user
-        if (!$this->user['is_guest']) {
-            $username = $this->user['username'];
-            $email = $this->user['email'];
+        if (!$this->user->is_guest) {
+            $username = $this->user->username;
+            $email = $this->user->email;
         }
         // Otherwise it should be in $feather ($_POST)
         else {
             $email = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             // Load the register.php/prof_reg.php language files
-            require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
-            require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+            require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
+            require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
                 require FEATHER_ROOT.'include/email.php';
@@ -133,7 +133,7 @@ class post
 
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
-                if ($this->user['is_guest'] && is_banned_email($email)) {
+                if ($this->user->is_guest && is_banned_email($email)) {
                     if ($this->config['p_allow_banned_email'] == '0') {
                         $errors[] = $lang_prof_reg['Banned email'];
                     }
@@ -149,7 +149,7 @@ class post
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
             $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
-        } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user['is_admmod']) {
+        } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = $lang_post['All caps message'];
         }
 
@@ -180,9 +180,9 @@ class post
     {
         $post = array();
 
-        if (!$this->user['is_guest']) {
-            $post['username'] = $this->user['username'];
-            $post['email'] = $this->user['email'];
+        if (!$this->user->is_guest) {
+            $post['username'] = $this->user->username;
+            $post['email'] = $this->user->email;
         }
         // Otherwise it should be in $feather ($_POST)
         else {
@@ -219,19 +219,19 @@ class post
     {
         $new = array();
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $new['tid'] = $tid;
 
             // Insert the new post
-            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', '.$this->user['id'].', \''.$this->db->escape(get_remote_address()).'\', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$tid.')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', '.$this->user->id.', \''.$this->db->escape(get_remote_address()).'\', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$tid.')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
             $new['pid'] = $this->db->insert_id();
 
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1') {
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
-                    $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user['id'].' ,'.$tid.')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
+                    $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user->id.' ,'.$tid.')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
                 } elseif (!isset($post['subscribe']) && $is_subscribed) {
-                    $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$this->user['id'].' AND topic_id='.$tid) or error('Unable to remove subscription', __FILE__, __LINE__, $this->db->error());
+                    $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$this->user->id.' AND topic_id='.$tid) or error('Unable to remove subscription', __FILE__, __LINE__, $this->db->error());
                 }
             }
         } else {
@@ -259,7 +259,7 @@ class post
         $previous_post_time = $this->db->result($result);
 
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result = $this->db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'topic_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$this->db->prefix.'online AS o ON u.id=o.user_id LEFT JOIN '.$this->db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND COALESCE(o.logged, u.last_visit)>'.$previous_post_time.' AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.topic_id='.$tid.' AND u.id!='.$this->user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'topic_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$this->db->prefix.'online AS o ON u.id=o.user_id LEFT JOIN '.$this->db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND COALESCE(o.logged, u.last_visit)>'.$previous_post_time.' AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.topic_id='.$tid.' AND u.id!='.$this->user->id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
         if ($this->db->num_rows($result)) {
             require_once FEATHER_ROOT.'include/email.php';
 
@@ -340,14 +340,14 @@ class post
         $this->db->query('INSERT INTO '.$this->db->prefix.'topics (poster, subject, posted, last_post, last_poster, sticky, forum_id) VALUES(\''.$this->db->escape($post['username']).'\', \''.$this->db->escape($post['subject']).'\', '.$post['time'].', '.$post['time'].', \''.$this->db->escape($post['username']).'\', '.$post['stick_topic'].', '.$fid.')') or error('Unable to create topic', __FILE__, __LINE__, $this->db->error());
         $new['tid'] = $this->db->insert_id();
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1' && $post['subscribe']) {
-                $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user['id'].' ,'.$new['tid'].')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
+                $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user->id.' ,'.$new['tid'].')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
             }
 
             // Create the post ("topic post")
-            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', '.$this->user['id'].', \''.$this->db->escape(get_remote_address()).'\', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new['tid'].')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', '.$this->user->id.', \''.$this->db->escape(get_remote_address()).'\', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new['tid'].')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
         } else {
             // Create the post ("topic post")
             $email_sql = ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') ? '\''.$this->db->escape($post['email']).'\'' : 'NULL';
@@ -369,7 +369,7 @@ class post
     public function send_notifications_new_topic($post, $cur_posting, $new_tid)
     {
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result = $this->db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'forum_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$this->db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.forum_id='.$cur_posting['id'].' AND u.id!='.$this->user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'forum_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$this->db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.forum_id='.$cur_posting['id'].' AND u.id!='.$this->user->id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
         if ($this->db->num_rows($result)) {
             require_once FEATHER_ROOT.'include/email.php';
 
@@ -445,7 +445,7 @@ class post
     public function warn_banned_user($post, $new_pid)
     {
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
@@ -463,13 +463,13 @@ class post
     // Increment post count, change group if needed
     public function increment_post_count($post, $new_tid)
     {
-        if (!$this->user['is_guest']) {
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET num_posts=num_posts+1, last_post='.$post['time'].' WHERE id='.$this->user['id']) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+        if (!$this->user->is_guest) {
+            $this->db->query('UPDATE '.$this->db->prefix.'users SET num_posts=num_posts+1, last_post='.$post['time'].' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
 
             // Promote this user to a new group if enabled
-            if ($this->user['g_promote_next_group'] != 0 && $this->user['num_posts'] + 1 >= $this->user['g_promote_min_posts']) {
-                $new_group_id = $this->user['g_promote_next_group'];
-                $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$new_group_id.' WHERE id='.$this->user['id']) or error('Unable to promote user to new group', __FILE__, __LINE__, $this->db->error());
+            if ($this->user->g_promote_next_group != 0 && $this->user->num_posts + 1 >= $this->user->g_promote_min_posts) {
+                $new_group_id = $this->user->g_promote_next_group;
+                $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$new_group_id.' WHERE id='.$this->user->id) or error('Unable to promote user to new group', __FILE__, __LINE__, $this->db->error());
             }
 
             // Topic tracking stuff...
@@ -585,7 +585,7 @@ class post
             $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('stick_topic') ? ' checked="checked"' : '').' />'.$lang_common['Stick topic'].'<br /></label>';
         }
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             if ($this->config['o_smilies'] == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
             }
@@ -598,7 +598,7 @@ class post
                     $subscr_checked = ($this->request->post('subscribe')) ? true : false;
                 }
                 // If auto subscribed
-                elseif ($this->user['auto_notify']) {
+                elseif ($this->user->auto_notify) {
                     $subscr_checked = true;
                 }
                 // If already subscribed to the topic

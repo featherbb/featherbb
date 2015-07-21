@@ -142,7 +142,7 @@ class register
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/banned_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_register.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -160,7 +160,7 @@ class register
             // If we previously found out that the email was a dupe
             if (!empty($dupe_list)) {
                 // Load the "dupe email register" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/dupe_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/dupe_email_register.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -178,7 +178,7 @@ class register
             // Should we alert people on the admin mailing list that a new user has registered?
             if ($this->config['o_regs_report'] == '1') {
                 // Load the "new user" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/new_user.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/new_user.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -198,7 +198,7 @@ class register
         // Must the user verify the registration or do we log him/her in right now?
         if ($this->config['o_regs_verify'] == '1') {
             // Load the "welcome" template
-            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/welcome.tpl'));
+            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/welcome.tpl'));
 
             // The first row contains the subject
             $first_crlf = strpos($mail_tpl, "\n");

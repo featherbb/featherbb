@@ -100,7 +100,7 @@ class bans
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $diff = ($this->user['timezone'] + $this->user['dst']) * 3600;
+        $diff = ($this->user->timezone + $this->user->dst) * 3600;
         $ban['expire'] = ($ban['expire'] != '') ? gmdate('Y-m-d', $ban['expire'] + $diff) : '';
 
         $ban['mode'] = 'edit';
@@ -198,7 +198,7 @@ class bans
                 message($lang_admin_bans['Invalid date message'].' '.$lang_admin_bans['Invalid date reasons']);
             }
 
-            $diff = ($this->user['timezone'] + $this->user['dst']) * 3600;
+            $diff = ($this->user->timezone + $this->user->dst) * 3600;
             $ban_expire -= $diff;
 
             if ($ban_expire <= time()) {
@@ -214,7 +214,7 @@ class bans
         $ban_message = ($ban_message != '') ? '\''.$this->db->escape($ban_message).'\'' : 'NULL';
 
         if ($this->request->post('mode') == 'add') {
-            $this->db->query('INSERT INTO '.$this->db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_user.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$this->user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('INSERT INTO '.$this->db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_user.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$this->user->id.')') or error('Unable to add ban', __FILE__, __LINE__, $this->db->error());
         } else {
             $this->db->query('UPDATE '.$this->db->prefix.'bans SET username='.$ban_user.', ip='.$ban_ip.', email='.$ban_email.', message='.$ban_message.', expire='.$ban_expire.' WHERE id='.intval($this->request->post('ban_id'))) or error('Unable to update ban', __FILE__, __LINE__, $this->db->error());
         }

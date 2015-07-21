@@ -25,7 +25,7 @@ class edit
     public function get_info_edit($id)
     {
         
-        $result = $this->db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.posted, t.first_post_id, t.sticky, t.closed, p.poster, p.poster_id, p.message, p.hide_smilies FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.posted, t.first_post_id, t.sticky, t.closed, p.poster, p.poster_id, p.message, p.hide_smilies FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
 
         if (!$this->db->num_rows($result)) {
             message($lang_common['Bad request'], false, '404 Not Found');
@@ -57,7 +57,7 @@ class edit
                 $errors[] = $lang_post['No subject after censoring'];
             } elseif (feather_strlen($subject) > 70) {
                 $errors[] = $lang_post['Too long subject'];
-            } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user['is_admmod']) {
+            } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
                 $errors[] = $lang_post['All caps subject'];
             }
         }
@@ -68,7 +68,7 @@ class edit
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
             $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
-        } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user['is_admmod']) {
+        } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = $lang_post['All caps message'];
         }
 
@@ -129,7 +129,7 @@ class edit
 
     public function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod)
     {
-        $edited_sql = (!$this->request->post('slient') || !$is_admmod) ? ', edited='.time().', edited_by=\''.$this->db->escape($this->user['username']).'\'' : '';
+        $edited_sql = (!$this->request->post('slient') || !$is_admmod) ? ', edited='.time().', edited_by=\''.$this->db->escape($this->user->username).'\'' : '';
 
         require FEATHER_ROOT.'include/search_idx.php';
 

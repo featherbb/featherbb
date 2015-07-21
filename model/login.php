@@ -98,17 +98,17 @@ class login
     {
         global $lang_login;
 
-        if ($this->user['is_guest'] || !isset($id) || $id != $this->user['id'] || !isset($token) || $token != feather_hash($this->user['id'].feather_hash(get_remote_address()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash(get_remote_address()))) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Remove user from "users online" list
-        $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id='.$this->user['id']) or error('Unable to delete from online list', __FILE__, __LINE__, $this->db->error());
+        $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id='.$this->user->id) or error('Unable to delete from online list', __FILE__, __LINE__, $this->db->error());
 
         // Update last_visit (make sure there's something to update it with)
-        if (isset($this->user['logged'])) {
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET last_visit='.$this->user['logged'].' WHERE id='.$this->user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $this->db->error());
+        if (isset($this->user->logged)) {
+            $this->db->query('UPDATE '.$this->db->prefix.'users SET last_visit='.$this->user->logged.' WHERE id='.$this->user->id) or error('Unable to update user visit data', __FILE__, __LINE__, $this->db->error());
         }
 
         feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
@@ -120,7 +120,7 @@ class login
     {
         global $lang_common, $lang_login;
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
@@ -142,7 +142,7 @@ class login
 
                 if ($this->db->num_rows($result)) {
                     // Load the "activate password" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/activate_password.tpl'));
+                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
