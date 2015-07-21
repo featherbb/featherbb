@@ -151,26 +151,29 @@ function doAddTags(tag1, tag2, obj) {
 	if (document.selection) {
 		textarea.focus();
 		var sel = document.selection.createRange();
-		//alert(sel.text);
 		sel.text = tag1 + sel.text + tag2;
 	} else { // Code for Mozilla Firefox
 		var len = textarea.value.length;
-		var start = textarea.selectionStart;
-		var end = textarea.selectionEnd;
+			start = textarea.selectionStart,
+			end = textarea.selectionEnd,
 
+			scrollTop = textarea.scrollTop,
+			scrollLeft = textarea.scrollLeft,
 
-		var scrollTop = textarea.scrollTop;
-		var scrollLeft = textarea.scrollLeft;
+			sel = textarea.value.substring(start, end),
+			rep = tag1 + sel + tag2;
 
-
-		var sel = textarea.value.substring(start, end);
-		//alert(sel);
-		var rep = tag1 + sel + tag2;
+		// Update textarea content with tags
 		textarea.value = textarea.value.substring(0, start) + rep + textarea.value.substring(end, len);
 
-		textarea.scrollTop = scrollTop;
-		textarea.scrollLeft = scrollLeft;
-
+		// Place cursor into tags if no word selected, or after word if selection.
+		if (len == 0) {
+			var cursorPos = textarea.value.substring(0, start).length + tag1.length + sel.length;
+			textarea.setSelectionRange(cursorPos, cursorPos);
+		} else {
+			textarea.scrollTop = scrollTop;
+			textarea.scrollLeft = scrollLeft;
+		}
 
 	}
 }
