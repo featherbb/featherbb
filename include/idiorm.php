@@ -985,9 +985,11 @@
          *
          * ON `user`.`id` = `profile`.`user_id`
          *
-         * The final (optional) argument specifies an alias for the joined table.
+         * The fourth argument specifies an alias for the joined table.
+         * 
+         * The final argument specifies is the last column should be escaped
          */
-        protected function _add_join_source($join_operator, $table, $constraint, $table_alias=null)
+        protected function _add_join_source($join_operator, $table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
             $join_operator = trim("{$join_operator} JOIN");
 
@@ -1003,7 +1005,13 @@
             if (is_array($constraint)) {
                 list($first_column, $operator, $second_column) = $constraint;
                 $first_column = $this->_quote_identifier($first_column);
-                $second_column = $this->_quote_identifier($second_column);
+                if (!$no_escape_second_col) {
+                    $second_column = $this->_quote_identifier($second_column);
+                }
+                else {
+                    // Seems OK, need more testing
+                    $second_column = '\''.str_replace("'","''",$second_column).'\'';
+                }
                 $constraint = "{$first_column} {$operator} {$second_column}";
             }
 
@@ -1039,41 +1047,41 @@
         /**
          * Add a simple JOIN source to the query
          */
-        public function join($table, $constraint, $table_alias=null)
+        public function join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("", $table, $constraint, $table_alias);
+            return $this->_add_join_source("", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add an INNER JOIN souce to the query
          */
-        public function inner_join($table, $constraint, $table_alias=null)
+        public function inner_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("INNER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("INNER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add a LEFT OUTER JOIN souce to the query
          */
-        public function left_outer_join($table, $constraint, $table_alias=null)
+        public function left_outer_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("LEFT OUTER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("LEFT OUTER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add an RIGHT OUTER JOIN souce to the query
          */
-        public function right_outer_join($table, $constraint, $table_alias=null)
+        public function right_outer_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("RIGHT OUTER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("RIGHT OUTER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add an FULL OUTER JOIN souce to the query
          */
-        public function full_outer_join($table, $constraint, $table_alias=null)
+        public function full_outer_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("FULL OUTER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("FULL OUTER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**

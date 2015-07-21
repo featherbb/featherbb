@@ -97,22 +97,29 @@ class index
         //$result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
         
         $select_print_categories_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
-        $where_print_categories_forums = array(array($this->feather->prefix.'forum_perms.read_forum' => 'NULL', $this->feather->prefix.'forum_perms.read_forum' => '1'));
+        $where_print_categories_forums = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+        $where_operator_print_categories_forums = array($this->feather->prefix.'forum_perms.read_forum' => '=', $this->feather->prefix.'forum_perms.read_forum' => '>');
         $order_by_print_categories_forums = array('c.disp_position', 'c.id', 'f.disp_position');
         
         $result = \ORM::for_table($this->feather->prefix.'categories')
             ->table_alias('c')
             ->select_many($select_print_categories_forums)
             ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->left_outer_join($this->feather->prefix.'forum_perms', $this->feather->prefix.'forum_perms.forum_id=f.id AND '.$this->feather->prefix.'forum_perms.group_id='.$this->user->g_id)
-            ->where_raw('(`'.$this->feather->prefix.'forum_perms`.read_forum IS NULL OR `'.$this->feather->prefix.'forum_perms`.read_forum = 1)')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', "3"), '', true)
+            ->where_raw('(`fp`.`read_forum` IS NULL OR `fp`.`read_forum`=1)')
+            //->where_any_is($where_print_categories_forums, $where_operator_print_categories_forums)
             ->order_by_many($order_by_print_categories_forums)
             ->find_array();
+            
+            print_r(\ORM::get_query_log());
         
         // TODO: result set
 
         $index_data = array();
-
         $cur_forum['cur_category'] = 0;
         $cur_forum['forum_count_formatted'] = 0;
         foreach ($result as $cur_forum) {

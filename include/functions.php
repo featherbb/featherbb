@@ -256,14 +256,14 @@ function set_default_user()
         exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
     }
     
-    $select_set_default_user = array('u.*', 'g.*', $feather->prefix.'online.logged', $feather->prefix.'online.last_post', $feather->prefix.'online.last_search');
+    $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
     $where_set_default_user = array('u.id' => '1');
     
     $result = ORM::for_table($feather->prefix.'users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
         ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-        ->left_outer_join($feather->prefix.'online', $feather->prefix.'online.ident = \''.$db->escape($remote_addr).'\'')
+        ->left_outer_join($feather->prefix.'online', array('o.ident', '=', $remote_addr), 'o', true)
         ->where($where_set_default_user)
         ->find_result_set();
     
