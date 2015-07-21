@@ -126,6 +126,7 @@ class viewtopic
                             'lang_antispam_questions'        =>    $lang_antispam_questions,
                             'url_forum'        =>    $url_forum,
                             'url_topic'        =>    $url_topic,
+                            'feather'          =>    $this->feather,
                             )
                     );
 

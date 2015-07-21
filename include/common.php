@@ -175,8 +175,7 @@ $forum_time_formats = array($feather->config['o_time_format'], 'H:i:s', 'H:i', '
 $forum_date_formats = array($feather->config['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
 
 // Check/update/set cookie and fetch user info
-$feather_user = array();
-check_cookie($feather_user);
+check_cookie();
 
 // Attempt to load the common language file
 if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php')) {

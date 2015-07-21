@@ -218,7 +218,7 @@ if (!defined('FEATHER')) {
 				</div>
 <?php
 
-    $diff = ($feather_user['timezone'] + $feather_user['dst']) * 3600;
+    $diff = ($feather->user->timezone + $feather->user->dst) * 3600;
     $timestamp = time() + $diff;
 
 ?>

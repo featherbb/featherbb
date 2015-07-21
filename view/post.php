@@ -84,6 +84,7 @@ $cur_index = 1;
     var baseUrl = '<?php echo feather_escape(get_base_url(true)) ?>';
 </script>
 <script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
+
 <div id="postform" class="blockform">
 	<h2><span><?php echo $action ?></span></h2>
 	<div class="box">
@@ -94,7 +95,7 @@ $cur_index = 1;
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
 <?php
-if ($feather_user['is_guest']) {
+if ($feather->user->is_guest) {
     $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
     $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
     ?>
@@ -115,11 +116,11 @@ if ($fid): ?>
     echo feather_escape($post['subject']);
 } ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<script>postEditorToolbar('req_message');</script>
-                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? feather_linebreaks(feather_trim(feather_escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
+                        <script>postEditorToolbar('req_message');</script>
+						<textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? feather_linebreaks(feather_trim(feather_escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open (this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open (this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($feather_config['o_smilies'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 						</ul>
@@ -144,7 +145,7 @@ if (!empty($checkboxes)) {
 
 ?>
 			</div>
-			<?php if ($feather_user['is_guest']) : ?>
+			<?php if ($feather->user->is_guest) : ?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_antispam['Robot title'] ?></legend>

@@ -60,6 +60,7 @@ class statistics
                 'num_online'    =>    $this->model->get_num_online(),
                 'total_size'    =>    $this->model->get_total_size(),
                 'php_accelerator'    =>    $this->model->get_php_accelerator(),
+                'feather'    =>    $this->feather,
             )
         );
 

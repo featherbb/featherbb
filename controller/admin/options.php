@@ -63,6 +63,7 @@ class options
                 'languages' => forum_list_langs(),
                 'styles' => $this->model->get_styles(),
                 'times' => $this->model->get_times(),
+                'feather'    =>    $this->feather,
             )
         );
 

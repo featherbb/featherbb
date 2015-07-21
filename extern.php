@@ -60,6 +60,14 @@ define('FEATHER_QUIET_VISIT', 1);
 if (!defined('FEATHER_ROOT')) {
     define('FEATHER_ROOT', dirname(__FILE__).'/');
 }
+
+// Load Slim Framework
+require 'Slim/Slim.php';
+\Slim\Slim::registerAutoloader();
+
+// Instantiate Slim
+$feather = new \Slim\Slim();
+
 require FEATHER_ROOT.'include/common.php';
 
 // The length at which topic subjects will be truncated (for HTML output)
@@ -68,11 +76,11 @@ if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
 }
 
 // If we're a guest and we've sent a username/pass, we can try to authenticate using those details
-if ($feather_user['is_guest'] && isset($_SERVER['PHP_AUTH_USER'])) {
+if ($feather->user->is_guest && isset($_SERVER['PHP_AUTH_USER'])) {
     authenticate_user($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 }
 
-if ($feather_user['g_read_board'] == '0') {
+if ($feather->user->g_read_board == '0') {
     http_authenticate_user();
     exit($lang_common['No view']);
 }
@@ -92,18 +100,19 @@ function escape_cdata($str)
 //
 function authenticate_user($user, $password, $password_is_hash = false)
 {
-    global $db, $feather_user;
+    global $db;
 
     // Check if there's a user matching $user and $password
+    // TODO....
     $result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-    $feather_user = $db->fetch_assoc($result);
+    $feather->user = $db->fetch_assoc($result);
 
-    if (!isset($feather_user['id']) ||
-        ($password_is_hash && $password != $feather_user['password']) ||
-        (!$password_is_hash && feather_hash($password) != $feather_user['password'])) {
+    if (!isset($feather->user->id) ||
+        ($password_is_hash && $password != $feather->user->password) ||
+        (!$password_is_hash && feather_hash($password) != $feather->user->password)) {
         set_default_user();
     } else {
-        $feather_user['is_guest'] = false;
+        $feather->user->is_guest = false;
     }
 }
 
@@ -127,9 +136,9 @@ switch ($action) {
 //
 function http_authenticate_user()
 {
-    global $feather_config, $feather_user;
+    global $feather_config;
 
-    if (!$feather_user['is_guest']) {
+    if (!$feather->user->is_guest) {
         return;
     }
 
@@ -330,7 +339,7 @@ if ($action == 'feed') {
         $tid = intval($_GET['tid']);
 
         // Fetch topic subject
-        $result = $db->query('SELECT t.subject, t.first_post_id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id='.$tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+        $result = $db->query('SELECT t.subject, t.first_post_id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$feather->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id='.$tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
         if (!$db->num_rows($result)) {
             http_authenticate_user();
             exit($lang_common['Bad request']);
@@ -368,12 +377,12 @@ if ($action == 'feed') {
             );
 
             if ($cur_post['poster_id'] > 1) {
-                if ($cur_post['email_setting'] == '0' && !$feather_user['is_guest']) {
+                if ($cur_post['email_setting'] == '0' && !$feather->user->is_guest) {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
                 $item['author']['uri'] = get_link('user/'.$cur_post['poster_id'].'/');
-            } elseif ($cur_post['poster_email'] != '' && !$feather_user['is_guest']) {
+            } elseif ($cur_post['poster_email'] != '' && !$feather->user->is_guest) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
 
@@ -398,7 +407,7 @@ if ($action == 'feed') {
 
             if (count($fids) == 1) {
                 // Fetch forum name
-                $result = $db->query('SELECT f.forum_name FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
+                $result = $db->query('SELECT f.forum_name FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$feather->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
                 if ($db->num_rows($result)) {
                     $forum_name = $lang_common['Title separator'].$db->result($result);
                 }
@@ -417,7 +426,7 @@ if ($action == 'feed') {
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
         if ($feather_config['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
-            $cache_id = 'feed'.sha1($feather_user['g_id'].'|'.$lang_common['lang_identifier'].'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
+            $cache_id = 'feed'.sha1($feather->user->g_id.'|'.$lang_common['lang_identifier'].'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
         // Load cached feed
@@ -437,7 +446,7 @@ if ($action == 'feed') {
             );
 
             // Fetch $show topics
-            $result = $db->query('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'posts AS p ON p.id='.($order_posted ? 't.first_post_id' : 't.last_post_id').' INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$feather_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL'.$forum_sql.' ORDER BY '.($order_posted ? 't.posted' : 't.last_post').' DESC LIMIT '.(isset($cache_id) ? 50 : $show)) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+            $result = $db->query('SELECT t.id, t.poster, t.subject, t.posted, t.last_post, t.last_poster, p.message, p.hide_smilies, u.email_setting, u.email, p.poster_id, p.poster_email FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'posts AS p ON p.id='.($order_posted ? 't.first_post_id' : 't.last_post_id').' INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$feather->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL'.$forum_sql.' ORDER BY '.($order_posted ? 't.posted' : 't.last_post').' DESC LIMIT '.(isset($cache_id) ? 50 : $show)) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
             while ($cur_topic = $db->fetch_assoc($result)) {
                 if ($feather_config['o_censoring'] == '1') {
                     $cur_topic['subject'] = censor_words($cur_topic['subject']);
@@ -457,12 +466,12 @@ if ($action == 'feed') {
                 );
 
                 if ($cur_topic['poster_id'] > 1) {
-                    if ($cur_topic['email_setting'] == '0' && !$feather_user['is_guest']) {
+                    if ($cur_topic['email_setting'] == '0' && !$feather->user->is_guest) {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
                     $item['author']['uri'] = get_link('user/'.$cur_topic['poster_id'].'/');
-                } elseif ($cur_topic['poster_email'] != '' && !$feather_user['is_guest']) {
+                } elseif ($cur_topic['poster_email'] != '' && !$feather->user->is_guest) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
 
@@ -516,7 +525,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     while ($feather_user_online = $db->fetch_assoc($result)) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = ($feather_user['g_view_users'] == '1') ? '<a href="'.get_link('user/'.$feather_user_online['user_id'].'/').'">'.feather_escape($feather_user_online['ident']).'</a>' : feather_escape($feather_user_online['ident']);
+            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$feather_user_online['user_id'].'/').'">'.feather_escape($feather_user_online['ident']).'</a>' : feather_escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -569,7 +578,7 @@ elseif ($action == 'stats') {
     header('Pragma: public');
 
     echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf($lang_index['Newest user'], (($feather_user['g_view_users'] == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf($lang_index['Newest user'], (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
     echo sprintf($lang_index['No of topics'], forum_number_format($stats['total_topics'])).'<br />'."\n";
     echo sprintf($lang_index['No of posts'], forum_number_format($stats['total_posts'])).'<br />'."\n";
 

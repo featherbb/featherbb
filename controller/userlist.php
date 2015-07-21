@@ -80,7 +80,7 @@ class userlist
                             'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'lang_ul' => $lang_ul,
-                            'feather_user' => $this->user,
+                            'feather' => $this->feather,
                             'username' => $username,
                             'show_group' => $show_group,
                             'sort_by' => $sort_by,

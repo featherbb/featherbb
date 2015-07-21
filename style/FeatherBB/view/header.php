@@ -15,15 +15,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather_user['style'].'.css' ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
 <?php
 if (!defined('FEATHER_ALLOW_INDEX')) {
     echo '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />'."\n";
 }
 
 if (defined('FEATHER_ADMIN_CONSOLE')) {
-    if (file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'/base_admin.css')) {
-        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather_user['style'].'/base_admin.css" />'."\n";
+    if (file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'/base_admin.css')) {
+        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather->user->style.'/base_admin.css" />'."\n";
     } else {
         echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
     }
@@ -109,7 +109,7 @@ endif;
         </div>
         <div class="clear"></div>
     </div>
-    <?php if ($feather_user['g_read_board'] == '1' && $feather_config['o_announcement'] == '1') : ?>
+    <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
     <div id="announce" class="block">
             <div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
             <div class="box">

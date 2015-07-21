@@ -153,7 +153,7 @@ class profile
                                 'lang_common' => $lang_common,
                                 'lang_profile' => $lang_profile,
                                 'lang_prof_reg' => $lang_prof_reg,
-                                'feather_user' => $this->user,
+                                'feather' => $this->feather,
                                 'id' => $id,
                                 'user' => $user,
                                 'user_disp' => $user_disp,
@@ -178,6 +178,7 @@ class profile
                                 'lang_common' => $lang_common,
                                 'lang_profile' => $lang_profile,
                                 'user' => $user,
+                                'feather' => $this->feather,
                                 )
                         );
                 
@@ -232,6 +233,7 @@ class profile
                                 'avatar_field' => $avatar_field,
                                 'signature_preview' => $signature_preview,
                                 'user' => $user,
+                                'feather' => $this->feather,
                                 )
                         );
                 
@@ -287,6 +289,7 @@ class profile
                                 'user' => $user,
                                 'forum_list' => $this->model->get_forum_list($id),
                                 'group_list' => $this->model->get_group_list($user),
+                                'feather' => $this->feather,
                                 )
                         );
                 
@@ -334,7 +337,7 @@ class profile
 
             $this->feather->render('profile/change_pass.php', array(
                                     'lang_common' => $lang_common,
-                                    'feather_user' => $this->user,
+                                    'feather' => $this->feather,
                                     'lang_profile' => $lang_profile,
                                     'id' => $id,
                                     )

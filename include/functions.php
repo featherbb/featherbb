@@ -21,7 +21,7 @@ function get_microtime()
 //
 // Cookie stuff!
 //
-function check_cookie(&$feather_user)
+function check_cookie()
 {
     global $db, $db_type, $feather_config, $cookie_name, $cookie_seed;
 
@@ -63,17 +63,6 @@ function check_cookie(&$feather_user)
             ->find_result_set();
         
         foreach ($result as $feather->user);
-        
-        // Compatibility :-)
-        $result = ORM::for_table($feather->prefix.'users')
-            ->table_alias('u')
-            ->select_many($select)
-            ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
-            ->where($where)
-            ->find_array();
-            
-        $feather_user = $result[0];
         
         // If user authorisation failed
         if (!isset($feather->user->id) || hash_hmac('sha1', $feather->user->password, $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
@@ -250,11 +239,11 @@ function get_admin_ids()
 
 
 //
-// Fill $feather_user with default values (for guests)
+// Fill $feather->user with default values (for guests)
 //
 function set_default_user()
 {
-    global $db, $db_type, $feather_user, $feather_config;
+    global $db, $db_type, $feather_config;
     
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
@@ -266,8 +255,6 @@ function set_default_user()
     if (!$db->num_rows($result)) {
         exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
     }
-
-    $feather_user = $db->fetch_assoc($result);
     
     $select = array('u.*', 'g.*', $feather->prefix.'online.logged', $feather->prefix.'online.last_post', $feather->prefix.'online.last_search');
     $where = array('u.id' => '1');

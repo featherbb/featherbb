@@ -67,8 +67,8 @@ echo "\t\t\t".'<div class="conl">'."\n";
 // Display the "Jump to" drop list
 if ($feather_config['o_quickjump'] == '1') {
     // Load cached quick jump
-    if (file_exists(FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php')) {
-        include FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php';
+    if (file_exists(FORUM_CACHE_DIR.'cache_quickjump_'.$feather->user->g_id.'.php')) {
+        include FORUM_CACHE_DIR.'cache_quickjump_'.$feather->user->g_id.'.php';
     }
 
     if (!defined('FEATHER_QJ_LOADED')) {
@@ -76,8 +76,8 @@ if ($feather_config['o_quickjump'] == '1') {
             require FEATHER_ROOT.'include/cache.php';
         }
 
-        generate_quickjump_cache($feather_user['g_id']);
-        require FORUM_CACHE_DIR.'cache_quickjump_'.$feather_user['g_id'].'.php';
+        generate_quickjump_cache($feather->user->g_id);
+        require FORUM_CACHE_DIR.'cache_quickjump_'.$feather->user->g_id.'.php';
     }
 }
 

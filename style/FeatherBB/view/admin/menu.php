@@ -27,7 +27,7 @@ if (!defined('FEATHER')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
-<?php if ($is_admin || $feather_user['g_mod_ban_users'] == '1'): ?>					<li<?php if ($page == 'bans') {
+<?php if ($is_admin || $feather->user->g_mod_ban_users == '1'): ?>					<li<?php if ($page == 'bans') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php echo $lang_admin_common['Bans'] ?></a></li>

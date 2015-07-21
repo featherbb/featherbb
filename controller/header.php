@@ -237,6 +237,7 @@ class header
                                 'paging_links' => $this->paging_links,
                                 'required_fields' => $this->required_fields,
                                 'db'        =>    $this->db,
+                                'feather'    => $this->feather,
                                 )
                         );
     }

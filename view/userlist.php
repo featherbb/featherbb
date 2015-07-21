@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_ul['User find legend'] ?></legend>
 					<div class="infldset">
-<?php if ($feather_user['g_search_users'] == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php echo $lang_ul['User group']."\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == -1) {
@@ -53,7 +53,7 @@ if (!defined('FEATHER')) {
 } ?>><?php echo $lang_search['Descending'] ?></option>
 						</select>
 						<br /></label>
-						<p class="clearb"><?php echo($feather_user['g_search_users'] == '1' ? $lang_ul['User search info'].' ' : '').$lang_ul['User sort info']; ?></p>
+						<p class="clearb"><?php echo($feather->user->g_search_users == '1' ? $lang_ul['User search info'].' ' : '').$lang_ul['User sort info']; ?></p>
 					</div>
 				</fieldset>
 			</div>

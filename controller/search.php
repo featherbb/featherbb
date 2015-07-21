@@ -93,7 +93,7 @@ class search
                             'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'feather_config' => $this->config,
-                            'feather_user' => $this->user,
+                            'feather' => $this->feather,
                             'forums' => $this->model->get_list_forums(),
                             )
                     );

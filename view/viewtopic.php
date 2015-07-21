@@ -134,10 +134,10 @@ if ($quickpost) {
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="pid" value="<?php echo feather_escape($pid) ?>" />
 						<input type="hidden" name="page" value="<?php echo feather_escape($p) ?>" />
-<?php if ($feather_config['o_topic_subscriptions'] == '1' && ($feather_user['auto_notify'] == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
+<?php if ($feather_config['o_topic_subscriptions'] == '1' && ($feather->user->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
-    if ($feather_user['is_guest']) {
+    if ($feather->user->is_guest) {
         $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
         $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
         ?>
@@ -158,11 +158,12 @@ if ($quickpost) {
 </script>
 <script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
 <script>postEditorToolbar('req_message');</script>
+
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off'];
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
 							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off'];
     ?></span></li>
@@ -172,7 +173,7 @@ if ($quickpost) {
 					</div>
 				</fieldset>
 			</div>
-			<?php if ($feather_user['is_guest']) : ?>
+			<?php if ($feather->user->is_guest) : ?>
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
