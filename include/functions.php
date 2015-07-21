@@ -51,15 +51,15 @@ function check_cookie()
             return;
         }
         
-        $select = array('u.*', 'g.*', 'o.logged', 'o.idle');
-        $where = array('u.id' => intval($cookie['user_id']));
+        $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
+        $where_check_cookie = array('u.id' => intval($cookie['user_id']));
         
         $result = ORM::for_table($feather->prefix.'users')
             ->table_alias('u')
-            ->select_many($select)
+            ->select_many($select_check_cookie)
             ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
             ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
-            ->where($where)
+            ->where($where_check_cookie)
             ->find_result_set();
         
         foreach ($result as $feather->user);
@@ -256,15 +256,15 @@ function set_default_user()
         exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
     }
     
-    $select = array('u.*', 'g.*', $feather->prefix.'online.logged', $feather->prefix.'online.last_post', $feather->prefix.'online.last_search');
-    $where = array('u.id' => '1');
+    $select_set_default_user = array('u.*', 'g.*', $feather->prefix.'online.logged', $feather->prefix.'online.last_post', $feather->prefix.'online.last_search');
+    $where_set_default_user = array('u.id' => '1');
     
     $result = ORM::for_table($feather->prefix.'users')
         ->table_alias('u')
-        ->select_many($select)
+        ->select_many($select_set_default_user)
         ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
         ->left_outer_join($feather->prefix.'online', $feather->prefix.'online.ident = \''.$db->escape($remote_addr).'\'')
-        ->where($where)
+        ->where($where_set_default_user)
         ->find_result_set();
     
     foreach ($result as $feather->user);
