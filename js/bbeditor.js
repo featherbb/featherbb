@@ -31,7 +31,7 @@ function postEditorToolbar(obj) {
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/bold.png\" name=\"btnBold\" title=\"Bold\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/italic.png\" name=\"btnItalic\" title=\"Italic\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/underline.png\" name=\"btnUnderline\" title=\"Underline\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\"Color\" onmouseover=\"toggleColorpicker()\"  onClick=\"OnCustomColorChanged()\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\"Color\" onClick=\"toggleColorpicker()\">");
 		document.write('<span class="toolbar-separator"></span>');
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-left.png\" name=\"btnLeft\" title=\"Left\" onClick=\"doAddTags('[left]','[/left]','" + obj + "')\">");
 		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-right.png\" name=\"btnRight\" title=\"Right\" onClick=\"doAddTags('[right]','[/right]','" + obj + "')\">");
@@ -151,26 +151,29 @@ function doAddTags(tag1, tag2, obj) {
 	if (document.selection) {
 		textarea.focus();
 		var sel = document.selection.createRange();
-		//alert(sel.text);
 		sel.text = tag1 + sel.text + tag2;
 	} else { // Code for Mozilla Firefox
 		var len = textarea.value.length;
-		var start = textarea.selectionStart;
-		var end = textarea.selectionEnd;
+			start = textarea.selectionStart,
+			end = textarea.selectionEnd,
 
+			scrollTop = textarea.scrollTop,
+			scrollLeft = textarea.scrollLeft,
 
-		var scrollTop = textarea.scrollTop;
-		var scrollLeft = textarea.scrollLeft;
+			sel = textarea.value.substring(start, end),
+			rep = tag1 + sel + tag2;
 
-
-		var sel = textarea.value.substring(start, end);
-		//alert(sel);
-		var rep = tag1 + sel + tag2;
+		// Update textarea content with tags
 		textarea.value = textarea.value.substring(0, start) + rep + textarea.value.substring(end, len);
 
-		textarea.scrollTop = scrollTop;
-		textarea.scrollLeft = scrollLeft;
-
+		// Place cursor into tags if no word selected, or after word if selection.
+		if (len == 0) {
+			var cursorPos = textarea.value.substring(0, start).length + tag1.length + sel.length;
+			textarea.setSelectionRange(cursorPos, cursorPos);
+		} else {
+			textarea.scrollTop = scrollTop;
+			textarea.scrollLeft = scrollLeft;
+		}
 
 	}
 }
