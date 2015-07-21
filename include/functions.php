@@ -355,7 +355,7 @@ function forum_setcookie($name, $value, $expire)
 //
 function check_bans()
 {
-    global $db, $feather_config, $lang_common, $feather_user, $feather_bans;
+    global $db, $feather_config, $lang_common, $feather_bans;
     
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
@@ -381,7 +381,7 @@ function check_bans()
             continue;
         }
 
-        if ($cur_ban['username'] != '' && utf8_strtolower($feather_user['username']) == utf8_strtolower($cur_ban['username'])) {
+        if ($cur_ban['username'] != '' && utf8_strtolower($feather->user->username) == utf8_strtolower($cur_ban['username'])) {
             $is_banned = true;
         }
 
@@ -405,7 +405,7 @@ function check_bans()
         }
 
         if ($is_banned) {
-            $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($feather_user['username']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+            $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($feather->user->username).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
             message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true);
         }
     }
@@ -941,13 +941,14 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 function message($message, $no_back_link = false, $http_status = null)
 {
-    global $db, $lang_common, $feather_config, $tpl_main, $feather_user;
+    global $db, $lang_common, $feather_config, $tpl_main;
 
     // Did we receive a custom header?
     if (!is_null($http_status)) {
         header('HTTP/1.1 ' . $http_status);
     }
     
+    // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
     if (!defined('FEATHER_HEADER')) {
@@ -983,22 +984,25 @@ function message($message, $no_back_link = false, $http_status = null)
 //
 function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
 {
-    global $lang_common, $feather_user, $forum_date_formats, $forum_time_formats;
+    global $lang_common, $forum_date_formats, $forum_time_formats;
 
     if ($timestamp == '') {
         return $lang_common['Never'];
     }
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    $diff = ($feather_user['timezone'] + $feather_user['dst']) * 3600;
+    $diff = ($feather->user->timezone + $feather->user->dst) * 3600;
     $timestamp += $diff;
     $now = time();
 
     if (is_null($date_format)) {
-        $date_format = $forum_date_formats[$feather_user['date_format']];
+        $date_format = $forum_date_formats[$feather->user->date_format];
     }
 
     if (is_null($time_format)) {
-        $time_format = $forum_time_formats[$feather_user['time_format']];
+        $time_format = $forum_time_formats[$feather->user->time_format];
     }
 
     $date = gmdate($date_format, $timestamp);
@@ -1276,7 +1280,7 @@ function array_insert(&$input, $offset, $element, $key = null)
 //
 function maintenance_message()
 {
-    global $db, $feather_config, $lang_common, $feather_user;
+    global $db, $feather_config, $lang_common;
 
     // Send no-cache headers
     header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
@@ -1292,9 +1296,9 @@ function maintenance_message()
     $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
     $message = str_replace($pattern, $replace, $feather_config['o_maintenance_message']);
 
-    if (file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'/maintenance.tpl')) {
-        $tpl_file = FEATHER_ROOT.'style/'.$feather_user['style'].'/maintenance.tpl';
-        $tpl_inc_dir = FEATHER_ROOT.'style/'.$feather_user['style'].'/';
+    if (file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'/maintenance.tpl')) {
+        $tpl_file = FEATHER_ROOT.'style/'.$feather->user->style.'/maintenance.tpl';
+        $tpl_inc_dir = FEATHER_ROOT.'style/'.$feather->user->style.'/';
     } else {
         $tpl_file = FEATHER_ROOT.'include/template/maintenance.tpl';
         $tpl_inc_dir = FEATHER_ROOT.'include/user/';
@@ -1320,7 +1324,7 @@ function maintenance_message()
 
     ?>
 <title><?php echo generate_page_title($page_title) ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $feather_user['style'].'.css' ?>" />
+<link rel="stylesheet" type="text/css" href="style/<?php echo $feather->user->style.'.css' ?>" />
 <?php
 
     $tpl_temp = trim(ob_get_contents());
@@ -1952,13 +1956,14 @@ function dump()
 //
 function get_path_view($file = null)
 {
-    global $feather_user;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
     
-    if ($file && is_file('style/'.$feather_user['style'])) {
-        return FEATHER_ROOT.'style/'.$feather_user['style'].'/view';
+    if ($file && is_file('style/'.$feather->user->style)) {
+        return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
     }
-    elseif (is_dir('style/'.$feather_user['style'].'/view')) {
-        return FEATHER_ROOT.'style/'.$feather_user['style'].'/view';
+    elseif (is_dir('style/'.$feather->user->style.'/view')) {
+        return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
     } else {
         return FEATHER_ROOT.'view';
     }
