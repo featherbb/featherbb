@@ -28,24 +28,24 @@ document.write('<script src="'+baseUrl+'/js/colorPicker.js"  type="text/javascri
 function postEditorToolbar(obj) {
 	// Toolbar buttons
 	document.write("<div class=\"toolbar\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/bold.png\" name=\"btnBold\" title=\"Bold\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/italic.png\" name=\"btnItalic\" title=\"Italic\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/underline.png\" name=\"btnUnderline\" title=\"Underline\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\"Color\" onClick=\"toggleColorpicker()\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/bold.png\" name=\"btnBold\" title=\""+langBbeditor.btnBold+"\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/italic.png\" name=\"btnItalic\" title=\""+langBbeditor.btnItalic+"\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/underline.png\" name=\"btnUnderline\" title=\""+langBbeditor.btnUnderline+"\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\""+langBbeditor.btnColor+"\" onClick=\"toggleColorpicker()\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-left.png\" name=\"btnLeft\" title=\"Left\" onClick=\"doAddTags('[left]','[/left]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-right.png\" name=\"btnRight\" title=\"Right\" onClick=\"doAddTags('[right]','[/right]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-justify.png\" name=\"btnJustify\" title=\"Justify\" onClick=\"doAddTags('[justify]','[/justify]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-center.png\" name=\"btnCenter\" title=\"Center\" onClick=\"doAddTags('[center]','[/center]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-left.png\" name=\"btnLeft\" title=\""+langBbeditor.btnLeft+"\" onClick=\"doAddTags('[left]','[/left]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-right.png\" name=\"btnRight\" title=\""+langBbeditor.btnRight+"\" onClick=\"doAddTags('[right]','[/right]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-justify.png\" name=\"btnJustify\" title=\""+langBbeditor.btnJustify+"\" onClick=\"doAddTags('[justify]','[/justify]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-center.png\" name=\"btnCenter\" title=\""+langBbeditor.btnCenter+"\" onClick=\"doAddTags('[center]','[/center]','" + obj + "')\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/link.png\" name=\"btnLink\" title=\"Insert URL Link\" onClick=\"doURL('" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/file-image-o.png\" name=\"btnPicture\" title=\"Insert Image\" onClick=\"doImage('" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/link.png\" name=\"btnLink\" title=\""+langBbeditor.btnLink+"\" onClick=\"doURL('" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/file-image-o.png\" name=\"btnPicture\" title=\""+langBbeditor.btnPicture+"\" onClick=\"doImage('" + obj + "')\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/list-ol.png\" name=\"btnList\" title=\"Ordered List\" onClick=\"doList('[list=1]','[/list]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/list-ul.png\" name=\"btnList\" title=\"Unordered List\" onClick=\"doList('[list]','[/list]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/list-ol.png\" name=\"btnList\" title=\""+langBbeditor.btnList+"\" onClick=\"doList('[list=1]','[/list]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/list-ul.png\" name=\"btnList\" title=\""+langBbeditor.btnList+"\" onClick=\"doList('[list]','[/list]','" + obj + "')\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/quote-left.png\" name=\"btnQuote\" title=\"Quote\" onClick=\"doAddTags('[quote]','[/quote]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/code.png\" name=\"btnCode\" title=\"Code\" onClick=\"doAddTags('[code]','[/code]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/quote-left.png\" name=\"btnQuote\" title=\""+langBbeditor.btnQuote+"\" onClick=\"doQuote('" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/code.png\" name=\"btnCode\" title=\""+langBbeditor.btnCode+"\" onClick=\"doAddTags('[code]','[/code]','" + obj + "')\">");
 		// document.write("<i class=\"fa fa-smile-o toolbar-icon\" title=\"Smilies\" onClick=\"doSmiley('" + obj + "')\"></i>");
 	document.write("</div>");
 
@@ -74,9 +74,9 @@ function postEditorToolbar(obj) {
 
 function doImage(obj) {
 	textarea = document.getElementById(obj);
-	var url = prompt('Enter the Image URL:', 'http://');
-	var scrollTop = textarea.scrollTop;
-	var scrollLeft = textarea.scrollLeft;
+	var url = prompt(langBbeditor.promptImage, 'http://'),
+		scrollTop = textarea.scrollTop,
+		scrollLeft = textarea.scrollLeft;
 
 	if (url != '' && url != null) {
 
@@ -85,15 +85,14 @@ function doImage(obj) {
 			var sel = document.selection.createRange();
 			sel.text = '[img]' + url + '[/img]';
 		} else {
-			var len = textarea.value.length;
-			var start = textarea.selectionStart;
-			var end = textarea.selectionEnd;
+			var len = textarea.value.length,
+				start = textarea.selectionStart,
+				end = textarea.selectionEnd,
 
-			var sel = textarea.value.substring(start, end);
-			//alert(sel);
-			var rep = '[img]' + url + '[/img]';
+				sel = textarea.value.substring(start, end),
+				//alert(sel);
+				rep = '[img]' + url + '[/img]';
 			textarea.value = textarea.value.substring(0, start) + rep + textarea.value.substring(end, len);
-
 
 			textarea.scrollTop = scrollTop;
 			textarea.scrollLeft = scrollLeft;
@@ -104,9 +103,9 @@ function doImage(obj) {
 
 function doURL(obj) {
 	textarea = document.getElementById(obj);
-	var url = prompt('Enter the URL:', 'http://');
-	var scrollTop = textarea.scrollTop;
-	var scrollLeft = textarea.scrollLeft;
+	var url = prompt(langBbeditor.promptUrl, 'http://'),
+		scrollTop = textarea.scrollTop,
+		scrollLeft = textarea.scrollLeft;
 
 	if (url != '' && url != null) {
 
@@ -123,11 +122,11 @@ function doURL(obj) {
 			//alert(sel.text);
 
 		} else {
-			var len = textarea.value.length;
-			var start = textarea.selectionStart;
-			var end = textarea.selectionEnd;
+			var len = textarea.value.length,
+				start = textarea.selectionStart,
+				end = textarea.selectionEnd,
 
-			var sel = textarea.value.substring(start, end);
+				sel = textarea.value.substring(start, end);
 
 			if (sel == "") {
 				var rep = '[url]' + url + '[/url]';
@@ -143,6 +142,13 @@ function doURL(obj) {
 			textarea.scrollLeft = scrollLeft;
 		}
 	}
+}
+
+function doQuote(obj) {
+	var author = prompt(langBbeditor.promptQuote),
+		openTag = (author != '' && author != null) ? '[quote='+author+']' : '[quote]';
+
+	doAddTags(openTag,'[/quote]',obj)
 }
 
 function doAddTags(tag1, tag2, obj) {
@@ -167,7 +173,7 @@ function doAddTags(tag1, tag2, obj) {
 		textarea.value = textarea.value.substring(0, start) + rep + textarea.value.substring(end, len);
 
 		// Place cursor into tags if no word selected, or after word if selection.
-		if (len == 0) {
+		if (end - start == 0) {
 			var cursorPos = textarea.value.substring(0, start).length + tag1.length + sel.length;
 			textarea.setSelectionRange(cursorPos, cursorPos);
 		} else {
