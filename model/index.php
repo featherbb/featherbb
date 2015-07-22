@@ -62,7 +62,7 @@ class index
 
             while ($cur_forum = $this->db->fetch_assoc($result)) {
                 if (!isset($tracked_topics['forums'][$cur_forum['id']]) || $tracked_topics['forums'][$cur_forum['id']] < $cur_forum['last_post']) {
-                    $forums[$cur_forum-['id']] = $cur_forum['last_post'];
+                    $forums[$cur_forum['id']] = $cur_forum['last_post'];
                 }
             }
 
