@@ -55,6 +55,7 @@ class index
                             'feather_config' => $this->config,
                             'online'    =>    $this->model->fetch_users_online(),
                             'forum_actions'        =>    $this->model->get_forum_actions(),
+                            'cur_cat'   => 0,
                             )
                     );
         

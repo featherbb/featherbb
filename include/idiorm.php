@@ -1343,15 +1343,33 @@
                 }
                 $firstsub = true;
                 foreach ($item as $key => $item) {
-                    $op = is_string($operator) ? $operator : (isset($operator[$key]) ? $operator[$key] : '=');
+                    $is_null = false;
+                    if ($item == 'IS NULL' || $item == 'IS NOT NULL') {
+                        $op = '';
+                        $is_null = true;
+                    }
+                    elseif (is_string($operator)) {
+                        $op = $operator;
+                    }
+                    elseif (isset($operator[$key])) {
+                        $op = $operator[$key];
+                    }
+                    else {
+                        $op = '=';
+                    }
                     if ($firstsub) {
                         $firstsub = false;
                     } else {
                         $query[] = "AND";
                     }
                     $query[] = $this->_quote_identifier($key);
-                    $data[] = $item;
-                    $query[] = $op . " ?";
+                    if (!$is_null) {
+                        $data[] = $item;
+                        $query[] = $op . " ?";
+                    }
+                    else {
+                        $query[] = $item;
+                    }
                 }
             }
             $query[] = "))";
@@ -1460,7 +1478,7 @@
         {
             return $this->_add_where($clause, $parameters);
         }
-
+        
         /**
          * Add a LIMIT to the query
          */

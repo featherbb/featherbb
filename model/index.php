@@ -62,7 +62,7 @@ class index
 
             while ($cur_forum = $this->db->fetch_assoc($result)) {
                 if (!isset($tracked_topics['forums'][$cur_forum['id']]) || $tracked_topics['forums'][$cur_forum['id']] < $cur_forum['last_post']) {
-                    $forums[$cur_forum['id']] = $cur_forum['last_post'];
+                    $forums[$cur_forum-['id']] = $cur_forum['last_post'];
                 }
             }
 
@@ -101,7 +101,6 @@ class index
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $where_operator_print_categories_forums = array($this->feather->prefix.'forum_perms.read_forum' => '=', $this->feather->prefix.'forum_perms.read_forum' => '>');
         $order_by_print_categories_forums = array('c.disp_position', 'c.id', 'f.disp_position');
         
         $result = \ORM::for_table($this->feather->prefix.'categories')
@@ -109,75 +108,74 @@ class index
             ->select_many($select_print_categories_forums)
             ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', "3"), '', true)
-            ->where_raw('(`fp`.`read_forum` IS NULL OR `fp`.`read_forum`=1)')
-            //->where_any_is($where_print_categories_forums, $where_operator_print_categories_forums)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_print_categories_forums)
             ->order_by_many($order_by_print_categories_forums)
-            ->find_array();
-            
-            print_r(\ORM::get_query_log());
-        
-        // TODO: result set
+            ->find_result_set();
 
         $index_data = array();
-        $cur_forum['cur_category'] = 0;
-        $cur_forum['forum_count_formatted'] = 0;
+        $i = 0;
         foreach ($result as $cur_forum) {
+            if ($i == 0) {
+                $cur_forum->cur_category = 0;
+                $cur_forum->forum_count_formatted = 0;
+            }
+            
             $moderators = '';
 
-            if (isset($cur_forum['cur_category'])) {
-                $cur_cat = $cur_forum['cur_category'];
+            if (isset($cur_forum->cur_category)) {
+                $cur_cat = $cur_forum->cur_category;
             } else {
                 $cur_cat = 0;
             }
 
-            if ($cur_forum['cid'] != $cur_cat) {
+            if ($cur_forum->cid != $cur_cat) {
                 // A new category since last iteration?
 
-                $cur_forum['forum_count_formatted'] = 0;
-                $cur_forum['cur_category'] = $cur_forum['cid'];
+                $cur_forum->forum_count_formatted = 0;
+                $cur_forum->cur_category = $cur_forum->cid;
             }
 
-            ++$cur_forum['forum_count_formatted'];
+            ++$cur_forum->forum_count_formatted;
 
-            $cur_forum['item_status'] = ($cur_forum['forum_count_formatted'] % 2 == 0) ? 'roweven' : 'rowodd';
+            $cur_forum->item_status = ($cur_forum->forum_count_formatted % 2 == 0) ? 'roweven' : 'rowodd';
             $forum_field_new = '';
-            $cur_forum['icon_type'] = 'icon';
+            $cur_forum->icon_type = 'icon';
 
             // Are there new posts since our last visit?
-            if (isset($new_topics[$cur_forum['fid']])) {
-                $cur_forum['item_status'] .= ' inew';
-                $forum_field_new = '<span class="newtext">[ <a href="'.get_link('search/?action=show_new&amp;fid='.$cur_forum['fid']).'">'.$lang_common['New posts'].'</a> ]</span>';
-                $cur_forum['icon_type'] = 'icon icon-new';
+            if (isset($new_topics[$cur_forum->fid])) {
+                $cur_forum->item_status .= ' inew';
+                $forum_field_new = '<span class="newtext">[ <a href="'.get_link('search/?action=show_new&amp;fid='.$cur_forum->fid).'">'.$lang_common['New posts'].'</a> ]</span>';
+                $cur_forum->icon_type = 'icon icon-new';
             }
 
             // Is this a redirect forum?
-            if ($cur_forum['redirect_url'] != '') {
-                $cur_forum['forum_field'] = '<h3><span class="redirtext">'.$lang_index['Link to'].'</span> <a href="'.feather_escape($cur_forum['redirect_url']).'" title="'.$lang_index['Link to'].' '.feather_escape($cur_forum['redirect_url']).'">'.feather_escape($cur_forum['forum_name']).'</a></h3>';
-                $cur_forum['num_topics_formatted'] = $cur_forum['num_posts_formatted'] = '-';
-                $cur_forum['item_status'] .= ' iredirect';
-                $cur_forum['icon_type'] = 'icon';
+            if ($cur_forum->redirect_url != '') {
+                $cur_forum->forum_field = '<h3><span class="redirtext">'.$lang_index['Link to'].'</span> <a href="'.feather_escape($cur_forum->redirect_url).'" title="'.$lang_index['Link to'].' '.feather_escape($cur_forum->redirect_url).'">'.feather_escape($cur_forum->forum_name).'</a></h3>';
+                $cur_forum->num_topics_formatted = $cur_forum->num_posts_formatted = '-';
+                $cur_forum->item_status .= ' iredirect';
+                $cur_forum->icon_type = 'icon';
             } else {
-                $cur_forum['forum_field'] = '<h3><a href="'.get_link('forum/'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name'])).'/'.'">'.feather_escape($cur_forum['forum_name']).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
-                $cur_forum['num_topics_formatted'] = $cur_forum['num_topics'];
-                $cur_forum['num_posts_formatted'] = $cur_forum['num_posts'];
+                $cur_forum->forum_field = '<h3><a href="'.get_link('forum/'.$cur_forum->fid.'/'.url_friendly($cur_forum->forum_name)).'/'.'">'.feather_escape($cur_forum->forum_name).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
+                $cur_forum->num_topics_formatted = $cur_forum->num_topics;
+                $cur_forum->num_posts_formatted = $cur_forum->num_posts;
             }
 
-            if ($cur_forum['forum_desc'] != '') {
-                $cur_forum['forum_field'] .= "\n\t\t\t\t\t\t\t\t".'<div class="forumdesc">'.$cur_forum['forum_desc'].'</div>';
+            if ($cur_forum->forum_desc != '') {
+                $cur_forum->forum_field .= "\n\t\t\t\t\t\t\t\t".'<div class="forumdesc">'.$cur_forum->forum_desc.'</div>';
             }
 
             // If there is a last_post/last_poster
-            if ($cur_forum['last_post'] != '') {
-                $cur_forum['last_post_formatted'] = '<a href="'.get_link('post/'.$cur_forum['last_post_id'].'/#p'.$cur_forum['last_post_id']).'">'.format_time($cur_forum['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_forum['last_poster']).'</span>';
-            } elseif ($cur_forum['redirect_url'] != '') {
-                $cur_forum['last_post_formatted'] = '- - -';
+            if ($cur_forum->last_post != '') {
+                $cur_forum->last_post_formatted = '<a href="'.get_link('post/'.$cur_forum->last_post_id.'/#p'.$cur_forum->last_post_id).'">'.format_time($cur_forum->last_post).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_forum->last_poster).'</span>';
+            } elseif ($cur_forum->redirect_url != '') {
+                $cur_forum->last_post_formatted = '- - -';
             } else {
-                $cur_forum['last_post_formatted'] = $lang_common['Never'];
+                $cur_forum->last_post_formatted = $lang_common['Never'];
             }
 
-            if ($cur_forum['moderators'] != '') {
-                $mods_array = unserialize($cur_forum['moderators']);
+            if ($cur_forum->moderators != '') {
+                $mods_array = unserialize($cur_forum->moderators);
                 $moderators = array();
 
                 foreach ($mods_array as $mod_username => $mod_id) {
@@ -188,12 +186,13 @@ class index
                     }
                 }
 
-                $cur_forum['moderators_formatted'] = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.$lang_common['Moderated by'].'</em> '.implode(', ', $moderators).')</p>'."\n";
+                $cur_forum->moderators_formatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.$lang_common['Moderated by'].'</em> '.implode(', ', $moderators).')</p>'."\n";
             } else {
-                $cur_forum['moderators_formatted'] = '';
+                $cur_forum->moderators_formatted = '';
             }
 
             $index_data[] = $cur_forum;
+            ++$i;
         }
 
         return $index_data;
