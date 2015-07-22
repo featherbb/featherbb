@@ -57,7 +57,8 @@ class forums
         require FEATHER_ROOT . 'model/admin/maintenance.php';
 
         // Prune all posts and topics
-        prune($forum_id, 1, -1);
+        $this->maintenance = new \model\admin\maintenance();
+        $this->maintenance->prune($forum_id, 1, -1);
 
         // Locate any "orphaned redirect topics" and delete them
         $result = $this->db->query('SELECT t1.id FROM '.$this->db->prefix.'topics AS t1 LEFT JOIN '.$this->db->prefix.'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $this->db->error());

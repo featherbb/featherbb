@@ -162,12 +162,12 @@ class maintenance
             for ($i = 0; $i < $num_forums; ++$i) {
                 $fid = $this->db->result($result, $i);
 
-                prune($fid, $prune_sticky, $prune_date);
+                $this->prune($fid, $prune_sticky, $prune_date);
                 update_forum($fid);
             }
         } else {
             $prune_from = intval($prune_from);
-            prune($prune_from, $prune_sticky, $prune_date);
+            $this->prune($prune_from, $prune_sticky, $prune_date);
             update_forum($prune_from);
         }
 

@@ -50,7 +50,8 @@ class categories
             $cur_forum = $this->db->result($result, $i);
 
             // Prune all posts and topics
-            prune($cur_forum, 1, -1);
+            $this->maintenance = new \model\admin\maintenance();
+            $this->maintenance->prune($cur_forum, 1, -1);
 
             // Delete the forum
             $this->db->query('DELETE FROM '.$this->db->prefix.'forums WHERE id='.$cur_forum) or error('Unable to delete forum', __FILE__, __LINE__, $this->db->error());
