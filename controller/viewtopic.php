@@ -28,10 +28,10 @@ class viewtopic
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        global $lang_common, $lang_post, $lang_topic, $pd;
+        global $lang_common, $lang_post, $lang_topic, $lang_bbeditor, $pd;
 
         if ($this->user->g_read_board == '0') {
             message($lang_common['No view'], false, '403 Forbidden');
@@ -46,6 +46,9 @@ class viewtopic
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
+
+        // BBcode toolbar feature
+        require FEATHER_ROOT.'lang/'.$this->user['language'].'/bbeditor.php';
 
         // Load the viewtopic.php model file
         require_once FEATHER_ROOT.'model/viewtopic.php';
@@ -112,6 +115,7 @@ class viewtopic
                             'lang_common' => $lang_common,
                             'lang_topic' => $lang_topic,
                             'lang_post' => $lang_post,
+                            'lang_bbeditor' => $lang_bbeditor,
                             'cur_topic'    =>    $cur_topic,
                             'subscraction'    =>    $subscraction,
                             'is_admmod'    =>    $is_admmod,
