@@ -24,14 +24,28 @@ class edit
     // Fetch some info about the post, the topic and the forum
     public function get_info_edit($id)
     {
-        
-        $result = $this->db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.posted, t.first_post_id, t.sticky, t.closed, p.poster, p.poster_id, p.message, p.hide_smilies FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
+        global $lang_common;
+     
+        $select_get_info_edit = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $where_get_info_edit = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
 
-        if (!$this->db->num_rows($result)) {
+        $cur_post = \ORM::for_table($this->feather->prefix.'posts')
+            ->table_alias('p')
+            ->select_many($select_get_info_edit)
+            ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_info_edit)
+            ->where('p.id', $id)
+            ->find_one();
+
+        if (!$cur_post) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $cur_post = $this->db->fetch_assoc($result);
 
         return $cur_post;
     }
@@ -129,22 +143,47 @@ class edit
 
     public function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod)
     {
-        $edited_sql = (!$this->request->post('slient') || !$is_admmod) ? ', edited='.time().', edited_by=\''.$this->db->escape($this->user->username).'\'' : '';
-
         require FEATHER_ROOT.'include/search_idx.php';
 
         if ($can_edit_subject) {
             // Update the topic and any redirect topics
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET subject=\''.$this->db->escape($post['subject']).'\', sticky='.$post['stick_topic'].' WHERE id='.$cur_post['tid'].' OR moved_to='.$cur_post['tid']) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+            $where_topic = array(
+                array('id' => $cur_post['tid']),
+                array('moved_to' => $cur_post['tid'])
+            );
+            
+            $update_topic = array(
+                'subject' => $post['subject'],
+                'sticky'  => $post['stick_topic']
+            );
+            
+            \ORM::for_table($this->db->prefix.'topics')->where_any_is($where_topic)
+                                                       ->find_one()
+                                                       ->set($update_topic)
+                                                       ->save();
 
             // We changed the subject, so we need to take that into account when we update the search words
             update_search_index('edit', $id, $post['message'], $post['subject']);
         } else {
             update_search_index('edit', $id, $post['message']);
         }
-
+        
         // Update the post
-        $this->db->query('UPDATE '.$this->db->prefix.'posts SET message=\''.$this->db->escape($post['message']).'\', hide_smilies='.$post['hide_smilies'].$edited_sql.' WHERE id='.$id) or error('Unable to update post', __FILE__, __LINE__, $this->db->error());
+        $update_post = array(
+            'message' => $post['message'],
+            'hide_smilies'  => $post['hide_smilies']
+        );
+        
+        if (!$this->request->post('silent') || !$is_admmod) {
+            $update_post['edited'] = time();
+            $update_post['edited_by'] = $this->user->username;
+        }
+
+        \ORM::for_table($this->db->prefix.'posts')->where('id', $id)
+                                                   ->find_one()
+                                                   ->set($update_post)
+                                                   ->save();
+        
     }
 
     public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
