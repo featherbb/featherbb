@@ -53,35 +53,53 @@ class index
 
     // Detects if a "new" icon has to be displayed
     public function get_new_posts()
-    {
-        $result = $this->db->query('SELECT f.id, f.last_post FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.last_post>'.$this->user->last_visit) or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
+    {   
+        $select_get_new_posts = array('f.id', 'f.last_post');
+        $where_get_new_posts_any = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
 
-        if ($this->db->num_rows($result)) {
-            $forums = $new_topics = array();
-            $tracked_topics = get_tracked_topics();
+        $result = \ORM::for_table($this->feather->prefix.'forums')
+            ->table_alias('f')
+            ->select_many($select_get_new_posts)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_new_posts_any)
+            ->where_gt('f.last_post', $this->user->last_visit)
+            ->find_result_set();
+        
+        $forums = $new_topics = array();
+        $tracked_topics = get_tracked_topics();
 
-            while ($cur_forum = $this->db->fetch_assoc($result)) {
-                if (!isset($tracked_topics['forums'][$cur_forum['id']]) || $tracked_topics['forums'][$cur_forum['id']] < $cur_forum['last_post']) {
-                    $forums[$cur_forum['id']] = $cur_forum['last_post'];
-                }
+        foreach ($result as $cur_forum) {
+            if (!isset($tracked_topics['forums'][$cur_forum->id]) || $tracked_topics['forums'][$cur_forum->id] < $cur_forum->last_post) {
+                $forums[$cur_forum->id] = $cur_forum->last_post;
             }
+        }
 
-            if (!empty($forums)) {
-                if (empty($tracked_topics['topics'])) {
-                    $new_topics = $forums;
-                } else {
-                    $result = $this->db->query('SELECT forum_id, id, last_post FROM '.$this->db->prefix.'topics WHERE forum_id IN('.implode(',', array_keys($forums)).') AND last_post>'.$this->user->last_visit.' AND moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $this->db->error());
+        if (!empty($forums)) {
+            if (empty($tracked_topics['topics'])) {
+                $new_topics = $forums;
+            } else {   
+                $select_get_new_posts_tracked_topics = array('forum_id', 'id', 'last_post');
 
-                    while ($cur_topic = $this->db->fetch_assoc($result)) {
-                        if (!isset($new_topics[$cur_topic['forum_id']]) && (!isset($tracked_topics['forums'][$cur_topic['forum_id']]) || $tracked_topics['forums'][$cur_topic['forum_id']] < $forums[$cur_topic['forum_id']]) && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post'])) {
-                            $new_topics[$cur_topic['forum_id']] = $forums[$cur_topic['forum_id']];
-                        }
+                $result = \ORM::for_table($this->feather->prefix.'topics')
+                    ->select_many($select_get_new_posts_tracked_topics)
+                    ->where_in('forum_id', array_keys($forums))
+                    ->where_gt('last_post', $this->user->last_visit)
+                    ->where_null('moved_to')
+                    ->find_result_set();
+
+                foreach ($result as $cur_topic) {
+                    if (!isset($new_topics[$cur_topic->forum_id]) && (!isset($tracked_topics['forums'][$cur_topic->forum_id]) || $tracked_topics['forums'][$cur_topic->forum_id] < $forums[$cur_topic->forum_id]) && (!isset($tracked_topics['topics'][$cur_topic->id]) || $tracked_topics['topics'][$cur_topic->id] < $cur_topic->last_post)) {
+                        $new_topics[$cur_topic->forum_id] = $forums[$cur_topic->forum_id];
                     }
                 }
             }
+        }
 
             return $new_topics;
-        }
     }
 
     // Returns the elements needed to display categories and their forums
@@ -93,8 +111,6 @@ class index
         if (!$this->user->is_guest) {
             $new_topics = $this->get_new_posts();
         }
-
-        //$result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
         
         $select_print_categories_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
         $where_print_categories_forums = array(
@@ -215,8 +231,12 @@ class index
             require FORUM_CACHE_DIR.'cache_users_info.php';
         }
 
-        $result = $this->db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$this->db->prefix.'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $this->db->error());
-        list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $this->db->fetch_row($result));
+        //$result = $this->db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$this->db->prefix.'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $this->db->error());
+        //list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $this->db->fetch_row($result));
+        
+        // TODO: combine into 1 query
+        $stats['total_topics'] = intval(\ORM::for_table($this->feather->prefix.'forums')->sum('num_topics'));
+        $stats['total_posts'] = intval(\ORM::for_table($this->feather->prefix.'forums')->sum('num_posts'));
 
         if ($this->user->g_view_users == '1') {
             $stats['newest_user'] = '<a href="'.get_link('user/'.$stats['last_user']['id']).'/">'.feather_escape($stats['last_user']['username']).'</a>';
@@ -234,13 +254,23 @@ class index
         $num_guests = 0;
         $online = array();
         $result = $this->db->query('SELECT user_id, ident FROM '.$this->db->prefix.'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $this->db->error());
+        
+        $select_fetch_users_online = array('user_id', 'ident');
+        $where_fetch_users_online = array('idle' => '0');
+        $order_by_fetch_users_online = array('ident');
+        
+        $result = \ORM::for_table($this->feather->prefix.'online')
+            ->select_many($select_fetch_users_online)
+            ->where($where_fetch_users_online)
+            ->order_by_many($order_by_fetch_users_online)
+            ->find_result_set();
 
-        while ($this->user_online = $this->db->fetch_assoc($result)) {
-            if ($this->user_online['user_id'] > 1) {
+        foreach($result as $user_online) {
+            if ($user_online->user_id > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('user/'.$this->user_online['user_id']).'/">'.feather_escape($this->user_online['ident']).'</a>';
+                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('user/'.$user_online->user_id).'/">'.feather_escape($user_online->ident).'</a>';
                 } else {
-                    $online['users'][] = "\n\t\t\t\t".'<dd>'.feather_escape($this->user_online['ident']);
+                    $online['users'][] = "\n\t\t\t\t".'<dd>'.feather_escape($user_online->ident);
                 }
             } else {
                 ++$num_guests;
