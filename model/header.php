@@ -25,9 +25,9 @@ class header
     // Returns page head
     public function get_reports()
     {
-        $result_header = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'reports WHERE zapped IS NULL') or error('Unable to fetch reports info', __FILE__, __LINE__, $this->db->error());
+        $result_header = \ORM::for_table($this->db->prefix.'reports')->where_null('zapped')->find_one();
 
-        if ($this->db->result($result_header)) {
+        if ($result_header) {
             return true;
         }
 
