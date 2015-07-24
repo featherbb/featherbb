@@ -92,7 +92,7 @@ class misc
 
     public function subscribeforum($id)
     {
-        global $lang_common;
+        global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -106,7 +106,7 @@ class misc
 
     public function subscribetopic($id)
     {
-        global $lang_common;
+        global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -120,7 +120,7 @@ class misc
 
     public function unsubscribeforum($id)
     {
-        global $lang_common;
+        global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
             message($lang_common['No permission'], false, '403 Forbidden');
@@ -134,7 +134,7 @@ class misc
 
     public function unsubscribetopic($id)
     {
-        global $lang_common;
+        global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
             message($lang_common['No permission'], false, '403 Forbidden');

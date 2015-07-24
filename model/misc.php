@@ -32,8 +32,6 @@ class misc
     public function get_info_mail($recipient_id)
     {
         global $lang_common;
-
-        $mail = array();
         
         $select_get_info_mail = array('username', 'email', 'email_setting');
         
@@ -94,7 +92,6 @@ class misc
 
         pun_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
-        //$this->db->query('UPDATE '.$this->db->prefix.'users SET last_email_sent='.time().' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
         \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
                                                   ->find_one()
                                                   ->set('last_email_sent', time())
@@ -146,21 +143,38 @@ class misc
         $topic = \ORM::for_table($this->db->prefix.'posts')->select('topic_id')
                                                               ->where('id', $post_id)
                                                               ->find_one();
+
         if (!$topic) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
+        $select_report = array('subject', 'forum_id');
+
         // Get the subject and forum ID
-        $result = $this->db->query('SELECT subject, forum_id FROM '.$this->db->prefix.'topics WHERE id='.$topic['topic_id']) or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $report = \ORM::for_table($this->db->prefix.'topics')->select($select_report)
+            ->where('id', $topic['topic_id'])
+            ->find_one();
+
+        if (!$report) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        list($subject, $forum_id) = $this->db->fetch_row($result);
-
         // Should we use the internal report handling?
         if ($this->config['o_report_method'] == '0' || $this->config['o_report_method'] == '2') {
-            $this->db->query('INSERT INTO '.$this->db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES('.$post_id.', '.$topic['topic_id'].', '.$forum_id.', '.$this->user->id.', '.time().', \''.$this->db->escape($reason).'\')') or error('Unable to create report', __FILE__, __LINE__, $this->db->error());
+            $insert_report = array(
+                'post_id' => $post_id,
+                'topic_id'  => $topic['topic_id'],
+                'forum_id'  => $report['forum_id'],
+                'reported_by'  => $this->user->id,
+                'created'  => time(),
+                'message'  => $reason,
+            );
+
+            // Insert the report
+            \ORM::for_table($this->db->prefix.'reports')
+                ->create()
+                ->set($insert_report)
+                ->save();
         }
 
         // Should we email the report?
@@ -175,8 +189,8 @@ class misc
                 $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
 
-                $mail_subject = str_replace('<forum_id>', $forum_id, $mail_subject);
-                $mail_subject = str_replace('<topic_subject>', $subject, $mail_subject);
+                $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
+                $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
                 $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                 $mail_message = str_replace('<post_url>', get_link('post/'.$post_id.'/#p'.$post_id), $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
@@ -188,21 +202,38 @@ class misc
             }
         }
 
-        $this->db->query('UPDATE '.$this->db->prefix.'users SET last_report_sent='.time().' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+            ->find_one()
+            ->set('last_report_sent', time())
+            ->save();
 
-        redirect(get_link('forum/'.$forum_id.'/'.url_friendly($subject).'/'), $lang_misc['Report redirect']);
+        redirect(get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['subject']).'/'), $lang_misc['Report redirect']);
     }
 
     public function get_info_report($post_id)
     {
         global $lang_common;
 
-        $result = $this->db->query('SELECT f.id AS fid, f.forum_name, t.id AS tid, t.subject FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$post_id) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $select_get_info_report = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
+        $where_get_info_report = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $cur_post = \ORM::for_table($this->feather->prefix.'posts')
+            ->table_alias('p')
+            ->select_many($select_get_info_report)
+            ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_info_report)
+            ->where('p.id', $post_id)
+            ->find_one();
+
+        if (!$cur_post) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $cur_post = $this->db->fetch_assoc($result);
 
         return $cur_post;
     }
@@ -216,17 +247,43 @@ class misc
         }
 
         // Make sure the user can view the topic
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$topic_id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $where_subscribe_topic = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $authorized = \ORM::for_table($this->feather->prefix.'topics')
+                    ->table_alias('t')
+                    ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                    ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+                    ->where_any_is($where_subscribe_topic)
+                    ->where('t.id', $topic_id)
+                    ->where_null('t.moved_to')
+                    ->find_one();
+
+        if (!$authorized) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$this->user->id.' AND topic_id='.$topic_id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
+        $is_subscribed = \ORM::for_table($this->feather->prefix.'topic_subscriptions')
+                        ->where('user_id', $this->user->id)
+                        ->where('topic_id', $topic_id)
+                        ->find_one();
+
+        if ($is_subscribed) {
             message($lang_misc['Already subscribed topic']);
         }
 
-        $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user->id.' ,'.$topic_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
+        $insert_subscribe_topic = array(
+            'user_id' => $this->user->id,
+            'topic_id'  => $topic_id
+        );
+
+        // Insert the subscription
+        \ORM::for_table($this->db->prefix.'topic_subscriptions')
+            ->create()
+            ->set($insert_subscribe_topic)
+            ->save();
 
         redirect(get_link('topic/'.$topic_id.'/'), $lang_misc['Subscribe redirect']);
     }
@@ -239,12 +296,20 @@ class misc
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$this->user->id.' AND topic_id='.$topic_id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $is_subscribed = \ORM::for_table($this->feather->prefix.'topic_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('topic_id', $topic_id)
+            ->find_one();
+
+        if (!$is_subscribed) {
             message($lang_misc['Not subscribed topic']);
         }
 
-        $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$this->user->id.' AND topic_id='.$topic_id) or error('Unable to remove subscription', __FILE__, __LINE__, $this->db->error());
+        // Delete the subscription
+        \ORM::for_table($this->db->prefix.'topic_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('topic_id', $topic_id)
+            ->delete_many();
 
         redirect(get_link('topic/'.$topic_id.'/'), $lang_misc['Unsubscribe redirect']);
     }
@@ -257,12 +322,20 @@ class misc
             message($lang_common['No permission'], false, '403 Forbidden');
         }
 
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'forum_subscriptions WHERE user_id='.$this->user->id.' AND forum_id='.$forum_id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $is_subscribed = \ORM::for_table($this->feather->prefix.'forum_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('forum_id', $forum_id)
+            ->find_one();
+
+        if (!$is_subscribed) {
             message($lang_misc['Not subscribed forum']);
         }
 
-        $this->db->query('DELETE FROM '.$this->db->prefix.'forum_subscriptions WHERE user_id='.$this->user->id.' AND forum_id='.$forum_id) or error('Unable to remove subscription', __FILE__, __LINE__, $this->db->error());
+        // Delete the subscription
+        \ORM::for_table($this->db->prefix.'forum_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('forum_id', $forum_id)
+            ->delete_many();
 
         redirect(get_link('forum/'.$forum_id.'/'), $lang_misc['Unsubscribe redirect']);
     }
@@ -276,17 +349,42 @@ class misc
         }
 
         // Make sure the user can view the forum
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $where_subscribe_forum = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $authorized = \ORM::for_table($this->feather->prefix.'forums')
+            ->table_alias('f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_subscribe_forum)
+            ->where('f.id', $forum_id)
+            ->find_one();
+
+        if (!$authorized) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'forum_subscriptions WHERE user_id='.$this->user->id.' AND forum_id='.$forum_id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
+        $is_subscribed = \ORM::for_table($this->feather->prefix.'forum_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('forum_id', $forum_id)
+            ->find_one();
+
+        if ($is_subscribed) {
             message($lang_misc['Already subscribed forum']);
         }
 
-        $this->db->query('INSERT INTO '.$this->db->prefix.'forum_subscriptions (user_id, forum_id) VALUES('.$this->user->id.' ,'.$forum_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
+        $insert_subscribe_forum = array(
+            'user_id' => $this->user->id,
+            'forum_id'  => $forum_id
+        );
+
+        // Insert the subscription
+        \ORM::for_table($this->db->prefix.'forum_subscriptions')
+            ->create()
+            ->set($insert_subscribe_forum)
+            ->save();
 
         redirect(get_link('forum/'.$forum_id.'/'), $lang_misc['Subscribe redirect']);
     }
