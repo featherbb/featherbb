@@ -29,37 +29,28 @@ class login
         $form_password = feather_trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
 
-        $username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$this->db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$this->db->escape($form_username).'\')';
-
-        $result = $this->db->query('SELECT * FROM '.$this->db->prefix.'users WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        $cur_user = $this->db->fetch_assoc($result);
+        $user = \ORM::for_table($this->db->prefix.'users')->where('username', $form_username)->find_one();
 
         $authorized = false;
 
-        if (!empty($cur_user['password'])) {
+        if (!empty($user->password)) {
             $form_password_hash = feather_hash($form_password); // Will result in a SHA-1 hash
 
-            // If there is a salt in the database we have upgraded from 1.3-legacy though haven't yet logged in
-            if (!empty($cur_user['salt'])) {
-                if (sha1($cur_user['salt'].sha1($form_password)) == $cur_user['password']) {
-                    // 1.3 used sha1(salt.sha1(pass))
-
-                    $authorized = true;
-
-                    $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$form_password_hash.'\', salt=NULL WHERE id='.$cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $this->db->error());
-                }
-            }
             // If the length isn't 40 then the password isn't using sha1, so it must be md5 from 1.2
-            elseif (strlen($cur_user['password']) != 40) {
-                if (md5($form_password) == $cur_user['password']) {
+            // Maybe this should be removed
+            if (strlen($user->password) != 40) {
+                if (md5($form_password) == $user->password) {
                     $authorized = true;
 
-                    $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$form_password_hash.'\' WHERE id='.$cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $this->db->error());
+                    \ORM::for_table($this->db->prefix.'users')->where('id', $user->id)
+                                                              ->find_one()
+                                                              ->set('password', $form_password_hash)
+                                                              ->save();
                 }
             }
             // Otherwise we should have a normal sha1 password
             else {
-                $authorized = ($cur_user['password'] == $form_password_hash);
+                $authorized = ($user->password == $form_password_hash);
             }
         }
 
@@ -68,8 +59,11 @@ class login
         }
 
         // Update the status if this is the first time the user logged in
-        if ($cur_user['group_id'] == FEATHER_UNVERIFIED) {
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$this->config['o_default_user_group'].' WHERE id='.$cur_user['id']) or error('Unable to update user status', __FILE__, __LINE__, $this->db->error());
+        if ($user->group_id == FEATHER_UNVERIFIED) {
+            \ORM::for_table($this->db->prefix.'users')->where('id', $user->id)
+                                                      ->find_one()
+                                                      ->set('group_id', $this->config['o_default_user_group'])
+                                                      ->save();
 
             // Regenerate the users info cache
             if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
@@ -80,10 +74,11 @@ class login
         }
 
         // Remove this user's guest entry from the online list
-        $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE ident=\''.$this->db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'online')->where('ident', get_remote_address())
+                                                   ->delete_many();
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
-        feather_setcookie($cur_user['id'], $form_password_hash, $expire);
+        feather_setcookie($user->id, $form_password_hash, $expire);
 
         // Reset tracked topics
         set_tracked_topics(null);
@@ -104,11 +99,15 @@ class login
         }
 
         // Remove user from "users online" list
-        $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id='.$this->user->id) or error('Unable to delete from online list', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'online')->where('user_id', $this->user->id)
+                                                   ->delete_many();
 
         // Update last_visit (make sure there's something to update it with)
         if (isset($this->user->logged)) {
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET last_visit='.$this->user->logged.' WHERE id='.$this->user->id) or error('Unable to update user visit data', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+                                                      ->find_one()
+                                                      ->set('last_visit', $this->user->logged)
+                                                      ->save();
         }
 
         feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
@@ -138,9 +137,14 @@ class login
 
             // Did everything go according to plan?
             if (empty($errors)) {
-                $result = $this->db->query('SELECT id, username, last_email_sent FROM '.$this->db->prefix.'users WHERE email=\''.$this->db->escape($email).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
+                $select_password_forgotten = array('id', 'username', 'last_email_sent');
 
-                if ($this->db->num_rows($result)) {
+                $result = \ORM::for_table($this->feather->prefix.'users')
+                    ->select($select_password_forgotten)
+                    ->where('email', $email)
+                    ->find_many();
+
+                if ($result) {
                     // Load the "activate password" template
                     $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
 
@@ -154,20 +158,29 @@ class login
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
                     // Loop through users we found
-                    while ($cur_hit = $this->db->fetch_assoc($result)) {
-                        if ($cur_hit['last_email_sent'] != '' && (time() - $cur_hit['last_email_sent']) < 3600 && (time() - $cur_hit['last_email_sent']) >= 0) {
-                            message(sprintf($lang_login['Email flood'], intval((3600 - (time() - $cur_hit['last_email_sent'])) / 60)), true);
+                    foreach($result as $cur_hit) {
+                        if ($cur_hit->last_email_sent != '' && (time() - $cur_hit->last_email_sent) < 3600 && (time() - $cur_hit->last_email_sent) >= 0) {
+                            message(sprintf($lang_login['Email flood'], intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), true);
                         }
 
                         // Generate a new password and a new password activation code
                         $new_password = random_pass(12);
                         $new_password_key = random_pass(8);
-
-                        $this->db->query('UPDATE '.$this->db->prefix.'users SET activate_string=\''.feather_hash($new_password).'\', activate_key=\''.$new_password_key.'\', last_email_sent = '.time().' WHERE id='.$cur_hit['id']) or error('Unable to update activation data', __FILE__, __LINE__, $this->db->error());
+ 
+                        $update_password = array(
+                            'activate_string' => feather_hash($new_password),
+                            'activate_key'    => $new_password_key,
+                            'last_email_sent' => time()
+                        );
+                        
+                        \ORM::for_table($this->db->prefix.'users')->where('id', $cur_hit->id)
+                                                                  ->find_one()
+                                                                  ->set($update_password)
+                                                                  ->save();
 
                         // Do the user specific replacements to the template
-                        $cur_mail_message = str_replace('<username>', $cur_hit['username'], $mail_message);
-                        $cur_mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
+                        $cur_mail_message = str_replace('<username>', $cur_hit->username, $mail_message);
+                        $cur_mail_message = str_replace('<activation_url>', get_link('user/'.$cur_hit->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
 
                         pun_mail($email, $mail_subject, $cur_mail_message);
