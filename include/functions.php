@@ -941,7 +941,9 @@ function message($message, $no_back_link = false, $http_status = null)
     if (!defined('FEATHER_HEADER')) {
         $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Info']);
 
-        define('FEATHER_ACTIVE_PAGE', 'index');
+        if (!defined('FEATHER_ACTIVE_PAGE')) {
+            define('FEATHER_ACTIVE_PAGE', 'index');
+        }
 
         require_once FEATHER_ROOT.'controller/header.php';
         
