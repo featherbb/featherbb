@@ -69,7 +69,8 @@ endif;
 ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo feather_escape(get_base_url(true)) ?>';
+    var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
+        langBbeditor = JSON.parse('<?= json_encode($lang_bbeditor); ?>');
 </script>
 <script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
 <div id="editform" class="blockform">

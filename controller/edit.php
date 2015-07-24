@@ -62,6 +62,9 @@ class edit
 
         // Load the post.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
+        
+        // Load the bbeditor.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
 
         // Start with a clean slate
         $errors = array();
@@ -113,6 +116,7 @@ class edit
                             'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
                             'post' => $post,
+                            'lang_bbeditor' => $lang_bbeditor,
                             )
                     );
 

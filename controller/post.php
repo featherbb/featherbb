@@ -43,6 +43,9 @@ class post
 
         // Load the register.php/profile.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
+        
+        // Load the bbeditor.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
 
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
@@ -225,6 +228,7 @@ class post
                             'url_topic' => $url_topic,
                             'quote' => $quote,
                             'errors'    =>    $errors,
+                            'lang_bbeditor' => $lang_bbeditor,
                             )
                     );
 
