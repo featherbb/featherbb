@@ -496,6 +496,8 @@ class users
 
     public function print_users($conditions, $order_by, $direction, $start_from)
     {
+        global $lang_common, $lang_admin_users;
+
         $user_data = array();
 
         $result = $this->db->query('SELECT u.id, u.username, u.email, u.title, u.num_posts, u.admin_note, g.g_id, g.g_user_title FROM '.$this->db->prefix.'users AS u LEFT JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : '').' ORDER BY '.$this->db->escape($order_by).' '.$this->db->escape($direction).' LIMIT '.$start_from.', 50') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
