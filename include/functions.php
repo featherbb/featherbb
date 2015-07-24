@@ -1896,6 +1896,16 @@ function display_saved_queries()
 <?php
 
     $query_time_total = 0.0;
+    // TODO
+    foreach (\ORM::get_query_log() as $idiorm_query) {
+        ?>
+                            	<tr>
+					<td class="tcl"><?php //echo($cur_query[1] != 0) ? $cur_query[1] : '&#160;' ?></td>
+					<td class="tcr"><?php echo feather_escape($idiorm_query) ?></td>
+				</tr>
+        <?php
+    }
+    
     foreach ($saved_queries as $cur_query) {
         $query_time_total += $cur_query[1];
 

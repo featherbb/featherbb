@@ -56,12 +56,10 @@ class footer
         // End the transaction
         $this->db->end_transaction();
 
-
         // Close the db connection (and free up any result data)
         $this->db->close();
 
         // If we reached this far, we shouldn't execute more code
-
         $this->feather->stop();
     }
 }
