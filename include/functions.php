@@ -1967,6 +1967,10 @@ function url_friendly($str)
     $str = strtr($str, $url_replace);
     $str = strtolower(utf8_decode($str));
     $str = feather_trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+    
+    if (empty($str)) {
+        $str = 'view';
+    }
 
     return $str;
 }
