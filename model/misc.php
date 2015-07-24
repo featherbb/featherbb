@@ -23,8 +23,10 @@ class misc
  
     public function update_last_visit()
     {
-        
-        $this->db->query('UPDATE '.$this->db->prefix.'users SET last_visit='.$this->user->logged.' WHERE id='.$this->user->id) or error('Unable to update user last visit data', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+                                                  ->find_one()
+                                                  ->set('last_visit', $this->user->logged)
+                                                  ->save();
     }
 
     public function get_info_mail($recipient_id)
@@ -32,19 +34,27 @@ class misc
         global $lang_common;
 
         $mail = array();
-
-        $result = $this->db->query('SELECT username, email, email_setting FROM '.$this->db->prefix.'users WHERE id='.$recipient_id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        
+        $select_get_info_mail = array('username', 'email', 'email_setting');
+        
+        $mail = \ORM::for_table($this->feather->prefix.'users')
+                ->select($select_get_info_mail)
+                ->where('id', $recipient_id)
+                ->find_one();
+        
+        if (!$mail) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        list($mail['recipient'], $mail['recipient_email'], $mail['email_setting']) = $this->db->fetch_row($result);
+        
+        $mail['recipient'] = $mail['username'];
+        $mail['recipient_email'] = $mail['email'];
 
         return $mail;
     }
 
     public function send_email($mail, $id)
     {
+        global $lang_misc;
         
         confirm_referrer(get_link_r('email/'.$id.'/'));
 
@@ -84,10 +94,14 @@ class misc
 
         pun_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
-        $this->db->query('UPDATE '.$this->db->prefix.'users SET last_email_sent='.time().' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+        //$this->db->query('UPDATE '.$this->db->prefix.'users SET last_email_sent='.time().' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+                                                  ->find_one()
+                                                  ->set('last_email_sent', time())
+                                                  ->save();
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent)
-        $redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
+        //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
         redirect(get_base_url(), $lang_misc['Email sent redirect']);
     }
@@ -95,6 +109,7 @@ class misc
     public function get_redirect_url($recipient_id)
     {
         // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
+        // TODO
         if ($this->request->getReferrer()) {
             $redirect_url = validate_redirect($this->request->getReferrer(), null);
         }
@@ -128,15 +143,15 @@ class misc
         }
 
         // Get the topic ID
-        $result = $this->db->query('SELECT topic_id FROM '.$this->db->prefix.'posts WHERE id='.$post_id) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $topic = \ORM::for_table($this->db->prefix.'posts')->select('topic_id')
+                                                              ->where('id', $post_id)
+                                                              ->find_one();
+        if (!$topic) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $topic_id = $this->db->result($result);
-
         // Get the subject and forum ID
-        $result = $this->db->query('SELECT subject, forum_id FROM '.$this->db->prefix.'topics WHERE id='.$topic_id) or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
+        $result = $this->db->query('SELECT subject, forum_id FROM '.$this->db->prefix.'topics WHERE id='.$topic['topic_id']) or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
         if (!$this->db->num_rows($result)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -145,7 +160,7 @@ class misc
 
         // Should we use the internal report handling?
         if ($this->config['o_report_method'] == '0' || $this->config['o_report_method'] == '2') {
-            $this->db->query('INSERT INTO '.$this->db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES('.$post_id.', '.$topic_id.', '.$forum_id.', '.$this->user->id.', '.time().', \''.$this->db->escape($reason).'\')') or error('Unable to create report', __FILE__, __LINE__, $this->db->error());
+            $this->db->query('INSERT INTO '.$this->db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES('.$post_id.', '.$topic['topic_id'].', '.$forum_id.', '.$this->user->id.', '.time().', \''.$this->db->escape($reason).'\')') or error('Unable to create report', __FILE__, __LINE__, $this->db->error());
         }
 
         // Should we email the report?
