@@ -24,13 +24,27 @@ class delete
     public function get_info_delete($id)
     {
         global $lang_common;
+        
+        $select_get_info_delete = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $where_get_info_delete = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
 
-        $result = $this->db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.id AS tid, t.subject, t.first_post_id, t.closed, p.posted, p.poster, p.poster_id, p.message, p.hide_smilies FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $cur_post = \ORM::for_table($this->feather->prefix.'posts')
+            ->table_alias('p')
+            ->select_many($select_get_info_delete)
+            ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_info_delete)
+            ->where('p.id', $id)
+            ->find_one();
+        
+        if (!$cur_post) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $cur_post = $this->db->fetch_assoc($result);
 
         return $cur_post;
     }
@@ -56,10 +70,14 @@ class delete
             update_forum($fid);
 
             // Redirect towards the previous post
-            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id='.$tid.' AND id < '.$id.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-            $post_id = $this->db->result($result);
+            $post = \ORM::for_table($this->feather->prefix.'posts')
+                ->select('id')
+                ->where('topic_id', $tid)
+                ->where_lt('id', $id)
+                ->order_by_desc('id')
+                ->find_one();
 
-            redirect(get_link('post/'.$post_id.'/#p'.$post_id), $lang_delete['Post del redirect']);
+            redirect(get_link('post/'.$post['id'].'/#p'.$post['id']), $lang_delete['Post del redirect']);
         }
     }
 }
