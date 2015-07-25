@@ -25,7 +25,7 @@ if (!defined('FEATHER')) {
 					<div class="infldset">
 						<label><?php echo $lang_misc['Move to'] ?>
 						<br /><select name="move_to_forum">
-								<?php get_forum_list_move($id); ?>
+								<?php echo $list_forums ?>
 							</optgroup>
 						</select>
 						<br /></label>

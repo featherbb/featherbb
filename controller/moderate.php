@@ -115,6 +115,41 @@ class moderate
                             get_link_r('post/'.$param.'/#p'.$param),
                             );
 
+        // Move one topic
+        if ($this->request->post('move_topics') || $this->request->post('move_topics_to')) {
+            if ($this->request->post('move_topics_to')) {
+                $this->model->move_topics_to($fid, $id, $param);
+            }
+
+            $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
+            if (empty($topics)) {
+                message($lang_misc['No topics selected']);
+            }
+
+            $topics = implode(',', array_map('intval', array_keys($topics)));
+
+            // Check if there are enough forums to move the topic
+            $this->model->check_move_possible();
+
+            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+
+            define('FEATHER_ACTIVE_PAGE', 'moderate');
+
+            $this->header->setTitle($page_title)->setPage($p)->display();
+
+            $this->feather->render('moderate/move_topics.php', array(
+                    'action'    =>    'multi',
+                    'id'    =>    $fid,
+                    'topics'    =>    $topics,
+                    'lang_misc'    =>    $lang_misc,
+                    'lang_common'    =>    $lang_common,
+                    'list_forums'   => $this->model->get_forum_list_move($fid),
+                )
+            );
+
+            $this->footer->display();
+        }
+
         // Stick a topic
         if ($action == 'stick') {
             confirm_referrer($url_referer);
@@ -178,11 +213,9 @@ class moderate
                         'topics'    =>    $id,
                         'lang_misc'    =>    $lang_misc,
                         'lang_common'    =>    $lang_common,
+                        'list_forums'   => $this->model->get_forum_list_move($fid),
                         )
                 );
-
-            $footer_style = 'moderate';
-            $forum_id = $id;
 
             $this->footer->display();
         }
@@ -208,9 +241,6 @@ class moderate
                         )
                     );
 
-                    $footer_style = 'moderate';
-                    $forum_id = $id;
-
                     $this->footer->display();
                 }
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
@@ -228,6 +258,7 @@ class moderate
                         'lang_misc' => $lang_misc,
                         'id' => $id,
                         'posts' => $posts,
+                        'list_forums' => $this->model->get_forum_list_split($id),
                         )
                 );
 
@@ -274,9 +305,6 @@ class moderate
                         'start_from' => $start_from,
                         )
                 );
-
-            $footer_style = 'moderate';
-            $forum_id = $id;
 
             $this->footer->display();
         }
@@ -345,9 +373,6 @@ class moderate
                             )
                     );
 
-        $footer_style = 'moderate';
-        $forum_id = $id;
-
         $this->footer->display();
     }
 
@@ -401,11 +426,9 @@ class moderate
                         'topics'    =>    $topics,
                         'lang_misc'    =>    $lang_misc,
                         'lang_common'    =>    $lang_common,
+                        'list_forums'   => $this->model->get_forum_list_move($fid),
                         )
                 );
-
-            $footer_style = 'moderate';
-            $forum_id = $fid;
 
             $this->footer->display();
         }
@@ -435,9 +458,6 @@ class moderate
                         )
                 );
 
-            $footer_style = 'moderate';
-            $forum_id = $fid;
-
             $this->footer->display();
         }
 
@@ -465,9 +485,6 @@ class moderate
                         'lang_common'    =>    $lang_common,
                         )
                 );
-
-            $footer_style = 'moderate';
-            $forum_id = $fid;
 
             $this->footer->display();
         }

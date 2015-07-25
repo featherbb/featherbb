@@ -33,14 +33,15 @@ class moderate
 
     public function display_ip_address_post($pid)
     {
-        global $lang_common, $lang_misc;
+        global $lang_common;
 
-        $result = $this->db->query('SELECT poster_ip FROM '.$this->db->prefix.'posts WHERE id='.$pid) or error('Unable to fetch post IP address', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $ip = \ORM::for_table($this->db->prefix.'posts')
+            ->where('id', $pid)
+            ->find_one_col('poster_ip');
+
+        if (!$ip) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $ip = $this->db->result($result);
 
         // Load the misc.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
@@ -50,23 +51,39 @@ class moderate
 
     public function get_moderators($fid)
     {
-        $result = $this->db->query('SELECT moderators FROM '.$this->db->prefix.'forums WHERE id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
-
-        $moderators = $this->db->result($result);
+        $moderators = \ORM::for_table($this->db->prefix.'forums')
+            ->where('id', $fid)
+            ->find_one_col('moderators');
 
         return $moderators;
     }
 
     public function get_topic_info($fid, $tid)
     {
+        global $lang_common;
         
         // Fetch some info about the topic
-        $result = $this->db->query('SELECT t.subject, t.num_replies, t.first_post_id, f.id AS forum_id, forum_name FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid.' AND t.id='.$tid.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $select_get_topic_info = array('forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id');
+        $where_get_topic_info = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $cur_topic = \ORM::for_table($this->feather->prefix.'topics')
+            ->table_alias('t')
+            ->select_many($select_get_topic_info)
+            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_topic_info)
+            ->where('f.id', $fid)
+            ->where('t.id', $tid)
+            ->where_null('t.moved_to')
+            ->find_one();
+
+        if (!$cur_topic) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $cur_topic = $this->db->fetch_assoc($result);
 
         return $cur_topic;
     }
@@ -91,28 +108,52 @@ class moderate
             }
 
             // Verify that the post IDs are valid
-            $admins_sql = ($this->user->g_id != FEATHER_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $this->db->error());
+            $posts_array = explode(',', $posts);
 
-            if ($this->db->num_rows($result) != substr_count($posts, ',') + 1) {
+            $result = \ORM::for_table($this->db->prefix.'posts')
+                ->where_in('id', $posts_array)
+                ->where('topic_id', $tid)
+                ->find_many();
+
+            if ($this->user->g_id != FEATHER_ADMIN) {
+                $result->where_not_in('poster_id', get_admin_ids());
+            }
+
+            if (count($result) != substr_count($posts, ',') + 1) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
 
             // Delete the posts
-            $this->db->query('DELETE FROM '.$this->db->prefix.'posts WHERE id IN('.$posts.')') or error('Unable to delete posts', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'posts')
+                ->where_in('id', $posts_array)
+                ->delete_many();
 
             require FEATHER_ROOT.'include/search_idx.php';
             strip_search_index($posts);
 
             // Get last_post, last_post_id, and last_poster for the topic after deletion
-            $result = $this->db->query('SELECT id, poster, posted FROM '.$this->db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-            $last_post = $this->db->fetch_assoc($result);
+            $select_last_post = array('id', 'poster', 'posted');
+
+            $last_post = \ORM::for_table($this->feather->prefix.'posts')
+                ->select_many($select_last_post)
+                ->where('topic_id', $tid)
+                ->find_one();
 
             // How many posts did we just delete?
             $num_posts_deleted = substr_count($posts, ',') + 1;
 
             // Update the topic
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET last_post='.$last_post['posted'].', last_post_id='.$last_post['id'].', last_poster=\''.$this->db->escape($last_post['poster']).'\', num_replies=num_replies-'.$num_posts_deleted.' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+            $update_topic = array(
+                'last_post' => $this->user->id,
+                'last_post_id'  => $last_post['id'],
+                'last_poster'  => $last_post['poster'],
+            );
+
+            \ORM::for_table($this->db->prefix.'topics')->where('id', $tid)
+                ->find_one()
+                ->set($update_topic)
+                ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted)
+                ->save();
 
             update_forum($fid);
 
@@ -124,7 +165,7 @@ class moderate
 
     public function split_posts($tid, $fid, $p = null)
     {
-        global $lang_common, $lang_misc;
+        global $lang_common, $lang_misc, $lang_post;
 
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         if (empty($posts)) {
@@ -150,14 +191,32 @@ class moderate
             $num_posts_splitted = substr_count($posts, ',') + 1;
 
             // Verify that the post IDs are valid
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $this->db->error());
-            if ($this->db->num_rows($result) != $num_posts_splitted) {
+            $posts_array = explode(',', $posts);
+
+            $result = \ORM::for_table($this->db->prefix.'posts')
+                ->where_in('id', $posts_array)
+                ->where('topic_id', $tid)
+                ->find_many();
+
+            if (count($result) != $num_posts_splitted) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
 
             // Verify that the move to forum ID is valid
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.group_id='.$this->user->g_id.' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $this->db->error());
-            if (!$this->db->num_rows($result)) {
+            $where_split_posts = array(
+                array('fp.post_topics' => 'IS NULL'),
+                array('fp.post_topics' => '1')
+            );
+
+            $result = \ORM::for_table($this->feather->prefix.'forums')
+                ->table_alias('f')
+                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
+                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+                ->where_any_is($where_split_posts)
+                ->where_null('f.redirect_url')
+                ->find_one();
+
+            if (!$result) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
 
@@ -174,28 +233,84 @@ class moderate
             }
 
             // Get data from the new first post
-            $result = $this->db->query('SELECT p.id, p.poster, p.posted FROM '.$this->db->prefix.'posts AS p WHERE id IN('.$posts.') ORDER BY p.id ASC LIMIT 1') or error('Unable to get first post', __FILE__, __LINE__, $this->db->error());
-            $first_post_data = $this->db->fetch_assoc($result);
+            $select_first_post = array('id', 'poster', 'posted');
+
+            $first_post_data = \ORM::for_table($this->feather->prefix.'posts')
+                ->select($select_first_post)
+                ->where_in('id',$posts_array )
+                ->order_by_asc('id')
+                ->find_one();
 
             // Create the new topic
-            $this->db->query('INSERT INTO '.$this->db->prefix.'topics (poster, subject, posted, first_post_id, forum_id) VALUES (\''.$this->db->escape($first_post_data['poster']).'\', \''.$this->db->escape($new_subject).'\', '.$first_post_data['posted'].', '.$first_post_data['id'].', '.$move_to_forum.')') or error('Unable to create new topic', __FILE__, __LINE__, $this->db->error());
-            $new_tid = $this->db->insert_id();
+            $insert_topic = array(
+                'poster' => $first_post_data['poster'],
+                'subject'  => $new_subject,
+                'posted'  => $first_post_data['posted'],
+                'first_post_id'  => $first_post_data['id'],
+                'forum_id'  => $move_to_forum,
+            );
+
+            \ORM::for_table($this->db->prefix.'topics')
+                ->create()
+                ->set($insert_topic)
+                ->save();
+
+            $new_tid = \ORM::get_db()->lastInsertId($this->db->prefix.'topics');
 
             // Move the posts to the new topic
-            $this->db->query('UPDATE '.$this->db->prefix.'posts SET topic_id='.$new_tid.' WHERE id IN('.$posts.')') or error('Unable to move posts into new topic', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'posts')->where_in('id', $posts_array)
+                ->find_one()
+                ->set('topic_id', $new_tid)
+                ->save();
 
             // Apply every subscription to both topics
-            $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id='.$tid) or error('Unable to copy existing subscriptions', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'topic_subscriptions')->raw_query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
-            $result = $this->db->query('SELECT id, poster, posted FROM '.$this->db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-            $last_post_data = $this->db->fetch_assoc($result);
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET last_post='.$last_post_data['posted'].', last_post_id='.$last_post_data['id'].', last_poster=\''.$this->db->escape($last_post_data['poster']).'\', num_replies=num_replies-'.$num_posts_splitted.' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+            $select_last_post = array('id', 'poster', 'posted');
+
+            $last_old_post_data = \ORM::for_table($this->feather->prefix.'posts')
+                ->select($select_last_post)
+                ->where('topic_id', $tid)
+                ->order_by_desc('id')
+                ->find_one();
+
+            // Update the old topic
+            $update_old_topic = array(
+                'last_post' => $last_old_post_data['posted'],
+                'last_post_id'  => $last_old_post_data['id'],
+                'last_poster'  => $last_old_post_data['poster'],
+            );
+
+            \ORM::for_table($this->db->prefix.'topics')
+                ->where('id', $tid)
+                ->find_one()
+                ->set($update_old_topic)
+                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted)
+                ->save();
 
             // Get last_post, last_post_id, and last_poster from the new topic and update it
-            $result = $this->db->query('SELECT id, poster, posted FROM '.$this->db->prefix.'posts WHERE topic_id='.$new_tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-            $last_post_data = $this->db->fetch_assoc($result);
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET last_post='.$last_post_data['posted'].', last_post_id='.$last_post_data['id'].', last_poster=\''.$this->db->escape($last_post_data['poster']).'\', num_replies='.($num_posts_splitted-1).' WHERE id='.$new_tid) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+            $select_new_post = array('id', 'poster', 'posted');
+
+            $last_new_post_data = \ORM::for_table($this->feather->prefix.'posts')
+                ->select($select_new_post)
+                ->where('topic_id', $new_tid)
+                ->order_by_desc('id')
+                ->find_one();
+
+            // Update the new topic
+            $update_new_topic = array(
+                'last_post' => $last_new_post_data['posted'],
+                'last_post_id'  => $last_new_post_data['id'],
+                'last_poster'  => $last_new_post_data['poster'],
+            );
+
+            \ORM::for_table($this->db->prefix.'topics')
+                ->where('id', $new_tid)
+                ->find_one()
+                ->set($update_new_topic)
+                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted-1)
+                ->save();
 
             update_forum($fid);
             update_forum($move_to_forum);
@@ -208,48 +323,88 @@ class moderate
 
     public function get_forum_list_split($id)
     {
-        
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
+        $output = '';
+
+        $select_get_forum_list_split = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $where_get_forum_list_split = array(
+            array('fp.post_topics' => 'IS NULL'),
+            array('fp.post_topics' => '1')
+        );
+        $order_by_get_forum_list_split = array('c.disp_position', 'c.id', 'f.disp_position');
+
+        $result = \ORM::for_table($this->feather->prefix.'categories')
+            ->table_alias('c')
+            ->select_many($select_get_forum_list_split)
+            ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_forum_list_split)
+            ->where_null('f.redirect_url')
+            ->order_by_many($order_by_get_forum_list_split)
+            ->find_result_set();
 
         $cur_category = 0;
-        while ($cur_forum = $this->db->fetch_assoc($result)) {
-            if ($cur_forum['cid'] != $cur_category) {
+
+        foreach($result as $cur_forum) {
+            if ($cur_forum->cid != $cur_category) {
                 // A new category since last iteration?
 
                 if ($cur_category) {
-                    echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum['cat_name']).'">'."\n";
-                $cur_category = $cur_forum['cid'];
+                $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum->cat_name).'">'."\n";
+                $cur_category = $cur_forum->cid;
             }
 
-            echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"'.($id == $cur_forum['fid'] ? ' selected="selected"' : '').'>'.feather_escape($cur_forum['forum_name']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'"'.($id == $cur_forum->fid ? ' selected="selected"' : '').'>'.feather_escape($cur_forum->forum_name).'</option>'."\n";
         }
+
+        return $output;
     }
 
     public function get_forum_list_move($id)
     {
-        
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
+        $output = '';
+
+        $select_get_forum_list_move = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $where_get_forum_list_move = array(
+            array('fp.post_topics' => 'IS NULL'),
+            array('fp.post_topics' => '1')
+        );
+        $order_by_get_forum_list_move = array('c.disp_position', 'c.id', 'f.disp_position');
+
+        $result = \ORM::for_table($this->feather->prefix.'categories')
+            ->table_alias('c')
+            ->select_many($select_get_forum_list_move)
+            ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_forum_list_move)
+            ->where_null('f.redirect_url')
+            ->order_by_many($order_by_get_forum_list_move)
+            ->find_result_set();
 
         $cur_category = 0;
-        while ($cur_forum = $this->db->fetch_assoc($result)) {
-            if ($cur_forum['cid'] != $cur_category) {
+
+        foreach($result as $cur_forum) {
+            if ($cur_forum->cid != $cur_category) {
                 // A new category since last iteration?
 
                 if ($cur_category) {
-                    echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum['cat_name']).'">'."\n";
-                $cur_category = $cur_forum['cid'];
+                $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum->cat_name).'">'."\n";
+                $cur_category = $cur_forum->cid;
             }
 
-            if ($cur_forum['fid'] != $id) {
-                echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.feather_escape($cur_forum['forum_name']).'</option>'."\n";
+            if ($cur_forum->fid != $id) {
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'">'.feather_escape($cur_forum->forum_name).'</option>'."\n";
             }
         }
+
+        return $output;
     }
 
     public function display_posts_view($tid, $start_from)
@@ -263,43 +418,56 @@ class moderate
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id LIMIT '.$start_from.','.$this->user->disp_posts) or error('Unable to fetch post IDs', __FILE__, __LINE__, $this->db->error());
+        $find_ids = \ORM::for_table($this->db->prefix.'posts')->select('id')
+            ->where('topic_id', $tid)
+            ->order_by('id')
+            ->limit($this->user->disp_posts)
+            ->offset($start_from)
+            ->find_many();
 
-        $post_ids = array();
-        for ($i = 0;$cur_post_id = $this->db->result($result, $i);$i++) {
-            $post_ids[] = $cur_post_id;
+        foreach ($find_ids as $id) {
+            $post_ids[] = $id['id'];
         }
 
         // Retrieve the posts (and their respective poster)
-        $result = $this->db->query('SELECT u.title, u.num_posts, g.g_id, g.g_user_title, p.id, p.poster, p.poster_id, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
+        $select_display_posts_view = array('u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by');
 
-        while ($cur_post = $this->db->fetch_assoc($result)) {
+        $result = \ORM::for_table($this->feather->prefix.'posts')
+            ->table_alias('p')
+            ->select_many($select_display_posts_view)
+            ->inner_join($this->feather->prefix.'users', array('u.id', '=', 'p.poster_id'), 'u')
+            ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->where_in('p.id', $post_ids)
+            ->order_by('p.id')
+            ->find_many();
+
+        foreach($result as $cur_post) {
             $post_count++;
 
             // If the poster is a registered user
-            if ($cur_post['poster_id'] > 1) {
+            if ($cur_post->poster_id > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post['poster_disp'] = '<a href="'.get_link('user/'.$cur_post['poster_id'].'/').'">'.feather_escape($cur_post['poster']).'</a>';
+                    $cur_post->poster_disp = '<a href="'.get_link('user/'.$cur_post->poster_id.'/').'">'.feather_escape($cur_post->poster).'</a>';
                 } else {
-                    $cur_post['poster_disp'] = feather_escape($cur_post['poster']);
+                    $cur_post->poster_disp = feather_escape($cur_post->poster);
                 }
 
                 // get_title() requires that an element 'username' be present in the array
-                $cur_post['username'] = $cur_post['poster'];
-                $cur_post['user_title'] = get_title($cur_post);
+                $cur_post->username = $cur_post->poster;
+                $cur_post->user_title = get_title($cur_post);
 
                 if ($this->config['o_censoring'] == '1') {
-                    $cur_post['user_title'] = censor_words($cur_post['user_title']);
+                    $cur_post->user_title = censor_words($cur_post->user_title);
                 }
             }
             // If the poster is a guest (or a user that has been deleted)
             else {
-                $cur_post['poster_disp'] = feather_escape($cur_post['poster']);
-                $cur_post['user_title'] = $lang_topic['Guest'];
+                $cur_post->poster_disp = feather_escape($cur_post->poster);
+                $cur_post->user_title = $lang_topic['Guest'];
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+            $cur_post->message = parse_message($cur_post->message, $cur_post->hide_smilies);
 
             $post_data[] = $cur_post;
         }
@@ -307,18 +475,22 @@ class moderate
         return $post_data;
     }
 
-    public function move_topics_to($fid)
+    public function move_topics_to($fid, $tfid = null, $param = null)
     {
         global $lang_common, $lang_misc;
 
-        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
+        confirm_referrer(array(
+            get_link_r('moderate/forum/'.$fid.'/'),
+            get_link_r('moderate/topic/'.$tfid.'/forum/'.$fid.'/action/move/'),
+            get_link_r('moderate/topic/'.$tfid.'/forum/'.$fid.'/action/move/param/'.$param.'/'),
+        ));
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         $topics = explode(',', $this->request->post('topics'));
-        $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
+        $move_to_forum = ($fid) ? intval($fid) : 0;
         if (empty($topics) || $move_to_forum < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }

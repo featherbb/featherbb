@@ -642,6 +642,34 @@
         }
 
         /**
+         * Tell the ORM that you are expecting a single column
+         * back from your query, and execute it. Will return
+         * the single result you asked for.
+         */
+        public function find_one_col($col)
+        {
+            if (!is_string($col)) {
+                return null;
+            }
+
+            $column = $this->_quote_identifier($col);
+
+            $select = $this->_add_result_column($column);
+            $select->limit(1);
+
+            $rows = $select->_run();
+
+            if (empty($rows)) {
+                return false;
+            }
+
+            $row = $select->_create_instance_from_row($rows[0]);
+
+            return isset($row->_data[$col]) ? $row->_data[$col] : null;
+        }
+
+
+        /**
          * Tell the ORM that you are expecting multiple results
          * from your query, and execute it. Will return an array
          * of instances of the ORM class, or an empty array if
