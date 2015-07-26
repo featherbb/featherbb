@@ -490,39 +490,78 @@ class moderate
         }
 
         $topics = explode(',', $this->request->post('topics'));
-        $move_to_forum = ($fid) ? intval($fid) : 0;
+        $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
         if (empty($topics) || $move_to_forum < 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         // Verify that the topic IDs are valid
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $this->db->error());
+        $result = \ORM::for_table($this->db->prefix.'topics')
+            ->where_in('id', $topics)
+            ->where('forum_id', $fid)
+            ->find_many();
 
-        if ($this->db->num_rows($result) != count($topics)) {
+        if (count($result) != count($topics)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
+
         // Verify that the move to forum ID is valid
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.group_id='.$this->user->g_id.' AND fp.forum_id='.$move_to_forum.') WHERE f.redirect_url IS NULL AND (fp.post_topics IS NULL OR fp.post_topics=1)') or error('Unable to fetch forum permissions', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $where_move_topics_to = array(
+            array('fp.post_topics' => 'IS NULL'),
+            array('fp.post_topics' => '1')
+        );
+
+        $authorized = \ORM::for_table($this->feather->prefix.'forums')
+            ->table_alias('f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_move_topics_to)
+            ->where_null('f.redirect_url')
+            ->find_one();
+
+        if (!$authorized) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
-        $this->db->query('DELETE FROM '.$this->db->prefix.'topics WHERE forum_id='.$move_to_forum.' AND moved_to IN('.implode(',', $topics).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')
+            ->where('forum_id', $move_to_forum)
+            ->where_in('moved_to', $topics)
+            ->delete_many();
 
         // Move the topic(s)
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET forum_id='.$move_to_forum.' WHERE id IN('.implode(',', $topics).')') or error('Unable to move topics', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')->where_in('id', $topics)
+            ->find_one()
+            ->set('forum_id', $move_to_forum)
+            ->save();
 
         // Should we create redirect topics?
         if ($this->request->post('with_redirect')) {
             foreach ($topics as $cur_topic) {
                 // Fetch info for the redirect topic
-                $result = $this->db->query('SELECT poster, subject, posted, last_post FROM '.$this->db->prefix.'topics WHERE id='.$cur_topic) or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
-                $moved_to = $this->db->fetch_assoc($result);
+                $select_move_topics_to = array('poster', 'subject', 'posted', 'last_post');
+
+                $moved_to = \ORM::for_table($this->db->prefix.'topics')->select_many($select_move_topics_to)
+                    ->where('id', $cur_topic)
+                    ->find_one();
 
                 // Create the redirect topic
-                $this->db->query('INSERT INTO '.$this->db->prefix.'topics (poster, subject, posted, last_post, moved_to, forum_id) VALUES(\''.$this->db->escape($moved_to['poster']).'\', \''.$this->db->escape($moved_to['subject']).'\', '.$moved_to['posted'].', '.$moved_to['last_post'].', '.$cur_topic.', '.$fid.')') or error('Unable to create redirect topic', __FILE__, __LINE__, $this->db->error());
+                $insert_move_topics_to = array(
+                    'poster' => $moved_to['poster'],
+                    'subject'  => $moved_to['subject'],
+                    'posted'  => $moved_to['posted'],
+                    'last_post'  => $moved_to['last_post'],
+                    'moved_to'  => $cur_topic,
+                    'forum_id'  => $fid,
+                );
+
+                // Insert the report
+                \ORM::for_table($this->db->prefix.'topics')
+                    ->create()
+                    ->set($insert_move_topics_to)
+                    ->save();
+
             }
         }
 
@@ -537,8 +576,25 @@ class moderate
     {
         global $lang_misc;
 
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result) < 2) {
+        $select_check_move_possible = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $where_check_move_possible = array(
+            array('fp.post_topics' => 'IS NULL'),
+            array('fp.post_topics' => '1')
+        );
+        $order_by_check_move_possible = array('c.disp_position', 'c.id', 'f.disp_position');
+
+        $result = \ORM::for_table($this->feather->prefix.'categories')
+            ->table_alias('c')
+            ->select_many($select_check_move_possible)
+            ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_check_move_possible)
+            ->where_null('f.redirect_url')
+            ->order_by_many($order_by_check_move_possible)
+            ->find_many();
+
+        if (count($result) < 2) {
             message($lang_misc['Nowhere to move']);
         }
     }
@@ -559,13 +615,21 @@ class moderate
         }
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid.' ORDER BY id ASC') or error('Unable to check topics', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result) != count($topics)) {
+        $result = \ORM::for_table($this->feather->prefix.'topics')
+            ->where_in('id', $topics)
+            ->where('forum_id', $fid)
+            ->find_many();
+
+        if (count($result) != count($topics)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         // The topic that we are merging into is the one with the smallest ID
-        $merge_to_tid = $this->db->result($result);
+        $merge_to_tid = \ORM::for_table($this->feather->prefix.'topics')
+            ->where_in('id', $topics)
+            ->where('forum_id', $fid)
+            ->order_by_asc('id')
+            ->find_one_col('id');
 
         // Make any redirect topics point to our new, merged topic
         $query = 'UPDATE '.$this->db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
@@ -575,10 +639,13 @@ class moderate
             $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
         }
 
-        $this->db->query($query) or error('Unable to make redirection topics', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')->raw_query($query);
 
         // Merge the posts into the topic
-        $this->db->query('UPDATE '.$this->db->prefix.'posts SET topic_id='.$merge_to_tid.' WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to merge the posts into the topic', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'posts')->where_in('topic_id', $topics)
+            ->find_one()
+            ->set('topic_id', $merge_to_tid)
+            ->save();
 
         // Update any subscriptions
         $result = $this->db->query('SELECT DISTINCT user_id FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to fetch subscriptions of merged topics', __FILE__, __LINE__, $this->db->error());
@@ -588,7 +655,10 @@ class moderate
             $subscribed_users[] = $row[0];
         }
 
-        $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to delete subscriptions of merged topics', __FILE__, __LINE__, $this->db->error());
+        // Delete the subscriptions
+        \ORM::for_table($this->db->prefix.'topic_subscriptions')
+            ->where_in('topic_id', $topics)
+            ->delete_many();
 
         foreach ($subscribed_users as $cur_user_id) {
             $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (topic_id, user_id) VALUES ('.$merge_to_tid.', '.$cur_user_id.')') or error('Unable to re-enter subscriptions for merge topic', __FILE__, __LINE__, $this->db->error());

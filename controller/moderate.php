@@ -418,7 +418,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->setTitle($page_title)->setPage($p)->display();
+            $this->header->setTitle($page_title)->display();
 
             $this->feather->render('moderate/move_topics.php', array(
                         'action'    =>    'multi',
@@ -448,7 +448,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->setTitle($page_title)->setPage($p)->display();
+            $this->header->setTitle($page_title)->display();
 
             $this->feather->render('moderate/merge_topics.php', array(
                         'id'    =>    $fid,
@@ -476,7 +476,7 @@ class moderate
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->setTitle($page_title)->setPage($p)->display();
+            $this->header->setTitle($page_title)->display();
 
             $this->feather->render('moderate/delete_topics.php', array(
                         'id'    =>    $fid,
