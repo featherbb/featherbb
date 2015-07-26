@@ -38,7 +38,7 @@ class edit
             ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
             ->where_any_is($where_get_info_edit)
             ->where('p.id', $id)
             ->find_one();

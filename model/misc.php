@@ -226,7 +226,7 @@ class misc
             ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
             ->where_any_is($where_get_info_report)
             ->where('p.id', $post_id)
             ->find_one();
@@ -255,7 +255,7 @@ class misc
         $authorized = \ORM::for_table($this->feather->prefix.'topics')
                     ->table_alias('t')
                     ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                    ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+                    ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                     ->where_any_is($where_subscribe_topic)
                     ->where('t.id', $topic_id)
                     ->where_null('t.moved_to')
@@ -357,7 +357,7 @@ class misc
         $authorized = \ORM::for_table($this->feather->prefix.'forums')
             ->table_alias('f')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
             ->where_any_is($where_subscribe_forum)
             ->where('f.id', $forum_id)
             ->find_one();

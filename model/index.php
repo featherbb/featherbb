@@ -64,7 +64,7 @@ class index
             ->table_alias('f')
             ->select_many($select_get_new_posts)
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
             ->where_any_is($where_get_new_posts_any)
             ->where_gt('f.last_post', $this->user->last_visit)
             ->find_result_set();
@@ -124,7 +124,7 @@ class index
             ->select_many($select_print_categories_forums)
             ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
             ->where_any_is($where_print_categories_forums)
             ->order_by_many($order_by_print_categories_forums)
             ->find_result_set();
