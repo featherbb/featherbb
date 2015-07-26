@@ -639,20 +639,21 @@ class moderate
             $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
         }
 
-        \ORM::for_table($this->db->prefix.'topics')->raw_query($query);
+        // TODO ?
+        \ORM::for_table($this->db->prefix.'topics')->raw_execute($query);
 
         // Merge the posts into the topic
-        \ORM::for_table($this->db->prefix.'posts')->where_in('topic_id', $topics)
-            ->find_one()
-            ->set('topic_id', $merge_to_tid)
-            ->save();
+        // TODO
+        \ORM::for_table($this->db->prefix.'topics')->raw_execute('UPDATE '.$this->db->prefix.'posts SET topic_id='.$merge_to_tid.' WHERE topic_id IN('.implode(',', $topics).')');
 
         // Update any subscriptions
-        $result = $this->db->query('SELECT DISTINCT user_id FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to fetch subscriptions of merged topics', __FILE__, __LINE__, $this->db->error());
+        $find_ids = \ORM::for_table($this->db->prefix.'topic_subscriptions')->select('user_id')
+            ->distinct()
+            ->where_in('topic_id', $topics)
+            ->find_many();
 
-        $subscribed_users = array();
-        while ($row = $this->db->fetch_row($result)) {
-            $subscribed_users[] = $row[0];
+        foreach ($find_ids as $id) {
+            $subscribed_users[] = $id['user_id'];
         }
 
         // Delete the subscriptions
@@ -661,24 +662,49 @@ class moderate
             ->delete_many();
 
         foreach ($subscribed_users as $cur_user_id) {
-            $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (topic_id, user_id) VALUES ('.$merge_to_tid.', '.$cur_user_id.')') or error('Unable to re-enter subscriptions for merge topic', __FILE__, __LINE__, $this->db->error());
+            $insert_topic_subscription = array(
+                'topic_id'  =>  $merge_to_tid,
+                'user_id'   =>  $cur_user_id,
+            );
+            // Insert the subscription
+            \ORM::for_table($this->db->prefix.'topic_subscriptions')
+                ->create()
+                ->set($insert_topic_subscription)
+                ->save();
         }
 
         // Without redirection the old topics are removed
-        if ($this->request->post('with_redirect') != '') {
-            $this->db->query('DELETE FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND id != '.$merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $this->db->error());
+        if ($this->request->post('with_redirect') == 0) {
+            \ORM::for_table($this->db->prefix.'topics')
+                ->where_in('id', $topics)
+                ->where_not_equal('id', $merge_to_tid)
+                ->delete_many();
         }
 
         // Count number of replies in the topic
-        $result = $this->db->query('SELECT COUNT(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$merge_to_tid) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $this->db->error());
-        $num_replies = $this->db->result($result, 0) - 1;
+        $num_replies = \ORM::for_table($this->db->prefix.'posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
 
         // Get last_post, last_post_id and last_poster
-        $result = $this->db->query('SELECT posted, id, poster FROM '.$this->db->prefix.'posts WHERE topic_id='.$merge_to_tid.' ORDER BY id DESC LIMIT 1') or error('Unable to get last post info', __FILE__, __LINE__, $this->db->error());
-        list($last_post, $last_post_id, $last_poster) = $this->db->fetch_row($result);
+        $select_last_post = array('posted', 'id', 'poster');
+
+        $last_post = \ORM::for_table($this->db->prefix.'posts')->select($select_last_post)
+            ->where('topic_id', $merge_to_tid)
+            ->order_by_desc('id')
+            ->find_one();
 
         // Update topic
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET num_replies='.$num_replies.', last_post='.$last_post.', last_post_id='.$last_post_id.', last_poster=\''.$this->db->escape($last_poster).'\' WHERE id='.$merge_to_tid) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+        $insert_topic = array(
+            'num_replies' => $num_replies,
+            'last_post'  => $last_post['posted'],
+            'last_post_id'  => $last_post['id'],
+            'last_poster'  => $last_post['poster'],
+        );
+
+        \ORM::for_table($this->db->prefix.'topics')
+            ->where('id', $merge_to_tid)
+            ->find_one()
+            ->set($insert_topic)
+            ->save();
 
         // Update the forum FROM which the topic was moved and redirect
         update_forum($fid);
@@ -696,34 +722,54 @@ class moderate
 
         require FEATHER_ROOT.'include/search_idx.php';
 
-        // Verify that the topic IDs are valid
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $this->db->error());
+        $topics_sql = explode(',', $topics);
 
-        if ($this->db->num_rows($result) != substr_count($topics, ',') + 1) {
+        // Verify that the topic IDs are valid
+        $result = \ORM::for_table($this->feather->prefix.'topics')
+            ->where_in('id', $topics_sql)
+            ->where('forum_id', $fid)
+            ->find_many();
+
+        if (count($result) != substr_count($topics, ',') + 1) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
         // Verify that the posts are not by admins
         if ($this->user->g_id != FEATHER_ADMIN) {
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'posts WHERE topic_id IN('.$topics.') AND poster_id IN('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $this->db->error());
-            if ($this->db->num_rows($result)) {
+            $authorized = \ORM::for_table($this->feather->prefix.'posts')
+                ->where_in('topic_id', $topics_sql)
+                ->where('poster_id', get_admin_ids())
+                ->find_many();
+            if ($authorized) {
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
         }
 
-        // Delete the topics and any redirect topics
-        $this->db->query('DELETE FROM '.$this->db->prefix.'topics WHERE id IN('.$topics.') OR moved_to IN('.$topics.')') or error('Unable to delete topic', __FILE__, __LINE__, $this->db->error());
+        // Delete the topics
+        \ORM::for_table($this->db->prefix.'topics')
+            ->where_in('id', $topics_sql)
+            ->delete_many();
+
+        // Delete any redirect topics
+        \ORM::for_table($this->db->prefix.'topics')
+            ->where_in('moved_to', $topics_sql)
+            ->delete_many();
 
         // Delete any subscriptions
-        $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id IN('.$topics.')') or error('Unable to delete subscriptions', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topic_subscriptions')
+            ->where_in('topic_id', $topics_sql)
+            ->delete_many();
 
         // Create a list of the post IDs in this topic and then strip the search index
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id IN('.$topics.')') or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
+        $find_ids = \ORM::for_table($this->db->prefix.'posts')->select('id')
+            ->where_in('topic_id', $topics_sql)
+            ->find_many();
 
-        $post_ids = '';
-        while ($row = $this->db->fetch_row($result)) {
-            $post_ids .= ($post_ids != '') ? ','.$row[0] : $row[0];
+        foreach ($find_ids as $id) {
+            $ids_post[] = $id['id'];
         }
+
+        $post_ids = implode(', ', $ids_post);
 
         // We have to check that we actually have a list of post IDs since we could be deleting just a redirect topic
         if ($post_ids != '') {
@@ -731,7 +777,9 @@ class moderate
         }
 
         // Delete posts
-        $this->db->query('DELETE FROM '.$this->db->prefix.'posts WHERE topic_id IN('.$topics.')') or error('Unable to delete posts', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'posts')
+            ->where_in('topic_id', $topics_sql)
+            ->delete_many();
 
         update_forum($fid);
 
@@ -742,14 +790,27 @@ class moderate
     {
         global $lang_common;
 
-        $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.num_topics, f.sort_by FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $select_get_forum_info = array('f.forum_name', 'f.redirect_url', 'f.num_topics', 'f.sort_by');
+        $where_get_forum_info = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $cur_forum = \ORM::for_table($this->feather->prefix.'forums')
+            ->table_alias('f')
+            ->select_many($select_get_forum_info)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), '', true)
+            ->where_any_is($where_get_forum_info)
+            ->where('f.id', $fid)
+            ->find_one();
+
+        if (!$cur_forum) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $cur_forum = $this->db->fetch_assoc($result);
-
         return $cur_forum;
+
     }
 
     public function forum_sort_by($forum_sort)
@@ -784,20 +845,31 @@ class moderate
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'topics WHERE forum_id='.$fid.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$this->user->disp_topics) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $this->db->error());
+        $result = \ORM::for_table($this->db->prefix.'topics')->select('id')
+            ->where('forum_id', $fid)
+            ->order_by_expr('sticky DESC, '.$sort_by)
+            ->limit($this->user->disp_topics)
+            ->offset($start_from)
+            ->find_many();
 
         // If there are topics in this forum
-        if ($this->db->num_rows($result)) {
-            $topic_ids = array();
-            for ($i = 0;$cur_topic_id = $this->db->result($result, $i);$i++) {
-                $topic_ids[] = $cur_topic_id;
+        if ($result) {
+
+            foreach ($result as $id) {
+                $topic_ids[] = $id['id'];
             }
 
             // Select topics
-            $result = $this->db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $this->db->error());
+            $select_display_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
+
+            // TODO: order_by_expr && result_set
+            $result = \ORM::for_table($this->db->prefix.'topics')->select($select_display_topics)
+                ->where_in('id', $topic_ids)
+                ->order_by_expr('sticky DESC, '.$sort_by.', id DESC')
+                ->find_many();
 
             $topic_count = 0;
-            while ($cur_topic = $this->db->fetch_assoc($result)) {
+            foreach($result as $cur_topic) {
                 ++$topic_count;
                 $status_text = array();
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
@@ -868,35 +940,54 @@ class moderate
     
     public function stick_topic($id, $fid)
     {
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET sticky=\'1\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to stick topic', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')->where('id', $id)->where('forum_id', $fid)
+            ->find_one()
+            ->set('sticky', 1)
+            ->save();
     }
 
     public function unstick_topic($id, $fid)
     {
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET sticky=\'0\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to stick topic', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')->where('id', $id)->where('forum_id', $fid)
+            ->find_one()
+            ->set('sticky', 0)
+            ->save();
     }
     
     public function open_topic($id, $fid)
     {
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed=\'0\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')->where('id', $id)->where('forum_id', $fid)
+            ->find_one()
+            ->set('closed', 0)
+            ->save();
     }
     
     public function close_topic($id, $fid)
     {
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed=\'1\' WHERE id='.$id.' AND forum_id='.$fid) or error('Unable to unstick topic', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'topics')->where('id', $id)->where('forum_id', $fid)
+            ->find_one()
+            ->set('closed', 1)
+            ->save();
     }
     
     public function close_multiple_topics($action, $topics, $fid)
     {
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to close topics', __FILE__, __LINE__, $this->db->error());
+        // TODO: update_many in Idiorm
+        \ORM::for_table($this->db->prefix.'topics')->raw_execute('UPDATE '.$this->db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid);
     }
     
     public function get_subject_tid($id)
     {
-        $result = $this->db->query('SELECT subject FROM '.$this->db->prefix.'topics WHERE id='.$id) or error('Unable to get subject', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        global $lang_common;
+
+        $subject = \ORM::for_table($this->db->prefix.'topics')
+            ->where('id', $id)
+            ->find_one_col('subject');
+
+        if (!$subject) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-        return $this->db->result($result);
+
+        return $subject;
     }
 }
