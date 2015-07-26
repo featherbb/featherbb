@@ -27,16 +27,44 @@ class post
         global $lang_common;
 
         if ($tid) {
-            $result = $this->db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, t.subject, t.closed, s.user_id AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') LEFT JOIN '.$this->db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$this->user->id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$tid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_post = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
+            $where_get_info_post_any = array(
+                array('fp.read_forum' => 'IS NULL'),
+                array('fp.read_forum' => '1')
+            );
+
+            $cur_posting = \ORM::for_table($this->feather->prefix.'topics')
+                ->table_alias('t')
+                ->select_many($select_get_info_post)
+                ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                ->left_outer_join($this->feather->prefix.'topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                ->left_outer_join($this->feather->prefix.'topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                ->where_any_is($where_get_info_post_any)
+                ->where('t.id', $tid)
+                ->find_one();
+
         } else {
-            $result = $this->db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_post = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics');
+            $where_get_info_post_any = array(
+                array('fp.read_forum' => 'IS NULL'),
+                array('fp.read_forum' => '1')
+            );
+
+            $cur_posting = \ORM::for_table($this->feather->prefix.'forums')
+                ->table_alias('f')
+                ->select_many($select_get_info_post)
+                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                ->where_any_is($where_get_info_post_any)
+                ->where('f.id', $fid)
+                ->find_one();
         }
 
-        if (!$this->db->num_rows($result)) {
+        if (!$cur_posting) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $cur_posting = $this->db->fetch_assoc($result);
 
         return $cur_posting;
     }
@@ -71,9 +99,11 @@ class post
         }
 
         if ($tid) {
-            $result = $this->db->query('SELECT subject FROM '.$this->db->prefix.'topics WHERE id='.$tid) or error('Unable to get subject', __FILE__, __LINE__, $this->db->error());
-            $subject_tid = $this->db->result($result);
-            if (!$this->db->num_rows($result)) {
+            $subject_tid = \ORM::for_table($this->db->prefix.'topics')
+                ->where('id', $tid)
+                ->find_one_col('subject');
+
+            if (!$subject_tid) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
             $url_subject = url_friendly($subject_tid);
@@ -112,13 +142,7 @@ class post
             }
         }
 
-        // If the user is logged in we get the username and email from $this->user
-        if (!$this->user->is_guest) {
-            $username = $this->user->username;
-            $email = $this->user->email;
-        }
-        // Otherwise it should be in $feather ($_POST)
-        else {
+        if ($this->user->is_guest) {
             $email = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             // Load the register.php/prof_reg.php language files
@@ -144,7 +168,7 @@ class post
         }
 
         // Clean up message from POST
-        $orig_message = $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
+        $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
 
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
@@ -223,26 +247,85 @@ class post
             $new['tid'] = $tid;
 
             // Insert the new post
-            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', '.$this->user->id.', \''.$this->db->escape(get_remote_address()).'\', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$tid.')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
-            $new['pid'] = $this->db->insert_id();
+            $insert_post = array(
+                'poster' => $post['username'],
+                'poster_id' => $this->user->id,
+                'poster_ip' => get_remote_address(),
+                'message' => $post['message'],
+                'hide_smilies' => $post['hide_smilies'],
+                'posted'  => $post['time'],
+                'topic_id'  => $tid,
+            );
+
+            \ORM::for_table($this->db->prefix.'posts')
+                ->create()
+                ->set($insert_post)
+                ->save();
+
+            $new['pid'] = \ORM::get_db()->lastInsertId($this->db->prefix.'posts');
 
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1') {
+                // ... is the question
+                // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
-                    $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user->id.' ,'.$tid.')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
-                } elseif (!isset($post['subscribe']) && $is_subscribed) {
-                    $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$this->user->id.' AND topic_id='.$tid) or error('Unable to remove subscription', __FILE__, __LINE__, $this->db->error());
+
+                    $insert_subscription = array(
+                        'user_id'   =>  $this->user->id,
+                        'topic_id'  =>  $tid
+                    );
+
+                    \ORM::for_table($this->db->prefix.'topic_subscriptions')
+                        ->create()
+                        ->set($insert_subscription)
+                        ->save();
+
+                // We reply and we don't want to be subscribed anymore
+                } elseif ($post['subscribe'] == '0' && $is_subscribed) {
+
+                    \ORM::for_table($this->db->prefix.'topic_subscriptions')
+                        ->where('user_id', $this->user->id)
+                        ->where('topic_id', $tid)
+                        ->delete_many();
+
                 }
             }
         } else {
             // It's a guest. Insert the new post
-            $email_sql = ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') ? '\''.$this->db->escape($post['email']).'\'' : 'NULL';
-            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', \''.$this->db->escape(get_remote_address()).'\', '.$email_sql.', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$tid.')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
-            $new['pid'] = $this->db->insert_id();
+            $insert_post = array(
+                'poster' => $post['username'],
+                'poster_ip' => get_remote_address(),
+                'message' => $post['message'],
+                'hide_smilies' => $post['hide_smilies'],
+                'posted'  => $post['time'],
+                'topic_id'  => $tid,
+            );
+
+            if ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') {
+                $insert_post['poster_email'] = $post['email'];
+            }
+
+            \ORM::for_table($this->db->prefix.'posts')
+                ->create()
+                ->set($insert_post)
+                ->save();
+
+
+            $new['pid'] = \ORM::get_db()->lastInsertId($this->db->prefix.'posts');
         }
 
         // Update topic
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET num_replies=num_replies+1, last_post='.$post['time'].', last_post_id='.$new['pid'].', last_poster=\''.$this->db->escape($post['username']).'\' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+        $update_topic = array(
+            'last_post' => $post['time'],
+            'last_post_id'  => $new['pid'],
+            'last_poster'  => $post['username'],
+        );
+
+        \ORM::for_table($this->db->prefix.'topics')->where('id', $tid)
+            ->find_one()
+            ->set($update_topic)
+            ->set_expr('num_replies', 'num_replies+1')
+            ->save();
 
         update_search_index('post', $new['pid'], $post['message']);
 
