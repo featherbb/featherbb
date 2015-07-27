@@ -338,12 +338,34 @@ class post
     public function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
     {
         // Get the post time for the previous post in this topic
-        $result = $this->db->query('SELECT posted FROM '.$this->db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT 1, 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        $previous_post_time = $this->db->result($result);
+        $previous_post_time = \ORM::for_table($this->feather->prefix.'posts')
+            ->where('topic_id', $tid)
+            ->order_by_desc('id')
+            ->find_one_col('posted');
 
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result = $this->db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'topic_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$this->db->prefix.'online AS o ON u.id=o.user_id LEFT JOIN '.$this->db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND COALESCE(o.logged, u.last_visit)>'.$previous_post_time.' AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.topic_id='.$tid.' AND u.id!='.$this->user->id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
+        $where_send_notifications_reply = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+        $select_send_notifications_reply = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+
+        $result = \ORM::for_table($this->feather->prefix.'users')
+            ->table_alias('u')
+            ->select_many($select_send_notifications_reply)
+            ->inner_join($this->feather->prefix.'topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', 'u.group_id'))
+            ->left_outer_join($this->feather->prefix.'online', array('u.id', '=', 'o.user_id'), 'o')
+            ->left_outer_join($this->feather->prefix.'bans', array('u.username', '=', 'b.username'), 'b')
+            ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time)
+            ->where_null('b.username')
+            ->where_any_is($where_send_notifications_reply)
+            ->where('s.topic_id', $tid)
+            ->where_not_equal('u.id', $this->user->id)
+            ->find_many();
+
+        if ($result) {
             require_once FEATHER_ROOT.'include/email.php';
 
             $notification_emails = array();
@@ -357,7 +379,7 @@ class post
             }
 
             // Loop through subscribed users and send emails
-            while ($cur_subscriber = $this->db->fetch_assoc($result)) {
+            foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
                     if (file_exists(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
@@ -420,26 +442,87 @@ class post
         $new = array();
 
         // Create the topic
-        $this->db->query('INSERT INTO '.$this->db->prefix.'topics (poster, subject, posted, last_post, last_poster, sticky, forum_id) VALUES(\''.$this->db->escape($post['username']).'\', \''.$this->db->escape($post['subject']).'\', '.$post['time'].', '.$post['time'].', \''.$this->db->escape($post['username']).'\', '.$post['stick_topic'].', '.$fid.')') or error('Unable to create topic', __FILE__, __LINE__, $this->db->error());
-        $new['tid'] = $this->db->insert_id();
+        $insert_topic = array(
+            'poster' => $post['username'],
+            'subject' => $post['subject'],
+            'posted'  => $post['time'],
+            'last_post'  => $post['time'],
+            'last_poster'  => $post['username'],
+            'sticky'  => $post['stick_topic'],
+            'forum_id'  => $fid,
+        );
+
+        \ORM::for_table($this->db->prefix.'topics')
+            ->create()
+            ->set($insert_topic)
+            ->save();
+
+        $new['tid'] = \ORM::get_db()->lastInsertId($this->db->prefix.'topics');
 
         if (!$this->user->is_guest) {
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1' && $post['subscribe']) {
-                $this->db->query('INSERT INTO '.$this->db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$this->user->id.' ,'.$new['tid'].')') or error('Unable to add subscription', __FILE__, __LINE__, $this->db->error());
+
+                $insert_subscription = array(
+                    'user_id'   =>  $this->user->id,
+                    'topic_id'  =>  $new['tid']
+                );
+
+                \ORM::for_table($this->db->prefix.'topic_subscriptions')
+                    ->create()
+                    ->set($insert_subscription)
+                    ->save();
+
             }
 
             // Create the post ("topic post")
-            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_id, poster_ip, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', '.$this->user->id.', \''.$this->db->escape(get_remote_address()).'\', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new['tid'].')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
+            $insert_post = array(
+                'poster' => $post['username'],
+                'poster_id' => $this->user->id,
+                'poster_ip' => get_remote_address(),
+                'message' => $post['message'],
+                'hide_smilies' => $post['hide_smilies'],
+                'posted'  => $post['time'],
+                'topic_id'  => $new['tid'],
+            );
+
+            \ORM::for_table($this->db->prefix.'posts')
+                ->create()
+                ->set($insert_post)
+                ->save();
         } else {
+            // It's a guest
             // Create the post ("topic post")
-            $email_sql = ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') ? '\''.$this->db->escape($post['email']).'\'' : 'NULL';
-            $this->db->query('INSERT INTO '.$this->db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id) VALUES(\''.$this->db->escape($post['username']).'\', \''.$this->db->escape(get_remote_address()).'\', '.$email_sql.', \''.$this->db->escape($post['message']).'\', '.$post['hide_smilies'].', '.$post['time'].', '.$new['tid'].')') or error('Unable to create post', __FILE__, __LINE__, $this->db->error());
+            $insert_post = array(
+                'poster' => $post['username'],
+                'poster_ip' => get_remote_address(),
+                'message' => $post['message'],
+                'hide_smilies' => $post['hide_smilies'],
+                'posted'  => $post['time'],
+                'topic_id'  => $new['tid'],
+            );
+
+            if ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') {
+                $insert_post['poster_email'] = $post['email'];
+            }
+
+            \ORM::for_table($this->db->prefix.'posts')
+                ->create()
+                ->set($insert_post)
+                ->save();
         }
-        $new['pid'] = $this->db->insert_id();
+        $new['pid'] = \ORM::get_db()->lastInsertId($this->db->prefix.'topics');
 
         // Update the topic with last_post_id
-        $this->db->query('UPDATE '.$this->db->prefix.'topics SET last_post_id='.$new['pid'].', first_post_id='.$new['pid'].' WHERE id='.$new['tid']) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+        $update_topic = array(
+            'last_post_id'  =>  $new['pid'],
+            'first_post_id' =>  $new['pid'],
+        );
+
+        \ORM::for_table($this->db->prefix.'topics')->where('id', $new['tid'])
+            ->find_one()
+            ->set($update_topic)
+            ->save();
 
         update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
@@ -452,8 +535,26 @@ class post
     public function send_notifications_new_topic($post, $cur_posting, $new_tid)
     {
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result = $this->db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'forum_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$this->db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.forum_id='.$cur_posting['id'].' AND u.id!='.$this->user->id) or error('Unable to fetch subscription info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
+        $where_send_notifications_reply = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+        $select_send_notifications_reply = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+
+        $result = \ORM::for_table($this->feather->prefix.'users')
+            ->table_alias('u')
+            ->select_many($select_send_notifications_reply)
+            ->inner_join($this->feather->prefix.'forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
+            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', 'u.group_id'))
+            ->left_outer_join($this->feather->prefix.'bans', array('u.username', '=', 'b.username'), 'b')
+            ->where_null('b.username')
+            ->where_any_is($where_send_notifications_reply)
+            ->where('s.forum_id', $cur_posting['id'])
+            ->where_not_equal('u.id', $this->user->id)
+            ->find_many();
+
+        if ($result) {
             require_once FEATHER_ROOT.'include/email.php';
 
             $notification_emails = array();
@@ -465,7 +566,7 @@ class post
             }
 
             // Loop through subscribed users and send emails
-            while ($cur_subscriber = $this->db->fetch_assoc($result)) {
+            foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
                     if (file_exists(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
@@ -505,8 +606,6 @@ class post
                         $notification_emails[$cur_subscriber['language']][1] = $mail_message;
                         $notification_emails[$cur_subscriber['language']][2] = $mail_subject_full;
                         $notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
-
-                        $mail_subject = $mail_message = $mail_subject_full = $mail_message_full = null;
                     }
                 }
 
@@ -547,12 +646,21 @@ class post
     public function increment_post_count($post, $new_tid)
     {
         if (!$this->user->is_guest) {
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET num_posts=num_posts+1, last_post='.$post['time'].' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'users')
+                ->where('id', $this->user->id)
+                ->find_one()
+                ->set('last_post', $post['time'])
+                ->set_expr('num_posts', 'num_posts+1')
+                ->save();
 
             // Promote this user to a new group if enabled
             if ($this->user->g_promote_next_group != 0 && $this->user->num_posts + 1 >= $this->user->g_promote_min_posts) {
                 $new_group_id = $this->user->g_promote_next_group;
-                $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$new_group_id.' WHERE id='.$this->user->id) or error('Unable to promote user to new group', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'users')
+                    ->where('id', $this->user->id)
+                    ->find_one()
+                    ->set('group_id', $new_group_id)
+                    ->save();
             }
 
             // Topic tracking stuff...
@@ -560,7 +668,12 @@ class post
             $tracked_topics['topics'][$new_tid] = time();
             set_tracked_topics($tracked_topics);
         } else {
-            $this->db->query('UPDATE '.$this->db->prefix.'online SET last_post='.$post['time'].' WHERE ident=\''.$this->db->escape(get_remote_address()).'\'') or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+            // Update the last_post field for guests
+            \ORM::for_table($this->db->prefix.'online')
+                ->where('ident', get_remote_address())
+                ->find_one()
+                ->set('last_post', $post['time'])
+                ->save();
         }
     }
 
@@ -593,33 +706,37 @@ class post
     {
         global $lang_common;
 
-        $result = $this->db->query('SELECT poster, message FROM '.$this->db->prefix.'posts WHERE id='.$qid.' AND topic_id='.$tid) or error('Unable to fetch quote info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $select_get_quote_message = array('poster', 'message');
+
+        $quote = \ORM::for_table($this->db->prefix.'posts')->select($select_get_quote_message)
+                 ->where('id', $qid)
+                 ->where('topic_id', $tid)
+                 ->find_one();
+
+        if (!$quote) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        list($q_poster, $q_message) = $this->db->fetch_row($result);
-
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
-        if (strpos($q_message, '[code]') !== false && strpos($q_message, '[/code]') !== false) {
-            list($inside, $outside) = split_text($q_message, '[code]', '[/code]');
+        if (strpos($quote['message'], '[code]') !== false && strpos($quote['message'], '[/code]') !== false) {
+            list($inside, $outside) = split_text($quote['message'], '[code]', '[/code]');
 
-            $q_message = implode("\1", $outside);
+            $quote['message'] = implode("\1", $outside);
         }
 
         // Remove [img] tags from quoted message
-        $q_message = preg_replace('%\[img(?:=(?:[^\[]*?))?\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%U', '\1\3', $q_message);
+        $quote['message'] = preg_replace('%\[img(?:=(?:[^\[]*?))?\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%U', '\1\3', $quote['message']);
 
         // If we split up the message before we have to concatenate it together again (code tags)
         if (isset($inside)) {
-            $outside = explode("\1", $q_message);
-            $q_message = '';
+            $outside = explode("\1", $quote['message']);
+            $quote['message'] = '';
 
             $num_tokens = count($outside);
             for ($i = 0; $i < $num_tokens; ++$i) {
-                $q_message .= $outside[$i];
+                $quote['message'] .= $outside[$i];
                 if (isset($inside[$i])) {
-                    $q_message .= '[code]'.$inside[$i].'[/code]';
+                    $quote['message'] .= '[code]'.$inside[$i].'[/code]';
                 }
             }
 
@@ -627,30 +744,30 @@ class post
         }
 
         if ($this->config['o_censoring'] == '1') {
-            $q_message = censor_words($q_message);
+            $quote['message'] = censor_words($quote['message']);
         }
 
-        $q_message = feather_escape($q_message);
+        $quote['message'] = feather_escape($quote['message']);
 
         if ($this->config['p_message_bbcode'] == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
                 //   characters such as backslash \ square brackets [] and quotes '".
-                if (preg_match('/[[\]\'"]/S', $q_poster)) {
+                if (preg_match('/[[\]\'"]/S', $quote['poster'])) {
                     // Check if we need to quote it.
                     // Post has special chars. Escape escapes and quotes then wrap in quotes.
-                    if (strpos($q_poster, '"') !== false && strpos($q_poster, '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
-                        $q_poster = feather_escape(str_replace('\\', '\\\\', $q_poster));
-                        $q_poster = '\''. $q_poster .'#'. $qid .'\'';
+                    if (strpos($quote['poster'], '"') !== false && strpos($quote['poster'], '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
+                        $quote['poster'] = feather_escape(str_replace('\\', '\\\\', $quote['poster']));
+                        $quote['poster'] = '\''. $quote['poster'] .'#'. $qid .'\'';
                     } else { // otherwise use double quotes.
-                        $q_poster = feather_escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $q_poster));
-                        $q_poster = '"'. $q_poster .'#'. $qid .'"';
+                        $quote['poster'] = feather_escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
+                        $quote['poster'] = '"'. $quote['poster'] .'#'. $qid .'"';
                     }
                 } else {
-                    $q_poster = $q_poster .'#'. $qid;
+                    $quote['poster'] = $quote['poster'] .'#'. $qid;
                 }
-            $quote = '[quote='. $q_poster .']'.$q_message.'[/quote]'."\n";
+            $quote = '[quote='. $quote['poster'] .']'.$quote['message'].'[/quote]'."\n";
         } else {
-            $quote = '> '.$q_poster.' '.$lang_common['wrote']."\n\n".'> '.$q_message."\n";
+            $quote = '> '.$quote['poster'].' '.$lang_common['wrote']."\n\n".'> '.$quote['message']."\n";
         }
 
         return $quote;
@@ -707,12 +824,18 @@ class post
 
         require_once FEATHER_ROOT.'include/parser.php';
 
-        $result = $this->db->query('SELECT poster, message, hide_smilies, posted FROM '.$this->db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT '.$this->config['o_topic_review']) or error('Unable to fetch topic review', __FILE__, __LINE__, $this->db->error());
+        $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 
-        while ($cur_post = $this->db->fetch_assoc($result)) {
+        $result = \ORM::for_table($this->db->prefix.'posts')->select($select_topic_review)
+            ->where('topic_id', $tid)
+            ->order_by_desc('id')
+            ->find_many();
+
+        foreach($result as $cur_post) {
             $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
             $post_data[] = $cur_post;
         }
+
         return $post_data;
     }
 }
