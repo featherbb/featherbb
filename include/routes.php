@@ -98,7 +98,7 @@ $feather->group('/admin', function() use ($feather) {
         $feather->get('(/)', '\controller\admin\bans:display');
         $feather->get('/delete/:id(/)', '\controller\admin\bans:delete')->conditions(array('id' => '[0-9]+'));
         $feather->map('/edit/:id(/)', '\controller\admin\bans:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
-        $feather->map('/add(/)', '\controller\admin\bans:add')->via('GET', 'POST');
+        $feather->map('/add(/:id)(/)', '\controller\admin\bans:add')->via('GET', 'POST');
     });
 
     // Admin options

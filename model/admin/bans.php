@@ -21,15 +21,15 @@ class bans
         $this->request = $this->feather->request;
     }
  
-    public function add_ban_info()
+    public function add_ban_info($id = null)
     {
         global $lang_common, $lang_admin_bans;
 
         $ban = array();
 
         // If the ID of the user to ban was provided through GET (a link from profile.php)
-        if ($this->request->get('find_ban')) {
-            $ban['user_id'] = intval($this->request->get('find_ban'));
+        if (is_numeric($id)) {
+            $ban['user_id'] = $id;
             if ($ban['user_id'] < 2) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -112,7 +112,11 @@ class bans
     {
         global $lang_admin_bans;
 
-        confirm_referrer(array(get_link_r('admin/bans/add/'), get_link_r('admin/bans/edit/'.$this->request->post('ban_id').'/')));
+        confirm_referrer(array(
+            get_link_r('admin/bans/add/'),
+            get_link_r('admin/bans/add/'.$this->request->post('ban_user_id').'/'),
+            get_link_r('admin/bans/edit/'.$this->request->post('ban_id').'/'),
+        ));
 
         $ban_user = feather_trim($this->request->post('ban_user'));
         $ban_ip = feather_trim($this->request->post('ban_ip'));

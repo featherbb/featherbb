@@ -90,7 +90,7 @@ class bans
         $this->footer->display();
     }
 
-    public function add()
+    public function add($id = null)
     {
         global $lang_common, $lang_admin_common, $lang_admin_bans;
 
@@ -121,7 +121,7 @@ class bans
         $this->feather->render('admin/bans/add_ban.php', array(
                 'lang_admin_bans' => $lang_admin_bans,
                 'lang_admin_common' => $lang_admin_common,
-                'ban' => $this->model->add_ban_info(),
+                'ban' => $this->model->add_ban_info($id),
             )
         );
 

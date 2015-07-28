@@ -20,7 +20,9 @@ if (!defined('FEATHER')) {
 				<div class="inform">
 				<input type="hidden" name="mode" value="<?php echo $ban['mode'] ?>" />
 <?php if ($ban['mode'] == 'edit'): ?>				<input type="hidden" name="ban_id" value="<?php echo $ban['id'] ?>" />
-<?php endif; ?>				<fieldset>
+<?php endif; ?>
+<?php if ($ban['mode'] == 'add'): ?>				<input type="hidden" name="ban_user_id" value="<?php echo $ban['user_id'] ?>" />
+<?php endif; ?><fieldset>
 						<legend><?php echo $lang_admin_bans['Ban advanced subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
