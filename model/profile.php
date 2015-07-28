@@ -34,13 +34,20 @@ class profile
 
             $key = $this->request->get('key');
 
-            $result = $this->db->query('SELECT * FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch new password', __FILE__, __LINE__, $this->db->error());
-            $cur_user = $this->db->fetch_assoc($result);
+            $cur_user = \ORM::for_table($this->feather->prefix.'users')
+                ->where('id', $id)
+                ->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
                 message($lang_profile['Pass key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
-                $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$this->db->escape($cur_user['activate_string']).'\', activate_string=NULL, activate_key=NULL'.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'users')
+                    ->where('id', $id)
+                    ->find_one()
+                    ->set('password', $cur_user['activate_string'])
+                    ->set_expr('activate_string', 'NULL')
+                    ->set_expr('activate_key', 'NULL')
+                    ->save();
 
                 message($lang_profile['Pass updated'], true);
             }
@@ -53,14 +60,20 @@ class profile
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
-                $result = $this->db->query('SELECT u.group_id, g.g_moderator FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-                if (!$this->db->num_rows($result)) {
+                $select_change_password = array('u.group_id', 'g.g_moderator');
+
+                $user = \ORM::for_table($this->feather->prefix.'users')
+                    ->table_alias('u')
+                    ->select($select_change_password)
+                    ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->where('u.id', $id)
+                    ->find_one();
+
+                if (!$user) {
                     message($lang_common['Bad request'], false, '404 Not Found');
                 }
 
-                list($group_id, $is_moderator) = $this->db->fetch_row($result);
-
-                if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
+                if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
                     message($lang_common['No permission'], false, '403 Forbidden');
                 }
             }
@@ -81,8 +94,9 @@ class profile
                 message($lang_prof_reg['Pass too short']);
             }
 
-            $result = $this->db->query('SELECT * FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch password', __FILE__, __LINE__, $this->db->error());
-            $cur_user = $this->db->fetch_assoc($result);
+            $cur_user = \ORM::for_table($this->feather->prefix.'users')
+                ->where('id', $id)
+                ->find_one();
 
             $authorized = false;
 
@@ -100,7 +114,10 @@ class profile
 
             $new_password_hash = feather_hash($new_password1);
 
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET password=\''.$new_password_hash.'\''.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+                ->find_one()
+                ->set('password', $new_password_hash)
+                ->save();
 
             if ($this->user->id == $id) {
                 feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
@@ -121,14 +138,20 @@ class profile
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's email?
 
-                $result = $this->db->query('SELECT u.group_id, g.g_moderator FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-                if (!$this->db->num_rows($result)) {
+                $select_change_mail = array('u.group_id', 'g.g_moderator');
+
+                $user = \ORM::for_table($this->feather->prefix.'users')
+                    ->table_alias('u')
+                    ->select($select_change_mail)
+                    ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->where('u.id', $id)
+                    ->find_one();
+
+                if (!$user) {
                     message($lang_common['Bad request'], false, '404 Not Found');
                 }
 
-                list($group_id, $is_moderator) = $this->db->fetch_row($result);
-
-                if ($this->user->g_mod_edit_users == '0' || $group_id == FEATHER_ADMIN || $is_moderator == '1') {
+                if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
                     message($lang_common['No permission'], false, '403 Forbidden');
                 }
             }
@@ -137,13 +160,20 @@ class profile
         if ($this->request->get('key')) {
             $key = $this->request->get('key');
 
-            $result = $this->db->query('SELECT activate_string, activate_key FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch activation data', __FILE__, __LINE__, $this->db->error());
-            list($new_email, $new_email_key) = $this->db->fetch_row($result);
+            $new_email_key = \ORM::for_table($this->feather->prefix.'users')
+                ->where('id', $id)
+                ->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
                 message($lang_profile['Email key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
-                $this->db->query('UPDATE '.$this->db->prefix.'users SET email=activate_string, activate_string=NULL, activate_key=NULL WHERE id='.$id) or error('Unable to update email address', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'users')
+                    ->where('id', $id)
+                    ->find_one()
+                    ->set_expr('email', 'activate_string')
+                    ->set_expr('activate_string', 'NULL')
+                    ->set_expr('activate_key', 'NULL')
+                    ->save();
 
                 message($lang_profile['Email updated'], true);
             }
@@ -186,12 +216,18 @@ class profile
             }
 
             // Check if someone else already has registered with that email address
-            $result = $this->db->query('SELECT id, username FROM '.$this->db->prefix.'users WHERE email=\''.$this->db->escape($new_email).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-            if ($this->db->num_rows($result)) {
+            $select_change_mail = array('id', 'username');
+
+            $result = \ORM::for_table($this->feather->prefix.'users')
+                ->select($select_change_mail)
+                ->where('email', $new_email)
+                ->find_many();
+
+            if ($result) {
                 if ($this->config['p_allow_dupe_email'] == '0') {
                     message($lang_prof_reg['Dupe email']);
                 } elseif ($this->config['o_mailing_list'] != '') {
-                    while ($cur_dupe = $this->db->fetch_assoc($result)) {
+                    foreach($result as $cur_dupe) {
                         $dupe_list[] = $cur_dupe['username'];
                     }
 
@@ -215,7 +251,16 @@ class profile
 
             $new_email_key = random_pass(8);
 
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET activate_string=\''.$this->db->escape($new_email).'\', activate_key=\''.$new_email_key.'\' WHERE id='.$id) or error('Unable to update activation data', __FILE__, __LINE__, $this->db->error());
+            // Update the user
+            $update_user = array(
+                'activate_string' => $new_email,
+                'activate_key'  => $new_email_key,
+            );
+
+            \ORM::for_table($this->db->prefix.'users')->where('id', tid)
+                ->find_one()
+                ->set($update_user)
+                ->save();
 
             // Load the "activate email" template
             $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
@@ -339,10 +384,14 @@ class profile
 
         $new_group_id = intval($this->request->post('group_id'));
 
-        $result = $this->db->query('SELECT group_id FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch user group', __FILE__, __LINE__, $this->db->error());
-        $old_group_id = $this->db->result($result);
+        $old_group_id = \ORM::for_table($this->feather->prefix.'users')
+            ->where('id', $id)
+            ->find_one_col('group_id');
 
-        $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$new_group_id.' WHERE id='.$id) or error('Unable to change user group', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+            ->find_one()
+            ->set('group_id', $new_group_id)
+            ->save();
 
         // Regenerate the users info cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
@@ -355,22 +404,37 @@ class profile
             generate_admins_cache();
         }
 
-        $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$new_group_id) or error('Unable to fetch group', __FILE__, __LINE__, $this->db->error());
-        $new_group_mod = $this->db->result($result);
+        $new_group_mod = \ORM::for_table($this->feather->prefix.'groups')
+            ->where('g_id', $new_group_id)
+            ->find_one_col('g_moderator');
 
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
         if ($new_group_id != FEATHER_ADMIN && $new_group_mod != '1') {
-            $result = $this->db->query('SELECT id, moderators FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
 
-            while ($cur_forum = $this->db->fetch_assoc($result)) {
+            $select_mods = array('id', 'moderators');
+
+            $result = \ORM::for_table($this->feather->prefix.'forums')
+                ->select($select_mods)
+                ->find_many();
+
+            foreach($result as $cur_forum) {
                 $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
                 if (in_array($id, $cur_moderators)) {
                     $username = array_search($id, $cur_moderators);
                     unset($cur_moderators[$username]);
-                    $cur_moderators = (!empty($cur_moderators)) ? '\''.$this->db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 
-                    $this->db->query('UPDATE '.$this->db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
+                    if (!empty($cur_moderators)) {
+                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                            ->find_one()
+                            ->set('moderators', serialize($cur_moderators))
+                            ->save();
+                    } else {
+                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                            ->find_one()
+                            ->set_expr('moderators', 'NULL')
+                            ->save();
+                    }
                 }
             }
         }
@@ -380,11 +444,10 @@ class profile
 
     public function get_username($id)
     {
-        
-
         // Get the username of the user we are processing
-        $result = $this->db->query('SELECT username FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        $username = $this->db->result($result);
+        $username = \ORM::for_table($this->feather->prefix.'users')
+            ->where('id', $id)
+            ->find_one_col('username');
 
         return $username;
     }
@@ -395,28 +458,44 @@ class profile
 
         confirm_referrer(get_link_r('user/'.$id.'/section/admin/'));
 
-        $username = self::get_username($id);
+        $username = $this->get_username($id);
 
         $moderator_in = ($this->request->post('moderator_in')) ? array_keys($this->request->post('moderator_in')) : array();
 
         // Loop through all forums
-        $result = $this->db->query('SELECT id, moderators FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
+        $select_mods = array('id', 'moderators');
 
-        while ($cur_forum = $this->db->fetch_assoc($result)) {
+        $result = \ORM::for_table($this->feather->prefix.'forums')
+            ->select($select_mods)
+            ->find_many();
+
+        foreach($result as $cur_forum) {
             $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
             // If the user should have moderator access (and he/she doesn't already have it)
             if (in_array($cur_forum['id'], $moderator_in) && !in_array($id, $cur_moderators)) {
                 $cur_moderators[$username] = $id;
                 uksort($cur_moderators, 'utf8_strcasecmp');
 
-                $this->db->query('UPDATE '.$this->db->prefix.'forums SET moderators=\''.$this->db->escape(serialize($cur_moderators)).'\' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                    ->find_one()
+                    ->set('moderators', serialize($cur_moderators))
+                    ->save();
             }
             // If the user shouldn't have moderator access (and he/she already has it)
             elseif (!in_array($cur_forum['id'], $moderator_in) && in_array($id, $cur_moderators)) {
                 unset($cur_moderators[$username]);
-                $cur_moderators = (!empty($cur_moderators)) ? '\''.$this->db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 
-                $this->db->query('UPDATE '.$this->db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
+                if (!empty($cur_moderators)) {
+                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        ->find_one()
+                        ->set('moderators', serialize($cur_moderators))
+                        ->save();
+                } else {
+                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        ->find_one()
+                        ->set_expr('moderators', 'NULL')
+                        ->save();
+                }
             }
         }
 
@@ -428,16 +507,19 @@ class profile
         global $lang_profile;
 
         // Get the username of the user we are banning
-        $result = $this->db->query('SELECT username FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch username', __FILE__, __LINE__, $this->db->error());
-        $username = $this->db->result($result);
+        $username = $this->get_username($id);
 
         // Check whether user is already banned
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'bans WHERE username = \''.$this->db->escape($username).'\' ORDER BY expire IS NULL DESC, expire DESC LIMIT 1') or error('Unable to fetch ban ID', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
-            $ban_id = $this->db->result($result);
-            redirect('admin_bans.php?edit_ban='.$ban_id.'&amp;exists', $lang_profile['Ban redirect']);
+        $ban_id = \ORM::for_table($this->feather->prefix.'bans')
+            ->where('username', $username)
+            ->order_by_expr('expire IS NULL DESC')
+            ->order_by_desc('expire')
+            ->find_one_col('id');
+
+        if ($ban_id) {
+            redirect(get_link('admin/bans/edit/'.$ban_id.'/'), $lang_profile['Ban redirect']);
         } else {
-            redirect('admin_bans.php?add_ban='.$id, $lang_profile['Ban redirect']);
+            redirect(get_link('admin/bans/add/'.$id.'/'), $lang_profile['Ban redirect']);
         }
     }
 
