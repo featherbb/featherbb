@@ -106,7 +106,7 @@ endif;
     <h2><span><?php echo $lang_common['Info'] ?></span></h2>
     <div class="box">
         <div class="inbox">
-            <p><?php echo $flash['message'] ?></p>
+            <p><?php echo feather_escape($flash['message']) ?></p>
         </div>
     </div>
 </div>
