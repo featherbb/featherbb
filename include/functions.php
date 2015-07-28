@@ -1360,6 +1360,9 @@ function redirect($destination_url, $message = null)
 {
     $feather = \Slim\Slim::getInstance();
 
+    // Add a flash message
+    $feather->flash('message', $message);
+
     $feather->redirect($destination_url);
 }
 

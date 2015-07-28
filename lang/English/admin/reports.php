@@ -3,7 +3,7 @@
 // Language definitions used in admin_reports.php
 $lang_admin_reports = array(
 
-'Report zapped redirect'    =>    'Report marked as read. Redirecting …',
+'Report zapped redirect'    =>    'Report marked as read.',
 'New reports head'            =>    'New reports',
 'Deleted user'                =>    'Deleted user',
 'Deleted'                    =>    'Deleted',

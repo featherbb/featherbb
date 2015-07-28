@@ -119,6 +119,16 @@ endif;
             </div>
     </div>
     <?php endif; ?>
+    <?php if (isset($flash['message'])) : ?>
+    <div id="msg" class="block">
+        <h2><span><?php echo $lang_common['Info'] ?></span></h2>
+        <div class="box">
+            <div class="inbox">
+                <p><?php echo $flash['message'] ?></p>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 </header>

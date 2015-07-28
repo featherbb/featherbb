@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+// Start a session for flash messages
+session_cache_limiter(false);
+session_start();
 
 // Load Slim Framework
 require 'Slim/Slim.php';
