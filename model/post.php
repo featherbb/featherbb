@@ -696,7 +696,7 @@ class post
 
         $select_get_quote_message = array('poster', 'message');
 
-        $quote = \ORM::for_table($this->db->prefix.'posts')->select($select_get_quote_message)
+        $quote = \ORM::for_table($this->db->prefix.'posts')->select_many($select_get_quote_message)
                  ->where('id', $qid)
                  ->where('topic_id', $tid)
                  ->find_one();
@@ -814,7 +814,7 @@ class post
 
         $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 
-        $result = \ORM::for_table($this->db->prefix.'posts')->select($select_topic_review)
+        $result = \ORM::for_table($this->db->prefix.'posts')->select_many($select_topic_review)
             ->where('topic_id', $tid)
             ->order_by_desc('id')
             ->find_many();

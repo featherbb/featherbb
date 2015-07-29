@@ -95,6 +95,7 @@ $cur_index = 1;
 					<legend><?php echo $lang_common['Write message legend'] ?></legend>
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
+                                                <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 if ($feather->user->is_guest) {
     $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
