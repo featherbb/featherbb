@@ -639,8 +639,9 @@ class profile
                 }
             } else {
                 // Set all his/her posts to guest
-                // TODO: update_many in Idiorm
-                \ORM::for_table($this->db->prefix.'posts')->raw_execute('UPDATE '.$this->db->prefix.'posts SET poster_id=1 WHERE poster_id='.$id);
+                \ORM::for_table($this->db->prefix.'posts')
+                    ->where_in('poster_id', '1')
+                    ->update_many('poster_id', $id);
             }
 
             // Delete the user
@@ -914,46 +915,67 @@ class profile
         }
 
 
-        // Single quotes around non-empty values and NULL for empty values
+        // Single quotes around non-empty values and nothing for empty values
         $temp = array();
         foreach ($form as $key => $input) {
-            $value = ($input !== '') ? '\''.$this->db->escape($input).'\'' : 'NULL';
-
-            $temp[] = $key.'='.$value;
+            $temp[$key] = $input;
         }
 
         if (empty($temp)) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-
-        $this->db->query('UPDATE '.$this->db->prefix.'users SET '.implode(',', $temp).' WHERE id='.$id) or error('Unable to update profile', __FILE__, __LINE__, $this->db->error());
+        \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+            ->find_one()
+            ->set($temp)
+            ->save();
 
         // If we changed the username we have to update some stuff
         if ($username_updated) {
-            $this->db->query('UPDATE '.$this->db->prefix.'bans SET username=\''.$this->db->escape($form['username']).'\' WHERE username=\''.$this->db->escape($info['old_username']).'\'') or error('Unable to update bans', __FILE__, __LINE__, $this->db->error());
-            // If any bans were updated, we will need to know because the cache will need to be regenerated.
-            if ($this->db->affected_rows() > 0) {
-                $bans_updated = true;
-            }
-            $this->db->query('UPDATE '.$this->db->prefix.'posts SET poster=\''.$this->db->escape($form['username']).'\' WHERE poster_id='.$id) or error('Unable to update posts', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('UPDATE '.$this->db->prefix.'posts SET edited_by=\''.$this->db->escape($form['username']).'\' WHERE edited_by=\''.$this->db->escape($info['old_username']).'\'') or error('Unable to update posts', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET poster=\''.$this->db->escape($form['username']).'\' WHERE poster=\''.$this->db->escape($info['old_username']).'\'') or error('Unable to update topics', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET last_poster=\''.$this->db->escape($form['username']).'\' WHERE last_poster=\''.$this->db->escape($info['old_username']).'\'') or error('Unable to update topics', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('UPDATE '.$this->db->prefix.'forums SET last_poster=\''.$this->db->escape($form['username']).'\' WHERE last_poster=\''.$this->db->escape($info['old_username']).'\'') or error('Unable to update forums', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('UPDATE '.$this->db->prefix.'online SET ident=\''.$this->db->escape($form['username']).'\' WHERE ident=\''.$this->db->escape($info['old_username']).'\'') or error('Unable to update online list', __FILE__, __LINE__, $this->db->error());
+            $bans_updated = \ORM::for_table($this->db->prefix.'bans')->where('username', $info['old_username'])
+                                ->update_many('username', $form['username']);
+
+            \ORM::for_table($this->db->prefix.'posts')
+                ->where('poster_id', $id)
+                ->update_many('poster', $form['username']);
+
+            \ORM::for_table($this->db->prefix.'posts')
+                ->where('edited_by', $info['old_username'])
+                ->update_many('edited_by', $form['username']);
+
+            \ORM::for_table($this->db->prefix.'topics')
+                ->where('poster', $info['old_username'])
+                ->update_many('poster', $form['username']);
+
+            \ORM::for_table($this->db->prefix.'topics')
+                ->where('last_poster', $info['old_username'])
+                ->update_many('last_poster', $form['username']);
+
+            \ORM::for_table($this->db->prefix.'forums')
+                ->where('last_poster', $info['old_username'])
+                ->update_many('last_poster', $form['username']);
+
+            \ORM::for_table($this->db->prefix.'online')
+                ->where('ident', $info['old_username'])
+                ->update_many('ident', $form['username']);
 
             // If the user is a moderator or an administrator we have to update the moderator lists
-            $result = $this->db->query('SELECT group_id FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-            $group_id = $this->db->result($result);
+            $group_id = \ORM::for_table($this->db->prefix.'users')
+                ->where('id', $id)
+                ->find_one_col('group_id');
 
-            $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $this->db->error());
-            $group_mod = $this->db->result($result);
+            $group_mod = \ORM::for_table($this->db->prefix.'groups')
+                ->where('g_id', $group_id)
+                ->find_one_col('g_moderator');
 
             if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
-                $result = $this->db->query('SELECT id, moderators FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
+                $select_mods = array('id', 'moderators');
 
-                while ($cur_forum = $this->db->fetch_assoc($result)) {
+                $result = \ORM::for_table($this->feather->prefix.'forums')
+                    ->select_many($select_mods)
+                    ->find_many();
+
+                foreach($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
                     if (in_array($id, $cur_moderators)) {
@@ -961,7 +983,10 @@ class profile
                         $cur_moderators[$form['username']] = $id;
                         uksort($cur_moderators, 'utf8_strcasecmp');
 
-                        $this->db->query('UPDATE '.$this->db->prefix.'forums SET moderators=\''.$this->db->escape(serialize($cur_moderators)).'\' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
+                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                            ->find_one()
+                            ->set('moderators', serialize($cur_moderators))
+                            ->save();
                     }
                 }
             }
@@ -974,7 +999,7 @@ class profile
             generate_users_info_cache();
 
             // Check if the bans table was updated and regenerate the bans cache when needed
-            if (isset($bans_updated)) {
+            if ($bans_updated) {
                 generate_bans_cache();
             }
         }
@@ -986,12 +1011,18 @@ class profile
     {
         global $lang_common;
 
-        $result = $this->db->query('SELECT u.id, u.username, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.msn, u.aim, u.yahoo, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, g.g_id, g.g_user_title, g.g_moderator FROM '.$this->db->prefix.'users AS u LEFT JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $select_get_user_info = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+
+        $user = \ORM::for_table($this->feather->prefix.'users')
+            ->table_alias('u')
+            ->select_many($select_get_user_info)
+            ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->where('u.id', $id)
+            ->find_one();
+
+        if (!$user) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $user = $this->db->fetch_assoc($result);
 
         return $user;
     }
@@ -1160,12 +1191,16 @@ class profile
 
     public function get_group_list($user)
     {
-                
         $output = '';
 
-        $result = $this->db->query('SELECT g_id, g_title FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
+        $select_group_list = array('g_id', 'g_title');
 
-        while ($cur_group = $this->db->fetch_assoc($result)) {
+        $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_group_list)
+                      ->where_not_equal('g_id', FEATHER_GUEST)
+                      ->order_by('g_title')
+                      ->find_many();
+
+        foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $this->config['o_default_user_group'] && $user['g_id'] == '')) {
                 $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             } else {
@@ -1180,10 +1215,19 @@ class profile
     {
         $output = '';
 
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.moderators FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
+        $select_get_forum_list = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators');
+        $order_by_get_forum_list = array('c.disp_position', 'c.id', 'f.disp_position');
+
+        $result = \ORM::for_table($this->feather->prefix.'categories')
+            ->table_alias('c')
+            ->select_many($select_get_forum_list)
+            ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->where_null('f.redirect_url')
+            ->order_by_many($order_by_get_forum_list)
+            ->find_many();
 
         $cur_category = 0;
-        while ($cur_forum = $this->db->fetch_assoc($result)) {
+        foreach($result as $cur_forum) {
             if ($cur_forum['cid'] != $cur_category) {
                 // A new category since last iteration?
 
