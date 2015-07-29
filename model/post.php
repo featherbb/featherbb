@@ -110,19 +110,7 @@ class post
         } else {
             $url_subject = '';
         }
-
-        // Make sure they got here from the site
-        confirm_referrer(array(
-            get_link_r('post/new-topic/'.$fid.'/'),
-            get_link_r('post/reply/'.$tid.'/'),
-            get_link_r('post/reply/'.$tid.'/quote/'.$qid.'/'),
-            get_link_r('topic/'.$tid.'/'.$url_subject.'/'),
-            get_link_r('topic/'.$tid.'/'),
-            get_link_r('topic/'.$tid.'/'.$url_subject.'/page/'.$page.'/'),
-            get_link_r('post/'.$pid.'/#p'.$pid),
-            )
-        );
-
+        
         // If it's a new topic
         if ($fid) {
             $subject = feather_trim($this->request->post('req_subject'));

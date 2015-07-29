@@ -54,7 +54,7 @@ class delete
         global $lang_delete;
 
         // Make sure they got here from the site
-        confirm_referrer(get_link_r('delete/'.$id.'/'));
+        
 
         require FEATHER_ROOT.'include/search_idx.php';
 

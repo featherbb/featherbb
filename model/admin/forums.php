@@ -25,7 +25,7 @@ class forums
     {
         global $lang_admin_forums, $lang_common;
 
-        confirm_referrer(get_link_r('admin/forums/'));
+        
 
         $add_to_cat = intval($this->request->post('add_to_cat'));
         if ($add_to_cat < 1) {
@@ -49,7 +49,7 @@ class forums
     {
         global $lang_admin_forums;
 
-        confirm_referrer(get_link_r('admin/forums/delete/'.$forum_id.'/'));
+        
 
         @set_time_limit(0);
 
@@ -103,7 +103,7 @@ class forums
     {
         global $lang_admin_forums;
 
-        confirm_referrer(get_link_r('admin/forums/'));
+        
 
         foreach ($this->request->post('position') as $forum_id => $disp_position) {
             $disp_position = trim($disp_position);
@@ -128,7 +128,7 @@ class forums
     {
         global $lang_admin_forums, $lang_common;
 
-        confirm_referrer(get_link_r('admin/forums/edit/'.$forum_id.'/'));
+        
 
         // Start with the forum details
         $forum_name = feather_trim($this->request->post('forum_name'));
@@ -188,7 +188,7 @@ class forums
     {
         global $lang_admin_forums;
 
-        confirm_referrer(get_link_r('admin/forums/edit/'.$forum_id.'/'));
+        
 
         $this->db->query('DELETE FROM '.$this->db->prefix.'forum_perms WHERE forum_id='.$forum_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $this->db->error());
 

@@ -18,6 +18,9 @@ require 'Slim/Slim.php';
 // Instantiate Slim
 $feather = new \Slim\Slim();
 
+// Load middlewares
+$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
+
 // Load FeatherBB
 define('FEATHER_ROOT', dirname(__FILE__).'/');
 require FEATHER_ROOT.'include/common.php';

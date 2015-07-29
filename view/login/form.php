@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_common['Login'] ?></span></h2>
 	<div class="box">
 		<form id="login" method="post" action="<?php echo get_link('login/action/in/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_login['Login legend'] ?></legend>

@@ -77,6 +77,7 @@ endif;
 	<h2><span><?php echo $lang_post['Edit post'] ?></span></h2>
 	<div class="box">
 		<form id="edit" method="post" action="<?php echo get_link('edit/'.$id.'/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_post['Edit post legend'] ?></legend>

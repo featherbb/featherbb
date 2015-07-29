@@ -12,6 +12,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $lang_common['lang_identifier'] ?>" lang="<?php echo $lang_common['lang_identifier'] ?>" dir="<?php echo $lang_common['lang_direction'] ?>">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
 <title><?php echo generate_page_title($page_title, $p) ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
 <?php
@@ -73,43 +75,63 @@ endif;
 ?>
 </head>
 
-<body>
+<body id="pun<?php echo FEATHER_ACTIVE_PAGE ?>">
 
-<div id="pun<?php echo FEATHER_ACTIVE_PAGE ?>" class="pun">
-<div class="top-box"></div>
-<div class="punwrap">
+<header>
 
-<div id="brdheader" class="block">
-	<div class="box">
-		<div id="brdtitle" class="inbox">
-			<h1><a href="<?php echo get_base_url() ?>/"><?php echo feather_escape($feather_config['o_board_title']) ?></a></h1>
-			<div id="brddesc"><?php echo  $feather_config['o_board_desc'] ?></div>
-		</div>
-		<?php echo $navlinks ?>
-		<?php echo $page_info ?>
-	</div>
-</div>
-
-<?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
-<div id="announce" class="block">
-	<div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
-	<div class="box">
-		<div id="announce-block" class="inbox">
-			<div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
-		</div>
-	</div>
-</div>
-<?php endif; ?>
-    
-<?php if (isset($flash['message'])) : ?>
-<div id="msg" class="block">
-    <h2><span><?php echo $lang_common['Info'] ?></span></h2>
-    <div class="box">
-        <div class="inbox">
-            <p><?php echo feather_escape($flash['message']) ?></p>
+<nav>
+    <div class="container">
+        <div class="phone-menu" id="phone-button">
+            <a class="button-phone"></a>
+         </div>
+        <div id="phone">
+            <?php echo $navlinks ?>
+            <div class="navbar-right">
+                    <form method="get" action="search" class="nav-search">
+                            <input type="hidden" name="action" value="search">
+                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php echo $lang_common['Search'] ?>">
+                    </form>
+            </div>
         </div>
     </div>
+</nav>
+    
+<div class="container">
+    <div class="container-title-status">
+        <h1 class="title-site">
+            <a href="<?php echo get_base_url() ?>" title="" class="site-name">
+                <p><?php echo feather_escape($feather_config['o_board_title']) ?></p>
+            </a>
+            <div id="brddesc"><?php echo $feather_config['o_board_desc'] ?></div>
+        </h1>
+        <div class="status-avatar">
+            <?php echo $page_info ?>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
+    <div id="announce" class="block">
+            <div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
+            <div class="box">
+                    <div id="announce-block" class="inbox">
+                            <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
+                    </div>
+            </div>
+    </div>
+    <?php endif; ?>
+    <?php if (isset($flash['message'])) : ?>
+    <div id="msg" class="block">
+        <h2><span><?php echo $lang_common['Info'] ?></span></h2>
+        <div class="box">
+            <div class="inbox">
+                <p><?php echo feather_escape($flash['message']) ?></p>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
-<?php endif; ?>
 
+</header>
+
+<section class="container">
 <div id="brdmain">

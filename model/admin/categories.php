@@ -25,7 +25,7 @@ class categories
     {
         global $lang_admin_categories;
 
-        confirm_referrer(get_link_r('admin/categories/'));
+        
 
         $new_cat_name = feather_trim($this->request->post('new_cat_name'));
         if ($new_cat_name == '') {

@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_profile['Upload avatar'] ?></span></h2>
 	<div class="box">
 		<form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?php echo get_link('user/'.$id.'/action/upload_avatar2/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Upload avatar legend'] ?></legend>

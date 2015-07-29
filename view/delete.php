@@ -28,6 +28,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_delete['Delete post'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="<?php echo get_link('delete/'.$id.'/') ?>">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<div class="forminfo">
 					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.feather_escape($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>

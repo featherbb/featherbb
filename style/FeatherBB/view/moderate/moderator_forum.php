@@ -29,6 +29,7 @@ if (!defined('FEATHER')) {
 </div>
 
 <form method="post" action="<?php echo get_link('moderate/forum/'.$id.'/') ?>">
+<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <input type="hidden" name="page" value="<?php echo feather_escape($p) ?>" />
 <div id="vf" class="blocktable">
 	<h2><span><?php echo feather_escape($cur_forum['forum_name']) ?></span></h2>

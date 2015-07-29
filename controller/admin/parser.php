@@ -62,7 +62,7 @@ class parser
         $count = count($bbcd);
 
         if ($this->request->post('form_sent')) {
-            confirm_referrer(get_link_r('admin/parser/'));
+            
 
             // Upload new smiley image to img/smilies
             if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {

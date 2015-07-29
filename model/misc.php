@@ -54,7 +54,7 @@ class misc
     {
         global $lang_misc;
         
-        confirm_referrer(get_link_r('email/'.$id.'/'));
+        
 
         // Clean up message and subject from POST
         $subject = feather_trim($this->request->post('req_subject'));
@@ -125,7 +125,7 @@ class misc
         global $lang_misc, $lang_common;
 
         // Make sure they got here from the site
-        confirm_referrer(get_link_r('report/'.$post_id.'/'));
+        
 
         // Clean up reason from POST
         $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));

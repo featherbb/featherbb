@@ -25,7 +25,7 @@ class permissions
     {
         global $lang_admin_permissions;
 
-        confirm_referrer(get_link_r('admin/permissions/'));
+        
 
         $form = array_map('intval', $this->request->post('form'));
 

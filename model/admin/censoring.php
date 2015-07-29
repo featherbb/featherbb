@@ -25,7 +25,7 @@ class censoring
     {
         global $lang_admin_censoring;
 
-        confirm_referrer(get_link_r('admin/censoring/'));
+        
 
         $search_for = feather_trim($this->request->post('new_search_for'));
         $replace_with = feather_trim($this->request->post('new_replace_with'));
@@ -50,7 +50,7 @@ class censoring
     {
         global $lang_admin_censoring;
 
-        confirm_referrer(get_link_r('admin/censoring/'));
+        
 
         $id = intval(key($this->request->post('update')));
 
@@ -77,7 +77,7 @@ class censoring
     {
         global $lang_admin_censoring;
 
-        confirm_referrer(get_link_r('admin/censoring/'));
+        
 
         $id = intval(key($this->request->post('remove')));
 

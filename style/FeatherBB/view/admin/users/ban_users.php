@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_users['Ban users'] ?></span></h2>
 		<div class="box">
 			<form id="bans2" name="confirm_ban_users" method="post" action="<?php echo get_link('admin/users') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
 				<div class="inform">
 					<fieldset>

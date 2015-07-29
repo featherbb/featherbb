@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_profile['Change email'] ?></span></h2>
 	<div class="box">
 		<form id="change_email" method="post" action="<?php echo get_link('user/'.$id.'/action/change_email') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Email legend'] ?></legend>

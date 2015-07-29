@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_groups['Group settings head'] ?></span></h2>
 		<div class="box">
 			<form id="groups2" method="post" action="" onsubmit="return process_form(this)">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="add_edit_group" value="<?php echo $lang_admin_common['Save'] ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="mode" value="<?php echo $group['mode'] ?>" />

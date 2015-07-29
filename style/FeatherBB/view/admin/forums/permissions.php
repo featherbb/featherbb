@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_forums['Edit forum head'] ?></span></h2>
 		<div class="box">
 			<form id="edit_forum" method="post" action="<?php echo get_link('admin/forums/edit/'.$forum_id.'/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>

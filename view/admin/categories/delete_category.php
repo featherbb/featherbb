@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_categories['Delete category head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/categories') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 				<input type="hidden" name="cat_to_delete" value="<?php echo $cat_to_delete ?>" />
 					<fieldset>

@@ -40,6 +40,7 @@ if (!empty($errors)) {
 	<h2><span><?php echo $lang_register['Register'] ?></span></h2>
 	<div class="box">
 		<form id="register" method="post" action="" onsubmit="this.register.disabled=true;if(process_form(this)){return true;}else{this.register.disabled=false;return false;}">
+		<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<div class="forminfo">
 					<h3><?php echo $lang_common['Important information'] ?></h3>

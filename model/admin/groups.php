@@ -98,11 +98,6 @@ class groups
             $group_id = 0;
         }
 
-        confirm_referrer(array(
-            get_link_r('admin/groups/edit/'.$group_id.'/'),
-            get_link_r('admin/groups/add/'),
-        ));
-
         // Is this the admin group? (special rules apply)
         $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == FEATHER_ADMIN) ? true : false;
 
@@ -196,7 +191,7 @@ class groups
     {
         global $lang_admin_groups, $lang_common;
 
-        confirm_referrer(get_link_r('admin/groups/'));
+        
 
         $group_id = intval($this->request->post('default_group'));
 

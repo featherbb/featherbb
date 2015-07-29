@@ -29,6 +29,7 @@ if (!defined('FEATHER')) {
 </div>
 
 <form method="post" action="">
+<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 $post_count = 0; // Keep track of post numbers
 foreach ($post_data as $post) {

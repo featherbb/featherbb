@@ -81,7 +81,7 @@ class profile
 
         if ($this->request->isPost()) {
             // Make sure they got here from the site
-            confirm_referrer(get_link_r('user/'.$id.'/action/change_pass/'));
+            
 
             $old_password = $this->request->post('req_old_password') ? feather_trim($this->request->post('req_old_password')) : '';
             $new_password1 = feather_trim($this->request->post('req_new_password1'));
@@ -183,7 +183,7 @@ class profile
             }
 
             // Make sure they got here from the site
-            confirm_referrer(get_link_r('user/'.$id.'/action/change_email/'));
+            
 
             require FEATHER_ROOT.'include/email.php';
 
@@ -289,13 +289,6 @@ class profile
             message($lang_profile['No file']);
         }
 
-        // Make sure they got here from the site
-        confirm_referrer(array(
-            get_link_r('user/'.$id.'/action/upload_avatar/'),
-            get_link_r('user/'.$id.'/action/upload_avatar2/'),
-            )
-        );
-
         $uploaded_file = $files_data['req_file'];
 
         // Make sure the upload went smooth
@@ -380,7 +373,7 @@ class profile
     {
         global $lang_profile;
 
-        confirm_referrer(get_link_r('user/'.$id.'/section/admin/'));
+        
 
         $new_group_id = intval($this->request->post('group_id'));
 
@@ -456,7 +449,7 @@ class profile
     {
         global $lang_profile;
 
-        confirm_referrer(get_link_r('user/'.$id.'/section/admin/'));
+        
 
         $username = $this->get_username($id);
 
@@ -527,7 +520,7 @@ class profile
     {
         global $lang_profile, $lang_common;
 
-        confirm_referrer('viewtopic.php'); // TODO
+        
 
         $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
@@ -548,7 +541,7 @@ class profile
     {
         global $lang_profile;
 
-        confirm_referrer(get_link_r('user/'.$id.'/section/admin/'));
+        
 
         // Get the username and group of the user we are deleting
         $result = $this->db->query('SELECT group_id, username FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
@@ -651,19 +644,6 @@ class profile
     public function update_profile($id, $info, $section)
     {
         global $lang_common, $lang_profile, $lang_prof_reg, $pd;
-
-        // Make sure they got here from the site
-        confirm_referrer(array(
-            get_link_r('user/'.$id.'/'),
-            get_link_r('user/'.$id.'/section/admin/'),
-            get_link_r('user/'.$id.'/section/essentials/'),
-            get_link_r('user/'.$id.'/section/privacy/'),
-            get_link_r('user/'.$id.'/section/messaging/'),
-            get_link_r('user/'.$id.'/section/display/'),
-            get_link_r('user/'.$id.'/section/personality/'),
-            get_link_r('user/'.$id.'/section/personal/'),
-            )
-        );
 
         $username_updated = false;
 

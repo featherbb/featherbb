@@ -51,7 +51,7 @@ class categories
 
         // Delete a category
         elseif ($this->request->post('del_cat') || $this->request->post('del_cat_comply')) {
-            confirm_referrer(get_link_r('admin/categories/'));
+            
 
             $cat_to_delete = intval($this->request->post('cat_to_delete'));
             if ($cat_to_delete < 1) {
@@ -84,7 +84,7 @@ class categories
             }
         } elseif ($this->request->post('update')) {
             // Change position and name of the categories
-                confirm_referrer(get_link_r('admin/categories/'));
+                
 
             $categories = $this->request->post('cat');
             if (empty($categories)) {
