@@ -140,7 +140,7 @@ class login
                 $select_password_forgotten = array('id', 'username', 'last_email_sent');
 
                 $result = \ORM::for_table($this->feather->prefix.'users')
-                    ->select($select_password_forgotten)
+                    ->select_many($select_password_forgotten)
                     ->where('email', $email)
                     ->find_many();
 

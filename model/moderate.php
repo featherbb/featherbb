@@ -226,7 +226,7 @@ class moderate
             $select_first_post = array('id', 'poster', 'posted');
 
             $first_post_data = \ORM::for_table($this->feather->prefix.'posts')
-                ->select($select_first_post)
+                ->select_many($select_first_post)
                 ->where_in('id',$posts_array )
                 ->order_by_asc('id')
                 ->find_one();
@@ -260,7 +260,7 @@ class moderate
             $select_last_post = array('id', 'poster', 'posted');
 
             $last_old_post_data = \ORM::for_table($this->feather->prefix.'posts')
-                ->select($select_last_post)
+                ->select_many($select_last_post)
                 ->where('topic_id', $tid)
                 ->order_by_desc('id')
                 ->find_one();
@@ -283,7 +283,7 @@ class moderate
             $select_new_post = array('id', 'poster', 'posted');
 
             $last_new_post_data = \ORM::for_table($this->feather->prefix.'posts')
-                ->select($select_new_post)
+                ->select_many($select_new_post)
                 ->where('topic_id', $new_tid)
                 ->order_by_desc('id')
                 ->find_one();
@@ -671,7 +671,7 @@ class moderate
         // Get last_post, last_post_id and last_poster
         $select_last_post = array('posted', 'id', 'poster');
 
-        $last_post = \ORM::for_table($this->db->prefix.'posts')->select($select_last_post)
+        $last_post = \ORM::for_table($this->db->prefix.'posts')->select_many($select_last_post)
             ->where('topic_id', $merge_to_tid)
             ->order_by_desc('id')
             ->find_one();
@@ -847,7 +847,7 @@ class moderate
             $select_display_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
 
             // TODO: order_by_expr && result_set
-            $result = \ORM::for_table($this->db->prefix.'topics')->select($select_display_topics)
+            $result = \ORM::for_table($this->db->prefix.'topics')->select_many($select_display_topics)
                 ->where_in('id', $topic_ids)
                 ->order_by_expr('sticky DESC, '.$sort_by.', id DESC')
                 ->find_many();

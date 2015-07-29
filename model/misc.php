@@ -36,7 +36,7 @@ class misc
         $select_get_info_mail = array('username', 'email', 'email_setting');
         
         $mail = \ORM::for_table($this->feather->prefix.'users')
-                ->select($select_get_info_mail)
+                ->select_many($select_get_info_mail)
                 ->where('id', $recipient_id)
                 ->find_one();
         
@@ -151,7 +151,7 @@ class misc
         $select_report = array('subject', 'forum_id');
 
         // Get the subject and forum ID
-        $report = \ORM::for_table($this->db->prefix.'topics')->select($select_report)
+        $report = \ORM::for_table($this->db->prefix.'topics')->select_many($select_report)
             ->where('id', $topic['topic_id'])
             ->find_one();
 
