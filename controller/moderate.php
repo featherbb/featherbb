@@ -108,12 +108,6 @@ class moderate
         }
 
         $url_subject = url_friendly($this->model->get_subject_tid($id));
-        $url_referer = array(
-                            get_link_r('topic/'.$id.'/'),
-                            get_link_r('topic/'.$id.'/'.$url_subject.'/'),
-                            get_link_r('topic/'.$id.'/'.$url_subject.'/page/'.$param.'/'),
-                            get_link_r('post/'.$param.'/#p'.$param),
-                            );
 
         // Move one topic
         if ($this->request->post('move_topics') || $this->request->post('move_topics_to')) {
@@ -152,7 +146,7 @@ class moderate
 
         // Stick a topic
         if ($action == 'stick') {
-            confirm_referrer($url_referer);
+            
 
             $this->model->stick_topic($id, $fid);
  
@@ -162,7 +156,7 @@ class moderate
 
         // Unstick a topic
         if ($action == 'unstick') {
-            confirm_referrer($url_referer);
+            
 
             $this->model->unstick_topic($id, $fid);
 
@@ -171,7 +165,7 @@ class moderate
 
         // Open a topic
         if ($action == 'open') {
-            confirm_referrer($url_referer);
+            
             
             $this->model->open_topic($id, $fid);
 
@@ -180,7 +174,7 @@ class moderate
 
         // Close a topic
         if ($action == 'close') {
-            confirm_referrer($url_referer);
+            
 
             $this->model->close_topic($id, $fid);
 
@@ -496,11 +490,6 @@ class moderate
 
             // There could be an array of topic IDs in $_POST
             if ($this->request->post('open') || $this->request->post('close')) {
-                confirm_referrer(array(
-                            get_link_r('moderate/forum/'.$fid.'/page/'.$this->request->post('page').'/'),
-                            get_link_r('moderate/forum/'.$fid.'/'),
-                            ));
-
                 $topics = $this->request->post('topics') ? @array_map('intval', @array_keys($this->request->post('topics'))) : array();
                 if (empty($topics)) {
                     message($lang_misc['No topics selected']);

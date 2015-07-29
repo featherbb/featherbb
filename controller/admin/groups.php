@@ -86,11 +86,6 @@ class groups
         // Load the admin_groups.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/groups.php';
 
-        confirm_referrer(array(
-            get_link_r('admin/groups/'),
-            get_link_r('admin/groups/delete/'.$id.'/'),
-        ));
-
         if ($id < 5) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }

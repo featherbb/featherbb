@@ -37,7 +37,7 @@ class maintenance
         // If this is the first cycle of posts we empty the search index before we proceed
         if ($this->request->get('i_empty_index')) {
             // This is the only potentially "dangerous" thing we can do here, so we check the referer
-            confirm_referrer(get_link_r('admin/maintenance/'));
+            
 
             $this->db->truncate_table('search_matches') or error('Unable to empty search index match table', __FILE__, __LINE__, $this->db->error());
             $this->db->truncate_table('search_words') or error('Unable to empty search index words table', __FILE__, __LINE__, $this->db->error());
@@ -148,7 +148,7 @@ class maintenance
     {
         global $lang_admin_maintenance;
 
-        confirm_referrer(get_link_r('admin/maintenance/'));
+        
 
         $prune_days = intval($this->request->post('prune_days'));
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;

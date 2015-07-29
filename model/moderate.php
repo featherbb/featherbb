@@ -98,11 +98,6 @@ class moderate
         }
 
         if ($this->request->post('delete_posts_comply')) {
-            confirm_referrer(array(
-                get_link_r('moderate/forum/'.$fid.'/'),
-                get_link_r('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$p.'/'),
-            ));
-
             if (@preg_match('%[^0-9,]%', $posts)) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -173,11 +168,6 @@ class moderate
         }
 
         if ($this->request->post('split_posts_comply')) {
-            confirm_referrer(array(
-                get_link_r('moderate/forum/'.$fid.'/'),
-                get_link_r('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$p.'/'),
-            ));
-
             if (@preg_match('%[^0-9,]%', $posts)) {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -479,12 +469,6 @@ class moderate
     {
         global $lang_common, $lang_misc;
 
-        confirm_referrer(array(
-            get_link_r('moderate/forum/'.$fid.'/'),
-            get_link_r('moderate/topic/'.$tfid.'/forum/'.$fid.'/action/move/'),
-            get_link_r('moderate/topic/'.$tfid.'/forum/'.$fid.'/action/move/param/'.$param.'/'),
-        ));
-
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
@@ -603,7 +587,7 @@ class moderate
     {
         global $lang_common, $lang_misc;
 
-        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
+        
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message($lang_common['Bad request'], false, '404 Not Found');
@@ -714,7 +698,7 @@ class moderate
     public function delete_topics($topics, $fid)
     {
         global $lang_misc, $lang_common;
-        confirm_referrer(get_link_r('moderate/forum/'.$fid.'/'));
+        
 
         if (@preg_match('%[^0-9,]%', $topics)) {
             message($lang_common['Bad request'], false, '404 Not Found');

@@ -25,7 +25,7 @@ class reports
     {
         global $lang_admin_reports;
 
-        confirm_referrer(get_link_r('admin/reports/'));
+        
 
         $zap_id = intval(key($this->request->post('zap_id')));
 

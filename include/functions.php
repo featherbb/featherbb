@@ -1058,7 +1058,7 @@ function random_key($len, $readable = false, $hash = false)
 //
 // Make sure that HTTP_REFERER matches base_url/script
 //
-function confirm_referrer($scripts, $error_msg = false)
+function 
 {
     global $lang_common;
     

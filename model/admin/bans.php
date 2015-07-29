@@ -112,12 +112,6 @@ class bans
     {
         global $lang_admin_bans;
 
-        confirm_referrer(array(
-            get_link_r('admin/bans/add/'),
-            get_link_r('admin/bans/add/'.$this->request->post('ban_user_id').'/'),
-            get_link_r('admin/bans/edit/'.$this->request->post('ban_id').'/'),
-        ));
-
         $ban_user = feather_trim($this->request->post('ban_user'));
         $ban_ip = feather_trim($this->request->post('ban_ip'));
         $ban_email = strtolower(feather_trim($this->request->post('ban_email')));
@@ -237,7 +231,7 @@ class bans
     {
         global $lang_common, $lang_admin_bans;
 
-        confirm_referrer(get_link_r('admin/bans/'));
+        
 
         $this->db->query('DELETE FROM '.$this->db->prefix.'bans WHERE id='.$ban_id) or error('Unable to delete ban', __FILE__, __LINE__, $this->db->error());
 

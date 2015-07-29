@@ -25,7 +25,7 @@ class options
     {
         global $lang_admin_options, $lang_common;
 
-        confirm_referrer(get_link_r('admin/options/'), $lang_admin_options['Bad HTTP Referer message']);
+        
 
         $form = array(
             'board_title'            => feather_trim($this->request->post('form_board_title')),

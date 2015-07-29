@@ -87,7 +87,7 @@ class users
     {
         global $lang_admin_users;
 
-        confirm_referrer(get_link_r('admin/users/'));
+        
 
         $move = array();
 
@@ -172,7 +172,7 @@ class users
     {
         global $lang_admin_users;
 
-        confirm_referrer(get_link_r('admin/users/'));
+        
 
         if ($this->request->post('users')) {
             $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
@@ -286,7 +286,7 @@ class users
     {
         global $lang_admin_users;
 
-        confirm_referrer(get_link_r('admin/users/'));
+        
 
         if ($this->request->post('users')) {
             $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));

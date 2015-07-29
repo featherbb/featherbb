@@ -55,7 +55,7 @@ class edit
         global $lang_post, $pd;
 
         // Make sure they got here from the site
-        confirm_referrer(get_link_r('edit/'.$id.'/'));
+        
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {

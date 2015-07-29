@@ -400,7 +400,7 @@ class profile
                 message($lang_common['No permission'], false, '403 Forbidden');
             }
 
-            confirm_referrer(get_link_r('user/'.$id.'/section/personality/'));
+            
 
             $this->model->delete_avatar($id);
 
