@@ -627,8 +627,9 @@ class moderate
         \ORM::for_table($this->db->prefix.'topics')->raw_execute($query);
 
         // Merge the posts into the topic
-        // TODO
-        \ORM::for_table($this->db->prefix.'topics')->raw_execute('UPDATE '.$this->db->prefix.'posts SET topic_id='.$merge_to_tid.' WHERE topic_id IN('.implode(',', $topics).')');
+        \ORM::for_table($this->db->prefix.'posts')
+            ->where_in('topic_id', $topics)
+            ->update_many('topic_id', $merge_to_tid);
 
         // Update any subscriptions
         $find_ids = \ORM::for_table($this->db->prefix.'topic_subscriptions')->select('user_id')
@@ -956,8 +957,9 @@ class moderate
     
     public function close_multiple_topics($action, $topics, $fid)
     {
-        // TODO: update_many in Idiorm
-        \ORM::for_table($this->db->prefix.'topics')->raw_execute('UPDATE '.$this->db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid);
+        \ORM::for_table($this->db->prefix.'topics')
+            ->where_in('id', $topics)
+            ->update_many('closed', $action);
     }
     
     public function get_subject_tid($id)
