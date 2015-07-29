@@ -37,6 +37,8 @@ require 'Slim/Slim.php';
 // Instantiate Slim
 $feather = new \Slim\Slim();
 
+$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
+
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
     exit('You are running PHP version '.PHP_VERSION.'. FeatherBB '.UPDATE_TO.' requires at least PHP '.MIN_PHP_VERSION.' to run properly. You must upgrade your PHP installation before you can continue.');
@@ -554,6 +556,7 @@ if (empty($stage)) {
 	<div class="box">
 		<form id="install" method="post" action="db_update.php">
 			<input type="hidden" name="stage" value="start" />
+                        <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 				<legend><?php echo $lang_update['Administrator only'] ?></legend>
@@ -1685,6 +1688,7 @@ switch ($stage) {
 	<div class="box">
 		<form method="post" action="db_update.php?stage=conv_users_dupe&amp;uid=<?php echo $uid ?>">
 			<input type="hidden" name="form_sent" value="1" />
+                        <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<div class="forminfo">
 						<p style="font-size: 1.1em"><?php echo $lang_update['Error info 1'] ?></p>

@@ -33,6 +33,8 @@ require 'Slim/Slim.php';
 // Instantiate Slim
 $feather = new \Slim\Slim();
 
+$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
+
 // Load the functions script
 require FEATHER_ROOT.'include/functions.php';
 
@@ -369,7 +371,7 @@ function process_form(the_form)
 		<h2><span><?php echo sprintf($lang_install['Install'], FORUM_VERSION) ?></span></h2>
 		<div class="box">
 			<form id="install" method="post" action="install.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
-			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo feather_escape($install_lang) ?>" /></div>
+			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>"><input type="hidden" name="install_lang" value="<?php echo feather_escape($install_lang) ?>" /></div>
 				<div class="inform">
 	<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
 						<h3><?php echo $lang_install['Errors'] ?></h3>
@@ -1746,6 +1748,7 @@ function process_form(the_form)
     if (!$written) {
         ?>
                     <form method="post" action="install.php">
+                        <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
                             <div class="inform">
                                     <div class="forminfo">
                                             <p><?php echo $lang_install['Info 17'] ?></p>
