@@ -58,6 +58,10 @@ class footer
 
         // Close the db connection (and free up any result data)
         $this->db->close();
+        
+        // Close Idiorm connection
+        $pdo = \ORM::get_db();
+        $pdo = null;
 
         // If we reached this far, we shouldn't execute more code
         $this->feather->stop();
