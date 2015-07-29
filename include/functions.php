@@ -1057,8 +1057,9 @@ function random_key($len, $readable = false, $hash = false)
 
 //
 // Make sure that HTTP_REFERER matches base_url/script
+// LEGACY
 //
-function 
+function confirm_referrer($scripts, $error_msg = null)
 {
     global $lang_common;
     
