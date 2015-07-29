@@ -18,6 +18,7 @@ if (!defined('FEATHER')) {
 	<div class="box">
 		<form id="bans2" method="post" action="">
 			<div class="inform">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<input type="hidden" name="mode" value="<?php echo $ban['mode'] ?>" />
 				<?php if ($ban['mode'] == 'edit'): ?>				<input type="hidden" name="ban_id" value="<?php echo $ban['id'] ?>" />
 				<?php endif; ?>

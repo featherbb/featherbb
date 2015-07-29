@@ -18,6 +18,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_misc['Delete topics'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<input type="hidden" name="topics" value="<?php echo implode(',', array_map('intval', array_keys($topics))) ?>" />
 			<div class="inform">
 				<fieldset>

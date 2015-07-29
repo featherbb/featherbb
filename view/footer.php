@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 ?>
 </div>
 
@@ -31,8 +31,8 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
         } else {
             $parameter = '';
         }
-        
-        
+
+
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.$lang_topic['Mod controls'].'</strong></dt>'."\n";
         // TODO: all
@@ -139,9 +139,10 @@ if (defined('FEATHER_SHOW_QUERIES')) {
     display_saved_queries();
 }
 ?>
-</div>
-<div class="end-box"></div>
-</div>
+
+</section>
+
+<script src="<?php echo get_base_url() ?>/style/FeatherBB/phone.min.js"></script>
 
 </body>
 </html>

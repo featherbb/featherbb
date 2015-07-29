@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_profile['Change pass'] ?></span></h2>
 	<div class="box">
 		<form id="change_pass" method="post" action="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
 				<fieldset>

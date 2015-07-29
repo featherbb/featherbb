@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_reports['New reports head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/reports/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 if ($is_report) {
     foreach ($report_data as $report) {

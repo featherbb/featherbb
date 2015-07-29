@@ -53,6 +53,7 @@ if (!defined('FEATHER')) {
 			</form>
 
 			<form method="post" action="<?php echo get_link('admin/maintenance/') ?>" onsubmit="return process_form(this)">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
 					<fieldset>

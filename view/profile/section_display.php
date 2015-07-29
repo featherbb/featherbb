@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo feather_escape($user['username']).' - '.$lang_profile['Section display'] ?></span></h2>
 	<div class="box">
 		<form id="profile5" method="post" action="<?php echo get_link('user/'.$id.'/section/display/') ?>">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 

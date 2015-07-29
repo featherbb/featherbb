@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_forums['Add forum head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/forums/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 if ($is_forum) {
     ?>
@@ -63,6 +64,7 @@ if (!empty($forum_data)) {
 		<h2 class="block2"><span><?php echo $lang_admin_forums['Edit forums head'] ?></span></h2>
 		<div class="box">
 			<form id="edforum" method="post" action="<?php echo get_link('admin/forums/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" /></p>
 <?php
     foreach ($forum_data as $forum) {

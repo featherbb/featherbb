@@ -29,6 +29,7 @@ if (!defined('FEATHER')) {
 
 
 <form id="search-users-form" action="<?php echo get_link('admin/users/') ?>" method="post">
+<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <div id="users2" class="blocktable">
 	<h2><span><?php echo $lang_admin_users['Results head'] ?></span></h2>
 	<div class="box">

@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_forums['Confirm delete head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/forums/delete/'.$forum_id.'/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Confirm delete subhead'] ?></legend>

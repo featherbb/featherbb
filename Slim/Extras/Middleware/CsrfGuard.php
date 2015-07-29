@@ -30,7 +30,7 @@ class CsrfGuard extends \Slim\Middleware
      */
     public function __construct($key = 'csrf_token')
     {
-        if (! is_string($key) || empty($key) || preg_match('/[^a-zA-Z0-9\-\_]/', $key)) {
+        if (!is_string($key) || empty($key) || preg_match('/[^a-zA-Z0-9\-\_]/', $key)) {
             throw new \OutOfBoundsException('Invalid CSRF token key "' . $key . '"');
         }
 
@@ -63,7 +63,7 @@ class CsrfGuard extends \Slim\Middleware
             throw new \Exception('Sessions are required to use the CSRF Guard middleware.');
         }
 
-        if (! isset($_SESSION[$this->key])) {
+        if (!isset($_SESSION[$this->key])) {
             $_SESSION[$this->key] = sha1(serialize($_SERVER) . rand(0, 0xffffffff));
         }
 

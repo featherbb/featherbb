@@ -28,6 +28,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_misc['Report post'] ?></span></h2>
 	<div class="box">
 		<form id="report" method="post" action="<?php echo get_link('report/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_misc['Reason desc'] ?></legend>
