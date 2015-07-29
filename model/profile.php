@@ -64,7 +64,7 @@ class profile
 
                 $user = \ORM::for_table($this->feather->prefix.'users')
                     ->table_alias('u')
-                    ->select($select_change_password)
+                    ->select_many($select_change_password)
                     ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where('u.id', $id)
                     ->find_one();
@@ -142,7 +142,7 @@ class profile
 
                 $user = \ORM::for_table($this->feather->prefix.'users')
                     ->table_alias('u')
-                    ->select($select_change_mail)
+                    ->select_many($select_change_mail)
                     ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where('u.id', $id)
                     ->find_one();
@@ -219,7 +219,7 @@ class profile
             $select_change_mail = array('id', 'username');
 
             $result = \ORM::for_table($this->feather->prefix.'users')
-                ->select($select_change_mail)
+                ->select_many($select_change_mail)
                 ->where('email', $new_email)
                 ->find_many();
 
@@ -373,8 +373,6 @@ class profile
     {
         global $lang_profile;
 
-        
-
         $new_group_id = intval($this->request->post('group_id'));
 
         $old_group_id = \ORM::for_table($this->feather->prefix.'users')
@@ -407,7 +405,7 @@ class profile
             $select_mods = array('id', 'moderators');
 
             $result = \ORM::for_table($this->feather->prefix.'forums')
-                ->select($select_mods)
+                ->select_many($select_mods)
                 ->find_many();
 
             foreach($result as $cur_forum) {
@@ -449,8 +447,6 @@ class profile
     {
         global $lang_profile;
 
-        
-
         $username = $this->get_username($id);
 
         $moderator_in = ($this->request->post('moderator_in')) ? array_keys($this->request->post('moderator_in')) : array();
@@ -459,7 +455,7 @@ class profile
         $select_mods = array('id', 'moderators');
 
         $result = \ORM::for_table($this->feather->prefix.'forums')
-            ->select($select_mods)
+            ->select_many($select_mods)
             ->find_many();
 
         foreach($result as $cur_forum) {
@@ -520,20 +516,25 @@ class profile
     {
         global $lang_profile, $lang_common;
 
-        
-
         $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
-        $sql = 'SELECT g.g_promote_next_group FROM '.$this->db->prefix.'groups AS g INNER JOIN '.$this->db->prefix.'users AS u ON u.group_id=g.g_id WHERE u.id='.$id.' AND g.g_promote_next_group>0';
-        $result = $this->db->query($sql) or error('Unable to fetch promotion information', __FILE__, __LINE__, $this->db->error());
-
-        if (!$this->db->num_rows($result)) {
+        // Find the group ID to promote the user to
+        $next_group_id = \ORM::for_table($this->feather->prefix.'groups')
+            ->table_alias('g')
+            ->inner_join($this->db->prefix.'users', array('u.group_id', '=', 'g.g_id'), 'u')
+            ->where('u.id', $id)
+            ->find_one_col('g.g_promote_next_group');
+        
+        if (!$next_group_id) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
 
-        $next_group_id = $this->db->result($result);
-        $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$next_group_id.' WHERE id='.$id) or error('Unable to promote user', __FILE__, __LINE__, $this->db->error());
-
+        // Update the user
+        \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+            ->find_one()
+            ->set('group_id', $next_group_id)
+            ->save();
+        
         redirect(get_link('post/'.$pid.'/#p'.$pid), $lang_profile['User promote redirect']);
     }
 
@@ -541,55 +542,92 @@ class profile
     {
         global $lang_profile;
 
-        
-
         // Get the username and group of the user we are deleting
-        $result = $this->db->query('SELECT group_id, username FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        list($group_id, $username) = $this->db->fetch_row($result);
+        $select_info_delete_user = array('group_id', 'username');
 
+        $result = \ORM::for_table($this->feather->prefix.'users')->where('id', $id)
+            ->select_many($select_info_delete_user)
+            ->find_one();
+        
+        $group_id = $result['group_id'];
+        $username = $result['username'];
+        
         if ($group_id == FEATHER_ADMIN) {
             message($lang_profile['No delete admin message']);
         }
 
         if ($this->request->post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-            $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $this->db->error());
-            $group_mod = $this->db->result($result);
+            $group_mod = \ORM::for_table($this->feather->prefix.'groups')
+                ->where('g_id', $group_id)
+                ->find_one_col('g_moderator');
 
             if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
-                $result = $this->db->query('SELECT id, moderators FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
+                $select_info_delete_moderators = array('id', 'moderators');
 
-                while ($cur_forum = $this->db->fetch_assoc($result)) {
+                $result = \ORM::for_table($this->feather->prefix.'forums')
+                    ->select_many($select_info_delete_moderators)
+                    ->find_many();
+                
+                foreach($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
                     if (in_array($id, $cur_moderators)) {
                         unset($cur_moderators[$username]);
-                        $cur_moderators = (!empty($cur_moderators)) ? '\''.$this->db->escape(serialize($cur_moderators)).'\'' : 'NULL';
-
-                        $this->db->query('UPDATE '.$this->db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
+                        
+                        if (!empty($cur_moderators)) {
+                            \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                                ->find_one()
+                                ->set('moderators', serialize($cur_moderators))
+                                ->save();
+                        } else {
+                            \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                                ->find_one()
+                                ->set_expr('moderators', 'NULL')
+                                ->save();
+                        }
                     }
                 }
             }
 
             // Delete any subscriptions
-            $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id='.$id) or error('Unable to delete topic subscriptions', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('DELETE FROM '.$this->db->prefix.'forum_subscriptions WHERE user_id='.$id) or error('Unable to delete forum subscriptions', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'topic_subscriptions')
+                ->where('user_id', $id)
+                ->delete_many();
+            \ORM::for_table($this->db->prefix.'forum_subscriptions')
+                ->where('user_id', $id)
+                ->delete_many();
 
             // Remove him/her from the online list (if they happen to be logged in)
-            $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id='.$id) or error('Unable to remove user from online list', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'online')
+                ->where('user_id', $id)
+                ->delete_many();
 
             // Should we delete all posts made by this user?
             if ($this->request->post('delete_posts')) {
                 require FEATHER_ROOT.'include/search_idx.php';
+                // Hold on, this could take some time!
                 @set_time_limit(0);
 
                 // Find all posts made by this user
-                $result = $this->db->query('SELECT p.id, p.topic_id, t.forum_id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id WHERE p.poster_id='.$id) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
-                if ($this->db->num_rows($result)) {
-                    while ($cur_post = $this->db->fetch_assoc($result)) {
+                $select_user_posts = array('p.id', 'p.topic_id', 't.forum_id');
+                
+                $result = \ORM::for_table($this->feather->prefix.'posts')
+                    ->table_alias('p')
+                    ->select_many($select_user_posts)
+                    ->inner_join($this->db->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                    ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->where('p.poster_id', $id)
+                    ->find_many();
+                
+                if ($result) {
+                    foreach($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
-                        $result2 = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id='.$cur_post['topic_id'].' ORDER BY posted LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-
+                        $result2 = \ORM::for_table($this->feather->prefix.'posts')
+                            ->where('topic_id', $cur_post['topic_id'])
+                            ->order_by('posted')
+                            ->find_one_col('id');
+                        
                         if ($this->db->result($result2) == $cur_post['id']) {
                             delete_topic($cur_post['topic_id']);
                         } else {
@@ -601,11 +639,14 @@ class profile
                 }
             } else {
                 // Set all his/her posts to guest
-                $this->db->query('UPDATE '.$this->db->prefix.'posts SET poster_id=1 WHERE poster_id='.$id) or error('Unable to update posts', __FILE__, __LINE__, $this->db->error());
+                // TODO: update_many in Idiorm
+                \ORM::for_table($this->db->prefix.'posts')->raw_execute('UPDATE '.$this->db->prefix.'posts SET poster_id=1 WHERE poster_id='.$id);
             }
 
             // Delete the user
-            $this->db->query('DELETE FROM '.$this->db->prefix.'users WHERE id='.$id) or error('Unable to delete user', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'users')
+                ->where('id', $id)
+                ->delete_many();
 
             // Delete user avatar
             delete_avatar($id);
@@ -630,13 +671,19 @@ class profile
         global $lang_common;
 
         $info = array();
+        
+        $select_fetch_user_group = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
 
-        $result = $this->db->query('SELECT u.username, u.group_id, g.g_moderator FROM '.$this->db->prefix.'users AS u LEFT JOIN '.$this->db->prefix.'groups AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
+        $info = \ORM::for_table($this->feather->prefix.'users')
+            ->table_alias('u')
+            ->select_many($select_fetch_user_group)
+            ->left_outer_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->where('u.id', $id)
+            ->find_one();
+
+        if (!$info) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        list($info['old_username'], $info['group_id'], $info['is_moderator']) = $this->db->fetch_row($result);
 
         return $info;
     }

@@ -90,12 +90,12 @@ class profile
             // Fetch the user group of the user we are editing
             $info = $this->model->fetch_user_group($id);
 
-            if ($this->user->id != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
-                                    (!$this->user->is_admmod ||                                                                    // and we are not an admin or mod
-                                    ($this->user->g_id != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
-                                    ($this->user->g_mod_edit_users == '0' ||                                                    // mods aren't allowed to edit users
-                                    $info['group_id'] == FEATHER_ADMIN ||                                                                    // or the user is an admin
-                                    $info['is_moderator'])))) {                                                                            // or the user is another mod
+            if ($this->user->id != $id &&                                                            // If we aren't the user (i.e. editing your own profile)
+                                    (!$this->user->is_admmod ||                                      // and we are not an admin or mod
+                                    ($this->user->g_id != FEATHER_ADMIN &&                           // or we aren't an admin and ...
+                                    ($this->user->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
+                                    $info['group_id'] == FEATHER_ADMIN ||                            // or the user is an admin
+                                    $info['is_moderator'])))) {                                      // or the user is another mod
                                     message($lang_common['No permission'], false, '403 Forbidden');
             }
 
@@ -112,11 +112,11 @@ class profile
         }
 
         // View or edit?
-        if ($this->user->id != $id &&                                                                    // If we aren't the user (i.e. editing your own profile)
-                (!$this->user->is_admmod ||                                                                    // and we are not an admin or mod
-                ($this->user->g_id != FEATHER_ADMIN &&                                                            // or we aren't an admin and ...
-                ($this->user->g_mod_edit_users == '0' ||                                                    // mods aren't allowed to edit users
-                $user['g_id'] == FEATHER_ADMIN ||                                                                // or the user is an admin
+        if ($this->user->id != $id &&                                 // If we aren't the user (i.e. editing your own profile)
+                (!$this->user->is_admmod ||                           // and we are not an admin or mod
+                ($this->user->g_id != FEATHER_ADMIN &&                // or we aren't an admin and ...
+                ($this->user->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
+                $user['g_id'] == FEATHER_ADMIN ||                     // or the user is an admin
                 $user['g_moderator'] == '1')))) {
             // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
