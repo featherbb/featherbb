@@ -19,6 +19,11 @@ class footer
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->dontStop = false;
+    }
+
+    public function dontStop() {
+        $this->dontStop = true;
     }
 
     public function display($footer_style = null, $id = null, $p = null, $pid = null, $forum_id = null, $num_pages = null)
@@ -62,6 +67,11 @@ class footer
         // Close Idiorm connection
         $pdo = \ORM::get_db();
         $pdo = null;
+
+        // If we need to stop the application outside a route
+        if ($this->dontStop) {
+            die();
+        }
 
         // If we reached this far, we shouldn't execute more code
         $this->feather->stop();

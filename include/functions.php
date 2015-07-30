@@ -292,7 +292,8 @@ function set_default_user()
                 break;
         }
     } else {
-        $db->query('UPDATE '.$db->prefix.'online SET logged='.time().' WHERE ident=\''.$db->escape($remote_addr).'\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+        \ORM::for_table($db->prefix.'online')->where('ident', $remote_addr)
+             ->update_many('logged', time());
     }
 
     $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
@@ -367,8 +368,7 @@ function check_bans()
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
             \ORM::for_table($db->prefix.'bans')->where('id', $cur_ban['id'])
-                                               ->find_one()
-                                               ->delete();
+                                               ->delete_many();
             $bans_altered = true;
             continue;
         }
@@ -398,9 +398,8 @@ function check_bans()
 
         if ($is_banned) {
             \ORM::for_table($db->prefix.'online')->where('ident', $feather->user->username)
-                                                 ->find_one()
-                                                 ->delete();
-            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true);
+                                                 ->delete_many();
+            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, null, true);
         }
     }
 
@@ -451,9 +450,9 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(\''.$db->escape($username).'\') OR UPPER(username)=UPPER(\''.$db->escape(ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)).'\')) AND id>1'.$query) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $result = \ORM::for_table($db->prefix.'online')->raw_query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
-    if ($db->num_rows($result)) {
+    if ($result) {
         $busy = $db->result($result);
         $errors[] = $lang_register['Username dupe 1'].' '.feather_escape($busy).'. '.$lang_register['Username dupe 2'];
     }
@@ -933,7 +932,7 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 // Display a message
 //
-function message($message, $no_back_link = false, $http_status = null)
+function message($message, $no_back_link = false, $http_status = null, $dontStop = false)
 {
     global $db, $lang_common, $feather_config, $tpl_main;
 
@@ -953,10 +952,12 @@ function message($message, $no_back_link = false, $http_status = null)
         }
 
         require_once FEATHER_ROOT.'controller/header.php';
+
+        $feather->config('templates.path', get_path_view());
         
         $header = new \controller\header();
-        
-        $header->display();
+
+        $header->setTitle($page_title)->display();
     }
 
     $feather->render('message.php', array(
@@ -967,11 +968,14 @@ function message($message, $no_back_link = false, $http_status = null)
     );
     
     require_once FEATHER_ROOT.'controller/footer.php';
-    
+
     $footer = new \controller\footer();
 
+    if ($dontStop) {
+        $footer->dontStop();
+    }
+
     $footer->display();
-    
 }
 
 
