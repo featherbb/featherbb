@@ -1974,22 +1974,6 @@ function get_link($link, $args = null)
     return $gen_link;
 }
 
-//
-// Generate link to another page on the forum for the referrer function
-//
-function get_link_r($link)
-{
-    if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
-        $base_url = '';
-    } else {
-        $base_url = 'index.php';
-    }
-
-    $gen_link = $base_url.$link;
-
-    return $gen_link;
-}
-
 
 //
 // Generate a hyperlink with parameters and anchor and a subsection such as a subpage
