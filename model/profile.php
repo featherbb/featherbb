@@ -80,9 +80,6 @@ class profile
         }
 
         if ($this->request->isPost()) {
-            // Make sure they got here from the site
-            
-
             $old_password = $this->request->post('req_old_password') ? feather_trim($this->request->post('req_old_password')) : '';
             $new_password1 = feather_trim($this->request->post('req_new_password1'));
             $new_password2 = feather_trim($this->request->post('req_new_password2'));
@@ -181,9 +178,6 @@ class profile
             if (feather_hash($this->request->post('req_password')) !== $this->user->password) {
                 message($lang_profile['Wrong pass']);
             }
-
-            // Make sure they got here from the site
-            
 
             require FEATHER_ROOT.'include/email.php';
 

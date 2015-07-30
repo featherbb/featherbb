@@ -53,9 +53,6 @@ class delete
     {
         global $lang_delete;
 
-        // Make sure they got here from the site
-        
-
         require FEATHER_ROOT.'include/search_idx.php';
 
         if ($is_topic_post) {

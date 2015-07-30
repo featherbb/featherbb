@@ -54,9 +54,6 @@ class edit
     {
         global $lang_post, $pd;
 
-        // Make sure they got here from the site
-        
-
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
             $subject = feather_trim($this->request->post('req_subject'));

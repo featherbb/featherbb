@@ -53,8 +53,6 @@ class misc
     public function send_email($mail, $id)
     {
         global $lang_misc;
-        
-        
 
         // Clean up message and subject from POST
         $subject = feather_trim($this->request->post('req_subject'));
@@ -123,9 +121,6 @@ class misc
     public function insert_report($post_id)
     {
         global $lang_misc, $lang_common;
-
-        // Make sure they got here from the site
-        
 
         // Clean up reason from POST
         $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));
