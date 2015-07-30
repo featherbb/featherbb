@@ -255,11 +255,6 @@ function set_default_user()
     $remote_addr = get_remote_address();
 
     // Fetch guest user
-    $result = $db->query('SELECT u.*, g.*, o.logged, o.last_post, o.last_search FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.ident=\''.$db->escape($remote_addr).'\' WHERE u.id=1') or error('Unable to fetch guest information', __FILE__, __LINE__, $db->error());
-    if (!$db->num_rows($result)) {
-        exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
-    }
-    
     $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
     $where_set_default_user = array('u.id' => '1');
     
@@ -270,6 +265,10 @@ function set_default_user()
         ->left_outer_join($feather->prefix.'online', array('o.ident', '=', $remote_addr), 'o', true)
         ->where($where_set_default_user)
         ->find_result_set();
+    
+    if (!$result) {
+        exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
+    }
     
     foreach ($result as $feather->user);
 
@@ -285,11 +284,11 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-                $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, \''.$db->escape($remote_addr).'\', '.$feather->user->logged.')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+            \ORM::for_table($db->prefix.'online')->raw_execute('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
 
             default:
-                $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, \''.$db->escape($remote_addr).'\', '.$feather->user->logged.' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                \ORM::for_table($db->prefix.'online')->raw_execute('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
         }
     } else {
@@ -367,7 +366,9 @@ function check_bans()
     foreach ($feather_bans as $cur_ban) {
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-            $db->query('DELETE FROM '.$db->prefix.'bans WHERE id='.$cur_ban['id']) or error('Unable to delete expired ban', __FILE__, __LINE__, $db->error());
+            \ORM::for_table($db->prefix.'bans')->where('id', $cur_ban['id'])
+                                               ->find_one()
+                                               ->delete();
             $bans_altered = true;
             continue;
         }
@@ -396,7 +397,9 @@ function check_bans()
         }
 
         if ($is_banned) {
-            $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($feather->user->username).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+            \ORM::for_table($db->prefix.'online')->where('ident', $feather->user->username)
+                                                 ->find_one()
+                                                 ->delete();
             message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true);
         }
     }
