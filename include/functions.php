@@ -108,11 +108,11 @@ function check_cookie()
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES('.$feather->user->id.', \''.$db->escape($feather->user->username).'\', '.$feather->user->logged.')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                        \ORM::for_table($db->prefix.'online')->raw_execute('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
                         break;
 
                     default:
-                        $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT '.$feather->user->id.', \''.$db->escape($feather->user->username).'\', '.$feather->user->logged.' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$feather->user->id.')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                        \ORM::for_table($db->prefix.'online')->raw_execute('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
                         break;
                 }
 
@@ -121,12 +121,16 @@ function check_cookie()
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if ($feather->user->logged < ($now-$feather_config['o_timeout_visit'])) {
-                    $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$feather->user->logged.' WHERE id='.$feather->user->id) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+                    \ORM::for_table($this->db->prefix.'users')->where('id', $feather->user->id)
+                        ->find_one()
+                        ->set('last_visit', $feather->user->logged)
+                        ->save();
                     $feather->user->last_visit = $feather->user->logged;
                 }
 
                 $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
-                $db->query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id='.$feather->user->id) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+                
+                \ORM::for_table($db->prefix.'online')->raw_execute('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
 
                 // Update tracked topics with the current expire time
                 if (isset($_COOKIE[$cookie_name.'_track'])) {

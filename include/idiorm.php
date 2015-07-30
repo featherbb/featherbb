@@ -349,6 +349,7 @@
                 case 'mysql':
                 case 'sqlite':
                 case 'sqlite2':
+                case 'sqlite3':
                 default:
                     return '`';
             }
