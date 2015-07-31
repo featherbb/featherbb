@@ -230,13 +230,14 @@ class index
             generate_users_info_cache();
             require FORUM_CACHE_DIR.'cache_users_info.php';
         }
-
-        //$result = $this->db->query('SELECT SUM(num_topics), SUM(num_posts) FROM '.$this->db->prefix.'forums') or error('Unable to fetch topic/post count', __FILE__, __LINE__, $this->db->error());
-        //list($stats['total_topics'], $stats['total_posts']) = array_map('intval', $this->db->fetch_row($result));
         
-        // TODO: combine into 1 query
-        $stats['total_topics'] = intval(\ORM::for_table($this->feather->prefix.'forums')->sum('num_topics'));
-        $stats['total_posts'] = intval(\ORM::for_table($this->feather->prefix.'forums')->sum('num_posts'));
+        $stats_query = \ORM::for_table($this->feather->prefix.'forums')
+                        ->select_expr('SUM(num_topics)', 'total_topics')
+                        ->select_expr('SUM(num_posts)', 'total_posts')
+                        ->find_one();
+        
+        $stats['total_topics'] = intval($stats_query['total_topics']);
+        $stats['total_posts'] = intval($stats_query['total_posts']);
 
         if ($this->user->g_view_users == '1') {
             $stats['newest_user'] = '<a href="'.get_link('user/'.$stats['last_user']['id']).'/">'.feather_escape($stats['last_user']['username']).'</a>';
@@ -253,8 +254,7 @@ class index
         // Fetch users online info and generate strings for output
         $num_guests = 0;
         $online = array();
-        $result = $this->db->query('SELECT user_id, ident FROM '.$this->db->prefix.'online WHERE idle=0 ORDER BY ident', true) or error('Unable to fetch online list', __FILE__, __LINE__, $this->db->error());
-        
+
         $select_fetch_users_online = array('user_id', 'ident');
         $where_fetch_users_online = array('idle' => '0');
         $order_by_fetch_users_online = array('ident');
