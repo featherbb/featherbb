@@ -125,11 +125,11 @@ $feather->db->start_transaction();
 require FEATHER_ROOT.'include/idiorm.php';
 
 // TODO: handle drivers
-ORM::configure('mysql:host='.$db_host.';dbname='.$db_name);
-ORM::configure('username', $db_username);
-ORM::configure('password', $db_password);
-ORM::configure('logging', true);
-ORM::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+\ORM::configure('mysql:host='.$db_host.';dbname='.$db_name);
+\ORM::configure('username', $db_username);
+\ORM::configure('password', $db_password);
+\ORM::configure('logging', true);
+\ORM::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
 
 // Inject DB prefix to SlimFramework
 $feather->prefix = $db_prefix;
