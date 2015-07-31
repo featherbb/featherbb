@@ -122,7 +122,7 @@ if (defined('FEATHER_DEBUG')) {
 
     // Calculate script generation time
     $time_diff = sprintf('%.3f', get_microtime() - $feather_start);
-    echo sprintf($lang_common['Querytime'], $time_diff, $db->get_num_queries());
+    echo sprintf($lang_common['Querytime'], $time_diff, count(\ORM::get_query_log()));
 
     if (function_exists('memory_get_usage')) {
         echo ' - '.sprintf($lang_common['Memory usage'], file_size(memory_get_usage()));
