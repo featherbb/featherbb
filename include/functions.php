@@ -479,18 +479,31 @@ function update_users_online()
     $now = time();
 
     // Fetch all online list entries that are older than "o_timeout_online"
-    $result = $db->query('SELECT user_id, ident, logged, idle FROM '.$db->prefix.'online WHERE logged<'.($now-$feather_config['o_timeout_online'])) or error('Unable to fetch old entries from online list', __FILE__, __LINE__, $db->error());
-    while ($cur_user = $db->fetch_assoc($result)) {
+    $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
+    
+    $result = \ORM::for_table($db->prefix.'online')->select_many($select_update_users_online)
+        ->where_lt('logged', $now-$feather_config['o_timeout_online'])
+        ->find_many();
+    
+    foreach ($result as $cur_user) {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1') {
-            $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($cur_user['ident']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+            \ORM::for_table($db->prefix.'online')->where('ident', $cur_user['ident'])
+                                                 ->delete_many();
         } else {
             // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
             if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$cur_user['logged'].' WHERE id='.$cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-                $db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$cur_user['user_id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+                \ORM::for_table($db->prefix.'users')->where('id', $cur_user['user_id'])
+                        ->find_one()
+                        ->set('last_visit', $cur_user['logged'])
+                        ->save();
+                \ORM::for_table($db->prefix.'online')->where('user_id', $cur_user['user_id'])
+                    ->delete_many();
             } elseif ($cur_user['idle'] == '0') {
-                $db->query('UPDATE '.$db->prefix.'online SET idle=1 WHERE user_id='.$cur_user['user_id']) or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                \ORM::for_table($db->prefix.'online')->where('user_id', $cur_user['user_id'])
+                        ->find_one()
+                        ->set('idle', 1)
+                        ->save();
             }
         }
     }
@@ -614,22 +627,50 @@ function get_tracked_topics()
 function update_forum($forum_id)
 {
     global $db;
+    
+    $stats_query = \ORM::for_table($db->prefix.'topics')
+                    ->where('forum_id', $forum_id)
+                    ->select_expr('COUNT(id)', 'total_topics')
+                    ->select_expr('SUM(num_replies)', 'total_replies')
+                    ->find_one();
+    
+    $num_topics = intval($stats_query['total_topics']);
+    $num_replies = intval($stats_query['total_replies']);
 
-    $result = $db->query('SELECT COUNT(id), SUM(num_replies) FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id) or error('Unable to fetch forum topic count', __FILE__, __LINE__, $db->error());
-    list($num_topics, $num_posts) = $db->fetch_row($result);
+    $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
 
-    $num_posts = $num_posts + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
+    $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
+    
+    $result = \ORM::for_table($db->prefix.'topics')->select_many($select_update_forum)
+        ->where('forum_id', $forum_id)
+        ->where_null('moved_to')
+        ->order_by_desc('last_post')
+        ->find_one();
 
-    $result = $db->query('SELECT last_post, last_post_id, last_poster FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' AND moved_to IS NULL ORDER BY last_post DESC LIMIT 1') or error('Unable to fetch last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
-    if ($db->num_rows($result)) {
+    if ($result) {
         // There are topics in the forum
-
-        list($last_post, $last_post_id, $last_poster) = $db->fetch_row($result);
-
-        $db->query('UPDATE '.$db->prefix.'forums SET num_topics='.$num_topics.', num_posts='.$num_posts.', last_post='.$last_post.', last_post_id='.$last_post_id.', last_poster=\''.$db->escape($last_poster).'\' WHERE id='.$forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
-    } else { // There are no topics
-        $db->query('UPDATE '.$db->prefix.'forums SET num_topics='.$num_topics.', num_posts='.$num_posts.', last_post=NULL, last_post_id=NULL, last_poster=NULL WHERE id='.$forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
+        $insert_update_forum = array(
+            'num_topics' => $num_topics,
+            'num_posts'  => $num_posts,
+            'last_post'  => $result['last_post'],
+            'last_post_id'  => $result['last_post_id'],
+            'last_poster'  => $result['last_poster'],
+        );
+    } else {
+        // There are no topics
+        $insert_update_forum = array(
+            'num_topics' => $num_topics,
+            'num_posts'  => $num_posts,
+            'last_post'  => 'NULL',
+            'last_post_id'  => 'NULL',
+            'last_poster'  => 'NULL',
+        );
     }
+        \ORM::for_table($db->prefix.'forums')
+            ->where('id', $forum_id)
+            ->find_one()
+            ->set($insert_update_forum)
+            ->save();
 }
 
 
@@ -657,27 +698,26 @@ function delete_avatar($user_id)
 function delete_topic($topic_id)
 {
     global $db;
-
+    
     // Delete the topic and any redirect topics
-    $db->query('DELETE FROM '.$db->prefix.'topics WHERE id='.$topic_id.' OR moved_to='.$topic_id) or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
+    $where_delete_topic = array(
+            array('id' => $topic_id),
+            array('moved_to' => $topic_id)
+        );
 
-    // Create a list of the post IDs in this topic
-    $post_ids = '';
-    $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
-    while ($row = $db->fetch_row($result)) {
-        $post_ids .= ($post_ids != '') ? ','.$row[0] : $row[0];
-    }
+    \ORM::for_table($db->prefix.'topics')
+        ->where_any_is($where_delete_topic)
+        ->delete_many();
 
-    // Make sure we have a list of post IDs
-    if ($post_ids != '') {
-        strip_search_index($post_ids);
-
-        // Delete posts in topic
-        $db->query('DELETE FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
-    }
+    // Delete posts in topic
+    \ORM::for_table($db->prefix.'posts')
+        ->where('topic_id', $topic_id)
+        ->delete_many();
 
     // Delete any subscriptions for this topic
-    $db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id='.$topic_id) or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+    \ORM::for_table($db->prefix.'topic_subscriptions')
+        ->where('topic_id', $topic_id)
+        ->delete_many();
 }
 
 
@@ -693,7 +733,10 @@ function delete_post($post_id, $topic_id)
     list($second_last_id, $second_poster, $second_posted) = $db->fetch_row($result);
 
     // Delete the post
-    $db->query('DELETE FROM '.$db->prefix.'posts WHERE id='.$post_id) or error('Unable to delete post', __FILE__, __LINE__, $db->error());
+    \ORM::for_table($db->prefix.'posts')
+        ->where('id', $post_id)
+        ->find_one()
+        ->delete();
 
     strip_search_index($post_id);
 
@@ -1867,16 +1910,18 @@ function display_saved_queries()
 <?php
 
     $query_time_total = 0.0;
-    // TODO
-    foreach (\ORM::get_query_log() as $idiorm_query) {
+    $i = 0;
+    foreach (\ORM::get_query_log()[1] as $query) {
         ?>
                             	<tr>
-					<td class="tcl"><?php //echo($cur_query[1] != 0) ? $cur_query[1] : '&#160;' ?></td>
-					<td class="tcr"><?php echo feather_escape($idiorm_query) ?></td>
+					<td class="tcl"><?php echo feather_escape(\ORM::get_query_log()[0][$i]) ?></td>
+					<td class="tcr"><?php echo feather_escape($query) ?></td>
 				</tr>
         <?php
+        ++$i;
     }
     
+    // TODO: To be removed
     foreach ($saved_queries as $cur_query) {
         $query_time_total += $cur_query[1];
 
