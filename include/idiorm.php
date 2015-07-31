@@ -503,8 +503,8 @@
             }
 
             self::$_last_query = $bound_query;
-            self::$_query_log[$connection_name][] = $bound_query;
-            
+            self::$_query_log[$connection_name][0][] = $query_time;
+            self::$_query_log[$connection_name][1][] = $bound_query;
             
             if(is_callable(self::$_config[$connection_name]['logger'])){
                 $logger = self::$_config[$connection_name]['logger'];
@@ -2175,7 +2175,7 @@
                 $this->_dirty_fields[$field] = $value;
                 if (false === $expr and isset($this->_expr_fields[$field])) {
                     unset($this->_expr_fields[$field]);
-                } elseif (true === $expr) {
+                } elseif (true === $expr || $value == 'NULL') {
                     $this->_expr_fields[$field] = true;
                 }
             }
