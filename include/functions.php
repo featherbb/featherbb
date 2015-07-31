@@ -795,21 +795,6 @@ function delete_post($post_id, $topic_id)
 
 
 //
-// Delete every .php file in the forum's cache directory
-//
-function forum_clear_cache()
-{
-    $d = dir(FORUM_CACHE_DIR);
-    while (($entry = $d->read()) !== false) {
-        if (substr($entry, -4) == '.php') {
-            @unlink(FORUM_CACHE_DIR.$entry);
-        }
-    }
-    $d->close();
-}
-
-
-//
 // Replace censored words in $text
 //
 function censor_words($text)
@@ -1282,119 +1267,48 @@ function is_all_uppercase($string)
 
 
 //
-// Inserts $element into $input at $offset
-// $offset can be either a numerical offset to insert at (eg: 0 inserts at the beginning of the array)
-// or a string, which is the key that the new element should be inserted before
-// $key is optional: it's used when inserting a new key/value pair into an associative array
-//
-function array_insert(&$input, $offset, $element, $key = null)
-{
-    if (is_null($key)) {
-        $key = $offset;
-    }
-
-    // Determine the proper offset if we're using a string
-    if (!is_int($offset)) {
-        $offset = array_search($offset, array_keys($input), true);
-    }
-
-    // Out of bounds checks
-    if ($offset > count($input)) {
-        $offset = count($input);
-    } elseif ($offset < 0) {
-        $offset = 0;
-    }
-
-    $input = array_merge(array_slice($input, 0, $offset), array($key => $element), array_slice($input, $offset));
-}
-
-
-//
 // Display a message when board is in maintenance mode
 //
 function maintenance_message()
 {
-    global $db, $feather_config, $lang_common;
-
-    // Send no-cache headers
-    header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
-    // Send the Content-type header in case the web server is setup to send something else
-    header('Content-type: text/html; charset=utf-8');
+    global $db, $lang_common, $feather_config, $tpl_main;
 
     // Deal with newlines, tabs and multiple spaces
     $pattern = array("\t", '  ', '  ');
     $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
     $message = str_replace($pattern, $replace, $feather_config['o_maintenance_message']);
 
-    if (file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'/maintenance.tpl')) {
-        $tpl_file = FEATHER_ROOT.'style/'.$feather->user->style.'/maintenance.tpl';
-        $tpl_inc_dir = FEATHER_ROOT.'style/'.$feather->user->style.'/';
-    } else {
-        $tpl_file = FEATHER_ROOT.'include/template/maintenance.tpl';
-        $tpl_inc_dir = FEATHER_ROOT.'include/user/';
-    }
-
-    $tpl_maint = file_get_contents($tpl_file);
-
-
-    // START SUBST - <pun_language>
-    $tpl_maint = str_replace('<pun_language>', $lang_common['lang_identifier'], $tpl_maint);
-    // END SUBST - <pun_language>
-
-
-    // START SUBST - <pun_content_direction>
-    $tpl_maint = str_replace('<pun_content_direction>', $lang_common['lang_direction'], $tpl_maint);
-    // END SUBST - <pun_content_direction>
-
-
-    // START SUBST - <pun_head>
-    ob_start();
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Maintenance']);
 
-    ?>
-<title><?php echo generate_page_title($page_title) ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $feather->user->style.'.css' ?>" />
-<?php
+    if (!defined('FEATHER_ACTIVE_PAGE')) {
+        define('FEATHER_ACTIVE_PAGE', 'index');
+    }
 
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_maint = str_replace('<pun_head>', $tpl_temp, $tpl_maint);
-    ob_end_clean();
-    // END SUBST - <pun_head>
+    require_once FEATHER_ROOT.'controller/header.php';
 
+    $feather->config('templates.path', get_path_view());
 
-    // START SUBST - <pun_maint_main>
-    ob_start();
+    $header = new \controller\header();
 
-    ?>
-<div class="block">
-	<h2><?php echo $lang_common['Maintenance'] ?></h2>
-	<div class="box">
-		<div class="inbox">
-			<p><?php echo $message ?></p>
-		</div>
-	</div>
-</div>
-<?php
+    $header->setTitle($page_title)->display();
 
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_maint = str_replace('<pun_maint_main>', $tpl_temp, $tpl_maint);
-    ob_end_clean();
-    // END SUBST - <pun_maint_main>
+    $feather->render('message.php', array(
+            'lang_common' => $lang_common,
+            'message'    =>    $message,
+            'no_back_link'    =>    '',
+        )
+    );
 
+    require_once FEATHER_ROOT.'controller/footer.php';
 
-    // End the transaction
-    $db->end_transaction();
+    $footer = new \controller\footer();
 
+    $footer->dontStop();
 
-    // Close the db connection (and free up any result data)
-    $db->close();
-
-    exit($tpl_maint);
+    $footer->display();
 }
 
 
@@ -1409,100 +1323,6 @@ function redirect($destination_url, $message = null)
     $feather->flash('message', $message);
 
     $feather->redirect($destination_url);
-}
-
-
-//
-// Display a simple error message
-//
-function error($message, $file = null, $line = null, $db_error = false)
-{
-    global $feather_config, $lang_common;
-
-    // Set some default settings if the script failed before $feather_config could be populated
-    if (empty($feather_config)) {
-        $feather_config = array(
-            'o_board_title'    => 'FluxBB',
-            'o_gzip'        => '0'
-        );
-    }
-
-    // Set some default translations if the script failed before $lang_common could be populated
-    if (empty($lang_common)) {
-        $lang_common = array(
-            'Title separator'    => ' / ',
-            'Page'                => 'Page %s'
-        );
-    }
-
-    // Empty all output buffers and stop buffering
-    while (@ob_end_clean());
-
-    // "Restart" output buffering if we are using ob_gzhandler (since the gzip header is already sent)
-    if ($feather_config['o_gzip'] && extension_loaded('zlib')) {
-        ob_start('ob_gzhandler');
-    }
-
-    // Send no-cache headers
-    header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
-    // Send the Content-type header in case the web server is setup to send something else
-    header('Content-type: text/html; charset=utf-8');
-
-    ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<?php $page_title = array(feather_escape($feather_config['o_board_title']), 'Error') ?>
-<title><?php echo generate_page_title($page_title) ?></title>
-<style type="text/css">
-<!--
-BODY {MARGIN: 10% 20% auto 20%; font: 10px Verdana, Arial, Helvetica, sans-serif}
-#errorbox {BORDER: 1px solid #B84623}
-H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADDING: 5px 4px}
-#errorbox DIV {PADDING: 6px 5px; BACKGROUND-COLOR: #F1F1F1}
--->
-</style>
-</head>
-<body>
-
-<div id="errorbox">
-	<h2>An error was encountered</h2>
-	<div>
-<?php
-
-    if (defined('FEATHER_DEBUG') && !is_null($file) && !is_null($line)) {
-        echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
-
-        if ($db_error) {
-            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.feather_escape($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
-
-            if ($db_error['error_sql'] != '') {
-                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.feather_escape($db_error['error_sql'])."\n";
-            }
-        }
-    } else {
-        echo "\t\t".'Error: <strong>'.$message.'.</strong>'."\n";
-    }
-
-    ?>
-	</div>
-</div>
-
-</body>
-</html>
-<?php
-
-    // If a database connection was established (before this error) we close it
-    if ($db_error) {
-        $GLOBALS['db']->close();
-    }
-
-    exit;
 }
 
 
@@ -1852,14 +1672,6 @@ function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
 }
 
 //
-// A wrapper for ucp_preg_replace
-//
-function ucp_preg_replace_callback($pattern, $replace, $subject)
-{
-    return ucp_preg_replace($pattern, $replace, $subject, true);
-}
-
-//
 // Replace four-byte characters with a question mark
 //
 // As MySQL cannot properly handle four-byte characters with the default utf-8
@@ -1947,7 +1759,7 @@ function display_saved_queries()
     $i = 0;
     foreach (\ORM::get_query_log()[1] as $query) {
         ?>
-                            	<tr>
+                <tr>
 					<td class="tcl"><?php echo feather_escape(\ORM::get_query_log()[0][$i]) ?></td>
 					<td class="tcr"><?php echo feather_escape($query) ?></td>
 				</tr>
@@ -1979,25 +1791,6 @@ function display_saved_queries()
 </div>
 <?php
 
-}
-
-
-//
-// Dump contents of variable(s)
-//
-function dump()
-{
-    echo '<pre>';
-
-    $num_args = func_num_args();
-
-    for ($i = 0; $i < $num_args; ++$i) {
-        print_r(func_get_arg($i));
-        echo "\n\n";
-    }
-
-    echo '</pre>';
-    exit;
 }
 
 //

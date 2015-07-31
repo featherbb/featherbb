@@ -243,6 +243,21 @@ function seems_utf8($str)
 
 
 //
+// Delete every .php file in the forum's cache directory
+//
+function forum_clear_cache()
+{
+    $d = dir(FORUM_CACHE_DIR);
+    while (($entry = $d->read()) !== false) {
+        if (substr($entry, -4) == '.php') {
+            @unlink(FORUM_CACHE_DIR.$entry);
+        }
+    }
+    $d->close();
+}
+
+
+//
 // Translates the number from a HTML numeric entity into an UTF-8 character
 //
 function dcr2utf8($src)
