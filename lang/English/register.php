@@ -23,7 +23,7 @@ $lang_register = array(
 
 // Registration email stuff
 'Reg email'                    =>    'Thank you for registering. Your password has been sent to the specified address. If it doesn\'t arrive you can contact the forum administrator at',
-'Reg complete'                =>    'Registration complete. Logging in and',
+'Reg complete'                =>    'Registration complete. You are now logged in.',
 
 // Register info
 'Desc 1'                    =>    'Registration will grant you access to a number of features and capabilities otherwise unavailable. These functions include the ability to edit and delete posts, design your own signature that accompanies your posts and much more. If you have any questions regarding this forum you should ask an administrator.',
