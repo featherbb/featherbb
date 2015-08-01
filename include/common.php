@@ -69,26 +69,6 @@ if (get_magic_quotes_runtime()) {
     set_magic_quotes_runtime(0);
 }
 
-// Strip slashes from GET/POST/COOKIE/REQUEST/FILES (if magic_quotes_gpc is enabled)
-if (!defined('FORUM_DISABLE_STRIPSLASHES') && get_magic_quotes_gpc()) {
-    function stripslashes_array($array)
-    {
-        return is_array($array) ? array_map('stripslashes_array', $array) : stripslashes($array);
-    }
-
-    $_GET = stripslashes_array($_GET);
-    $_POST = stripslashes_array($_POST);
-    $_COOKIE = stripslashes_array($_COOKIE);
-    $_REQUEST = stripslashes_array($_REQUEST);
-    if (is_array($_FILES)) {
-        // Don't strip valid slashes from tmp_name path on Windows
-        foreach ($_FILES as $key => $value) {
-            $_FILES[$key]['tmp_name'] = str_replace('\\', '\\\\', $value['tmp_name']);
-        }
-        $_FILES = stripslashes_array($_FILES);
-    }
-}
-
 // If a cookie name is not specified in config.php, we use the default (pun_cookie)
 if (empty($cookie_name)) {
     $cookie_name = 'feather_cookie';

@@ -23,130 +23,131 @@ function get_microtime()
 //
 function check_cookie()
 {
-    global $db, $db_type, $feather_config, $cookie_name, $cookie_seed;
+    global $cookie_name, $cookie_seed;
 
-    $now = time();
-    
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
+    $now = time();
 
-    // If the cookie is set and it matches the correct pattern, then read the values from it
-    if (isset($_COOKIE[$cookie_name]) && preg_match('%^(\d+)\|([0-9a-fA-F]+)\|(\d+)\|([0-9a-fA-F]+)$%', $_COOKIE[$cookie_name], $matches)) {
-        $cookie = array(
-            'user_id'            => intval($matches[1]),
-            'password_hash'    => $matches[2],
-            'expiration_time'    => intval($matches[3]),
-            'cookie_hash'        => $matches[4],
-        );
+    // Get FeatherBB cookie
+    $cookie_raw = $feather->getCookie($cookie_name);
+
+    // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
+    if (isset($cookie_raw)) {
+        $cookie = json_decode($cookie_raw, true);
+        $checksum = hash_hmac('sha1', $cookie['user_id'].$cookie['expires'], $cookie_seed . '_checksum');
+
+        // If cookie has a non-guest user, hasn't expired and is legit
+        if ($cookie['user_id'] > 1 && $cookie['expires'] > $now && $checksum == $cookie['checksum']) {
+
+            // Get user info from db
+            $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
+            $where_check_cookie = array('u.id' => intval($cookie['user_id']));
+
+            $result = ORM::for_table($feather->prefix.'users')
+                ->table_alias('u')
+                ->select_many($select_check_cookie)
+                ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+                ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
+                ->where($where_check_cookie)
+                ->find_result_set();
+
+            foreach ($result as $feather->user);
+
+            // Another security check, to prevent identity fraud by changing the user id in the cookie) (might be useless considering the strength of encryption)
+            if (isset($feather->user->id) && hash_hmac('sha1', $feather->user->password, $cookie_seed.'_password_hash') === $cookie['password_hash']) {
+                $expires = ($cookie['expires'] > $now + $feather->config['o_timeout_visit']) ? $now + 1209600 : $now + $feather->config['o_timeout_visit'];
+                $feather->user->is_guest = false;
+                $feather->user->is_admmod = $feather->user->g_id == FEATHER_ADMIN || $feather->user->g_moderator == '1';
+                feather_setcookie($feather->user->id, $feather->user->password, $expires);
+                set_preferences();
+                return true;
+            }
+        }
+    }
+    // If there is no cookie, or cookie is guest or expired, let's reconnect.
+    $expires = $now + 31536000; // The cookie expires after a year
+    feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expires);
+    return set_default_user();
+}
+
+//
+// Set preferences
+//
+function set_preferences()
+{
+    global $db_type, $cookie_name;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    $now = time();
+
+    // Set a default language if the user selected language no longer exists
+    if (!file_exists(FEATHER_ROOT.'lang/'.$feather->user->language)) {
+        $feather->user->language = $feather->config['o_default_lang'];
     }
 
-    // If it has a non-guest user, and hasn't expired
-    if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now) {
-        // If the cookie has been tampered with
-        if (hash_hmac('sha1', $cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash') !== $cookie['cookie_hash']) {           
-            $expire = $now + 31536000; // The cookie expires after a year
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
-            set_default_user();
+    // Set a default style if the user selected style no longer exists
+    if (!file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'.css')) {
+        $feather->user->style = $feather->config['o_default_style'];
+    }
 
-            return;
-        }
-        
-        $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
-        $where_check_cookie = array('u.id' => intval($cookie['user_id']));
-        
-        $result = ORM::for_table($feather->prefix.'users')
-            ->table_alias('u')
-            ->select_many($select_check_cookie)
-            ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
-            ->where($where_check_cookie)
-            ->find_result_set();
-        
-        foreach ($result as $feather->user);
-        
-        // If user authorisation failed
-        if (!isset($feather->user->id) || hash_hmac('sha1', $feather->user->password, $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
-            $expire = $now + 31536000; // The cookie expires after a year
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
-            set_default_user();
+    if (!$feather->user->disp_topics) {
+        $feather->user->disp_topics = $feather->config['o_disp_topics_default'];
+    }
+    if (!$feather->user->disp_posts) {
+        $feather->user->disp_posts = $feather->config['o_disp_posts_default'];
+    }
 
-            return;
-        }
+    // Define this if you want this visit to affect the online list and the users last visit data
+    if (!defined('FEATHER_QUIET_VISIT')) {
+        // Update the online list
+        if (!$feather->user->logged) {
+            $feather->user->logged = $now;
 
-        // Send a new, updated cookie with a new expiration timestamp
-        $expire = ($cookie['expiration_time'] > $now + $feather_config['o_timeout_visit']) ? $now + 1209600 : $now + $feather_config['o_timeout_visit'];
-        feather_setcookie($feather->user->id, $feather->user->password, $expire);
+            // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
+            switch ($db_type) {
+                case 'mysql':
+                case 'mysqli':
+                case 'mysql_innodb':
+                case 'mysqli_innodb':
+                case 'sqlite':
+                case 'sqlite3':
+                    \ORM::for_table($feather->db->prefix.'online')->raw_execute('REPLACE INTO '.$feather->db->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
+                    break;
 
-        // Set a default language if the user selected language no longer exists
-        if (!file_exists(FEATHER_ROOT.'lang/'.$feather->user->language)) {
-            $feather->user->language = $feather_config['o_default_lang'];
-        }
-
-        // Set a default style if the user selected style no longer exists
-        if (!file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'.css')) {
-            $feather->user->style = $feather_config['o_default_style'];
-        }
-
-        if (!$feather->user->disp_topics) {
-            $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
-        }
-        if (!$feather->user->disp_posts) {
-            $feather->user->disp_posts = $feather_config['o_disp_posts_default'];
-        }
-
-        // Define this if you want this visit to affect the online list and the users last visit data
-        if (!defined('FEATHER_QUIET_VISIT')) {
-            // Update the online list
-            if (!$feather->user->logged) {
-                $feather->user->logged = $now;
-
-                // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch ($db_type) {
-                    case 'mysql':
-                    case 'mysqli':
-                    case 'mysql_innodb':
-                    case 'mysqli_innodb':
-                    case 'sqlite':
-                    case 'sqlite3':
-                        \ORM::for_table($db->prefix.'online')->raw_execute('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
-                        break;
-
-                    default:
-                        \ORM::for_table($db->prefix.'online')->raw_execute('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
-                        break;
-                }
-
-                // Reset tracked topics
-                set_tracked_topics(null);
-            } else {
-                // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if ($feather->user->logged < ($now-$feather_config['o_timeout_visit'])) {
-                    \ORM::for_table($this->db->prefix.'users')->where('id', $feather->user->id)
-                        ->find_one()
-                        ->set('last_visit', $feather->user->logged)
-                        ->save();
-                    $feather->user->last_visit = $feather->user->logged;
-                }
-
-                $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
-                
-                \ORM::for_table($db->prefix.'online')->raw_execute('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
-
-                // Update tracked topics with the current expire time
-                if (isset($_COOKIE[$cookie_name.'_track'])) {
-                    forum_setcookie($cookie_name.'_track', $_COOKIE[$cookie_name.'_track'], $now + $feather_config['o_timeout_visit']);
-                }
+                default:
+                    \ORM::for_table($feather->db->prefix.'online')->raw_execute('INSERT INTO '.$feather->db->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
+                    break;
             }
+
+            // Reset tracked topics
+            set_tracked_topics(null);
+
         } else {
-            if (!$feather->user->logged) {
-                $feather->user->logged = $feather->user->last_visit;
+            // Special case: We've timed out, but no other user has browsed the forums since we timed out
+            if ($feather->user->logged < ($now-$feather->config['o_timeout_visit'])) {
+                \ORM::for_table($feather->db->prefix.'users')->where('id', $feather->user->id)
+                    ->find_one()
+                    ->set('last_visit', $feather->user->logged)
+                    ->save();
+                $feather->user->last_visit = $feather->user->logged;
+            }
+
+            $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
+
+            \ORM::for_table($feather->db->prefix.'online')->raw_execute('UPDATE '.$feather->db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
+
+            // Update tracked topics with the current expire time
+            $cookie_tracked_topics = $feather->getCookie($cookie_name.'_track');
+            if (isset($cookie_tracked_topics)) {
+                set_tracked_topics(json_decode($cookie_tracked_topics, true));
             }
         }
-
-        $feather->user->is_guest = false;
-        $feather->user->is_admmod = $feather->user->g_id == FEATHER_ADMIN || $feather->user->g_moderator == '1';
     } else {
-        set_default_user();
+        if (!$feather->user->logged) {
+            $feather->user->logged = $feather->user->last_visit;
+        }
     }
 }
 
@@ -308,14 +309,19 @@ function set_default_user()
 
 
 //
-// Set a cookie, FluxBB style!
-// Wrapper for forum_setcookie
+// Wrapper for Slim setCookie method
 //
-function feather_setcookie($user_id, $password_hash, $expire)
+function feather_setcookie($user_id, $password, $expires)
 {
     global $cookie_name, $cookie_seed;
 
-    forum_setcookie($cookie_name, $user_id.'|'.hash_hmac('sha1', $password_hash, $cookie_seed.'_password_hash').'|'.$expire.'|'.hash_hmac('sha1', $user_id.'|'.$expire, $cookie_seed.'_cookie_hash'), $expire);
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    $cookie_data = array('user_id' => $user_id,
+        'password_hash' => hash_hmac('sha1', $password, $cookie_seed.'_password_hash'),
+        'expires' => $expires,
+        'checksum' => hash_hmac('sha1', $user_id.$expires, $cookie_seed.'_checksum'));
+    $feather->setCookie($cookie_name, json_encode($cookie_data), $expires);
 }
 
 
@@ -557,33 +563,22 @@ function generate_page_title($page_title, $p = null)
 //
 // Save array of tracked topics in cookie
 //
-function set_tracked_topics($tracked_topics)
+function set_tracked_topics($tracked_topics = null)
 {
-    global $cookie_name, $cookie_path, $cookie_domain, $cookie_secure, $feather_config;
+    global $cookie_name;
 
-    $cookie_data = '';
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
     if (!empty($tracked_topics)) {
         // Sort the arrays (latest read first)
         arsort($tracked_topics['topics'], SORT_NUMERIC);
         arsort($tracked_topics['forums'], SORT_NUMERIC);
-
-        // Homebrew serialization (to avoid having to run unserialize() on cookie data)
-        foreach ($tracked_topics['topics'] as $id => $timestamp) {
-            $cookie_data .= 't'.$id.'='.$timestamp.';';
-        }
-        foreach ($tracked_topics['forums'] as $id => $timestamp) {
-            $cookie_data .= 'f'.$id.'='.$timestamp.';';
-        }
-
-        // Enforce a byte size limit (4096 minus some space for the cookie name - defaults to 4048)
-        if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE) {
-            $cookie_data = substr($cookie_data, 0, FORUM_MAX_COOKIE_SIZE);
-            $cookie_data = substr($cookie_data, 0, strrpos($cookie_data, ';')).';';
-        }
+    } else {
+        $tracked_topics = array('topics' => array(), 'forums' => array());
     }
 
-    forum_setcookie($cookie_name.'_track', $cookie_data, time() + $feather_config['o_timeout_visit']);
-    $_COOKIE[$cookie_name.'_track'] = $cookie_data; // Set it directly in $_COOKIE as well
+    return $feather->setCookie($cookie_name . '_track', json_encode($tracked_topics), time() + $feather->config['o_timeout_visit']);
 }
 
 
@@ -594,28 +589,16 @@ function get_tracked_topics()
 {
     global $cookie_name;
 
-    $cookie_data = isset($_COOKIE[$cookie_name.'_track']) ? $_COOKIE[$cookie_name.'_track'] : false;
-    if (!$cookie_data) {
-        return array('topics' => array(), 'forums' => array());
-    }
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE) {
-        return array('topics' => array(), 'forums' => array());
-    }
+    $cookie_raw = $feather->getCookie($cookie_name.'_track');
 
-    // Unserialize data from cookie
-    $tracked_topics = array('topics' => array(), 'forums' => array());
-    $temp = explode(';', $cookie_data);
-    foreach ($temp as $t) {
-        $type = substr($t, 0, 1) == 'f' ? 'forums' : 'topics';
-        $id = intval(substr($t, 1));
-        $timestamp = intval(substr($t, strpos($t, '=') + 1));
-        if ($id > 0 && $timestamp > 0) {
-            $tracked_topics[$type][$id] = $timestamp;
-        }
+    if (isset($cookie_raw)) {
+        $cookie_data = json_decode($cookie_raw, true);
+        return $cookie_data;
     }
-
-    return $tracked_topics;
+    return array('topics' => array(), 'forums' => array());
 }
 
 
