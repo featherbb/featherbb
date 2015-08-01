@@ -99,9 +99,13 @@ class search
         if (isset($search_id)) {
             $ident = ($this->user->is_guest) ? get_remote_address() : $this->user->username;
 
-            $result = $this->db->query('SELECT search_data FROM '.$this->db->prefix.'search_cache WHERE id='.$search_id.' AND ident=\''.$this->db->escape($ident).'\'') or error('Unable to fetch search results', __FILE__, __LINE__, $this->db->error());
-            if ($row = $this->db->fetch_assoc($result)) {
-                $temp = unserialize($row['search_data']);
+            $search_data = \ORM::for_table($this->db->prefix.'search_cache')
+                                ->where('id', $search_id)
+                                ->where('ident', $ident)
+                                ->find_one_col('search_data');
+
+            if ($search_data) {
+                $temp = unserialize($search_data);
 
                 $search_ids = unserialize($temp['search_ids']);
                 $num_hits = $temp['num_hits'];
@@ -127,9 +131,11 @@ class search
                 }
 
                 if (!$this->user->is_guest) {
-                    $this->db->query('UPDATE '.$this->db->prefix.'users SET last_search='.time().' WHERE id='.$this->user->id) or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+                    \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+                                                        ->update_many('last_search', time());
                 } else {
-                    $this->db->query('UPDATE '.$this->db->prefix.'online SET last_search='.time().' WHERE ident=\''.$this->db->escape(get_remote_address()).'\'') or error('Unable to update user', __FILE__, __LINE__, $this->db->error());
+                    \ORM::for_table($this->db->prefix.'online')->where('ident', get_remote_address())
+                                                         ->update_many('last_search', time());
                 }
 
                 switch ($sort_by) {
@@ -187,15 +193,15 @@ class search
                             {
                                 if (is_cjk($cur_word)) {
                                     $where_cond = str_replace('*', '%', $cur_word);
-                                    $where_cond = ($search_in ? (($search_in > 0) ? 'p.message LIKE \'%'.$this->db->escape($where_cond).'%\'' : 't.subject LIKE \'%'.$this->db->escape($where_cond).'%\'') : 'p.message LIKE \'%'.$this->db->escape($where_cond).'%\' OR t.subject LIKE \'%'.$this->db->escape($where_cond).'%\'');
+                                    $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = $this->db->query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE ('.$where_cond.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, true) or error('Unable to search for posts', __FILE__, __LINE__, $this->db->error());
+                                    $result = \ORM::for_table($this->db->prefix.'posts')->raw_query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE ('.$where_cond_cjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => $where_cond))->find_many();
                                 } else {
-                                    $result = $this->db->query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->db->prefix.'search_words AS w INNER JOIN '.$this->db->prefix.'search_matches AS m ON m.word_id = w.id INNER JOIN '.$this->db->prefix.'posts AS p ON p.id=m.post_id INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE w.word LIKE \''.$this->db->escape(str_replace('*', '%', $cur_word)).'\''.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, true) or error('Unable to search for posts', __FILE__, __LINE__, $this->db->error());
+                                    $result = \ORM::for_table($this->db->prefix.'posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->db->prefix.'search_words AS w INNER JOIN '.$this->db->prefix.'search_matches AS m ON m.word_id = w.id INNER JOIN '.$this->db->prefix.'posts AS p ON p.id=m.post_id INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => str_replace('*', '%', $cur_word)))->find_many();
                                 }
 
                                 $row = array();
-                                while ($temp = $this->db->fetch_assoc($result)) {
+                                foreach($result as $temp) {
                                     $row[$temp['post_id']] = $temp['topic_id'];
 
                                     if (!$word_count) {
@@ -245,28 +251,22 @@ class search
 
                 // If it's a search for author name (and that author name isn't Guest)
                 if ($author && $author != 'guest' && $author != utf8_strtolower($lang_common['Guest'])) {
-                    switch ($db_type) {
-                        case 'pgsql':
-                            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'users WHERE username ILIKE \''.$this->db->escape($author).'\'') or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
-                            break;
+                    $username_exists = \ORM::for_table($this->db->prefix.'users')->select('id')->where_like('username', $author)->find_many();
 
-                        default:
-                            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'users WHERE username LIKE \''.$this->db->escape($author).'\'') or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
-                            break;
-                    }
-
-                    if ($this->db->num_rows($result)) {
+                    if ($username_exists) {
                         $user_ids = array();
-                        while ($row = $this->db->fetch_row($result)) {
-                            $user_ids[] = $row[0];
+                        foreach ($username_exists as $row) {
+                            $user_ids[] = $row['id'];
                         }
 
-                        $result = $this->db->query('SELECT p.id AS post_id, p.topic_id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir) or error('Unable to fetch matched posts list', __FILE__, __LINE__, $this->db->error());
-                        while ($temp = $this->db->fetch_assoc($result)) {
+                        $result = \ORM::for_table($this->db->prefix.'posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir)->find_many();
+
+                        foreach($result as $temp) {
                             $author_results[$temp['post_id']] = $temp['topic_id'];
                         }
 
-                        $this->db->free_result($result);
+                        $pdo = \ORM::get_db();
+                        $pdo = null;
                     }
                 }
 
