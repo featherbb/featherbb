@@ -120,30 +120,53 @@ class viewforum
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'topics WHERE forum_id='.$forum_id.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$this->user->disp_topics) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $this->db->error());
+        $result = \ORM::for_table($this->db->prefix.'topics')->select('id')
+                        ->where('forum_id', $forum_id)
+                        ->order_by_desc('sticky')
+                        ->order_by_expr($sort_by)
+                        ->order_by_desc('id')
+                        ->limit($this->user->disp_topics)
+                        ->offset($start_from)
+                        ->find_many();
 
         $forum_data = array();
 
         // If there are topics in this forum
-        if ($this->db->num_rows($result)) {
+        if ($result) {
             $topic_ids = array();
-            for ($i = 0; $cur_topic_id = $this->db->result($result, $i); $i++) {
-                $topic_ids[] = $cur_topic_id;
+            foreach($result as $cur_topic_id) {
+                $topic_ids[] = $cur_topic_id['id'];
             }
 
             // Fetch list of topics to display on this page
             if ($this->user->is_guest || $this->config['o_show_dot'] == '0') {
                 // Without "the dot"
-                $sql = 'SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC';
+                $select_print_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
+
+                $result = \ORM::for_table($this->db->prefix.'topics')->select_many($select_print_topics)
+                            ->where_in('id', $topic_ids)
+                            ->order_by_desc('sticky')
+                            ->order_by_expr($sort_by)
+                            ->order_by_desc('id')
+                            ->find_many();
             } else {
                 // With "the dot"
-                $sql = 'SELECT p.poster_id AS has_posted, t.id, t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'posts AS p ON t.id=p.topic_id AND p.poster_id='.$this->user->id.' WHERE t.id IN('.implode(',', $topic_ids).') GROUP BY t.id'.($db_type == 'pgsql' ? ', t.subject, t.poster, t.posted, t.last_post, t.last_post_id, t.last_poster, t.num_views, t.num_replies, t.closed, t.sticky, t.moved_to, p.poster_id' : '').' ORDER BY t.sticky DESC, t.'.$sort_by.', t.id DESC';
+                $select_print_topics = array('has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to');
+
+                $result = \ORM::for_table($this->db->prefix.'topics')->table_alias('t')
+                    ->select_many($select_print_topics)
+                    ->left_outer_join($this->db->prefix.'posts', array('t.id', '=', 'p.topic_id'), 'p')
+                    ->left_outer_join($this->db->prefix.'posts', array('p.poster_id', '=', $this->user->id), null, true)
+                    ->where_in('t.id', $topic_ids)
+                    ->group_by('t.id')
+                    ->order_by_desc('sticky')
+                    ->order_by_expr($sort_by)
+                    ->order_by_desc('id')
+                    ->find_many();
             }
 
-            $result = $this->db->query($sql) or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
-
             $topic_count = 0;
-            while ($cur_topic = $this->db->fetch_assoc($result)) {
+            foreach ($result as $cur_topic) {
                 ++$topic_count;
                 $status_text = array();
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
