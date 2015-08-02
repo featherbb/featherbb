@@ -303,14 +303,35 @@ class search
                 $sort_by = 0;
                 $sort_dir = 'DESC';
 
+                $where_search_action = array(
+                    array('fp.read_forum' => 'IS NULL'),
+                    array('fp.read_forum' => '1')
+                );
+
                 // If it's a search for new posts since last visit
                 if ($action == 'show_new') {
                     if ($this->user->is_guest) {
                         message($lang_common['No permission'], false, '403 Forbidden');
                     }
 
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$this->user->last_visit.' AND t.moved_to IS NULL'.($this->request->get('fid') ? ' AND t.forum_id='.intval($this->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'topics')
+                                ->table_alias('t')
+                                ->select('t.id')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where_any_is($where_search_action)
+                                ->where_gt('t.last_post', $this->user->last_visit)
+                                ->where_null('t.moved_to')
+                                ->order_by_desc('t.last_post');
+
+
+                    if ($this->request->get('fid')) {
+                        $result = $result->where('t.forum_id', intval($this->request->get('fid')));
+                    }
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No new posts']);
@@ -318,8 +339,23 @@ class search
                 }
                 // If it's a search for recent posts (in a certain time interval)
                 elseif ($action == 'show_recent') {
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.(time() - $interval).' AND t.moved_to IS NULL'.($this->request->get('fid') ? ' AND t.forum_id='.intval($this->request->get('fid')) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'topics')
+                                ->table_alias('t')
+                                ->select('t.id')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where_any_is($where_search_action)
+                                ->where_gt('t.last_post', time() - $interval)
+                                ->where_null('t.moved_to')
+                                ->order_by_desc('t.last_post');
+
+                    if ($this->request->get('fid')) {
+                        $result = $result->where('t.forum_id', intval($this->request->get('fid')));
+                    }
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No recent posts']);
@@ -327,8 +363,23 @@ class search
                 }
                 // If it's a search for topics in which the user has posted
                 elseif ($action == 'show_replies') {
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'posts AS p ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id='.$this->user->id.' GROUP BY t.id'.($db_type == 'pgsql' ? ', t.last_post' : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'topics')
+                                ->table_alias('t')
+                                ->select('t.id')
+                                ->inner_join($this->db->prefix.'posts', array('t.id', '=', 'p.topic_id'), 'p')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where_any_is($where_search_action)
+                                ->where('p.poster_id', $this->user->id)
+                                ->group_by('t.id');
+
+                    if ($db_type == 'pgsql') {
+                        $result = $result->group_by('t.last_post');
+                    }
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No user posts']);
@@ -338,8 +389,19 @@ class search
                 elseif ($action == 'show_user_posts') {
                     $show_as = 'posts';
 
-                    $result = $this->db->query('SELECT p.id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON p.topic_id=t.id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id='.$user_id.' ORDER BY p.posted DESC') or error('Unable to fetch user posts', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'posts')
+                                ->table_alias('p')
+                                ->select('p.id')
+                                ->inner_join($this->db->prefix.'topics', array('p.topic_id', '=', 't.id'), 't')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where_any_is($where_search_action)
+                                ->where('p.poster_id', $user_id)
+                                ->order_by_desc('p.posted');
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No user posts']);
@@ -350,8 +412,19 @@ class search
                 }
                 // If it's a search for topics by a specific user ID
                 elseif ($action == 'show_user_topics') {
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'posts AS p ON t.first_post_id=p.id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id='.$user_id.' ORDER BY t.last_post DESC') or error('Unable to fetch user topics', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'topics')
+                                ->table_alias('t')
+                                ->select('t.id')
+                                ->inner_join($this->db->prefix.'posts', array('t.first_post_id', '=', 'p.id'), 'p')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where_any_is($where_search_action)
+                                ->where('p.poster_id', $user_id)
+                                ->order_by_desc('t.last_post');
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No user topics']);
@@ -366,8 +439,19 @@ class search
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
 
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$user_id.') LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'topics')
+                                ->table_alias('t')
+                                ->select('t.id')
+                                ->inner_join($this->db->prefix.'topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                                ->inner_join($this->db->prefix.'topic_subscriptions', array('s.user_id', '=', $user_id), null, true)
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where_any_is($where_search_action)
+                                ->order_by_desc('t.last_post');
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No subscriptions']);
@@ -378,8 +462,19 @@ class search
                 }
                 // If it's a search for unanswered posts
                 else {
-                    $result = $this->db->query('SELECT t.id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.num_replies=0 AND t.moved_to IS NULL ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $this->db->error());
-                    $num_hits = $this->db->num_rows($result);
+                    $result = \ORM::for_table($this->db->prefix.'topics')
+                                ->table_alias('t')
+                                ->select('t.id')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->where('t.num_replies', 0)
+                                ->where_null('t.moved_to')
+                                ->where_any_is($where_search_action)
+                                ->order_by_desc('t.last_post');
+
+                    $result = $result->find_many();
+
+                    $num_hits = count($result);
 
                     if (!$num_hits) {
                         message($lang_search['No unanswered']);
@@ -387,11 +482,12 @@ class search
                 }
 
                 $search_ids = array();
-                while ($row = $this->db->fetch_row($result)) {
-                    $search_ids[] = $row[0];
+                foreach($result as $row) {
+                    $search_ids[] = $row['id'];
                 }
 
-                $this->db->free_result($result);
+                $pdo = \ORM::get_db();
+                $pdo = null;
             } else {
                 message($lang_common['Bad request'], false, '404 Not Found');
             }
@@ -399,14 +495,14 @@ class search
 
             // Prune "old" search results
             $old_searches = array();
-            $result = $this->db->query('SELECT ident FROM '.$this->db->prefix.'online') or error('Unable to fetch online list', __FILE__, __LINE__, $this->db->error());
+            $result = \ORM::for_table($this->db->prefix.'online')->select('ident')->find_many();
 
-            if ($this->db->num_rows($result)) {
-                while ($row = $this->db->fetch_row($result)) {
-                    $old_searches[] = '\''.$this->db->escape($row[0]).'\'';
+            if ($result) {
+                foreach($result as $row) {
+                    $old_searches[] = $row['ident'];
                 }
 
-                $this->db->query('DELETE FROM '.$this->db->prefix.'search_cache WHERE ident NOT IN('.implode(',', $old_searches).')') or error('Unable to delete search results', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'search_cache')->where_not_in('ident', $old_searches)->delete_many();
             }
 
             // Fill an array with our results and search properties
@@ -422,7 +518,16 @@ class search
 
             $ident = ($this->user->is_guest) ? get_remote_address() : $this->user->username;
 
-            $this->db->query('INSERT INTO '.$this->db->prefix.'search_cache (id, ident, search_data) VALUES('.$search_id.', \''.$this->db->escape($ident).'\', \''.$this->db->escape($temp).'\')') or error('Unable to insert search results', __FILE__, __LINE__, $this->db->error());
+            $insert_cache = array(
+                'id'   =>  $search_id,
+                'ident'  =>  $ident,
+                'search_data'  =>  $temp,
+            );
+
+            \ORM::for_table($this->db->prefix.'search_cache')
+                ->create()
+                ->set($insert_cache)
+                ->save();
 
             if ($search_type[0] != 'action') {
                 $this->db->end_transaction();
@@ -436,7 +541,7 @@ class search
 
         // If we're on the new posts search, display a "mark all as read" link
         if (!$this->user->is_guest && $search_type[0] == 'action' && $search_type[1] == 'show_new') {
-            $search['forum_actions'][] = '<a href="misc.php?action=markread">'.$lang_common['Mark all as read'].'</a>';
+            $search['forum_actions'][] = '<a href="'.get_link('mark-read/').'">'.$lang_common['Mark all as read'].'</a>';
         }
 
         // Fetch results to display

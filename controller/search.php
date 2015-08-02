@@ -50,7 +50,7 @@ class search
             $search = $this->model->get_search_results();
 
                 // We have results to display
-                if ($search['is_result']) {
+                if (isset($search['is_result'])) {
                     $page_title = array(feather_escape($this->config['o_board_title']), $lang_search['Search results']);
 
                     define('FEATHER_ACTIVE_PAGE', 'search');
