@@ -28,7 +28,7 @@ class post
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function newreply($fid = null, $tid = null, $qid = null)
     {
         self::newpost('', $fid, $tid);
@@ -36,7 +36,7 @@ class post
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        global $lang_common, $lang_prof_reg, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
+        global $lang_common, $lang_prof_reg, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register, $lang_bbeditor;
 
         // Load the register.php/profile.php language file
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
@@ -47,6 +47,9 @@ class post
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user['language'].'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
+
+        // BBcode toolbar feature
+        require FEATHER_ROOT.'lang/'.$this->user['language'].'/bbeditor.php';
 
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->request->post('username')) {
@@ -214,6 +217,7 @@ class post
                             'lang_post' => $lang_post,
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions' => $lang_antispam_questions,
+                            'lang_bbeditor' => $lang_bbeditor,
                             'index_questions' => $index_questions,
                             'checkboxes' => $checkboxes,
                             'cur_posting' => $cur_posting,
