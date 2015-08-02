@@ -26,17 +26,39 @@ class viewforum
     {
         global $lang_common;
 
+        $where_get_info_forum = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
         if (!$this->user->is_guest) {
-            $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, s.user_id AS is_subscribed FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_subscriptions AS s ON (f.id=s.forum_id AND s.user_id='.$this->user->id.') LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_forum = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id');
+
+            $cur_forum = \ORM::for_table($this->db->prefix.'forums')->table_alias('f')
+                            ->select_many($select_get_info_forum)
+                            ->left_outer_join($this->db->prefix.'forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
+                            ->left_outer_join($this->db->prefix.'forum_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($where_get_info_forum)
+                            ->where('f.id', $id)
+                            ->find_one();
         } else {
-            $result = $this->db->query('SELECT f.forum_name, f.redirect_url, f.moderators, f.num_topics, f.sort_by, fp.post_topics, 0 AS is_subscribed FROM '.$this->db->prefix.'forums AS f LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_forum = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics');
+
+            $cur_forum = \ORM::for_table($this->db->prefix.'forums')->table_alias('f')
+                ->select_many($select_get_info_forum)
+                ->select_expr(0, 'is_subscribed')
+                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                ->where_any_is($where_get_info_forum)
+                ->where('f.id', $id)
+                ->find_one();
         }
 
-        if (!$this->db->num_rows($result)) {
+        if (!$cur_forum) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
-
-        $cur_forum = $this->db->fetch_assoc($result);
 
         return $cur_forum;
     }

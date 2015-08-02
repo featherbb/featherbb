@@ -116,11 +116,12 @@ class viewtopic
                             ->where_null('t.moved_to')
                             ->find_one();
         } else {
-            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 0);
+            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
 
             $cur_topic = \ORM::for_table($this->db->prefix.'topics')
                             ->table_alias('t')
                             ->select_many($select_get_info_topic)
+                            ->select_expr(0, 'is_subscribed')
                             ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
                             ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
