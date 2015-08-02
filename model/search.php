@@ -583,13 +583,32 @@ class search
 
             // Run the query and fetch the results
             if ($show_as == 'posts') {
-                $result = $this->db->query('SELECT p.id AS pid, p.poster AS pposter, p.posted AS pposted, p.poster_id, p.message, p.hide_smilies, t.id AS tid, t.poster, t.subject, t.first_post_id, t.last_post, t.last_post_id, t.last_poster, t.num_replies, t.forum_id, f.forum_name FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id WHERE p.id IN('.implode(',', $search_ids).') ORDER BY '.$sort_by_sql.' '.$sort_dir) or error('Unable to fetch search results', __FILE__, __LINE__, $this->db->error());
+                $select_search_post = array('pid' => 'p.id', 'pposter' => 'p.poster', 'pposted' => 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies', 'tid' => 't.id', 't.poster', 't.subject', 't.first_post_id', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.forum_id', 'f.forum_name');
+
+                $result = \ORM::for_table($this->db->prefix.'posts')
+                                ->table_alias('p')
+                                ->select_many($select_search_post)
+                                ->inner_join($this->db->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                                ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                                ->where_in('p.id', $search_ids)
+                                ->order_by($sort_by_sql, $sort_dir)
+                                ->find_many();
+
             } else {
-                $result = $this->db->query('SELECT t.id AS tid, t.poster, t.subject, t.last_post, t.last_post_id, t.last_poster, t.num_replies, t.closed, t.sticky, t.forum_id, f.forum_name FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id WHERE t.id IN('.implode(',', $search_ids).') ORDER BY '.$sort_by_sql.' '.$sort_dir) or error('Unable to fetch search results', __FILE__, __LINE__, $this->db->error());
+
+                $select_search_topic = array('tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name');
+
+                $result = \ORM::for_table($this->db->prefix.'topics')
+                    ->table_alias('t')
+                    ->select_many($select_search_topic)
+                    ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->where_in('t.id', $search_ids)
+                    ->order_by($sort_by_sql, $sort_dir)
+                    ->find_many();
             }
 
             $search['search_set'] = array();
-            while ($row = $this->db->fetch_assoc($result)) {
+            foreach($result as $row) {
                 $search['search_set'][] = $row;
             }
 
@@ -603,11 +622,9 @@ class search
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
-                    $result = $this->db->query('SELECT username FROM '.$this->db->prefix.'users WHERE id='.$subscriber_id) or error('Unable to fetch username of subscriber', __FILE__, __LINE__, $this->db->error());
+                    $subscriber_name = \ORM::for_table($this->db->prefix.'users')->where('id', $subscriber_id)->find_one_col('username');
 
-                    if ($this->db->num_rows($result)) {
-                        $subscriber_name = $this->db->result($result);
-                    } else {
+                    if (!$subscriber_name) {
                         message($lang_common['Bad request'], false, '404 Not Found');
                     }
 
@@ -763,7 +780,23 @@ class search
         
         $output = '';
 
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
+        $select_get_list_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
+        $where_get_list_forums = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+        $order_by_get_list_forums = array('c.disp_position', 'c.id', 'f.disp_position');
+
+        $result = \ORM::for_table($this->feather->prefix.'categories')
+                    ->table_alias('c')
+                    ->select_many($select_get_list_forums)
+                    ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                    ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                    ->where_any_is($where_get_list_forums)
+                    ->where_null('f.redirect_url')
+                    ->order_by_many($order_by_get_list_forums)
+                    ->find_many();
 
         // We either show a list of forums of which multiple can be selected
         if ($this->config['o_search_all_forums'] == '1' || $this->user->is_admmod) {
@@ -772,7 +805,7 @@ class search
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";
 
             $cur_category = 0;
-            while ($cur_forum = $this->db->fetch_assoc($result)) {
+            foreach($result as $cur_forum) {
                 if ($cur_forum['cid'] != $cur_category) {
                     // A new category since last iteration?
 
