@@ -1743,7 +1743,7 @@ function display_saved_queries()
     foreach (\ORM::get_query_log()[1] as $query) {
         ?>
                 <tr>
-					<td class="tcl"><?php echo feather_escape(\ORM::get_query_log()[0][$i]) ?></td>
+					<td class="tcl"><?php echo feather_escape(round(\ORM::get_query_log()[0][$i], 6)) ?></td>
 					<td class="tcr"><?php echo feather_escape($query) ?></td>
 				</tr>
         <?php
