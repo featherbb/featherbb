@@ -587,8 +587,6 @@ class moderate
     {
         global $lang_common, $lang_misc;
 
-        
-
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message($lang_common['Bad request'], false, '404 Not Found');
         }
