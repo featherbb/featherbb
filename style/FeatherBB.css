@@ -1,4 +1,4 @@
-/* 
+/*
  * FeatherBB default style
  *
  * Responsive, classy and modern!
@@ -1237,6 +1237,22 @@ footer .footer-link a {
 }
 #viewprofile .fakeform .inform fieldset dd {
     margin: 0 0 15px
+}
+#msg {
+    opacity: 0;
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    min-width: 230px;
+    max-width: 400px;
+}
+#msg .close {
+    float: right;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: transparent;
+    border: none;
 }
 #msg,
 #posterror {
