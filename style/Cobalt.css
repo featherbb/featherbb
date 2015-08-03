@@ -1148,3 +1148,21 @@ body {
 .pun .inew .icon {
 	border-color: #5496d8 #4b85c0 #4377ac #4f8dcb
 	}
+
+
+/* Alert box
+----------------------------------------------------------------*/
+
+#msgflash {
+    opacity: 0;
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    min-width: 230px;
+    max-width: 400px;
+	z-index: 1000;
+}
+#msgflash h2 {
+	color: #60a0dc;
+	font-weight: bold;
+}

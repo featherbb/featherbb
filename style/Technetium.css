@@ -1371,3 +1371,17 @@ body {
 .pun .imoved .icon {
 	background-image:url(Technetium/icon-moved.png);
 }
+
+/* Alert boxes
+----------------------------------------------------------------*/
+
+#msgflash {
+    opacity: 0;
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    min-width: 240px;
+    max-width: 410px;
+	padding: 5px;
+	z-index: 1000;
+}

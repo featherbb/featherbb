@@ -102,14 +102,16 @@ endif;
 <?php endif; ?>
 
 <?php if (isset($flash['message'])) : ?>
-<div id="msg" class="block">
-    <h2><span><?php echo $lang_common['Info'] ?></span></h2>
+<script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
+<div id="msgflash" class="block">
+    <h2><span><?php echo $lang_common['Info'] ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
     <div class="box">
         <div class="inbox">
             <p><?php echo feather_escape($flash['message']) ?></p>
         </div>
     </div>
 </div>
+<script type="text/javascript">fadeIn('msgflash', 0);</script>
 <?php endif; ?>
 
 <div id="brdmain">

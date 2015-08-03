@@ -1247,14 +1247,6 @@ footer .footer-link a {
     min-width: 230px;
     max-width: 400px;
 }
-#msgflash .close {
-    float: right;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background-color: transparent;
-    border: none;
-}
 #msg,
 #msgflash,
 #posterror {
