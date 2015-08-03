@@ -100,35 +100,19 @@ endif;
 	</div>
 </div>
 <?php endif; ?>
-    
+
 <?php if (isset($flash['message'])) : ?>
+<script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
 <div id="msg" class="block">
-    <h2><span><?php echo $lang_common['Info'] ?></span></h2>
-    <button type="button" class="close" aria-label="Close" onclick="fadeOut('msg', 9);"><span aria-hidden="true">&times;</span></button>
+    <h2><span><?php echo $lang_common['Info'] ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msg', 9);">&times;</span></h2>
+
     <div class="box">
         <div class="inbox">
             <p><?php echo feather_escape($flash['message']) ?></p>
         </div>
     </div>
 </div>
-<script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
-<script type="text/javascript">
-fadeIn('msg', 0);
-var alertBox = document.getElementById("msg");
-var handler = onVisibilityChange(alertBox);
-
-if (window.addEventListener) {
-    addEventListener('DOMContentLoaded', handler, false);
-    addEventListener('load', handler, false);
-    addEventListener('scroll', handler, false);
-    addEventListener('resize', handler, false);
-} else if (window.attachEvent)  {
-    attachEvent('onDOMContentLoaded', handler); // IE9+ :(
-    attachEvent('onload', handler);
-    attachEvent('onscroll', handler);
-    attachEvent('onresize', handler);
-}
-</script>
+<script type="text/javascript">fadeIn('msg', 0);</script>
 <?php endif; ?>
 
 <div id="brdmain">
