@@ -36,7 +36,7 @@ class reports
         require FEATHER_ROOT.'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);

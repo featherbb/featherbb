@@ -34,7 +34,7 @@ class misc
         global $lang_common;
 
         if ($this->config['o_rules'] == '0' || ($this->user->is_guest && $this->user->g_read_board == '0' && $this->config['o_regs_allow'] == '0')) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Load the register.php language file
@@ -58,7 +58,7 @@ class misc
         global $lang_common;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -77,7 +77,7 @@ class misc
         global $lang_common;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -95,7 +95,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -109,7 +109,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -123,7 +123,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -137,7 +137,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -151,11 +151,11 @@ class misc
         global $lang_common;
 
         if ($this->user->is_guest || $this->user->g_send_email == '0') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         if ($id < 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Load the misc.php language file
@@ -195,7 +195,7 @@ class misc
         global $lang_common;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file

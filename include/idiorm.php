@@ -1556,9 +1556,9 @@
         /**
          * Add simple ORDER BY clause
          */
-        public function order_by($column_name)
+        public function order_by($column_name, $dir=null)
         {
-            return $this->_add_order_by($column_name, '');
+            return $this->_add_order_by($column_name, $dir);
         }
         
         /**

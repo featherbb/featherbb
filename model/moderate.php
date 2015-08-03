@@ -40,7 +40,7 @@ class moderate
             ->find_one_col('poster_ip');
 
         if (!$ip) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Load the misc.php language file
@@ -82,7 +82,7 @@ class moderate
             ->find_one();
 
         if (!$cur_topic) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_topic;
@@ -99,7 +99,7 @@ class moderate
 
         if ($this->request->post('delete_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             // Verify that the post IDs are valid
@@ -115,7 +115,7 @@ class moderate
             }
 
             if (count($result) != substr_count($posts, ',') + 1) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             // Delete the posts
@@ -169,12 +169,12 @@ class moderate
 
         if ($this->request->post('split_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
             if ($move_to_forum < 1) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             // How many posts did we just split off?
@@ -189,7 +189,7 @@ class moderate
                 ->find_many();
 
             if (count($result) != $num_posts_splitted) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             // Verify that the move to forum ID is valid
@@ -207,7 +207,7 @@ class moderate
                 ->find_one();
 
             if (!$result) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             // Load the post.php language file
@@ -470,13 +470,13 @@ class moderate
         global $lang_common, $lang_misc;
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $topics = explode(',', $this->request->post('topics'));
         $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
         if (empty($topics) || $move_to_forum < 1) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Verify that the topic IDs are valid
@@ -486,7 +486,7 @@ class moderate
             ->find_many();
 
         if (count($result) != count($topics)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
 
@@ -505,7 +505,7 @@ class moderate
             ->find_one();
 
         if (!$authorized) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
@@ -587,10 +587,8 @@ class moderate
     {
         global $lang_common, $lang_misc;
 
-        
-
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $topics = explode(',', $this->request->post('topics'));
@@ -605,7 +603,7 @@ class moderate
             ->find_many();
 
         if (count($result) != count($topics)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // The topic that we are merging into is the one with the smallest ID
@@ -702,7 +700,7 @@ class moderate
         
 
         if (@preg_match('%[^0-9,]%', $topics)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         require FEATHER_ROOT.'include/search_idx.php';
@@ -716,7 +714,7 @@ class moderate
             ->find_many();
 
         if (count($result) != substr_count($topics, ',') + 1) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Verify that the posts are not by admins
@@ -726,7 +724,7 @@ class moderate
                 ->where('poster_id', get_admin_ids())
                 ->find_many();
             if ($authorized) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
         }
 
@@ -791,7 +789,7 @@ class moderate
             ->find_one();
 
         if (!$cur_forum) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_forum;
@@ -971,7 +969,7 @@ class moderate
             ->find_one_col('subject');
 
         if (!$subject) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $subject;

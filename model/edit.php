@@ -44,7 +44,7 @@ class edit
             ->find_one();
 
         if (!$cur_post) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_post;

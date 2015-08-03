@@ -34,7 +34,7 @@ class viewtopic
         global $lang_common, $lang_post, $lang_topic, $lang_bbeditor, $pd;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Load the viewtopic.php language file

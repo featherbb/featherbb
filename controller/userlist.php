@@ -34,9 +34,9 @@ class userlist
         global $lang_common;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         } elseif ($this->user->g_view_users == '0') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the userlist.php language file

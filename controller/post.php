@@ -28,7 +28,7 @@ class post
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function newreply($fid = null, $tid = null, $qid = null)
     {
         self::newpost('', $fid, $tid);
@@ -36,7 +36,7 @@ class post
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        global $lang_common, $lang_prof_reg, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register;
+        global $lang_common, $lang_prof_reg, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register, $lang_bbeditor;
 
         // Load the register.php/profile.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
@@ -51,9 +51,12 @@ class post
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
+        // BBcode toolbar feature
+        require FEATHER_ROOT.'lang/'.$this->user['language'].'/bbeditor.php';
+
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->request->post('username')) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Fetch some info about the topic and/or the forum
@@ -63,7 +66,7 @@ class post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -75,7 +78,7 @@ class post
                 ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the post.php language file
@@ -172,7 +175,7 @@ class post
             $action = $lang_post['Post new topic'];
             $form = '<form id="post" method="post" action="'.get_link('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $url_forum = url_friendly($cur_posting['forum_name']);
@@ -217,6 +220,7 @@ class post
                             'lang_post' => $lang_post,
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions' => $lang_antispam_questions,
+                            'lang_bbeditor' => $lang_bbeditor,
                             'index_questions' => $index_questions,
                             'checkboxes' => $checkboxes,
                             'cur_posting' => $cur_posting,

@@ -92,12 +92,12 @@ endif;
 
 <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
 <div id="announce" class="block">
-	<div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
-	<div class="box">
-		<div id="announce-block" class="inbox">
-			<div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
-		</div>
-	</div>
+    <div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
+    <div class="box">
+        <div id="announce-block" class="inbox">
+            <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
+        </div>
+    </div>
 </div>
 <?php endif; ?>
 

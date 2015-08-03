@@ -29,9 +29,12 @@ class register
         $user['errors'] = '';
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'users WHERE registration_ip=\''.$this->db->escape(get_remote_address()).'\' AND registered>'.(time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
+        $already_registered = \ORM::for_table($this->db->prefix.'users')
+                                  ->where('registration_ip', get_remote_address())
+                                  ->where_gt('registered', time() - 3600)
+                                  ->find_one();
 
-        if ($this->db->num_rows($result)) {
+        if ($already_registered) {
             message($lang_register['Registration flood']);
         }
 
@@ -90,13 +93,16 @@ class register
         // Check if someone else already has registered with that email address
         $dupe_list = array();
 
-        $result = $this->db->query('SELECT username FROM '.$this->db->prefix.'users WHERE email=\''.$this->db->escape($user['email1']).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
+        $dupe_mail = \ORM::for_table($this->db->prefix.'users')->select('username')
+            ->where('email', $user['email1'])
+            ->find_many();
+
+        if ($dupe_mail) {
             if ($this->config['p_allow_dupe_email'] == '0') {
                 $user['errors'][] = $lang_prof_reg['Dupe email'];
             }
 
-            while ($cur_dupe = $this->db->fetch_assoc($result)) {
+            foreach($dupe_mail as $cur_dupe) {
                 $dupe_list[] = $cur_dupe['username'];
             }
         }
@@ -105,7 +111,7 @@ class register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
@@ -125,8 +131,28 @@ class register
         $password_hash = feather_hash($user['password1']);
 
         // Add the user
-        $this->db->query('INSERT INTO '.$this->db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$this->db->escape($user['username']).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$this->db->escape($user['email1']).'\', '.$this->config['o_default_email_setting'].', '.$this->config['o_default_timezone'].' , 0, \''.$this->db->escape($user['language']).'\', \''.$this->config['o_default_style'].'\', '.$now.', \''.$this->db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $this->db->error());
-        $new_uid = $this->db->insert_id();
+        $insert_user = array(
+            'username'        => $user['username'],
+            'group_id'        => $intial_group_id,
+            'password'        => $password_hash,
+            'email'           => $user['email1'],
+            'email_setting'   => $this->config['o_default_email_setting'],
+            'timezone'        => $this->config['o_default_timezone'],
+            'dst'             => 0,
+            'language'        => $user['language'],
+            'style'           => $this->config['o_default_style'],
+            'registered'      => $now,
+            'registration_ip' => get_remote_address(),
+            'last_visit'      => $now,
+        );
+
+        \ORM::for_table($this->db->prefix.'users')
+            ->create()
+            ->set($insert_user)
+            ->save();
+
+        $new_uid = \ORM::get_db()->lastInsertId($this->db->prefix.'users');
+
 
         if ($this->config['o_regs_verify'] == '0') {
             // Regenerate the users info cache

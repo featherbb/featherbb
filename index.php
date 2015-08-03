@@ -21,6 +21,9 @@ $feather = new \Slim\Slim();
 // Load middlewares
 $feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
 
+// Cookie encryption
+$feather->config('cookies.encrypt', true);
+
 // Load FeatherBB
 define('FEATHER_ROOT', dirname(__FILE__).'/');
 require FEATHER_ROOT.'include/common.php';

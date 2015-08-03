@@ -36,7 +36,7 @@ class statistics
         require FEATHER_ROOT.'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -78,7 +78,7 @@ class statistics
         require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Show phpinfo() output

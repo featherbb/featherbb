@@ -46,25 +46,25 @@ class profile
 
         if ($this->request->post('update_group_membership')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $this->model->update_group_membership($id, $this->feather);
         } elseif ($this->request->post('update_forums')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $this->model->update_mod_forums($id, $this->feather);
         } elseif ($this->request->post('ban')) {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $this->model->ban_user($id);
         } elseif ($this->request->post('delete_user') || $this->request->post('delete_user_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $this->model->delete_user($id, $this->feather);
@@ -96,7 +96,7 @@ class profile
                                     ($this->user->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == FEATHER_ADMIN ||                            // or the user is an admin
                                     $info['is_moderator'])))) {                                      // or the user is another mod
-                                    message($lang_common['No permission'], false, '403 Forbidden');
+                                    message($lang_common['No permission'], '403');
             }
 
             $this->model->update_profile($id, $info, $section, $this->feather);
@@ -200,7 +200,7 @@ class profile
                 
             } elseif ($section == 'personality') {
                 if ($this->config['o_avatars'] == '0' && $this->config['o_signatures'] == '0') {
-                    message($lang_common['Bad request'], false, '404 Not Found');
+                    message($lang_common['Bad request'], '404');
                 }
 
                 $avatar_field = '<span><a href="'.get_link('user/'.$id.'/action/upload_avatar/').'">'.$lang_profile['Change avatar'].'</a></span>';
@@ -294,7 +294,7 @@ class profile
                         );
                 
             } else {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             $this->footer->display();
@@ -318,9 +318,9 @@ class profile
 
         if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user->g_read_board == '0') {
-                message($lang_common['No view'], false, '403 Forbidden');
+                message($lang_common['No view'], '403');
             } elseif ($this->user->g_view_users == '0' && ($this->user->is_guest || $this->user->id != $id)) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
         }
 
@@ -369,7 +369,7 @@ class profile
             }
 
             if ($this->user->id != $id && !$this->user->is_admmod) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             if ($this->feather->request()->isPost()) {
@@ -397,7 +397,7 @@ class profile
             
         } elseif ($action == 'delete_avatar') {
             if ($this->user->id != $id && !$this->user->is_admmod) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             
@@ -407,12 +407,12 @@ class profile
             redirect(get_link('user/'.$id.'/section/personality/'), $lang_profile['Avatar deleted redirect']);
         } elseif ($action == 'promote') {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $this->model->promote_user($id, $this->feather);
         } else {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
     }
 }

@@ -79,7 +79,7 @@ class header
     public function display()
     {
         global $lang_common;
-        
+
         // Send no-cache headers
         header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
         header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -213,7 +213,7 @@ class header
 
         // Render the header
         $this->title = isset($this->title) ? $this->title : feather_escape($this->config['o_board_title']);
-        
+
         // Define $p if it's not set to avoid a PHP notice
         $this->page = isset($this->page) ? $this->page : null;
 
@@ -223,21 +223,21 @@ class header
         $this->required_fields = isset($this->required_fields) ? $this->required_fields : null;
 
         $this->feather->render('header.php', array(
-                                'lang_common' => $lang_common,
-                                'page_title' => $this->title,
-                                'focus_element' => $this->focus_element,
-                                'p' => $this->page,
-                                'feather_user' => $this->user,
-                                'feather_config' => $this->config,
-                                '_SERVER'    =>    $_SERVER,
-                                'page_head'        =>    $this->page_head,
-                                'navlinks'        =>    $navlinks,
-                                'page_info'        =>    $page_info,
-                                'paging_links' => $this->paging_links,
-                                'required_fields' => $this->required_fields,
-                                'db'        =>    $this->db,
-                                'feather'    => $this->feather,
-                                )
-                        );
+                'lang_common' => $lang_common,
+                'page_title' => $this->title,
+                'focus_element' => $this->focus_element,
+                'p' => $this->page,
+                'feather_user' => $this->user,
+                'feather_config' => $this->config,
+                '_SERVER'    =>    $_SERVER,
+                'page_head'        =>    $this->page_head,
+                'navlinks'        =>    $navlinks,
+                'page_info'        =>    $page_info,
+                'paging_links' => $this->paging_links,
+                'required_fields' => $this->required_fields,
+                'db'        =>    $this->db,
+                'feather'    => $this->feather,
+            )
+        );
     }
 }

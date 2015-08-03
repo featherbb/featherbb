@@ -34,7 +34,7 @@ class delete
         global $lang_common, $lang_post, $pd;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -56,11 +56,11 @@ class delete
                 $cur_post['poster_id'] != $this->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the delete.php language file

@@ -34,11 +34,11 @@ class viewforum
         global $lang_common, $lang_forum;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         if ($id < 1) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Load the viewforum.php language file

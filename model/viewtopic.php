@@ -26,18 +26,27 @@ class viewtopic
     {
         global $lang_common;
 
-        $result = $this->db->query('SELECT topic_id, posted FROM '.$this->db->prefix.'posts WHERE id='.$post_id) or error('Unable to fetch topic ID', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+        $select_info_topic = array('topic_id', 'posted');
+
+        $result = \ORM::for_table($this->db->prefix.'posts')
+                      ->select_many($select_info_topic)
+                      ->where('id', $post_id)
+                      ->find_one();
+
+        if (!$result) {
+            message($lang_common['Bad request'], '404');
         }
 
-        list($post['topic_id'], $posted) = $this->db->fetch_row($result);
+        $post['topic_id'] = $result['topic_id'];
+        $posted = $result['posted'];
 
         // Determine on which page the post is located (depending on $forum_user['disp_posts'])
-        $result = $this->db->query('SELECT COUNT(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$post['topic_id'].' AND posted<'.$posted) or error('Unable to count previous posts', __FILE__, __LINE__, $this->db->error());
-        $num_posts = $this->db->result($result) + 1;
+        $num_posts = \ORM::for_table($this->db->prefix.'posts')
+                        ->where('topic_id', $post['topic_id'])
+                        ->where_lt('posted', $posted)
+                        ->count('id');
 
-        $post['get_p'] = ceil($num_posts / $this->user->disp_posts);
+        $post['get_p'] = ceil(($num_posts + 1) / $this->user->disp_posts);
 
         return $post;
     }
@@ -53,8 +62,10 @@ class viewtopic
                 $tracked_topics = get_tracked_topics();
                 $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $this->user->last_visit;
 
-                $result = $this->db->query('SELECT MIN(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$topic_id.' AND posted>'.$last_viewed) or error('Unable to fetch first new post info', __FILE__, __LINE__, $this->db->error());
-                $first_new_post_id = $this->db->result($result);
+                $first_new_post_id = \ORM::for_table($this->db->prefix.'posts')
+                                        ->where('topic_id', $topic_id)
+                                        ->where_gt('posted', $last_viewed)
+                                        ->min('id');
 
                 if ($first_new_post_id) {
                     header('Location: '.get_base_url().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
@@ -68,8 +79,9 @@ class viewtopic
 
         // If action=last, we redirect to the last post
         if ($action == 'last') {
-            $result = $this->db->query('SELECT MAX(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch last post info', __FILE__, __LINE__, $this->db->error());
-            $last_post_id = $this->db->result($result);
+            $last_post_id = \ORM::for_table($this->db->prefix.'posts')
+                                ->where('topic_id', $topic_id)
+                                ->max('id');
 
             if ($last_post_id) {
                 header('Location: '.get_base_url().'/post/'.$last_post_id.'/#p'.$last_post_id);
@@ -83,17 +95,45 @@ class viewtopic
     {
         global $lang_common;
 
+        $where_get_info_topic = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
         if (!$this->user->is_guest) {
-            $result = $this->db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, s.user_id AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$this->user->id.') LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id');
+
+            $cur_topic = \ORM::for_table($this->db->prefix.'topics')
+                            ->table_alias('t')
+                            ->select_many($select_get_info_topic)
+                            ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join($this->db->prefix.'topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                            ->left_outer_join($this->db->prefix.'topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($where_get_info_topic)
+                            ->where('t.id', $id)
+                            ->where_null('t.moved_to')
+                            ->find_one();
         } else {
-            $result = $this->db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, 0 AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
+
+            $cur_topic = \ORM::for_table($this->db->prefix.'topics')
+                            ->table_alias('t')
+                            ->select_many($select_get_info_topic)
+                            ->select_expr(0, 'is_subscribed')
+                            ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($where_get_info_topic)
+                            ->where('t.id', $id)
+                            ->where_null('t.moved_to')
+                            ->find_one();
         }
 
-        if (!$this->db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+        if (!$cur_topic) {
+            message($lang_common['Bad request'], '404');
         }
-
-        $cur_topic = $this->db->fetch_assoc($result);
 
         return $cur_topic;
     }
@@ -200,11 +240,16 @@ class viewtopic
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id='.$topic_id.' ORDER BY id LIMIT '.$start_from.','.$this->user->disp_posts) or error('Unable to fetch post IDs', __FILE__, __LINE__, $this->db->error());
+        $result = \ORM::for_table($this->db->prefix.'posts')->select('id')
+                    ->where('topic_id', $topic_id)
+                    ->order_by('id')
+                    ->limit($this->user->disp_topics)
+                    ->offset($start_from)
+                    ->find_many();
 
         $post_ids = array();
-        for ($i = 0;$cur_post_id = $this->db->result($result, $i);$i++) {
-            $post_ids[] = $cur_post_id;
+        foreach ($result as $cur_post_id) {
+            $post_ids[] = $cur_post_id['id'];
         }
 
         if (empty($post_ids)) {
@@ -213,7 +258,23 @@ class viewtopic
 
         // Retrieve the posts (and their respective poster/online status)
         $result = $this->db->query('SELECT u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, g.g_promote_next_group, o.user_id AS is_online FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$this->db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        while ($cur_post = $this->db->fetch_assoc($result)) {
+
+
+        $select_print_posts = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
+
+        $result = \ORM::for_table($this->db->prefix.'posts')
+            ->table_alias('p')
+            ->select_many($select_print_posts)
+            ->inner_join($this->db->prefix.'users', array('u.id', '=', 'p.poster_id'), 'u')
+            ->inner_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join($this->db->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
+            ->left_outer_join($this->db->prefix.'online', array('o2.user_id', '!=', 1), 'o2', true)
+            ->left_outer_join($this->db->prefix.'online', array('o.idle', '=', 0), null, true)
+            ->where_in('p.id', $post_ids)
+            ->order_by('p.id')
+            ->find_array();
+
+        foreach($result as $cur_post) {
             $post_count++;
             $cur_post['user_avatar'] = '';
             $cur_post['user_info'] = array();
@@ -358,7 +419,10 @@ class viewtopic
     public function increment_views($id)
     {
         if ($this->config['o_topic_views'] == '1') {
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET num_views=num_views+1 WHERE id='.$id) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'topics')->where('id', $id)
+                ->find_one()
+                ->set_expr('num_views', 'num_views+1')
+                ->save();
         }
     }
 }

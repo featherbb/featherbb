@@ -38,7 +38,7 @@ class users
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -47,7 +47,7 @@ class users
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $move = $this->model->move_users();
@@ -74,7 +74,7 @@ class users
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $user_ids = $this->model->delete_users();
@@ -101,7 +101,7 @@ class users
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $user_ids = $this->model->ban_users();
@@ -200,7 +200,7 @@ class users
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -245,7 +245,7 @@ class users
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file

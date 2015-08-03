@@ -31,7 +31,7 @@ class bans
         if (is_numeric($id)) {
             $ban['user_id'] = $id;
             if ($ban['user_id'] < 2) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             $result = $this->db->query('SELECT group_id, username, email FROM '.$this->db->prefix.'users WHERE id='.$ban['user_id']) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
@@ -97,7 +97,7 @@ class bans
         if ($this->db->num_rows($result)) {
             list($ban['ban_user'], $ban['ip'], $ban['email'], $ban['message'], $ban['expire']) = $this->db->fetch_row($result);
         } else {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $diff = ($this->user->timezone + $this->user->dst) * 3600;
