@@ -37,12 +37,12 @@ the forums or in the GitHub bug tracker.
 ## Recommendations
 
 * Make use of a PHP accelerator such as APC or XCache
-* Make sure PHP has the zlib module installed to allow FluxBB to gzip output
+* Make sure PHP has the zlib module installed to allow FeatherBB to gzip output
 
 ## Links
 
 * Homepage: http://featherbb.org
-* Documentation: soon
+* Documentation: http://featherbb.org/docs/
 * Community: http://featherbb.org/forums/
 * Chat: https://gitter.im/featherbb/featherbb
 * Development: http://github.com/featherbb/featherbb
