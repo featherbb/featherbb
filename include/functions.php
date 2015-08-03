@@ -25,11 +25,6 @@ function check_cookie()
 {
     global $cookie_name, $cookie_seed;
 
-<<<<<<< HEAD
-    $now = time();
-
-=======
->>>>>>> featherbb/new-db-layer
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
     $now = time();
@@ -76,40 +71,6 @@ function check_cookie()
     return set_default_user();
 }
 
-<<<<<<< HEAD
-    // If it has a non-guest user, and hasn't expired
-    if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now) {
-        // If the cookie has been tampered with
-        if (hash_hmac('sha1', $cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash') !== $cookie['cookie_hash']) {
-            $expire = $now + 31536000; // The cookie expires after a year
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
-            set_default_user();
-
-            return;
-        }
-
-        $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
-        $where_check_cookie = array('u.id' => intval($cookie['user_id']));
-
-        $result = ORM::for_table($feather->prefix.'users')
-            ->table_alias('u')
-            ->select_many($select_check_cookie)
-            ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
-            ->where($where_check_cookie)
-            ->find_result_set();
-
-        foreach ($result as $feather->user);
-
-        // If user authorisation failed
-        if (!isset($feather->user->id) || hash_hmac('sha1', $feather->user->password, $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
-            $expire = $now + 31536000; // The cookie expires after a year
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
-            set_default_user();
-
-            return;
-        }
-=======
 //
 // Set preferences
 //
@@ -120,7 +81,6 @@ function set_preferences()
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
     $now = time();
->>>>>>> featherbb/new-db-layer
 
     // Set a default language if the user selected language no longer exists
     if (!file_exists(FEATHER_ROOT.'lang/'.$feather->user->language)) {
@@ -161,14 +121,8 @@ function set_preferences()
                     break;
             }
 
-<<<<<<< HEAD
-                $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
-
-                \ORM::for_table($db->prefix.'online')->raw_execute('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
-=======
             // Reset tracked topics
             set_tracked_topics(null);
->>>>>>> featherbb/new-db-layer
 
         } else {
             // Special case: We've timed out, but no other user has browsed the forums since we timed out
@@ -1062,16 +1016,9 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
 
     $feather->render('message.php', array(
         'lang_common' => $lang_common,
-<<<<<<< HEAD
-        'message'    =>    $message,
-        'no_back_link'    =>    $no_back_link,
-        )
-    );
-=======
         'message'    =>    $msg,
         'no_back_link'    => $no_back_link,
         ));
->>>>>>> featherbb/new-db-layer
 
     require_once FEATHER_ROOT.'controller/footer.php';
 

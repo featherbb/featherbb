@@ -94,21 +94,6 @@
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
-    </div>
-</nav>
-
-<div class="container">
-    <div class="container-title-status">
-        <h1 class="title-site">
-            <a href="<?php echo get_base_url() ?>" title="" class="site-name">
-                <p><?php echo feather_escape($feather_config['o_board_title']) ?></p>
-            </a>
-            <div id="brddesc"><?php echo $feather_config['o_board_desc'] ?></div>
-        </h1>
-        <div class="status-avatar">
-            <?php echo $page_info ?>
-=======
     </nav>
 
     <div class="container">
@@ -123,7 +108,6 @@
                 <?php echo $page_info ?>
             </div>
             <div class="clear"></div>
->>>>>>> featherbb/new-db-layer
         </div>
         <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
             <div id="announce" class="block">
@@ -134,62 +118,22 @@
                     </div>
                 </div>
             </div>
-<<<<<<< HEAD
-    </div>
-    <?php endif; ?>
-    <?php if (isset($flash['message'])) : ?>
-    <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
-    <div id="msgflash" class="block">
-        <h2><span><?php echo $lang_common['Info'] ?></span></h2>
-        <button type="button" class="close" aria-label="Close" onclick="fadeOut('msgflash', 9);"><span aria-hidden="true">&times;</span></button>
-        <div class="box">
-            <div class="inbox">
-                <p><?php echo feather_escape($flash['message']) ?></p>
-=======
         <?php endif; ?>
         <?php if (isset($flash['message'])) : ?>
+            <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
             <div id="msgflash" class="block">
-                <h2><span><?php echo $lang_common['Info'] ?></span></h2>
-                <button type="button" class="close" aria-label="Close" onclick="fadeOut('msg', 9);"><span aria-hidden="true">&times;</span></button>
+                <h2><span><?php echo $lang_common['Info'] ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
                 <div class="box">
                     <div class="inbox">
                         <p><?php echo feather_escape($flash['message']) ?></p>
                     </div>
                 </div>
->>>>>>> featherbb/new-db-layer
             </div>
-            <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
-            <script type="text/javascript">
-                fadeIn('msgflash', 0);
-                var alertBox = document.getElementById("msgflash");
-                var handler = onVisibilityChange(alertBox);
-
-                if (window.addEventListener) {
-                    addEventListener('DOMContentLoaded', handler, false);
-                    addEventListener('load', handler, false);
-                    addEventListener('scroll', handler, false);
-                    addEventListener('resize', handler, false);
-                } else if (window.attachEvent)  {
-                    attachEvent('onDOMContentLoaded', handler); // IE9+ :(
-                    attachEvent('onload', handler);
-                    attachEvent('onscroll', handler);
-                    attachEvent('onresize', handler);
-                }
-            </script>
+            <script type="text/javascript">fadeIn('msgflash', 0);</script>
         <?php endif; ?>
     </div>
-<<<<<<< HEAD
-    <script type="text/javascript">fadeIn('msgflash', 0);</script>
-    <?php endif; ?>
-</div>
-=======
->>>>>>> featherbb/new-db-layer
 
 </header>
 
 <section class="container">
-<<<<<<< HEAD
-<div id="brdmain">
-=======
     <div id="brdmain">
->>>>>>> featherbb/new-db-layer

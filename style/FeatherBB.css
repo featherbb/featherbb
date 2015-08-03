@@ -27,10 +27,7 @@ th {
     clear: both
 }
 #announce,
-<<<<<<< HEAD
-=======
 #msg,
->>>>>>> featherbb/new-db-layer
 #msgflash,
 #posterror {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5)
@@ -1250,18 +1247,7 @@ footer .footer-link a {
     min-width: 230px;
     max-width: 400px;
 }
-#msgflash .close {
-    float: right;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background-color: transparent;
-    border: none;
-}
-<<<<<<< HEAD
-=======
 #msg,
->>>>>>> featherbb/new-db-layer
 #msgflash,
 #posterror {
     margin: 15px 0;
@@ -1271,19 +1257,13 @@ footer .footer-link a {
     border: 1px solid #fbeed5;
     border-radius: 4px
 }
-<<<<<<< HEAD
-=======
 #msg h2,
->>>>>>> featherbb/new-db-layer
 #msgflash h2,
 #posterror h2 {
     margin: 0 0 4px;
     font-size: 18px
 }
-<<<<<<< HEAD
-=======
 #msg p,
->>>>>>> featherbb/new-db-layer
 #msgflash p,
 #posterror p {
     margin: 0 0 2px
