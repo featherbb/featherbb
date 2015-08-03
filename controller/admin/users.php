@@ -149,7 +149,7 @@ class users
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
-            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/include/common.js"></script>');
+            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/js/common.js"></script>');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 

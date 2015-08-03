@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $lang_common['lang_identifier'] ?>" lang="<?php echo $lang_common['lang_identifier'] ?>" dir="<?php echo $lang_common['lang_direction'] ?>">
@@ -92,15 +92,15 @@ endif;
 
 <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
 <div id="announce" class="block">
-	<div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
-	<div class="box">
-		<div id="announce-block" class="inbox">
-			<div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
-		</div>
-	</div>
+    <div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
+    <div class="box">
+        <div id="announce-block" class="inbox">
+            <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
+        </div>
+    </div>
 </div>
 <?php endif; ?>
-    
+
 <?php if (isset($flash['message'])) : ?>
 <div id="msg" class="block">
     <h2><span><?php echo $lang_common['Info'] ?></span></h2>

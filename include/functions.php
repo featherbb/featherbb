@@ -249,7 +249,7 @@ function get_admin_ids()
 function set_default_user()
 {
     global $db, $db_type, $feather_config;
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -258,7 +258,7 @@ function set_default_user()
     // Fetch guest user
     $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
     $where_set_default_user = array('u.id' => '1');
-    
+
     $result = ORM::for_table($feather->prefix.'users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
@@ -266,11 +266,11 @@ function set_default_user()
         ->left_outer_join($feather->prefix.'online', array('o.ident', '=', $remote_addr), 'o', true)
         ->where($where_set_default_user)
         ->find_result_set();
-    
+
     if (!$result) {
         exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
     }
-    
+
     foreach ($result as $feather->user);
 
     // Update online list
@@ -353,7 +353,7 @@ function forum_setcookie($name, $value, $expire)
 function check_bans()
 {
     global $db, $feather_config, $lang_common, $feather_bans;
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -470,7 +470,7 @@ function check_username($username, $errors, $exclude_id = null)
             break;
         }
     }
-    
+
     return $errors;
 }
 
@@ -486,11 +486,11 @@ function update_users_online()
 
     // Fetch all online list entries that are older than "o_timeout_online"
     $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
-    
+
     $result = \ORM::for_table($db->prefix.'online')->select_many($select_update_users_online)
         ->where_lt('logged', $now-$feather_config['o_timeout_online'])
         ->find_many();
-    
+
     foreach ($result as $cur_user) {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1') {
@@ -608,20 +608,20 @@ function get_tracked_topics()
 function update_forum($forum_id)
 {
     global $db;
-    
+
     $stats_query = \ORM::for_table($db->prefix.'topics')
                     ->where('forum_id', $forum_id)
                     ->select_expr('COUNT(id)', 'total_topics')
                     ->select_expr('SUM(num_replies)', 'total_replies')
                     ->find_one();
-    
+
     $num_topics = intval($stats_query['total_topics']);
     $num_replies = intval($stats_query['total_replies']);
 
     $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
 
     $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
-    
+
     $result = \ORM::for_table($db->prefix.'topics')->select_many($select_update_forum)
         ->where('forum_id', $forum_id)
         ->where_null('moved_to')
@@ -679,7 +679,7 @@ function delete_avatar($user_id)
 function delete_topic($topic_id)
 {
     global $db;
-    
+
     // Delete the topic and any redirect topics
     $where_delete_topic = array(
             array('id' => $topic_id),
@@ -875,7 +875,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
         if ($num_pages > 1 && $cur_page > 1) {
             $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.$lang_common['Previous'].'</a>';
         }
-                        
+
         if ($cur_page > 3) {
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
@@ -985,7 +985,7 @@ function message($message, $no_back_link = false, $http_status = null, $dontStop
     if (!is_null($http_status)) {
         header('HTTP/1.1 ' . $http_status);
     }
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -999,7 +999,7 @@ function message($message, $no_back_link = false, $http_status = null, $dontStop
         require_once FEATHER_ROOT.'controller/header.php';
 
         $feather->config('templates.path', get_path_view());
-        
+
         $header = new \controller\header();
 
         $header->setTitle($page_title)->display();
@@ -1011,7 +1011,7 @@ function message($message, $no_back_link = false, $http_status = null, $dontStop
         'no_back_link'    =>    $no_back_link,
         )
     );
-    
+
     require_once FEATHER_ROOT.'controller/footer.php';
 
     $footer = new \controller\footer();
@@ -1034,7 +1034,7 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
     if ($timestamp == '') {
         return $lang_common['Never'];
     }
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -1178,7 +1178,7 @@ function feather_hash($str)
 function get_remote_address()
 {
     $feather = \Slim\Slim::getInstance();
-    
+
     $remote_addr = $feather->request->getIp();
 
     return $remote_addr;
@@ -1749,7 +1749,7 @@ function display_saved_queries()
         <?php
         ++$i;
     }
-    
+
     // TODO: To be removed
     foreach ($saved_queries as $cur_query) {
         $query_time_total += $cur_query[1];
@@ -1783,7 +1783,7 @@ function get_path_view($file = null)
 {
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
-    
+
     if ($file && is_file('style/'.$feather->user->style)) {
         return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
     }
@@ -1805,7 +1805,7 @@ function url_friendly($str)
     $str = strtr($str, $url_replace);
     $str = strtolower(utf8_decode($str));
     $str = feather_trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
-    
+
     if (empty($str)) {
         $str = 'view';
     }

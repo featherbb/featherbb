@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $lang_common['lang_identifier'] ?>" lang="<?php echo $lang_common['lang_identifier'] ?>" dir="<?php echo $lang_common['lang_direction'] ?>">
@@ -95,7 +95,7 @@ endif;
         </div>
     </div>
 </nav>
-    
+
 <div class="container">
     <div class="container-title-status">
         <h1 class="title-site">
@@ -120,14 +120,33 @@ endif;
     </div>
     <?php endif; ?>
     <?php if (isset($flash['message'])) : ?>
-    <div id="msg" class="block">
+    <div id="msgflash" class="block">
         <h2><span><?php echo $lang_common['Info'] ?></span></h2>
+        <button type="button" class="close" aria-label="Close" onclick="fadeOut('msg', 9);"><span aria-hidden="true">&times;</span></button>
         <div class="box">
             <div class="inbox">
                 <p><?php echo feather_escape($flash['message']) ?></p>
             </div>
         </div>
     </div>
+    <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
+    <script type="text/javascript">
+    fadeIn('msgflash', 0);
+    var alertBox = document.getElementById("msgflash");
+    var handler = onVisibilityChange(alertBox);
+
+    if (window.addEventListener) {
+        addEventListener('DOMContentLoaded', handler, false);
+        addEventListener('load', handler, false);
+        addEventListener('scroll', handler, false);
+        addEventListener('resize', handler, false);
+    } else if (window.attachEvent)  {
+        attachEvent('onDOMContentLoaded', handler); // IE9+ :(
+        attachEvent('onload', handler);
+        attachEvent('onscroll', handler);
+        attachEvent('onresize', handler);
+    }
+    </script>
     <?php endif; ?>
 </div>
 
