@@ -1152,7 +1152,7 @@ body {
 /* Alert boxes
 ----------------------------------------------------------------*/
 
-#msg {
+#msgflash {
     opacity: 0;
     position: fixed;
     top: 40px;
@@ -1162,7 +1162,7 @@ body {
 	padding: 5px;
 	z-index: 1000;
 }
-#msg h2 {
+#msgflash h2 {
 	color: #60c860;
 	font-weight: bold;
 }

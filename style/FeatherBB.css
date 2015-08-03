@@ -27,7 +27,7 @@ th {
     clear: both
 }
 #announce,
-#msg,
+#msgflash,
 #posterror {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5)
 }
@@ -1238,7 +1238,7 @@ footer .footer-link a {
 #viewprofile .fakeform .inform fieldset dd {
     margin: 0 0 15px
 }
-#msg {
+#msgflash {
     opacity: 0;
     position: fixed;
     top: 40px;
@@ -1246,7 +1246,7 @@ footer .footer-link a {
     min-width: 230px;
     max-width: 400px;
 }
-#msg .close {
+#msgflash .close {
     float: right;
     position: absolute;
     top: 6px;
@@ -1254,7 +1254,7 @@ footer .footer-link a {
     background-color: transparent;
     border: none;
 }
-#msg,
+#msgflash,
 #posterror {
     margin: 15px 0;
     padding: 8px 35px 8px 14px;
@@ -1263,12 +1263,12 @@ footer .footer-link a {
     border: 1px solid #fbeed5;
     border-radius: 4px
 }
-#msg h2,
+#msgflash h2,
 #posterror h2 {
     margin: 0 0 4px;
     font-size: 18px
 }
-#msg p,
+#msgflash p,
 #posterror p {
     margin: 0 0 2px
 }

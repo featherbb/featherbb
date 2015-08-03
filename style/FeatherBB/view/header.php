@@ -121,16 +121,16 @@ endif;
     <?php endif; ?>
     <?php if (isset($flash['message'])) : ?>
     <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
-    <div id="msg" class="block">
+    <div id="msgflash" class="block">
         <h2><span><?php echo $lang_common['Info'] ?></span></h2>
-        <button type="button" class="close" aria-label="Close" onclick="fadeOut('msg', 9);"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" aria-label="Close" onclick="fadeOut('msgflash', 9);"><span aria-hidden="true">&times;</span></button>
         <div class="box">
             <div class="inbox">
                 <p><?php echo feather_escape($flash['message']) ?></p>
             </div>
         </div>
     </div>
-    <script type="text/javascript">fadeIn('msg', 0);</script>
+    <script type="text/javascript">fadeIn('msgflash', 0);</script>
     <?php endif; ?>
 </div>
 

@@ -1375,7 +1375,7 @@ body {
 /* Alert boxes
 ----------------------------------------------------------------*/
 
-#msg {
+#msgflash {
     opacity: 0;
     position: fixed;
     top: 40px;
