@@ -178,13 +178,16 @@ class groups
 
             generate_admin_menu('groups');
 
+            $group = $this->model->info_add_group($groups, $id);
+
             $this->feather->render('admin/groups/add_edit_group.php', array(
                     'lang_admin_groups'    =>    $lang_admin_groups,
                     'lang_admin_common'    =>    $lang_admin_common,
                     'feather_config'    =>    $this->config,
-                    'group'    =>    $this->model->info_add_group($groups, $id),
+                    'group'    =>    $group,
                     'groups'    =>    $groups,
                     'id'    => $id,
+                    'group_list'    => $this->model->get_group_list($groups, $group),
                 )
             );
 

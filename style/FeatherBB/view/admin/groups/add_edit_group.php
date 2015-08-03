@@ -48,7 +48,7 @@ if (!defined('FEATHER')) {
 									<td>
 										<select name="promote_next_group" tabindex="3">
 											<option value="0"><?php echo $lang_admin_groups['Disable promotion'] ?></option>
-											<?php get_group_list($groups, $group); ?>
+											<?php echo $group_list ?>
 										</select>
 										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo feather_escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
 										<span><?php printf($lang_admin_groups['Promote users help'], $lang_admin_groups['Disable promotion']) ?></span>
