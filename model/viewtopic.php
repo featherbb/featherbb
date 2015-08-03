@@ -34,7 +34,7 @@ class viewtopic
                       ->find_one();
 
         if (!$result) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $post['topic_id'] = $result['topic_id'];
@@ -132,7 +132,7 @@ class viewtopic
         }
 
         if (!$cur_topic) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_topic;

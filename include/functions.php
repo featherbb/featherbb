@@ -977,9 +977,10 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 // Display a message
 //
-function message($message, $no_back_link = false, $http_status = null, $dontStop = false)
+
+function message($msg, $http_status = null, $no_back_link = false, $dontStop = false)
 {
-    global $db, $lang_common, $feather_config, $tpl_main;
+    global $lang_common;
 
     // Did we receive a custom header?
     if (!is_null($http_status)) {
@@ -989,8 +990,16 @@ function message($message, $no_back_link = false, $http_status = null, $dontStop
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
+    $http_status = (int) $http_status;
+    if ($http_status > 0) {
+        $feather->response->setStatus($http_status);
+    }
+
+    // Overwrite existing body
+    $feather->response->setBody('');
+
     if (!defined('FEATHER_HEADER')) {
-        $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Info']);
+        $page_title = array(feather_escape($feather->config['o_board_title']), $lang_common['Info']);
 
         if (!defined('FEATHER_ACTIVE_PAGE')) {
             define('FEATHER_ACTIVE_PAGE', 'index');
@@ -1007,10 +1016,9 @@ function message($message, $no_back_link = false, $http_status = null, $dontStop
 
     $feather->render('message.php', array(
         'lang_common' => $lang_common,
-        'message'    =>    $message,
-        'no_back_link'    =>    $no_back_link,
-        )
-    );
+        'message'    =>    $msg,
+        'no_back_link'    => $no_back_link,
+        ));
 
     require_once FEATHER_ROOT.'controller/footer.php';
 
@@ -1271,6 +1279,7 @@ function maintenance_message()
     }
 
     require_once FEATHER_ROOT.'controller/header.php';
+    require_once FEATHER_ROOT.'controller/footer.php';
 
     $feather->config('templates.path', get_path_view());
 

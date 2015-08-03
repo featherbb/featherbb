@@ -38,7 +38,7 @@ class search
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         } elseif ($this->user->g_search == '0') {
             message($lang_search['No search permission'], false, '403 Forbidden');
         }

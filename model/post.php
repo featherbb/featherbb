@@ -63,7 +63,7 @@ class post
         }
 
         if (!$cur_posting) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_posting;
@@ -104,7 +104,7 @@ class post
                 ->find_one_col('subject');
 
             if (!$subject_tid) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
             $url_subject = url_friendly($subject_tid);
         } else {
@@ -702,7 +702,7 @@ class post
                  ->find_one();
 
         if (!$quote) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)

@@ -155,5 +155,5 @@ $feather->group('/admin', function() use ($feather) {
 
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
-    message($lang_common['Bad request'], false, '404 Not Found');
+    message($lang_common['Bad request'], '404');
 });

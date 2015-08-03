@@ -48,7 +48,7 @@ class groups
         } else {
             // We are editing a group
             if (!isset($groups[$id])) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             $group['info'] = $groups[$id];
@@ -197,12 +197,12 @@ class groups
 
         // Make sure it's not the admin or guest groups
         if ($group_id == FEATHER_ADMIN || $group_id == FEATHER_GUEST) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Make sure it's not a moderator group
         if ($groups[$group_id]['g_moderator'] != 0) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$group_id.' WHERE conf_name=\'o_default_user_group\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());

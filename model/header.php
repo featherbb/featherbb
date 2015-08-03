@@ -22,7 +22,6 @@ class header
         $this->request = $this->feather->request;
     }
 
-    // Returns page head
     public function get_reports()
     {
         $result_header = \ORM::for_table($this->db->prefix.'reports')->where_null('zapped')->find_one();

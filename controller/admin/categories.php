@@ -36,7 +36,7 @@ class categories
         require FEATHER_ROOT.'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -55,7 +55,7 @@ class categories
 
             $cat_to_delete = intval($this->request->post('cat_to_delete'));
             if ($cat_to_delete < 1) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             if ($this->request->post('del_cat_comply')) { // Delete a category with all forums and posts
@@ -88,7 +88,7 @@ class categories
 
             $categories = $this->request->post('cat');
             if (empty($categories)) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             $this->model->update_categories($categories);

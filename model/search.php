@@ -45,7 +45,7 @@ class search
         if ($this->request->get('search_id')) {
             $search_id = intval($this->request->get('search_id'));
             if ($search_id < 1) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
         }
         // If it's a regular search (keywords and/or author)
@@ -77,21 +77,21 @@ class search
         elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
             $user_id = ($this->request->get('user_id')) ? intval($this->request->get('user_id')) : $this->user->id;
             if ($user_id < 2) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             // Subscribed topics can only be viewed by admins, moderators and the users themselves
             if ($action == 'show_subscriptions' && !$this->user->is_admmod && $user_id != $this->user->id) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
         } elseif ($action == 'show_recent') {
             $interval = $this->request->get('value') ? intval($this->request->get('value')) : 86400;
         } elseif ($action == 'show_replies') {
             if ($this->user->is_guest) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
         } elseif ($action != 'show_new' && $action != 'show_unanswered') {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
 
@@ -311,7 +311,7 @@ class search
                 // If it's a search for new posts since last visit
                 if ($action == 'show_new') {
                     if ($this->user->is_guest) {
-                        message($lang_common['No permission'], false, '403 Forbidden');
+                        message($lang_common['No permission'], '403');
                     }
 
                     $result = \ORM::for_table($this->db->prefix.'topics')
@@ -436,7 +436,7 @@ class search
                 // If it's a search for subscribed topics
                 elseif ($action == 'show_subscriptions') {
                     if ($this->user->is_guest) {
-                        message($lang_common['Bad request'], false, '404 Not Found');
+                        message($lang_common['Bad request'], '404');
                     }
 
                     $result = \ORM::for_table($this->db->prefix.'topics')
@@ -489,7 +489,7 @@ class search
                 $pdo = \ORM::get_db();
                 $pdo = null;
             } else {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
 
@@ -625,7 +625,7 @@ class search
                     $subscriber_name = \ORM::for_table($this->db->prefix.'users')->where('id', $subscriber_id)->find_one_col('username');
 
                     if (!$subscriber_name) {
-                        message($lang_common['Bad request'], false, '404 Not Found');
+                        message($lang_common['Bad request'], '404');
                     }
 
                     $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf($lang_search['Quick search show_subscriptions'], feather_escape($subscriber_name)).'</a>';

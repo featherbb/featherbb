@@ -111,7 +111,7 @@ class register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];

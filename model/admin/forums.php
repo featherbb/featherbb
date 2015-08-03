@@ -29,7 +29,7 @@ class forums
 
         $add_to_cat = intval($this->request->post('add_to_cat'));
         if ($add_to_cat < 1) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $this->db->query('INSERT INTO '.$this->db->prefix.'forums (forum_name, cat_id) VALUES(\''.$this->db->escape($lang_admin_forums['New forum']).'\', '.$add_to_cat.')') or error('Unable to create forum', __FILE__, __LINE__, $this->db->error());
@@ -142,7 +142,7 @@ class forums
         }
 
         if ($cat_id < 1) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $forum_desc = ($forum_desc != '') ? '\''.$this->db->escape($forum_desc).'\'' : 'NULL';
@@ -208,7 +208,7 @@ class forums
 
         $result = $this->db->query('SELECT id, forum_name, forum_desc, redirect_url, num_topics, sort_by, cat_id FROM '.$this->db->prefix.'forums WHERE id='.$forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $this->db->error());
         if (!$this->db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $cur_forum = $this->db->fetch_assoc($result);

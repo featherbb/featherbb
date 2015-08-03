@@ -34,7 +34,7 @@ class moderate
         global $lang_common;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Load the viewforum.php language file
@@ -46,7 +46,7 @@ class moderate
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         $this->model->display_ip_address_post($pid);
@@ -57,7 +57,7 @@ class moderate
         global $lang_common;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Load the viewforum.php language file
@@ -69,7 +69,7 @@ class moderate
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         $this->model->display_ip_info($ip);
@@ -80,7 +80,7 @@ class moderate
         global $lang_common, $lang_topic, $lang_misc;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Load the viewforum.php language file
@@ -93,7 +93,7 @@ class moderate
         // by all moderators and admins
         if ($action == 'get_host') {
             if (!$this->user->is_admmod) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             }
 
             $this->model->display_ip_address();
@@ -104,7 +104,7 @@ class moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         $url_subject = url_friendly($this->model->get_subject_tid($id));
@@ -309,7 +309,7 @@ class moderate
         global $lang_common, $lang_forum, $lang_misc;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Load the viewforum.php language file
@@ -323,7 +323,7 @@ class moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Fetch some info about the forum
@@ -331,7 +331,7 @@ class moderate
 
         // Is this a redirect forum? In that case, abort!
         if ($cur_forum['redirect_url'] != '') {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $sort_by = $this->model->forum_sort_by($cur_forum['sort_by']);
@@ -375,7 +375,7 @@ class moderate
         global $lang_common, $lang_forum, $lang_topic, $lang_misc;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+            message($lang_common['No view'], '403');
         }
 
         // Load the viewforum.php language file
@@ -389,7 +389,7 @@ class moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Move one or more topics

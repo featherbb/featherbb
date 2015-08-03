@@ -35,7 +35,7 @@ class index
         require FEATHER_ROOT.'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_index.php language file

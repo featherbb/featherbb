@@ -57,7 +57,7 @@ class viewforum
         }
 
         if (!$cur_forum) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_forum;

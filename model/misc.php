@@ -41,7 +41,7 @@ class misc
                 ->find_one();
         
         if (!$mail) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
         
         $mail['recipient'] = $mail['username'];
@@ -140,7 +140,7 @@ class misc
                                                               ->find_one();
 
         if (!$topic) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $select_report = array('subject', 'forum_id');
@@ -151,7 +151,7 @@ class misc
             ->find_one();
 
         if (!$report) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Should we use the internal report handling?
@@ -227,7 +227,7 @@ class misc
             ->find_one();
 
         if (!$cur_post) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_post;
@@ -238,7 +238,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Make sure the user can view the topic
@@ -257,7 +257,7 @@ class misc
                     ->find_one();
 
         if (!$authorized) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $is_subscribed = \ORM::for_table($this->feather->prefix.'topic_subscriptions')
@@ -288,7 +288,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         $is_subscribed = \ORM::for_table($this->feather->prefix.'topic_subscriptions')
@@ -314,7 +314,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         $is_subscribed = \ORM::for_table($this->feather->prefix.'forum_subscriptions')
@@ -340,7 +340,7 @@ class misc
         global $lang_common, $lang_misc;
 
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Make sure the user can view the forum
@@ -358,7 +358,7 @@ class misc
             ->find_one();
 
         if (!$authorized) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $is_subscribed = \ORM::for_table($this->feather->prefix.'forum_subscriptions')

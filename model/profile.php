@@ -56,7 +56,7 @@ class profile
         // Make sure we are allowed to change this user's password
         if ($this->user->id != $id) {
             if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
@@ -70,11 +70,11 @@ class profile
                     ->find_one();
 
                 if (!$user) {
-                    message($lang_common['Bad request'], false, '404 Not Found');
+                    message($lang_common['Bad request'], '404');
                 }
 
                 if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
-                    message($lang_common['No permission'], false, '403 Forbidden');
+                    message($lang_common['No permission'], '403');
                 }
             }
         }
@@ -131,7 +131,7 @@ class profile
         // Make sure we are allowed to change this user's email
         if ($this->user->id != $id) {
             if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
-                message($lang_common['No permission'], false, '403 Forbidden');
+                message($lang_common['No permission'], '403');
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's email?
 
@@ -145,11 +145,11 @@ class profile
                     ->find_one();
 
                 if (!$user) {
-                    message($lang_common['Bad request'], false, '404 Not Found');
+                    message($lang_common['Bad request'], '404');
                 }
 
                 if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
-                    message($lang_common['No permission'], false, '403 Forbidden');
+                    message($lang_common['No permission'], '403');
                 }
             }
         }
@@ -520,7 +520,7 @@ class profile
             ->find_one_col('g.g_promote_next_group');
         
         if (!$next_group_id) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Update the user
@@ -677,7 +677,7 @@ class profile
             ->find_one();
 
         if (!$info) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $info;
@@ -705,7 +705,7 @@ class profile
                     $languages = forum_list_langs();
                     $form['language'] = feather_trim($this->request->post('form_language'));
                     if (!in_array($form['language'], $languages)) {
-                        message($lang_common['Bad request'], false, '404 Not Found');
+                        message($lang_common['Bad request'], '404');
                     }
                 }
 
@@ -882,7 +882,7 @@ class profile
                     $styles = forum_list_styles();
                     $form['style'] = feather_trim($this->request->post('form_style'));
                     if (!in_array($form['style'], $styles)) {
-                        message($lang_common['Bad request'], false, '404 Not Found');
+                        message($lang_common['Bad request'], '404');
                     }
                 }
 
@@ -905,7 +905,7 @@ class profile
             }
 
             default:
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
         }
 
 
@@ -916,7 +916,7 @@ class profile
         }
 
         if (empty($temp)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         \ORM::for_table($this->db->prefix.'users')->where('id', $id)
@@ -1015,7 +1015,7 @@ class profile
             ->find_one();
 
         if (!$user) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         return $user;

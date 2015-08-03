@@ -56,7 +56,7 @@ class post
 
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->request->post('username')) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Fetch some info about the topic and/or the forum
@@ -66,7 +66,7 @@ class post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -78,7 +78,7 @@ class post
                 ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the post.php language file
@@ -175,7 +175,7 @@ class post
             $action = $lang_post['Post new topic'];
             $form = '<form id="post" method="post" action="'.get_link('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $url_forum = url_friendly($cur_posting['forum_name']);
