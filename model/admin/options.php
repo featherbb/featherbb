@@ -219,12 +219,12 @@ class options
             // Only update values that have changed
             if (array_key_exists('o_'.$key, $this->config) && $this->config['o_'.$key] != $input) {
                 if ($input != '' || is_int($input)) {
-                    $value = '\''.$this->db->escape($input).'\'';
+                    \ORM::for_table($this->db->prefix.'config')->where('conf_name', 'o_'.$key)
+                                                               ->update_many('conf_value', $input);
                 } else {
-                    $value = 'NULL';
+                    \ORM::for_table($this->db->prefix.'config')->where('conf_name', 'o_'.$key)
+                                                               ->update_many_expr('conf_value', 'NULL');
                 }
-
-                $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$value.' WHERE conf_name=\'o_'.$this->db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());
             }
         }
 

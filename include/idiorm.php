@@ -2369,6 +2369,22 @@
             return self::_execute($query, $this->_values, $this->_connection_name);
         }
 
+        public function update_many_expr($key, $value) {
+            // Build and return the full DELETE statement by concatenating
+            // the results of calling each separate builder method.
+            $query = $this->_join_if_not_empty(" ", array(
+                "UPDATE",
+                $this->_quote_identifier($this->_table_name),
+                "SET",
+                $this->_quote_identifier($key),
+                "= ".$value,
+                $this->_build_where(),
+            ));
+            $this->_values = array_merge(array(), $this->_values);
+
+            return self::_execute($query, $this->_values, $this->_connection_name);
+        }
+
         // --------------------- //
         // ---  ArrayAccess  --- //
         // --------------------- //
