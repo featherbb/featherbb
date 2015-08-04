@@ -105,7 +105,12 @@ $feather->group('/admin', function() use ($feather) {
     $feather->map('/options(/)', '\controller\admin\options:display')->via('GET', 'POST');
 
     // Admin categories
-    $feather->map('/categories(/)', '\controller\admin\categories:display')->via('GET', 'POST');
+    $feather->group('/categories', function() use ($feather) {
+        $feather->get('(/)', '\controller\admin\categories:display');
+        $feather->post('/add(/)', '\controller\admin\categories:add_category');
+        $feather->post('/edit(/)', '\controller\admin\categories:edit_categories');
+        $feather->post('/delete(/)', '\controller\admin\categories:delete_category');
+    });
 
     // Admin censoring
     $feather->map('/censoring(/)', '\controller\admin\censoring:display')->via('GET', 'POST');
