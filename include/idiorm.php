@@ -2369,6 +2369,9 @@
             return self::_execute($query, $this->_values, $this->_connection_name);
         }
 
+        /**
+         * Update many records from the database without escaping values
+         */
         public function update_many_expr($key, $value) {
             // Build and return the full DELETE statement by concatenating
             // the results of calling each separate builder method.
