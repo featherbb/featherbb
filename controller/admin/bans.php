@@ -62,10 +62,12 @@ class bans
             
             $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
+            $ban_data = $this->model->find_ban($start_from);
+
             $this->feather->render('admin/bans/search_ban.php', array(
                     'lang_admin_bans' => $lang_admin_bans,
                     'lang_admin_common' => $lang_admin_common,
-                    'ban_data' => $this->model->print_bans($ban_info['conditions'], $ban_info['order_by'], $ban_info['direction'], $start_from),
+                    'ban_data' => $ban_data['data'],
                 )
             );
 
