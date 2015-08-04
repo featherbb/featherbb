@@ -25,8 +25,6 @@ class permissions
     {
         global $lang_admin_permissions;
 
-        
-
         $form = array_map('intval', $this->request->post('form'));
 
         foreach ($form as $key => $input) {
@@ -37,7 +35,8 @@ class permissions
 
             // Only update values that have changed
             if (array_key_exists('p_'.$key, $this->config) && $this->config['p_'.$key] != $input) {
-                $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$input.' WHERE conf_name=\'p_'.$this->db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'config')->where('conf_name', 'p_'.$key)
+                                                           ->update_many('conf_value', $input);
             }
         }
 
