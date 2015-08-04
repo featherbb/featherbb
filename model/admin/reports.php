@@ -93,6 +93,8 @@ class reports
     {
         global $lang_admin_reports;
 
+        $report_data = array();
+
         $select_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username');
         $reports = \ORM::for_table($this->feather->prefix.'reports')
                         ->table_alias('r')
@@ -103,10 +105,9 @@ class reports
                         ->left_outer_join($this->feather->prefix.'users', array('r.reported_by', '=', 'u.id'), 'u')
                         ->where_null('r.zapped')
                         ->order_by_desc('created')
-                        ->find_result_set();
+                        ->find_many();
 
         foreach ($reports as $cur_report) {
-            var_dump($cur_report);
             $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="'.get_link('users/'.$cur_report['reported_by'].'/').'">'.feather_escape($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
             $forum = ($cur_report['forum_name'] != '') ? '<span><a href="'.get_link('forum/'.$cur_report['forum_id'].'/'.url_friendly($cur_report['forum_name']).'/').'">'.feather_escape($cur_report['forum_name']).'</a></span>' : '<span>'.$lang_admin_reports['Deleted'].'</span>';
             $topic = ($cur_report['subject'] != '') ? '<span>»&#160;<a href="'.get_link('forum/'.$cur_report['topic_id'].'/'.url_friendly($cur_report['subject'])).'">'.feather_escape($cur_report['subject']).'</a></span>' : '<span>»&#160;'.$lang_admin_reports['Deleted'].'</span>';
@@ -124,6 +125,8 @@ class reports
     {
         global $lang_admin_reports;
 
+        $report_zapped_data = array();
+
         $select_zapped_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username');
         $zapped_reports = \ORM::for_table($this->feather->prefix.'reports')
                             ->table_alias('r')
@@ -136,7 +139,7 @@ class reports
                             ->where_not_null('r.zapped')
                             ->order_by_desc('zapped')
                             ->limit(10)
-                            ->find_result_set();
+                            ->find_many();
 
         foreach ($zapped_reports as $cur_report) {
             $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="'.get_link('users/'.$cur_report['reported_by'].'/').'">'.feather_escape($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
