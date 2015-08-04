@@ -112,9 +112,9 @@ class categories
         }
 
         if ($this->model->delete_category($cat_to_delete)) {
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Categories deleted redirect']);
-        } else { // TODO, error message
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Categories deleted redirect']);
+            redirect(get_link('admin/categories/'), $lang_admin_categories['Category deleted redirect']);
+        } else {
+            redirect(get_link('admin/categories/'), $lang_admin_categories['Unable to delete category']);
         }
     }
 
@@ -141,7 +141,7 @@ class categories
 
         generate_admin_menu('categories');
 
-        $this->feather->render('admin/categories/admin_categories.php', array(
+        $this->feather->render('admin/categories.php', array(
                 'lang_admin_categories' => $lang_admin_categories,
                 'lang_admin_common' => $lang_admin_common,
                 'cat_list' => $this->model->get_cat_list(),
