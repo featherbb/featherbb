@@ -28,24 +28,25 @@ class reports
         $zap_id = intval(key($this->request->post('zap_id')));
 
         $result = \ORM::for_table($this->feather->prefix.'reports')
-            ->select('zapped')
             ->where('id', $zap_id)
             ->find_one_col('zapped');
 
+        $set_zap_report = array('zapped' => time(),
+                                'zapped_by' => $this->user->id);
+        
         if (!$result) {
             \ORM::for_table($this->feather->prefix.'reports')
                 ->where('id', $zap_id)
                 ->find_one()
-                ->set(array('zapped' => time(),
-                            'zapped_by' => $this->user->id))
+                ->set($set_zap_report)
                 ->save();
         }
 
         $threshold = \ORM::for_table($this->feather->prefix.'reports')
-            ->select('zapped')
             ->where_not_null('zapped')
             ->order_by_desc('zapped')
             ->offset(10)
+            ->limit(1)
             ->find_one_col('zapped');
         
         if ($threshold) {
@@ -132,10 +133,10 @@ class reports
                             ->left_outer_join($this->feather->prefix.'forums', array('r.forum_id', '=', 'f.id'), 'f')
                             ->left_outer_join($this->feather->prefix.'users', array('r.reported_by', '=', 'u.id'), 'u')
                             ->left_outer_join($this->feather->prefix.'users', array('r.zapped_by', '=', 'u2.id'), 'u2')
-                        ->where_not_null('r.zapped')
-                        ->order_by_desc('zapped')
-                        ->limit(10)
-                        ->find_result_set();
+                            ->where_not_null('r.zapped')
+                            ->order_by_desc('zapped')
+                            ->limit(10)
+                            ->find_result_set();
 
         foreach ($zapped_reports as $cur_report) {
             $cur_report['reporter_disp'] = ($cur_report['reporter'] != '') ? '<a href="'.get_link('users/'.$cur_report['reported_by'].'/').'">'.feather_escape($cur_report['reporter']).'</a>' : $lang_admin_reports['Deleted user'];
