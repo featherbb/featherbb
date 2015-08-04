@@ -1875,3 +1875,19 @@ function get_sublink($link, $sublink, $subarg, $args = null)
 
     return $gen_link;
 }
+
+// Generate breadcrumbs from an array of name and URLs
+
+function breadcrumbs(array $links) {
+    global $lang_admin_reports;
+
+    foreach ($links as $name => $url) {
+        if ($name != '' && $url != '') {
+            $tmp[] = '<span><a href="' . $url . '">'.feather_escape($name).'</a></span>';
+        } else {
+            $tmp[] = '<span>'.$lang_admin_reports['Deleted'].'</span>';
+            return implode(' » ', $tmp);
+        }
+    }
+    return implode(' » ', $tmp);
+}

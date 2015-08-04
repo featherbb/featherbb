@@ -60,8 +60,6 @@ class reports
         $this->feather->render('admin/reports.php', array(
                 'lang_admin_reports'    =>    $lang_admin_reports,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'is_report'    =>    $this->model->check_reports(),
-                'is_report_zapped'    =>    $this->model->check_zapped_reports(),
                 'report_data'   =>  $this->model->get_reports(),
                 'report_zapped_data'   =>  $this->model->get_zapped_reports(),
             )

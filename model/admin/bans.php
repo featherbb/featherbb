@@ -315,7 +315,7 @@ class bans
 
     public function print_bans($conditions, $order_by, $direction, $start_from)
     {
-        
+
 
         $ban_data = array();
 
