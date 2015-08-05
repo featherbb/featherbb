@@ -283,7 +283,7 @@ function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name 
     $from = '"'.encode_mail_text($from_name).'" <'.$from_email.'>';
     $subject = encode_mail_text($subject);
 
-    $headers = 'From: '.$from.$EOL.'Date: '.gmdate('r').$EOL.'MIME-Version: 1.0'.$EOL.'Content-transfer-encoding: 8bit'.$EOL.'Content-type: text/plain; charset=utf-8'.$EOL.'X-Mailer: FluxBB Mailer';
+    $headers = 'From: '.$from.$EOL.'Date: '.gmdate('r').$EOL.'MIME-Version: 1.0'.$EOL.'Content-transfer-encoding: 8bit'.$EOL.'Content-type: text/plain; charset=utf-8'.$EOL.'X-Mailer: FeatherBB Mailer';
 
     // If we specified a reply-to email, we deal with it here
     if (!empty($reply_to_email)) {
