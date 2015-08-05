@@ -23,8 +23,9 @@ class users
  
     public function get_num_ip($ip_stats)
     {
-        $result = $this->db->query('SELECT poster_ip, MAX(posted) AS last_used FROM '.$this->db->prefix.'posts WHERE poster_id='.$ip_stats.' GROUP BY poster_ip') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        $num_ips = $this->db->num_rows($result);
+        $num_ips = \ORM::for_table($this->db->prefix.'posts')->where('poster_id', $ip_stats)
+                        ->group_by('poster_ip')
+                        ->count('poster_ip');
 
         return $num_ips;
     }
@@ -33,9 +34,18 @@ class users
     {
         $ip_data = array();
 
-        $result = $this->db->query('SELECT poster_ip, MAX(posted) AS last_used, COUNT(id) AS used_times FROM '.$this->db->prefix.'posts WHERE poster_id='.$ip_stats.' GROUP BY poster_ip ORDER BY last_used DESC LIMIT '.$start_from.', 50') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
-            while ($cur_ip = $this->db->fetch_assoc($result)) {
+        $result = \ORM::for_table($this->db->prefix.'posts')->where('poster_id', $ip_stats)
+                    ->select('poster_ip')
+                    ->select_expr('MAX(posted)', 'last_used')
+                    ->select_expr('COUNT(id)', 'used_times')
+                    ->select('poster_ip')
+                    ->group_by('poster_ip')
+                    ->order_by_desc('last_used')
+                    ->offset($start_from)
+                    ->limit(50)
+                    ->find_many();
+        if ($result) {
+            foreach ($result as $cur_ip) {
                 $ip_data[] = $cur_ip;
             }
         }
@@ -45,16 +55,19 @@ class users
 
     public function get_num_users_ip($ip)
     {
-        $result = $this->db->query('SELECT DISTINCT poster_id, poster FROM '.$this->db->prefix.'posts WHERE poster_ip=\''.$this->db->escape($ip).'\'') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        $num_users = $this->db->num_rows($result);
+        $num_users = \ORM::for_table($this->db->prefix.'posts')->where('poster_ip', $ip)
+                        ->distinct()
+                        ->count('poster_id');
 
         return $num_users;
     }
 
     public function get_num_users_search($conditions)
     {
-        $result = $this->db->query('SELECT COUNT(id) FROM '.$this->db->prefix.'users AS u LEFT JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : '')) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        $num_users = $this->db->result($result);
+        $num_users = \ORM::for_table($this->db->prefix.'users')->table_alias('u')
+                        ->left_outer_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
+                        ->count('id');
 
         return $num_users;
     }
@@ -86,8 +99,6 @@ class users
     public function move_users()
     {
         global $lang_admin_users;
-
-        
 
         $move = array();
 
@@ -171,8 +182,6 @@ class users
     public function delete_users()
     {
         global $lang_admin_users;
-
-        
 
         if ($this->request->post('users')) {
             $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
@@ -285,8 +294,6 @@ class users
     public function ban_users()
     {
         global $lang_admin_users;
-
-        
 
         if ($this->request->post('users')) {
             $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
