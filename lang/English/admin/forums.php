@@ -4,12 +4,14 @@
 $lang_admin_forums = array(
 
 'Forum added redirect'        =>    'Forum added.',
+'Unable to add forum'	=> 'Unable to add forum',
 'Forum deleted redirect'    =>    'Forum deleted.',
 'Forums updated redirect'    =>    'Forums updated.',
 'Forum updated redirect'    =>    'Forum updated.',
 'Perms reverted redirect'    =>    'Permissions reverted to defaults.',
 'Must enter name message'    =>    'You must enter a forum name.',
 'Must be integer message'    =>    'Position must be a positive integer value.',
+'Must be valid category'	=>	'You must enter a valid category',
 'New forum'                    =>    'New forum',
 
 // Entry page

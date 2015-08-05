@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_forums['Add forum head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/forums/') ?>">
+			<form method="post" action="<?php echo get_link('admin/forums/add') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 if ($is_forum) {
@@ -27,9 +27,9 @@ if ($is_forum) {
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" name="add_forum" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
+									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
 									<td>
-										<select name="add_to_cat" tabindex="1">
+										<select name="cat" tabindex="1">
 											<?php echo $categories_add ?>
 										</select>
 										<span><?php echo $lang_admin_forums['Add forum help'] ?></span>

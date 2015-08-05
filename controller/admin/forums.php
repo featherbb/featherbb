@@ -28,6 +28,38 @@ class forums
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
+
+    public function add_forum()
+    {
+        global $lang_common, $lang_admin_common, $lang_admin_forums;
+
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
+        }
+
+        // Load the admin_options.php language file
+        require FEATHER_ROOT.'include/common_admin.php';
+        require FEATHER_ROOT.'lang/'.$admin_language.'/forums.php';
+
+        $cat_id = (int) $this->request->post('cat');
+
+        if ($cat_id < 1) {
+            redirect(get_link('admin/forums/'), $lang_admin_forums['Must be valid category']);
+        }
+
+        if ($fid = $this->model->add_forum($cat_id, $lang_admin_forums['New forum'])) {
+            // Regenerate the quick jump cache
+            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                require FEATHER_ROOT.'include/cache.php';
+            }
+
+            generate_quickjump_cache();
+
+            redirect(get_link('admin/forums/edit/'.$fid.'/'), $lang_admin_forums['Forum added redirect']);
+        } else {
+            redirect(get_link('admin/forums/'), $lang_admin_forums['Unable to add forum']);
+        }
+    }
     
     public function display()
     {
@@ -44,11 +76,7 @@ class forums
         // Load the admin_options.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
 
-        // Add a "default" forum
-        if ($this->request->post('add_forum')) {
-            $this->model->add_forum();
-        }  // Update forum positions
-        elseif ($this->request->post('update_positions')) {
+        if ($this->request->post('update_positions')) {
             $this->model->update_positions();
         }
 

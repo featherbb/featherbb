@@ -127,7 +127,8 @@ $feather->group('/admin', function() use ($feather) {
 
     // Admin forums
     $feather->group('/forums', function() use ($feather) {
-        $feather->map('(/)', '\controller\admin\forums:display')->via('GET', 'POST');
+        $feather->get('(/)', '\controller\admin\forums:display');
+        $feather->post('/add(/)', '\controller\admin\forums:add_forum');
         $feather->map('/delete/:id(/)', '\controller\admin\forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
         $feather->map('/edit/:id(/)', '\controller\admin\forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
     });

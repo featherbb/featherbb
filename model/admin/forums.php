@@ -21,28 +21,17 @@ class forums
         $this->request = $this->feather->request;
     }
  
-    public function add_forum()
+    public function add_forum($cat_id, $forum_name)
     {
-        global $lang_admin_forums, $lang_common;
+        $set_add_forum = array('forum_name' => $forum_name,
+                                'cat_id' => $cat_id);
 
-        
+        $forum = \ORM::for_table($this->db->prefix.'forums')
+                    ->create()
+                    ->set($set_add_forum);
+        $forum->save();
 
-        $add_to_cat = intval($this->request->post('add_to_cat'));
-        if ($add_to_cat < 1) {
-            message($lang_common['Bad request'], '404');
-        }
-
-        $this->db->query('INSERT INTO '.$this->db->prefix.'forums (forum_name, cat_id) VALUES(\''.$this->db->escape($lang_admin_forums['New forum']).'\', '.$add_to_cat.')') or error('Unable to create forum', __FILE__, __LINE__, $this->db->error());
-        $new_fid = $this->db->insert_id();
-
-        // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_quickjump_cache();
-
-        redirect(get_link('admin/forums/edit/'.$new_fid.'/'), $lang_admin_forums['Forum added redirect']);
+        return $forum->id();
     }
 
     public function delete_forum($forum_id)
