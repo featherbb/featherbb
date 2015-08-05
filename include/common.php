@@ -110,6 +110,9 @@ require FEATHER_ROOT.'include/idiorm.php';
 \ORM::configure('password', $db_password);
 \ORM::configure('logging', true);
 \ORM::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+\ORM::configure('id_column_overrides', array(
+    $db_prefix.'groups' => 'g_id',
+));
 
 // Inject DB prefix to SlimFramework
 $feather->prefix = $db_prefix;

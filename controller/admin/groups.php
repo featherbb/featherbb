@@ -99,11 +99,11 @@ class groups
         $is_member = $this->model->check_members($id);
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
-        if (!$is_member || $feather->request->post('del_group')) {
+        if (!$is_member || $this->request->post('del_group')) {
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
                 $this->model->delete_group($id);
             } else {
-                $group_title = get_group_title($id);
+                $group_title = $this->model->get_group_title($id);
 
                 $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
