@@ -21,6 +21,10 @@ class forums
         $this->request = $this->feather->request;
     }
  
+    //
+    // Forum 
+    //
+
     public function add_forum($cat_id, $forum_name)
     {
         $set_add_forum = array('forum_name' => $forum_name,
@@ -42,21 +46,90 @@ class forums
                     ->save();
     }
 
-    public function update_permissions(array $permissions_data)
+    public function delete_forum($forum_id)
     {
-        $permissions = \ORM::for_table($this->db->prefix.'forum_perms')
-                            ->where('forum_id', $permissions_data['forum_id'])
-                            ->where('group_id', $permissions_data['group_id'])
-                            ->delete_many();
+        // Load the maintenance.php model file for prune public function
+        require FEATHER_ROOT . 'model/admin/maintenance.php';
 
-        if ($permissions) {
-            return \ORM::for_table($this->db->prefix.'forum_perms')
-                    ->create()
-                    ->set($permissions_data)
-                    ->save();
+        // Prune all posts and topics
+        $this->maintenance = new \model\admin\maintenance();
+        $this->maintenance->prune($forum_id, 1, -1);
+
+        // Delete the forum
+        \ORM::for_table($this->db->prefix.'forums')
+            ->find_one($forum_id)
+            ->delete();
+
+        // Delete forum specific group permissions and subscriptions
+        \ORM::for_table($this->db->prefix.'forum_perms')
+            ->where('forum_id', $forum_id)
+            ->delete_many();
+
+        \ORM::for_table($this->db->prefix.'forum_subscriptions')
+            ->where('forum_id', $forum_id)
+            ->delete_many();
+
+        // Delete orphaned redirect topics
+        $orphans = \ORM::for_table($this->db->prefix.'topics')
+                    ->table_alias('t1')
+                    ->left_outer_join($this->feather->prefix.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                    ->where_null('t2.id')
+                    ->where_not_null('t1.moved_to')
+                    ->find_many();
+
+        if (count($orphans) > 0) {
+            $orphans->delete_many();
         }
 
+        return true; // TODO, better error handling
     }
+
+    public function get_forum_info($forum_id)
+    {
+        $result = \ORM::for_table($this->db->prefix.'forums')
+                    ->where('id', $forum_id)
+                    ->find_array();
+        return $result[0];
+    }
+
+    public function get_forums()
+    {
+        $forum_data = array();
+
+        $select_get_forums = array('cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position');
+
+        $result = \ORM::for_table($this->db->prefix.'categories')
+                    ->table_alias('c')
+                    ->select_many($select_get_forums)
+                    ->inner_join($this->db->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->order_by_asc('f.disp_position')
+                    ->order_by_asc('c.disp_position')
+                    ->find_array();
+
+        foreach ($result as $forum) {
+            if (!isset($forum_data[$forum['cid']])) {
+                $forum_data[$forum['cid']] = array('cat_name' => $forum['cat_name'],
+                                                   'cat_position' => $forum['cat_position'],
+                                                   'cat_forums' => array());
+            }
+            $forum_data[$forum['cid']]['cat_forums'][] = array('forum_id' => $forum['fid'],
+                                                               'forum_name' => $forum['forum_name'],
+                                                               'position' => $forum['forum_position']);
+        }
+        return $forum_data;
+    }
+
+    public function update_positions($forum_id, $position)
+    {
+        return \ORM::for_table($this->db->prefix.'forums')
+                ->find_one($forum_id)
+                ->set('disp_position', $position)
+                ->save();
+    }
+
+    //
+    // Permissions
+    //
 
     public function get_permissions($forum_id)
     {
@@ -102,6 +175,22 @@ class forums
         return $result->order_by_asc('g_id')->find_array();
     }
 
+    public function update_permissions(array $permissions_data)
+    {
+        $permissions = \ORM::for_table($this->db->prefix.'forum_perms')
+                            ->where('forum_id', $permissions_data['forum_id'])
+                            ->where('group_id', $permissions_data['group_id'])
+                            ->delete_many();
+
+        if ($permissions) {
+            return \ORM::for_table($this->db->prefix.'forum_perms')
+                    ->create()
+                    ->set($permissions_data)
+                    ->save();
+        }
+
+    }
+
     public function delete_permissions($forum_id, $group_id = null) 
     {
         $result = \ORM::for_table($this->db->prefix.'forum_perms')
@@ -112,99 +201,5 @@ class forums
         }
 
         return $result->delete_many();
-    }
-
-    public function delete_forum($forum_id)
-    {
-        // Load the maintenance.php model file for prune public function
-        require FEATHER_ROOT . 'model/admin/maintenance.php';
-
-        // Prune all posts and topics
-        $this->maintenance = new \model\admin\maintenance();
-        $this->maintenance->prune($forum_id, 1, -1);
-
-        // Delete the forum
-        \ORM::for_table($this->db->prefix.'forums')
-            ->find_one($forum_id)
-            ->delete();
-
-        // Delete forum specific group permissions and subscriptions
-        \ORM::for_table($this->db->prefix.'forum_perms')
-            ->where('forum_id', $forum_id)
-            ->delete_many();
-
-        \ORM::for_table($this->db->prefix.'forum_subscriptions')
-            ->where('forum_id', $forum_id)
-            ->delete_many();
-
-        // Delete orphaned redirect topics
-        $orphans = \ORM::for_table($this->db->prefix.'topics')
-                    ->table_alias('t1')
-                    ->left_outer_join($this->feather->prefix.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
-                    ->where_null('t2.id')
-                    ->where_not_null('t1.moved_to')
-                    ->find_many();
-
-        if (count($orphans) > 0) {
-            $orphans->delete_many();
-        }
-
-        return true; // TODO, better error handling
-    }
-
-    public function update_positions($forum_id, $position)
-    {
-        return \ORM::for_table($this->db->prefix.'forums')
-                ->find_one($forum_id)
-                ->set('disp_position', $position)
-                ->save();
-    }
-
-    public function get_forum_info($forum_id)
-    {
-        $result = \ORM::for_table($this->db->prefix.'forums')
-                    ->where('id', $forum_id)
-                    ->find_array();
-        return $result[0];
-    }
-
-    public function get_categories_permissions($cur_forum)
-    {
-        $output = '';
-
-        $result = $this->db->query('SELECT id, cat_name FROM '.$this->db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $this->db->error());
-        while ($cur_cat = $this->db->fetch_assoc($result)) {
-            $selected = ($cur_cat['id'] == $cur_forum['cat_id']) ? ' selected="selected"' : '';
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'"'.$selected.'>'.feather_escape($cur_cat['cat_name']).'</option>'."\n";
-        }
-        
-        return $output;
-    }
-
-    public function get_forums()
-    {
-        $forum_data = array();
-
-        $select_get_forums = array('cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position');
-
-        $result = \ORM::for_table($this->db->prefix.'categories')
-                    ->table_alias('c')
-                    ->select_many($select_get_forums)
-                    ->inner_join($this->db->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
-                    ->order_by_asc('f.disp_position')
-                    ->order_by_asc('c.disp_position')
-                    ->find_array();
-
-        foreach ($result as $forum) {
-            if (!isset($forum_data[$forum['cid']])) {
-                $forum_data[$forum['cid']] = array('cat_name' => $forum['cat_name'],
-                                                   'cat_position' => $forum['cat_position'],
-                                                   'cat_forums' => array());
-            }
-            $forum_data[$forum['cid']]['cat_forums'][] = array('forum_id' => $forum['fid'],
-                                                               'forum_name' => $forum['forum_name'],
-                                                               'position' => $forum['forum_position']);
-        }
-        return $forum_data;
     }
 }

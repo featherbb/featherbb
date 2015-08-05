@@ -237,6 +237,7 @@ class forums
 
         redirect(get_link('admin/forums/'), $lang_admin_forums['Forums updated redirect']);
     }
+    
     public function display()
     {
         global $lang_common, $lang_admin_common, $lang_admin_forums;
