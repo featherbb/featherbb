@@ -101,7 +101,13 @@ class forums
                 foreach($permissions as $perm_group) {
                     $permissions_data = array('group_id' => $perm_group['g_id'],
                                                 'forum_id' => $forum_id);
-                    $permissions_data['read_forum'] = ($perm_group['g_read_board'] == '1') ? isset($this->request->post('read_forum_new')[$perm_group['g_id']]) ? '1' : '0' : intval($this->request->post('read_forum_new')[$perm_group['g_id']]);
+                    if ($perm_group['g_read_board'] == '1' && isset($this->request->post('read_forum_new')[$perm_group['g_id']]) && $this->request->post('read_forum_new')[$perm_group['g_id']] == '1') {
+                        $permissions_data['read_forum'] = '1';
+                    }
+                    else {
+                        $permissions_data['read_forum'] = '0';
+                    }
+
                     $permissions_data['post_replies'] = (isset($this->request->post('post_replies_new')[$perm_group['g_id']])) ? '1' : '0';
                     $permissions_data['post_topics'] = (isset($this->request->post('post_topics_new')[$perm_group['g_id']])) ? '1' : '0';
                     // Check if the new settings differ from the old
@@ -172,6 +178,8 @@ class forums
         if ($this->user->g_id != FEATHER_ADMIN) {
             message($lang_common['No permission'], '403');
         }
+
+        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // Load the admin_options.php language file
         require FEATHER_ROOT.'include/common_admin.php';
