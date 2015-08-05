@@ -128,8 +128,9 @@ $feather->group('/admin', function() use ($feather) {
     // Admin forums
     $feather->group('/forums', function() use ($feather) {
         $feather->map('(/)', '\controller\admin\forums:display')->via('GET', 'POST');
-        $feather->map('/delete/:id(/)', '\controller\admin\forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
-        $feather->map('/edit/:id(/)', '\controller\admin\forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+        $feather->post('/add(/)', '\controller\admin\forums:add_forum');
+        $feather->map('/edit/:id(/)', '\controller\admin\forums:edit_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+        $feather->map('/delete/:id(/)', '\controller\admin\forums:delete_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
     });
 
     // Admin groups
