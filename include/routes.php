@@ -92,7 +92,8 @@ $feather->group('/admin', function() use ($feather) {
 
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
-    
+    $feather->get('/index(/)', '\controller\admin\index:display');
+
     // Admin bans
     $feather->group('/bans', function() use ($feather) {
         $feather->get('(/)', '\controller\admin\bans:display');
