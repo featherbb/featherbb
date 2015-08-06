@@ -27,16 +27,7 @@ class FeatherBB extends \Slim\Middleware
        	// Block prefetch requests
         $this->app->hook('slim.before', function () use ($feather) {
         	if ((isset($feather->environment['HTTP_X_MOZ'])) && ($feather->environment['HTTP_X_MOZ'] == 'prefetch')) {
-
-                header('HTTP/1.1 403 Prefetching Forbidden');
-
-                // Send no-cache headers
-                $this->app->response->headers->set('Expires', 'Thu, 21 Jul 1977 07:30:00 GMT');
-                $this->app->response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s').' GMT');
-                $this->app->response->headers->set('Cache-Control',  'post-check=0, pre-check=0');
-                $this->app->response->headers->set('Pragma', 'no-cache'); // For HTTP/1.0 compatibility
-
-                $feather->halt(403);
+                $feather->halt(403, 'Prefetch forbidden');
         	}
         });
 
