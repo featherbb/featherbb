@@ -151,7 +151,7 @@ check_cookie();
 if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php')) {
     include FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php';
 } else {
-    error('There is no valid language pack \''.feather_escape($feather->user->language).'\' installed. Please reinstall a language of that name');
+    die('There is no valid language pack \''.feather_escape($feather->user->language).'\' installed. Please reinstall a language of that name');
 }
 
 // Check if we are to display a maintenance message
