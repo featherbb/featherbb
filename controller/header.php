@@ -80,21 +80,6 @@ class header
     {
         global $lang_common;
 
-        // Send no-cache headers
-        header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header('Cache-Control: post-check=0, pre-check=0', false);
-        header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
-        // Send the Content-type header in case the web server is setup to send something else
-        header('Content-type: text/html; charset=utf-8');
-
-        // Prevent site from being embedded in a frame
-        header('X-Frame-Options: deny');
-
-        // Prevent PHP exposure
-        header('X-Powered-By: FeatherBB');
-
         // START SUBST - <body> TODO
         /*if (isset($focus_element)) {
             $tpl_main = str_replace('<body onload="', '<body onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();', $tpl_main);
