@@ -20,11 +20,12 @@ $feather = new \Slim\Slim();
 
 // Load middlewares
 $feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
+$feather->add(new \Slim\Extras\Middleware\FeatherBB()); // FeatherBB
 
 // Cookie encryption
 $feather->config('cookies.encrypt', true);
 
-// Load FeatherBB
+// Load FeatherBB common file
 define('FEATHER_ROOT', dirname(__FILE__).'/');
 require FEATHER_ROOT.'include/common.php';
 
