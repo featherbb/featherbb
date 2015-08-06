@@ -157,8 +157,8 @@ class users
             $new_group = $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ? $this->request->post('new_group') : message($lang_admin_users['Invalid group message']);
 
             // Is the new group a moderator group?
-            $result = $this->db->query('SELECT g_moderator FROM '.$this->db->prefix.'groups WHERE g_id='.$new_group) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
-            $new_group_mod = $this->db->result($result);
+            $new_group_mod = \ORM::for_table($this->db->prefix.'groups')->where('g_id', $new_group)
+                                ->find_one_col('g_moderator');
 
             // Fetch user groups
             $user_groups = array();
@@ -243,16 +243,22 @@ class users
         }
 
         // Are we trying to delete any admins?
-        $result = $this->db->query('SELECT COUNT(*) FROM '.$this->db->prefix.'users WHERE id IN ('.implode(',', $user_ids).') AND group_id='.FEATHER_ADMIN) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->result($result) > 0) {
+        $is_admin = \ORM::for_table($this->db->prefix.'users')->where_in('id', $user_ids)
+            ->where('group_id', FEATHER_ADMIN)
+            ->find_one();
+        if ($is_admin) {
             message($lang_admin_users['No delete admins message']);
         }
 
         if ($this->request->post('delete_users_comply')) {
             // Fetch user groups
             $user_groups = array();
-            $result = $this->db->query('SELECT id, group_id FROM '.$this->db->prefix.'users WHERE id IN ('.implode(',', $user_ids).')') or error('Unable to fetch user groups', __FILE__, __LINE__, $this->db->error());
-            while ($cur_user = $this->db->fetch_assoc($result)) {
+            $select_fetch_user_groups = array('id', 'group_id');
+            $result = \ORM::for_table($this->db->prefix.'users')->select_many($select_fetch_user_groups)
+                ->where_in('id', $user_ids)
+                ->find_many();
+            foreach($result as $cur_user) {
+
                 if (!isset($user_groups[$cur_user['group_id']])) {
                     $user_groups[$cur_user['group_id']] = array();
                 }
@@ -262,32 +268,55 @@ class users
 
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
-            $result = $this->db->query('SELECT g_id, g_moderator FROM '.$this->db->prefix.'groups WHERE g_id IN ('.implode(',', $group_ids).')') or error('Unable to fetch group moderators', __FILE__, __LINE__, $this->db->error());
-            while ($cur_group = $this->db->fetch_assoc($result)) {
+            $select_fetch_user_mods = array('g_id', 'g_moderator');
+            $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_fetch_user_mods)
+                ->where_in('g_id', $group_ids)
+                ->find_many();
+            foreach($result as $cur_group) {
                 if ($cur_group['g_moderator'] == '0') {
                     unset($user_groups[$cur_group['g_id']]);
                 }
             }
 
             // Fetch forum list and clean up their moderator list
-            $result = $this->db->query('SELECT id, moderators FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
-            while ($cur_forum = $this->db->fetch_assoc($result)) {
+            $select_mods = array('id', 'moderators');
+            $result = \ORM::for_table($this->feather->prefix.'forums')
+                ->select_many($select_mods)
+                ->find_many();
+
+            foreach($result as $cur_forum) {
                 $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
                 foreach ($user_groups as $group_users) {
                     $cur_moderators = array_diff($cur_moderators, $group_users);
                 }
 
-                $cur_moderators = (!empty($cur_moderators)) ? '\''.$this->db->escape(serialize($cur_moderators)).'\'' : 'NULL';
-                $this->db->query('UPDATE '.$this->db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $this->db->error());
+                if (!empty($cur_moderators)) {
+                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        ->find_one()
+                        ->set('moderators', serialize($cur_moderators))
+                        ->save();
+                } else {
+                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        ->find_one()
+                        ->set_expr('moderators', 'NULL')
+                        ->save();
+                }
             }
 
+
             // Delete any subscriptions
-            $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE user_id IN ('.implode(',', $user_ids).')') or error('Unable to delete topic subscriptions', __FILE__, __LINE__, $this->db->error());
-            $this->db->query('DELETE FROM '.$this->db->prefix.'forum_subscriptions WHERE user_id IN ('.implode(',', $user_ids).')') or error('Unable to delete forum subscriptions', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'topic_subscriptions')
+                    ->where_in('user_id', $user_ids)
+                    ->delete_many();
+            \ORM::for_table($this->db->prefix.'forum_subscriptions')
+                    ->where_in('user_id', $user_ids)
+                    ->delete_many();
 
             // Remove them from the online list (if they happen to be logged in)
-            $this->db->query('DELETE FROM '.$this->db->prefix.'online WHERE user_id IN ('.implode(',', $user_ids).')') or error('Unable to remove users from online list', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'online')
+                    ->where_in('user_id', $user_ids)
+                    ->delete_many();
 
             // Should we delete all posts made by these users?
             if ($this->request->post('delete_posts')) {
@@ -295,11 +324,22 @@ class users
                 @set_time_limit(0);
 
                 // Find all posts made by this user
-                $result = $this->db->query('SELECT p.id, p.topic_id, t.forum_id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id WHERE p.poster_id IN ('.implode(',', $user_ids).')') or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
-                if ($this->db->num_rows($result)) {
-                    while ($cur_post = $this->db->fetch_assoc($result)) {
+                $select_user_posts = array('p.id', 'p.topic_id', 't.forum_id');
+
+                $result = \ORM::for_table($this->feather->prefix.'posts')
+                            ->table_alias('p')
+                            ->select_many($select_user_posts)
+                            ->inner_join($this->db->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                            ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->where('p.poster_id', $user_ids)
+                            ->find_many();
+                if ($result) {
+                    foreach($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
-                        $result2 = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id='.$cur_post['topic_id'].' ORDER BY posted LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
+                        $result2 = \ORM::for_table($this->feather->prefix.'posts')
+                                        ->where('topic_id', $cur_post['topic_id'])
+                                        ->order_by('posted')
+                                        ->find_one_col('id');
 
                         if ($this->db->result($result2) == $cur_post['id']) {
                             delete_topic($cur_post['topic_id']);
@@ -312,11 +352,16 @@ class users
                 }
             } else {
                 // Set all their posts to guest
-                $this->db->query('UPDATE '.$this->db->prefix.'posts SET poster_id=1 WHERE poster_id IN ('.implode(',', $user_ids).')') or error('Unable to update posts', __FILE__, __LINE__, $this->db->error());
+                \ORM::for_table($this->db->prefix.'posts')
+                        ->where_in('poster_id', '1')
+                        ->update_many('poster_id', $user_ids);
             }
 
             // Delete the users
-            $this->db->query('DELETE FROM '.$this->db->prefix.'users WHERE id IN ('.implode(',', $user_ids).')') or error('Unable to delete users', __FILE__, __LINE__, $this->db->error());
+            \ORM::for_table($this->db->prefix.'users')
+                    ->where_in('id', $user_ids)
+                    ->delete_many();
+
 
             // Delete user avatars
             foreach ($user_ids as $user_id) {
@@ -355,14 +400,20 @@ class users
         }
 
         // Are we trying to ban any admins?
-        $result = $this->db->query('SELECT COUNT(*) FROM '.$this->db->prefix.'users WHERE id IN ('.implode(',', $user_ids).') AND group_id='.FEATHER_ADMIN) or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->result($result) > 0) {
+        $is_admin = \ORM::for_table($this->db->prefix . 'users')->where_in('id', $user_ids)
+            ->where('group_id', FEATHER_ADMIN)
+            ->find_one();
+        if ($is_admin) {
             message($lang_admin_users['No ban admins message']);
         }
 
         // Also, we cannot ban moderators
-        $result = $this->db->query('SELECT COUNT(*) FROM '.$this->db->prefix.'users AS u INNER JOIN '.$this->db->prefix.'groups AS g ON u.group_id=g.g_id WHERE g.g_moderator=1 AND u.id IN ('.implode(',', $user_ids).')') or error('Unable to fetch moderator group info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->result($result) > 0) {
+        $is_mod = \ORM::for_table($this->db->prefix . 'users')->table_alias('u')
+            ->inner_join($this->db->prefix . 'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+            ->where('g.g_moderator', 1)
+            ->where_in('u.id', $user_ids)
+            ->find_one();
+        if ($is_mod) {
             message($lang_admin_users['No ban mods message']);
         }
 
@@ -372,58 +423,76 @@ class users
             $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
 
             if ($ban_expire != '' && $ban_expire != 'Never') {
-                $ban_expire = strtotime($ban_expire.' GMT');
+                $ban_expire = strtotime($ban_expire . ' GMT');
 
                 if ($ban_expire == -1 || !$ban_expire) {
-                    message($lang_admin_users['Invalid date message'].' '.$lang_admin_users['Invalid date reasons']);
+                    message($lang_admin_users['Invalid date message'] . ' ' . $lang_admin_users['Invalid date reasons']);
                 }
 
                 $diff = ($this->user->timezone + $this->user->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
-                    message($lang_admin_users['Invalid date message'].' '.$lang_admin_users['Invalid date reasons']);
+                    message($lang_admin_users['Invalid date message'] . ' ' . $lang_admin_users['Invalid date reasons']);
                 }
             } else {
                 $ban_expire = 'NULL';
             }
 
-            $ban_message = ($ban_message != '') ? '\''.$this->db->escape($ban_message).'\'' : 'NULL';
+            $ban_message = ($ban_message != '') ? $ban_message : 'NULL';
 
             // Fetch user information
             $user_info = array();
-            $result = $this->db->query('SELECT id, username, email, registration_ip FROM '.$this->db->prefix.'users WHERE id IN ('.implode(',', $user_ids).')') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-            while ($cur_user = $this->db->fetch_assoc($result)) {
+            $select_fetch_user_information = array('id', 'username', 'email', 'registration_ip');
+            $result = \ORM::for_table($this->db->prefix . 'users')->select_many($select_fetch_user_information)
+                ->where_in('id', $user_ids)
+                ->find_many();
+            foreach ($result as $cur_user) {
                 $user_info[$cur_user['id']] = array('username' => $cur_user['username'], 'email' => $cur_user['email'], 'ip' => $cur_user['registration_ip']);
             }
 
             // Overwrite the registration IP with one from the last post (if it exists)
             if ($ban_the_ip != 0) {
-                $result = $this->db->query('SELECT p.poster_id, p.poster_ip FROM '.$this->db->prefix.'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM '.$this->db->prefix.'posts WHERE poster_id IN ('.implode(',', $user_ids).') GROUP BY poster_id) AS i ON p.id=i.id') or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-                while ($cur_address = $this->db->fetch_assoc($result)) {
+                $result = \ORM::for_table($this->db->prefix . 'posts')->raw_query('SELECT p.poster_id, p.poster_ip FROM ' . $this->db->prefix . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . $this->db->prefix . 'posts WHERE poster_id IN (' . implode(',', $user_ids) . ') GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
+                foreach ($result as $cur_address) {
                     $user_info[$cur_address['poster_id']]['ip'] = $cur_address['poster_ip'];
                 }
             }
 
             // And insert the bans!
             foreach ($user_ids as $user_id) {
-                $ban_username = '\''.$this->db->escape($user_info[$user_id]['username']).'\'';
-                $ban_email = '\''.$this->db->escape($user_info[$user_id]['email']).'\'';
-                $ban_ip = ($ban_the_ip != 0) ? '\''.$this->db->escape($user_info[$user_id]['ip']).'\'' : 'NULL';
+                $ban_username = $user_info[$user_id]['username'];
+                $ban_email = $user_info[$user_id]['email'];
+                $ban_ip = ($ban_the_ip != 0) ? $user_info[$user_id]['ip'] : 'NULL';
 
-                $this->db->query('INSERT INTO '.$this->db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES('.$ban_username.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$this->user->id.')') or error('Unable to add ban', __FILE__, __LINE__, $this->db->error());
+                $insert_update_ban = array(
+                    'username' => $ban_username,
+                    'ip' => $ban_ip,
+                    'email' => $ban_email,
+                    'message' => $ban_message,
+                    'expire' => $ban_expire,
+                    'ban_creator' => $this->user->id,
+                );
+
+                if ($this->request->post('mode') == 'add') {
+                    $insert_update_ban['ban_creator'] = $this->user->id;
+
+                    \ORM::for_table($this->db->prefix . 'bans')
+                        ->create()
+                        ->set($insert_update_ban)
+                        ->save();
+                }
+
+                // Regenerate the bans cache
+                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                    require FEATHER_ROOT . 'include/cache.php';
+                }
+
+                generate_bans_cache();
+
+                redirect(get_link('admin/users/'), $lang_admin_users['Users banned redirect']);
             }
-
-            // Regenerate the bans cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_bans_cache();
-
-            redirect(get_link('admin/users/'), $lang_admin_users['Users banned redirect']);
         }
-
         return $user_ids;
     }
 
@@ -525,7 +594,7 @@ class users
         $like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
         foreach ($form as $key => $input) {
             if ($input != '' && in_array($key, array('username', 'email', 'title', 'realname', 'url', 'jabber', 'icq', 'msn', 'aim', 'yahoo', 'location', 'signature', 'admin_note'))) {
-                $search['conditions'][] = 'u.'.$this->db->escape($key).' '.$like_command.' \''.$this->db->escape(str_replace('*', '%', $input)).'\'';
+                $search['conditions'][] = 'u.'.str_replace("'","''",$key).' '.$like_command.' \''.str_replace("'","''",str_replace('*', '%', $input)).'\'';
                 $search['query_str'][] = 'form%5B'.$key.'%5D='.urlencode($input);
             }
         }
@@ -552,9 +621,18 @@ class users
 
         $user_data = array();
 
-        $result = $this->db->query('SELECT u.id, u.username, u.email, u.title, u.num_posts, u.admin_note, g.g_id, g.g_user_title FROM '.$this->db->prefix.'users AS u LEFT JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : '').' ORDER BY '.$this->db->escape($order_by).' '.$this->db->escape($direction).' LIMIT '.$start_from.', 50') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
-            while ($cur_user = $this->db->fetch_assoc($result)) {
+        $select_print_users = array('u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title');
+        $result = \ORM::for_table($this->db->prefix.'users')->table_alias('u')
+                        ->select_many($select_print_users)
+                        ->left_outer_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
+                        ->offset($start_from)
+                        ->limit(50)
+                        ->order_by($order_by, $direction)
+                        ->find_many();
+
+        if ($result) {
+            foreach ($result as $cur_user) {
                 $cur_user['user_title'] = get_title($cur_user);
 
                 // This script is a special case in that we want to display "Not verified" for non-verified users
@@ -573,9 +651,12 @@ class users
     {
         $output = '';
 
-        $result = $this->db->query('SELECT g_id, g_title FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
+        $select_get_group_list = array('g_id', 'g_title');
+        $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_get_group_list)
+                        ->where_not_equal('g_id', FEATHER_GUEST)
+                        ->order_by('g_title');
 
-        while ($cur_group = $this->db->fetch_assoc($result)) {
+        foreach ($result as $cur_group) {
             $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
         }
 
