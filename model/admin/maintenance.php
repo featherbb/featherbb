@@ -91,8 +91,6 @@ class maintenance
 
         // Check if there is more work to do
         if ($end_at > 0) {
-            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $this->db->error());
-
             $id = \ORM::for_table($this->db->prefix.'posts')->where_gt('id', $end_at)
                         ->order_by_asc('id')
                         ->find_one_col('id');

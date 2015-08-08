@@ -257,9 +257,6 @@ class viewtopic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result = $this->db->query('SELECT u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, g.g_promote_next_group, o.user_id AS is_online FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$this->db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-
-
         $select_print_posts = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
 
         $result = \ORM::for_table($this->db->prefix.'posts')
