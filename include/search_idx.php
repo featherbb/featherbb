@@ -302,7 +302,12 @@ function strip_search_index($post_ids)
 {
     global $db_type, $db;
 
-    $post_ids_sql = explode(',', $post_ids);
+    if (!is_array($post_ids)) {
+        $post_ids_sql = explode(',', $post_ids);
+    }
+    else {
+        $post_ids_sql = $post_ids;
+    }
 
     switch ($db_type) {
         case 'mysql':
