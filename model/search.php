@@ -226,7 +226,8 @@ class search
                                 }
 
                                 ++$word_count;
-                                $this->db->free_result($result);
+                                $pdo = \ORM::get_db();
+                                $pdo = null;
 
                                 break;
                             }
