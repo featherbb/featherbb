@@ -1,36 +1,116 @@
 <?php
 /**
- * FeatherBB
  *
- *
- * USAGE
+ * Copyright (C) 2015 FeatherBB
+ * based on code by (C) 2008-2012 FluxBB
+ * and Rickard Andersson (C) 2002-2008 PunBB
+ * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  *
  * $app = new \Slim\Slim();
- * $app->add(new \Slim\Extras\Middleware\FeatherBB());
+ * $app->add(new \Slim\Extras\Middleware\FeatherBB($params));
  *
  */
+
 namespace Slim\Extras\Middleware;
 
 class FeatherBB extends \Slim\Middleware
 {
-	protected $settings = array();
+    protected $data = array();
 
-	public function __construct()
+	public function __construct(array $user_forum_settings = array())
 	{
+        $this->data['forum_env'] = array(
+                                    'FEATHER' => true,
+                                    'FEATHER_ROOT' => dirname(__FILE__).'/../../../',
+                                    'FORUM_VERSION' => '1.0.0',
+                                    'FORUM_NAME' => 'FeatherBB',
+                                    'FORUM_DB_REVISION' => 21,
+                                    'FORUM_SI_REVISION' => 2,
+                                    'FORUM_PARSER_REVISION' => 2,
+                                    'FORUM_CACHE_DIR' => dirname(__FILE__).'/../../../cache/', // TODO : Move in user settings
+                                    'FEATHER_UNVERIFIED' => 0,
+                                    'FEATHER_ADMIN' => 1,
+                                    'FEATHER_MOD' => 2,
+                                    'FEATHER_GUEST' => 3,
+                                    'FEATHER_MEMBER' => 4,
+                                    'FEATHER_MAX_POSTSIZE' => 32768,
+                                    'FEATHER_SEARCH_MIN_WORD' => 3,
+                                    'FEATHER_SEARCH_MAX_WORD' => 20,
+                                    'FORUM_MAX_COOKIE_SIZE' => 4048
+                                    );
 
+        $this->data['forum_settings'] = array_merge(self::load_default_settings(), $this->load_forum_config(), $user_forum_settings);
 	}
 
-    public function call() 
+    public function load_forum_config()
     {
-        $feather = $this->app;
+        global $feather_config; // Legacy
 
-       	// Block prefetch requests
-        $this->app->hook('slim.before', function () use ($feather) {
-        	if ((isset($feather->environment['HTTP_X_MOZ'])) && ($feather->environment['HTTP_X_MOZ'] == 'prefetch')) {
-                $feather->halt(403, 'Prefetch forbidden');
-        	}
-        });
+        if (file_exists($this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php')) {
+            include $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
+        } else {
+            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
+            generate_config_cache();
+            require $this->data['forum_env']['FEATHER_ROOT'].'cache_config.php';
+        }
+        return $feather_config;
+    }
 
+    public static function load_default_settings()
+    {
+        return array(
+                // Database
+                'db_type' => 'mysqli',
+                'db_host' => '',
+                'db_name' => '',
+                'db_user' => '',
+                'db_pass' => '',
+                'db_prefix' => '',
+                // Cookies
+                'cookie_name' => 'feather_cookie',
+                'cookie_seed' => 'changeme', // MUST BE CHANGED
+                );
+    }
+
+    // Getters / setters for Slim container (avoid magic get error)
+
+    public function set_forum_env($key, $value = null)
+    {
+        $tmp = (!is_array($key) && !is_null($value)) ? array($key, $value) : $key;
+        foreach ($tmp as $key => $value) {
+            $this->app->container->get('forum_env')[$key] = $value;
+        }
+
+    }
+
+    public function set_forum_settings($key, $value = null)
+    {
+        $tmp = (!is_array($key) && !is_null($value)) ? array($key, $value) : $key;
+        foreach ($tmp as $key => $value) {
+            $this->app->container->get('forum_settings')[$key] = $value;
+        }
+
+    }
+
+    public function hydrate($data)
+    {
+        foreach ($data as $key => $value) {
+            $this->app->container[$key] = $value;
+        }
+    }
+
+    // Legacy function, to ensure constants backward compatibility
+    public function env_to_globals(array $vars)
+    {
+        foreach ($vars as $key => $value) {
+            define($key, $value);
+        }
+    }
+
+    //
+
+    public function set_headers()
+    {
         // No cache headers
         $this->app->response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
         $this->app->response->headers->set('Pragma', 'no-cache');
@@ -41,9 +121,327 @@ class FeatherBB extends \Slim\Middleware
         // Prevent the site to be embedded in iFrame
         $this->app->response->headers->set('X-Frame-Options', 'deny');
         // Yeah !
-        $this->app->response->headers->set('X-Powered-By', 'FeatherBB');
+        $this->app->response->headers->set('X-Powered-By', $this->app->forum_env['FORUM_NAME']);
+    }
 
-        // Call next middleware.
+    public function init_db()
+    {
+        // Include IdiORM
+        require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
+
+        // TODO: handle drivers
+        \ORM::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
+        \ORM::configure('username', $this->app->forum_settings['db_user']);
+        \ORM::configure('password', $this->app->forum_settings['db_pass']);
+        \ORM::configure('logging', true);
+        \ORM::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+        \ORM::configure('id_column_overrides', array(
+            $this->app->forum_settings['db_prefix'].'groups' => 'g_id',
+        ));
+    }
+
+    public function authenticate()
+    {
+        $now = time();
+
+        // Get FeatherBB cookie
+        $cookie_raw = $this->app->getCookie($this->data['forum_settings']['cookie_name']);
+
+        // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
+        if (isset($cookie_raw)) {
+            $cookie = json_decode($cookie_raw, true);
+            $checksum = hash_hmac('sha1', $cookie['user_id'].$cookie['expires'], $this->data['forum_settings']['cookie_seed'].'_checksum');
+
+            // If cookie has a non-guest user, hasn't expired and is legit
+            if ($cookie['user_id'] > 1 && $cookie['expires'] > $now && $checksum == $cookie['checksum']) {
+
+                // Get user info from db
+                $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
+                $where_check_cookie = array('u.id' => intval($cookie['user_id']));
+
+                $result = \ORM::for_table($this->data['forum_settings']['db_prefix'].'users')
+                    ->table_alias('u')
+                    ->select_many($select_check_cookie)
+                    ->inner_join($this->data['forum_settings']['db_prefix'].'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+                    ->left_outer_join($this->data['forum_settings']['db_prefix'].'online', array('o.user_id', '=', 'u.id'), 'o')
+                    ->where($where_check_cookie)
+                    ->find_result_set();
+
+                foreach ($result as $this->app->user);
+
+                // Another security check, to prevent identity fraud by changing the user id in the cookie) (might be useless considering the strength of encryption)
+                if (isset($this->app->user->id) && hash_hmac('sha1', $this->app->user->password, $this->data['forum_settings']['cookie_seed'].'_password_hash') === $cookie['password_hash']) {
+                    $expires = ($cookie['expires'] > $now + $this->data['forum_settings']['o_timeout_visit']) ? $now + 1209600 : $now + $this->data['forum_settings']['o_timeout_visit'];
+                    $this->app->user->is_guest = false;
+                    $this->app->user->is_admmod = $this->app->user->g_id == FEATHER_ADMIN || $this->app->g_moderator == '1';
+                    if (!$this->app->user->disp_topics) {
+                        $this->app->user->disp_topics = $this->data['forum_settings']['o_disp_topics_default'];
+                    }
+                    if (!$this->app->user->disp_posts) {
+                        $this->app->user->disp_posts = $this->data['forum_settings']['o_disp_posts_default'];
+                    }
+                    if (!file_exists($this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language)) {
+                        $this->app->user->language = $this->data['forum_settings']['o_default_lang'];
+                    }
+                    if (!file_exists($this->data['forum_env']['FEATHER_ROOT'].'style/'.$this->app->user->style.'.css')) {
+                        $this->app->user->style = $this->data['forum_settings']['o_default_style'];
+                    }
+                    feather_setcookie($this->app->user->id, $this->app->user->password, $expires);
+                    $this->update_online();
+                    return true;
+                }
+            }
+        }
+        // If there is no cookie, or cookie is guest or expired, let's reconnect.
+        $expires = $now + 31536000; // The cookie expires after a year
+        $remote_addr = get_remote_address();
+
+        // Fetch guest user
+        $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
+        $where_set_default_user = array('u.id' => '1');
+
+        $result = \ORM::for_table($this->data['forum_settings']['db_prefix'].'users')
+            ->table_alias('u')
+            ->select_many($select_set_default_user)
+            ->inner_join($this->data['forum_settings']['db_prefix'].'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+            ->left_outer_join($this->data['forum_settings']['db_prefix'].'online', array('o.ident', '=', $remote_addr), 'o', true)
+            ->where($where_set_default_user)
+            ->find_result_set();
+
+        if (!$result) {
+            exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
+        }
+
+        foreach ($result as $this->app->user);
+
+        $this->app->user->disp_topics = $this->data['forum_settings']['o_disp_topics_default'];
+        $this->app->user->disp_posts = $this->data['forum_settings']['o_disp_posts_default'];
+        $this->app->user->timezone = $this->data['forum_settings']['o_default_timezone'];
+        $this->app->user->dst = $this->data['forum_settings']['o_default_dst'];
+        $this->app->user->language = $this->data['forum_settings']['o_default_lang'];
+        $this->app->user->style = $this->data['forum_settings']['o_default_style'];
+        $this->app->user->is_guest = true;
+        $this->app->user->is_admmod = false;
+
+        // Update online list
+        if (!$this->app->user->logged) {
+            $this->app->user->logged = time();
+
+            // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
+            switch ($this->data['forum_settings']['db_type']) {
+                case 'mysql':
+                case 'mysqli':
+                case 'mysql_innodb':
+                case 'mysqli_innodb':
+                case 'sqlite':
+                case 'sqlite3':
+                \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                    break;
+
+                default:
+                    \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                    break;
+            }
+        } else {
+            \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->where('ident', $remote_addr)
+                 ->update_many('logged', time());
+        }
+
+        feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expires);
+        return true;
+    }
+
+    public function update_online()
+    {
+        $now = time();
+
+        // Define this if you want this visit to affect the online list and the users last visit data
+        if (!defined('FEATHER_QUIET_VISIT')) {
+            // Update the online list
+            if (!$this->app->user->logged) {
+                $this->app->user->logged = $now;
+
+                // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
+                switch ($this->data['forum_settings']['db_type']) {
+                    case 'mysql':
+                    case 'mysqli':
+                    case 'mysql_innodb':
+                    case 'mysqli_innodb':
+                    case 'sqlite':
+                    case 'sqlite3':
+                        \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        break;
+
+                    default:
+                        \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        break;
+                }
+
+                // Reset tracked topics
+                set_tracked_topics(null);
+
+            } else {
+                // Special case: We've timed out, but no other user has browsed the forums since we timed out
+                if ($this->app->user->logged < ($now-$this->data['forum_settings']['o_timeout_visit'])) {
+                    \ORM::for_table($this->data['forum_settings']['db_prefix'].'users')->where('id', $this->app->user->id)
+                        ->find_one()
+                        ->set('last_visit', $this->app->user->logged)
+                        ->save();
+                    $this->app->user->last_visit = $this->app->user->logged;
+                }
+
+                $idle_sql = ($this->app->user->idle == '1') ? ', idle=0' : '';
+
+                \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('UPDATE '.$this->data['forum_settings']['db_prefix'].'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
+
+                // Update tracked topics with the current expire time
+                $cookie_tracked_topics = $this->app->getCookie($this->data['forum_settings']['cookie_name'].'_track');
+                if (isset($cookie_tracked_topics)) {
+                    set_tracked_topics(json_decode($cookie_tracked_topics, true));
+                }
+            }
+        } else {
+            if (!$this->app->user->logged) {
+                $this->app->user->logged = $this->app->user->last_visit;
+            }
+        }
+    }
+
+    //
+
+    public function init_db_legacy()
+    {
+        switch ($this->app->forum_settings['db_type']) {
+            case 'mysql':
+                require_once FEATHER_ROOT.'include/dblayer/mysql.php';
+                break;
+
+            case 'mysql_innodb':
+                require_once FEATHER_ROOT.'include/dblayer/mysql_innodb.php';
+                break;
+
+            case 'mysqli':
+                require_once FEATHER_ROOT.'include/dblayer/mysqli.php';
+                break;
+
+            case 'mysqli_innodb':
+                require_once FEATHER_ROOT.'include/dblayer/mysqli_innodb.php';
+                break;
+
+            case 'pgsql':
+                require_once FEATHER_ROOT.'include/dblayer/pgsql.php';
+                break;
+
+            case 'sqlite':
+                require_once FEATHER_ROOT.'include/dblayer/sqlite.php';
+                break;
+
+            case 'sqlite3':
+                require_once FEATHER_ROOT.'include/dblayer/sqlite3.php';
+                break;
+
+            default:
+                error('\''.$db_type.'\' is not a valid database type. Please check settings in config.php.', __FILE__, __LINE__);
+                break;
+        }
+
+        $this->app->container->singleton('db', function () {
+            // Create the database adapter object (and open/connect to/select db)
+            return new \DBLayer($this->app->forum_settings['db_host'],
+                               $this->app->forum_settings['db_user'],
+                               $this->app->forum_settings['db_pass'],
+                               $this->app->forum_settings['db_name'],
+                               $this->app->forum_settings['db_prefix'],
+                               false);
+        });
+        $this->app->db->start_transaction();
+        $this->app->prefix = $this->app->forum_settings['db_prefix']; // But, why ? *insert GIF here*
+    }
+
+    public function call()
+    {
+        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed;
+
+        // Configure Slim
+        $this->app->config('cookies.encrypt', true);
+        $this->app->config('debug', true); // As long as we're developing FeatherBB
+
+        // Populate Feather object
+        $this->hydrate($this->data);
+
+        // Legacy
+        $this->env_to_globals($this->app->forum_env);
+        $this->app->config = $this->data['forum_settings'];
+        extract($this->data['forum_settings']);
+
+        // Block prefetch requests
+        $this->app->hook('slim.before', function () {
+        	if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
+                $this->app->halt(403, 'Prefetch forbidden');
+        	}
+        });
+
+        $this->set_headers();
+        $this->init_db();
+        $this->init_db_legacy();
+
+        require_once $this->app->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
+        require_once $this->app->forum_env['FEATHER_ROOT'].'include/functions.php';
+
+        // TODO : check useness
+        // Strip out "bad" UTF-8 characters
+        forum_remove_bad_characters();
+        // Reverse the effect of register_globals
+        forum_unregister_globals();
+
+        // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
+        setlocale(LC_CTYPE, 'C');
+
+        // TODO : magic quotes
+        // Turn off magic_quotes_runtime
+        if (get_magic_quotes_runtime()) {
+            set_magic_quotes_runtime(0);
+        }
+
+        // Define time formats
+        $forum_time_formats = array($this->app->config['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
+        $forum_date_formats = array($this->app->config['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
+
+        $this->authenticate();
+
+        // Attempt to load the common language file
+        if (file_exists($this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php')) {
+            include $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php';
+        } else {
+            die('There is no valid language pack \''.feather_escape($this->app->user->language).'\' installed. Please reinstall a language of that name');
+        }
+
+        // Check if we are to display a maintenance message
+        if ($this->app->config['o_maintenance'] && $this->app->user->g_id > FEATHER_ADMIN && !defined('FEATHER_TURN_OFF_MAINT')) {
+            maintenance_message();
+        }
+
+        // Load cached bans
+        if (file_exists($this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php')) {
+            include $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+        }
+
+        if (!defined('FEATHER_BANS_LOADED')) {
+            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                require_once $this->app->forum_env['FEATHER_ROOT'].'include/cache.php';
+            }
+
+            generate_bans_cache();
+            require_once $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+        }
+
+        // Check if current user is banned
+        check_bans();
+
+        // Update online list
+        update_users_online();
+
+        $this->app->config('templates.path', get_path_view());
         $this->next->call();
     }
 
