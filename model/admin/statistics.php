@@ -50,7 +50,7 @@ class statistics
 
     public function get_num_online()
     {
-        $num_online = \ORM::for_table('online')->where('idle', 0)
+        $num_online = \DB::for_table('online')->where('idle', 0)
                             ->count('user_id');
 
         return $num_online;
@@ -64,7 +64,7 @@ class statistics
 
         if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = \ORM::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->prefix.'%\'')->find_many();
+            $result = \DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->prefix.'%\'')->find_many();
 
             $total['size'] = $total['records'] = 0;
             foreach ($result as $status) {

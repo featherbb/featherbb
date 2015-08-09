@@ -59,7 +59,7 @@ class index
             array('fp.read_forum' => '1')
         );
 
-        $result = \ORM::for_table('forums')
+        $result = \DB::for_table('forums')
             ->table_alias('f')
             ->select_many($select_get_new_posts)
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
@@ -83,7 +83,7 @@ class index
             } else {   
                 $select_get_new_posts_tracked_topics = array('forum_id', 'id', 'last_post');
 
-                $result = \ORM::for_table('topics')
+                $result = \DB::for_table('topics')
                     ->select_many($select_get_new_posts_tracked_topics)
                     ->where_in('forum_id', array_keys($forums))
                     ->where_gt('last_post', $this->user->last_visit)
@@ -118,7 +118,7 @@ class index
         );
         $order_by_print_categories_forums = array('c.disp_position', 'c.id', 'f.disp_position');
         
-        $result = \ORM::for_table('categories')
+        $result = \DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_print_categories_forums)
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
@@ -230,7 +230,7 @@ class index
             require FORUM_CACHE_DIR.'cache_users_info.php';
         }
         
-        $stats_query = \ORM::for_table('forums')
+        $stats_query = \DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
                         ->select_expr('SUM(num_posts)', 'total_posts')
                         ->find_one();
@@ -258,7 +258,7 @@ class index
         $where_fetch_users_online = array('idle' => '0');
         $order_by_fetch_users_online = array('ident');
         
-        $result = \ORM::for_table('online')
+        $result = \DB::for_table('online')
             ->select_many($select_fetch_users_online)
             ->where($where_fetch_users_online)
             ->order_by_many($order_by_fetch_users_online)

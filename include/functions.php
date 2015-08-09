@@ -45,7 +45,7 @@ function check_cookie()
             $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
             $where_check_cookie = array('u.id' => intval($cookie['user_id']));
 
-            $result = ORM::for_table('users')
+            $result = \DB::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
                 ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -114,11 +114,11 @@ function set_preferences()
                 case 'mysqli_innodb':
                 case 'sqlite':
                 case 'sqlite3':
-                    \ORM::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
+                    \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
                     break;
 
                 default:
-                    \ORM::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
+                    \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
                     break;
             }
 
@@ -128,7 +128,7 @@ function set_preferences()
         } else {
             // Special case: We've timed out, but no other user has browsed the forums since we timed out
             if ($feather->user->logged < ($now-$feather->config['o_timeout_visit'])) {
-                \ORM::for_table('users')->where('id', $feather->user->id)
+                \DB::for_table('users')->where('id', $feather->user->id)
                     ->find_one()
                     ->set('last_visit', $feather->user->logged)
                     ->save();
@@ -137,7 +137,7 @@ function set_preferences()
 
             $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
 
-            \ORM::for_table('online')->raw_execute('UPDATE '.$feather->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
+            \DB::for_table('online')->raw_execute('UPDATE '.$feather->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
 
             // Update tracked topics with the current expire time
             $cookie_tracked_topics = $feather->getCookie($cookie_name.'_track');
@@ -286,15 +286,15 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-            \ORM::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+            \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
 
             default:
-                \ORM::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
         }
     } else {
-        \ORM::for_table('online')->where('ident', $remote_addr)
+        \DB::for_table('online')->where('ident', $remote_addr)
              ->update_many('logged', time());
     }
 
@@ -352,7 +352,7 @@ function check_bans()
     foreach ($feather_bans as $cur_ban) {
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-            \ORM::for_table('bans')->where('id', $cur_ban['id'])
+            \DB::for_table('bans')->where('id', $cur_ban['id'])
                                                ->delete_many();
             $bans_altered = true;
             continue;
@@ -382,7 +382,7 @@ function check_bans()
         }
 
         if ($is_banned) {
-            \ORM::for_table('online')->where('ident', $feather->user->username)
+            \DB::for_table('online')->where('ident', $feather->user->username)
                                                  ->delete_many();
             message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
         }
@@ -435,7 +435,7 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = \ORM::for_table('online')->raw_query('SELECT username FROM '.$feather->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
     if ($result) {
         $busy = $result['username'];
@@ -466,26 +466,26 @@ function update_users_online()
     // Fetch all online list entries that are older than "o_timeout_online"
     $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
-    $result = \ORM::for_table('online')->select_many($select_update_users_online)
+    $result = \DB::for_table('online')->select_many($select_update_users_online)
         ->where_lt('logged', $now-$feather_config['o_timeout_online'])
         ->find_many();
 
     foreach ($result as $cur_user) {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1') {
-            \ORM::for_table('online')->where('ident', $cur_user['ident'])
+            \DB::for_table('online')->where('ident', $cur_user['ident'])
                                                  ->delete_many();
         } else {
             // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
             if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                \ORM::for_table('users')->where('id', $cur_user['user_id'])
+                \DB::for_table('users')->where('id', $cur_user['user_id'])
                         ->find_one()
                         ->set('last_visit', $cur_user['logged'])
                         ->save();
-                \ORM::for_table('online')->where('user_id', $cur_user['user_id'])
+                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
                     ->delete_many();
             } elseif ($cur_user['idle'] == '0') {
-                \ORM::for_table('online')->where('user_id', $cur_user['user_id'])
+                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
                         ->update_many('idle', 1);
             }
         }
@@ -589,7 +589,7 @@ function update_forum($forum_id)
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-    $stats_query = \ORM::for_table('topics')
+    $stats_query = \DB::for_table('topics')
                     ->where('forum_id', $forum_id)
                     ->select_expr('COUNT(id)', 'total_topics')
                     ->select_expr('SUM(num_replies)', 'total_replies')
@@ -602,7 +602,7 @@ function update_forum($forum_id)
 
     $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
 
-    $result = \ORM::for_table('topics')->select_many($select_update_forum)
+    $result = \DB::for_table('topics')->select_many($select_update_forum)
         ->where('forum_id', $forum_id)
         ->where_null('moved_to')
         ->order_by_desc('last_post')
@@ -627,7 +627,7 @@ function update_forum($forum_id)
             'last_poster'  => 'NULL',
         );
     }
-        \ORM::for_table('forums')
+        \DB::for_table('forums')
             ->where('id', $forum_id)
             ->find_one()
             ->set($insert_update_forum)
@@ -667,17 +667,17 @@ function delete_topic($topic_id)
             array('moved_to' => $topic_id)
         );
 
-    \ORM::for_table('topics')
+    \DB::for_table('topics')
         ->where_any_is($where_delete_topic)
         ->delete_many();
 
     // Delete posts in topic
-    \ORM::for_table('posts')
+    \DB::for_table('posts')
         ->where('topic_id', $topic_id)
         ->delete_many();
 
     // Delete any subscriptions for this topic
-    \ORM::for_table('topic_subscriptions')
+    \DB::for_table('topic_subscriptions')
         ->where('topic_id', $topic_id)
         ->delete_many();
 }
@@ -691,7 +691,7 @@ function delete_post($post_id, $topic_id)
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-    $result = \ORM::for_table('posts')
+    $result = \DB::for_table('posts')
                   ->select_many('id', 'poster', 'posted')
                   ->where('topic_id', $topic_id)
                   ->order_by_desc('id')
@@ -712,7 +712,7 @@ function delete_post($post_id, $topic_id)
    }
 
     // Delete the post
-    \ORM::for_table('posts')
+    \DB::for_table('posts')
         ->where('id', $post_id)
         ->find_one()
         ->delete();
@@ -720,7 +720,7 @@ function delete_post($post_id, $topic_id)
     strip_search_index($post_id);
 
     // Count number of replies in the topic
-    $num_replies = \ORM::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
+    $num_replies = \DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
 
     // If the message we deleted is the most recent in the topic (at the end of the topic)
     if ($last_id == $post_id) {
@@ -732,14 +732,14 @@ function delete_post($post_id, $topic_id)
                 'last_poster'  => $second_poster,
                 'num_replies'  => $num_replies,
             );
-            \ORM::for_table('topics')
+            \DB::for_table('topics')
                 ->where('id', $topic_id)
                 ->find_one()
                 ->set($update_topic)
                 ->save();
         } else {
             // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
-            \ORM::for_table('topics')
+            \DB::for_table('topics')
                 ->where('id', $topic_id)
                 ->find_one()
                 ->set_expr('last_post', 'posted')
@@ -750,7 +750,7 @@ function delete_post($post_id, $topic_id)
         }
     } else {
         // Otherwise we just decrement the reply counter
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->where('id', $topic_id)
             ->find_one()
             ->set('num_replies', $num_replies)
@@ -1727,10 +1727,10 @@ function display_saved_queries()
 
     $query_time_total = 0.0;
     $i = 0;
-    foreach (\ORM::get_query_log()[1] as $query) {
+    foreach (\DB::get_query_log()[1] as $query) {
         ?>
                 <tr>
-					<td class="tcl"><?php echo feather_escape(round(\ORM::get_query_log()[0][$i], 6)) ?></td>
+					<td class="tcl"><?php echo feather_escape(round(\DB::get_query_log()[0][$i], 6)) ?></td>
 					<td class="tcr"><?php echo feather_escape($query) ?></td>
 				</tr>
         <?php

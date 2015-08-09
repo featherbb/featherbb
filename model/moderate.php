@@ -34,7 +34,7 @@ class moderate
     {
         global $lang_common;
 
-        $ip = \ORM::for_table('posts')
+        $ip = \DB::for_table('posts')
             ->where('id', $pid)
             ->find_one_col('poster_ip');
 
@@ -50,7 +50,7 @@ class moderate
 
     public function get_moderators($fid)
     {
-        $moderators = \ORM::for_table('forums')
+        $moderators = \DB::for_table('forums')
             ->where('id', $fid)
             ->find_one_col('moderators');
 
@@ -68,7 +68,7 @@ class moderate
             array('fp.read_forum' => '1')
         );
 
-        $cur_topic = \ORM::for_table('topics')
+        $cur_topic = \DB::for_table('topics')
             ->table_alias('t')
             ->select_many($select_get_topic_info)
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
@@ -104,7 +104,7 @@ class moderate
             // Verify that the post IDs are valid
             $posts_array = explode(',', $posts);
 
-            $result = \ORM::for_table('posts')
+            $result = \DB::for_table('posts')
                 ->where_in('id', $posts_array)
                 ->where('topic_id', $tid)
                 ->find_many();
@@ -118,7 +118,7 @@ class moderate
             }
 
             // Delete the posts
-            \ORM::for_table('posts')
+            \DB::for_table('posts')
                 ->where_in('id', $posts_array)
                 ->delete_many();
 
@@ -128,7 +128,7 @@ class moderate
             // Get last_post, last_post_id, and last_poster for the topic after deletion
             $select_last_post = array('id', 'poster', 'posted');
 
-            $last_post = \ORM::for_table('posts')
+            $last_post = \DB::for_table('posts')
                 ->select_many($select_last_post)
                 ->where('topic_id', $tid)
                 ->find_one();
@@ -143,7 +143,7 @@ class moderate
                 'last_poster'  => $last_post['poster'],
             );
 
-            \ORM::for_table('topics')->where('id', $tid)
+            \DB::for_table('topics')->where('id', $tid)
                 ->find_one()
                 ->set($update_topic)
                 ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted)
@@ -182,7 +182,7 @@ class moderate
             // Verify that the post IDs are valid
             $posts_array = explode(',', $posts);
 
-            $result = \ORM::for_table('posts')
+            $result = \DB::for_table('posts')
                 ->where_in('id', $posts_array)
                 ->where('topic_id', $tid)
                 ->find_many();
@@ -197,7 +197,7 @@ class moderate
                 array('fp.post_topics' => '1')
             );
 
-            $result = \ORM::for_table('forums')
+            $result = \DB::for_table('forums')
                 ->table_alias('f')
                 ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
                 ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
@@ -224,7 +224,7 @@ class moderate
             // Get data from the new first post
             $select_first_post = array('id', 'poster', 'posted');
 
-            $first_post_data = \ORM::for_table('posts')
+            $first_post_data = \DB::for_table('posts')
                 ->select_many($select_first_post)
                 ->where_in('id',$posts_array )
                 ->order_by_asc('id')
@@ -239,26 +239,26 @@ class moderate
                 'forum_id'  => $move_to_forum,
             );
 
-            \ORM::for_table('topics')
+            \DB::for_table('topics')
                 ->create()
                 ->set($insert_topic)
                 ->save();
 
-            $new_tid = \ORM::get_db()->lastInsertId($this->feather->prefix.'topics');
+            $new_tid = \DB::get_db()->lastInsertId($this->feather->prefix.'topics');
 
             // Move the posts to the new topic
-            \ORM::for_table('posts')->where_in('id', $posts_array)
+            \DB::for_table('posts')->where_in('id', $posts_array)
                 ->find_one()
                 ->set('topic_id', $new_tid)
                 ->save();
 
             // Apply every subscription to both topics
-            \ORM::for_table('topic_subscriptions')->raw_query('INSERT INTO '.$this->feather->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->feather->prefix.'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
+            \DB::for_table('topic_subscriptions')->raw_query('INSERT INTO '.$this->feather->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->feather->prefix.'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
             $select_last_post = array('id', 'poster', 'posted');
 
-            $last_old_post_data = \ORM::for_table('posts')
+            $last_old_post_data = \DB::for_table('posts')
                 ->select_many($select_last_post)
                 ->where('topic_id', $tid)
                 ->order_by_desc('id')
@@ -271,7 +271,7 @@ class moderate
                 'last_poster'  => $last_old_post_data['poster'],
             );
 
-            \ORM::for_table('topics')
+            \DB::for_table('topics')
                 ->where('id', $tid)
                 ->find_one()
                 ->set($update_old_topic)
@@ -281,7 +281,7 @@ class moderate
             // Get last_post, last_post_id, and last_poster from the new topic and update it
             $select_new_post = array('id', 'poster', 'posted');
 
-            $last_new_post_data = \ORM::for_table('posts')
+            $last_new_post_data = \DB::for_table('posts')
                 ->select_many($select_new_post)
                 ->where('topic_id', $new_tid)
                 ->order_by_desc('id')
@@ -294,7 +294,7 @@ class moderate
                 'last_poster'  => $last_new_post_data['poster'],
             );
 
-            \ORM::for_table('topics')
+            \DB::for_table('topics')
                 ->where('id', $new_tid)
                 ->find_one()
                 ->set($update_new_topic)
@@ -321,7 +321,7 @@ class moderate
         );
         $order_by_get_forum_list_split = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $result = \ORM::for_table('categories')
+        $result = \DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_get_forum_list_split)
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
@@ -363,7 +363,7 @@ class moderate
         );
         $order_by_get_forum_list_move = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $result = \ORM::for_table('categories')
+        $result = \DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_get_forum_list_move)
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
@@ -407,7 +407,7 @@ class moderate
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $find_ids = \ORM::for_table('posts')->select('id')
+        $find_ids = \DB::for_table('posts')->select('id')
             ->where('topic_id', $tid)
             ->order_by('id')
             ->limit($this->user->disp_posts)
@@ -421,7 +421,7 @@ class moderate
         // Retrieve the posts (and their respective poster)
         $select_display_posts_view = array('u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by');
 
-        $result = \ORM::for_table('posts')
+        $result = \DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_display_posts_view)
             ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
@@ -479,7 +479,7 @@ class moderate
         }
 
         // Verify that the topic IDs are valid
-        $result = \ORM::for_table('topics')
+        $result = \DB::for_table('topics')
             ->where_in('id', $topics)
             ->where('forum_id', $fid)
             ->find_many();
@@ -495,7 +495,7 @@ class moderate
             array('fp.post_topics' => '1')
         );
 
-        $authorized = \ORM::for_table('forums')
+        $authorized = \DB::for_table('forums')
             ->table_alias('f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
@@ -508,13 +508,13 @@ class moderate
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->where('forum_id', $move_to_forum)
             ->where_in('moved_to', $topics)
             ->delete_many();
 
         // Move the topic(s)
-        \ORM::for_table('topics')->where_in('id', $topics)
+        \DB::for_table('topics')->where_in('id', $topics)
             ->find_one()
             ->set('forum_id', $move_to_forum)
             ->save();
@@ -525,7 +525,7 @@ class moderate
                 // Fetch info for the redirect topic
                 $select_move_topics_to = array('poster', 'subject', 'posted', 'last_post');
 
-                $moved_to = \ORM::for_table('topics')->select_many($select_move_topics_to)
+                $moved_to = \DB::for_table('topics')->select_many($select_move_topics_to)
                     ->where('id', $cur_topic)
                     ->find_one();
 
@@ -540,7 +540,7 @@ class moderate
                 );
 
                 // Insert the report
-                \ORM::for_table('topics')
+                \DB::for_table('topics')
                     ->create()
                     ->set($insert_move_topics_to)
                     ->save();
@@ -566,7 +566,7 @@ class moderate
         );
         $order_by_check_move_possible = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $result = \ORM::for_table('categories')
+        $result = \DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_check_move_possible)
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
@@ -596,7 +596,7 @@ class moderate
         }
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
-        $result = \ORM::for_table('topics')
+        $result = \DB::for_table('topics')
             ->where_in('id', $topics)
             ->where('forum_id', $fid)
             ->find_many();
@@ -606,7 +606,7 @@ class moderate
         }
 
         // The topic that we are merging into is the one with the smallest ID
-        $merge_to_tid = \ORM::for_table('topics')
+        $merge_to_tid = \DB::for_table('topics')
             ->where_in('id', $topics)
             ->where('forum_id', $fid)
             ->order_by_asc('id')
@@ -621,15 +621,15 @@ class moderate
         }
 
         // TODO ?
-        \ORM::for_table('topics')->raw_execute($query);
+        \DB::for_table('topics')->raw_execute($query);
 
         // Merge the posts into the topic
-        \ORM::for_table('posts')
+        \DB::for_table('posts')
             ->where_in('topic_id', $topics)
             ->update_many('topic_id', $merge_to_tid);
 
         // Update any subscriptions
-        $find_ids = \ORM::for_table('topic_subscriptions')->select('user_id')
+        $find_ids = \DB::for_table('topic_subscriptions')->select('user_id')
             ->distinct()
             ->where_in('topic_id', $topics)
             ->find_many();
@@ -639,7 +639,7 @@ class moderate
         }
 
         // Delete the subscriptions
-        \ORM::for_table('topic_subscriptions')
+        \DB::for_table('topic_subscriptions')
             ->where_in('topic_id', $topics)
             ->delete_many();
 
@@ -649,7 +649,7 @@ class moderate
                 'user_id'   =>  $cur_user_id,
             );
             // Insert the subscription
-            \ORM::for_table('topic_subscriptions')
+            \DB::for_table('topic_subscriptions')
                 ->create()
                 ->set($insert_topic_subscription)
                 ->save();
@@ -657,19 +657,19 @@ class moderate
 
         // Without redirection the old topics are removed
         if ($this->request->post('with_redirect') == 0) {
-            \ORM::for_table('topics')
+            \DB::for_table('topics')
                 ->where_in('id', $topics)
                 ->where_not_equal('id', $merge_to_tid)
                 ->delete_many();
         }
 
         // Count number of replies in the topic
-        $num_replies = \ORM::for_table('posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
+        $num_replies = \DB::for_table('posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
 
         // Get last_post, last_post_id and last_poster
         $select_last_post = array('posted', 'id', 'poster');
 
-        $last_post = \ORM::for_table('posts')->select_many($select_last_post)
+        $last_post = \DB::for_table('posts')->select_many($select_last_post)
             ->where('topic_id', $merge_to_tid)
             ->order_by_desc('id')
             ->find_one();
@@ -682,7 +682,7 @@ class moderate
             'last_poster'  => $last_post['poster'],
         );
 
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->where('id', $merge_to_tid)
             ->find_one()
             ->set($insert_topic)
@@ -707,7 +707,7 @@ class moderate
         $topics_sql = explode(',', $topics);
 
         // Verify that the topic IDs are valid
-        $result = \ORM::for_table('topics')
+        $result = \DB::for_table('topics')
             ->where_in('id', $topics_sql)
             ->where('forum_id', $fid)
             ->find_many();
@@ -718,7 +718,7 @@ class moderate
 
         // Verify that the posts are not by admins
         if ($this->user->g_id != FEATHER_ADMIN) {
-            $authorized = \ORM::for_table('posts')
+            $authorized = \DB::for_table('posts')
                 ->where_in('topic_id', $topics_sql)
                 ->where('poster_id', get_admin_ids())
                 ->find_many();
@@ -728,22 +728,22 @@ class moderate
         }
 
         // Delete the topics
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->where_in('id', $topics_sql)
             ->delete_many();
 
         // Delete any redirect topics
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->where_in('moved_to', $topics_sql)
             ->delete_many();
 
         // Delete any subscriptions
-        \ORM::for_table('topic_subscriptions')
+        \DB::for_table('topic_subscriptions')
             ->where_in('topic_id', $topics_sql)
             ->delete_many();
 
         // Create a list of the post IDs in this topic and then strip the search index
-        $find_ids = \ORM::for_table('posts')->select('id')
+        $find_ids = \DB::for_table('posts')->select('id')
             ->where_in('topic_id', $topics_sql)
             ->find_many();
 
@@ -759,7 +759,7 @@ class moderate
         }
 
         // Delete posts
-        \ORM::for_table('posts')
+        \DB::for_table('posts')
             ->where_in('topic_id', $topics_sql)
             ->delete_many();
 
@@ -778,7 +778,7 @@ class moderate
             array('fp.read_forum' => '1')
         );
 
-        $cur_forum = \ORM::for_table('forums')
+        $cur_forum = \DB::for_table('forums')
             ->table_alias('f')
             ->select_many($select_get_forum_info)
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
@@ -827,7 +827,7 @@ class moderate
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = \ORM::for_table('topics')->select('id')
+        $result = \DB::for_table('topics')->select('id')
             ->where('forum_id', $fid)
             ->order_by_expr('sticky DESC, '.$sort_by)
             ->limit($this->user->disp_topics)
@@ -845,7 +845,7 @@ class moderate
             $select_display_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
 
             // TODO: order_by_expr && result_set
-            $result = \ORM::for_table('topics')->select_many($select_display_topics)
+            $result = \DB::for_table('topics')->select_many($select_display_topics)
                 ->where_in('id', $topic_ids)
                 ->order_by_expr('sticky DESC, '.$sort_by.', id DESC')
                 ->find_many();
@@ -922,7 +922,7 @@ class moderate
     
     public function stick_topic($id, $fid)
     {
-        \ORM::for_table('topics')->where('id', $id)->where('forum_id', $fid)
+        \DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
             ->find_one()
             ->set('sticky', 1)
             ->save();
@@ -930,7 +930,7 @@ class moderate
 
     public function unstick_topic($id, $fid)
     {
-        \ORM::for_table('topics')->where('id', $id)->where('forum_id', $fid)
+        \DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
             ->find_one()
             ->set('sticky', 0)
             ->save();
@@ -938,7 +938,7 @@ class moderate
     
     public function open_topic($id, $fid)
     {
-        \ORM::for_table('topics')->where('id', $id)->where('forum_id', $fid)
+        \DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
             ->find_one()
             ->set('closed', 0)
             ->save();
@@ -946,7 +946,7 @@ class moderate
     
     public function close_topic($id, $fid)
     {
-        \ORM::for_table('topics')->where('id', $id)->where('forum_id', $fid)
+        \DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
             ->find_one()
             ->set('closed', 1)
             ->save();
@@ -954,7 +954,7 @@ class moderate
     
     public function close_multiple_topics($action, $topics, $fid)
     {
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->where_in('id', $topics)
             ->update_many('closed', $action);
     }
@@ -963,7 +963,7 @@ class moderate
     {
         global $lang_common;
 
-        $subject = \ORM::for_table('topics')
+        $subject = \DB::for_table('topics')
             ->where('id', $id)
             ->find_one_col('subject');
 

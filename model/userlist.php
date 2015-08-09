@@ -25,7 +25,7 @@ class userlist
     public function fetch_user_count($username, $show_group)
     {
         // Fetch user count
-        $num_users = \ORM::for_table('users')->table_alias('u')
+        $num_users = \DB::for_table('users')->table_alias('u')
                         ->where_gt('u.id', 1)
                         ->where_not_equal('u.group_id', FEATHER_UNVERIFIED);
 
@@ -48,7 +48,7 @@ class userlist
 
         $select_dropdown_menu = array('g_id', 'g_title');
 
-        $result = \ORM::for_table('groups')->select_many($select_dropdown_menu)
+        $result = \DB::for_table('groups')->select_many($select_dropdown_menu)
                         ->where_not_equal('g_id', FEATHER_GUEST)
                         ->order_by('g_id')
                         ->find_many();
@@ -70,7 +70,7 @@ class userlist
         $userlist_data = array();
 
         // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = \ORM::for_table('users')->select('u.id')
+        $result = \DB::for_table('users')->select('u.id')
                     ->table_alias('u')
                     ->where_gt('u.id', 1)
                     ->where_not_equal('u.group_id', FEATHER_UNVERIFIED);
@@ -97,7 +97,7 @@ class userlist
             // Grab the users
             $select_users = array('u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered', 'g.g_id', 'g.g_user_title');
 
-            $result = \ORM::for_table('users')->table_alias('u')
+            $result = \DB::for_table('users')->table_alias('u')
                           ->select_many($select_users)
                           ->left_outer_join('groups' ,array('g.g_id', '=', 'u.group_id'), 'g')
                           ->where_in('u.id', $user_ids)

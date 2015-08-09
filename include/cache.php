@@ -21,7 +21,7 @@ function generate_config_cache()
     global $db;
 
     // Get the forum config from the DB
-    $result = \ORM::for_table('config')->find_array();
+    $result = \DB::for_table('config')->find_array();
 
     $output = array();
     foreach ($result as $cur_config_item) {
@@ -42,7 +42,7 @@ function generate_bans_cache()
     global $db;
 
     // Get the ban list from the DB
-    $result = \ORM::for_table('bans')->find_array();
+    $result = \DB::for_table('bans')->find_array();
 
     $output = array();
     foreach ($result as $cur_ban) {
@@ -67,14 +67,14 @@ function generate_quickjump_cache($group_id = false)
     // If a group_id was supplied, we generate the quick jump cache for that group only
     if ($group_id !== false) {
         // Is this group even allowed to read forums?
-        $read_board = \ORM::for_table('groups')->where('g_id', $group_id)
+        $read_board = \DB::for_table('groups')->where('g_id', $group_id)
                             ->find_one_col('g_read_board');
 
         $groups[$group_id] = $read_board;
     } else {
         // A group_id was not supplied, so we generate the quick jump cache for all groups
         $select_quickjump_all_groups = array('g_id', 'g_read_board');
-        $result = \ORM::for_table('groups')->select_many($select_quickjump_all_groups)
+        $result = \DB::for_table('groups')->select_many($select_quickjump_all_groups)
                         ->find_many();
 
         foreach ($result as $row) {
@@ -95,7 +95,7 @@ function generate_quickjump_cache($group_id = false)
             );
             $order_by_generate_quickjump_cache = array('c.disp_position', 'c.id', 'f.disp_position');
 
-            $result = \ORM::for_table('categories')
+            $result = \DB::for_table('categories')
                             ->table_alias('c')
                             ->select_many($select_generate_quickjump_cache)
                             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
@@ -143,7 +143,7 @@ function generate_censoring_cache()
     global $db;
 
     $select_generate_censoring_cache = array('search_for', 'replace_with');
-    $result = \ORM::for_table('censoring')->select_many($select_generate_censoring_cache)
+    $result = \DB::for_table('censoring')->select_many($select_generate_censoring_cache)
                     ->find_many();
 
     $search_for = $replace_with = array();
@@ -198,11 +198,11 @@ function generate_users_info_cache()
 
     $stats = array();
 
-    $stats['total_users'] = (\ORM::for_table('users')->where_not_equal('group_id', FEATHER_UNVERIFIED)
+    $stats['total_users'] = (\DB::for_table('users')->where_not_equal('group_id', FEATHER_UNVERIFIED)
                                 ->count('id')) - 1;
 
     $select_generate_users_info_cache = array('id', 'username');
-    $last_user = \ORM::for_table('users')->select_many($select_generate_users_info_cache)
+    $last_user = \DB::for_table('users')->select_many($select_generate_users_info_cache)
                         ->where_not_equal('group_id', FEATHER_UNVERIFIED)
                         ->order_by_desc('registered')
                         ->limit(1)
@@ -223,7 +223,7 @@ function generate_admins_cache()
     global $db;
 
     // Get admins from the DB
-    $result = \ORM::for_table('users')->select('id')
+    $result = \DB::for_table('users')->select('id')
                     ->where('group_id', FEATHER_ADMIN)
                     ->find_array();
 

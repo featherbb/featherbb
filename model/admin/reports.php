@@ -26,7 +26,7 @@ class reports
 
         $zap_id = intval(key($this->request->post('zap_id')));
 
-        $result = \ORM::for_table('reports')
+        $result = \DB::for_table('reports')
             ->where('id', $zap_id)
             ->find_one_col('zapped');
 
@@ -34,14 +34,14 @@ class reports
             'zapped_by' => $this->user->id);
 
         if (!$result) {
-            \ORM::for_table('reports')
+            \DB::for_table('reports')
                 ->where('id', $zap_id)
                 ->find_one()
                 ->set($set_zap_report)
                 ->save();
         }
 
-        $threshold = \ORM::for_table('reports')
+        $threshold = \DB::for_table('reports')
             ->where_not_null('zapped')
             ->order_by_desc('zapped')
             ->offset(10)
@@ -49,7 +49,7 @@ class reports
             ->find_one_col('zapped');
 
         if ($threshold) {
-            \ORM::for_table('reports')
+            \DB::for_table('reports')
                 ->where_lte('zapped', $threshold)
                 ->delete_many();
         }
@@ -63,7 +63,7 @@ class reports
 
         $reports = array();
         $select_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username');
-        $reports = \ORM::for_table('reports')
+        $reports = \DB::for_table('reports')
             ->table_alias('r')
             ->select_many($select_reports)
             ->left_outer_join('posts', array('r.post_id', '=', 'p.id'), 'p')
@@ -83,7 +83,7 @@ class reports
 
         $zapped_reports = array();
         $select_zapped_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username');
-        $zapped_reports = \ORM::for_table('reports')
+        $zapped_reports = \DB::for_table('reports')
             ->table_alias('r')
             ->select_many($select_zapped_reports)
             ->left_outer_join('posts', array('r.post_id', '=', 'p.id'), 'p')

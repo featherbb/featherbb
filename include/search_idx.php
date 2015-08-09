@@ -180,7 +180,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 
     if ($mode == 'edit') {
         $select_update_search_index = array('w.id', 'w.word', 'm.subject_match');
-        $result = \ORM::for_table('search_words')->table_alias('w')
+        $result = \DB::for_table('search_words')->table_alias('w')
                         ->select_many($select_update_search_index)
                         ->inner_join('search_matches', array('w.id', '=', 'm.word_id'), 'm')
                         ->where('m.post_id', $post_id)
@@ -195,7 +195,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
             $cur_words[$match_in][$row['word']] = $row['id'];
         }
 
-        $pdo = \ORM::get_db();
+        $pdo = \DB::get_db();
         $pdo = null;
 
         $words['add']['post'] = array_diff($words_message, array_keys($cur_words['post']));
@@ -217,7 +217,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 
     if (!empty($unique_words)) {
         $select_unique_words = array('id', 'word');
-        $result = \ORM::for_table('search_words')->select_many($select_unique_words)
+        $result = \DB::for_table('search_words')->select_many($select_unique_words)
                         ->where_in('word', $unique_words)
                         ->find_many();
 
@@ -226,7 +226,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
             $word_ids[$row['word']] = $row['id'];
         }
 
-        $pdo = \ORM::get_db();
+        $pdo = \DB::get_db();
         $pdo = null;
 
         $new_words = array_values(array_diff($unique_words, array_keys($word_ids)));
@@ -241,14 +241,14 @@ function update_search_index($mode, $post_id, $message, $subject = null)
                 case 'mysqli_innodb':
                     // Quite dirty, right? :-)
                     $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
-                    \ORM::for_table('search_words')
+                    \DB::for_table('search_words')
                         ->raw_execute('INSERT INTO '.$db->prefix.'search_words (word) VALUES '.$placeholders, $new_words);
                     break;
 
                 default:
                     foreach ($new_words as $word) {
                         $word_insert['word'] = $word;
-                        \ORM::for_table('search_words')
+                        \DB::for_table('search_words')
                             ->create()
                             ->set($word_insert)
                             ->save();
@@ -271,7 +271,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
                 $sql[] = $cur_words[$match_in][$word];
             }
 
-            \ORM::for_table('search_matches')
+            \DB::for_table('search_matches')
                     ->where_in('word_id', $sql)
                     ->where('post_id', $post_id)
                     ->where('subject_match', $subject_match)
@@ -286,7 +286,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
         if (!empty($wordlist)) {
             $wordlist = array_values($wordlist);
             $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
-            \ORM::for_table('search_words')
+            \DB::for_table('search_words')
                 ->raw_execute('INSERT INTO '.$db->prefix.'search_matches (post_id, word_id, subject_match) SELECT '.$post_id.', id, '.$subject_match.' FROM '.$db->prefix.'search_words WHERE word IN ('.$placeholders.')', $wordlist);
         }
     }
@@ -315,7 +315,7 @@ function strip_search_index($post_ids)
         case 'mysql_innodb':
         case 'mysqli_innodb':
         {
-            $result = \ORM::for_table('search_matches')->select('word_id')
+            $result = \DB::for_table('search_matches')->select('word_id')
                 ->where_in('post_id', $post_ids_sql)
                 ->group_by('word_id')
                 ->find_many();
@@ -326,7 +326,7 @@ function strip_search_index($post_ids)
                     $word_ids[] = $row['word_id'];
                 }
 
-                $result = \ORM::for_table('search_matches')->select('word_id')
+                $result = \DB::for_table('search_matches')->select('word_id')
                                     ->where_in('word_id', $word_ids)
                                     ->group_by('word_id')
                                     ->having_raw('COUNT(word_id)=1')
@@ -338,7 +338,7 @@ function strip_search_index($post_ids)
                         $word_ids[] = $row['word_id'];
                     }
 
-                    \ORM::for_table('search_words')
+                    \DB::for_table('search_words')
                         ->where_in('id', $word_ids)
                         ->delete_many();
                 }
@@ -347,12 +347,12 @@ function strip_search_index($post_ids)
         }
 
         default:
-            \ORM::for_table('search_matches')
+            \DB::for_table('search_matches')
                 ->where_raw('id IN(SELECT word_id FROM '.$db->prefix.'search_matches WHERE word_id IN(SELECT word_id FROM '.$db->prefix.'search_matches WHERE post_id IN('.$post_ids.') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                 ->delete_many();
             break;
 
-        \ORM::for_table('search_matches')
+        \DB::for_table('search_matches')
             ->where_in('post_id', $post_ids_sql)
             ->delete_many();
     }

@@ -80,12 +80,12 @@ $feather->prefix = $db_prefix;
 require FEATHER_ROOT.'include/idiorm.php';
 
 // TODO: handle drivers
-\ORM::configure('mysql:host='.$db_host.';dbname='.$db_name);
-\ORM::configure('username', $db_username);
-\ORM::configure('password', $db_password);
-\ORM::configure('logging', true);
-\ORM::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
-\ORM::configure('id_column_overrides', array(
+\DB::configure('mysql:host='.$db_host.';dbname='.$db_name);
+\DB::configure('username', $db_username);
+\DB::configure('password', $db_password);
+\DB::configure('logging', true);
+\DB::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+\DB::configure('id_column_overrides', array(
     $db_prefix.'groups' => 'g_id',
 ));
 

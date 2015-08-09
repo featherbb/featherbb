@@ -32,7 +32,7 @@ class post
                 array('fp.read_forum' => '1')
             );
 
-            $cur_posting = \ORM::for_table('topics')
+            $cur_posting = \DB::for_table('topics')
                 ->table_alias('t')
                 ->select_many($select_get_info_post)
                 ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
@@ -51,7 +51,7 @@ class post
                 array('fp.read_forum' => '1')
             );
 
-            $cur_posting = \ORM::for_table('forums')
+            $cur_posting = \DB::for_table('forums')
                 ->table_alias('f')
                 ->select_many($select_get_info_post)
                 ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
@@ -98,7 +98,7 @@ class post
         }
 
         if ($tid) {
-            $subject_tid = \ORM::for_table('topics')
+            $subject_tid = \DB::for_table('topics')
                 ->where('id', $tid)
                 ->find_one_col('subject');
 
@@ -244,12 +244,12 @@ class post
                 'topic_id'  => $tid,
             );
 
-            \ORM::for_table('posts')
+            \DB::for_table('posts')
                 ->create()
                 ->set($insert_post)
                 ->save();
 
-            $new['pid'] = \ORM::get_db()->lastInsertId($this->feather->prefix.'posts');
+            $new['pid'] = \DB::get_db()->lastInsertId($this->feather->prefix.'posts');
 
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1') {
@@ -262,7 +262,7 @@ class post
                         'topic_id'  =>  $tid
                     );
 
-                    \ORM::for_table('topic_subscriptions')
+                    \DB::for_table('topic_subscriptions')
                         ->create()
                         ->set($insert_subscription)
                         ->save();
@@ -270,7 +270,7 @@ class post
                 // We reply and we don't want to be subscribed anymore
                 } elseif ($post['subscribe'] == '0' && $is_subscribed) {
 
-                    \ORM::for_table('topic_subscriptions')
+                    \DB::for_table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $tid)
                         ->delete_many();
@@ -292,13 +292,13 @@ class post
                 $insert_post['poster_email'] = $post['email'];
             }
 
-            \ORM::for_table('posts')
+            \DB::for_table('posts')
                 ->create()
                 ->set($insert_post)
                 ->save();
 
 
-            $new['pid'] = \ORM::get_db()->lastInsertId($this->feather->prefix.'posts');
+            $new['pid'] = \DB::get_db()->lastInsertId($this->feather->prefix.'posts');
         }
 
         // Update topic
@@ -308,7 +308,7 @@ class post
             'last_poster'  => $post['username'],
         );
 
-        \ORM::for_table('topics')->where('id', $tid)
+        \DB::for_table('topics')->where('id', $tid)
             ->find_one()
             ->set($update_topic)
             ->set_expr('num_replies', 'num_replies+1')
@@ -325,7 +325,7 @@ class post
     public function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
     {
         // Get the post time for the previous post in this topic
-        $previous_post_time = \ORM::for_table('posts')
+        $previous_post_time = \DB::for_table('posts')
             ->where('topic_id', $tid)
             ->order_by_desc('id')
             ->find_one_col('posted');
@@ -337,7 +337,7 @@ class post
         );
         $select_send_notifications_reply = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
 
-        $result = \ORM::for_table('users')
+        $result = \DB::for_table('users')
             ->table_alias('u')
             ->select_many($select_send_notifications_reply)
             ->inner_join('topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
@@ -439,12 +439,12 @@ class post
             'forum_id'  => $fid,
         );
 
-        \ORM::for_table('topics')
+        \DB::for_table('topics')
             ->create()
             ->set($insert_topic)
             ->save();
 
-        $new['tid'] = \ORM::get_db()->lastInsertId($this->feather->prefix.'topics');
+        $new['tid'] = \DB::get_db()->lastInsertId($this->feather->prefix.'topics');
 
         if (!$this->user->is_guest) {
             // To subscribe or not to subscribe, that ...
@@ -455,7 +455,7 @@ class post
                     'topic_id'  =>  $new['tid']
                 );
 
-                \ORM::for_table('topic_subscriptions')
+                \DB::for_table('topic_subscriptions')
                     ->create()
                     ->set($insert_subscription)
                     ->save();
@@ -473,7 +473,7 @@ class post
                 'topic_id'  => $new['tid'],
             );
 
-            \ORM::for_table('posts')
+            \DB::for_table('posts')
                 ->create()
                 ->set($insert_post)
                 ->save();
@@ -493,12 +493,12 @@ class post
                 $insert_post['poster_email'] = $post['email'];
             }
 
-            \ORM::for_table('posts')
+            \DB::for_table('posts')
                 ->create()
                 ->set($insert_post)
                 ->save();
         }
-        $new['pid'] = \ORM::get_db()->lastInsertId($this->feather->prefix.'topics');
+        $new['pid'] = \DB::get_db()->lastInsertId($this->feather->prefix.'topics');
 
         // Update the topic with last_post_id
         $update_topic = array(
@@ -506,7 +506,7 @@ class post
             'first_post_id' =>  $new['pid'],
         );
 
-        \ORM::for_table('topics')->where('id', $new['tid'])
+        \DB::for_table('topics')->where('id', $new['tid'])
             ->find_one()
             ->set($update_topic)
             ->save();
@@ -528,7 +528,7 @@ class post
         );
         $select_send_notifications_reply = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
 
-        $result = \ORM::for_table('users')
+        $result = \DB::for_table('users')
             ->table_alias('u')
             ->select_many($select_send_notifications_reply)
             ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
@@ -633,7 +633,7 @@ class post
     public function increment_post_count($post, $new_tid)
     {
         if (!$this->user->is_guest) {
-            \ORM::for_table('users')
+            \DB::for_table('users')
                 ->where('id', $this->user->id)
                 ->find_one()
                 ->set('last_post', $post['time'])
@@ -643,7 +643,7 @@ class post
             // Promote this user to a new group if enabled
             if ($this->user->g_promote_next_group != 0 && $this->user->num_posts + 1 >= $this->user->g_promote_min_posts) {
                 $new_group_id = $this->user->g_promote_next_group;
-                \ORM::for_table('users')
+                \DB::for_table('users')
                     ->where('id', $this->user->id)
                     ->find_one()
                     ->set('group_id', $new_group_id)
@@ -656,7 +656,7 @@ class post
             set_tracked_topics($tracked_topics);
         } else {
             // Update the last_post field for guests
-            \ORM::for_table('online')
+            \DB::for_table('online')
                 ->where('ident', get_remote_address())
                 ->find_one()
                 ->set('last_post', $post['time'])
@@ -695,7 +695,7 @@ class post
 
         $select_get_quote_message = array('poster', 'message');
 
-        $quote = \ORM::for_table('posts')->select_many($select_get_quote_message)
+        $quote = \DB::for_table('posts')->select_many($select_get_quote_message)
                  ->where('id', $qid)
                  ->where('topic_id', $tid)
                  ->find_one();
@@ -813,7 +813,7 @@ class post
 
         $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 
-        $result = \ORM::for_table('posts')->select_many($select_topic_review)
+        $result = \DB::for_table('posts')->select_many($select_topic_review)
             ->where('topic_id', $tid)
             ->order_by_desc('id')
             ->find_many();

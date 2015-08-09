@@ -22,7 +22,7 @@ class header
 
     public function get_reports()
     {
-        $result_header = \ORM::for_table('reports')->where_null('zapped')->find_one();
+        $result_header = \DB::for_table('reports')->where_null('zapped')->find_one();
 
         if ($result_header) {
             return true;

@@ -57,7 +57,7 @@ class footer
                     );
         
         // Close Idiorm connection
-        $pdo = \ORM::get_db();
+        $pdo = \DB::get_db();
         $pdo = null;
 
         // If we need to stop the application outside a route
