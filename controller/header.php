@@ -14,7 +14,6 @@ class header
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -220,7 +219,6 @@ class header
                 'page_info'        =>    $page_info,
                 'paging_links' => $this->paging_links,
                 'required_fields' => $this->required_fields,
-                'db'        =>    $this->db,
                 'feather'    => $this->feather,
             )
         );
