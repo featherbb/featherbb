@@ -9,6 +9,8 @@
 
 namespace model;
 
+use DB;
+
 class delete
 {
     public function __construct()
@@ -30,7 +32,7 @@ class delete
             array('fp.read_forum' => '1')
         );
 
-        $cur_post = \DB::for_table('posts')
+        $cur_post = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_get_info_delete)
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
@@ -66,7 +68,7 @@ class delete
             update_forum($fid);
 
             // Redirect towards the previous post
-            $post = \DB::for_table('posts')
+            $post = DB::for_table('posts')
                 ->select('id')
                 ->where('topic_id', $tid)
                 ->where_lt('id', $id)

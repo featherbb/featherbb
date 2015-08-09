@@ -9,6 +9,8 @@
 
 namespace model;
 
+use DB;
+
 class edit
 {
     public function __construct()
@@ -31,7 +33,7 @@ class edit
             array('fp.read_forum' => '1')
         );
 
-        $cur_post = \DB::for_table('posts')
+        $cur_post = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_get_info_edit)
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
@@ -153,7 +155,7 @@ class edit
                 'sticky'  => $post['stick_topic']
             );
             
-            \DB::for_table('topics')->where_any_is($where_topic)
+            DB::for_table('topics')->where_any_is($where_topic)
                                                        ->find_one()
                                                        ->set($update_topic)
                                                        ->save();
@@ -175,7 +177,7 @@ class edit
             $update_post['edited_by'] = $this->user->username;
         }
 
-        \DB::for_table('posts')->where('id', $id)
+        DB::for_table('posts')->where('id', $id)
                                                    ->find_one()
                                                    ->set($update_post)
                                                    ->save();

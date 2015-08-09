@@ -9,6 +9,8 @@
 
 namespace model\admin;
 
+use DB;
+
 class options
 {
     public function __construct()
@@ -218,10 +220,10 @@ class options
             // Only update values that have changed
             if (array_key_exists('o_'.$key, $this->config) && $this->config['o_'.$key] != $input) {
                 if ($input != '' || is_int($input)) {
-                    \DB::for_table('config')->where('conf_name', 'o_'.$key)
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
                                                                ->update_many('conf_value', $input);
                 } else {
-                    \DB::for_table('config')->where('conf_name', 'o_'.$key)
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
                                                                ->update_many_expr('conf_value', 'NULL');
                 }
             }

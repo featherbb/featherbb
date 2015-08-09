@@ -9,6 +9,8 @@
 
 namespace model;
 
+use DB;
+
 class viewforum
 {
     public function __construct()
@@ -33,7 +35,7 @@ class viewforum
         if (!$this->user->is_guest) {
             $select_get_info_forum = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id');
 
-            $cur_forum = \DB::for_table('forums')->table_alias('f')
+            $cur_forum = DB::for_table('forums')->table_alias('f')
                             ->select_many($select_get_info_forum)
                             ->left_outer_join('forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
                             ->left_outer_join('forum_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
@@ -45,7 +47,7 @@ class viewforum
         } else {
             $select_get_info_forum = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics');
 
-            $cur_forum = \DB::for_table('forums')->table_alias('f')
+            $cur_forum = DB::for_table('forums')->table_alias('f')
                 ->select_many($select_get_info_forum)
                 ->select_expr(0, 'is_subscribed')
                 ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
@@ -141,7 +143,7 @@ class viewforum
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = \DB::for_table('topics')->select('id')
+        $result = DB::for_table('topics')->select('id')
                         ->where('forum_id', $forum_id)
                         ->order_by_desc('sticky')
                         ->order_by_expr($sort_by)
@@ -164,7 +166,7 @@ class viewforum
                 // Without "the dot"
                 $select_print_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
 
-                $result = \DB::for_table('topics')->select_many($select_print_topics)
+                $result = DB::for_table('topics')->select_many($select_print_topics)
                             ->where_in('id', $topic_ids)
                             ->order_by_desc('sticky')
                             ->order_by_expr($sort_by)
@@ -174,7 +176,7 @@ class viewforum
                 // With "the dot"
                 $select_print_topics = array('has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to');
 
-                $result = \DB::for_table('topics')->table_alias('t')
+                $result = DB::for_table('topics')->table_alias('t')
                     ->select_many($select_print_topics)
                     ->left_outer_join('posts', array('t.id', '=', 'p.topic_id'), 'p')
                     ->left_outer_join('posts', array('p.poster_id', '=', $this->user->id), null, true)

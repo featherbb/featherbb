@@ -9,6 +9,8 @@
 
 namespace model;
 
+use DB;
+
 class viewtopic
 {
     public function __construct()
@@ -27,7 +29,7 @@ class viewtopic
 
         $select_info_topic = array('topic_id', 'posted');
 
-        $result = \DB::for_table('posts')
+        $result = DB::for_table('posts')
                       ->select_many($select_info_topic)
                       ->where('id', $post_id)
                       ->find_one();
@@ -40,7 +42,7 @@ class viewtopic
         $posted = $result['posted'];
 
         // Determine on which page the post is located (depending on $forum_user['disp_posts'])
-        $num_posts = \DB::for_table('posts')
+        $num_posts = DB::for_table('posts')
                         ->where('topic_id', $post['topic_id'])
                         ->where_lt('posted', $posted)
                         ->count('id');
@@ -61,7 +63,7 @@ class viewtopic
                 $tracked_topics = get_tracked_topics();
                 $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $this->user->last_visit;
 
-                $first_new_post_id = \DB::for_table('posts')
+                $first_new_post_id = DB::for_table('posts')
                                         ->where('topic_id', $topic_id)
                                         ->where_gt('posted', $last_viewed)
                                         ->min('id');
@@ -78,7 +80,7 @@ class viewtopic
 
         // If action=last, we redirect to the last post
         if ($action == 'last') {
-            $last_post_id = \DB::for_table('posts')
+            $last_post_id = DB::for_table('posts')
                                 ->where('topic_id', $topic_id)
                                 ->max('id');
 
@@ -102,7 +104,7 @@ class viewtopic
         if (!$this->user->is_guest) {
             $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id');
 
-            $cur_topic = \DB::for_table('topics')
+            $cur_topic = DB::for_table('topics')
                             ->table_alias('t')
                             ->select_many($select_get_info_topic)
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
@@ -117,7 +119,7 @@ class viewtopic
         } else {
             $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
 
-            $cur_topic = \DB::for_table('topics')
+            $cur_topic = DB::for_table('topics')
                             ->table_alias('t')
                             ->select_many($select_get_info_topic)
                             ->select_expr(0, 'is_subscribed')
@@ -239,7 +241,7 @@ class viewtopic
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = \DB::for_table('posts')->select('id')
+        $result = DB::for_table('posts')->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by('id')
                     ->limit($this->user->disp_topics)
@@ -258,7 +260,7 @@ class viewtopic
         // Retrieve the posts (and their respective poster/online status)
         $select_print_posts = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
 
-        $result = \DB::for_table('posts')
+        $result = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_print_posts)
             ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
@@ -415,7 +417,7 @@ class viewtopic
     public function increment_views($id)
     {
         if ($this->config['o_topic_views'] == '1') {
-            \DB::for_table('topics')->where('id', $id)
+            DB::for_table('topics')->where('id', $id)
                 ->find_one()
                 ->set_expr('num_views', 'num_views+1')
                 ->save();

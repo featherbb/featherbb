@@ -9,6 +9,8 @@
 
 namespace model;
 
+use DB;
+
 class register
 {
     public function __construct()
@@ -28,7 +30,7 @@ class register
         $user['errors'] = '';
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-        $already_registered = \DB::for_table('users')
+        $already_registered = DB::for_table('users')
                                   ->where('registration_ip', get_remote_address())
                                   ->where_gt('registered', time() - 3600)
                                   ->find_one();
@@ -92,7 +94,7 @@ class register
         // Check if someone else already has registered with that email address
         $dupe_list = array();
 
-        $dupe_mail = \DB::for_table('users')->select('username')
+        $dupe_mail = DB::for_table('users')->select('username')
             ->where('email', $user['email1'])
             ->find_many();
 
@@ -145,12 +147,12 @@ class register
             'last_visit'      => $now,
         );
 
-        \DB::for_table('users')
+        DB::for_table('users')
             ->create()
             ->set($insert_user)
             ->save();
 
-        $new_uid = \DB::get_db()->lastInsertId($this->feather->prefix.'users');
+        $new_uid = DB::get_db()->lastInsertId($this->feather->prefix.'users');
 
 
         if ($this->config['o_regs_verify'] == '0') {

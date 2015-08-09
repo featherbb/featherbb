@@ -10,6 +10,8 @@
 
 namespace model\admin;
 
+use DB;
+
 class parser
 {
     public function __construct()

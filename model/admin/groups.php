@@ -9,6 +9,8 @@
 
 namespace model\admin;
 
+use DB;
+
 class groups
 {
     public function __construct()
@@ -22,7 +24,7 @@ class groups
  
     public function fetch_groups()
     {
-        $result = \DB::for_table('groups')->order_by('g_id')->find_many();
+        $result = DB::for_table('groups')->order_by('g_id')->find_many();
         $groups = array();
         foreach ($result as $cur_group) {
             $groups[$cur_group['g_id']] = $cur_group;
@@ -76,7 +78,7 @@ class groups
     public function get_group_list_delete($group_id)
     {
         $select_get_group_list_delete = array('g_id', 'g_title');
-        $result = \DB::for_table('groups')->select_many($select_get_group_list_delete)
+        $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
                         ->where_not_equal('g_id', FEATHER_GUEST)
                         ->where_not_equal('g_id', $group_id)
                         ->order_by('g_title')
@@ -177,20 +179,20 @@ class groups
         );
 
         if ($this->request->post('mode') == 'add') {
-            $title_exists = \DB::for_table('groups')->where('g_title', $title)->find_one();
+            $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
             if ($title_exists) {
                 message(sprintf($lang_admin_groups['Title already exists message'], feather_escape($title)));
             }
 
-            \DB::for_table('groups')
+            DB::for_table('groups')
                 ->create()
                 ->set($insert_update_group)
                 ->save();
-            $new_group_id = \DB::get_db()->lastInsertId($this->feather->prefix.'groups');
+            $new_group_id = DB::get_db()->lastInsertId($this->feather->prefix.'groups');
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
-            $result = \DB::for_table('forum_perms')->select_many($select_forum_perms)
+            $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', $this->request->post('base_group'))
                             ->find_many();
 
@@ -203,24 +205,24 @@ class groups
                     'post_topics'    =>  $cur_forum_perm['post_topics'],
                 );
 
-                \DB::for_table('forum_perms')
+                DB::for_table('forum_perms')
                         ->create()
                         ->set($insert_perms)
                         ->save();
             }
         } else {
-            $title_exists = \DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
+            $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
             if ($title_exists) {
                 message(sprintf($lang_admin_groups['Title already exists message'], feather_escape($title)));
             }
-            \DB::for_table('groups')
+            DB::for_table('groups')
                     ->find_one($this->request->post('group_id'))
                     ->set($insert_update_group)
                     ->save();
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
-                \DB::for_table('users')->where('group_id', $this->request->post('group_id'))
+                DB::for_table('users')->where('group_id', $this->request->post('group_id'))
                         ->where_gte('num_posts', $promote_min_posts)
                         ->update_many('group_id', $promote_next_group);
             }
@@ -258,7 +260,7 @@ class groups
             message($lang_common['Bad request'], '404');
         }
 
-        \DB::for_table('config')->where('conf_name', 'o_default_user_group')
+        DB::for_table('config')->where('conf_name', 'o_default_user_group')
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
@@ -273,7 +275,7 @@ class groups
 
     public function check_members($group_id)
     {
-        $is_member = \DB::for_table('groups')->table_alias('g')
+        $is_member = DB::for_table('groups')->table_alias('g')
             ->select('g.g_title')
             ->select_expr('COUNT(u.id)', 'members')
             ->inner_join('users', array('g.g_id', '=', 'u.group_id'), 'u')
@@ -291,20 +293,20 @@ class groups
 
         if ($this->request->post('del_group')) {
             $move_to_group = intval($this->request->post('move_to_group'));
-            \DB::for_table('users')->where('group_id', $group_id)
+            DB::for_table('users')->where('group_id', $group_id)
                                                       ->update_many('group_id', $move_to_group);
         }
 
         // Delete the group and any forum specific permissions
-        \DB::for_table('groups')
+        DB::for_table('groups')
             ->where('g_id', $group_id)
             ->delete_many();
-        \DB::for_table('forum_perms')
+        DB::for_table('forum_perms')
             ->where('group_id', $group_id)
             ->delete_many();
 
         // Don't let users be promoted to this group
-        \DB::for_table('groups')->where('g_promote_next_group', $group_id)
+        DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
         redirect(get_link('admin/groups/'), $lang_admin_groups['Group removed redirect']);
@@ -312,7 +314,7 @@ class groups
 
     public function get_group_title($group_id)
     {
-        $group_title = \DB::for_table('groups')->where('g_id', $group_id)
+        $group_title = DB::for_table('groups')->where('g_id', $group_id)
                             ->find_one_col('g_title');
 
         return $group_title;
@@ -320,7 +322,7 @@ class groups
 
     public function get_title_members($group_id)
     {
-        $group = \DB::for_table('groups')->table_alias('g')
+        $group = DB::for_table('groups')->table_alias('g')
                     ->select('g.g_title')
                     ->select_expr('COUNT(u.id)', 'members')
                     ->inner_join('users', array('g.g_id', '=', 'u.group_id'), 'u')

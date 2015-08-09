@@ -9,6 +9,8 @@
 
 namespace model\admin;
 
+use DB;
+
 class permissions
 {
     public function __construct()
@@ -34,7 +36,7 @@ class permissions
 
             // Only update values that have changed
             if (array_key_exists('p_'.$key, $this->config) && $this->config['p_'.$key] != $input) {
-                \DB::for_table('config')->where('conf_name', 'p_'.$key)
+                DB::for_table('config')->where('conf_name', 'p_'.$key)
                                                            ->update_many('conf_value', $input);
             }
         }

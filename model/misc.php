@@ -9,6 +9,8 @@
 
 namespace model;
 
+use DB;
+
 class misc
 {
     public function __construct()
@@ -22,7 +24,7 @@ class misc
  
     public function update_last_visit()
     {
-        \DB::for_table('users')->where('id', $this->user->id)
+        DB::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
                                                   ->set('last_visit', $this->user->logged)
                                                   ->save();
@@ -34,7 +36,7 @@ class misc
         
         $select_get_info_mail = array('username', 'email', 'email_setting');
         
-        $mail = \DB::for_table('users')
+        $mail = DB::for_table('users')
                 ->select_many($select_get_info_mail)
                 ->where('id', $recipient_id)
                 ->find_one();
@@ -89,7 +91,7 @@ class misc
 
         pun_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
-        \DB::for_table('users')->where('id', $this->user->id)
+        DB::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
                                                   ->set('last_email_sent', time())
                                                   ->save();
@@ -134,7 +136,7 @@ class misc
         }
 
         // Get the topic ID
-        $topic = \DB::for_table('posts')->select('topic_id')
+        $topic = DB::for_table('posts')->select('topic_id')
                                                               ->where('id', $post_id)
                                                               ->find_one();
 
@@ -145,7 +147,7 @@ class misc
         $select_report = array('subject', 'forum_id');
 
         // Get the subject and forum ID
-        $report = \DB::for_table('topics')->select_many($select_report)
+        $report = DB::for_table('topics')->select_many($select_report)
             ->where('id', $topic['topic_id'])
             ->find_one();
 
@@ -165,7 +167,7 @@ class misc
             );
 
             // Insert the report
-            \DB::for_table('reports')
+            DB::for_table('reports')
                 ->create()
                 ->set($insert_report)
                 ->save();
@@ -196,7 +198,7 @@ class misc
             }
         }
 
-        \DB::for_table('users')->where('id', $this->user->id)
+        DB::for_table('users')->where('id', $this->user->id)
             ->find_one()
             ->set('last_report_sent', time())
             ->save();
@@ -214,7 +216,7 @@ class misc
             array('fp.read_forum' => '1')
         );
 
-        $cur_post = \DB::for_table('posts')
+        $cur_post = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_get_info_report)
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
@@ -246,7 +248,7 @@ class misc
             array('fp.read_forum' => '1')
         );
 
-        $authorized = \DB::for_table('topics')
+        $authorized = DB::for_table('topics')
                     ->table_alias('t')
                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
                     ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
@@ -259,7 +261,7 @@ class misc
             message($lang_common['Bad request'], '404');
         }
 
-        $is_subscribed = \DB::for_table('topic_subscriptions')
+        $is_subscribed = DB::for_table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $topic_id)
                         ->find_one();
@@ -274,7 +276,7 @@ class misc
         );
 
         // Insert the subscription
-        \DB::for_table('topic_subscriptions')
+        DB::for_table('topic_subscriptions')
             ->create()
             ->set($insert_subscribe_topic)
             ->save();
@@ -290,7 +292,7 @@ class misc
             message($lang_common['No permission'], '403');
         }
 
-        $is_subscribed = \DB::for_table('topic_subscriptions')
+        $is_subscribed = DB::for_table('topic_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('topic_id', $topic_id)
             ->find_one();
@@ -300,7 +302,7 @@ class misc
         }
 
         // Delete the subscription
-        \DB::for_table('topic_subscriptions')
+        DB::for_table('topic_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('topic_id', $topic_id)
             ->delete_many();
@@ -316,7 +318,7 @@ class misc
             message($lang_common['No permission'], '403');
         }
 
-        $is_subscribed = \DB::for_table('forum_subscriptions')
+        $is_subscribed = DB::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id)
             ->find_one();
@@ -326,7 +328,7 @@ class misc
         }
 
         // Delete the subscription
-        \DB::for_table('forum_subscriptions')
+        DB::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id)
             ->delete_many();
@@ -348,7 +350,7 @@ class misc
             array('fp.read_forum' => '1')
         );
 
-        $authorized = \DB::for_table('forums')
+        $authorized = DB::for_table('forums')
             ->table_alias('f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
@@ -360,7 +362,7 @@ class misc
             message($lang_common['Bad request'], '404');
         }
 
-        $is_subscribed = \DB::for_table('forum_subscriptions')
+        $is_subscribed = DB::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id)
             ->find_one();
@@ -375,7 +377,7 @@ class misc
         );
 
         // Insert the subscription
-        \DB::for_table('forum_subscriptions')
+        DB::for_table('forum_subscriptions')
             ->create()
             ->set($insert_subscribe_forum)
             ->save();
