@@ -48,8 +48,8 @@ function check_cookie()
             $result = ORM::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
-                ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
+                ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+                ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o')
                 ->where($where_check_cookie)
                 ->find_result_set();
 
@@ -263,8 +263,8 @@ function set_default_user()
     $result = ORM::for_table('users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
-        ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-        ->left_outer_join($feather->prefix.'online', array('o.ident', '=', $remote_addr), 'o', true)
+        ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+        ->left_outer_join('online', array('o.ident', '=', $remote_addr), 'o', true)
         ->where($where_set_default_user)
         ->find_result_set();
 

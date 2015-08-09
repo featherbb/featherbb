@@ -355,7 +355,7 @@ class bans
             $select_bans = array('b.id', 'b.username', 'b.ip', 'b.email', 'b.message', 'b.expire', 'b.ban_creator', 'ban_creator_username' => 'u.username');
 
             $result = $result->select_many($select_bans)
-                             ->left_outer_join($this->feather->prefix.'users', array('b.ban_creator', '=', 'u.id'), 'u')
+                             ->left_outer_join('users', array('b.ban_creator', '=', 'u.id'), 'u')
                              ->order_by($ban_info['order_by'], $ban_info['direction'])
                              ->offset($start_from)
                              ->limit(50)

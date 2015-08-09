@@ -71,7 +71,7 @@ class forums
         // Delete orphaned redirect topics
         $orphans = \ORM::for_table('topics')
                     ->table_alias('t1')
-                    ->left_outer_join($this->feather->prefix.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                    ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to')
                     ->find_many();
@@ -100,7 +100,7 @@ class forums
         $result = \ORM::for_table('categories')
                     ->table_alias('c')
                     ->select_many($select_get_forums)
-                    ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->order_by_asc('f.disp_position')
                     ->order_by_asc('c.disp_position')
                     ->find_array();
@@ -139,7 +139,7 @@ class forums
         $permissions = \ORM::for_table('groups')
                         ->table_alias('g')
                         ->select_many($select_permissions)
-                        ->left_outer_join($this->feather->prefix.'forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
+                        ->left_outer_join('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
                         ->where_not_equal('g.g_id', FEATHER_ADMIN)
                         ->order_by_asc('g.g_id')
                         ->find_many();

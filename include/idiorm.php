@@ -239,8 +239,9 @@
         public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION)
         {
             $feather = \Slim\Slim::getInstance();
+            $table_name = $feather->prefix.$table_name;
             self::_setup_db($connection_name);
-            return new self($feather->prefix.$table_name, array(), $connection_name);
+            return new self($table_name, array(), $connection_name);
         }
 
         /**
@@ -613,7 +614,9 @@
          */
         protected function _create_instance_from_row($row)
         {
-            $instance = self::for_table($this->_table_name, $this->_connection_name);
+            $feather = \Slim\Slim::getInstance();
+            $table = str_replace($feather->prefix, '', $this->_table_name);
+            $instance = self::for_table($table, $this->_connection_name);
             $instance->use_id_column($this->_instance_id_column);
             $instance->hydrate($row);
             return $instance;
@@ -1022,6 +1025,9 @@
          */
         protected function _add_join_source($join_operator, $table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
+            $feather = \Slim\Slim::getInstance();
+            $table = $feather->prefix.$table;
+
             $join_operator = trim("{$join_operator} JOIN");
 
             $table = $this->_quote_identifier($table);
@@ -1055,6 +1061,9 @@
          */
         public function raw_join($table, $constraint, $table_alias, $parameters = array())
         {
+            $feather = \Slim\Slim::getInstance();
+            $table = $feather->prefix.$table;
+
             // Add table alias if present
             if (!is_null($table_alias)) {
                 $table_alias = $this->_quote_identifier($table_alias);

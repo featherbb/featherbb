@@ -64,7 +64,7 @@ class users
     public function get_num_users_search($conditions)
     {
         $num_users = \ORM::for_table('users')->table_alias('u')
-                        ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                         ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
                         ->count('id');
 
@@ -98,7 +98,7 @@ class users
 
             $result = \ORM::for_table('users')->table_alias('u')
                 ->select_many($select_get_info_poster)
-                ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                 ->where_gt('u.id', 1)
                 ->where_in('u.id', $poster_ids)
                 ->find_many();
@@ -328,8 +328,8 @@ class users
                 $result = \ORM::for_table('posts')
                             ->table_alias('p')
                             ->select_many($select_user_posts)
-                            ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->where('p.poster_id', $user_ids)
                             ->find_many();
                 if ($result) {
@@ -408,7 +408,7 @@ class users
 
         // Also, we cannot ban moderators
         $is_mod = \ORM::for_table('users')->table_alias('u')
-            ->inner_join($this->feather->prefix . 'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+            ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
             ->where('g.g_moderator', 1)
             ->where_in('u.id', $user_ids)
             ->find_one();
@@ -623,7 +623,7 @@ class users
         $select_print_users = array('u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title');
         $result = \ORM::for_table('users')->table_alias('u')
                         ->select_many($select_print_users)
-                        ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                         ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
                         ->offset($start_from)
                         ->limit(50)

@@ -182,7 +182,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
         $select_update_search_index = array('w.id', 'w.word', 'm.subject_match');
         $result = \ORM::for_table('search_words')->table_alias('w')
                         ->select_many($select_update_search_index)
-                        ->inner_join($db->prefix.'search_matches', array('w.id', '=', 'm.word_id'), 'm')
+                        ->inner_join('search_matches', array('w.id', '=', 'm.word_id'), 'm')
                         ->where('m.post_id', $post_id)
                         ->find_many();
 

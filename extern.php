@@ -98,8 +98,8 @@ function authenticate_user($user, $password, $password_is_hash = false)
     $result = ORM::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
-                ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                ->left_outer_join($feather->prefix.'online', array('o.user_id', '=', 'u.id'), 'o');
+                ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+                ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o');
 
     if (is_int($user)) {
         $result = $result->where('u.id', intval($user));
@@ -361,8 +361,8 @@ if ($action == 'feed') {
 
         $cur_topic = \ORM::for_table('topics')->table_alias('t')
                         ->select_many($select_show_recent_topics)
-                        ->left_outer_join($db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                        ->left_outer_join($db->prefix.'forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
                         ->where_any_is($where_show_recent_topics)
                         ->where_null('t.moved_to')
                         ->where('t.id', $tid)
@@ -392,7 +392,7 @@ if ($action == 'feed') {
         $result = \ORM::for_table('posts')
             ->table_alias('p')
             ->select_many($select_print_posts)
-            ->inner_join($db->prefix.'users', array('u.id', '=', 'p.poster_id'), 'u')
+            ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
             ->where('p.topic_id', $tid)
             ->order_by_desc('p.posted')
             ->limit($show)
@@ -451,8 +451,8 @@ if ($action == 'feed') {
                 );
 
                 $cur_topic = \ORM::for_table('forums')->table_alias('f')
-                    ->left_outer_join($db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join($db->prefix.'forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
+                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
                     ->where_any_is($where_show_forum_name)
                     ->where('f.id', $fids[0])
                     ->find_one_col('f.forum_name');
@@ -502,10 +502,10 @@ if ($action == 'feed') {
             );
 
             $result = $result->select_many($select_print_posts)
-                        ->inner_join($db->prefix.'posts', array('p.id', '=', ($order_posted ? 't.first_post_id' : 't.last_post_id')), 'p')
-                        ->inner_join($db->prefix.'users', array('u.id', '=', 'p.poster_id'), 'u')
-                        ->left_outer_join($db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                        ->left_outer_join($db->prefix.'forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
+                        ->inner_join('posts', array('p.id', '=', ($order_posted ? 't.first_post_id' : 't.last_post_id')), 'p')
+                        ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
                         ->where_any_is($where_print_posts)
                         ->where_null('t.moved_to')
                         ->order_by(($order_posted ? 't.posted' : 't.last_post'))

@@ -35,10 +35,10 @@ class viewforum
 
             $cur_forum = \ORM::for_table('forums')->table_alias('f')
                             ->select_many($select_get_info_forum)
-                            ->left_outer_join($this->feather->prefix.'forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
-                            ->left_outer_join($this->feather->prefix.'forum_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
-                            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->left_outer_join('forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
+                            ->left_outer_join('forum_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                             ->where_any_is($where_get_info_forum)
                             ->where('f.id', $id)
                             ->find_one();
@@ -48,8 +48,8 @@ class viewforum
             $cur_forum = \ORM::for_table('forums')->table_alias('f')
                 ->select_many($select_get_info_forum)
                 ->select_expr(0, 'is_subscribed')
-                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                 ->where_any_is($where_get_info_forum)
                 ->where('f.id', $id)
                 ->find_one();
@@ -176,8 +176,8 @@ class viewforum
 
                 $result = \ORM::for_table('topics')->table_alias('t')
                     ->select_many($select_print_topics)
-                    ->left_outer_join($this->feather->prefix.'posts', array('t.id', '=', 'p.topic_id'), 'p')
-                    ->left_outer_join($this->feather->prefix.'posts', array('p.poster_id', '=', $this->user->id), null, true)
+                    ->left_outer_join('posts', array('t.id', '=', 'p.topic_id'), 'p')
+                    ->left_outer_join('posts', array('p.poster_id', '=', $this->user->id), null, true)
                     ->where_in('t.id', $topic_ids)
                     ->group_by('t.id')
                     ->order_by_desc('sticky')

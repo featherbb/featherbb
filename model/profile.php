@@ -64,7 +64,7 @@ class profile
                 $user = \ORM::for_table('users')
                     ->table_alias('u')
                     ->select_many($select_change_password)
-                    ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where('u.id', $id)
                     ->find_one();
 
@@ -139,7 +139,7 @@ class profile
                 $user = \ORM::for_table('users')
                     ->table_alias('u')
                     ->select_many($select_change_mail)
-                    ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where('u.id', $id)
                     ->find_one();
 
@@ -514,7 +514,7 @@ class profile
         // Find the group ID to promote the user to
         $next_group_id = \ORM::for_table('groups')
             ->table_alias('g')
-            ->inner_join($this->feather->prefix.'users', array('u.group_id', '=', 'g.g_id'), 'u')
+            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
             ->where('u.id', $id)
             ->find_one_col('g.g_promote_next_group');
         
@@ -608,8 +608,8 @@ class profile
                 $result = \ORM::for_table('posts')
                     ->table_alias('p')
                     ->select_many($select_user_posts)
-                    ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                    ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+                    ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                     ->where('p.poster_id', $id)
                     ->find_many();
                 
@@ -671,7 +671,7 @@ class profile
         $info = \ORM::for_table('users')
             ->table_alias('u')
             ->select_many($select_fetch_user_group)
-            ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
             ->where('u.id', $id)
             ->find_one();
 
@@ -1009,7 +1009,7 @@ class profile
         $user = \ORM::for_table('users')
             ->table_alias('u')
             ->select_many($select_get_user_info)
-            ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
             ->where('u.id', $id)
             ->find_one();
 
@@ -1214,7 +1214,7 @@ class profile
         $result = \ORM::for_table('categories')
             ->table_alias('c')
             ->select_many($select_get_forum_list)
-            ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->where_null('f.redirect_url')
             ->order_by_many($order_by_get_forum_list)
             ->find_many();

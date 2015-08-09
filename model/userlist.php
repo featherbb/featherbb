@@ -99,7 +99,7 @@ class userlist
 
             $result = \ORM::for_table('users')->table_alias('u')
                           ->select_many($select_users)
-                          ->left_outer_join($this->feather->prefix.'groups' ,array('g.g_id', '=', 'u.group_id'), 'g')
+                          ->left_outer_join('groups' ,array('g.g_id', '=', 'u.group_id'), 'g')
                           ->where_in('u.id', $user_ids)
                           ->order_by($sort_by, $sort_dir)
                           ->order_by_asc('u.id')

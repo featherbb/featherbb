@@ -64,7 +64,7 @@ class categories
         // Delete orphan redirect forums
         $orphans = \ORM::for_table('topics')
                     ->table_alias('t1')
-                    ->left_outer_join($this->feather->prefix.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                    ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to')
                     ->find_many();

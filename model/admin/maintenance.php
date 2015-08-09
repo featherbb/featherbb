@@ -69,7 +69,7 @@ class maintenance
 
         $result = \ORM::for_table('posts')->table_alias('p')
                         ->select_many($select_get_query_str)
-                        ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                        ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                         ->where_gte('p.id', $start_at)
                         ->order_by_asc('p.id')
                         ->limit($per_page)
@@ -188,7 +188,7 @@ class maintenance
         // Locate any "orphaned redirect topics" and delete them
         $result = \ORM::for_table('topics')->table_alias('t1')
                         ->select('t1.id')
-                        ->left_outer_join($this->feather->prefix.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                        ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
                         ->where_null('t2.id')
                         ->where_not_null('t1.moved_to')
                         ->find_array();
@@ -258,7 +258,7 @@ class maintenance
         $result = \ORM::for_table('categories')
                     ->table_alias('c')
                     ->select_many($select_get_categories)
-                    ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_categories)
                     ->find_many();
