@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 
 // Index
 $feather->get('/', '\controller\index:display');
@@ -92,7 +92,7 @@ $feather->group('/admin', function() use ($feather) {
 
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
-    
+
     // Admin bans
     $feather->group('/bans', function() use ($feather) {
         $feather->get('(/)', '\controller\admin\bans:display');
@@ -156,10 +156,10 @@ $feather->group('/admin', function() use ($feather) {
         $feather->get('/ip-stats/id/:id(/)', '\controller\admin\users:ipstats')->conditions(array('id' => '[0-9]+'));
         $feather->get('/show-users/ip/:ip(/)', '\controller\admin\users:showusers');
     });
-    
+
 });
 
 // 404 not found
-$feather->notFound(function () use ($lang_common) {
-    message($lang_common['Bad request'], '404');
+$feather->notFound(function () use ($feather) {
+    $feather->halt(404, 'Not found');
 });
