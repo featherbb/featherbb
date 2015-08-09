@@ -28,7 +28,7 @@ class login
         $form_password = feather_trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
 
-        $user = \ORM::for_table($this->db->prefix.'users')->where('username', $form_username)->find_one();
+        $user = \ORM::for_table('users')->where('username', $form_username)->find_one();
 
         $authorized = false;
 
@@ -41,7 +41,7 @@ class login
                 if (md5($form_password) == $user->password) {
                     $authorized = true;
 
-                    \ORM::for_table($this->db->prefix.'users')->where('id', $user->id)
+                    \ORM::for_table('users')->where('id', $user->id)
                                                               ->find_one()
                                                               ->set('password', $form_password_hash)
                                                               ->save();
@@ -59,7 +59,7 @@ class login
 
         // Update the status if this is the first time the user logged in
         if ($user->group_id == FEATHER_UNVERIFIED) {
-            \ORM::for_table($this->db->prefix.'users')->where('id', $user->id)
+            \ORM::for_table('users')->where('id', $user->id)
                                                       ->find_one()
                                                       ->set('group_id', $this->config['o_default_user_group'])
                                                       ->save();
@@ -73,7 +73,7 @@ class login
         }
 
         // Remove this user's guest entry from the online list
-        \ORM::for_table($this->db->prefix.'online')->where('ident', get_remote_address())
+        \ORM::for_table('online')->where('ident', get_remote_address())
                                                    ->delete_many();
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
@@ -98,12 +98,12 @@ class login
         }
 
         // Remove user from "users online" list
-        \ORM::for_table($this->db->prefix.'online')->where('user_id', $this->user->id)
+        \ORM::for_table('online')->where('user_id', $this->user->id)
                                                    ->delete_many();
 
         // Update last_visit (make sure there's something to update it with)
         if (isset($this->user->logged)) {
-            \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+            \ORM::for_table('users')->where('id', $this->user->id)
                                                       ->find_one()
                                                       ->set('last_visit', $this->user->logged)
                                                       ->save();
@@ -138,7 +138,7 @@ class login
             if (empty($errors)) {
                 $select_password_forgotten = array('id', 'username', 'last_email_sent');
 
-                $result = \ORM::for_table($this->feather->prefix.'users')
+                $result = \ORM::for_table('users')
                     ->select_many($select_password_forgotten)
                     ->where('email', $email)
                     ->find_many();
@@ -172,7 +172,7 @@ class login
                             'last_email_sent' => time()
                         );
                         
-                        \ORM::for_table($this->db->prefix.'users')->where('id', $cur_hit->id)
+                        \ORM::for_table('users')->where('id', $cur_hit->id)
                                                                   ->find_one()
                                                                   ->set($update_password)
                                                                   ->save();

@@ -98,7 +98,7 @@ class search
         if (isset($search_id)) {
             $ident = ($this->user->is_guest) ? get_remote_address() : $this->user->username;
 
-            $search_data = \ORM::for_table($this->db->prefix.'search_cache')
+            $search_data = \ORM::for_table('search_cache')
                                 ->where('id', $search_id)
                                 ->where('ident', $ident)
                                 ->find_one_col('search_data');
@@ -130,10 +130,10 @@ class search
                 }
 
                 if (!$this->user->is_guest) {
-                    \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+                    \ORM::for_table('users')->where('id', $this->user->id)
                                                         ->update_many('last_search', time());
                 } else {
-                    \ORM::for_table($this->db->prefix.'online')->where('ident', get_remote_address())
+                    \ORM::for_table('online')->where('ident', get_remote_address())
                                                          ->update_many('last_search', time());
                 }
 
@@ -194,9 +194,9 @@ class search
                                     $where_cond = str_replace('*', '%', $cur_word);
                                     $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = \ORM::for_table($this->db->prefix.'posts')->raw_query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE ('.$where_cond_cjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => $where_cond))->find_many();
+                                    $result = \ORM::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->feather->prefix.'posts AS p INNER JOIN '.$this->feather->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->feather->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE ('.$where_cond_cjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => $where_cond))->find_many();
                                 } else {
-                                    $result = \ORM::for_table($this->db->prefix.'posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->db->prefix.'search_words AS w INNER JOIN '.$this->db->prefix.'search_matches AS m ON m.word_id = w.id INNER JOIN '.$this->db->prefix.'posts AS p ON p.id=m.post_id INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => str_replace('*', '%', $cur_word)))->find_many();
+                                    $result = \ORM::for_table('posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->feather->prefix.'search_words AS w INNER JOIN '.$this->feather->prefix.'search_matches AS m ON m.word_id = w.id INNER JOIN '.$this->feather->prefix.'posts AS p ON p.id=m.post_id INNER JOIN '.$this->feather->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->feather->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => str_replace('*', '%', $cur_word)))->find_many();
                                 }
 
                                 $row = array();
@@ -251,7 +251,7 @@ class search
 
                 // If it's a search for author name (and that author name isn't Guest)
                 if ($author && $author != 'guest' && $author != utf8_strtolower($lang_common['Guest'])) {
-                    $username_exists = \ORM::for_table($this->db->prefix.'users')->select('id')->where_like('username', $author)->find_many();
+                    $username_exists = \ORM::for_table('users')->select('id')->where_like('username', $author)->find_many();
 
                     if ($username_exists) {
                         $user_ids = array();
@@ -259,7 +259,7 @@ class search
                             $user_ids[] = $row['id'];
                         }
 
-                        $result = \ORM::for_table($this->db->prefix.'posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir)->find_many();
+                        $result = \ORM::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.$this->feather->prefix.'posts AS p INNER JOIN '.$this->feather->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->feather->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir)->find_many();
 
                         foreach($result as $temp) {
                             $author_results[$temp['post_id']] = $temp['topic_id'];
@@ -314,11 +314,11 @@ class search
                         message($lang_common['No permission'], '403');
                     }
 
-                    $result = \ORM::for_table($this->db->prefix.'topics')
+                    $result = \ORM::for_table('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where_any_is($where_search_action)
                                 ->where_gt('t.last_post', $this->user->last_visit)
                                 ->where_null('t.moved_to')
@@ -339,11 +339,11 @@ class search
                 }
                 // If it's a search for recent posts (in a certain time interval)
                 elseif ($action == 'show_recent') {
-                    $result = \ORM::for_table($this->db->prefix.'topics')
+                    $result = \ORM::for_table('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where_any_is($where_search_action)
                                 ->where_gt('t.last_post', time() - $interval)
                                 ->where_null('t.moved_to')
@@ -363,12 +363,12 @@ class search
                 }
                 // If it's a search for topics in which the user has posted
                 elseif ($action == 'show_replies') {
-                    $result = \ORM::for_table($this->db->prefix.'topics')
+                    $result = \ORM::for_table('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->inner_join($this->db->prefix.'posts', array('t.id', '=', 'p.topic_id'), 'p')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->inner_join($this->feather->prefix.'posts', array('t.id', '=', 'p.topic_id'), 'p')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where_any_is($where_search_action)
                                 ->where('p.poster_id', $this->user->id)
                                 ->group_by('t.id');
@@ -389,12 +389,12 @@ class search
                 elseif ($action == 'show_user_posts') {
                     $show_as = 'posts';
 
-                    $result = \ORM::for_table($this->db->prefix.'posts')
+                    $result = \ORM::for_table('posts')
                                 ->table_alias('p')
                                 ->select('p.id')
-                                ->inner_join($this->db->prefix.'topics', array('p.topic_id', '=', 't.id'), 't')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->inner_join($this->feather->prefix.'topics', array('p.topic_id', '=', 't.id'), 't')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where_any_is($where_search_action)
                                 ->where('p.poster_id', $user_id)
                                 ->order_by_desc('p.posted');
@@ -412,12 +412,12 @@ class search
                 }
                 // If it's a search for topics by a specific user ID
                 elseif ($action == 'show_user_topics') {
-                    $result = \ORM::for_table($this->db->prefix.'topics')
+                    $result = \ORM::for_table('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->inner_join($this->db->prefix.'posts', array('t.first_post_id', '=', 'p.id'), 'p')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->inner_join($this->feather->prefix.'posts', array('t.first_post_id', '=', 'p.id'), 'p')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where_any_is($where_search_action)
                                 ->where('p.poster_id', $user_id)
                                 ->order_by_desc('t.last_post');
@@ -439,13 +439,13 @@ class search
                         message($lang_common['Bad request'], '404');
                     }
 
-                    $result = \ORM::for_table($this->db->prefix.'topics')
+                    $result = \ORM::for_table('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->inner_join($this->db->prefix.'topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                                ->inner_join($this->db->prefix.'topic_subscriptions', array('s.user_id', '=', $user_id), null, true)
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->inner_join($this->feather->prefix.'topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                                ->inner_join($this->feather->prefix.'topic_subscriptions', array('s.user_id', '=', $user_id), null, true)
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where_any_is($where_search_action)
                                 ->order_by_desc('t.last_post');
 
@@ -462,11 +462,11 @@ class search
                 }
                 // If it's a search for unanswered posts
                 else {
-                    $result = \ORM::for_table($this->db->prefix.'topics')
+                    $result = \ORM::for_table('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                                ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                                ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                                 ->where('t.num_replies', 0)
                                 ->where_null('t.moved_to')
                                 ->where_any_is($where_search_action)
@@ -495,14 +495,14 @@ class search
 
             // Prune "old" search results
             $old_searches = array();
-            $result = \ORM::for_table($this->db->prefix.'online')->select('ident')->find_many();
+            $result = \ORM::for_table('online')->select('ident')->find_many();
 
             if ($result) {
                 foreach($result as $row) {
                     $old_searches[] = $row['ident'];
                 }
 
-                \ORM::for_table($this->db->prefix.'search_cache')->where_not_in('ident', $old_searches)->delete_many();
+                \ORM::for_table('search_cache')->where_not_in('ident', $old_searches)->delete_many();
             }
 
             // Fill an array with our results and search properties
@@ -524,7 +524,7 @@ class search
                 'search_data'  =>  $temp,
             );
 
-            \ORM::for_table($this->db->prefix.'search_cache')
+            \ORM::for_table('search_cache')
                 ->create()
                 ->set($insert_cache)
                 ->save();
@@ -585,11 +585,11 @@ class search
             if ($show_as == 'posts') {
                 $select_search_post = array('pid' => 'p.id', 'pposter' => 'p.poster', 'pposted' => 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies', 'tid' => 't.id', 't.poster', 't.subject', 't.first_post_id', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.forum_id', 'f.forum_name');
 
-                $result = \ORM::for_table($this->db->prefix.'posts')
+                $result = \ORM::for_table('posts')
                                 ->table_alias('p')
                                 ->select_many($select_search_post)
-                                ->inner_join($this->db->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                                ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                                ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                                ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
                                 ->where_in('p.id', $search_ids)
                                 ->order_by($sort_by_sql, $sort_dir)
                                 ->find_many();
@@ -598,10 +598,10 @@ class search
 
                 $select_search_topic = array('tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name');
 
-                $result = \ORM::for_table($this->db->prefix.'topics')
+                $result = \ORM::for_table('topics')
                     ->table_alias('t')
                     ->select_many($select_search_topic)
-                    ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
                     ->where_in('t.id', $search_ids)
                     ->order_by($sort_by_sql, $sort_dir)
                     ->find_many();
@@ -622,7 +622,7 @@ class search
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
-                    $subscriber_name = \ORM::for_table($this->db->prefix.'users')->where('id', $subscriber_id)->find_one_col('username');
+                    $subscriber_name = \ORM::for_table('users')->where('id', $subscriber_id)->find_one_col('username');
 
                     if (!$subscriber_name) {
                         message($lang_common['Bad request'], '404');
@@ -787,7 +787,7 @@ class search
         );
         $order_by_get_list_forums = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $result = \ORM::for_table($this->feather->prefix.'categories')
+        $result = \ORM::for_table('categories')
                     ->table_alias('c')
                     ->select_many($select_get_list_forums)
                     ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')

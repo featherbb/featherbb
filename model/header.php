@@ -11,7 +11,6 @@ namespace model;
 
 class header
 {
-
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
@@ -23,7 +22,7 @@ class header
 
     public function get_reports()
     {
-        $result_header = \ORM::for_table($this->db->prefix.'reports')->where_null('zapped')->find_one();
+        $result_header = \ORM::for_table('reports')->where_null('zapped')->find_one();
 
         if ($result_header) {
             return true;

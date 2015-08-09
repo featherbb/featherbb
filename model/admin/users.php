@@ -22,7 +22,7 @@ class users
  
     public function get_num_ip($ip_stats)
     {
-        $num_ips = \ORM::for_table($this->db->prefix.'posts')->where('poster_id', $ip_stats)
+        $num_ips = \ORM::for_table('posts')->where('poster_id', $ip_stats)
                         ->group_by('poster_ip')
                         ->count('poster_ip');
 
@@ -33,7 +33,7 @@ class users
     {
         $ip_data = array();
 
-        $result = \ORM::for_table($this->db->prefix.'posts')->where('poster_id', $ip_stats)
+        $result = \ORM::for_table('posts')->where('poster_id', $ip_stats)
                     ->select('poster_ip')
                     ->select_expr('MAX(posted)', 'last_used')
                     ->select_expr('COUNT(id)', 'used_times')
@@ -54,7 +54,7 @@ class users
 
     public function get_num_users_ip($ip)
     {
-        $num_users = \ORM::for_table($this->db->prefix.'posts')->where('poster_ip', $ip)
+        $num_users = \ORM::for_table('posts')->where('poster_ip', $ip)
                         ->distinct()
                         ->count('poster_id');
 
@@ -63,8 +63,8 @@ class users
 
     public function get_num_users_search($conditions)
     {
-        $num_users = \ORM::for_table($this->db->prefix.'users')->table_alias('u')
-                        ->left_outer_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+        $num_users = \ORM::for_table('users')->table_alias('u')
+                        ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
                         ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
                         ->count('id');
 
@@ -77,7 +77,7 @@ class users
 
         $select_info_get_info_poster = array('poster_id', 'poster');
 
-        $result = \ORM::for_table($this->db->prefix.'posts')->select_many($select_info_get_info_poster)
+        $result = \ORM::for_table('posts')->select_many($select_info_get_info_poster)
                         ->distinct()
                         ->where('poster_ip', $ip)
                         ->order_by_asc('poster')
@@ -96,9 +96,9 @@ class users
 
             $select_get_info_poster = array('u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title');
 
-            $result = \ORM::for_table($this->db->prefix.'users')->table_alias('u')
+            $result = \ORM::for_table('users')->table_alias('u')
                 ->select_many($select_get_info_poster)
-                ->inner_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
                 ->where_gt('u.id', 1)
                 ->where_in('u.id', $poster_ids)
                 ->find_many();
@@ -132,7 +132,7 @@ class users
         }
 
         // Are we trying to batch move any admins?
-        $is_admin = \ORM::for_table($this->db->prefix.'users')->where_in('id', $move['user_ids'])
+        $is_admin = \ORM::for_table('users')->where_in('id', $move['user_ids'])
                         ->where('group_id', FEATHER_ADMIN)
                         ->find_one();
         if ($is_admin) {
@@ -143,7 +143,7 @@ class users
         $select_user_groups = array('g_id', 'g_title');
         $where_not_in = array(FEATHER_GUEST, FEATHER_ADMIN);
 
-        $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_user_groups)
+        $result = \ORM::for_table('groups')->select_many($select_user_groups)
             ->where_not_in('g_id', $where_not_in)
             ->order_by_asc('g_title')
             ->find_many();
@@ -156,13 +156,13 @@ class users
             $new_group = $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ? $this->request->post('new_group') : message($lang_admin_users['Invalid group message']);
 
             // Is the new group a moderator group?
-            $new_group_mod = \ORM::for_table($this->db->prefix.'groups')->where('g_id', $new_group)
+            $new_group_mod = \ORM::for_table('groups')->where('g_id', $new_group)
                                 ->find_one_col('g_moderator');
 
             // Fetch user groups
             $user_groups = array();
             $select_fetch_user_groups = array('id', 'group_id');
-            $result = \ORM::for_table($this->db->prefix.'users')->select_many($select_fetch_user_groups)
+            $result = \ORM::for_table('users')->select_many($select_fetch_user_groups)
                             ->where_in('id', $move['user_ids'])
                             ->find_many();
             foreach($result as $cur_user) {
@@ -176,7 +176,7 @@ class users
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
             $select_fetch_user_mods = array('g_id', 'g_moderator');
-            $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_fetch_user_mods)
+            $result = \ORM::for_table('groups')->select_many($select_fetch_user_mods)
                             ->where_in('g_id', $group_ids)
                             ->find_many();
             foreach($result as $cur_group) {
@@ -188,7 +188,7 @@ class users
             if (!empty($user_groups) && $new_group != FEATHER_ADMIN && $new_group_mod != '1') {
                 // Fetch forum list and clean up their moderator list
                 $select_mods = array('id', 'moderators');
-                $result = \ORM::for_table($this->feather->prefix.'forums')
+                $result = \ORM::for_table('forums')
                             ->select_many($select_mods)
                             ->find_many();
 
@@ -200,12 +200,12 @@ class users
                     }
 
                     if (!empty($cur_moderators)) {
-                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        \ORM::for_table('forums')->where('id', $cur_forum['id'])
                             ->find_one()
                             ->set('moderators', serialize($cur_moderators))
                             ->save();
                     } else {
-                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        \ORM::for_table('forums')->where('id', $cur_forum['id'])
                             ->find_one()
                             ->set_expr('moderators', 'NULL')
                             ->save();
@@ -214,7 +214,7 @@ class users
             }
 
             // Change user group
-            \ORM::for_table($this->db->prefix.'users')->where_in('id', $move['user_ids'])
+            \ORM::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
             redirect(get_link('admin/users/'), $lang_admin_users['Users move redirect']);
@@ -242,7 +242,7 @@ class users
         }
 
         // Are we trying to delete any admins?
-        $is_admin = \ORM::for_table($this->db->prefix.'users')->where_in('id', $user_ids)
+        $is_admin = \ORM::for_table('users')->where_in('id', $user_ids)
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
@@ -253,7 +253,7 @@ class users
             // Fetch user groups
             $user_groups = array();
             $select_fetch_user_groups = array('id', 'group_id');
-            $result = \ORM::for_table($this->db->prefix.'users')->select_many($select_fetch_user_groups)
+            $result = \ORM::for_table('users')->select_many($select_fetch_user_groups)
                 ->where_in('id', $user_ids)
                 ->find_many();
             foreach($result as $cur_user) {
@@ -268,7 +268,7 @@ class users
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
             $select_fetch_user_mods = array('g_id', 'g_moderator');
-            $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_fetch_user_mods)
+            $result = \ORM::for_table('groups')->select_many($select_fetch_user_mods)
                 ->where_in('g_id', $group_ids)
                 ->find_many();
             foreach($result as $cur_group) {
@@ -279,7 +279,7 @@ class users
 
             // Fetch forum list and clean up their moderator list
             $select_mods = array('id', 'moderators');
-            $result = \ORM::for_table($this->feather->prefix.'forums')
+            $result = \ORM::for_table('forums')
                 ->select_many($select_mods)
                 ->find_many();
 
@@ -291,12 +291,12 @@ class users
                 }
 
                 if (!empty($cur_moderators)) {
-                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                    \ORM::for_table('forums')->where('id', $cur_forum['id'])
                         ->find_one()
                         ->set('moderators', serialize($cur_moderators))
                         ->save();
                 } else {
-                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                    \ORM::for_table('forums')->where('id', $cur_forum['id'])
                         ->find_one()
                         ->set_expr('moderators', 'NULL')
                         ->save();
@@ -305,15 +305,15 @@ class users
 
 
             // Delete any subscriptions
-            \ORM::for_table($this->db->prefix.'topic_subscriptions')
+            \ORM::for_table('topic_subscriptions')
                     ->where_in('user_id', $user_ids)
                     ->delete_many();
-            \ORM::for_table($this->db->prefix.'forum_subscriptions')
+            \ORM::for_table('forum_subscriptions')
                     ->where_in('user_id', $user_ids)
                     ->delete_many();
 
             // Remove them from the online list (if they happen to be logged in)
-            \ORM::for_table($this->db->prefix.'online')
+            \ORM::for_table('online')
                     ->where_in('user_id', $user_ids)
                     ->delete_many();
 
@@ -325,17 +325,17 @@ class users
                 // Find all posts made by this user
                 $select_user_posts = array('p.id', 'p.topic_id', 't.forum_id');
 
-                $result = \ORM::for_table($this->feather->prefix.'posts')
+                $result = \ORM::for_table('posts')
                             ->table_alias('p')
                             ->select_many($select_user_posts)
-                            ->inner_join($this->db->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                            ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->where('p.poster_id', $user_ids)
                             ->find_many();
                 if ($result) {
                     foreach($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
-                        $result2 = \ORM::for_table($this->feather->prefix.'posts')
+                        $result2 = \ORM::for_table('posts')
                                         ->where('topic_id', $cur_post['topic_id'])
                                         ->order_by('posted')
                                         ->find_one_col('id');
@@ -351,13 +351,13 @@ class users
                 }
             } else {
                 // Set all their posts to guest
-                \ORM::for_table($this->db->prefix.'posts')
+                \ORM::for_table('posts')
                         ->where_in('poster_id', '1')
                         ->update_many('poster_id', $user_ids);
             }
 
             // Delete the users
-            \ORM::for_table($this->db->prefix.'users')
+            \ORM::for_table('users')
                     ->where_in('id', $user_ids)
                     ->delete_many();
 
@@ -399,7 +399,7 @@ class users
         }
 
         // Are we trying to ban any admins?
-        $is_admin = \ORM::for_table($this->db->prefix . 'users')->where_in('id', $user_ids)
+        $is_admin = \ORM::for_table('users')->where_in('id', $user_ids)
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
@@ -407,8 +407,8 @@ class users
         }
 
         // Also, we cannot ban moderators
-        $is_mod = \ORM::for_table($this->db->prefix . 'users')->table_alias('u')
-            ->inner_join($this->db->prefix . 'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+        $is_mod = \ORM::for_table('users')->table_alias('u')
+            ->inner_join($this->feather->prefix . 'groups', array('u.group_id', '=', 'g.g_id'), 'g')
             ->where('g.g_moderator', 1)
             ->where_in('u.id', $user_ids)
             ->find_one();
@@ -443,7 +443,7 @@ class users
             // Fetch user information
             $user_info = array();
             $select_fetch_user_information = array('id', 'username', 'email', 'registration_ip');
-            $result = \ORM::for_table($this->db->prefix . 'users')->select_many($select_fetch_user_information)
+            $result = \ORM::for_table('users')->select_many($select_fetch_user_information)
                 ->where_in('id', $user_ids)
                 ->find_many();
             foreach ($result as $cur_user) {
@@ -452,7 +452,7 @@ class users
 
             // Overwrite the registration IP with one from the last post (if it exists)
             if ($ban_the_ip != 0) {
-                $result = \ORM::for_table($this->db->prefix . 'posts')->raw_query('SELECT p.poster_id, p.poster_ip FROM ' . $this->db->prefix . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . $this->db->prefix . 'posts WHERE poster_id IN (' . implode(',', $user_ids) . ') GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
+                $result = \ORM::for_table('posts')->raw_query('SELECT p.poster_id, p.poster_ip FROM ' . $this->feather->prefix . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . $this->feather->prefix . 'posts WHERE poster_id IN (' . implode(',', $user_ids) . ') GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
                 foreach ($result as $cur_address) {
                     $user_info[$cur_address['poster_id']]['ip'] = $cur_address['poster_ip'];
                 }
@@ -476,7 +476,7 @@ class users
                 if ($this->request->post('mode') == 'add') {
                     $insert_update_ban['ban_creator'] = $this->user->id;
 
-                    \ORM::for_table($this->db->prefix . 'bans')
+                    \ORM::for_table('bans')
                         ->create()
                         ->set($insert_update_ban)
                         ->save();
@@ -621,9 +621,9 @@ class users
         $user_data = array();
 
         $select_print_users = array('u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title');
-        $result = \ORM::for_table($this->db->prefix.'users')->table_alias('u')
+        $result = \ORM::for_table('users')->table_alias('u')
                         ->select_many($select_print_users)
-                        ->left_outer_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
                         ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
                         ->offset($start_from)
                         ->limit(50)
@@ -651,7 +651,7 @@ class users
         $output = '';
 
         $select_get_group_list = array('g_id', 'g_title');
-        $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_get_group_list)
+        $result = \ORM::for_table('groups')->select_many($select_get_group_list)
                         ->where_not_equal('g_id', FEATHER_GUEST)
                         ->order_by('g_title');
 

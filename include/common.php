@@ -73,20 +73,8 @@ define('FEATHER_MOD', 2);
 define('FEATHER_GUEST', 3);
 define('FEATHER_MEMBER', 4);
 
-// Load DB abstraction layer and connect
-require FEATHER_ROOT.'include/dblayer/common_db.php';
-
- // Inject DB dependency into SlimFramework
-$feather->container->singleton('db', function () use ($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect) {
-    // Create the database adapter object (and open/connect to/select db)
-    return new DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect);
-});
-
-// Backward compatibility - to be removed soon
-$db = $feather->db;
-
-// Start a transaction
-$feather->db->start_transaction();
+// Inject DB prefix to SlimFramework
+$feather->prefix = $db_prefix;
 
 // Include Idiorm
 require FEATHER_ROOT.'include/idiorm.php';
@@ -100,9 +88,6 @@ require FEATHER_ROOT.'include/idiorm.php';
 \ORM::configure('id_column_overrides', array(
     $db_prefix.'groups' => 'g_id',
 ));
-
-// Inject DB prefix to SlimFramework
-$feather->prefix = $db_prefix;
 
 // Load cached config
 if (file_exists(FORUM_CACHE_DIR.'cache_config.php')) {

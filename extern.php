@@ -95,7 +95,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
     // Check if there's a user matching $user and $password
     $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
 
-    $result = ORM::for_table($feather->prefix.'users')
+    $result = ORM::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
                 ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -359,7 +359,7 @@ if ($action == 'feed') {
             array('fp.read_forum' => '1')
         );
 
-        $cur_topic = \ORM::for_table($db->prefix.'topics')->table_alias('t')
+        $cur_topic = \ORM::for_table('topics')->table_alias('t')
                         ->select_many($select_show_recent_topics)
                         ->left_outer_join($db->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
                         ->left_outer_join($db->prefix.'forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
@@ -389,7 +389,7 @@ if ($action == 'feed') {
         // Fetch $show posts
         $select_print_posts = array('p.id', 'p.poster', 'p.message', 'p.hide_smilies', 'p.posted', 'p.poster_email', 'p.poster_id', 'u.email_setting', 'u.email');
 
-        $result = \ORM::for_table($db->prefix.'posts')
+        $result = \ORM::for_table('posts')
             ->table_alias('p')
             ->select_many($select_print_posts)
             ->inner_join($db->prefix.'users', array('u.id', '=', 'p.poster_id'), 'u')
@@ -431,7 +431,7 @@ if ($action == 'feed') {
         $order_posted = isset($_GET['order']) && strtolower($_GET['order']) == 'posted';
         $forum_name = '';
 
-        $result = \ORM::for_table($db->prefix.'topics')
+        $result = \ORM::for_table('topics')
                         ->table_alias('t');
 
         // Were any forum IDs supplied?
@@ -450,7 +450,7 @@ if ($action == 'feed') {
                     array('fp.read_forum' => '1')
                 );
 
-                $cur_topic = \ORM::for_table($db->prefix.'forums')->table_alias('f')
+                $cur_topic = \ORM::for_table('forums')->table_alias('f')
                     ->left_outer_join($db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
                     ->left_outer_join($db->prefix.'forum_perms', array('fp.group_id', '=', $feather->user->g_id), null, true)
                     ->where_any_is($where_show_forum_name)
@@ -590,7 +590,7 @@ elseif ($action == 'online' || $action == 'online_full') {
     $where_fetch_users_online = array('idle' => '0');
     $order_by_fetch_users_online = array('ident');
 
-    $result = \ORM::for_table($db->prefix.'online')
+    $result = \ORM::for_table('online')
                 ->select_many($select_fetch_users_online)
                 ->where($where_fetch_users_online)
                 ->order_by_many($order_by_fetch_users_online)
@@ -641,7 +641,7 @@ elseif ($action == 'stats') {
         require FORUM_CACHE_DIR.'cache_users_info.php';
     }
 
-    $stats_query = \ORM::for_table($db->prefix.'forums')
+    $stats_query = \ORM::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
                         ->select_expr('SUM(num_posts)', 'total_posts')
                         ->find_one();

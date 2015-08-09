@@ -238,8 +238,9 @@
          */
         public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION)
         {
+            $feather = \Slim\Slim::getInstance();
             self::_setup_db($connection_name);
-            return new self($table_name, array(), $connection_name);
+            return new self($feather->prefix.$table_name, array(), $connection_name);
         }
 
         /**

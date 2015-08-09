@@ -29,7 +29,7 @@ class forums
         $set_add_forum = array('forum_name' => $forum_name,
                                 'cat_id' => $cat_id);
 
-        $forum = \ORM::for_table($this->db->prefix.'forums')
+        $forum = \ORM::for_table('forums')
                     ->create()
                     ->set($set_add_forum);
         $forum->save();
@@ -39,7 +39,7 @@ class forums
 
     public function update_forum($forum_id, array $forum_data)
     {
-        return \ORM::for_table($this->db->prefix.'forums')
+        return \ORM::for_table('forums')
                     ->find_one($forum_id)
                     ->set($forum_data)
                     ->save();
@@ -55,21 +55,21 @@ class forums
         $this->maintenance->prune($forum_id, 1, -1);
 
         // Delete the forum
-        \ORM::for_table($this->db->prefix.'forums')
+        \ORM::for_table('forums')
             ->find_one($forum_id)
             ->delete();
 
         // Delete forum specific group permissions and subscriptions
-        \ORM::for_table($this->db->prefix.'forum_perms')
+        \ORM::for_table('forum_perms')
             ->where('forum_id', $forum_id)
             ->delete_many();
 
-        \ORM::for_table($this->db->prefix.'forum_subscriptions')
+        \ORM::for_table('forum_subscriptions')
             ->where('forum_id', $forum_id)
             ->delete_many();
 
         // Delete orphaned redirect topics
-        $orphans = \ORM::for_table($this->db->prefix.'topics')
+        $orphans = \ORM::for_table('topics')
                     ->table_alias('t1')
                     ->left_outer_join($this->feather->prefix.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
                     ->where_null('t2.id')
@@ -85,7 +85,7 @@ class forums
 
     public function get_forum_info($forum_id)
     {
-        $result = \ORM::for_table($this->db->prefix.'forums')
+        $result = \ORM::for_table('forums')
                     ->where('id', $forum_id)
                     ->find_array();
         return $result[0];
@@ -97,10 +97,10 @@ class forums
 
         $select_get_forums = array('cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position');
 
-        $result = \ORM::for_table($this->db->prefix.'categories')
+        $result = \ORM::for_table('categories')
                     ->table_alias('c')
                     ->select_many($select_get_forums)
-                    ->inner_join($this->db->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->order_by_asc('f.disp_position')
                     ->order_by_asc('c.disp_position')
                     ->find_array();
@@ -120,7 +120,7 @@ class forums
 
     public function update_positions($forum_id, $position)
     {
-        return \ORM::for_table($this->db->prefix.'forums')
+        return \ORM::for_table('forums')
                 ->find_one($forum_id)
                 ->set('disp_position', $position)
                 ->save();
@@ -136,7 +136,7 @@ class forums
 
         $select_permissions = array('g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
 
-        $permissions = \ORM::for_table($this->db->prefix.'groups')
+        $permissions = \ORM::for_table('groups')
                         ->table_alias('g')
                         ->select_many($select_permissions)
                         ->left_outer_join($this->feather->prefix.'forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
@@ -164,7 +164,7 @@ class forums
     {
         $select_get_default_group_permissions = array('g_id', 'g_read_board', 'g_post_replies', 'g_post_topics');
 
-        $result = \ORM::for_table($this->db->prefix.'groups')
+        $result = \ORM::for_table('groups')
                     ->select_many($select_get_default_group_permissions);
 
         if (!$fetch_admin) {
@@ -176,13 +176,13 @@ class forums
 
     public function update_permissions(array $permissions_data)
     {
-        $permissions = \ORM::for_table($this->db->prefix.'forum_perms')
+        $permissions = \ORM::for_table('forum_perms')
                             ->where('forum_id', $permissions_data['forum_id'])
                             ->where('group_id', $permissions_data['group_id'])
                             ->delete_many();
 
         if ($permissions) {
-            return \ORM::for_table($this->db->prefix.'forum_perms')
+            return \ORM::for_table('forum_perms')
                     ->create()
                     ->set($permissions_data)
                     ->save();
@@ -192,7 +192,7 @@ class forums
 
     public function delete_permissions($forum_id, $group_id = null) 
     {
-        $result = \ORM::for_table($this->db->prefix.'forum_perms')
+        $result = \ORM::for_table('forum_perms')
                     ->where('forum_id', $forum_id);
 
         if ($group_id) {

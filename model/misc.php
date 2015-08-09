@@ -22,7 +22,7 @@ class misc
  
     public function update_last_visit()
     {
-        \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+        \ORM::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
                                                   ->set('last_visit', $this->user->logged)
                                                   ->save();
@@ -34,7 +34,7 @@ class misc
         
         $select_get_info_mail = array('username', 'email', 'email_setting');
         
-        $mail = \ORM::for_table($this->feather->prefix.'users')
+        $mail = \ORM::for_table('users')
                 ->select_many($select_get_info_mail)
                 ->where('id', $recipient_id)
                 ->find_one();
@@ -89,7 +89,7 @@ class misc
 
         pun_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
-        \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+        \ORM::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
                                                   ->set('last_email_sent', time())
                                                   ->save();
@@ -134,7 +134,7 @@ class misc
         }
 
         // Get the topic ID
-        $topic = \ORM::for_table($this->db->prefix.'posts')->select('topic_id')
+        $topic = \ORM::for_table('posts')->select('topic_id')
                                                               ->where('id', $post_id)
                                                               ->find_one();
 
@@ -145,7 +145,7 @@ class misc
         $select_report = array('subject', 'forum_id');
 
         // Get the subject and forum ID
-        $report = \ORM::for_table($this->db->prefix.'topics')->select_many($select_report)
+        $report = \ORM::for_table('topics')->select_many($select_report)
             ->where('id', $topic['topic_id'])
             ->find_one();
 
@@ -165,7 +165,7 @@ class misc
             );
 
             // Insert the report
-            \ORM::for_table($this->db->prefix.'reports')
+            \ORM::for_table('reports')
                 ->create()
                 ->set($insert_report)
                 ->save();
@@ -196,7 +196,7 @@ class misc
             }
         }
 
-        \ORM::for_table($this->db->prefix.'users')->where('id', $this->user->id)
+        \ORM::for_table('users')->where('id', $this->user->id)
             ->find_one()
             ->set('last_report_sent', time())
             ->save();
@@ -214,7 +214,7 @@ class misc
             array('fp.read_forum' => '1')
         );
 
-        $cur_post = \ORM::for_table($this->feather->prefix.'posts')
+        $cur_post = \ORM::for_table('posts')
             ->table_alias('p')
             ->select_many($select_get_info_report)
             ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
@@ -246,7 +246,7 @@ class misc
             array('fp.read_forum' => '1')
         );
 
-        $authorized = \ORM::for_table($this->feather->prefix.'topics')
+        $authorized = \ORM::for_table('topics')
                     ->table_alias('t')
                     ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
                     ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
@@ -259,7 +259,7 @@ class misc
             message($lang_common['Bad request'], '404');
         }
 
-        $is_subscribed = \ORM::for_table($this->feather->prefix.'topic_subscriptions')
+        $is_subscribed = \ORM::for_table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $topic_id)
                         ->find_one();
@@ -274,7 +274,7 @@ class misc
         );
 
         // Insert the subscription
-        \ORM::for_table($this->db->prefix.'topic_subscriptions')
+        \ORM::for_table('topic_subscriptions')
             ->create()
             ->set($insert_subscribe_topic)
             ->save();
@@ -290,7 +290,7 @@ class misc
             message($lang_common['No permission'], '403');
         }
 
-        $is_subscribed = \ORM::for_table($this->feather->prefix.'topic_subscriptions')
+        $is_subscribed = \ORM::for_table('topic_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('topic_id', $topic_id)
             ->find_one();
@@ -300,7 +300,7 @@ class misc
         }
 
         // Delete the subscription
-        \ORM::for_table($this->db->prefix.'topic_subscriptions')
+        \ORM::for_table('topic_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('topic_id', $topic_id)
             ->delete_many();
@@ -316,7 +316,7 @@ class misc
             message($lang_common['No permission'], '403');
         }
 
-        $is_subscribed = \ORM::for_table($this->feather->prefix.'forum_subscriptions')
+        $is_subscribed = \ORM::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id)
             ->find_one();
@@ -326,7 +326,7 @@ class misc
         }
 
         // Delete the subscription
-        \ORM::for_table($this->db->prefix.'forum_subscriptions')
+        \ORM::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id)
             ->delete_many();
@@ -348,7 +348,7 @@ class misc
             array('fp.read_forum' => '1')
         );
 
-        $authorized = \ORM::for_table($this->feather->prefix.'forums')
+        $authorized = \ORM::for_table('forums')
             ->table_alias('f')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
@@ -360,7 +360,7 @@ class misc
             message($lang_common['Bad request'], '404');
         }
 
-        $is_subscribed = \ORM::for_table($this->feather->prefix.'forum_subscriptions')
+        $is_subscribed = \ORM::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id)
             ->find_one();
@@ -375,7 +375,7 @@ class misc
         );
 
         // Insert the subscription
-        \ORM::for_table($this->db->prefix.'forum_subscriptions')
+        \ORM::for_table('forum_subscriptions')
             ->create()
             ->set($insert_subscribe_forum)
             ->save();

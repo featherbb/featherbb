@@ -27,6 +27,7 @@ function check_cookie()
 
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
+    
     $now = time();
 
     // Get FeatherBB cookie
@@ -44,7 +45,7 @@ function check_cookie()
             $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
             $where_check_cookie = array('u.id' => intval($cookie['user_id']));
 
-            $result = ORM::for_table($feather->prefix.'users')
+            $result = ORM::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
                 ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -113,11 +114,11 @@ function set_preferences()
                 case 'mysqli_innodb':
                 case 'sqlite':
                 case 'sqlite3':
-                    \ORM::for_table($feather->db->prefix.'online')->raw_execute('REPLACE INTO '.$feather->db->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
+                    \ORM::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
                     break;
 
                 default:
-                    \ORM::for_table($feather->db->prefix.'online')->raw_execute('INSERT INTO '.$feather->db->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
+                    \ORM::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
                     break;
             }
 
@@ -127,7 +128,7 @@ function set_preferences()
         } else {
             // Special case: We've timed out, but no other user has browsed the forums since we timed out
             if ($feather->user->logged < ($now-$feather->config['o_timeout_visit'])) {
-                \ORM::for_table($feather->db->prefix.'users')->where('id', $feather->user->id)
+                \ORM::for_table('users')->where('id', $feather->user->id)
                     ->find_one()
                     ->set('last_visit', $feather->user->logged)
                     ->save();
@@ -136,7 +137,7 @@ function set_preferences()
 
             $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
 
-            \ORM::for_table($feather->db->prefix.'online')->raw_execute('UPDATE '.$feather->db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
+            \ORM::for_table('online')->raw_execute('UPDATE '.$feather->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
 
             // Update tracked topics with the current expire time
             $cookie_tracked_topics = $feather->getCookie($cookie_name.'_track');
@@ -248,7 +249,7 @@ function get_admin_ids()
 //
 function set_default_user()
 {
-    global $db, $db_type, $feather_config;
+    global $db_type, $feather_config;
 
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
@@ -259,7 +260,7 @@ function set_default_user()
     $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
     $where_set_default_user = array('u.id' => '1');
 
-    $result = ORM::for_table($feather->prefix.'users')
+    $result = ORM::for_table('users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
         ->inner_join($feather->prefix.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -285,15 +286,15 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-            \ORM::for_table($db->prefix.'online')->raw_execute('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+            \ORM::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
 
             default:
-                \ORM::for_table($db->prefix.'online')->raw_execute('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                \ORM::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
         }
     } else {
-        \ORM::for_table($db->prefix.'online')->where('ident', $remote_addr)
+        \ORM::for_table('online')->where('ident', $remote_addr)
              ->update_many('logged', time());
     }
 
@@ -326,33 +327,11 @@ function feather_setcookie($user_id, $password, $expires)
 
 
 //
-// Set a cookie, FluxBB style!
-
-function forum_setcookie($name, $value, $expire)
-{
-    global $cookie_path, $cookie_domain, $cookie_secure, $feather_config;
-
-    if ($expire - time() - $feather_config['o_timeout_visit'] < 1) {
-        $expire = 0;
-    }
-
-    // Enable sending of a P3P header
-    header('P3P: CP="CUR ADM"');
-
-    if (version_compare(PHP_VERSION, '5.2.0', '>=')) {
-        setcookie($name, $value, $expire, $cookie_path, $cookie_domain, $cookie_secure, true);
-    } else {
-        setcookie($name, $value, $expire, $cookie_path.'; HttpOnly', $cookie_domain, $cookie_secure);
-    }
-}
-
-
-//
 // Check whether the connecting user is banned (and delete any expired bans while we're at it)
 //
 function check_bans()
 {
-    global $db, $feather_config, $lang_common, $feather_bans;
+    global $feather_config, $lang_common, $feather_bans;
 
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
@@ -373,7 +352,7 @@ function check_bans()
     foreach ($feather_bans as $cur_ban) {
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-            \ORM::for_table($db->prefix.'bans')->where('id', $cur_ban['id'])
+            \ORM::for_table('bans')->where('id', $cur_ban['id'])
                                                ->delete_many();
             $bans_altered = true;
             continue;
@@ -403,7 +382,7 @@ function check_bans()
         }
 
         if ($is_banned) {
-            \ORM::for_table($db->prefix.'online')->where('ident', $feather->user->username)
+            \ORM::for_table('online')->where('ident', $feather->user->username)
                                                  ->delete_many();
             message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
         }
@@ -425,7 +404,7 @@ function check_bans()
 //
 function check_username($username, $errors, $exclude_id = null)
 {
-    global $db, $feather_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $feather_bans;
+    global $feather, $feather_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $feather_bans;
 
     // Include UTF-8 function
     require_once FEATHER_ROOT.'include/utf8/strcasecmp.php';
@@ -456,10 +435,10 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = \ORM::for_table($db->prefix.'online')->raw_query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+    $result = \ORM::for_table('online')->raw_query('SELECT username FROM '.$feather->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
     if ($result) {
-        $busy = $db->result($result);
+        $busy = $result['username'];
         $errors[] = $lang_register['Username dupe 1'].' '.feather_escape($busy).'. '.$lang_register['Username dupe 2'];
     }
 
@@ -480,33 +459,33 @@ function check_username($username, $errors, $exclude_id = null)
 //
 function update_users_online()
 {
-    global $db, $feather_config;
+    global $feather, $feather_config;
 
     $now = time();
 
     // Fetch all online list entries that are older than "o_timeout_online"
     $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
-    $result = \ORM::for_table($db->prefix.'online')->select_many($select_update_users_online)
+    $result = \ORM::for_table('online')->select_many($select_update_users_online)
         ->where_lt('logged', $now-$feather_config['o_timeout_online'])
         ->find_many();
 
     foreach ($result as $cur_user) {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1') {
-            \ORM::for_table($db->prefix.'online')->where('ident', $cur_user['ident'])
+            \ORM::for_table('online')->where('ident', $cur_user['ident'])
                                                  ->delete_many();
         } else {
             // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
             if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                \ORM::for_table($db->prefix.'users')->where('id', $cur_user['user_id'])
+                \ORM::for_table('users')->where('id', $cur_user['user_id'])
                         ->find_one()
                         ->set('last_visit', $cur_user['logged'])
                         ->save();
-                \ORM::for_table($db->prefix.'online')->where('user_id', $cur_user['user_id'])
+                \ORM::for_table('online')->where('user_id', $cur_user['user_id'])
                     ->delete_many();
             } elseif ($cur_user['idle'] == '0') {
-                \ORM::for_table($db->prefix.'online')->where('user_id', $cur_user['user_id'])
+                \ORM::for_table('online')->where('user_id', $cur_user['user_id'])
                         ->update_many('idle', 1);
             }
         }
@@ -607,9 +586,10 @@ function get_tracked_topics()
 //
 function update_forum($forum_id)
 {
-    global $db;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    $stats_query = \ORM::for_table($db->prefix.'topics')
+    $stats_query = \ORM::for_table('topics')
                     ->where('forum_id', $forum_id)
                     ->select_expr('COUNT(id)', 'total_topics')
                     ->select_expr('SUM(num_replies)', 'total_replies')
@@ -622,7 +602,7 @@ function update_forum($forum_id)
 
     $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
 
-    $result = \ORM::for_table($db->prefix.'topics')->select_many($select_update_forum)
+    $result = \ORM::for_table('topics')->select_many($select_update_forum)
         ->where('forum_id', $forum_id)
         ->where_null('moved_to')
         ->order_by_desc('last_post')
@@ -647,7 +627,7 @@ function update_forum($forum_id)
             'last_poster'  => 'NULL',
         );
     }
-        \ORM::for_table($db->prefix.'forums')
+        \ORM::for_table('forums')
             ->where('id', $forum_id)
             ->find_one()
             ->set($insert_update_forum)
@@ -678,7 +658,8 @@ function delete_avatar($user_id)
 //
 function delete_topic($topic_id)
 {
-    global $db;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     // Delete the topic and any redirect topics
     $where_delete_topic = array(
@@ -686,17 +667,17 @@ function delete_topic($topic_id)
             array('moved_to' => $topic_id)
         );
 
-    \ORM::for_table($db->prefix.'topics')
+    \ORM::for_table('topics')
         ->where_any_is($where_delete_topic)
         ->delete_many();
 
     // Delete posts in topic
-    \ORM::for_table($db->prefix.'posts')
+    \ORM::for_table('posts')
         ->where('topic_id', $topic_id)
         ->delete_many();
 
     // Delete any subscriptions for this topic
-    \ORM::for_table($db->prefix.'topic_subscriptions')
+    \ORM::for_table('topic_subscriptions')
         ->where('topic_id', $topic_id)
         ->delete_many();
 }
@@ -707,9 +688,10 @@ function delete_topic($topic_id)
 //
 function delete_post($post_id, $topic_id)
 {
-    global $db;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    $result = \ORM::for_table($db->prefix.'posts')
+    $result = \ORM::for_table('posts')
                   ->select_many('id', 'poster', 'posted')
                   ->where('topic_id', $topic_id)
                   ->order_by_desc('id')
@@ -730,7 +712,7 @@ function delete_post($post_id, $topic_id)
    }
 
     // Delete the post
-    \ORM::for_table($db->prefix.'posts')
+    \ORM::for_table('posts')
         ->where('id', $post_id)
         ->find_one()
         ->delete();
@@ -738,7 +720,7 @@ function delete_post($post_id, $topic_id)
     strip_search_index($post_id);
 
     // Count number of replies in the topic
-    $num_replies = \ORM::for_table($db->prefix.'posts')->where('topic_id', $topic_id)->count() - 1;
+    $num_replies = \ORM::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
 
     // If the message we deleted is the most recent in the topic (at the end of the topic)
     if ($last_id == $post_id) {
@@ -750,14 +732,14 @@ function delete_post($post_id, $topic_id)
                 'last_poster'  => $second_poster,
                 'num_replies'  => $num_replies,
             );
-            \ORM::for_table($db->prefix.'topics')
+            \ORM::for_table('topics')
                 ->where('id', $topic_id)
                 ->find_one()
                 ->set($update_topic)
                 ->save();
         } else {
             // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
-            \ORM::for_table($db->prefix.'topics')
+            \ORM::for_table('topics')
                 ->where('id', $topic_id)
                 ->find_one()
                 ->set_expr('last_post', 'posted')
@@ -768,7 +750,7 @@ function delete_post($post_id, $topic_id)
         }
     } else {
         // Otherwise we just decrement the reply counter
-        \ORM::for_table($db->prefix.'topics')
+        \ORM::for_table('topics')
             ->where('id', $topic_id)
             ->find_one()
             ->set('num_replies', $num_replies)
@@ -782,7 +764,6 @@ function delete_post($post_id, $topic_id)
 //
 function censor_words($text)
 {
-    global $db;
     static $search_for, $replace_with;
 
     // If not already built in a previous call, build an array of censor words and their replacement text
@@ -1262,7 +1243,7 @@ function is_all_uppercase($string)
 //
 function maintenance_message()
 {
-    global $db, $lang_common, $feather_config, $tpl_main;
+    global $lang_common, $feather_config, $tpl_main;
 
     // Deal with newlines, tabs and multiple spaces
     $pattern = array("\t", '  ', '  ');
@@ -1726,10 +1707,7 @@ function forum_is_writable($path)
 //
 function display_saved_queries()
 {
-    global $db, $lang_common;
-
-    // Get the queries so that we can print them out
-    $saved_queries = $db->get_saved_queries();
+    global $lang_common;
 
     ?>
 
@@ -1758,21 +1736,7 @@ function display_saved_queries()
         <?php
         ++$i;
     }
-
-    // TODO: To be removed
-    foreach ($saved_queries as $cur_query) {
-        $query_time_total += $cur_query[1];
-
         ?>
-				<tr>
-					<td class="tcl"><?php echo($cur_query[1] != 0) ? $cur_query[1] : '&#160;' ?></td>
-					<td class="tcr"><?php echo feather_escape($cur_query[0]) ?></td>
-				</tr>
-<?php
-
-    }
-
-    ?>
 				<tr>
 					<td class="tcl" colspan="2"><?php printf($lang_common['Total query time'], $query_time_total.' s') ?></td>
 				</tr>

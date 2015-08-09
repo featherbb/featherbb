@@ -31,7 +31,7 @@ class edit
             array('fp.read_forum' => '1')
         );
 
-        $cur_post = \ORM::for_table($this->feather->prefix.'posts')
+        $cur_post = \ORM::for_table('posts')
             ->table_alias('p')
             ->select_many($select_get_info_edit)
             ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
@@ -153,7 +153,7 @@ class edit
                 'sticky'  => $post['stick_topic']
             );
             
-            \ORM::for_table($this->db->prefix.'topics')->where_any_is($where_topic)
+            \ORM::for_table('topics')->where_any_is($where_topic)
                                                        ->find_one()
                                                        ->set($update_topic)
                                                        ->save();
@@ -175,7 +175,7 @@ class edit
             $update_post['edited_by'] = $this->user->username;
         }
 
-        \ORM::for_table($this->db->prefix.'posts')->where('id', $id)
+        \ORM::for_table('posts')->where('id', $id)
                                                    ->find_one()
                                                    ->set($update_post)
                                                    ->save();

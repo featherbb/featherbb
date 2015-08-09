@@ -34,7 +34,7 @@ class bans
             }
 
             $select_add_ban_info = array('group_id', 'username', 'email');
-            $result = \ORM::for_table($this->db->prefix.'users')->select_many($select_add_ban_info)
+            $result = \ORM::for_table('users')->select_many($select_add_ban_info)
                         ->where('id', $ban['user_id'])
                         ->find_one();
 
@@ -52,7 +52,7 @@ class bans
 
             if ($ban['ban_user'] != '') {
                 $select_add_ban_info = array('id', 'group_id', 'username', 'email');
-                $result = \ORM::for_table($this->db->prefix.'users')->select_many($select_add_ban_info)
+                $result = \ORM::for_table('users')->select_many($select_add_ban_info)
                     ->where('username', $ban['ban_user'])
                     ->where_gt('id', 1)
                     ->find_one();
@@ -73,7 +73,7 @@ class bans
                 message(sprintf($lang_admin_bans['User is admin message'], feather_escape($ban['ban_user'])));
             }
 
-            $is_moderator_group = \ORM::for_table($this->db->prefix.'groups')->where('g_id', $group_id)
+            $is_moderator_group = \ORM::for_table('groups')->where('g_id', $group_id)
                                         ->find_one_col('g_moderator');
 
             if ($is_moderator_group) {
@@ -83,12 +83,12 @@ class bans
 
         // If we have a $ban['user_id'], we can try to find the last known IP of that user
         if (isset($ban['user_id'])) {
-            $ban['ip'] = \ORM::for_table($this->db->prefix.'posts')->where('poster_id', $ban['user_id'])
+            $ban['ip'] = \ORM::for_table('posts')->where('poster_id', $ban['user_id'])
                             ->order_by_desc('posted')
                             ->find_one_col('poster_ip');
 
             if (!$ban['ip']) {
-                $ban['ip'] = \ORM::for_table($this->db->prefix.'users')->where('id', $ban['user_id'])
+                $ban['ip'] = \ORM::for_table('users')->where('id', $ban['user_id'])
                                  ->find_one_col('registration_ip');
             }
         }
@@ -107,7 +107,7 @@ class bans
         $ban['id'] = $id;
 
         $select_edit_ban_info = array('username', 'ip', 'email', 'message', 'expire');
-        $result = \ORM::for_table($this->db->prefix.'bans')->select_many($select_edit_ban_info)
+        $result = \ORM::for_table('bans')->select_many($select_edit_ban_info)
             ->where('id', $ban['id'])
             ->find_one();
 
@@ -147,7 +147,7 @@ class bans
 
         // Make sure we're not banning an admin or moderator
         if (!empty($ban_user)) {
-            $group_id = \ORM::for_table($this->db->prefix.'users')->where('username', $ban_user)
+            $group_id = \ORM::for_table('users')->where('username', $ban_user)
                             ->where_gt('id', 1)
                             ->find_one_col('group_id');
 
@@ -156,7 +156,7 @@ class bans
                     message(sprintf($lang_admin_bans['User is admin message'], feather_escape($ban_user)));
                 }
 
-                $is_moderator_group = \ORM::for_table($this->db->prefix.'groups')->where('g_id', $group_id)
+                $is_moderator_group = \ORM::for_table('groups')->where('g_id', $group_id)
                                             ->find_one_col('g_moderator');
 
                 if ($is_moderator_group) {
@@ -245,13 +245,13 @@ class bans
         if ($this->request->post('mode') == 'add') {
             $insert_update_ban['ban_creator'] = $this->user->id;
 
-            \ORM::for_table($this->db->prefix.'bans')
+            \ORM::for_table('bans')
                 ->create()
                 ->set($insert_update_ban)
                 ->save();
         } else {
 
-            \ORM::for_table($this->db->prefix.'bans')
+            \ORM::for_table('bans')
                 ->where('id', $this->request->post('ban_id'))
                 ->find_one()
                 ->set($insert_update_ban)
@@ -272,7 +272,7 @@ class bans
     {
         global $lang_admin_bans;
 
-        \ORM::for_table($this->db->prefix.'bans')->where('id', $ban_id)
+        \ORM::for_table('bans')->where('id', $ban_id)
                     ->find_one()
                     ->delete();
 
@@ -304,7 +304,7 @@ class bans
         $ban_info['query_str'][] = 'direction='.$ban_info['direction'];
 
         // Build the query
-        $result = \ORM::for_table($this->db->prefix.'bans')->table_alias('b')
+        $result = \ORM::for_table('bans')->table_alias('b')
                         ->where_gt('b.id', 0);
 
         // Try to convert date/time to timestamps
@@ -355,7 +355,7 @@ class bans
             $select_bans = array('b.id', 'b.username', 'b.ip', 'b.email', 'b.message', 'b.expire', 'b.ban_creator', 'ban_creator_username' => 'u.username');
 
             $result = $result->select_many($select_bans)
-                             ->left_outer_join($this->db->prefix.'users', array('b.ban_creator', '=', 'u.id'), 'u')
+                             ->left_outer_join($this->feather->prefix.'users', array('b.ban_creator', '=', 'u.id'), 'u')
                              ->order_by($ban_info['order_by'], $ban_info['direction'])
                              ->offset($start_from)
                              ->limit(50)
