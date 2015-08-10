@@ -18,8 +18,6 @@ if (!defined('FEATHER')) {
 //
 function generate_config_cache()
 {
-    global $db;
-
     // Get the forum config from the DB
     $result = \DB::for_table('config')->find_array();
 
@@ -39,8 +37,6 @@ function generate_config_cache()
 //
 function generate_bans_cache()
 {
-    global $db;
-
     // Get the ban list from the DB
     $result = \DB::for_table('bans')->find_array();
 
@@ -60,7 +56,7 @@ function generate_bans_cache()
 //
 function generate_quickjump_cache($group_id = false)
 {
-    global $db, $lang_common;
+    global $lang_common;
 
     $groups = array();
 
@@ -140,8 +136,6 @@ function generate_quickjump_cache($group_id = false)
 //
 function generate_censoring_cache()
 {
-    global $db;
-
     $select_generate_censoring_cache = array('search_for', 'replace_with');
     $result = \DB::for_table('censoring')->select_many($select_generate_censoring_cache)
                     ->find_many();
@@ -194,8 +188,6 @@ function generate_stopwords_cache()
 //
 function generate_users_info_cache()
 {
-    global $db;
-
     $stats = array();
 
     $stats['total_users'] = (\DB::for_table('users')->where_not_equal('group_id', FEATHER_UNVERIFIED)
@@ -220,8 +212,6 @@ function generate_users_info_cache()
 //
 function generate_admins_cache()
 {
-    global $db;
-
     // Get admins from the DB
     $result = \DB::for_table('users')->select('id')
                     ->where('group_id', FEATHER_ADMIN)

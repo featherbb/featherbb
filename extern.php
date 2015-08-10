@@ -90,7 +90,7 @@ function escape_cdata($str)
 //
 function authenticate_user($user, $password, $password_is_hash = false)
 {
-    global $db, $feather;
+    global $feather;
 
     // Check if there's a user matching $user and $password
     $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');

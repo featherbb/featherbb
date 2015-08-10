@@ -165,11 +165,13 @@ function strip_bbcode($text)
 //
 function update_search_index($mode, $post_id, $message, $subject = null)
 {
-    global $db_type, $db;
+    global $db_type;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     $message = utf8_strtolower($message);
     $subject = utf8_strtolower($subject);
-
 
     // Remove any bbcode that we shouldn't index
     $message = strip_bbcode($message);
@@ -242,7 +244,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
                     // Quite dirty, right? :-)
                     $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
                     \DB::for_table('search_words')
-                        ->raw_execute('INSERT INTO '.$db->prefix.'search_words (word) VALUES '.$placeholders, $new_words);
+                        ->raw_execute('INSERT INTO '.$feather->prefix.'search_words (word) VALUES '.$placeholders, $new_words);
                     break;
 
                 default:
@@ -287,7 +289,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
             $wordlist = array_values($wordlist);
             $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
             \DB::for_table('search_words')
-                ->raw_execute('INSERT INTO '.$db->prefix.'search_matches (post_id, word_id, subject_match) SELECT '.$post_id.', id, '.$subject_match.' FROM '.$db->prefix.'search_words WHERE word IN ('.$placeholders.')', $wordlist);
+                ->raw_execute('INSERT INTO '.$feather->prefix.'search_matches (post_id, word_id, subject_match) SELECT '.$post_id.', id, '.$subject_match.' FROM '.$feather->prefix.'search_words WHERE word IN ('.$placeholders.')', $wordlist);
         }
     }
 
@@ -300,7 +302,10 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 //
 function strip_search_index($post_ids)
 {
-    global $db_type, $db;
+    global $db_type;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     if (!is_array($post_ids)) {
         $post_ids_sql = explode(',', $post_ids);
@@ -348,7 +353,7 @@ function strip_search_index($post_ids)
 
         default:
             \DB::for_table('search_matches')
-                ->where_raw('id IN(SELECT word_id FROM '.$db->prefix.'search_matches WHERE word_id IN(SELECT word_id FROM '.$db->prefix.'search_matches WHERE post_id IN('.$post_ids.') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                ->where_raw('id IN(SELECT word_id FROM '.$feather->prefix.'search_matches WHERE word_id IN(SELECT word_id FROM '.$feather->prefix.'search_matches WHERE post_id IN('.$post_ids.') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                 ->delete_many();
             break;
 
