@@ -362,88 +362,85 @@ class FeatherBB extends \Slim\Middleware
     {
         global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed;
 
-        // Configure Slim
-        $this->app->config('cookies.encrypt', true);
-        $this->app->config('debug', true); // As long as we're developing FeatherBB
-
-        // Populate Feather object
-        $this->hydrate($this->data);
-
-        // Legacy
-        $this->env_to_globals($this->app->forum_env);
-        $this->app->config = $this->data['forum_settings'];
-        extract($this->data['forum_settings']);
-
         // Block prefetch requests
-        $this->app->hook('slim.before', function () {
-        	if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
-                $this->app->halt(403, 'Prefetch forbidden');
-        	}
-        });
-
-        $this->set_headers();
-        $this->init_db();
-        $this->init_db_legacy();
-
-        require_once $this->app->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
-        require_once $this->app->forum_env['FEATHER_ROOT'].'include/functions.php';
-
-        // TODO : check useness
-        // Strip out "bad" UTF-8 characters
-        forum_remove_bad_characters();
-        // Reverse the effect of register_globals
-        forum_unregister_globals();
-
-        // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
-        setlocale(LC_CTYPE, 'C');
-
-        // TODO : magic quotes
-        // Turn off magic_quotes_runtime
-        if (get_magic_quotes_runtime()) {
-            set_magic_quotes_runtime(0);
-        }
-
-        // Define time formats
-        $forum_time_formats = array($this->app->config['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
-        $forum_date_formats = array($this->app->config['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
-
-        $this->authenticate();
-
-        // Attempt to load the common language file
-        if (file_exists($this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php')) {
-            include $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php';
+        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch') || true) {
+            $this->set_headers();
+            $this->app->response->setStatus(403);
         } else {
-            die('There is no valid language pack \''.feather_escape($this->app->user->language).'\' installed. Please reinstall a language of that name');
-        }
+            // Configure Slim
+            $this->app->config('cookies.encrypt', true);
+            $this->app->config('debug', true); // As long as we're developing FeatherBB
 
-        // Check if we are to display a maintenance message
-        if ($this->app->config['o_maintenance'] && $this->app->user->g_id > FEATHER_ADMIN && !defined('FEATHER_TURN_OFF_MAINT')) {
-            maintenance_message();
-        }
+            // Populate Feather object
+            $this->hydrate($this->data);
 
-        // Load cached bans
-        if (file_exists($this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php')) {
-            include $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
-        }
+            // Legacy
+            $this->env_to_globals($this->app->forum_env);
+            $this->app->config = $this->data['forum_settings'];
+            extract($this->data['forum_settings']);
 
-        if (!defined('FEATHER_BANS_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require_once $this->app->forum_env['FEATHER_ROOT'].'include/cache.php';
+            $this->set_headers();
+            $this->init_db();
+            $this->init_db_legacy();
+
+            require_once $this->app->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
+            require_once $this->app->forum_env['FEATHER_ROOT'].'include/functions.php';
+
+            // TODO : check useness
+            // Strip out "bad" UTF-8 characters
+            forum_remove_bad_characters();
+            // Reverse the effect of register_globals
+            forum_unregister_globals();
+
+            // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
+            setlocale(LC_CTYPE, 'C');
+
+            // TODO : magic quotes
+            // Turn off magic_quotes_runtime
+            if (get_magic_quotes_runtime()) {
+                set_magic_quotes_runtime(0);
             }
 
-            generate_bans_cache();
-            require_once $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+            // Define time formats
+            $forum_time_formats = array($this->app->config['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
+            $forum_date_formats = array($this->app->config['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
+
+            $this->authenticate();
+
+            // Attempt to load the common language file
+            if (file_exists($this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php')) {
+                include $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php';
+            } else {
+                die('There is no valid language pack \''.feather_escape($this->app->user->language).'\' installed. Please reinstall a language of that name');
+            }
+
+            // Check if we are to display a maintenance message
+            if ($this->app->config['o_maintenance'] && $this->app->user->g_id > FEATHER_ADMIN && !defined('FEATHER_TURN_OFF_MAINT')) {
+                maintenance_message();
+            }
+
+            // Load cached bans
+            if (file_exists($this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php')) {
+                include $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+            }
+
+            if (!defined('FEATHER_BANS_LOADED')) {
+                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                    require_once $this->app->forum_env['FEATHER_ROOT'].'include/cache.php';
+                }
+
+                generate_bans_cache();
+                require_once $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+            }
+
+            // Check if current user is banned
+            check_bans();
+
+            // Update online list
+            update_users_online();
+
+            $this->app->config('templates.path', get_path_view());
+            $this->next->call();
         }
-
-        // Check if current user is banned
-        check_bans();
-
-        // Update online list
-        update_users_online();
-
-        $this->app->config('templates.path', get_path_view());
-        $this->next->call();
     }
-
-
 }
