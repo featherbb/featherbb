@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_groups['Group settings head'] ?></span></h2>
 		<div class="box">
 			<form id="groups2" method="post" action="" onsubmit="return process_form(this)">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="add_edit_group" value="<?php echo $lang_admin_common['Save'] ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="mode" value="<?php echo $group['mode'] ?>" />
@@ -47,7 +48,7 @@ if (!defined('FEATHER')) {
 									<td>
 										<select name="promote_next_group" tabindex="3">
 											<option value="0"><?php echo $lang_admin_groups['Disable promotion'] ?></option>
-											<?php get_group_list($groups, $group); ?>
+											<?php echo $group_list ?>
 										</select>
 										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo feather_escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
 										<span><?php printf($lang_admin_groups['Promote users help'], $lang_admin_groups['Disable promotion']) ?></span>

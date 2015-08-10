@@ -14,7 +14,6 @@ class users
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -37,8 +36,8 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -46,8 +45,8 @@ class users
 
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+            if ($this->user->g_id > FEATHER_ADMIN) {
+                message($lang_common['No permission'], '403');
             }
 
             $move = $this->model->move_users();
@@ -73,8 +72,8 @@ class users
 
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+            if ($this->user->g_id > FEATHER_ADMIN) {
+                message($lang_common['No permission'], '403');
             }
 
             $user_ids = $this->model->delete_users();
@@ -100,8 +99,8 @@ class users
 
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
-            if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+                message($lang_common['No permission'], '403');
             }
 
             $user_ids = $this->model->ban_users();
@@ -144,12 +143,12 @@ class users
             $paging_links = '<span class="pages-label">' . $lang_common['Pages'] . ' </span>' . paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
-            $can_delete = $can_move = $this->user['g_id'] == FEATHER_ADMIN;
-            $can_ban = $this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_ban_users'] == '1');
+            $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
+            $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
-            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/include/common.js"></script>');
+            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/js/common.js"></script>');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -199,8 +198,8 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -244,8 +243,8 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file

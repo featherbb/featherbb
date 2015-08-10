@@ -17,8 +17,9 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_reports['New reports head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/reports/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
-if ($is_report) {
+if (!empty($report_data)) {
     foreach ($report_data as $report) {
         ?>
 				<div class="inform">
@@ -27,12 +28,14 @@ if ($is_report) {
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php printf($lang_admin_reports['Reported by'], $report['reporter_disp']) ?></th>
-									<td class="location"><?php echo implode(' ', $report['report_location']) ?></td>
+									<th scope="row"><?php printf($lang_admin_reports['Reported by'], ($report['reporter'] != '') ? '<a href="'.get_link('users/'.$report['reported_by'].'/').'">'.feather_escape($report['reporter']).'</a>' : $lang_admin_reports['Deleted user']) ?></th>
+									<td class="location"><?php echo breadcrumbs(array($report['forum_name'] => get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['forum_name']).'/'),
+																						$report['subject'] => get_link('forum/'.$report['topic_id'].'/'.url_friendly($report['subject'])),
+																						sprintf($lang_admin_reports['Post ID'], $report['pid']) => get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_reports['Reason'] ?><div><input type="submit" name="zap_id[<?php echo $report['id'] ?>]" value="<?php echo $lang_admin_reports['Zap'] ?>" /></div></th>
-									<td><?php echo $report['post'] ?></td>
+									<td><?php echo str_replace("\n", '<br />', feather_escape($report['message'])) ?></td>
 								</tr>
 							</table>
 						</div>
@@ -66,21 +69,23 @@ if ($is_report) {
 			<div class="fakeform">
 <?php
 
-if ($is_report_zapped) {
+if (!empty($report_zapped_data)) {
     foreach ($report_zapped_data as $report) {
         ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php printf($lang_admin_reports['Zapped subhead'], format_time($report['zapped']), $report['zapped_by_disp']) ?></legend>
+						<legend><?php printf($lang_admin_reports['Zapped subhead'], format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.get_link('user/'.$report['zapped_by_id'].'/').'">'.feather_escape($report['zapped_by']).'</a>' : $lang_admin_reports['NA']) ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php printf($lang_admin_reports['Reported by'], $report['reporter_disp']) ?></th>
-									<td class="location"><?php echo implode(' ', $report['report_location']) ?></td>
+									<th scope="row"><?php printf($lang_admin_reports['Reported by'], ($report['reporter'] != '') ? '<a href="'.get_link('users/'.$report['reported_by'].'/').'">'.feather_escape($report['reporter']).'</a>' : $lang_admin_reports['Deleted user']) ?></th>
+									<td class="location"><?php echo breadcrumbs(array($report['forum_name'] => get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['forum_name']).'/'),
+																						$report['subject'] => get_link('forum/'.$report['topic_id'].'/'.url_friendly($report['subject'])),
+																						sprintf($lang_admin_reports['Post ID'], $report['pid']) => get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_reports['Reason'] ?></th>
-									<td><?php echo $report['post'] ?></td>
+									<td><?php echo str_replace("\n", '<br />', feather_escape($report['message'])) ?></td>
 								</tr>
 							</table>
 						</div>

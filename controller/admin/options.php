@@ -14,7 +14,6 @@ class options
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class options
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -63,6 +62,7 @@ class options
                 'languages' => forum_list_langs(),
                 'styles' => $this->model->get_styles(),
                 'times' => $this->model->get_times(),
+                'feather'    =>    $this->feather,
             )
         );
 

@@ -3,13 +3,15 @@
 // Language definitions used in admin_forums.php
 $lang_admin_forums = array(
 
-'Forum added redirect'        =>    'Forum added. Redirecting …',
-'Forum deleted redirect'    =>    'Forum deleted. Redirecting …',
-'Forums updated redirect'    =>    'Forums updated. Redirecting …',
-'Forum updated redirect'    =>    'Forum updated. Redirecting …',
-'Perms reverted redirect'    =>    'Permissions reverted to defaults. Redirecting …',
+'Forum added redirect'        =>    'Forum added.',
+'Unable to add forum'	=> 'Unable to add forum',
+'Forum deleted redirect'    =>    'Forum deleted.',
+'Forums updated redirect'    =>    'Forums updated.',
+'Forum updated redirect'    =>    'Forum updated.',
+'Perms reverted redirect'    =>    'Permissions reverted to defaults.',
 'Must enter name message'    =>    'You must enter a forum name.',
 'Must be integer message'    =>    'Position must be a positive integer value.',
+'Must be valid category'	=>	'You must enter a valid category',
 'New forum'                    =>    'New forum',
 
 // Entry page
@@ -19,7 +21,7 @@ $lang_admin_forums = array(
 'Add forum help'            =>    'Select the category to which you wish to add a new forum.',
 'Add forum'                    =>    'Add forum',
 'No categories exist'        =>    'No categories exist',
-'Edit forums head'            =>    'Edit forums',
+'Manage forums head'            =>    'Manage forums',
 'Category subhead'            =>    'Category:',
 'Forum label'                =>    'Forum',
 'Edit link'                    =>    'Edit',

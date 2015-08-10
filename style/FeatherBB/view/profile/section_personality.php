@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo feather_escape($user['username']).' - '.$lang_profile['Section personality'] ?></span></h2>
 	<div class="box">
 		<form id="profile4" method="post" action="<?php echo get_link('user/'.$id.'/section/personality/') ?>">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php if ($feather_config['o_avatars'] == '1'): ?>				<div class="inform">
 				<fieldset id="profileavatar">
@@ -39,7 +40,7 @@ if (!defined('FEATHER')) {
 						</div>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather->user->g_post_links == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather_config['p_sig_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($feather_config['o_smilies_sig'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 						</ul>

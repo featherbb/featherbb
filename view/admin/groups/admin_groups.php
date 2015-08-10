@@ -19,6 +19,7 @@ if (!defined('FEATHER')) {
 				<div class="inform">
 					<fieldset>
                         <form id="groups" method="post" action="<?php echo get_link('admin/groups/add/') ?>">
+                        <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 						<legend><?php echo $lang_admin_groups['Add group subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
@@ -51,6 +52,7 @@ foreach ($groups as $cur_group) {
 				<div class="inform">
 					<fieldset>
                         <form id="groups" method="post" action="<?php echo get_link('admin/groups/') ?>">
+                        	<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 						<legend><?php echo $lang_admin_groups['Default group subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">

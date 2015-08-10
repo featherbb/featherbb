@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+// Start a session for flash messages
+session_cache_limiter(false);
+session_start();
 
 // Load Slim Framework
 require 'Slim/Slim.php';
@@ -15,7 +18,14 @@ require 'Slim/Slim.php';
 // Instantiate Slim
 $feather = new \Slim\Slim();
 
-// Load FeatherBB
+// Load middlewares
+$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
+$feather->add(new \Slim\Extras\Middleware\FeatherBB()); // FeatherBB
+
+// Cookie encryption
+$feather->config('cookies.encrypt', true);
+
+// Load FeatherBB common file
 define('FEATHER_ROOT', dirname(__FILE__).'/');
 require FEATHER_ROOT.'include/common.php';
 

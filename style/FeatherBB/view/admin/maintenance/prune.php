@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_maintenance['Prune head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/maintenance/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
 					<input type="hidden" name="prune_days" value="<?php echo $prune['days'] ?>" />

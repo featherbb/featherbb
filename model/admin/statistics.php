@@ -9,12 +9,13 @@
 
 namespace model\admin;
 
+use DB;
+
 class statistics
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -51,8 +52,8 @@ class statistics
 
     public function get_num_online()
     {
-        $result = $this->db->query('SELECT COUNT(user_id) FROM '.$this->db->prefix.'online WHERE idle=0') or error('Unable to fetch online count', __FILE__, __LINE__, $this->db->error());
-        $num_online = $this->db->result($result);
+        $num_online = DB::for_table('online')->where('idle', 0)
+                            ->count('user_id');
 
         return $num_online;
     }
@@ -61,20 +62,22 @@ class statistics
     {
         global $db_type;
 
+        $total = array();
+
         if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = $this->db->query('SHOW TABLE STATUS LIKE \''.$this->db->prefix.'%\'') or error('Unable to fetch table status', __FILE__, __LINE__, $this->db->error());
+            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->prefix.'%\'')->find_many();
 
-            $total_records = $total_size = 0;
-            while ($status = $this->db->fetch_assoc($result)) {
-                $total_records += $status['Rows'];
-                $total_size += $status['Data_length'] + $status['Index_length'];
+            $total['size'] = $total['records'] = 0;
+            foreach ($result as $status) {
+                $total['records'] += $status['Rows'];
+                $total['size'] += $status['Data_length'] + $status['Index_length'];
             }
 
-            $total_size = file_size($total_size);
+            $total['size'] = file_size($total['size']);
         }
 
-        return $total_size;
+        return $total;
     }
 
     public function get_php_accelerator()
@@ -96,5 +99,7 @@ class statistics
         } else {
             $php_accelerator = $lang_admin_index['NA'];
         }
+
+        return $php_accelerator;
     }
 }

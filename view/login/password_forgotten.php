@@ -40,6 +40,7 @@ if (!empty($errors)) {
 	<h2><span><?php echo $lang_login['Request pass'] ?></span></h2>
 	<div class="box">
 		<form id="request_pass" method="post" action="<?php echo get_link('login/action/forget/') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_login['Request pass legend'] ?></legend>

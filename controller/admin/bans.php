@@ -14,7 +14,6 @@ class bans
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -37,8 +36,8 @@ class bans
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -62,10 +61,12 @@ class bans
             
             $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
+            $ban_data = $this->model->find_ban($start_from);
+
             $this->feather->render('admin/bans/search_ban.php', array(
                     'lang_admin_bans' => $lang_admin_bans,
                     'lang_admin_common' => $lang_admin_common,
-                    'ban_data' => $this->model->print_bans($ban_info['conditions'], $ban_info['order_by'], $ban_info['direction'], $start_from),
+                    'ban_data' => $ban_data['data'],
                 )
             );
 
@@ -90,7 +91,7 @@ class bans
         $this->footer->display();
     }
 
-    public function add()
+    public function add($id = null)
     {
         global $lang_common, $lang_admin_common, $lang_admin_bans;
 
@@ -98,8 +99,8 @@ class bans
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -121,7 +122,7 @@ class bans
         $this->feather->render('admin/bans/add_ban.php', array(
                 'lang_admin_bans' => $lang_admin_bans,
                 'lang_admin_common' => $lang_admin_common,
-                'ban' => $this->model->add_ban_info(),
+                'ban' => $this->model->add_ban_info($id),
             )
         );
 
@@ -134,8 +135,8 @@ class bans
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -153,8 +154,8 @@ class bans
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file

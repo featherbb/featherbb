@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_options['Options head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/options/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="form_sent" value="1" />
@@ -218,7 +219,7 @@ if (!defined('FEATHER')) {
 				</div>
 <?php
 
-    $diff = ($feather_user['timezone'] + $feather_user['dst']) * 3600;
+    $diff = ($feather->user->timezone + $feather->user->dst) * 3600;
     $timestamp = time() + $diff;
 
 ?>

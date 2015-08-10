@@ -14,7 +14,6 @@ class help
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -32,13 +31,13 @@ class help
     {
         global $lang_common;
 
-        if ($this->user['g_read_board'] == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+        if ($this->user->g_read_board == '0') {
+            message($lang_common['No view'], '403');
         }
 
 
         // Load the help.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/help.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/help.php';
 
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_help['Help']);

@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_misc['Send email to'] ?> <?php echo feather_escape($mail['recipient']) ?></span></h2>
 	<div class="box">
 		<form id="email" method="post" action="<?php echo get_link('email/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_misc['Write email'] ?></legend>

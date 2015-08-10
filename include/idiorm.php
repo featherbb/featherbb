@@ -38,7 +38,7 @@
      *
      */
 
-    class ORM implements ArrayAccess
+    class DB implements ArrayAccess
     {
         // ----------------------- //
         // --- CLASS CONSTANTS --- //
@@ -101,7 +101,7 @@
         // Key name of the connections in self::$_db used by this instance
         protected $_connection_name;
 
-        // The name of the table the current ORM instance is associated with
+        // The name of the table the current DB instance is associated with
         protected $_table_name;
 
         // Alias for the table to be used in SELECT queries
@@ -230,14 +230,16 @@
          * Despite its slightly odd name, this is actually the factory
          * method used to acquire instances of the class. It is named
          * this way for the sake of a readable interface, ie
-         * ORM::for_table('table_name')->find_one()-> etc. As such,
+         * DB::for_table('table_name')->find_one()-> etc. As such,
          * this will normally be the first method called in a chain.
          * @param string $table_name
          * @param string $connection_name Which connection to use
-         * @return ORM
+         * @return DB
          */
         public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION)
         {
+            $feather = \Slim\Slim::getInstance();
+            $table_name = $feather->prefix.$table_name;
             self::_setup_db($connection_name);
             return new self($table_name, array(), $connection_name);
         }
@@ -277,7 +279,7 @@
 
         /**
          * Set the PDO object used by Idiorm to communicate with the database.
-         * This is public in case the ORM should use a ready-instantiated
+         * This is public in case the DB should use a ready-instantiated
          * PDO object as its database connection. Accepts an optional string key
          * to identify the connection if multiple connections are used.
          * @param PDO $db
@@ -304,7 +306,7 @@
         /**
          * Detect and initialise the character used to quote identifiers
          * (table names, column names etc). If this has been specified
-         * manually using ORM::configure('identifier_quote_character', 'some-char'),
+         * manually using DB::configure('identifier_quote_character', 'some-char'),
          * this will do nothing.
          * @param string $connection_name Which connection to use
          */
@@ -319,7 +321,7 @@
         /**
          * Detect and initialise the limit clause style ("SELECT TOP 5" /
          * "... LIMIT 5"). If this has been specified manually using
-         * ORM::configure('limit_clause_style', 'top'), this will do nothing.
+         * DB::configure('limit_clause_style', 'top'), this will do nothing.
          * @param string $connection_name Which connection to use
          */
         public static function _setup_limit_clause_style($connection_name)
@@ -349,6 +351,7 @@
                 case 'mysql':
                 case 'sqlite':
                 case 'sqlite2':
+                case 'sqlite3':
                 default:
                     return '`';
             }
@@ -366,14 +369,14 @@
                 case 'sqlsrv':
                 case 'dblib':
                 case 'mssql':
-                    return ORM::LIMIT_STYLE_TOP_N;
+                    return DB::LIMIT_STYLE_TOP_N;
                 default:
-                    return ORM::LIMIT_STYLE_LIMIT;
+                    return DB::LIMIT_STYLE_LIMIT;
             }
         }
 
         /**
-         * Returns the PDO instance used by the the ORM to communicate with
+         * Returns the PDO instance used by the the DB to communicate with
          * the database. This can be called if any low-level DB access is
          * required outside the class. If multiple connections are used,
          * accepts an optional key name for the connection.
@@ -404,7 +407,7 @@
         }
 
         /**
-         * Returns the PDOStatement instance last used by any connection wrapped by the ORM.
+         * Returns the PDOStatement instance last used by any connection wrapped by the DB.
          * Useful for access to PDOStatement::rowCount() or error information
          * @return PDOStatement
          */
@@ -462,8 +465,7 @@
          * @param float $query_time Query time
          * @return bool
          */
-        protected static function _log_query($query, $parameters, $connection_name, $query_time)
-        {
+        protected static function _log_query($query, $parameters, $connection_name, $query_time) {
             // If logging is not enabled, do nothing
             if (!self::$_config[$connection_name]['logging']) {
                 return false;
@@ -473,38 +475,40 @@
                 self::$_query_log[$connection_name] = array();
             }
 
-            // Strip out any non-integer indexes from the parameters
-            foreach ($parameters as $key => $value) {
-                if (!is_int($key)) {
-                    unset($parameters[$key]);
-                }
-            }
-
-            if (count($parameters) > 0) {
+            if (empty($parameters)) {
+                $bound_query = $query;
+            } else {
                 // Escape the parameters
                 $parameters = array_map(array(self::get_db($connection_name), 'quote'), $parameters);
 
-                // Avoid %format collision for vsprintf
-                $query = str_replace("%", "%%", $query);
+                if (array_values($parameters) === $parameters) {
+                    // ? placeholders
+                    // Avoid %format collision for vsprintf
+                    $query = str_replace("%", "%%", $query);
 
-                // Replace placeholders in the query for vsprintf
-                if (false !== strpos($query, "'") || false !== strpos($query, '"')) {
-                    $query = IdiormString::str_replace_outside_quotes("?", "%s", $query);
+                    // Replace placeholders in the query for vsprintf
+                    if(false !== strpos($query, "'") || false !== strpos($query, '"')) {
+                        $query = IdiormString::str_replace_outside_quotes("?", "%s", $query);
+                    } else {
+                        $query = str_replace("?", "%s", $query);
+                    }
+
+                    // Replace the question marks in the query with the parameters
+                    $bound_query = vsprintf($query, $parameters);
                 } else {
-                    $query = str_replace("?", "%s", $query);
+                    // named placeholders
+                    foreach ($parameters as $key => $val) {
+                        $query = str_replace($key, $val, $query);
+                    }
+                    $bound_query = $query;
                 }
-
-                // Replace the question marks in the query with the parameters
-                $bound_query = vsprintf($query, $parameters);
-            } else {
-                $bound_query = $query;
             }
 
             self::$_last_query = $bound_query;
-            self::$_query_log[$connection_name][] = $bound_query;
+            self::$_query_log[$connection_name][0][] = $query_time;
+            self::$_query_log[$connection_name][1][] = $bound_query;
             
-            
-            if (is_callable(self::$_config[$connection_name]['logger'])) {
+            if(is_callable(self::$_config[$connection_name]['logger'])){
                 $logger = self::$_config[$connection_name]['logger'];
                 $logger($bound_query, $query_time);
             }
@@ -562,7 +566,7 @@
 
         /**
          * "Private" constructor; shouldn't be called directly.
-         * Use the ORM::for_table factory method instead.
+         * Use the DB::for_table factory method instead.
          */
         protected function __construct($table_name, $data = array(), $connection_name = self::DEFAULT_CONNECTION)
         {
@@ -605,21 +609,23 @@
         }
 
         /**
-         * Create an ORM instance from the given row (an associative
+         * Create an DB instance from the given row (an associative
          * array of data fetched from the database)
          */
         protected function _create_instance_from_row($row)
         {
-            $instance = self::for_table($this->_table_name, $this->_connection_name);
+            $feather = \Slim\Slim::getInstance();
+            $table = str_replace($feather->prefix, '', $this->_table_name);
+            $instance = self::for_table($table, $this->_connection_name);
             $instance->use_id_column($this->_instance_id_column);
             $instance->hydrate($row);
             return $instance;
         }
 
         /**
-         * Tell the ORM that you are expecting a single result
+         * Tell the DB that you are expecting a single result
          * back from your query, and execute it. Will return
-         * a single instance of the ORM class, or false if no
+         * a single instance of the DB class, or false if no
          * rows were returned.
          * As a shortcut, you may supply an ID as a parameter
          * to this method. This will perform a primary key
@@ -641,9 +647,37 @@
         }
 
         /**
-         * Tell the ORM that you are expecting multiple results
+         * Tell the DB that you are expecting a single column
+         * back from your query, and execute it. Will return
+         * the single result you asked for.
+         */
+        public function find_one_col($col)
+        {
+            if (!is_string($col)) {
+                return null;
+            }
+
+            $column = $this->_quote_identifier($col);
+
+            $select = $this->_add_result_column($column);
+            $select->limit(1);
+
+            $rows = $select->_run();
+
+            if (empty($rows)) {
+                return false;
+            }
+
+            $row = $select->_create_instance_from_row($rows[0]);
+
+            return isset($row->_data[$col]) ? $row->_data[$col] : null;
+        }
+
+
+        /**
+         * Tell the DB that you are expecting multiple results
          * from your query, and execute it. Will return an array
-         * of instances of the ORM class, or an empty array if
+         * of instances of the DB class, or an empty array if
          * no rows were returned.
          * @return array|\IdiormResultSet
          */
@@ -656,9 +690,9 @@
         }
 
         /**
-         * Tell the ORM that you are expecting multiple results
+         * Tell the DB that you are expecting multiple results
          * from your query, and execute it. Will return an array
-         * of instances of the ORM class, or an empty array if
+         * of instances of the DB class, or an empty array if
          * no rows were returned.
          * @return array
          */
@@ -669,9 +703,9 @@
         }
 
         /**
-         * Tell the ORM that you are expecting multiple results
+         * Tell the DB that you are expecting multiple results
          * from your query, and execute it. Will return a result set object
-         * containing instances of the ORM class.
+         * containing instances of the DB class.
          * @return \IdiormResultSet
          */
         public function find_result_set()
@@ -680,7 +714,7 @@
         }
 
         /**
-         * Tell the ORM that you are expecting multiple results
+         * Tell the DB that you are expecting multiple results
          * from your query, and execute it. Will return an array,
          * or an empty array if no rows were returned.
          * @return array
@@ -691,7 +725,7 @@
         }
 
         /**
-         * Tell the ORM that you wish to execute a COUNT query.
+         * Tell the DB that you wish to execute a COUNT query.
          * Will return an integer representing the number of
          * rows returned.
          */
@@ -701,7 +735,7 @@
         }
 
         /**
-         * Tell the ORM that you wish to execute a MAX query.
+         * Tell the DB that you wish to execute a MAX query.
          * Will return the max value of the choosen column.
          */
         public function max($column)
@@ -710,7 +744,7 @@
         }
 
         /**
-         * Tell the ORM that you wish to execute a MIN query.
+         * Tell the DB that you wish to execute a MIN query.
          * Will return the min value of the choosen column.
          */
         public function min($column)
@@ -719,7 +753,7 @@
         }
 
         /**
-         * Tell the ORM that you wish to execute a AVG query.
+         * Tell the DB that you wish to execute a AVG query.
          * Will return the average value of the choosen column.
          */
         public function avg($column)
@@ -728,7 +762,7 @@
         }
 
         /**
-         * Tell the ORM that you wish to execute a SUM query.
+         * Tell the DB that you wish to execute a SUM query.
          * Will return the sum of the choosen column.
          */
         public function sum($column)
@@ -781,7 +815,7 @@
         }
 
         /**
-         * Force the ORM to flag all the fields in the $data array
+         * Force the DB to flag all the fields in the $data array
          * as "dirty" and therefore update them when save() is called.
          */
         public function force_all_dirty()
@@ -880,7 +914,7 @@
          * @example select_many('column', 'column2', 'column3');
          * @example select_many(array('column', 'column2', 'column3'), 'column4', 'column5');
          *
-         * @return \ORM
+         * @return \DB
          */
         public function select_many()
         {
@@ -909,7 +943,7 @@
          * @example select_many_expr('column', 'column2', 'column3')
          * @example select_many_expr(array('column', 'column2', 'column3'), 'column4', 'column5')
          *
-         * @return \ORM
+         * @return \DB
          */
         public function select_many_expr()
         {
@@ -985,10 +1019,15 @@
          *
          * ON `user`.`id` = `profile`.`user_id`
          *
-         * The final (optional) argument specifies an alias for the joined table.
+         * The fourth argument specifies an alias for the joined table.
+         * 
+         * The final argument specifies is the last column should be escaped
          */
-        protected function _add_join_source($join_operator, $table, $constraint, $table_alias=null)
+        protected function _add_join_source($join_operator, $table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
+            $feather = \Slim\Slim::getInstance();
+            $table = $feather->prefix.$table;
+
             $join_operator = trim("{$join_operator} JOIN");
 
             $table = $this->_quote_identifier($table);
@@ -1003,7 +1042,13 @@
             if (is_array($constraint)) {
                 list($first_column, $operator, $second_column) = $constraint;
                 $first_column = $this->_quote_identifier($first_column);
-                $second_column = $this->_quote_identifier($second_column);
+                if (!$no_escape_second_col) {
+                    $second_column = $this->_quote_identifier($second_column);
+                }
+                else {
+                    // Seems OK, need more testing
+                    $second_column = '\''.str_replace("'","''",$second_column).'\'';
+                }
                 $constraint = "{$first_column} {$operator} {$second_column}";
             }
 
@@ -1016,6 +1061,9 @@
          */
         public function raw_join($table, $constraint, $table_alias, $parameters = array())
         {
+            $feather = \Slim\Slim::getInstance();
+            $table = $feather->prefix.$table;
+
             // Add table alias if present
             if (!is_null($table_alias)) {
                 $table_alias = $this->_quote_identifier($table_alias);
@@ -1039,41 +1087,41 @@
         /**
          * Add a simple JOIN source to the query
          */
-        public function join($table, $constraint, $table_alias=null)
+        public function join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("", $table, $constraint, $table_alias);
+            return $this->_add_join_source("", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add an INNER JOIN souce to the query
          */
-        public function inner_join($table, $constraint, $table_alias=null)
+        public function inner_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("INNER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("INNER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add a LEFT OUTER JOIN souce to the query
          */
-        public function left_outer_join($table, $constraint, $table_alias=null)
+        public function left_outer_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("LEFT OUTER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("LEFT OUTER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add an RIGHT OUTER JOIN souce to the query
          */
-        public function right_outer_join($table, $constraint, $table_alias=null)
+        public function right_outer_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("RIGHT OUTER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("RIGHT OUTER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
          * Add an FULL OUTER JOIN souce to the query
          */
-        public function full_outer_join($table, $constraint, $table_alias=null)
+        public function full_outer_join($table, $constraint, $table_alias=null, $no_escape_second_col=false)
         {
-            return $this->_add_join_source("FULL OUTER", $table, $constraint, $table_alias);
+            return $this->_add_join_source("FULL OUTER", $table, $constraint, $table_alias, $no_escape_second_col);
         }
 
         /**
@@ -1335,15 +1383,33 @@
                 }
                 $firstsub = true;
                 foreach ($item as $key => $item) {
-                    $op = is_string($operator) ? $operator : (isset($operator[$key]) ? $operator[$key] : '=');
+                    $is_null = false;
+                    if ($item == 'IS NULL' || $item == 'IS NOT NULL') {
+                        $op = '';
+                        $is_null = true;
+                    }
+                    elseif (is_string($operator)) {
+                        $op = $operator;
+                    }
+                    elseif (isset($operator[$key])) {
+                        $op = $operator[$key];
+                    }
+                    else {
+                        $op = '=';
+                    }
                     if ($firstsub) {
                         $firstsub = false;
                     } else {
                         $query[] = "AND";
                     }
                     $query[] = $this->_quote_identifier($key);
-                    $data[] = $item;
-                    $query[] = $op . " ?";
+                    if (!$is_null) {
+                        $data[] = $item;
+                        $query[] = $op . " ?";
+                    }
+                    else {
+                        $query[] = $item;
+                    }
                 }
             }
             $query[] = "))";
@@ -1452,7 +1518,7 @@
         {
             return $this->_add_where($clause, $parameters);
         }
-
+        
         /**
          * Add a LIMIT to the query
          */
@@ -1497,6 +1563,40 @@
             return $this->_add_order_by($column_name, 'ASC');
         }
 
+        /**
+         * Add simple ORDER BY clause
+         */
+        public function order_by($column_name, $dir=null)
+        {
+            return $this->_add_order_by($column_name, $dir);
+        }
+        
+        /**
+         * Add columns to the list of columns returned by the ORDER BY
+         * query. This defaults to '*'. Many columns can be supplied
+         * as either an array or as a list of parameters to the method.
+         *
+         * @example order_by_many('column', 'column2', 'column3');
+         * @example order_by_many(array('column' => 'DESC', 'column2' => 'ASC'), 'column4', 'column5');
+         *
+         * @return \DB
+         */
+        public function order_by_many()
+        {
+            $order_name = func_get_args();
+            if (!empty($order_name)) {
+                $order_name = $this->_normalise_select_many_columns($order_name);
+                foreach ($order_name as $order_by => $dir) {
+                    if (is_numeric($order_by)) {
+                        $order_by = $dir;
+                        $dir = null;
+                    }
+                    $this->_add_order_by($order_by, $dir);
+                }
+            }
+            return $this;
+        }
+        
         /**
          * Add an unquoted expression as an ORDER BY clause
          */
@@ -1565,7 +1665,7 @@
         public function having_id_is($id)
         {
             return (is_array($this->_get_id_column_name())) ?
-                $this->having($this->_get_compound_id_column_values($value)) :
+                $this->having($this->_get_compound_id_column_values($id), null) :
                 $this->having($this->_get_id_column_name(), $id);
         }
 
@@ -1695,7 +1795,7 @@
             $result_columns = join(', ', $this->_result_columns);
 
             if (!is_null($this->_limit) &&
-                self::$_config[$this->_connection_name]['limit_clause_style'] === ORM::LIMIT_STYLE_TOP_N) {
+                self::$_config[$this->_connection_name]['limit_clause_style'] === DB::LIMIT_STYLE_TOP_N) {
                 $fragment .= "TOP {$this->_limit} ";
             }
 
@@ -1790,7 +1890,7 @@
         {
             $fragment = '';
             if (!is_null($this->_limit) &&
-                self::$_config[$this->_connection_name]['limit_clause_style'] == ORM::LIMIT_STYLE_LIMIT) {
+                self::$_config[$this->_connection_name]['limit_clause_style'] == DB::LIMIT_STYLE_LIMIT) {
                 if (self::get_db($this->_connection_name)->getAttribute(PDO::ATTR_DRIVER_NAME) == 'firebird') {
                     $fragment = 'ROWS';
                 } else {
@@ -1972,7 +2072,7 @@
         }
 
         /**
-         * Return the raw data wrapped by this ORM
+         * Return the raw data wrapped by this DB
          * instance as an associative array. Column
          * names may optionally be supplied as arguments,
          * if so, only those keys will be returned.
@@ -2070,7 +2170,7 @@
         }
 
         /**
-         * Set a property on the ORM object.
+         * Set a property on the DB object.
          * @param string|array $key
          * @param string|null $value
          * @param bool $raw Whether this value should be treated as raw or not
@@ -2085,7 +2185,7 @@
                 $this->_dirty_fields[$field] = $value;
                 if (false === $expr and isset($this->_expr_fields[$field])) {
                     unset($this->_expr_fields[$field]);
-                } elseif (true === $expr) {
+                } elseif (true === $expr || $value == 'NULL') {
                     $this->_expr_fields[$field] = true;
                 }
             }
@@ -2159,7 +2259,7 @@
                         // if the primary key is compound, assign the last inserted id
                         // to the first column
                         if (is_array($column)) {
-                            $column = array_slice($column, 0, 1);
+                            $column = reset($column);
                         }
                         $this->_data[$column] = $db->lastInsertId();
                     }
@@ -2259,6 +2359,45 @@
             return self::_execute($query, $this->_values, $this->_connection_name);
         }
 
+        /**
+         * Update many records from the database
+         */
+        public function update_many($key, $value) {
+            // Build and return the full DELETE statement by concatenating
+            // the results of calling each separate builder method.
+            $query = $this->_join_if_not_empty(" ", array(
+                "UPDATE",
+                $this->_quote_identifier($this->_table_name),
+                "SET",
+                $this->_quote_identifier($key),
+                "= ?",
+                $this->_build_where(),
+            ));
+            $params = array($value);
+            $this->_values = array_merge($params, $this->_values);
+
+            return self::_execute($query, $this->_values, $this->_connection_name);
+        }
+
+        /**
+         * Update many records from the database without escaping values
+         */
+        public function update_many_expr($key, $value) {
+            // Build and return the full DELETE statement by concatenating
+            // the results of calling each separate builder method.
+            $query = $this->_join_if_not_empty(" ", array(
+                "UPDATE",
+                $this->_quote_identifier($this->_table_name),
+                "SET",
+                $this->_quote_identifier($key),
+                "= ".$value,
+                $this->_build_where(),
+            ));
+            $this->_values = array_merge(array(), $this->_values);
+
+            return self::_execute($query, $this->_values, $this->_connection_name);
+        }
+
         // --------------------- //
         // ---  ArrayAccess  --- //
         // --------------------- //
@@ -2316,12 +2455,12 @@
          * In this case we are attempting to convert camel case formatted
          * methods into underscore formatted methods.
          *
-         * This allows us to call ORM methods using camel case and remain
+         * This allows us to call DB methods using camel case and remain
          * backwards compatible.
          *
          * @param  string   $name
          * @param  array    $arguments
-         * @return ORM
+         * @return DB
          */
         public function __call($name, $arguments)
         {
@@ -2339,18 +2478,18 @@
          * In this case we are attempting to convert camel case formatted
          * methods into underscore formatted methods.
          *
-         * This allows us to call ORM methods using camel case and remain
+         * This allows us to call DB methods using camel case and remain
          * backwards compatible.
          *
          * @param  string   $name
          * @param  array    $arguments
-         * @return ORM
+         * @return DB
          */
         public static function __callStatic($name, $arguments)
         {
             $method = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
 
-            return call_user_func_array(array('ORM', $method), $arguments);
+            return call_user_func_array(array('DB', $method), $arguments);
         }
     }
 
@@ -2596,7 +2735,7 @@
          * Call a method on all models in a result set. This allows for method
          * chaining such as setting a property on all models in a result set or
          * any other batch operation across models.
-         * @example ORM::for_table('Widget')->find_many()->set('field', 'value')->save();
+         * @example DB::for_table('Widget')->find_many()->set('field', 'value')->save();
          * @param string $method
          * @param array $params
          * @return \IdiormResultSet

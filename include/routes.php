@@ -92,20 +92,26 @@ $feather->group('/admin', function() use ($feather) {
 
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
-    
+    $feather->get('/index(/)', '\controller\admin\index:display');
+
     // Admin bans
     $feather->group('/bans', function() use ($feather) {
         $feather->get('(/)', '\controller\admin\bans:display');
         $feather->get('/delete/:id(/)', '\controller\admin\bans:delete')->conditions(array('id' => '[0-9]+'));
         $feather->map('/edit/:id(/)', '\controller\admin\bans:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
-        $feather->map('/add(/)', '\controller\admin\bans:add')->via('GET', 'POST');
+        $feather->map('/add(/:id)(/)', '\controller\admin\bans:add')->via('GET', 'POST');
     });
 
     // Admin options
     $feather->map('/options(/)', '\controller\admin\options:display')->via('GET', 'POST');
 
     // Admin categories
-    $feather->map('/categories(/)', '\controller\admin\categories:display')->via('GET', 'POST');
+    $feather->group('/categories', function() use ($feather) {
+        $feather->get('(/)', '\controller\admin\categories:display');
+        $feather->post('/add(/)', '\controller\admin\categories:add_category');
+        $feather->post('/edit(/)', '\controller\admin\categories:edit_categories');
+        $feather->post('/delete(/)', '\controller\admin\categories:delete_category');
+    });
 
     // Admin censoring
     $feather->map('/censoring(/)', '\controller\admin\censoring:display')->via('GET', 'POST');
@@ -123,8 +129,9 @@ $feather->group('/admin', function() use ($feather) {
     // Admin forums
     $feather->group('/forums', function() use ($feather) {
         $feather->map('(/)', '\controller\admin\forums:display')->via('GET', 'POST');
-        $feather->map('/delete/:id(/)', '\controller\admin\forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
-        $feather->map('/edit/:id(/)', '\controller\admin\forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+        $feather->post('/add(/)', '\controller\admin\forums:add_forum');
+        $feather->map('/edit/:id(/)', '\controller\admin\forums:edit_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
+        $feather->map('/delete/:id(/)', '\controller\admin\forums:delete_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
     });
 
     // Admin groups
@@ -155,5 +162,5 @@ $feather->group('/admin', function() use ($feather) {
 
 // 404 not found
 $feather->notFound(function () use ($lang_common) {
-    message($lang_common['Bad request'], false, '404 Not Found');
+    message($lang_common['Bad request'], '404');
 });

@@ -16,7 +16,8 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_forums['Edit forum head'] ?></span></h2>
 		<div class="box">
-			<form id="edit_forum" method="post" action="<?php echo get_link('admin/forums/edit/'.$forum_id.'/') ?>">
+			<form id="edit_forum" method="post" action="<?php echo get_link('admin/forums/edit/'.$cur_forum['id'].'/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>
@@ -35,7 +36,10 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_forums['Category label'] ?></th>
 									<td>
 										<select name="cat_id" tabindex="3">
-											<?php echo $categories_perms ?>
+											<?php  foreach ($forum_data as $cat_id => $cat_data) {
+												$selected = ($cat_id == $cur_forum['cat_id']) ? 'selected="selected"' : '';
+												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.feather_escape($cat_data['cat_name']).'</option>'."\n";
+											} ?>
 										</select>
 									</td>
 								</tr>
@@ -57,7 +61,7 @@ if (!defined('FEATHER')) {
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_forums['Redirect label'] ?></th>
-									<td><?php echo($cur_forum['num_topics']) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.feather_escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
+									<td><?php echo(!empty($cur_forum['num_topics'])) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.feather_escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>

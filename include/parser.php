@@ -118,7 +118,10 @@ Parameters: (See the BBcode regex to see how each of these parameters are captur
 *********************************************************** */
 function _preparse_bbcode_callback($matches)
 {
-    global $lang_common, $feather_user, $errors, $pd;
+    global $lang_common, $errors, $pd;
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     // Initialize some local variables. Use reference variables where possible.
     $tagname =& $matches[1];                                // BBCode tag name.
@@ -262,7 +265,7 @@ function _preparse_bbcode_callback($matches)
         // Sanitize contents which is (hopefully) a url link. Trim spaces.
         $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
         // Handle special case link to a
-        if ($feather_user['g_post_links'] != '1') {
+        if ($feather->user->g_post_links != '1') {
             $new_errors[] = $lang_common['BBerr cannot post URLs'];
         }
         else if (($m = url_valid($contents))) {
@@ -569,7 +572,8 @@ function _preparse_bbcode_callback($matches)
  */
 function preparse_bbcode($text, &$errors, $is_signature = false)
 {
-    global $lang_common, $feather_config, $feather_user, $pd;
+    global $lang_common, $feather_config, $pd;
+
     $pd['new_errors'] = array(); // Reset the parser error message stack.
     $pd['in_signature'] = ($is_signature) ? true : false;
     $pd['ipass'] = 1;
@@ -965,7 +969,10 @@ function _parse_bbcode_callback($matches)
 //
 function parse_bbcode(&$text, $hide_smilies = 0)
 {
-    global $feather_config, $feather_user, $pd;
+    global $feather_config, $pd;
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     if ($feather_config['o_censoring'] === '1') {
         $text = censor_words($text);
@@ -979,9 +986,9 @@ function parse_bbcode(&$text, $hide_smilies = 0)
     }
     // Set $smile_on flag depending on global flags and whether or not this is a signature.
     if ($pd['in_signature']) {
-        $smile_on = ($feather_config['o_smilies_sig'] && $feather_user['show_smilies'] && !$hide_smilies) ? 1 : 0;
+        $smile_on = ($feather_config['o_smilies_sig'] && $feather->user->show_smilies && !$hide_smilies) ? 1 : 0;
     } else {
-        $smile_on = ($feather_config['o_smilies'] && $feather_user['show_smilies'] && !$hide_smilies) ? 1 : 0;
+        $smile_on = ($feather_config['o_smilies'] && $feather->user->show_smilies && !$hide_smilies) ? 1 : 0;
     }
     // Split text into hidden and non-hidden chunks. Process the non-hidden content chunks.
     $parts = explode("\1", $text); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
@@ -1022,10 +1029,14 @@ function _do_smilies_callback($matches)
 //
 function parse_message($text, $hide_smilies)
 {
-    global $pd, $feather_config, $feather_user;
+    global $pd, $feather_config;
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    
     $pd['in_signature'] = false;
     // Disable images via the $bbcd['in_post'] flag if globally disabled.
-    if ($feather_config['p_message_img_tag'] !== '1' || $feather_user['show_img'] !== '1') {
+    if ($feather_config['p_message_img_tag'] !== '1' || $feather->user->show_img !== '1') {
         if (isset($pd['bbcd']['img'])) {
             $pd['bbcd']['img']['in_post'] = false;
         }
@@ -1037,10 +1048,14 @@ function parse_message($text, $hide_smilies)
 //
 function parse_signature($text)
 {
-    global $pd, $feather_config, $feather_user;
+    global $pd, $feather_config;
+    
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    
     $pd['in_signature'] = true;
     // Disable images via the $bbcd['in_sig'] flag if globally disabled.
-    if ($feather_config['p_sig_img_tag'] !== '1' || $feather_user['show_img_sig'] !== '1') {
+    if ($feather_config['p_sig_img_tag'] !== '1' || $feather->user->show_img_sig !== '1') {
         if (isset($pd['bbcd']['img'])) {
             $pd['bbcd']['img']['in_sig'] = false;
         }

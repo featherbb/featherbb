@@ -14,7 +14,6 @@ class index
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -27,15 +26,30 @@ class index
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
+
+    public function remove_install_folder($directory)
+    {
+        foreach(glob("{$directory}/*") as $file)
+        {
+            if(is_dir($file)) {
+                $this->remove_install_folder($file);
+            } else {
+                unlink($file);
+            }
+        }
+        $deleted = rmdir($directory);
+
+        return $deleted;
+    }
     
     public function display($action = null)
     {
-        global $lang_common, $lang_admin_common;
+        global $lang_common, $lang_admin_common, $lang_admin_index;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_index.php language file
@@ -60,9 +74,9 @@ class index
                 message(sprintf($lang_admin_index['New version available message'], '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
-        // Remove install.php
+        // Remove /install
         elseif ($action == 'remove_install_file') {
-            $deleted = @unlink(FEATHER_ROOT.'install.php');
+            $deleted = $this->remove_install_folder(FEATHER_ROOT.'install');
 
             if ($deleted) {
                 redirect(get_link('admin/'), $lang_admin_index['Deleted install.php redirect']);
@@ -71,7 +85,7 @@ class index
             }
         }
 
-        $install_file_exists = is_file(FEATHER_ROOT.'install.php');
+        $install_folder_exists = is_dir(FEATHER_ROOT.'install');
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Index']);
 
@@ -83,7 +97,7 @@ class index
 
         $this->feather->render('admin/index.php', array(
                             'lang_admin_index'    =>    $lang_admin_index,
-                            'install_file_exists'    =>    $install_file_exists,
+                            'install_file_exists'    =>    $install_folder_exists,
                             'feather_config'    =>    $this->config,
                             )
                     );

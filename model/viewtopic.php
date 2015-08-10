@@ -9,12 +9,13 @@
 
 namespace model;
 
+use DB;
+
 class viewtopic
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -26,18 +27,27 @@ class viewtopic
     {
         global $lang_common;
 
-        $result = $this->db->query('SELECT topic_id, posted FROM '.$this->db->prefix.'posts WHERE id='.$post_id) or error('Unable to fetch topic ID', __FILE__, __LINE__, $this->db->error());
-        if (!$this->db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+        $select_info_topic = array('topic_id', 'posted');
+
+        $result = DB::for_table('posts')
+                      ->select_many($select_info_topic)
+                      ->where('id', $post_id)
+                      ->find_one();
+
+        if (!$result) {
+            message($lang_common['Bad request'], '404');
         }
 
-        list($post['topic_id'], $posted) = $this->db->fetch_row($result);
+        $post['topic_id'] = $result['topic_id'];
+        $posted = $result['posted'];
 
         // Determine on which page the post is located (depending on $forum_user['disp_posts'])
-        $result = $this->db->query('SELECT COUNT(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$post['topic_id'].' AND posted<'.$posted) or error('Unable to count previous posts', __FILE__, __LINE__, $this->db->error());
-        $num_posts = $this->db->result($result) + 1;
+        $num_posts = DB::for_table('posts')
+                        ->where('topic_id', $post['topic_id'])
+                        ->where_lt('posted', $posted)
+                        ->count('id');
 
-        $post['get_p'] = ceil($num_posts / $this->user['disp_posts']);
+        $post['get_p'] = ceil(($num_posts + 1) / $this->user->disp_posts);
 
         return $post;
     }
@@ -48,13 +58,15 @@ class viewtopic
         
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
-            if (!$this->user['is_guest']) {
+            if (!$this->user->is_guest) {
                 // We need to check if this topic has been viewed recently by the user
                 $tracked_topics = get_tracked_topics();
-                $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $this->user['last_visit'];
+                $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $this->user->last_visit;
 
-                $result = $this->db->query('SELECT MIN(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$topic_id.' AND posted>'.$last_viewed) or error('Unable to fetch first new post info', __FILE__, __LINE__, $this->db->error());
-                $first_new_post_id = $this->db->result($result);
+                $first_new_post_id = DB::for_table('posts')
+                                        ->where('topic_id', $topic_id)
+                                        ->where_gt('posted', $last_viewed)
+                                        ->min('id');
 
                 if ($first_new_post_id) {
                     header('Location: '.get_base_url().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
@@ -68,8 +80,9 @@ class viewtopic
 
         // If action=last, we redirect to the last post
         if ($action == 'last') {
-            $result = $this->db->query('SELECT MAX(id) FROM '.$this->db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch last post info', __FILE__, __LINE__, $this->db->error());
-            $last_post_id = $this->db->result($result);
+            $last_post_id = DB::for_table('posts')
+                                ->where('topic_id', $topic_id)
+                                ->max('id');
 
             if ($last_post_id) {
                 header('Location: '.get_base_url().'/post/'.$last_post_id.'/#p'.$last_post_id);
@@ -83,17 +96,45 @@ class viewtopic
     {
         global $lang_common;
 
-        if (!$this->user['is_guest']) {
-            $result = $this->db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, s.user_id AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$this->user['id'].') LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
+        $where_get_info_topic = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        if (!$this->user->is_guest) {
+            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id');
+
+            $cur_topic = DB::for_table('topics')
+                            ->table_alias('t')
+                            ->select_many($select_get_info_topic)
+                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($where_get_info_topic)
+                            ->where('t.id', $id)
+                            ->where_null('t.moved_to')
+                            ->find_one();
         } else {
-            $result = $this->db->query('SELECT t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, 0 AS is_subscribed FROM '.$this->db->prefix.'topics AS t INNER JOIN '.$this->db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$this->db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$this->user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
+            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
+
+            $cur_topic = DB::for_table('topics')
+                            ->table_alias('t')
+                            ->select_many($select_get_info_topic)
+                            ->select_expr(0, 'is_subscribed')
+                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($where_get_info_topic)
+                            ->where('t.id', $id)
+                            ->where_null('t.moved_to')
+                            ->find_one();
         }
 
-        if (!$this->db->num_rows($result)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+        if (!$cur_topic) {
+            message($lang_common['Bad request'], '404');
         }
-
-        $cur_topic = $this->db->fetch_assoc($result);
 
         return $cur_topic;
     }
@@ -104,7 +145,7 @@ class viewtopic
         global $lang_topic;
 
         if ($closed == '0') {
-            if (($post_replies == '' && $this->user['g_post_replies'] == '1') || $post_replies == '1' || $is_admmod) {
+            if (($post_replies == '' && $this->user->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
                 $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/reply/'.$topic_id.'/').'">'.$lang_topic['Post reply'].'</a></p>'."\n";
             } else {
                 $post_link = '';
@@ -128,12 +169,12 @@ class viewtopic
         global $lang_common;
 
         $quickpost = false;
-        if ($this->config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $this->user['g_post_replies'] == '1')) && ($closed == '0' || $is_admmod)) {
+        if ($this->config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $this->user->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
             // Load the post.php language file
-            require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
+            require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
             $required_fields = array('req_message' => $lang_common['Message']);
-            if ($this->user['is_guest']) {
+            if ($this->user->is_guest) {
                 $required_fields['req_username'] = $lang_post['Guest name'];
                 if ($this->config['p_force_guest_email'] == '1') {
                     $required_fields['req_email'] = $lang_common['Email'];
@@ -150,7 +191,7 @@ class viewtopic
     {
         global $lang_topic;
 
-        if (!$this->user['is_guest'] && $this->config['o_topic_subscriptions'] == '1') {
+        if (!$this->user->is_guest && $this->config['o_topic_subscriptions'] == '1') {
             if ($is_subscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
                 $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/topic/'.$topic_id.'/').'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
@@ -200,11 +241,16 @@ class viewtopic
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id='.$topic_id.' ORDER BY id LIMIT '.$start_from.','.$this->user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $this->db->error());
+        $result = DB::for_table('posts')->select('id')
+                    ->where('topic_id', $topic_id)
+                    ->order_by('id')
+                    ->limit($this->user->disp_topics)
+                    ->offset($start_from)
+                    ->find_many();
 
         $post_ids = array();
-        for ($i = 0;$cur_post_id = $this->db->result($result, $i);$i++) {
-            $post_ids[] = $cur_post_id;
+        foreach ($result as $cur_post_id) {
+            $post_ids[] = $cur_post_id['id'];
         }
 
         if (empty($post_ids)) {
@@ -212,8 +258,21 @@ class viewtopic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result = $this->db->query('SELECT u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, g.g_promote_next_group, o.user_id AS is_online FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$this->db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-        while ($cur_post = $this->db->fetch_assoc($result)) {
+        $select_print_posts = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
+
+        $result = DB::for_table('posts')
+            ->table_alias('p')
+            ->select_many($select_print_posts)
+            ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
+            ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o')
+            ->left_outer_join('online', array('o2.user_id', '!=', 1), 'o2', true)
+            ->left_outer_join('online', array('o.idle', '=', 0), null, true)
+            ->where_in('p.id', $post_ids)
+            ->order_by('p.id')
+            ->find_array();
+
+        foreach($result as $cur_post) {
             $post_count++;
             $cur_post['user_avatar'] = '';
             $cur_post['user_info'] = array();
@@ -224,7 +283,7 @@ class viewtopic
 
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
-                if ($this->user['g_view_users'] == '1') {
+                if ($this->user->g_view_users == '1') {
                     $cur_post['username_formatted'] = '<a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/">'.feather_escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = feather_escape($cur_post['username']);
@@ -239,7 +298,7 @@ class viewtopic
                 // Format the online indicator
                 $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
 
-                if ($this->config['o_avatars'] == '1' && $this->user['show_avatars'] != '0') {
+                if ($this->config['o_avatars'] == '1' && $this->user->show_avatars != '0') {
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {
@@ -259,14 +318,14 @@ class viewtopic
 
                     $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Registered'].' '.format_time($cur_post['registered'], true).'</span></dd>';
 
-                    if ($this->config['o_show_post_count'] == '1' || $this->user['is_admmod']) {
+                    if ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
                         $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Posts'].' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
-                    if ((($cur_post['email_setting'] == '0' && !$this->user['is_guest']) || $this->user['is_admmod']) && $this->user['g_send_email'] == '1') {
+                    if ((($cur_post['email_setting'] == '0' && !$this->user->is_guest) || $this->user->is_admmod) && $this->user->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
-                    } elseif ($cur_post['email_setting'] == '1' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
+                    } elseif ($cur_post['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.$lang_common['Email'].'</a></span>';
                     }
 
@@ -279,13 +338,13 @@ class viewtopic
                     }
                 }
 
-                if ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_promote_users'] == '1')) {
+                if ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
                         $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.$lang_topic['Promote user'].'</a></span></dd>';
                     }
                 }
 
-                if ($this->user['is_admmod']) {
+                if ($this->user->is_admmod) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.feather_escape($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
@@ -298,38 +357,38 @@ class viewtopic
                 $cur_post['username_formatted'] = feather_escape($cur_post['username']);
                 $cur_post['user_title_formatted'] = get_title($cur_post);
 
-                if ($this->user['is_admmod']) {
+                if ($this->user->is_admmod) {
                     $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.feather_escape($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
                 }
 
-                if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user['is_guest'] && $this->user['g_send_email'] == '1') {
+                if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['poster_email']).'">'.$lang_common['Email'].'</a></span>';
                 }
             }
 
             // Generation post action array (quote, edit, delete etc.)
             if (!$is_admmod) {
-                if (!$this->user['is_guest']) {
+                if (!$this->user->is_guest) {
                     $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
                 }
 
                 if ($cur_topic['closed'] == '0') {
-                    if ($cur_post['poster_id'] == $this->user['id']) {
-                        if ((($start_from + $post_count) == 1 && $this->user['g_delete_topics'] == '1') || (($start_from + $post_count) > 1 && $this->user['g_delete_posts'] == '1')) {
+                    if ($cur_post['poster_id'] == $this->user->id) {
+                        if ((($start_from + $post_count) == 1 && $this->user->g_delete_topics == '1') || (($start_from + $post_count) > 1 && $this->user->g_delete_posts == '1')) {
                             $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                         }
-                        if ($this->user['g_edit_posts'] == '1') {
+                        if ($this->user->g_edit_posts == '1') {
                             $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
                         }
                     }
 
-                    if (($cur_topic['post_replies'] == '' && $this->user['g_post_replies'] == '1') || $cur_topic['post_replies'] == '1') {
+                    if (($cur_topic['post_replies'] == '' && $this->user->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
                         $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.$lang_topic['Quote'].'</a></span></li>';
                     }
                 }
             } else {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
-                if ($this->user['g_id'] == FEATHER_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
+                if ($this->user->g_id == FEATHER_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
                 }
@@ -340,7 +399,7 @@ class viewtopic
             $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
-            if ($this->config['o_signatures'] == '1' && $cur_post['signature'] != '' && $this->user['show_sig'] != '0') {
+            if ($this->config['o_signatures'] == '1' && $cur_post['signature'] != '' && $this->user->show_sig != '0') {
                 if (isset($avatar_cache[$cur_post['poster_id']])) {
                     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 } else {
@@ -353,5 +412,15 @@ class viewtopic
         }
 
         return $post_data;
+    }
+    
+    public function increment_views($id)
+    {
+        if ($this->config['o_topic_views'] == '1') {
+            DB::for_table('topics')->where('id', $id)
+                ->find_one()
+                ->set_expr('num_views', 'num_views+1')
+                ->save();
+        }
     }
 }
