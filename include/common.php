@@ -37,7 +37,7 @@ forum_unregister_globals();
 
 // If FEATHER isn't defined, config.php is missing or corrupt
 if (!defined('FEATHER')) {
-    header('Location: install.php');
+    header('Location: '.$feather->request->getPath().'install/index.php');
     exit;
 }
 
@@ -105,15 +105,6 @@ if (!defined('FEATHER_CONFIG_LOADED')) {
 
 // Inject config to SlimFramework
 $feather->config = $feather_config;
-
-// Verify that we are running the proper database schema revision
-if (!isset($feather->config['o_database_revision']) || $feather->config['o_database_revision'] < FORUM_DB_REVISION ||
-    !isset($feather->config['o_searchindex_revision']) || $feather->config['o_searchindex_revision'] < FORUM_SI_REVISION ||
-    !isset($feather->config['o_parser_revision']) || $feather->config['o_parser_revision'] < FORUM_PARSER_REVISION ||
-    version_compare($feather->config['o_cur_version'], FORUM_VERSION, '<')) {
-    header('Location: db_update.php');
-    exit;
-}
 
 // Enable output buffering
 if (!defined('FEATHER_DISABLE_BUFFERING')) {

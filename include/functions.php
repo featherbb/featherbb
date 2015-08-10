@@ -260,7 +260,7 @@ function set_default_user()
     $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
     $where_set_default_user = array('u.id' => '1');
 
-    $result = ORM::for_table('users')
+    $result = \DB::for_table('users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
         ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')

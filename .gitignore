@@ -3,3 +3,4 @@ include/config.php
 .idea/
 nbproject/
 lang/French
+.htaccess
