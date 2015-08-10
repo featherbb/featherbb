@@ -363,7 +363,7 @@ class FeatherBB extends \Slim\Middleware
         global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed;
 
         // Block prefetch requests
-        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch') || true) {
+        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
             $this->set_headers();
             $this->app->response->setStatus(403);
         } else {
