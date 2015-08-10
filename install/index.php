@@ -227,6 +227,7 @@ if (!isset($_POST['form_sent'])) {
     $base_url .= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));                            // path
 
     if (substr($base_url, -1) == '/') {
+        $base_url = str_replace('/install', '', $base_url);
         $base_url = substr($base_url, 0, -1);
     }
 
