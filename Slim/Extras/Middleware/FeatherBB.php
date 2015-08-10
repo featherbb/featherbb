@@ -367,10 +367,6 @@ class FeatherBB extends \Slim\Middleware
             $this->set_headers();
             $this->app->response->setStatus(403);
         } else {
-            // Configure Slim
-            $this->app->config('cookies.encrypt', true);
-            $this->app->config('debug', true); // As long as we're developing FeatherBB
-
             // Populate Feather object
             $this->hydrate($this->data);
 
@@ -439,7 +435,10 @@ class FeatherBB extends \Slim\Middleware
             // Update online list
             update_users_online();
 
-            $this->app->config('templates.path', get_path_view());
+            // Configure Slim
+            $this->app->config('cookies.encrypt', true);
+            $this->app->config('debug', true); // As long as we're developing FeatherBB
+            $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? FEATHER_ROOT.'style/'.$this->app->user->style.'/view' : FEATHER_ROOT.'view');
             $this->next->call();
         }
     }
