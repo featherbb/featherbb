@@ -92,10 +92,7 @@ $feather->group('/admin', function() use ($feather) {
 
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
-<<<<<<< HEAD
-=======
     $feather->get('/index(/)', '\controller\admin\index:display');
->>>>>>> featherbb/master
 
     // Admin bans
     $feather->group('/bans', function() use ($feather) {
