@@ -20,6 +20,7 @@ class FeatherBB extends \Slim\Middleware
 
 	public function __construct(array $user_forum_settings = array())
 	{
+        // Define forum env constants
         $this->data['forum_env'] = array(
                                     'FEATHER' => true,
                                     'FEATHER_ROOT' => dirname(__FILE__).'/../../../',
@@ -41,8 +42,19 @@ class FeatherBB extends \Slim\Middleware
                                     'FEATHER_SHOW_QUERIES' => 1
                                     );
 
+        // Define forum settings / TODO : handle settings with a class / User input overrides all previous settings
         $this->data['forum_settings'] = array_merge(self::load_default_settings(), $user_forum_settings);
-        $this->init_db();
+
+        // Load DB settings
+        require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
+        DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
+        DB::configure('username', $this->data['forum_settings']['db_user']);
+        DB::configure('password', $this->data['forum_settings']['db_pass']);
+        DB::configure('logging', true);
+        DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+        DB::configure('id_column_overrides', array(
+            'groups' => 'g_id',
+        ));
 	}
 
     public function load_forum_config()
@@ -71,7 +83,9 @@ class FeatherBB extends \Slim\Middleware
                 'db_prefix' => '',
                 // Cookies
                 'cookie_name' => 'feather_cookie',
-                'cookie_seed' => 'changeme', // MUST BE CHANGED
+                'cookie_seed' => 'changeme', // MUST BE CHANGED !!!
+                // Debug
+                'debug' => false,
                 );
     }
 
@@ -101,13 +115,15 @@ class FeatherBB extends \Slim\Middleware
         }
     }
 
-    // Legacy function, to ensure constants backward compatibility
+    // Legacy function, to ensure backward compatibility with globals
     public function env_to_globals(array $vars)
     {
         foreach ($vars as $key => $value) {
             define($key, $value);
         }
     }
+
+    // Headers
 
     public function set_headers()
     {
@@ -124,21 +140,7 @@ class FeatherBB extends \Slim\Middleware
         $this->app->response->headers->set('X-Powered-By', $this->app->forum_env['FORUM_NAME']);
     }
 
-    public function init_db()
-    {
-        // Include ORM
-        require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
-
-        // TODO: handle drivers
-        DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
-        DB::configure('username', $this->data['forum_settings']['db_user']);
-        DB::configure('password', $this->data['forum_settings']['db_pass']);
-        DB::configure('logging', true);
-        DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
-        DB::configure('id_column_overrides', array(
-            'groups' => 'g_id',
-        ));
-    }
+    // Auth
 
     public function authenticate()
     {
@@ -146,7 +148,6 @@ class FeatherBB extends \Slim\Middleware
 
         // Get FeatherBB cookie
         $cookie_raw = $this->app->getCookie($this->data['forum_settings']['cookie_name']);
-        var_dump($cookie_raw);
         // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
         if (isset($cookie_raw)) {
             $cookie = json_decode($cookie_raw, true);
@@ -193,7 +194,6 @@ class FeatherBB extends \Slim\Middleware
 
         // If there is no cookie, or cookie is guest or expired, let's reconnect.
         $expires = $now + 31536000; // The cookie expires after a year
-        $remote_addr = get_remote_address();
 
         // Fetch guest user
         $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
@@ -203,7 +203,7 @@ class FeatherBB extends \Slim\Middleware
             ->table_alias('u')
             ->select_many($select_set_default_user)
             ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->left_outer_join('online', array('o.ident', '=', $remote_addr), 'o', true)
+            ->left_outer_join('online', array('o.ident', '=', get_remote_address()), 'o', true)
             ->where($where_set_default_user)
             ->find_result_set();
 
@@ -310,7 +310,7 @@ class FeatherBB extends \Slim\Middleware
 
     public function call()
     {
-        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed; // Legacy
+        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats; // Legacy
 
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
             $this->set_headers();
@@ -318,11 +318,12 @@ class FeatherBB extends \Slim\Middleware
         } else {
             $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
 
-            require_once $this->app->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
-            require_once $this->app->forum_env['FEATHER_ROOT'].'include/functions.php';
+            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
+            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';
 
-            // Populate Feather object
+            // Get forum config
             $this->data['forum_settings'] = array_merge($this->load_forum_config(), $this->data['forum_settings']);
+            // Populate Feather object (Slim instance)
             $this->hydrate($this->data);
 
             $this->app->config = $this->data['forum_settings']; // Legacy
@@ -352,8 +353,8 @@ class FeatherBB extends \Slim\Middleware
             $this->authenticate();
 
             // Attempt to load the common language file
-            if (file_exists($this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php')) {
-                include $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php';
+            if (file_exists($this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php')) {
+                include $this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php';
             } else {
                 die('There is no valid language pack \''.feather_escape($this->app->user->language).'\' installed. Please reinstall a language of that name');
             }
@@ -364,17 +365,17 @@ class FeatherBB extends \Slim\Middleware
             }
 
             // Load cached bans
-            if (file_exists($this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php')) {
-                include $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+            if (file_exists($this->data['forum_env']['FORUM_CACHE_DIR'].'cache_bans.php')) {
+                include $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_bans.php';
             }
 
             if (!defined('FEATHER_BANS_LOADED')) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require_once $this->app->forum_env['FEATHER_ROOT'].'include/cache.php';
+                    require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
                 }
 
                 generate_bans_cache();
-                require_once $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+                require_once $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_bans.php';
             }
 
             // Check if current user is banned
