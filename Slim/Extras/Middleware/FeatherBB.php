@@ -172,7 +172,7 @@ class FeatherBB extends \Slim\Middleware
                 if (isset($this->app->user->id) && hash_hmac('sha1', $this->app->user->password, $this->data['forum_settings']['cookie_seed'].'_password_hash') === $cookie['password_hash']) {
                     $expires = ($cookie['expires'] > $now + $this->data['forum_settings']['o_timeout_visit']) ? $now + 1209600 : $now + $this->data['forum_settings']['o_timeout_visit'];
                     $this->app->user->is_guest = false;
-                    $this->app->user->is_admmod = $this->app->user->g_id == FEATHER_ADMIN || $this->app->g_moderator == '1';
+                    $this->app->user->is_admmod = $this->app->user->g_id == $this->data['forum_env']['FEATHER_ADMIN'] || $this->app->g_moderator == '1';
                     if (!$this->app->user->disp_topics) {
                         $this->app->user->disp_topics = $this->data['forum_settings']['o_disp_topics_default'];
                     }
@@ -323,6 +323,9 @@ class FeatherBB extends \Slim\Middleware
 
             // Get forum config
             $this->data['forum_settings'] = array_merge($this->load_forum_config(), $this->data['forum_settings']);
+            // Define time formats
+            $forum_time_formats = array($this->data['forum_settings']['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
+            $forum_date_formats = array($this->data['forum_settings']['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
             // Populate Feather object (Slim instance)
             $this->hydrate($this->data);
 
@@ -334,10 +337,6 @@ class FeatherBB extends \Slim\Middleware
             // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
             setlocale(LC_CTYPE, 'C');
 
-            // Define time formats
-            $forum_time_formats = array($this->app->config['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
-            $forum_date_formats = array($this->app->config['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
-
             $this->authenticate();
 
             // Attempt to load the common language file
@@ -348,7 +347,7 @@ class FeatherBB extends \Slim\Middleware
             }
 
             // Check if we are to display a maintenance message
-            if ($this->app->config['o_maintenance'] && $this->app->user->g_id > FEATHER_ADMIN && !defined('FEATHER_TURN_OFF_MAINT')) {
+            if ($this->data['forum_settings']['o_maintenance'] && $this->app->user->g_id > $this->data['forum_env']['FEATHER_ADMIN'] && !defined('FEATHER_TURN_OFF_MAINT')) {
                 maintenance_message();
             }
 
