@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+
+
 //
 // Return current timestamp (with microseconds) as a float
 //
@@ -17,8 +19,6 @@ function get_microtime()
 }
 
 //
-<<<<<<< HEAD
-=======
 // Cookie stuff!
 //
 function check_cookie()
@@ -27,7 +27,7 @@ function check_cookie()
 
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
-    
+
     $now = time();
 
     // Get FeatherBB cookie
@@ -154,7 +154,6 @@ function set_preferences()
 
 
 //
->>>>>>> featherbb/master
 // Try to determine the current URL
 //
 function get_current_url($max_length = 0)
@@ -222,6 +221,7 @@ function get_base_url($support_https = false)
     return $base_url;
 }
 
+
 //
 // Fetch admin IDs
 //
@@ -245,8 +245,6 @@ function get_admin_ids()
 
 
 //
-<<<<<<< HEAD
-=======
 // Fill $feather->user with default values (for guests)
 //
 function set_default_user()
@@ -312,7 +310,6 @@ function set_default_user()
 
 
 //
->>>>>>> featherbb/master
 // Wrapper for Slim setCookie method
 //
 function feather_setcookie($user_id, $password, $expires)
@@ -328,10 +325,7 @@ function feather_setcookie($user_id, $password, $expires)
     $feather->setCookie($cookie_name, json_encode($cookie_data), $expires);
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> featherbb/master
 //
 // Check whether the connecting user is banned (and delete any expired bans while we're at it)
 //
@@ -358,11 +352,7 @@ function check_bans()
     foreach ($feather_bans as $cur_ban) {
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-<<<<<<< HEAD
-            \ORM::for_table($feather->db->prefix.'bans')->where('id', $cur_ban['id'])
-=======
             \DB::for_table('bans')->where('id', $cur_ban['id'])
->>>>>>> featherbb/master
                                                ->delete_many();
             $bans_altered = true;
             continue;
@@ -392,11 +382,7 @@ function check_bans()
         }
 
         if ($is_banned) {
-<<<<<<< HEAD
-            \ORM::for_table($feather->db->prefix.'online')->where('ident', $feather->user->username)
-=======
             \DB::for_table('online')->where('ident', $feather->user->username)
->>>>>>> featherbb/master
                                                  ->delete_many();
             message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
         }
@@ -449,11 +435,7 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-<<<<<<< HEAD
-    $result = \ORM::for_table($feather->db->prefix.'online')->raw_query('SELECT username FROM '.$feather->db->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
-=======
     $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
->>>>>>> featherbb/master
 
     if ($result) {
         $busy = $result['username'];
@@ -477,47 +459,20 @@ function check_username($username, $errors, $exclude_id = null)
 //
 function update_users_online()
 {
-<<<<<<< HEAD
-    global $db;
-=======
     global $feather, $feather_config;
->>>>>>> featherbb/master
 
     $now = time();
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
 
     // Fetch all online list entries that are older than "o_timeout_online"
     $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
-<<<<<<< HEAD
-    $result = \ORM::for_table($feather->db->prefix.'online')->select_many($select_update_users_online)
-        ->where_lt('logged', $now - $feather->config['o_timeout_online'])
-=======
     $result = \DB::for_table('online')->select_many($select_update_users_online)
         ->where_lt('logged', $now-$feather_config['o_timeout_online'])
->>>>>>> featherbb/master
         ->find_many();
 
     foreach ($result as $cur_user) {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1') {
-<<<<<<< HEAD
-            \ORM::for_table($feather->db->prefix.'online')->where('ident', $cur_user['ident'])
-                                                 ->delete_many();
-        } else {
-            // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-            if ($cur_user['logged'] < ($now-$feather->config['o_timeout_visit'])) {
-                \ORM::for_table($feather->db->prefix.'users')->where('id', $cur_user['user_id'])
-                        ->find_one()
-                        ->set('last_visit', $cur_user['logged'])
-                        ->save();
-                \ORM::for_table($feather->db->prefix.'online')->where('user_id', $cur_user['user_id'])
-                    ->delete_many();
-            } elseif ($cur_user['idle'] == '0') {
-                \ORM::for_table($feather->db->prefix.'online')->where('user_id', $cur_user['user_id'])
-=======
             \DB::for_table('online')->where('ident', $cur_user['ident'])
                                                  ->delete_many();
         } else {
@@ -531,7 +486,6 @@ function update_users_online()
                     ->delete_many();
             } elseif ($cur_user['idle'] == '0') {
                 \DB::for_table('online')->where('user_id', $cur_user['user_id'])
->>>>>>> featherbb/master
                         ->update_many('idle', 1);
             }
         }
@@ -635,11 +589,7 @@ function update_forum($forum_id)
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-<<<<<<< HEAD
-    $stats_query = \ORM::for_table($feather->db->prefix.'topics')
-=======
     $stats_query = \DB::for_table('topics')
->>>>>>> featherbb/master
                     ->where('forum_id', $forum_id)
                     ->select_expr('COUNT(id)', 'total_topics')
                     ->select_expr('SUM(num_replies)', 'total_replies')
@@ -652,11 +602,7 @@ function update_forum($forum_id)
 
     $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
 
-<<<<<<< HEAD
-    $result = \ORM::for_table($feather->db->prefix.'topics')->select_many($select_update_forum)
-=======
     $result = \DB::for_table('topics')->select_many($select_update_forum)
->>>>>>> featherbb/master
         ->where('forum_id', $forum_id)
         ->where_null('moved_to')
         ->order_by_desc('last_post')
@@ -681,11 +627,7 @@ function update_forum($forum_id)
             'last_poster'  => 'NULL',
         );
     }
-<<<<<<< HEAD
-        \ORM::for_table($feather->db->prefix.'forums')
-=======
         \DB::for_table('forums')
->>>>>>> featherbb/master
             ->where('id', $forum_id)
             ->find_one()
             ->set($insert_update_forum)
@@ -725,29 +667,17 @@ function delete_topic($topic_id)
             array('moved_to' => $topic_id)
         );
 
-<<<<<<< HEAD
-    \ORM::for_table($feather->db->prefix.'topics')
-=======
     \DB::for_table('topics')
->>>>>>> featherbb/master
         ->where_any_is($where_delete_topic)
         ->delete_many();
 
     // Delete posts in topic
-<<<<<<< HEAD
-    \ORM::for_table($feather->db->prefix.'posts')
-=======
     \DB::for_table('posts')
->>>>>>> featherbb/master
         ->where('topic_id', $topic_id)
         ->delete_many();
 
     // Delete any subscriptions for this topic
-<<<<<<< HEAD
-    \ORM::for_table($feather->db->prefix.'topic_subscriptions')
-=======
     \DB::for_table('topic_subscriptions')
->>>>>>> featherbb/master
         ->where('topic_id', $topic_id)
         ->delete_many();
 }
@@ -761,11 +691,7 @@ function delete_post($post_id, $topic_id)
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-<<<<<<< HEAD
-    $result = \ORM::for_table($feather->db->prefix.'posts')
-=======
     $result = \DB::for_table('posts')
->>>>>>> featherbb/master
                   ->select_many('id', 'poster', 'posted')
                   ->where('topic_id', $topic_id)
                   ->order_by_desc('id')
@@ -786,11 +712,7 @@ function delete_post($post_id, $topic_id)
    }
 
     // Delete the post
-<<<<<<< HEAD
-    \ORM::for_table($feather->db->prefix.'posts')
-=======
     \DB::for_table('posts')
->>>>>>> featherbb/master
         ->where('id', $post_id)
         ->find_one()
         ->delete();
@@ -798,11 +720,7 @@ function delete_post($post_id, $topic_id)
     strip_search_index($post_id);
 
     // Count number of replies in the topic
-<<<<<<< HEAD
-    $num_replies = \ORM::for_table($feather->db->prefix.'posts')->where('topic_id', $topic_id)->count() - 1;
-=======
     $num_replies = \DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
->>>>>>> featherbb/master
 
     // If the message we deleted is the most recent in the topic (at the end of the topic)
     if ($last_id == $post_id) {
@@ -814,22 +732,14 @@ function delete_post($post_id, $topic_id)
                 'last_poster'  => $second_poster,
                 'num_replies'  => $num_replies,
             );
-<<<<<<< HEAD
-            \ORM::for_table($feather->db->prefix.'topics')
-=======
             \DB::for_table('topics')
->>>>>>> featherbb/master
                 ->where('id', $topic_id)
                 ->find_one()
                 ->set($update_topic)
                 ->save();
         } else {
             // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
-<<<<<<< HEAD
-            \ORM::for_table($feather->db->prefix.'topics')
-=======
             \DB::for_table('topics')
->>>>>>> featherbb/master
                 ->where('id', $topic_id)
                 ->find_one()
                 ->set_expr('last_post', 'posted')
@@ -840,11 +750,7 @@ function delete_post($post_id, $topic_id)
         }
     } else {
         // Otherwise we just decrement the reply counter
-<<<<<<< HEAD
-        \ORM::for_table($feather->db->prefix.'topics')
-=======
         \DB::for_table('topics')
->>>>>>> featherbb/master
             ->where('id', $topic_id)
             ->find_one()
             ->set('num_replies', $num_replies)
