@@ -37,7 +37,8 @@ class FeatherBB extends \Slim\Middleware
                                     'FEATHER_MAX_POSTSIZE' => 32768,
                                     'FEATHER_SEARCH_MIN_WORD' => 3,
                                     'FEATHER_SEARCH_MAX_WORD' => 20,
-                                    'FORUM_MAX_COOKIE_SIZE' => 4048
+                                    'FORUM_MAX_COOKIE_SIZE' => 4048,
+                                    'FEATHER_SHOW_QUERIES' => 1
                                     );
 
         $this->data['forum_settings'] = array_merge(self::load_default_settings(), $this->load_forum_config(), $user_forum_settings);
@@ -137,7 +138,7 @@ class FeatherBB extends \Slim\Middleware
         DB::configure('logging', true);
         DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
         DB::configure('id_column_overrides', array(
-            $this->app->forum_settings['db_prefix'].'groups' => 'g_id',
+            'groups' => 'g_id',
         ));
     }
 
@@ -160,11 +161,11 @@ class FeatherBB extends \Slim\Middleware
                 $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
                 $where_check_cookie = array('u.id' => intval($cookie['user_id']));
 
-                $result = DB::for_table($this->data['forum_settings']['db_prefix'].'users')
+                $result = DB::for_table('users')
                     ->table_alias('u')
                     ->select_many($select_check_cookie)
-                    ->inner_join($this->data['forum_settings']['db_prefix'].'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                    ->left_outer_join($this->data['forum_settings']['db_prefix'].'online', array('o.user_id', '=', 'u.id'), 'o')
+                    ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+                    ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o')
                     ->where($where_check_cookie)
                     ->find_result_set();
 
@@ -201,11 +202,11 @@ class FeatherBB extends \Slim\Middleware
         $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
         $where_set_default_user = array('u.id' => '1');
 
-        $result = DB::for_table($this->data['forum_settings']['db_prefix'].'users')
+        $result = DB::for_table('users')
             ->table_alias('u')
             ->select_many($select_set_default_user)
-            ->inner_join($this->data['forum_settings']['db_prefix'].'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->left_outer_join($this->data['forum_settings']['db_prefix'].'online', array('o.ident', '=', $remote_addr), 'o', true)
+            ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+            ->left_outer_join('online', array('o.ident', '=', $remote_addr), 'o', true)
             ->where($where_set_default_user)
             ->find_result_set();
 
@@ -236,15 +237,15 @@ class FeatherBB extends \Slim\Middleware
                 case 'mysqli_innodb':
                 case 'sqlite':
                 case 'sqlite3':
-                DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                DB::for_table('online')->raw_execute('REPLACE INTO online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
                     break;
 
                 default:
-                    DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                    DB::for_table('online')->raw_execute('INSERT INTO online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
                     break;
             }
         } else {
-            DB::for_table($this->data['forum_settings']['db_prefix'].'online')->where('ident', $remote_addr)
+            DB::for_table('online')->where('ident', $remote_addr)
                  ->update_many('logged', time());
         }
 
@@ -270,11 +271,11 @@ class FeatherBB extends \Slim\Middleware
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
                         break;
 
                     default:
-                        DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
                         break;
                 }
 
@@ -284,7 +285,7 @@ class FeatherBB extends \Slim\Middleware
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if ($this->app->user->logged < ($now-$this->data['forum_settings']['o_timeout_visit'])) {
-                    DB::for_table($this->data['forum_settings']['db_prefix'].'users')->where('id', $this->app->user->id)
+                    DB::for_table('users')->where('id', $this->app->user->id)
                         ->find_one()
                         ->set('last_visit', $this->app->user->logged)
                         ->save();
@@ -293,7 +294,7 @@ class FeatherBB extends \Slim\Middleware
 
                 $idle_sql = ($this->app->user->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('UPDATE '.$this->data['forum_settings']['db_prefix'].'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
+                DB::for_table('online')->raw_execute('UPDATE online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = $this->app->getCookie($this->data['forum_settings']['cookie_name'].'_track');

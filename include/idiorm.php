@@ -225,7 +225,7 @@
         {
             self::$_config = array();
         }
-        
+
         /**
          * Despite its slightly odd name, this is actually the factory
          * method used to acquire instances of the class. It is named
@@ -239,7 +239,7 @@
         public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION)
         {
             $feather = \Slim\Slim::getInstance();
-            $table_name = $feather->prefix.$table_name;
+            $table_name = $feather->forum_settings['db_prefix'].$table_name;
             self::_setup_db($connection_name);
             return new self($table_name, array(), $connection_name);
         }
@@ -507,12 +507,12 @@
             self::$_last_query = $bound_query;
             self::$_query_log[$connection_name][0][] = $query_time;
             self::$_query_log[$connection_name][1][] = $bound_query;
-            
+
             if(is_callable(self::$_config[$connection_name]['logger'])){
                 $logger = self::$_config[$connection_name]['logger'];
                 $logger($bound_query, $query_time);
             }
-            
+
             return true;
         }
 
@@ -1020,7 +1020,7 @@
          * ON `user`.`id` = `profile`.`user_id`
          *
          * The fourth argument specifies an alias for the joined table.
-         * 
+         *
          * The final argument specifies is the last column should be escaped
          */
         protected function _add_join_source($join_operator, $table, $constraint, $table_alias=null, $no_escape_second_col=false)
@@ -1286,7 +1286,7 @@
                 return implode(', ', $db_fields);
             }
         }
-        
+
         /**
          * Helper method that filters a column/value array returning only those
          * columns that belong to a compound primary key.
@@ -1518,7 +1518,7 @@
         {
             return $this->_add_where($clause, $parameters);
         }
-        
+
         /**
          * Add a LIMIT to the query
          */
@@ -1570,7 +1570,7 @@
         {
             return $this->_add_order_by($column_name, $dir);
         }
-        
+
         /**
          * Add columns to the list of columns returned by the ORDER BY
          * query. This defaults to '*'. Many columns can be supplied
@@ -1596,7 +1596,7 @@
             }
             return $this;
         }
-        
+
         /**
          * Add an unquoted expression as an ORDER BY clause
          */
@@ -2653,7 +2653,7 @@
         {
             return $this->get_results();
         }
-        
+
         /**
          * Get the number of records in the result set
          * @return int
@@ -2692,7 +2692,7 @@
         {
             return $this->_results[$offset];
         }
-        
+
         /**
          * ArrayAccess
          * @param int|string $offset
