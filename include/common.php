@@ -76,18 +76,40 @@ define('FEATHER_MEMBER', 4);
 // Inject DB prefix to SlimFramework
 $feather->prefix = $db_prefix;
 
-// Include Idiorm
+// Include Idiorm and set it up
 require FEATHER_ROOT.'include/idiorm.php';
 
-// TODO: handle drivers
-\DB::configure('mysql:host='.$db_host.';dbname='.$db_name);
+switch ($db_type) {
+    case 'mysql':
+    case 'mysqli':
+    case 'mysql_innodb':
+    case 'mysqli_innodb':
+        \DB::configure('mysql:host='.$db_host.';dbname='.$db_name);
+        \DB::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+        break;
+    case 'sqlite';
+    case 'sqlite3';
+        \DB::configure('sqlite:./'.$db_name);
+        break;
+    case 'pgsql':
+        \DB::configure('pgsql:host='.$db_host.'dbname='.$db_name);
+        break;
+}
 \DB::configure('username', $db_username);
 \DB::configure('password', $db_password);
-\DB::configure('logging', true);
-\DB::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
 \DB::configure('id_column_overrides', array(
     $db_prefix.'groups' => 'g_id',
 ));
+
+// Log queries if needed
+if (defined('FEATHER_SHOW_QUERIES')) {
+    \DB::configure('logging', true);
+}
+
+// Cache queries if needed
+if (defined('FEATHER_CACHE_QUERIES')) {
+    \DB::configure('caching', true);
+}
 
 // Load cached config
 if (file_exists(FORUM_CACHE_DIR.'cache_config.php')) {
