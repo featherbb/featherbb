@@ -14,7 +14,6 @@ class footer
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -54,18 +53,11 @@ class footer
                             'forum_id' => $forum_id,
                             'num_pages' => $num_pages,
                             'feather' => $this->feather,
-                            'db' => $this->db,
                             )
                     );
-
-        // End the transaction
-        $this->db->end_transaction();
-
-        // Close the db connection (and free up any result data)
-        $this->db->close();
         
         // Close Idiorm connection
-        $pdo = \ORM::get_db();
+        $pdo = \DB::get_db();
         $pdo = null;
 
         // If we need to stop the application outside a route

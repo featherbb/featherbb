@@ -9,12 +9,13 @@
 
 namespace model\admin;
 
+use DB;
+
 class censoring
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,7 +36,7 @@ class censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        \ORM::for_table($this->db->prefix.'censoring')
+        DB::for_table('censoring')
             ->create()
             ->set($set_search_word)
             ->save();
@@ -66,7 +67,7 @@ class censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        \ORM::for_table($this->db->prefix.'censoring')
+        DB::for_table('censoring')
             ->find_one($id)
             ->set($set_search_word)
             ->save();
@@ -87,7 +88,7 @@ class censoring
 
         $id = intval(key($this->request->post('remove')));
 
-        \ORM::for_table($this->db->prefix.'censoring')
+        DB::for_table('censoring')
             ->find_one($id)
             ->delete();
 
@@ -105,7 +106,7 @@ class censoring
     {
         $word_data = array();
 
-        $word_data = \ORM::for_table($this->db->prefix.'censoring')
+        $word_data = DB::for_table('censoring')
                         ->order_by_asc('id')
                         ->find_array();
 

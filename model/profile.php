@@ -9,12 +9,13 @@
 
 namespace model;
 
+use DB;
+
 class profile
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -34,14 +35,14 @@ class profile
 
             $key = $this->request->get('key');
 
-            $cur_user = \ORM::for_table($this->feather->prefix.'users')
+            $cur_user = DB::for_table('users')
                 ->where('id', $id)
                 ->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
                 message($lang_profile['Pass key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
-                \ORM::for_table($this->db->prefix.'users')
+                DB::for_table('users')
                     ->where('id', $id)
                     ->find_one()
                     ->set('password', $cur_user['activate_string'])
@@ -62,10 +63,10 @@ class profile
 
                 $select_change_password = array('u.group_id', 'g.g_moderator');
 
-                $user = \ORM::for_table($this->feather->prefix.'users')
+                $user = DB::for_table('users')
                     ->table_alias('u')
                     ->select_many($select_change_password)
-                    ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where('u.id', $id)
                     ->find_one();
 
@@ -91,7 +92,7 @@ class profile
                 message($lang_prof_reg['Pass too short']);
             }
 
-            $cur_user = \ORM::for_table($this->feather->prefix.'users')
+            $cur_user = DB::for_table('users')
                 ->where('id', $id)
                 ->find_one();
 
@@ -111,7 +112,7 @@ class profile
 
             $new_password_hash = feather_hash($new_password1);
 
-            \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+            DB::for_table('users')->where('id', $id)
                 ->find_one()
                 ->set('password', $new_password_hash)
                 ->save();
@@ -137,10 +138,10 @@ class profile
 
                 $select_change_mail = array('u.group_id', 'g.g_moderator');
 
-                $user = \ORM::for_table($this->feather->prefix.'users')
+                $user = DB::for_table('users')
                     ->table_alias('u')
                     ->select_many($select_change_mail)
-                    ->inner_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where('u.id', $id)
                     ->find_one();
 
@@ -157,14 +158,14 @@ class profile
         if ($this->request->get('key')) {
             $key = $this->request->get('key');
 
-            $new_email_key = \ORM::for_table($this->feather->prefix.'users')
+            $new_email_key = DB::for_table('users')
                 ->where('id', $id)
                 ->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
                 message($lang_profile['Email key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
-                \ORM::for_table($this->db->prefix.'users')
+                DB::for_table('users')
                     ->where('id', $id)
                     ->find_one()
                     ->set_expr('email', 'activate_string')
@@ -212,7 +213,7 @@ class profile
             // Check if someone else already has registered with that email address
             $select_change_mail = array('id', 'username');
 
-            $result = \ORM::for_table($this->feather->prefix.'users')
+            $result = DB::for_table('users')
                 ->select_many($select_change_mail)
                 ->where('email', $new_email)
                 ->find_many();
@@ -251,7 +252,7 @@ class profile
                 'activate_key'  => $new_email_key,
             );
 
-            \ORM::for_table($this->db->prefix.'users')->where('id', tid)
+            DB::for_table('users')->where('id', tid)
                 ->find_one()
                 ->set($update_user)
                 ->save();
@@ -369,11 +370,11 @@ class profile
 
         $new_group_id = intval($this->request->post('group_id'));
 
-        $old_group_id = \ORM::for_table($this->feather->prefix.'users')
+        $old_group_id = DB::for_table('users')
             ->where('id', $id)
             ->find_one_col('group_id');
 
-        \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+        DB::for_table('users')->where('id', $id)
             ->find_one()
             ->set('group_id', $new_group_id)
             ->save();
@@ -389,7 +390,7 @@ class profile
             generate_admins_cache();
         }
 
-        $new_group_mod = \ORM::for_table($this->feather->prefix.'groups')
+        $new_group_mod = DB::for_table('groups')
             ->where('g_id', $new_group_id)
             ->find_one_col('g_moderator');
 
@@ -398,7 +399,7 @@ class profile
 
             $select_mods = array('id', 'moderators');
 
-            $result = \ORM::for_table($this->feather->prefix.'forums')
+            $result = DB::for_table('forums')
                 ->select_many($select_mods)
                 ->find_many();
 
@@ -410,12 +411,12 @@ class profile
                     unset($cur_moderators[$username]);
 
                     if (!empty($cur_moderators)) {
-                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        DB::for_table('forums')->where('id', $cur_forum['id'])
                             ->find_one()
                             ->set('moderators', serialize($cur_moderators))
                             ->save();
                     } else {
-                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        DB::for_table('forums')->where('id', $cur_forum['id'])
                             ->find_one()
                             ->set_expr('moderators', 'NULL')
                             ->save();
@@ -430,7 +431,7 @@ class profile
     public function get_username($id)
     {
         // Get the username of the user we are processing
-        $username = \ORM::for_table($this->feather->prefix.'users')
+        $username = DB::for_table('users')
             ->where('id', $id)
             ->find_one_col('username');
 
@@ -448,7 +449,7 @@ class profile
         // Loop through all forums
         $select_mods = array('id', 'moderators');
 
-        $result = \ORM::for_table($this->feather->prefix.'forums')
+        $result = DB::for_table('forums')
             ->select_many($select_mods)
             ->find_many();
 
@@ -459,7 +460,7 @@ class profile
                 $cur_moderators[$username] = $id;
                 uksort($cur_moderators, 'utf8_strcasecmp');
 
-                \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                DB::for_table('forums')->where('id', $cur_forum['id'])
                     ->find_one()
                     ->set('moderators', serialize($cur_moderators))
                     ->save();
@@ -469,12 +470,12 @@ class profile
                 unset($cur_moderators[$username]);
 
                 if (!empty($cur_moderators)) {
-                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                    DB::for_table('forums')->where('id', $cur_forum['id'])
                         ->find_one()
                         ->set('moderators', serialize($cur_moderators))
                         ->save();
                 } else {
-                    \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                    DB::for_table('forums')->where('id', $cur_forum['id'])
                         ->find_one()
                         ->set_expr('moderators', 'NULL')
                         ->save();
@@ -493,7 +494,7 @@ class profile
         $username = $this->get_username($id);
 
         // Check whether user is already banned
-        $ban_id = \ORM::for_table($this->feather->prefix.'bans')
+        $ban_id = DB::for_table('bans')
             ->where('username', $username)
             ->order_by_expr('expire IS NULL DESC')
             ->order_by_desc('expire')
@@ -513,9 +514,9 @@ class profile
         $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
         // Find the group ID to promote the user to
-        $next_group_id = \ORM::for_table($this->feather->prefix.'groups')
+        $next_group_id = DB::for_table('groups')
             ->table_alias('g')
-            ->inner_join($this->db->prefix.'users', array('u.group_id', '=', 'g.g_id'), 'u')
+            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
             ->where('u.id', $id)
             ->find_one_col('g.g_promote_next_group');
         
@@ -524,7 +525,7 @@ class profile
         }
 
         // Update the user
-        \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+        DB::for_table('users')->where('id', $id)
             ->find_one()
             ->set('group_id', $next_group_id)
             ->save();
@@ -539,7 +540,7 @@ class profile
         // Get the username and group of the user we are deleting
         $select_info_delete_user = array('group_id', 'username');
 
-        $result = \ORM::for_table($this->feather->prefix.'users')->where('id', $id)
+        $result = DB::for_table('users')->where('id', $id)
             ->select_many($select_info_delete_user)
             ->find_one();
         
@@ -552,14 +553,14 @@ class profile
 
         if ($this->request->post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-            $group_mod = \ORM::for_table($this->feather->prefix.'groups')
+            $group_mod = DB::for_table('groups')
                 ->where('g_id', $group_id)
                 ->find_one_col('g_moderator');
 
             if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
                 $select_info_delete_moderators = array('id', 'moderators');
 
-                $result = \ORM::for_table($this->feather->prefix.'forums')
+                $result = DB::for_table('forums')
                     ->select_many($select_info_delete_moderators)
                     ->find_many();
                 
@@ -570,12 +571,12 @@ class profile
                         unset($cur_moderators[$username]);
                         
                         if (!empty($cur_moderators)) {
-                            \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                            DB::for_table('forums')->where('id', $cur_forum['id'])
                                 ->find_one()
                                 ->set('moderators', serialize($cur_moderators))
                                 ->save();
                         } else {
-                            \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                            DB::for_table('forums')->where('id', $cur_forum['id'])
                                 ->find_one()
                                 ->set_expr('moderators', 'NULL')
                                 ->save();
@@ -585,15 +586,15 @@ class profile
             }
 
             // Delete any subscriptions
-            \ORM::for_table($this->db->prefix.'topic_subscriptions')
+            DB::for_table('topic_subscriptions')
                 ->where('user_id', $id)
                 ->delete_many();
-            \ORM::for_table($this->db->prefix.'forum_subscriptions')
+            DB::for_table('forum_subscriptions')
                 ->where('user_id', $id)
                 ->delete_many();
 
             // Remove him/her from the online list (if they happen to be logged in)
-            \ORM::for_table($this->db->prefix.'online')
+            DB::for_table('online')
                 ->where('user_id', $id)
                 ->delete_many();
 
@@ -606,18 +607,18 @@ class profile
                 // Find all posts made by this user
                 $select_user_posts = array('p.id', 'p.topic_id', 't.forum_id');
                 
-                $result = \ORM::for_table($this->feather->prefix.'posts')
+                $result = DB::for_table('posts')
                     ->table_alias('p')
                     ->select_many($select_user_posts)
-                    ->inner_join($this->db->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                    ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+                    ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                     ->where('p.poster_id', $id)
                     ->find_many();
                 
                 if ($result) {
                     foreach($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
-                        $result2 = \ORM::for_table($this->feather->prefix.'posts')
+                        $result2 = DB::for_table('posts')
                             ->where('topic_id', $cur_post['topic_id'])
                             ->order_by('posted')
                             ->find_one_col('id');
@@ -633,13 +634,13 @@ class profile
                 }
             } else {
                 // Set all his/her posts to guest
-                \ORM::for_table($this->db->prefix.'posts')
+                DB::for_table('posts')
                     ->where_in('poster_id', '1')
                     ->update_many('poster_id', $id);
             }
 
             // Delete the user
-            \ORM::for_table($this->db->prefix.'users')
+            DB::for_table('users')
                 ->where('id', $id)
                 ->delete_many();
 
@@ -669,10 +670,10 @@ class profile
         
         $select_fetch_user_group = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
 
-        $info = \ORM::for_table($this->feather->prefix.'users')
+        $info = DB::for_table('users')
             ->table_alias('u')
             ->select_many($select_fetch_user_group)
-            ->left_outer_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
             ->where('u.id', $id)
             ->find_one();
 
@@ -919,53 +920,53 @@ class profile
             message($lang_common['Bad request'], '404');
         }
 
-        \ORM::for_table($this->db->prefix.'users')->where('id', $id)
+        DB::for_table('users')->where('id', $id)
             ->find_one()
             ->set($temp)
             ->save();
 
         // If we changed the username we have to update some stuff
         if ($username_updated) {
-            $bans_updated = \ORM::for_table($this->db->prefix.'bans')->where('username', $info['old_username'])
+            $bans_updated = DB::for_table('bans')->where('username', $info['old_username'])
                                 ->update_many('username', $form['username']);
 
-            \ORM::for_table($this->db->prefix.'posts')
+            DB::for_table('posts')
                 ->where('poster_id', $id)
                 ->update_many('poster', $form['username']);
 
-            \ORM::for_table($this->db->prefix.'posts')
+            DB::for_table('posts')
                 ->where('edited_by', $info['old_username'])
                 ->update_many('edited_by', $form['username']);
 
-            \ORM::for_table($this->db->prefix.'topics')
+            DB::for_table('topics')
                 ->where('poster', $info['old_username'])
                 ->update_many('poster', $form['username']);
 
-            \ORM::for_table($this->db->prefix.'topics')
+            DB::for_table('topics')
                 ->where('last_poster', $info['old_username'])
                 ->update_many('last_poster', $form['username']);
 
-            \ORM::for_table($this->db->prefix.'forums')
+            DB::for_table('forums')
                 ->where('last_poster', $info['old_username'])
                 ->update_many('last_poster', $form['username']);
 
-            \ORM::for_table($this->db->prefix.'online')
+            DB::for_table('online')
                 ->where('ident', $info['old_username'])
                 ->update_many('ident', $form['username']);
 
             // If the user is a moderator or an administrator we have to update the moderator lists
-            $group_id = \ORM::for_table($this->db->prefix.'users')
+            $group_id = DB::for_table('users')
                 ->where('id', $id)
                 ->find_one_col('group_id');
 
-            $group_mod = \ORM::for_table($this->db->prefix.'groups')
+            $group_mod = DB::for_table('groups')
                 ->where('g_id', $group_id)
                 ->find_one_col('g_moderator');
 
             if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
                 $select_mods = array('id', 'moderators');
 
-                $result = \ORM::for_table($this->feather->prefix.'forums')
+                $result = DB::for_table('forums')
                     ->select_many($select_mods)
                     ->find_many();
 
@@ -977,7 +978,7 @@ class profile
                         $cur_moderators[$form['username']] = $id;
                         uksort($cur_moderators, 'utf8_strcasecmp');
 
-                        \ORM::for_table($this->db->prefix.'forums')->where('id', $cur_forum['id'])
+                        DB::for_table('forums')->where('id', $cur_forum['id'])
                             ->find_one()
                             ->set('moderators', serialize($cur_moderators))
                             ->save();
@@ -1007,10 +1008,10 @@ class profile
 
         $select_get_user_info = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
-        $user = \ORM::for_table($this->feather->prefix.'users')
+        $user = DB::for_table('users')
             ->table_alias('u')
             ->select_many($select_get_user_info)
-            ->left_outer_join($this->feather->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
             ->where('u.id', $id)
             ->find_one();
 
@@ -1189,7 +1190,7 @@ class profile
 
         $select_group_list = array('g_id', 'g_title');
 
-        $result = \ORM::for_table($this->db->prefix.'groups')->select_many($select_group_list)
+        $result = DB::for_table('groups')->select_many($select_group_list)
                       ->where_not_equal('g_id', FEATHER_GUEST)
                       ->order_by('g_title')
                       ->find_many();
@@ -1212,10 +1213,10 @@ class profile
         $select_get_forum_list = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators');
         $order_by_get_forum_list = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $result = \ORM::for_table($this->feather->prefix.'categories')
+        $result = DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_get_forum_list)
-            ->inner_join($this->feather->prefix.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->where_null('f.redirect_url')
             ->order_by_many($order_by_get_forum_list)
             ->find_many();

@@ -30,8 +30,7 @@ if (!defined('FEATHER')) {
 					</dd>
 					<dt><?php echo $lang_admin_index['Database label'] ?></dt>
 					<dd>
-						<?php echo implode(' ', $db->get_version())."\n" ?>
-<?php if (isset($total_records) && isset($total_size)): ?>						<br /><?php printf($lang_admin_index['Database data rows']."\n", forum_number_format($total_records)) ?>
+<?php if (isset($total_records) && isset($total_size)): ?>						<?php printf($lang_admin_index['Database data rows']."\n", forum_number_format($total_records)) ?>
 						<br /><?php printf($lang_admin_index['Database data size']."\n", $total_size) ?>
 <?php endif; ?>					</dd>
 <?php endif; ?>

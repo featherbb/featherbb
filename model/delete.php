@@ -9,12 +9,13 @@
 
 namespace model;
 
+use DB;
+
 class delete
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -31,13 +32,13 @@ class delete
             array('fp.read_forum' => '1')
         );
 
-        $cur_post = \ORM::for_table($this->feather->prefix.'posts')
+        $cur_post = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_get_info_delete)
-            ->inner_join($this->feather->prefix.'topics', array('t.id', '=', 'p.topic_id'), 't')
-            ->inner_join($this->feather->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join($this->feather->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
             ->where_any_is($where_get_info_delete)
             ->where('p.id', $id)
             ->find_one();
@@ -67,7 +68,7 @@ class delete
             update_forum($fid);
 
             // Redirect towards the previous post
-            $post = \ORM::for_table($this->feather->prefix.'posts')
+            $post = DB::for_table('posts')
                 ->select('id')
                 ->where('topic_id', $tid)
                 ->where_lt('id', $id)

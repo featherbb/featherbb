@@ -18,14 +18,12 @@ if (!defined('FEATHER')) {
 //
 function generate_config_cache()
 {
-    global $db;
-
     // Get the forum config from the DB
-    $result = $db->query('SELECT * FROM '.$db->prefix.'config', true) or error('Unable to fetch forum config', __FILE__, __LINE__, $db->error());
+    $result = \DB::for_table('config')->find_array();
 
     $output = array();
-    while ($cur_config_item = $db->fetch_row($result)) {
-        $output[$cur_config_item[0]] = $cur_config_item[1];
+    foreach ($result as $cur_config_item) {
+        $output[$cur_config_item['conf_name']] = $cur_config_item['conf_value'];
     }
 
     // Output config as PHP code
@@ -39,13 +37,11 @@ function generate_config_cache()
 //
 function generate_bans_cache()
 {
-    global $db;
-
     // Get the ban list from the DB
-    $result = $db->query('SELECT * FROM '.$db->prefix.'bans', true) or error('Unable to fetch ban list', __FILE__, __LINE__, $db->error());
+    $result = \DB::for_table('bans')->find_array();
 
     $output = array();
-    while ($cur_ban = $db->fetch_assoc($result)) {
+    foreach ($result as $cur_ban) {
         $output[] = $cur_ban;
     }
 
@@ -60,23 +56,25 @@ function generate_bans_cache()
 //
 function generate_quickjump_cache($group_id = false)
 {
-    global $db, $lang_common;
+    global $lang_common;
 
     $groups = array();
 
     // If a group_id was supplied, we generate the quick jump cache for that group only
     if ($group_id !== false) {
         // Is this group even allowed to read forums?
-        $result = $db->query('SELECT g_read_board FROM '.$db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch user group read permission', __FILE__, __LINE__, $db->error());
-        $read_board = $db->result($result);
+        $read_board = \DB::for_table('groups')->where('g_id', $group_id)
+                            ->find_one_col('g_read_board');
 
         $groups[$group_id] = $read_board;
     } else {
         // A group_id was not supplied, so we generate the quick jump cache for all groups
-        $result = $db->query('SELECT g_id, g_read_board FROM '.$db->prefix.'groups') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+        $select_quickjump_all_groups = array('g_id', 'g_read_board');
+        $result = \DB::for_table('groups')->select_many($select_quickjump_all_groups)
+                        ->find_many();
 
-        while ($row = $db->fetch_row($result)) {
-            $groups[$row[0]] = $row[1];
+        foreach ($result as $row) {
+            $groups[$row['g_id']] = $row['g_read_board'];
         }
     }
 
@@ -86,13 +84,29 @@ function generate_quickjump_cache($group_id = false)
         $output = '<?php'."\n\n".'if (!defined(\'FEATHER\')) exit;'."\n".'define(\'FEATHER_QJ_LOADED\', 1);'."\n".'$forum_id = isset($forum_id) ? $forum_id : 0;'."\n\n".'?>';
 
         if ($read_board == '1') {
-            $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$group_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+            $select_generate_quickjump_cache = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
+            $where_generate_quickjump_cache = array(
+                array('fp.read_forum' => 'IS NULL'),
+                array('fp.read_forum' => '1')
+            );
+            $order_by_generate_quickjump_cache = array('c.disp_position', 'c.id', 'f.disp_position');
 
-            if ($db->num_rows($result)) {
+            $result = \DB::for_table('categories')
+                            ->table_alias('c')
+                            ->select_many($select_generate_quickjump_cache)
+                            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $group_id), null, true)
+                            ->where_any_is($where_generate_quickjump_cache)
+                            ->where_null('f.redirect_url')
+                            ->order_by_many($order_by_generate_quickjump_cache)
+                            ->find_many();
+
+            if ($result) {
                 $output .= "\t\t\t\t".'<form id="qjump" method="get" action="">'."\n\t\t\t\t\t".'<div><label><span><?php echo $lang_common[\'Jump to\'] ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\''.get_link('forum/').'\'+this.options[this.selectedIndex].value)">'."\n";
 
                 $cur_category = 0;
-                while ($cur_forum = $db->fetch_assoc($result)) {
+                foreach ($result as $cur_forum) {
                     if ($cur_forum['cid'] != $cur_category) {
                         // A new category since last iteration?
 
@@ -122,15 +136,16 @@ function generate_quickjump_cache($group_id = false)
 //
 function generate_censoring_cache()
 {
-    global $db;
-
-    $result = $db->query('SELECT search_for, replace_with FROM '.$db->prefix.'censoring') or error('Unable to fetch censoring list', __FILE__, __LINE__, $db->error());
-    $num_words = $db->num_rows($result);
+    $select_generate_censoring_cache = array('search_for', 'replace_with');
+    $result = \DB::for_table('censoring')->select_many($select_generate_censoring_cache)
+                    ->find_many();
 
     $search_for = $replace_with = array();
-    for ($i = 0; $i < $num_words; $i++) {
-        list($search_for[$i], $replace_with[$i]) = $db->fetch_row($result);
-        $search_for[$i] = '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($search_for[$i], '%')).')(?=[^\p{L}\p{N}])%iu';
+    $i = 0;
+    foreach ($result as $row) {
+        $replace_with[$i] = $row['replace_with'];
+        $search_for[$i] = '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($row['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu';
+        ++$i;
     }
 
     // Output censored words as PHP code
@@ -173,15 +188,18 @@ function generate_stopwords_cache()
 //
 function generate_users_info_cache()
 {
-    global $db;
-
     $stats = array();
 
-    $result = $db->query('SELECT COUNT(id)-1 FROM '.$db->prefix.'users WHERE group_id!='.FEATHER_UNVERIFIED) or error('Unable to fetch total user count', __FILE__, __LINE__, $db->error());
-    $stats['total_users'] = $db->result($result);
+    $stats['total_users'] = (\DB::for_table('users')->where_not_equal('group_id', FEATHER_UNVERIFIED)
+                                ->count('id')) - 1;
 
-    $result = $db->query('SELECT id, username FROM '.$db->prefix.'users WHERE group_id!='.FEATHER_UNVERIFIED.' ORDER BY registered DESC LIMIT 1') or error('Unable to fetch newest registered user', __FILE__, __LINE__, $db->error());
-    $stats['last_user'] = $db->fetch_assoc($result);
+    $select_generate_users_info_cache = array('id', 'username');
+    $last_user = \DB::for_table('users')->select_many($select_generate_users_info_cache)
+                        ->where_not_equal('group_id', FEATHER_UNVERIFIED)
+                        ->order_by_desc('registered')
+                        ->limit(1)
+                        ->find_array();
+    $stats['last_user'] = $last_user[0];
 
     // Output users info as PHP code
     $content = '<?php'."\n\n".'define(\'feather_userS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
@@ -194,14 +212,14 @@ function generate_users_info_cache()
 //
 function generate_admins_cache()
 {
-    global $db;
-
     // Get admins from the DB
-    $result = $db->query('SELECT id FROM '.$db->prefix.'users WHERE group_id='.FEATHER_ADMIN) or error('Unable to fetch users info', __FILE__, __LINE__, $db->error());
+    $result = \DB::for_table('users')->select('id')
+                    ->where('group_id', FEATHER_ADMIN)
+                    ->find_array();
 
     $output = array();
-    while ($row = $db->fetch_row($result)) {
-        $output[] = $row[0];
+    foreach ($result as $row) {
+        $output[] = $row['id'];
     }
 
     // Output admin list as PHP code

@@ -9,12 +9,13 @@
 
 namespace model\admin;
 
+use DB;
+
 class statistics
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -51,7 +52,7 @@ class statistics
 
     public function get_num_online()
     {
-        $num_online = \ORM::for_table($this->db->prefix.'online')->where('idle', 0)
+        $num_online = DB::for_table('online')->where('idle', 0)
                             ->count('user_id');
 
         return $num_online;
@@ -65,7 +66,7 @@ class statistics
 
         if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = \ORM::for_table($this->db->prefix.'users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->db->prefix.'%\'')->find_many();
+            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->prefix.'%\'')->find_many();
 
             $total['size'] = $total['records'] = 0;
             foreach ($result as $status) {

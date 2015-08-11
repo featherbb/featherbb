@@ -9,12 +9,13 @@
 
 namespace model;
 
+use DB;
+
 class viewtopic
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -28,7 +29,7 @@ class viewtopic
 
         $select_info_topic = array('topic_id', 'posted');
 
-        $result = \ORM::for_table($this->db->prefix.'posts')
+        $result = DB::for_table('posts')
                       ->select_many($select_info_topic)
                       ->where('id', $post_id)
                       ->find_one();
@@ -41,7 +42,7 @@ class viewtopic
         $posted = $result['posted'];
 
         // Determine on which page the post is located (depending on $forum_user['disp_posts'])
-        $num_posts = \ORM::for_table($this->db->prefix.'posts')
+        $num_posts = DB::for_table('posts')
                         ->where('topic_id', $post['topic_id'])
                         ->where_lt('posted', $posted)
                         ->count('id');
@@ -62,7 +63,7 @@ class viewtopic
                 $tracked_topics = get_tracked_topics();
                 $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $this->user->last_visit;
 
-                $first_new_post_id = \ORM::for_table($this->db->prefix.'posts')
+                $first_new_post_id = DB::for_table('posts')
                                         ->where('topic_id', $topic_id)
                                         ->where_gt('posted', $last_viewed)
                                         ->min('id');
@@ -79,7 +80,7 @@ class viewtopic
 
         // If action=last, we redirect to the last post
         if ($action == 'last') {
-            $last_post_id = \ORM::for_table($this->db->prefix.'posts')
+            $last_post_id = DB::for_table('posts')
                                 ->where('topic_id', $topic_id)
                                 ->max('id');
 
@@ -103,14 +104,14 @@ class viewtopic
         if (!$this->user->is_guest) {
             $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id');
 
-            $cur_topic = \ORM::for_table($this->db->prefix.'topics')
+            $cur_topic = DB::for_table('topics')
                             ->table_alias('t')
                             ->select_many($select_get_info_topic)
-                            ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
-                            ->left_outer_join($this->db->prefix.'topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                            ->left_outer_join($this->db->prefix.'topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
-                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                             ->where_any_is($where_get_info_topic)
                             ->where('t.id', $id)
                             ->where_null('t.moved_to')
@@ -118,13 +119,13 @@ class viewtopic
         } else {
             $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
 
-            $cur_topic = \ORM::for_table($this->db->prefix.'topics')
+            $cur_topic = DB::for_table('topics')
                             ->table_alias('t')
                             ->select_many($select_get_info_topic)
                             ->select_expr(0, 'is_subscribed')
-                            ->inner_join($this->db->prefix.'forums', array('f.id', '=', 't.forum_id'), 'f')
-                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join($this->db->prefix.'forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                             ->where_any_is($where_get_info_topic)
                             ->where('t.id', $id)
                             ->where_null('t.moved_to')
@@ -240,7 +241,7 @@ class viewtopic
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = \ORM::for_table($this->db->prefix.'posts')->select('id')
+        $result = DB::for_table('posts')->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by('id')
                     ->limit($this->user->disp_topics)
@@ -257,19 +258,16 @@ class viewtopic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result = $this->db->query('SELECT u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, g.g_id, g.g_user_title, g.g_promote_next_group, o.user_id AS is_online FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$this->db->prefix.'online AS o ON (o.user_id=u.id AND o.user_id!=1 AND o.idle=0) WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $this->db->error());
-
-
         $select_print_posts = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
 
-        $result = \ORM::for_table($this->db->prefix.'posts')
+        $result = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($select_print_posts)
-            ->inner_join($this->db->prefix.'users', array('u.id', '=', 'p.poster_id'), 'u')
-            ->inner_join($this->db->prefix.'groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->left_outer_join($this->db->prefix.'online', array('o.user_id', '=', 'u.id'), 'o')
-            ->left_outer_join($this->db->prefix.'online', array('o2.user_id', '!=', 1), 'o2', true)
-            ->left_outer_join($this->db->prefix.'online', array('o.idle', '=', 0), null, true)
+            ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
+            ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o')
+            ->left_outer_join('online', array('o2.user_id', '!=', 1), 'o2', true)
+            ->left_outer_join('online', array('o.idle', '=', 0), null, true)
             ->where_in('p.id', $post_ids)
             ->order_by('p.id')
             ->find_array();
@@ -419,7 +417,7 @@ class viewtopic
     public function increment_views($id)
     {
         if ($this->config['o_topic_views'] == '1') {
-            \ORM::for_table($this->db->prefix.'topics')->where('id', $id)
+            DB::for_table('topics')->where('id', $id)
                 ->find_one()
                 ->set_expr('num_views', 'num_views+1')
                 ->save();

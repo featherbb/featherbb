@@ -9,12 +9,13 @@
 
 namespace model\admin;
 
+use DB;
+
 class options
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -219,10 +220,10 @@ class options
             // Only update values that have changed
             if (array_key_exists('o_'.$key, $this->config) && $this->config['o_'.$key] != $input) {
                 if ($input != '' || is_int($input)) {
-                    \ORM::for_table($this->db->prefix.'config')->where('conf_name', 'o_'.$key)
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
                                                                ->update_many('conf_value', $input);
                 } else {
-                    \ORM::for_table($this->db->prefix.'config')->where('conf_name', 'o_'.$key)
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
                                                                ->update_many_expr('conf_value', 'NULL');
                 }
             }

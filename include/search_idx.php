@@ -165,7 +165,10 @@ function strip_bbcode($text)
 //
 function update_search_index($mode, $post_id, $message, $subject = null)
 {
-    global $db_type, $db;
+    global $db_type;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     $message = utf8_strtolower($message);
     $subject = utf8_strtolower($subject);
@@ -178,18 +181,24 @@ function update_search_index($mode, $post_id, $message, $subject = null)
     $words_subject = ($subject) ? split_words($subject, true) : array();
 
     if ($mode == 'edit') {
-        $result = $db->query('SELECT w.id, w.word, m.subject_match FROM '.$db->prefix.'search_words AS w INNER JOIN '.$db->prefix.'search_matches AS m ON w.id=m.word_id WHERE m.post_id='.$post_id, true) or error('Unable to fetch search index words', __FILE__, __LINE__, $db->error());
+        $select_update_search_index = array('w.id', 'w.word', 'm.subject_match');
+        $result = \DB::for_table('search_words')->table_alias('w')
+                        ->select_many($select_update_search_index)
+                        ->inner_join('search_matches', array('w.id', '=', 'm.word_id'), 'm')
+                        ->where('m.post_id', $post_id)
+                        ->find_many();
 
         // Declare here to stop array_keys() and array_diff() from complaining if not set
         $cur_words['post'] = array();
         $cur_words['subject'] = array();
 
-        while ($row = $db->fetch_row($result)) {
-            $match_in = ($row[2]) ? 'subject' : 'post';
-            $cur_words[$match_in][$row[1]] = $row[0];
+        foreach ($result as $row) {
+            $match_in = ($row['subject_match']) ? 'subject' : 'post';
+            $cur_words[$match_in][$row['word']] = $row['id'];
         }
 
-        $db->free_result($result);
+        $pdo = \DB::get_db();
+        $pdo = null;
 
         $words['add']['post'] = array_diff($words_message, array_keys($cur_words['post']));
         $words['add']['subject'] = array_diff($words_subject, array_keys($cur_words['subject']));
@@ -209,16 +218,21 @@ function update_search_index($mode, $post_id, $message, $subject = null)
     $unique_words = array_unique(array_merge($words['add']['post'], $words['add']['subject']));
 
     if (!empty($unique_words)) {
-        $result = $db->query('SELECT id, word FROM '.$db->prefix.'search_words WHERE word IN(\''.implode('\',\'', array_map(array($db, 'escape'), $unique_words)).'\')', true) or error('Unable to fetch search index words', __FILE__, __LINE__, $db->error());
+        $select_unique_words = array('id', 'word');
+        $result = \DB::for_table('search_words')->select_many($select_unique_words)
+                        ->where_in('word', $unique_words)
+                        ->find_many();
 
         $word_ids = array();
-        while ($row = $db->fetch_row($result)) {
-            $word_ids[$row[1]] = $row[0];
+        foreach ($result as $row) {
+            $word_ids[$row['word']] = $row['id'];
         }
 
-        $db->free_result($result);
+        $pdo = \DB::get_db();
+        $pdo = null;
 
-        $new_words = array_diff($unique_words, array_keys($word_ids));
+        $new_words = array_values(array_diff($unique_words, array_keys($word_ids)));
+
         unset($unique_words);
 
         if (!empty($new_words)) {
@@ -227,12 +241,19 @@ function update_search_index($mode, $post_id, $message, $subject = null)
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    $db->query('INSERT INTO '.$db->prefix.'search_words (word) VALUES(\''.implode('\'),(\'', array_map(array($db, 'escape'), $new_words)).'\')');
+                    // Quite dirty, right? :-)
+                    $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
+                    \DB::for_table('search_words')
+                        ->raw_execute('INSERT INTO '.$feather->prefix.'search_words (word) VALUES '.$placeholders, $new_words);
                     break;
 
                 default:
                     foreach ($new_words as $word) {
-                        $db->query('INSERT INTO '.$db->prefix.'search_words (word) VALUES(\''.$db->escape($word).'\')');
+                        $word_insert['word'] = $word;
+                        \DB::for_table('search_words')
+                            ->create()
+                            ->set($word_insert)
+                            ->save();
                     }
                     break;
             }
@@ -246,12 +267,17 @@ function update_search_index($mode, $post_id, $message, $subject = null)
         $subject_match = ($match_in == 'subject') ? 1 : 0;
 
         if (!empty($wordlist)) {
-            $sql = '';
+
+            $sql = array();
             foreach ($wordlist as $word) {
-                $sql .= (($sql != '') ? ',' : '').$cur_words[$match_in][$word];
+                $sql[] = $cur_words[$match_in][$word];
             }
 
-            $db->query('DELETE FROM '.$db->prefix.'search_matches WHERE word_id IN('.$sql.') AND post_id='.$post_id.' AND subject_match='.$subject_match) or error('Unable to delete search index word matches', __FILE__, __LINE__, $db->error());
+            \DB::for_table('search_matches')
+                    ->where_in('word_id', $sql)
+                    ->where('post_id', $post_id)
+                    ->where('subject_match', $subject_match)
+                    ->delete_many();
         }
     }
 
@@ -260,7 +286,10 @@ function update_search_index($mode, $post_id, $message, $subject = null)
         $subject_match = ($match_in == 'subject') ? 1 : 0;
 
         if (!empty($wordlist)) {
-            $db->query('INSERT INTO '.$db->prefix.'search_matches (post_id, word_id, subject_match) SELECT '.$post_id.', id, '.$subject_match.' FROM '.$db->prefix.'search_words WHERE word IN(\''.implode('\',\'', array_map(array($db, 'escape'), $wordlist)).'\')') or error('Unable to insert search index word matches', __FILE__, __LINE__, $db->error());
+            $wordlist = array_values($wordlist);
+            $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
+            \DB::for_table('search_words')
+                ->raw_execute('INSERT INTO '.$feather->prefix.'search_matches (post_id, word_id, subject_match) SELECT '.$post_id.', id, '.$subject_match.' FROM '.$feather->prefix.'search_words WHERE word IN ('.$placeholders.')', $wordlist);
         }
     }
 
@@ -273,7 +302,17 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 //
 function strip_search_index($post_ids)
 {
-    global $db_type, $db;
+    global $db_type;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
+    if (!is_array($post_ids)) {
+        $post_ids_sql = explode(',', $post_ids);
+    }
+    else {
+        $post_ids_sql = $post_ids;
+    }
 
     switch ($db_type) {
         case 'mysql':
@@ -281,33 +320,45 @@ function strip_search_index($post_ids)
         case 'mysql_innodb':
         case 'mysqli_innodb':
         {
-            $result = $db->query('SELECT word_id FROM '.$db->prefix.'search_matches WHERE post_id IN('.$post_ids.') GROUP BY word_id') or error('Unable to fetch search index word match', __FILE__, __LINE__, $db->error());
+            $result = \DB::for_table('search_matches')->select('word_id')
+                ->where_in('post_id', $post_ids_sql)
+                ->group_by('word_id')
+                ->find_many();
 
-            if ($db->num_rows($result)) {
+            if ($result) {
                 $word_ids = '';
-                while ($row = $db->fetch_row($result)) {
-                    $word_ids .= ($word_ids != '') ? ','.$row[0] : $row[0];
+                foreach ($result as $row) {
+                    $word_ids[] = $row['word_id'];
                 }
 
-                $result = $db->query('SELECT word_id FROM '.$db->prefix.'search_matches WHERE word_id IN('.$word_ids.') GROUP BY word_id HAVING COUNT(word_id)=1') or error('Unable to fetch search index word match', __FILE__, __LINE__, $db->error());
+                $result = \DB::for_table('search_matches')->select('word_id')
+                                    ->where_in('word_id', $word_ids)
+                                    ->group_by('word_id')
+                                    ->having_raw('COUNT(word_id)=1')
+                                    ->find_many();
 
-                if ($db->num_rows($result)) {
+                if ($result) {
                     $word_ids = '';
-                    while ($row = $db->fetch_row($result)) {
-                        $word_ids .= ($word_ids != '') ? ','.$row[0] : $row[0];
+                    foreach ($result as $row) {
+                        $word_ids[] = $row['word_id'];
                     }
 
-                    $db->query('DELETE FROM '.$db->prefix.'search_words WHERE id IN('.$word_ids.')') or error('Unable to delete search index word', __FILE__, __LINE__, $db->error());
+                    \DB::for_table('search_words')
+                        ->where_in('id', $word_ids)
+                        ->delete_many();
                 }
             }
-
             break;
         }
 
         default:
-            $db->query('DELETE FROM '.$db->prefix.'search_words WHERE id IN(SELECT word_id FROM '.$db->prefix.'search_matches WHERE word_id IN(SELECT word_id FROM '.$db->prefix.'search_matches WHERE post_id IN('.$post_ids.') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)') or error('Unable to delete from search index', __FILE__, __LINE__, $db->error());
+            \DB::for_table('search_matches')
+                ->where_raw('id IN(SELECT word_id FROM '.$feather->prefix.'search_matches WHERE word_id IN(SELECT word_id FROM '.$feather->prefix.'search_matches WHERE post_id IN('.$post_ids.') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                ->delete_many();
             break;
-    }
 
-    $db->query('DELETE FROM '.$db->prefix.'search_matches WHERE post_id IN('.$post_ids.')') or error('Unable to delete search index word match', __FILE__, __LINE__, $db->error());
+        \DB::for_table('search_matches')
+            ->where_in('post_id', $post_ids_sql)
+            ->delete_many();
+    }
 }

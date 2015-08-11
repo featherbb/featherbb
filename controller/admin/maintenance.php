@@ -14,7 +14,6 @@ class maintenance
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -71,10 +70,6 @@ class maintenance
             $prune_from = feather_trim($this->request->post('prune_from'));
             $prune_sticky = intval($this->request->post('prune_sticky'));
 
-            if ($this->request->post('prune_comply')) {
-                $this->model->prune_comply($prune_from, $prune_sticky);
-            }
-
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Prune']);
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -82,6 +77,10 @@ class maintenance
             $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('maintenance');
+
+            if ($this->request->post('prune_comply')) {
+                $this->model->prune_comply($prune_from, $prune_sticky);
+            }
 
             $this->feather->render('admin/maintenance/prune.php', array(
                     'lang_admin_maintenance'    =>    $lang_admin_maintenance,
