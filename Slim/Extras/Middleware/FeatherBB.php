@@ -203,7 +203,7 @@ class FeatherBB extends \Slim\Middleware
             ->table_alias('u')
             ->select_many($select_set_default_user)
             ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->left_outer_join('online', array('o.ident', '=', get_remote_address()), 'o', true)
+            ->left_outer_join('online', array('o.ident', '=', $this->app->request->getIp()), 'o', true)
             ->where($where_set_default_user)
             ->find_result_set();
 
@@ -234,15 +234,15 @@ class FeatherBB extends \Slim\Middleware
                 case 'mysqli_innodb':
                 case 'sqlite':
                 case 'sqlite3':
-                DB::for_table('online')->raw_execute('REPLACE INTO online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                DB::for_table('online')->raw_execute('REPLACE INTO online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
                     break;
 
                 default:
-                    DB::for_table('online')->raw_execute('INSERT INTO online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                    DB::for_table('online')->raw_execute('INSERT INTO online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
                     break;
             }
         } else {
-            DB::for_table('online')->where('ident', $remote_addr)
+            DB::for_table('online')->where('ident', $this->app->request->getIp())
                  ->update_many('logged', time());
         }
 
@@ -317,7 +317,7 @@ class FeatherBB extends \Slim\Middleware
             $this->app->response->setStatus(403);
         } else {
             $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
-
+            
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';
 
