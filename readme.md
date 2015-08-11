@@ -47,7 +47,7 @@ the forums or in the GitHub bug tracker.
 
 ## Recommendations
 
-* Make use of a PHP accelerator such as APC or XCache
+* Make use of a PHP accelerator such as OPCache
 * Make sure PHP has the zlib module installed to allow FeatherBB to gzip output
 
 ## Links
