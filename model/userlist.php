@@ -9,13 +9,14 @@
 
 namespace model;
 
+use DB;
+
 class userlist
 {
 
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -25,22 +26,19 @@ class userlist
     // Counts the numeber of user for a specific query
     public function fetch_user_count($username, $show_group)
     {
-        global $db_type;
-
-        // Create any SQL for the WHERE clause
-        $where_sql = array();
-        $like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
+        // Fetch user count
+        $num_users = DB::for_table('users')->table_alias('u')
+                        ->where_gt('u.id', 1)
+                        ->where_not_equal('u.group_id', FEATHER_UNVERIFIED);
 
         if ($username != '') {
-            $where_sql[] = 'u.username '.$like_command.' \''.$this->db->escape(str_replace('*', '%', $username)).'\'';
+            $num_users = $num_users->where_like('u.username', str_replace('*', '%', $username));
         }
         if ($show_group > -1) {
-            $where_sql[] = 'u.group_id='.$show_group;
+            $num_users = $num_users->where('u.group_id', $show_group);
         }
 
-        // Fetch user count
-        $result = $this->db->query('SELECT COUNT(id) FROM '.$this->db->prefix.'users AS u WHERE u.id>1 AND u.group_id!='.FEATHER_UNVERIFIED.(!empty($where_sql) ? ' AND '.implode(' AND ', $where_sql) : '')) or error('Unable to fetch user list count', __FILE__, __LINE__, $this->db->error());
-        $num_users = $this->db->result($result);
+        $num_users = $num_users->count('id');
 
         return $num_users;
     }
@@ -50,9 +48,14 @@ class userlist
     {
         $dropdown_menu = '';
 
-        $result = $this->db->query('SELECT g_id, g_title FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
+        $select_dropdown_menu = array('g_id', 'g_title');
 
-        while ($cur_group = $this->db->fetch_assoc($result)) {
+        $result = DB::for_table('groups')->select_many($select_dropdown_menu)
+                        ->where_not_equal('g_id', FEATHER_GUEST)
+                        ->order_by('g_id')
+                        ->find_many();
+
+        foreach($result as $cur_group) {
             if ($cur_group['g_id'] == $show_group) {
                 $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             } else {
@@ -66,34 +69,45 @@ class userlist
     // Prints the users
     public function print_users($username, $start_from, $sort_by, $sort_dir, $show_group)
     {
-        global $db_type;
-
         $userlist_data = array();
 
-        // Create any SQL for the WHERE clause
-        $where_sql = array();
-        $like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
+        // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
+        $result = DB::for_table('users')->select('u.id')
+                    ->table_alias('u')
+                    ->where_gt('u.id', 1)
+                    ->where_not_equal('u.group_id', FEATHER_UNVERIFIED);
 
         if ($username != '') {
-            $where_sql[] = 'u.username '.$like_command.' \''.$this->db->escape(str_replace('*', '%', $username)).'\'';
+            $result = $result->where_like('u.username', str_replace('*', '%', $username));
         }
         if ($show_group > -1) {
-            $where_sql[] = 'u.group_id='.$show_group;
+            $result = $result->where('u.group_id', $show_group);
         }
 
-        // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = $this->db->query('SELECT u.id FROM '.$this->db->prefix.'users AS u WHERE u.id>1 AND u.group_id!='.FEATHER_UNVERIFIED.(!empty($where_sql) ? ' AND '.implode(' AND ', $where_sql) : '').' ORDER BY '.$sort_by.' '.$sort_dir.', u.id ASC LIMIT '.$start_from.', 50') or error('Unable to fetch user IDs', __FILE__, __LINE__, $this->db->error());
+        $result = $result->order_by($sort_by, $sort_dir)
+                         ->order_by_asc('u.id')
+                         ->limit(50)
+                         ->offset($start_from)
+                         ->find_many();
 
-        if ($this->db->num_rows($result)) {
+        if ($result) {
             $user_ids = array();
-            for ($i = 0;$cur_user_id = $this->db->result($result, $i);$i++) {
-                $user_ids[] = $cur_user_id;
+            foreach ($result as $cur_user_id) {
+                $user_ids[] = $cur_user_id['id'];
             }
 
             // Grab the users
-            $result = $this->db->query('SELECT u.id, u.username, u.title, u.num_posts, u.registered, g.g_id, g.g_user_title FROM '.$this->db->prefix.'users AS u LEFT JOIN '.$this->db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id IN('.implode(',', $user_ids).') ORDER BY '.$sort_by.' '.$sort_dir.', u.id ASC') or error('Unable to fetch user list', __FILE__, __LINE__, $this->db->error());
+            $select_users = array('u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered', 'g.g_id', 'g.g_user_title');
 
-            while ($user_data = $this->db->fetch_assoc($result)) {
+            $result = DB::for_table('users')->table_alias('u')
+                          ->select_many($select_users)
+                          ->left_outer_join('groups' ,array('g.g_id', '=', 'u.group_id'), 'g')
+                          ->where_in('u.id', $user_ids)
+                          ->order_by($sort_by, $sort_dir)
+                          ->order_by_asc('u.id')
+                          ->find_many();
+
+            foreach($result as $user_data) {
                 $userlist_data[] = $user_data;
             }
         }

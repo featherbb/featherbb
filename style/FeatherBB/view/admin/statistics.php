@@ -22,7 +22,7 @@ if (!defined('FEATHER')) {
 					<dd>
 						<?php printf($lang_admin_index['Server load data']."\n", $server_load, $num_online) ?>
 					</dd>
-<?php if ($feather_user['g_id'] == FEATHER_ADMIN): ?>					<dt><?php echo $lang_admin_index['Environment label'] ?></dt>
+<?php if ($feather->user->g_id == FEATHER_ADMIN): ?>					<dt><?php echo $lang_admin_index['Environment label'] ?></dt>
 					<dd>
 						<?php printf($lang_admin_index['Environment data OS'], PHP_OS) ?><br />
 						<?php printf($lang_admin_index['Environment data version'], phpversion(), '<a href="'.get_link('admin/phpinfo/').'">'.$lang_admin_index['Show info'].'</a>') ?><br />
@@ -30,8 +30,7 @@ if (!defined('FEATHER')) {
 					</dd>
 					<dt><?php echo $lang_admin_index['Database label'] ?></dt>
 					<dd>
-						<?php echo implode(' ', $db->get_version())."\n" ?>
-<?php if (isset($total_records) && isset($total_size)): ?>						<br /><?php printf($lang_admin_index['Database data rows']."\n", forum_number_format($total_records)) ?>
+<?php if (isset($total_records) && isset($total_size)): ?>						<?php printf($lang_admin_index['Database data rows']."\n", forum_number_format($total_records)) ?>
 						<br /><?php printf($lang_admin_index['Database data size']."\n", $total_size) ?>
 <?php endif; ?>					</dd>
 <?php endif; ?>

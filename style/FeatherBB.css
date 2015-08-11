@@ -1,4 +1,4 @@
-/* 
+/*
  * FeatherBB default style
  *
  * Responsive, classy and modern!
@@ -28,6 +28,7 @@ th {
 }
 #announce,
 #msg,
+#msgflash,
 #posterror {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5)
 }
@@ -1238,7 +1239,16 @@ footer .footer-link a {
 #viewprofile .fakeform .inform fieldset dd {
     margin: 0 0 15px
 }
+#msgflash {
+    opacity: 0;
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    min-width: 230px;
+    max-width: 400px;
+}
 #msg,
+#msgflash,
 #posterror {
     margin: 15px 0;
     padding: 8px 35px 8px 14px;
@@ -1248,11 +1258,13 @@ footer .footer-link a {
     border-radius: 4px
 }
 #msg h2,
+#msgflash h2,
 #posterror h2 {
     margin: 0 0 4px;
     font-size: 18px
 }
 #msg p,
+#msgflash p,
 #posterror p {
     margin: 0 0 2px
 }
@@ -1345,7 +1357,6 @@ input[type=submit]:focus {
 }
 code {
     padding: 15px!important;
-    background-color: #272822
 }
 img {
     max-width: 100%;

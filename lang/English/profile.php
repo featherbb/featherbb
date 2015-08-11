@@ -23,7 +23,7 @@ $lang_profile = array(
 // Password stuff
 'Pass key bad'                    =>    'The specified password activation key was incorrect or has expired. Please re-request a new password. If that fails, contact the forum administrator at',
 'Pass updated'                    =>    'Your password has been updated. You can now login with your new password.',
-'Pass updated redirect'            =>    'Password updated. Redirecting …',
+'Pass updated redirect'            =>    'Password updated.',
 'Wrong pass'                    =>    'Wrong old password.',
 'Change pass'                    =>    'Change password',
 'Change pass legend'            =>    'Enter and confirm your new password',
@@ -54,8 +54,8 @@ $lang_profile = array(
 'bytes'                            =>    'bytes',
 'Move failed'                    =>    'The server was unable to save the uploaded file. Please contact the forum administrator at',
 'Unknown failure'                =>    'An unknown error occurred. Please try again.',
-'Avatar upload redirect'        =>    'Avatar uploaded. Redirecting …',
-'Avatar deleted redirect'        =>    'Avatar deleted. Redirecting …',
+'Avatar upload redirect'        =>    'Avatar uploaded.',
+'Avatar deleted redirect'        =>    'Avatar deleted.',
 'Avatar desc'                    =>    'An avatar is a small image that will be displayed under your username in your posts. It must not be any bigger than',
 'Upload avatar'                    =>    'Upload avatar',
 'Upload avatar legend'            =>    'Enter an avatar file to upload',
@@ -65,7 +65,7 @@ $lang_profile = array(
 
 // Form validation stuff
 'Forbidden title'                =>    'The title you entered contains a forbidden word. You must choose a different title.',
-'Profile redirect'                =>    'Profile updated. Redirecting …',
+'Profile redirect'                =>    'Profile updated.',
 
 // Profile display stuff
 'Users profile'                    =>    '%s\'s profile',
@@ -133,10 +133,10 @@ $lang_profile = array(
 'Delete warning'                =>    'Warning! Deleted users and/or posts cannot be restored. If you choose not to delete the posts made by this user, the posts can only be deleted manually at a later time.',
 'Delete posts'                    =>    'Delete any posts and topics this user has made.',
 'Delete'                        =>    'Delete', // submit button (confirm user delete)
-'User delete redirect'            =>    'User deleted. Redirecting …',
-'User promote redirect'            =>    'User promoted. Redirecting …',
-'Group membership redirect'        =>    'Group membership saved. Redirecting …',
-'Update forums redirect'        =>    'Forum moderator rights updated. Redirecting …',
+'User delete redirect'            =>    'User deleted.',
+'User promote redirect'            =>    'User promoted.',
+'Group membership redirect'        =>    'Group membership saved.',
+'Update forums redirect'        =>    'Forum moderator rights updated.',
 'Ban redirect'                    =>    'Redirecting …',
 'No delete admin message'        =>    'Administrators cannot be deleted. In order to delete this user, you must first move him/her to a different user group.',
 

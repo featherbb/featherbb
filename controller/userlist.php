@@ -14,7 +14,6 @@ class userlist
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -33,23 +32,23 @@ class userlist
     {
         global $lang_common;
 
-        if ($this->user['g_read_board'] == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
-        } elseif ($this->user['g_view_users'] == '0') {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_read_board == '0') {
+            message($lang_common['No view'], '403');
+        } elseif ($this->user->g_view_users == '0') {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the userlist.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/userlist.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.php';
 
         // Load the search.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/search.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/search.php';
 
 
         // Determine if we are allowed to view post counts
-        $show_post_count = ($this->config['o_show_post_count'] == '1' || $this->user['is_admmod']) ? true : false;
+        $show_post_count = ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) ? true : false;
 
-        $username = $this->request->get('username') && $this->user['g_search_users'] == '1' ? feather_trim($this->request->get('username')) : '';
+        $username = $this->request->get('username') && $this->user->g_search_users == '1' ? feather_trim($this->request->get('username')) : '';
         $show_group = $this->request->get('show_group') ? intval($this->request->get('show_group')) : -1;
         $sort_by = $this->request->get('sort_by') && (in_array($this->request->get('sort_by'), array('username', 'registered')) || ($this->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $this->request->get('sort_by') : 'username';
         $sort_dir = $this->request->get('sort_dir') && $this->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
@@ -63,7 +62,7 @@ class userlist
         $start_from = 50 * ($p - 1);
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['User list']);
-        if ($this->user['g_search_users'] == '1') {
+        if ($this->user->g_search_users == '1') {
             $focus_element = array('userlist', 'username');
         }
 
@@ -74,13 +73,13 @@ class userlist
 
         define('FEATHER_ACTIVE_PAGE', 'userlist');
 
-        $this->header->display($page_title, $p, $focus_element, $paging_links);
+        $this->header->setTitle($page_title)->setPage($p)->setFocusElement($focus_element)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('userlist.php', array(
                             'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'lang_ul' => $lang_ul,
-                            'feather_user' => $this->user,
+                            'feather' => $this->feather,
                             'username' => $username,
                             'show_group' => $show_group,
                             'sort_by' => $sort_by,

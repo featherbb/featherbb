@@ -14,7 +14,6 @@ class maintenance
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class maintenance
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -52,7 +51,7 @@ class maintenance
         }
 
         if ($action == 'rebuild') {
-            $this->model->rebuild($this->feather);
+            $this->model->rebuild();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_maintenance['Rebuilding search index']);
 
@@ -62,7 +61,7 @@ class maintenance
                 )
             );
 
-            $query_str = $this->model->get_query_str($this->feather);
+            $query_str = $this->model->get_query_str();
 
             exit('<script type="text/javascript">window.location="'.get_link('admin/maintenance/').$query_str.'"</script><hr /><p>'.sprintf($lang_admin_maintenance['Javascript redirect failed'], '<a href="'.get_link('admin/maintenance/').$query_str.'">'.$lang_admin_maintenance['Click here'].'</a>').'</p>');
         }
@@ -71,49 +70,42 @@ class maintenance
             $prune_from = feather_trim($this->request->post('prune_from'));
             $prune_sticky = intval($this->request->post('prune_sticky'));
 
-            if ($this->request->post('prune_comply')) {
-                $this->model->prune_comply($this->feather, $prune_from, $prune_sticky);
-            }
-
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Prune']);
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('maintenance');
+
+            if ($this->request->post('prune_comply')) {
+                $this->model->prune_comply($prune_from, $prune_sticky);
+            }
 
             $this->feather->render('admin/maintenance/prune.php', array(
                     'lang_admin_maintenance'    =>    $lang_admin_maintenance,
                     'lang_admin_common'    =>    $lang_admin_common,
                     'prune_sticky'    =>    $prune_sticky,
                     'prune_from'    =>    $prune_from,
-                    'prune' => $this->model->get_info_prune($this->feather, $prune_sticky, $prune_from),
+                    'prune' => $this->model->get_info_prune($prune_sticky, $prune_from),
                 )
             );
 
             $this->footer->display();
         }
 
-        // Get the first post ID from the db
-        $first_id = '';
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts ORDER BY id ASC LIMIT 1') or error('Unable to fetch topic info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
-            $first_id = $this->db->result($result);
-        }
-
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Maintenance']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('maintenance');
 
         $this->feather->render('admin/maintenance/admin_maintenance.php', array(
                 'lang_admin_maintenance'    =>    $lang_admin_maintenance,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'first_id' => $first_id,
+                'first_id' => $this->model->get_first_id(),
                 'categories' => $this->model->get_categories(),
             )
         );

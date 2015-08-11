@@ -14,7 +14,6 @@ class reports
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class reports
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -46,22 +45,20 @@ class reports
 
         // Zap a report
         if ($this->feather->request->isPost()) {
-            $this->model->zap_report($this->feather);
+            $this->model->zap_report();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Reports']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('reports');
 
         $this->feather->render('admin/reports.php', array(
                 'lang_admin_reports'    =>    $lang_admin_reports,
                 'lang_admin_common'    =>    $lang_admin_common,
-                'is_report'    =>    $this->model->check_reports(),
-                'is_report_zapped'    =>    $this->model->check_zapped_reports(),
                 'report_data'   =>  $this->model->get_reports(),
                 'report_zapped_data'   =>  $this->model->get_zapped_reports(),
             )

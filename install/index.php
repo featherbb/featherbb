@@ -20,14 +20,13 @@ define('MIN_PGSQL_VERSION', '7.0.0');
 define('FEATHER_SEARCH_MIN_WORD', 3);
 define('FEATHER_SEARCH_MAX_WORD', 20);
 
-
-define('FEATHER_ROOT', dirname(__FILE__).'/');
+define('FEATHER_ROOT', dirname(dirname(__FILE__)).'/');
 
 // Send the Content-type header in case the web server is setup to send something else
 header('Content-type: text/html; charset=utf-8');
 
 // Load Slim Framework
-require 'Slim/Slim.php';
+require FEATHER_ROOT.'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
 // Instantiate Slim
@@ -90,11 +89,6 @@ if (file_exists(FEATHER_ROOT.'include/config.php')) {
     // Check to see whether FeatherBB is already installed
     include FEATHER_ROOT.'include/config.php';
 
-    // If we have the 1.3-legacy constant defined, define the proper 1.4 constant so we don't get an incorrect "need to install" message
-    if (defined('FORUM')) {
-        define('FEATHER', FORUM);
-    }
-
     // If FEATHER is defined, config.php is probably valid and thus the software is installed
     if (defined('FEATHER')) {
         exit($lang_install['Already installed']);
@@ -112,6 +106,88 @@ if (!defined('FORUM_CACHE_DIR')) {
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
     exit(sprintf($lang_install['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
+}
+
+
+
+//
+// Display a simple error message
+//
+function error($message, $file = null, $line = null, $db_error = false)
+{
+    global $feather_config, $lang_common;
+    // Set some default settings if the script failed before $feather_config could be populated
+    if (empty($feather_config)) {
+        $feather_config = array(
+            'o_board_title'    => 'FluxBB',
+            'o_gzip'        => '0'
+        );
+    }
+    // Set some default translations if the script failed before $lang_common could be populated
+    if (empty($lang_common)) {
+        $lang_common = array(
+            'Title separator'    => ' / ',
+            'Page'                => 'Page %s'
+        );
+    }
+    // Empty all output buffers and stop buffering
+    while (@ob_end_clean());
+    // "Restart" output buffering if we are using ob_gzhandler (since the gzip header is already sent)
+    if ($feather_config['o_gzip'] && extension_loaded('zlib')) {
+        ob_start('ob_gzhandler');
+    }
+    // Send no-cache headers
+    header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
+    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Cache-Control: post-check=0, pre-check=0', false);
+    header('Pragma: no-cache'); // For HTTP/1.0 compatibility
+    // Send the Content-type header in case the web server is setup to send something else
+    header('Content-type: text/html; charset=utf-8');
+    ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<?php $page_title = array(feather_escape($feather_config['o_board_title']), 'Error') ?>
+<title><?php echo generate_page_title($page_title) ?></title>
+<style type="text/css">
+<!--
+BODY {MARGIN: 10% 20% auto 20%; font: 10px Verdana, Arial, Helvetica, sans-serif}
+#errorbox {BORDER: 1px solid #B84623}
+H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADDING: 5px 4px}
+#errorbox DIV {PADDING: 6px 5px; BACKGROUND-COLOR: #F1F1F1}
+-->
+</style>
+</head>
+<body>
+
+<div id="errorbox">
+	<h2>An error was encountered</h2>
+	<div>
+<?php
+    if (defined('FEATHER_DEBUG') && !is_null($file) && !is_null($line)) {
+        echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
+        if ($db_error) {
+            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.feather_escape($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
+            if ($db_error['error_sql'] != '') {
+                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.feather_escape($db_error['error_sql'])."\n";
+            }
+        }
+    } else {
+        echo "\t\t".'Error: <strong>'.$message.'.</strong>'."\n";
+    }
+    ?>
+	</div>
+</div>
+
+</body>
+</html>
+<?php
+    // If a database connection was established (before this error) we close it
+    if ($db_error) {
+        $GLOBALS['db']->close();
+    }
+    exit;
 }
 
 
@@ -151,6 +227,7 @@ if (!isset($_POST['form_sent'])) {
     $base_url .= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));                            // path
 
     if (substr($base_url, -1) == '/') {
+        $base_url = str_replace('/install', '', $base_url);
         $base_url = substr($base_url, 0, -1);
     }
 
@@ -175,7 +252,7 @@ if (!isset($_POST['form_sent'])) {
     $description = feather_trim($_POST['desc']);
     $base_url = feather_trim($_POST['req_base_url']);
     $default_lang = feather_trim($_POST['req_default_lang']);
-    $default_style = feather_trim($_POST['req_default_style']);
+    $default_style = 'FeatherBB';
     $alerts = array();
 
     // Make sure base_url doesn't end with a slash
@@ -278,7 +355,7 @@ if (!isset($_POST['form_sent']) || !empty($alerts)) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $lang_install['FeatherBB Installation'] ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $default_style ?>.css" />
+<link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 <script type="text/javascript">
 /* <![CDATA[ */
 function process_form(the_form)
@@ -334,7 +411,7 @@ function process_form(the_form)
 	<?php if (count($languages) > 1): ?><div class="blockform">
 		<h2><span><?php echo $lang_install['Choose install language'] ?></span></h2>
 		<div class="box">
-			<form id="install" method="post" action="install.php">
+			<form id="install" method="post" action="">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_install['Install language'] ?></legend>
@@ -368,7 +445,7 @@ function process_form(the_form)
 	<div class="blockform">
 		<h2><span><?php echo sprintf($lang_install['Install'], FORUM_VERSION) ?></span></h2>
 		<div class="box">
-			<form id="install" method="post" action="install.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
+			<form id="install" method="post" action="" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
 			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo feather_escape($install_lang) ?>" /></div>
 				<div class="inform">
 	<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
@@ -477,14 +554,6 @@ function process_form(the_form)
 							<label class="required"><strong><?php echo $lang_install['Board title'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo feather_escape($title) ?>" size="60" maxlength="255" /><br /></label>
 							<label><?php echo $lang_install['Board description'] ?><br /><input id="desc" type="text" name="desc" value="<?php echo feather_escape($description) ?>" size="60" maxlength="255" /><br /></label>
 							<label class="required"><strong><?php echo $lang_install['Base URL'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo feather_escape($base_url) ?>" size="60" maxlength="100" /><br /></label>
-						</div>
-					</fieldset>
-				</div>
-				<div class="inform">
-					<fieldset>
-						<legend><?php echo $lang_install['Appearance'] ?></legend>
-						<div class="infldset">
-							<p><?php echo $lang_install['Info 15'] ?></p>
 							<label class="required"><strong><?php echo $lang_install['Default language'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
 <?php
 
@@ -494,20 +563,6 @@ function process_form(the_form)
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
-        }
-    }
-
-    ?>
-							</select><br /></label>
-							<label class="required"><strong><?php echo $lang_install['Default style'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_style" name="req_default_style">
-<?php
-
-            $styles = forum_list_styles();
-    foreach ($styles as $temp) {
-        if ($temp == $default_style) {
-            echo "\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
-        } else {
-            echo "\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
         }
     }
 
@@ -535,31 +590,31 @@ function process_form(the_form)
     // Load the appropriate DB layer class
     switch ($db_type) {
         case 'mysql':
-            require FEATHER_ROOT.'include/dblayer/mysql.php';
+            require FEATHER_ROOT.'install/dblayer/mysql.php';
             break;
 
         case 'mysql_innodb':
-            require FEATHER_ROOT.'include/dblayer/mysql_innodb.php';
+            require FEATHER_ROOT.'install/dblayer/mysql_innodb.php';
             break;
 
         case 'mysqli':
-            require FEATHER_ROOT.'include/dblayer/mysqli.php';
+            require FEATHER_ROOT.'install/dblayer/mysqli.php';
             break;
 
         case 'mysqli_innodb':
-            require FEATHER_ROOT.'include/dblayer/mysqli_innodb.php';
+            require FEATHER_ROOT.'install/dblayer/mysqli_innodb.php';
             break;
 
         case 'pgsql':
-            require FEATHER_ROOT.'include/dblayer/pgsql.php';
+            require FEATHER_ROOT.'install/dblayer/pgsql.php';
             break;
 
         case 'sqlite':
-            require FEATHER_ROOT.'include/dblayer/sqlite.php';
+            require FEATHER_ROOT.'install/dblayer/sqlite.php';
             break;
             
         case 'sqlite3':
-            require FEATHER_ROOT.'include/dblayer/sqlite3.php';
+            require FEATHER_ROOT.'install/dblayer/sqlite3.php';
             break;
 
         default:
@@ -1678,10 +1733,6 @@ function process_form(the_form)
     $db->query('INSERT INTO '.$db_prefix.'posts (poster, poster_id, poster_ip, message, posted, topic_id) VALUES(\''.$db->escape($username).'\', 2, \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$now.', 1)')
         or error('Unable to insert into table '.$db_prefix.'posts. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-    // Index the test post so searching for it works
-    require FEATHER_ROOT.'include/search_idx.php';
-    update_search_index('post', 1, $message, $subject);
-
     $db->end_transaction();
 
 
@@ -1710,6 +1761,11 @@ function process_form(the_form)
         }
     }
 
+    // Rename htaccess if rewrite is possible
+    if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
+        rename(FEATHER_ROOT.'.htaccess.dist', FEATHER_ROOT.'.htaccess');
+    }
+
 
     ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1718,7 +1774,7 @@ function process_form(the_form)
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $lang_install['FeatherBB Installation'] ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $default_style ?>.css" />
+<link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
 
@@ -1745,7 +1801,7 @@ function process_form(the_form)
 
     if (!$written) {
         ?>
-                    <form method="post" action="install.php">
+                    <form method="post" action="">
                             <div class="inform">
                                     <div class="forminfo">
                                             <p><?php echo $lang_install['Info 17'] ?></p>

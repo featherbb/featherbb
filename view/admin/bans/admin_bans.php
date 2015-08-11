@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_bans['New ban head'] ?></span></h2>
 		<div class="box">
 			<form id="bans" method="post" action="<?php echo get_link('admin/bans/add/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_bans['Add ban subhead'] ?></legend>
@@ -39,6 +40,7 @@ if (!defined('FEATHER')) {
 		<h2 class="block2"><span><?php echo $lang_admin_bans['Ban search head'] ?></span></h2>
 		<div class="box">
 			<form id="find_bans" method="get" action="<?php echo get_link('admin/bans/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="find_ban" value="<?php echo $lang_admin_bans['Submit search'] ?>" tabindex="3" /></p>
 				<div class="inform">
 					<fieldset>

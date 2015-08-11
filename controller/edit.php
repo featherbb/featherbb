@@ -14,7 +14,6 @@ class edit
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -33,8 +32,8 @@ class edit
     {
         global $lang_common, $lang_prof_reg, $lang_post, $lang_register;
 
-        if ($this->user['g_read_board'] == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+        if ($this->user->g_read_board == '0') {
+            message($lang_common['No view'], '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -42,7 +41,7 @@ class edit
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && array_key_exists($this->user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $id == $cur_post['first_post_id'];
 
@@ -52,31 +51,34 @@ class edit
         }
 
         // Do we have permission to edit this post?
-        if (($this->user['g_edit_posts'] == '0' || $cur_post['poster_id'] != $this->user['id'] || $cur_post['closed'] == '1') && !$is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (($this->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
-        if ($is_admmod && $this->user['g_id'] != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
+        
+        // Load the bbeditor.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
 
         // Start with a clean slate
         $errors = array();
 
         if ($this->feather->request()->isPost()) {
             // Let's see if everything went right
-            $errors = $this->model->check_errors_before_edit($id, $this->feather, $can_edit_subject, $errors);
+            $errors = $this->model->check_errors_before_edit($id, $can_edit_subject, $errors);
 
             // Setup some variables before post
-            $post = $this->model->setup_variables($this->feather, $cur_post, $is_admmod, $can_edit_subject, $errors);
+            $post = $this->model->setup_variables($cur_post, $is_admmod, $can_edit_subject, $errors);
 
             // Did everything go according to plan?
             if (empty($errors) && !$this->request->post('preview')) {
                 // Edit the post
-                $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $this->feather, $is_admmod);
+                $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
                 redirect(get_link('post/'.$id.'/#p'.$id), $lang_post['Post redirect']);
             }
@@ -91,7 +93,7 @@ class edit
 
         define('FEATHER_ACTIVE_PAGE', 'edit');
 
-        $this->header->display($page_title, '', $focus_element, '', $required_fields);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         if ($this->request->post('preview')) {
             require_once FEATHER_ROOT.'include/parser.php';
@@ -109,10 +111,11 @@ class edit
                             'id' => $id,
                             'feather_config' => $this->config,
                             'feather_user' => $this->user,
-                            'checkboxes' => $this->model->get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $this->feather, 1),
+                            'checkboxes' => $this->model->get_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                             'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
                             'post' => $post,
+                            'lang_bbeditor' => $lang_bbeditor,
                             )
                     );
 

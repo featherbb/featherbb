@@ -9,19 +9,20 @@
 
 namespace model\admin;
 
+use DB;
+
 class maintenance
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
  
-    public function rebuild($feather)
+    public function rebuild()
     {
         global $db_type, $lang_admin_maintenance;
 
@@ -36,11 +37,8 @@ class maintenance
 
         // If this is the first cycle of posts we empty the search index before we proceed
         if ($this->request->get('i_empty_index')) {
-            // This is the only potentially "dangerous" thing we can do here, so we check the referer
-            confirm_referrer(get_link_r('admin/maintenance/'));
-
-            $this->db->truncate_table('search_matches') or error('Unable to empty search index match table', __FILE__, __LINE__, $this->db->error());
-            $this->db->truncate_table('search_words') or error('Unable to empty search index words table', __FILE__, __LINE__, $this->db->error());
+            DB::for_table('search_words')->raw_execute('TRUNCATE '.$this->feather->prefix.'search_words');
+            DB::for_table('search_matches')->raw_execute('TRUNCATE '.$this->feather->prefix.'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
             switch ($db_type) {
@@ -48,16 +46,16 @@ class maintenance
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    $result = $this->db->query('ALTER TABLE '.$this->db->prefix.'search_words auto_increment=1') or error('Unable to update table auto_increment', __FILE__, __LINE__, $this->db->error());
+                    DB::for_table('search_words')->raw_execute('ALTER TABLE '.$this->feather->prefix.'search_words auto_increment=1');
                     break;
 
                 case 'pgsql';
-                    $result = $this->db->query('SELECT setval(\''.$this->db->prefix.'search_words_id_seq\', 1, false)') or error('Unable to update sequence', __FILE__, __LINE__, $this->db->error());
+                    DB::for_table('search_words')->raw_execute('SELECT setval(\''.$this->feather->prefix.'search_words_id_seq\', 1, false)');
             }
         }
     }
 
-    public function get_query_str($feather)
+    public function get_query_str()
     {
         global $lang_admin_maintenance;
 
@@ -69,10 +67,18 @@ class maintenance
         require FEATHER_ROOT.'include/search_idx.php';
 
         // Fetch posts to process this cycle
-        $result = $this->db->query('SELECT p.id, p.message, t.subject, t.first_post_id FROM '.$this->db->prefix.'posts AS p INNER JOIN '.$this->db->prefix.'topics AS t ON t.id=p.topic_id WHERE p.id >= '.$start_at.' ORDER BY p.id ASC LIMIT '.$per_page) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
+        $select_get_query_str = array('p.id', 'p.message', 't.subject', 't.first_post_id');
+
+        $result = DB::for_table('posts')->table_alias('p')
+                        ->select_many($select_get_query_str)
+                        ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+                        ->where_gte('p.id', $start_at)
+                        ->order_by_asc('p.id')
+                        ->limit($per_page)
+                        ->find_many();
 
         $end_at = 0;
-        while ($cur_item = $this->db->fetch_assoc($result)) {
+        foreach ($result as $cur_item) {
             echo '<p><span>'.sprintf($lang_admin_maintenance['Processing post'], $cur_item['id']).'</span></p>'."\n";
 
             if ($cur_item['id'] == $cur_item['first_post_id']) {
@@ -86,15 +92,17 @@ class maintenance
 
         // Check if there is more work to do
         if ($end_at > 0) {
-            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $this->db->error());
+            $id = DB::for_table('posts')->where_gt('id', $end_at)
+                        ->order_by_asc('id')
+                        ->find_one_col('id');
 
-            if ($this->db->num_rows($result) > 0) {
-                $query_str = '?action=rebuild&i_per_page='.$per_page.'&i_start_at='.$this->db->result($result);
+            if ($id) {
+                $query_str = '?action=rebuild&i_per_page='.$per_page.'&i_start_at='.intval($id);
             }
         }
 
-        $this->db->end_transaction();
-        $this->db->close();
+        $pdo = DB::get_db();
+        $pdo = null;
 
         return $query_str;
     }
@@ -104,38 +112,49 @@ class maintenance
     //
     public function prune($forum_id, $prune_sticky, $prune_date)
     {
-        
+        // Fetch topics to prune
+        $topics_id = DB::for_table('topics')->select('id')
+                    ->where('forum_id', $forum_id);
 
-        $extra_sql = ($prune_date != -1) ? ' AND last_post<'.$prune_date : '';
+        if ($prune_date != -1) {
+            $topics_id = $topics_id->where_lt('last_post', $prune_date);
+        }
 
         if (!$prune_sticky) {
-            $extra_sql .= ' AND sticky=\'0\'';
+            $topics_id = $topics_id->where('sticky', 0);
         }
 
-        // Fetch topics to prune
-        $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'topics WHERE forum_id='.$forum_id.$extra_sql, true) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
+        $topics_id = $topics_id->find_many();
 
-        $topic_ids = '';
-        while ($row = $this->db->fetch_row($result)) {
-            $topic_ids .= (($topic_ids != '') ? ',' : '').$row[0];
+        $topic_ids = array();
+        foreach ($topics_id as $row) {
+            $topic_ids[] = $row['id'];
         }
 
-        if ($topic_ids != '') {
+        if (!empty($topic_ids)) {
             // Fetch posts to prune
-            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'posts WHERE topic_id IN('.$topic_ids.')', true) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
+            $posts_id = DB::for_table('posts')->select('id')
+                            ->where_in('topic_id', $topic_ids)
+                            ->find_many();
 
-            $post_ids = '';
-            while ($row = $this->db->fetch_row($result)) {
-                $post_ids .= (($post_ids != '') ? ',' : '').$row[0];
+            $post_ids = array();
+            foreach ($posts_id as $row) {
+                $post_ids[] = $row['id'];
             }
 
             if ($post_ids != '') {
                 // Delete topics
-                $this->db->query('DELETE FROM '.$this->db->prefix.'topics WHERE id IN('.$topic_ids.')') or error('Unable to prune topics', __FILE__, __LINE__, $this->db->error());
+                DB::for_table('topics')
+                        ->where_in('id', $topic_ids)
+                        ->delete_many();
                 // Delete subscriptions
-                $this->db->query('DELETE FROM '.$this->db->prefix.'topic_subscriptions WHERE topic_id IN('.$topic_ids.')') or error('Unable to prune subscriptions', __FILE__, __LINE__, $this->db->error());
+                DB::for_table('topic_subscriptions')
+                        ->where_in('topic_id', $topic_ids)
+                        ->delete_many();
                 // Delete posts
-                $this->db->query('DELETE FROM '.$this->db->prefix.'posts WHERE id IN('.$post_ids.')') or error('Unable to prune posts', __FILE__, __LINE__, $this->db->error());
+                DB::for_table('posts')
+                        ->where_in('id', $post_ids)
+                        ->delete_many();
 
                 // We removed a bunch of posts, so now we have to update the search index
                 require_once FEATHER_ROOT.'include/search_idx.php';
@@ -144,11 +163,9 @@ class maintenance
         }
     }
 
-    public function prune_comply($feather, $prune_from, $prune_sticky)
+    public function prune_comply($prune_from, $prune_sticky)
     {
         global $lang_admin_maintenance;
-
-        confirm_referrer(get_link_r('admin/maintenance/'));
 
         $prune_days = intval($this->request->post('prune_days'));
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
@@ -156,37 +173,43 @@ class maintenance
         @set_time_limit(0);
 
         if ($prune_from == 'all') {
-            $result = $this->db->query('SELECT id FROM '.$this->db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $this->db->error());
-            $num_forums = $this->db->num_rows($result);
+            $result = DB::for_table('forums')->select('id')->find_array();
 
-            for ($i = 0; $i < $num_forums; ++$i) {
-                $fid = $this->db->result($result, $i);
-
-                prune($fid, $prune_sticky, $prune_date);
-                update_forum($fid);
+            if (!empty($result)) {
+                foreach ($result as $row) {
+                    $this->prune($row['id'], $prune_sticky, $prune_date);
+                    update_forum($row['id']);
+                }
             }
         } else {
             $prune_from = intval($prune_from);
-            prune($prune_from, $prune_sticky, $prune_date);
+            $this->prune($prune_from, $prune_sticky, $prune_date);
             update_forum($prune_from);
         }
 
         // Locate any "orphaned redirect topics" and delete them
-        $result = $this->db->query('SELECT t1.id FROM '.$this->db->prefix.'topics AS t1 LEFT JOIN '.$this->db->prefix.'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $this->db->error());
-        $num_orphans = $this->db->num_rows($result);
+        $result = DB::for_table('topics')->table_alias('t1')
+                        ->select('t1.id')
+                        ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                        ->where_null('t2.id')
+                        ->where_not_null('t1.moved_to')
+                        ->find_array();
 
-        if ($num_orphans) {
-            for ($i = 0; $i < $num_orphans; ++$i) {
-                $orphans[] = $this->db->result($result, $i);
+        $orphans = array();
+        if (!empty($result)) {
+            foreach ($result as $row) {
+                $orphans[] = $row['id'];
             }
 
-            $this->db->query('DELETE FROM '.$this->db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $this->db->error());
+            DB::for_table('topics')
+                    ->where_in('id', $orphans)
+                    ->delete_many();
         }
 
         redirect(get_link('admin/maintenance/'), $lang_admin_maintenance['Posts pruned redirect']);
     }
 
-    public function get_info_prune($feather, $prune_sticky, $prune_from)
+    public function get_info_prune($prune_sticky, $prune_from)
     {
         global $lang_admin_maintenance;
 
@@ -200,25 +223,25 @@ class maintenance
         $prune['date'] = time() - ($prune['days'] * 86400);
 
         // Concatenate together the query for counting number of topics to prune
-        $sql = 'SELECT COUNT(id) FROM '.$this->db->prefix.'topics WHERE last_post<'.$prune['date'].' AND moved_to IS NULL';
+        $query = DB::for_table('topics')->where_lt('last_post', $prune['date'])
+                        ->where_null('moved_to');
 
         if ($prune_sticky == '0') {
-            $sql .= ' AND sticky=0';
+            $query = $query->where('sticky', 0);
         }
 
         if ($prune_from != 'all') {
-            $prune_from = intval($prune_from);
-            $sql .= ' AND forum_id='.$prune_from;
+            $query = $query->where('forum_id', intval($prune_from));
 
             // Fetch the forum name (just for cosmetic reasons)
-            $result = $this->db->query('SELECT forum_name FROM '.$this->db->prefix.'forums WHERE id='.$prune_from) or error('Unable to fetch forum name', __FILE__, __LINE__, $this->db->error());
-            $prune['forum'] = '"'.feather_escape($this->db->result($result)).'"';
+            $forum = DB::for_table('forums')->where('id', $prune_from)
+                        ->find_one_col('forum_name');
+            $prune['forum'] = '"'.feather_escape($forum).'"';
         } else {
             $prune['forum'] = $lang_admin_maintenance['All forums'];
         }
 
-        $result = $this->db->query($sql) or error('Unable to fetch topic prune count', __FILE__, __LINE__, $this->db->error());
-        $prune['num_topics'] = $this->db->result($result);
+        $prune['num_topics'] = $query->count('id');
 
         if (!$prune['num_topics']) {
             message(sprintf($lang_admin_maintenance['No old topics message'], $prune['days']));
@@ -229,14 +252,21 @@ class maintenance
 
     public function get_categories()
     {
-        
-        
         $output = '';
 
-        $result = $this->db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$this->db->prefix.'categories AS c INNER JOIN '.$this->db->prefix.'forums AS f ON c.id=f.cat_id WHERE f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $this->db->error());
+        $select_get_categories = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $order_by_get_categories = array('c.disp_position', 'c.id', 'f.disp_position');
+
+        $result = DB::for_table('categories')
+                    ->table_alias('c')
+                    ->select_many($select_get_categories)
+                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->where_null('f.redirect_url')
+                    ->order_by_many($order_by_get_categories)
+                    ->find_many();
 
         $cur_category = 0;
-        while ($forum = $this->db->fetch_assoc($result)) {
+        foreach ($result as $forum) {
             if ($forum['cid'] != $cur_category) {
                 // Are we still in the same category?
 
@@ -252,5 +282,17 @@ class maintenance
         }
         
         return $output;
+    }
+    
+    public function get_first_id()
+    {
+        $first_id = '';
+        $first_id_sql = DB::for_table('posts')->order_by_asc('id')
+                            ->find_one_col('id');
+        if ($first_id_sql) {
+            $first_id = $first_id_sql;
+        }
+        
+        return $first_id;
     }
 }

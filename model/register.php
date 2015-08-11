@@ -9,19 +9,20 @@
 
 namespace model;
 
+use DB;
+
 class register
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
  
-    public function check_for_errors($feather)
+    public function check_for_errors()
     {
         global $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
 
@@ -29,9 +30,12 @@ class register
         $user['errors'] = '';
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-        $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'users WHERE registration_ip=\''.$this->db->escape(get_remote_address()).'\' AND registered>'.(time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
+        $already_registered = DB::for_table('users')
+                                  ->where('registration_ip', get_remote_address())
+                                  ->where_gt('registered', time() - 3600)
+                                  ->find_one();
 
-        if ($this->db->num_rows($result)) {
+        if ($already_registered) {
             message($lang_register['Registration flood']);
         }
 
@@ -90,13 +94,16 @@ class register
         // Check if someone else already has registered with that email address
         $dupe_list = array();
 
-        $result = $this->db->query('SELECT username FROM '.$this->db->prefix.'users WHERE email=\''.$this->db->escape($user['email1']).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $this->db->error());
-        if ($this->db->num_rows($result)) {
+        $dupe_mail = DB::for_table('users')->select('username')
+            ->where('email', $user['email1'])
+            ->find_many();
+
+        if ($dupe_mail) {
             if ($this->config['p_allow_dupe_email'] == '0') {
                 $user['errors'][] = $lang_prof_reg['Dupe email'];
             }
 
-            while ($cur_dupe = $this->db->fetch_assoc($result)) {
+            foreach($dupe_mail as $cur_dupe) {
                 $dupe_list[] = $cur_dupe['username'];
             }
         }
@@ -105,7 +112,7 @@ class register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
@@ -125,8 +132,28 @@ class register
         $password_hash = feather_hash($user['password1']);
 
         // Add the user
-        $this->db->query('INSERT INTO '.$this->db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$this->db->escape($user['username']).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$this->db->escape($user['email1']).'\', '.$this->config['o_default_email_setting'].', '.$this->config['o_default_timezone'].' , 0, \''.$this->db->escape($user['language']).'\', \''.$this->config['o_default_style'].'\', '.$now.', \''.$this->db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $this->db->error());
-        $new_uid = $this->db->insert_id();
+        $insert_user = array(
+            'username'        => $user['username'],
+            'group_id'        => $intial_group_id,
+            'password'        => $password_hash,
+            'email'           => $user['email1'],
+            'email_setting'   => $this->config['o_default_email_setting'],
+            'timezone'        => $this->config['o_default_timezone'],
+            'dst'             => 0,
+            'language'        => $user['language'],
+            'style'           => $this->config['o_default_style'],
+            'registered'      => $now,
+            'registration_ip' => get_remote_address(),
+            'last_visit'      => $now,
+        );
+
+        DB::for_table('users')
+            ->create()
+            ->set($insert_user)
+            ->save();
+
+        $new_uid = DB::get_db()->lastInsertId($this->feather->prefix.'users');
+
 
         if ($this->config['o_regs_verify'] == '0') {
             // Regenerate the users info cache
@@ -142,7 +169,7 @@ class register
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/banned_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_register.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -160,7 +187,7 @@ class register
             // If we previously found out that the email was a dupe
             if (!empty($dupe_list)) {
                 // Load the "dupe email register" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/dupe_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/dupe_email_register.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -178,7 +205,7 @@ class register
             // Should we alert people on the admin mailing list that a new user has registered?
             if ($this->config['o_regs_report'] == '1') {
                 // Load the "new user" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/new_user.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/new_user.tpl'));
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -198,7 +225,7 @@ class register
         // Must the user verify the registration or do we log him/her in right now?
         if ($this->config['o_regs_verify'] == '1') {
             // Load the "welcome" template
-            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user['language'].'/mail_templates/welcome.tpl'));
+            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/welcome.tpl'));
 
             // The first row contains the subject
             $first_crlf = strpos($mail_tpl, "\n");
@@ -209,7 +236,7 @@ class register
             $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<password>', $user['password1'], $mail_message);
-            $mail_message = str_replace('<login_url>', get_base_url().'/login.php', $mail_message);
+            $mail_message = str_replace('<login_url>', get_link('login/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
             pun_mail($user['email1'], $mail_subject, $mail_message);

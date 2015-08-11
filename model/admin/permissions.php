@@ -9,23 +9,22 @@
 
 namespace model\admin;
 
+use DB;
+
 class permissions
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
  
-    public function update_permissions($feather)
+    public function update_permissions()
     {
         global $lang_admin_permissions;
-
-        confirm_referrer(get_link_r('admin/permissions/'));
 
         $form = array_map('intval', $this->request->post('form'));
 
@@ -37,7 +36,8 @@ class permissions
 
             // Only update values that have changed
             if (array_key_exists('p_'.$key, $this->config) && $this->config['p_'.$key] != $input) {
-                $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$input.' WHERE conf_name=\'p_'.$this->db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());
+                DB::for_table('config')->where('conf_name', 'p_'.$key)
+                                                           ->update_many('conf_value', $input);
             }
         }
 

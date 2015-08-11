@@ -9,12 +9,13 @@
 
 namespace model\admin;
 
+use DB;
+
 class groups
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -23,18 +24,16 @@ class groups
  
     public function fetch_groups()
     {
-        
-
-        $result = $this->db->query('SELECT * FROM '.$this->db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user groups', __FILE__, __LINE__, $this->db->error());
+        $result = DB::for_table('groups')->order_by('g_id')->find_many();
         $groups = array();
-        while ($cur_group = $this->db->fetch_assoc($result)) {
+        foreach ($result as $cur_group) {
             $groups[$cur_group['g_id']] = $cur_group;
         }
 
         return $groups;
     }
 
-    public function info_add_group($groups, $feather, $id)
+    public function info_add_group($groups, $id)
     {
         global $lang_common;
 
@@ -48,7 +47,7 @@ class groups
         } else {
             // We are editing a group
             if (!isset($groups[$id])) {
-                message($lang_common['Bad request'], false, '404 Not Found');
+                message($lang_common['Bad request'], '404');
             }
 
             $group['info'] = $groups[$id];
@@ -61,24 +60,31 @@ class groups
 
     public function get_group_list($groups, $group)
     {
+        $output = '';
+
         foreach ($groups as $cur_group) {
             if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != FEATHER_ADMIN && $cur_group['g_id'] != FEATHER_GUEST) {
                 if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
-                    echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
                 } else {
-                    echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
                 }
             }
         }
+
+        return $output;
     }
 
     public function get_group_list_delete($group_id)
     {
-        
+        $select_get_group_list_delete = array('g_id', 'g_title');
+        $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
+                        ->where_not_equal('g_id', FEATHER_GUEST)
+                        ->where_not_equal('g_id', $group_id)
+                        ->order_by('g_title')
+                        ->find_many();
 
-        $result = $this->db->query('SELECT g_id, g_title FROM '.$this->db->prefix.'groups WHERE g_id!='.FEATHER_GUEST.' AND g_id!='.$group_id.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $this->db->error());
-
-        while ($cur_group = $this->db->fetch_assoc($result)) {
+        foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == FEATHER_MEMBER) {
                 // Pre-select the pre-defined Members group
                 echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
@@ -88,7 +94,7 @@ class groups
         }
     }
 
-    public function add_edit_group($groups, $feather)
+    public function add_edit_group($groups)
     {
         global $lang_admin_groups;
 
@@ -97,11 +103,6 @@ class groups
         } else {
             $group_id = 0;
         }
-
-        confirm_referrer(array(
-            get_link_r('admin/groups/edit/'.$group_id.'/'),
-            get_link_r('admin/groups/add/'),
-        ));
 
         // Is this the admin group? (special rules apply)
         $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == FEATHER_ADMIN) ? true : false;
@@ -146,33 +147,84 @@ class groups
             message($lang_admin_groups['Must enter title message']);
         }
 
-        $user_title = ($user_title != '') ? '\''.$this->db->escape($user_title).'\'' : 'NULL';
+        $user_title = ($user_title != '') ? $user_title : 'NULL';
+
+        $insert_update_group = array(
+            'g_title'               =>  $title,
+            'g_user_title'          =>  $user_title,
+            'g_promote_min_posts'   =>  $promote_min_posts,
+            'g_promote_next_group'  =>  $promote_next_group,
+            'g_moderator'           =>  $moderator,
+            'g_mod_edit_users'      =>  $mod_edit_users,
+            'g_mod_rename_users'    =>  $mod_rename_users,
+            'g_mod_change_passwords'=>  $mod_change_passwords,
+            'g_mod_ban_users'       =>  $mod_ban_users,
+            'g_mod_promote_users'   =>  $mod_promote_users,
+            'g_read_board'          =>  $read_board,
+            'g_view_users'          =>  $view_users,
+            'g_post_replies'        =>  $post_replies,
+            'g_post_topics'         =>  $post_topics,
+            'g_edit_posts'          =>  $edit_posts,
+            'g_delete_posts'        =>  $delete_posts,
+            'g_delete_topics'       =>  $delete_topics,
+            'g_post_links'          =>  $post_links,
+            'g_set_title'           =>  $set_title,
+            'g_search'              =>  $search,
+            'g_search_users'        =>  $search_users,
+            'g_send_email'          =>  $send_email,
+            'g_post_flood'          =>  $post_flood,
+            'g_search_flood'        =>  $search_flood,
+            'g_email_flood'         =>  $email_flood,
+            'g_report_flood'        =>  $report_flood,
+        );
 
         if ($this->request->post('mode') == 'add') {
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'groups WHERE g_title=\''.$this->db->escape($title).'\'') or error('Unable to check group title collision', __FILE__, __LINE__, $this->db->error());
-            if ($this->db->num_rows($result)) {
+            $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
+            if ($title_exists) {
                 message(sprintf($lang_admin_groups['Title already exists message'], feather_escape($title)));
             }
 
-            $this->db->query('INSERT INTO '.$this->db->prefix.'groups (g_title, g_user_title, g_promote_min_posts, g_promote_next_group, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_mod_promote_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_post_links, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES(\''.$this->db->escape($title).'\', '.$user_title.', '.$promote_min_posts.', '.$promote_next_group.', '.$moderator.', '.$mod_edit_users.', '.$mod_rename_users.', '.$mod_change_passwords.', '.$mod_ban_users.', '.$mod_promote_users.', '.$read_board.', '.$view_users.', '.$post_replies.', '.$post_topics.', '.$edit_posts.', '.$delete_posts.', '.$delete_topics.', '.$post_links.', '.$set_title.', '.$search.', '.$search_users.', '.$send_email.', '.$post_flood.', '.$search_flood.', '.$email_flood.', '.$report_flood.')') or error('Unable to add group', __FILE__, __LINE__, $this->db->error());
-            $new_group_id = $this->db->insert_id();
+            DB::for_table('groups')
+                ->create()
+                ->set($insert_update_group)
+                ->save();
+            $new_group_id = DB::get_db()->lastInsertId($this->feather->prefix.'groups');
 
             // Now lets copy the forum specific permissions from the group which this group is based on
-            $result = $this->db->query('SELECT forum_id, read_forum, post_replies, post_topics FROM '.$this->db->prefix.'forum_perms WHERE group_id='.$this->request->post('base_group')) or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $this->db->error());
-            while ($cur_forum_perm = $this->db->fetch_assoc($result)) {
-                $this->db->query('INSERT INTO '.$this->db->prefix.'forum_perms (group_id, forum_id, read_forum, post_replies, post_topics) VALUES('.$new_group_id.', '.$cur_forum_perm['forum_id'].', '.$cur_forum_perm['read_forum'].', '.$cur_forum_perm['post_replies'].', '.$cur_forum_perm['post_topics'].')') or error('Unable to insert group forum permissions', __FILE__, __LINE__, $this->db->error());
+            $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
+            $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
+                            ->where('group_id', $this->request->post('base_group'))
+                            ->find_many();
+
+            foreach ($result as $cur_forum_perm) {
+                $insert_perms = array(
+                    'group_id'       =>  $new_group_id,
+                    'forum_id'       =>  $cur_forum_perm['forum_id'],
+                    'read_forum'     =>  $cur_forum_perm['read_forum'],
+                    'post_replies'   =>  $cur_forum_perm['post_replies'],
+                    'post_topics'    =>  $cur_forum_perm['post_topics'],
+                );
+
+                DB::for_table('forum_perms')
+                        ->create()
+                        ->set($insert_perms)
+                        ->save();
             }
         } else {
-            $result = $this->db->query('SELECT 1 FROM '.$this->db->prefix.'groups WHERE g_title=\''.$this->db->escape($title).'\' AND g_id!='.$this->request->post('group_id')) or error('Unable to check group title collision', __FILE__, __LINE__, $this->db->error());
-            if ($this->db->num_rows($result)) {
+            $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
+            if ($title_exists) {
                 message(sprintf($lang_admin_groups['Title already exists message'], feather_escape($title)));
             }
-
-            $this->db->query('UPDATE '.$this->db->prefix.'groups SET g_title=\''.$this->db->escape($title).'\', g_user_title='.$user_title.', g_promote_min_posts='.$promote_min_posts.', g_promote_next_group='.$promote_next_group.', g_moderator='.$moderator.', g_mod_edit_users='.$mod_edit_users.', g_mod_rename_users='.$mod_rename_users.', g_mod_change_passwords='.$mod_change_passwords.', g_mod_ban_users='.$mod_ban_users.', g_mod_promote_users='.$mod_promote_users.', g_read_board='.$read_board.', g_view_users='.$view_users.', g_post_replies='.$post_replies.', g_post_topics='.$post_topics.', g_edit_posts='.$edit_posts.', g_delete_posts='.$delete_posts.', g_delete_topics='.$delete_topics.', g_post_links='.$post_links.', g_set_title='.$set_title.', g_search='.$search.', g_search_users='.$search_users.', g_send_email='.$send_email.', g_post_flood='.$post_flood.', g_search_flood='.$search_flood.', g_email_flood='.$email_flood.', g_report_flood='.$report_flood.' WHERE g_id='.$this->request->post('group_id')) or error('Unable to update group', __FILE__, __LINE__, $this->db->error());
+            DB::for_table('groups')
+                    ->find_one($this->request->post('group_id'))
+                    ->set($insert_update_group)
+                    ->save();
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
-                $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id = '.$promote_next_group.' WHERE group_id = '.$this->request->post('group_id').' AND num_posts >= '.$promote_min_posts) or error('Unable to auto-promote existing users', __FILE__, __LINE__, $this->db->error());
+                DB::for_table('users')->where('group_id', $this->request->post('group_id'))
+                        ->where_gte('num_posts', $promote_min_posts)
+                        ->update_many('group_id', $promote_next_group);
             }
         }
 
@@ -192,25 +244,24 @@ class groups
         }
     }
 
-    public function set_default_group($groups, $feather)
+    public function set_default_group($groups)
     {
         global $lang_admin_groups, $lang_common;
-
-        confirm_referrer(get_link_r('admin/groups/'));
 
         $group_id = intval($this->request->post('default_group'));
 
         // Make sure it's not the admin or guest groups
         if ($group_id == FEATHER_ADMIN || $group_id == FEATHER_GUEST) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Make sure it's not a moderator group
         if ($groups[$group_id]['g_moderator'] != 0) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
-        $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$group_id.' WHERE conf_name=\'o_default_user_group\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());
+        DB::for_table('config')->where('conf_name', 'o_default_user_group')
+                                                   ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
@@ -224,55 +275,64 @@ class groups
 
     public function check_members($group_id)
     {
-        
+        $is_member = DB::for_table('groups')->table_alias('g')
+            ->select('g.g_title')
+            ->select_expr('COUNT(u.id)', 'members')
+            ->inner_join('users', array('g.g_id', '=', 'u.group_id'), 'u')
+            ->where('g.g_id', $group_id)
+            ->group_by('g.g_id')
+            ->group_by('g_title')
+            ->find_one();
 
-        $result = $this->db->query('SELECT g.g_title, COUNT(u.id) FROM '.$this->db->prefix.'groups AS g INNER JOIN '.$this->db->prefix.'users AS u ON g.g_id=u.group_id WHERE g.g_id='.$group_id.' GROUP BY g.g_id, g_title') or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
-
-        if ($this->db->num_rows($result)) {
-            $is_member = true;
-        } else {
-            $is_member = false;
-        }
-
-        return $is_member;
+        return (bool) $is_member;
     }
 
-    public function delete_group($feather, $group_id)
+    public function delete_group($group_id)
     {
         global $lang_admin_groups;
 
         if ($this->request->post('del_group')) {
             $move_to_group = intval($this->request->post('move_to_group'));
-            $this->db->query('UPDATE '.$this->db->prefix.'users SET group_id='.$move_to_group.' WHERE group_id='.$group_id) or error('Unable to move users into group', __FILE__, __LINE__, $this->db->error());
+            DB::for_table('users')->where('group_id', $group_id)
+                                                      ->update_many('group_id', $move_to_group);
         }
 
         // Delete the group and any forum specific permissions
-        $this->db->query('DELETE FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to delete group', __FILE__, __LINE__, $this->db->error());
-        $this->db->query('DELETE FROM '.$this->db->prefix.'forum_perms WHERE group_id='.$group_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $this->db->error());
+        DB::for_table('groups')
+            ->where('g_id', $group_id)
+            ->delete_many();
+        DB::for_table('forum_perms')
+            ->where('group_id', $group_id)
+            ->delete_many();
 
         // Don't let users be promoted to this group
-        $this->db->query('UPDATE '.$this->db->prefix.'groups SET g_promote_next_group=0 WHERE g_promote_next_group='.$group_id) or error('Unable to remove group as promotion target', __FILE__, __LINE__, $this->db->error());
+        DB::for_table('groups')->where('g_promote_next_group', $group_id)
+                                                   ->update_many('g_promote_next_group', 0);
 
         redirect(get_link('admin/groups/'), $lang_admin_groups['Group removed redirect']);
     }
 
     public function get_group_title($group_id)
     {
-        
-
-        $result = $this->db->query('SELECT g_title FROM '.$this->db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group title', __FILE__, __LINE__, $this->db->error());
-        $group_title = $this->db->result($result);
+        $group_title = DB::for_table('groups')->where('g_id', $group_id)
+                            ->find_one_col('g_title');
 
         return $group_title;
     }
 
     public function get_title_members($group_id)
     {
-        
+        $group = DB::for_table('groups')->table_alias('g')
+                    ->select('g.g_title')
+                    ->select_expr('COUNT(u.id)', 'members')
+                    ->inner_join('users', array('g.g_id', '=', 'u.group_id'), 'u')
+                    ->where('g.g_id', $group_id)
+                    ->group_by('g.g_id')
+                    ->group_by('g_title')
+                    ->find_one();
 
-        $result = $this->db->query('SELECT g.g_title, COUNT(u.id) FROM '.$this->db->prefix.'groups AS g INNER JOIN '.$this->db->prefix.'users AS u ON g.g_id=u.group_id WHERE g.g_id='.$group_id.' GROUP BY g.g_id, g_title') or error('Unable to fetch group info', __FILE__, __LINE__, $this->db->error());
-
-        list($group_info['title'], $group_info['members']) = $this->db->fetch_row($result);
+        $group_info['title'] = $group['g_title'];
+        $group_info['members'] = $group['members'];
 
         return $group_info;
     }

@@ -14,7 +14,6 @@ class register
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -33,19 +32,19 @@ class register
     {
         global $lang_common, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
 
-        if (!$this->user['is_guest']) {
-            header('Location: index.php');
+        if (!$this->user->is_guest) {
+            header('Location: '.get_base_url());
             exit;
         }
 
         // Load the register.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
         // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/antispam.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled
@@ -66,7 +65,7 @@ class register
         $user['errors'] = '';
 
         if ($this->feather->request()->isPost()) {
-            $user = $this->model->check_for_errors($this->feather);
+            $user = $this->model->check_for_errors();
 
             // Did everything go according to plan? Insert the user
             if (empty($user['errors'])) {
@@ -74,7 +73,7 @@ class register
             }
         }
 
-        $this->header->display($page_title, '', $focus_element, '', $required_fields);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('register/form.php', array(
                             'errors' => $user['errors'],
@@ -103,11 +102,11 @@ class register
     public function rules()
     { // TODO: fix $_GET w/ URL rewriting
 
-        global $lang_common, $lang_login;
+        global $lang_common, $lang_login, $lang_register;
 
         // If we are logged in, we shouldn't be here
-        if (!$this->user['is_guest']) {
-            header('Location: index.php');
+        if (!$this->user->is_guest) {
+            header('Location: '.get_base_url());
             exit;
         }
 
@@ -117,10 +116,10 @@ class register
         }
 
         // Load the register.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/register.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
         // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/prof_reg.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
 
         if ($this->config['o_rules'] != '1') {
             redirect(get_link('register/agree/'));
@@ -130,7 +129,7 @@ class register
 
         define('FEATHER_ACTIVE_PAGE', 'register');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         $this->feather->render('register/rules.php', array(
                             'lang_register'    =>    $lang_register,

@@ -136,7 +136,7 @@ if (!defined('FEATHER')) {
 										<select name="user_group" tabindex="23">
 											<option value="-1" selected="selected"><?php echo $lang_admin_users['All groups'] ?></option>
 											<option value="0"><?php echo $lang_admin_users['Unverified users'] ?></option>
-											<?php get_group_list(); ?>
+											<?php echo $group_list; ?>
 										</select>
 									</td>
 								</tr>

@@ -8,7 +8,7 @@ $lang_install = array(
 'Choose install language info'    =>    'The language used for this install script. The default language used for the board itself can be set below.',
 'Install language'                =>    'Install language',
 'Change language'                =>    'Change language',
-'Already installed'                =>    'It seems like FeatherBB is already installed. You should go <a href="index.php">here</a> instead.',
+'Already installed'                =>    'It seems like FeatherBB is already installed. You should go <a href="../index.php">here</a> instead.',
 'You are running error'            =>    'You are running %1$s version %2$s. FeatherBB %3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue.',
 'My FeatherBB Forum'            =>    'My FeatherBB Forum',
 'Description'                    =>    'Lighter than a feather.',
@@ -93,8 +93,8 @@ $lang_install = array(
 'FeatherBB has been installed'        =>    'FeatherBB has been installed. To finalize the installation please follow the instructions below.',
 'Final instructions'            =>    'Final instructions',
 'Info 17'                        =>    'To finalize the installation, you need to click on the button below to download a file called config.php. You then need to upload this file to the root directory of your FeatherBB installation.',
-'Info 18'                        =>    'Once you have uploaded config.php, FeatherBB will be fully installed! At that point, you may <a href="index.php">go to the forum index</a>.',
+'Info 18'                        =>    'Once you have uploaded config.php, FeatherBB will be fully installed! At that point, you may <a href="../index.php">go to the forum index</a>.',
 'Download config.php file'        =>    'Download config.php file',
-'FeatherBB fully installed'        =>    'FeatherBB has been fully installed! You may now <a href="index.php">go to the forum index</a>.',
+'FeatherBB fully installed'        =>    'FeatherBB has been fully installed! You may now <a href="../index.php">go to the forum index</a>.',
 
 );

@@ -17,13 +17,14 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo feather_escape($user['username']).' - '.$lang_profile['Section essentials'] ?></span></h2>
 	<div class="box">
 		<form id="profile1" method="post" action="<?php echo get_link('user/'.$id.'/section/essentials/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Username and pass legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<?php echo $user_disp['username_field'] ?>
-<?php if ($feather_user['id'] == $id || $feather_user['g_id'] == FEATHER_ADMIN || ($user['g_moderator'] == '0' && $feather_user['g_mod_change_passwords'] == '1')): ?>							<p class="actions"><span><a href="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>"><?php echo $lang_profile['Change pass'] ?></a></span></p>
+<?php if ($feather->user->id == $id || $feather->user->g_id == FEATHER_ADMIN || ($user['g_moderator'] == '0' && $feather->user->g_mod_change_passwords == '1')): ?>							<p class="actions"><span><a href="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>"><?php echo $lang_profile['Change pass'] ?></a></span></p>
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>
@@ -240,11 +241,11 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_profile['User activity'] ?></legend>
 					<div class="infldset">
-						<p><?php printf($lang_profile['Registered info'], format_time($user['registered'], true).(($feather_user['is_admmod']) ? ' (<a href="moderate.php?get_host='.feather_escape($user['registration_ip']).'">'.feather_escape($user['registration_ip']).'</a>)' : '')) ?></p>
+						<p><?php printf($lang_profile['Registered info'], format_time($user['registered'], true).(($feather->user->is_admmod) ? ' (<a href="'.get_link('admin/users/show-users/ip/'.$user['registration_ip'].'/').'">'.feather_escape($user['registration_ip']).'</a>)' : '')) ?></p>
 						<p><?php printf($lang_profile['Last post info'], format_time($user['last_post'])) ?></p>
 						<p><?php printf($lang_profile['Last visit info'], format_time($user['last_visit'])) ?></p>
 						<?php echo $user_disp['posts_field'] ?>
-<?php if ($feather_user['is_admmod']): ?>							<label><?php echo $lang_profile['Admin note'] ?><br />
+<?php if ($feather->user->is_admmod): ?>							<label><?php echo $lang_profile['Admin note'] ?><br />
 						<input id="admin_note" type="text" name="admin_note" value="<?php echo feather_escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
 <?php endif; ?>						</div>
 				</fieldset>

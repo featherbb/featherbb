@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_groups['Group delete head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/groups/delete/'.$id.'/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 				<input type="hidden" name="group_to_delete" value="<?php echo get_link('admin/groups/delete/'.$id.'/') ?>" />
 					<fieldset>

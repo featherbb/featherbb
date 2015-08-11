@@ -17,12 +17,13 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_profile['Change pass'] ?></span></h2>
 	<div class="box">
 		<form id="change_pass" method="post" action="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
 				<fieldset>
 					<legend><?php echo $lang_profile['Change pass legend'] ?></legend>
 					<div class="infldset">
-<?php if (!$feather_user['is_admmod']): ?>						<label class="required"><strong><?php echo $lang_profile['Old pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
+<?php if (!$feather->user->is_admmod): ?>						<label class="required"><strong><?php echo $lang_profile['Old pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
 						<input type="password" name="req_old_password" size="16" /><br /></label>
 <?php endif; ?>						<label class="conl required"><strong><?php echo $lang_profile['New pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
 						<input type="password" name="req_new_password1" size="16" /><br /></label>

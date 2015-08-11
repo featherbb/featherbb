@@ -67,10 +67,17 @@ elseif ($feather->request->post('preview')):
 <?php
 endif;
 ?>
+<!-- Init BBcode editor toolbar -->
+<script>
+    var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
+        langBbeditor = JSON.parse('<?= json_encode($lang_bbeditor); ?>');
+</script>
+<script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
 <div id="editform" class="blockform">
 	<h2><span><?php echo $lang_post['Edit post'] ?></span></h2>
 	<div class="box">
 		<form id="edit" method="post" action="<?php echo get_link('edit/'.$id.'/') ?>" onsubmit="return process_form(this)">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_post['Edit post legend'] ?></legend>
@@ -79,10 +86,11 @@ endif;
 <?php if ($can_edit_subject): ?>						<label class="required"><strong><?php echo $lang_common['Subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
 						<input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" value="<?php echo feather_escape($feather->request->post('req_subject') ? $feather->request->post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Message'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<textarea name="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo feather_escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
+						<script>postEditorToolbar('req_message');</script>
+                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo feather_escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
 						<ul class="bblinks">
 							<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="help.php#img" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="help.php#smilies" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($feather_config['o_smilies'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 						</ul>

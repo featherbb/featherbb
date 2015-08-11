@@ -12,13 +12,11 @@ if (!defined('FEATHER')) {
     exit;
 }
 
-$cur_cat = 0;
+if (empty($index_data)): ?>
+    <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo $lang_index['Empty board'] ?></p></div></div></div>
+<?php endif;
 foreach ($index_data as $forum) {
-    if ($forum['cur_category'] == 0) : ?>
-	<div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo $lang_index['Empty board'] ?></p></div></div></div>
-	<?php
-    endif;
-    if ($forum['cid'] != $cur_cat) :
+    if ($forum->cid != $cur_cat) :
         if ($cur_cat != 0) :
     ?>
 				</tbody>
@@ -28,8 +26,8 @@ foreach ($index_data as $forum) {
 	</div>
 	<?php endif;
     ?>
-	<div id="idx<?php echo $forum['cid'] ?>" class="blocktable">
-	<h2><span><?php echo feather_escape($forum['cat_name']) ?></span></h2>
+	<div id="idx<?php echo $forum->cid ?>" class="blocktable">
+	<h2><span><?php echo feather_escape($forum->cat_name) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
@@ -43,21 +41,21 @@ foreach ($index_data as $forum) {
 			</thead>
 			<tbody>
 	<?php
-    $cur_cat = $forum['cid'];
+    $cur_cat = $forum->cid;
     endif;
     ?>
-				<tr class="<?php echo $forum['item_status'] ?>">
+				<tr class="<?php echo $forum->item_status ?>">
 					<td class="tcl">
-						<div class="<?php echo $forum['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($forum['forum_count_formatted']) ?></div></div>
+						<div class="<?php echo $forum->icon_type ?>"><div class="nosize"><?php echo forum_number_format($forum->forum_count_formatted) ?></div></div>
 						<div class="tclcon">
 							<div>
-								<?php echo $forum['forum_field']."\n".$forum['moderators_formatted'] ?>
+								<?php echo $forum->forum_field."\n".$forum->moderators_formatted ?>
 							</div>
 						</div>
 					</td>
-					<td class="tc2"><?php echo forum_number_format($forum['num_topics_formatted']) ?></td>
-					<td class="tc3"><?php echo forum_number_format($forum['num_posts_formatted']) ?></td>
-					<td class="tcr"><?php echo $forum['last_post_formatted'] ?></td>
+					<td class="tc2"><?php echo forum_number_format($forum->num_topics_formatted) ?></td>
+					<td class="tc3"><?php echo forum_number_format($forum->num_posts_formatted) ?></td>
+					<td class="tcr"><?php echo $forum->last_post_formatted ?></td>
 				</tr>
 	<?php
 

@@ -14,7 +14,6 @@ class users
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -28,7 +27,7 @@ class users
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         global $lang_common, $lang_admin_common, $lang_admin_users;
@@ -37,8 +36,8 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -46,17 +45,17 @@ class users
 
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+            if ($this->user->g_id > FEATHER_ADMIN) {
+                message($lang_common['No permission'], '403');
             }
 
-            $move = $this->model->move_users($this->feather);
+            $move = $this->model->move_users();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Move users']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title);
+            $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('users');
 
@@ -73,17 +72,17 @@ class users
 
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
-            if ($this->user['g_id'] > FEATHER_ADMIN) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+            if ($this->user->g_id > FEATHER_ADMIN) {
+                message($lang_common['No permission'], '403');
             }
 
-            $user_ids = $this->model->delete_users($this->feather);
+            $user_ids = $this->model->delete_users();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
-                
-            $this->header->display($page_title);
+
+            $this->header->setTitle($page_title)->display();
 
             generate_admin_menu('users');
 
@@ -100,18 +99,18 @@ class users
 
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
-            if ($this->user['g_id'] != FEATHER_ADMIN && ($this->user['g_moderator'] != '1' || $this->user['g_mod_ban_users'] == '0')) {
-                message($lang_common['No permission'], false, '403 Forbidden');
+            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+                message($lang_common['No permission'], '403');
             }
 
-            $user_ids = $this->model->ban_users($this->feather);
+            $user_ids = $this->model->ban_users();
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
             $focus_element = array('bans2', 'ban_message');
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
-            $this->header->display($page_title, '', $focus_element);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
             generate_admin_menu('users');
 
@@ -129,7 +128,7 @@ class users
         if ($this->request->get('find_user')) {
 
             // Return conditions and query string for the URL
-            $search = $this->model->get_user_search($this->feather);
+            $search = $this->model->get_user_search();
 
             // Fetch user count
             $num_users = $this->model->get_num_users_search($search['conditions']);
@@ -144,16 +143,16 @@ class users
             $paging_links = '<span class="pages-label">' . $lang_common['Pages'] . ' </span>' . paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
-            $can_delete = $can_move = $this->user['g_id'] == FEATHER_ADMIN;
-            $can_ban = $this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && $this->user['g_mod_ban_users'] == '1');
+            $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
+            $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
-            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/include/common.js"></script>');
+            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/js/common.js"></script>');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
-  
-            $this->header->display($page_title, $p, '', $paging_links, null, $page_head);
+
+            $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
             $this->feather->render('admin/users/find_users.php', array(
                     'lang_admin_users' => $lang_admin_users,
@@ -176,16 +175,17 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, '', $focus_element);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
         generate_admin_menu('users');
 
         $this->feather->render('admin/users/admin_users.php', array(
                 'lang_admin_users' => $lang_admin_users,
                 'lang_admin_common' => $lang_admin_common,
+                'group_list' => $this->model->get_group_list(),
             )
         );
-        
+
         $this->footer->display();
     }
 
@@ -198,8 +198,8 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -221,7 +221,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, $p, '', $paging_links);
+        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/search_ip.php', array(
                 'lang_admin_users' => $lang_admin_users,
@@ -243,8 +243,8 @@ class users
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -270,7 +270,7 @@ class users
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, $p, '', $paging_links);
+        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/show_users.php', array(
                 'lang_admin_users' => $lang_admin_users,
@@ -279,7 +279,7 @@ class users
                 'info'   =>  $this->model->get_info_poster($ip, $start_from),
             )
         );
-        
+
         $this->footer->display();
     }
 }

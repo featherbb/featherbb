@@ -14,7 +14,6 @@ class statistics
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class statistics
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -48,9 +47,11 @@ class statistics
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('index');
+
+        $total = $this->model->get_total_size();
 
         $this->feather->render('admin/statistics.php', array(
                 'lang_admin_common'    =>    $lang_admin_common,
@@ -58,8 +59,10 @@ class statistics
                 'feather_config'    =>    $this->config,
                 'server_load'    =>    $this->model->get_server_load(),
                 'num_online'    =>    $this->model->get_num_online(),
-                'total_size'    =>    $this->model->get_total_size(),
+                'total_size'    =>    $total['size'],
+                'total_records'    =>    $total['records'],
                 'php_accelerator'    =>    $this->model->get_php_accelerator(),
+                'feather'    =>    $this->feather,
             )
         );
 
@@ -76,8 +79,8 @@ class statistics
         // Load the admin_index.php language file
         require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         // Show phpinfo() output

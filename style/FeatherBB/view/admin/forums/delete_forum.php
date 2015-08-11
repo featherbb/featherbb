@@ -16,12 +16,13 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_forums['Confirm delete head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/forums/delete/'.$forum_id.'/') ?>">
+			<form method="post" action="<?php echo get_link('admin/forums/delete/'.$cur_forum['id'].'/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Confirm delete subhead'] ?></legend>
 						<div class="infldset">
-							<p><?php printf($lang_admin_forums['Confirm delete info'], $forum_name) ?></p>
+							<p><?php printf($lang_admin_forums['Confirm delete info'], $cur_forum['forum_name']) ?></p>
 							<p class="warntext"><?php echo $lang_admin_forums['Confirm delete warn'] ?></p>
 						</div>
 					</fieldset>

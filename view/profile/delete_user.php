@@ -17,6 +17,7 @@ if (!defined('FEATHER')) {
 	<h2><span><?php echo $lang_profile['Confirm delete user'] ?></span></h2>
 	<div class="box">
 		<form id="confirm_del_user" method="post" action="<?php echo get_link('user/'.$id.'/') ?>">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php echo $lang_profile['Confirm delete legend'] ?></legend>

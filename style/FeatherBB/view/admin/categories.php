@@ -16,16 +16,17 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_categories['Add categories head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/categories/') ?>">
+			<form method="post" action="<?php echo get_link('admin/categories/add/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Add categories subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_categories['Add category label'] ?><div><input type="submit" name="add_cat" value="<?php echo $lang_admin_categories['Add new submit'] ?>" tabindex="2" /></div></th>
+									<th scope="row"><?php echo $lang_admin_categories['Add category label'] ?><div><input type="submit" value="<?php echo $lang_admin_categories['Add new submit'] ?>" tabindex="2" /></div></th>
 									<td>
-										<input type="text" name="new_cat_name" size="35" maxlength="80" tabindex="1" />
+										<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+										<input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
 										<span><?php printf($lang_admin_categories['Add category help'], '<a href="'.get_link('admin/forums').'">'.$lang_admin_common['Forums'].'</a>') ?></span>
 									</td>
 								</tr>
@@ -38,14 +39,15 @@ if (!defined('FEATHER')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Delete categories head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/categories/') ?>">
+			<form method="post" action="<?php echo get_link('admin/categories/delete') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Delete categories subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_categories['Delete category label'] ?><div><input type="submit" name="del_cat" value="<?php echo $lang_admin_common['Delete'] ?>" tabindex="4" /></div></th>
+									<th scope="row"><?php echo $lang_admin_categories['Delete category label'] ?><div><input type="submit" value="<?php echo $lang_admin_common['Delete'] ?>" tabindex="4" /></div></th>
 									<td>
 										<select name="cat_to_delete" tabindex="3">
 <?php
@@ -56,7 +58,7 @@ if (!defined('FEATHER')) {
 
 ?>
 										</select>
-										<span><?php echo $lang_admin_categories['Delete category help'] ?></span>
+										<span style="color: red;"><input type="checkbox" name="disclaimer" value="1"> <?php echo $lang_admin_categories['Delete category disclaimer'] ?></span>
 									</td>
 								</tr>
 							</table>
@@ -69,7 +71,8 @@ if (!defined('FEATHER')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Edit categories head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/categories/') ?>">
+			<form method="post" action="<?php echo get_link('admin/categories/edit/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Edit categories subhead'] ?></legend>
@@ -97,7 +100,7 @@ if (!defined('FEATHER')) {
 ?>
 							</tbody>
 							</table>
-							<div class="fsetsubmit"><input type="submit" name="update" value="<?php echo $lang_admin_common['Update'] ?>" /></div>
+							<div class="fsetsubmit"><input type="submit" value="<?php echo $lang_admin_common['Update'] ?>" /></div>
 						</div>
 					</fieldset>
 				</div>

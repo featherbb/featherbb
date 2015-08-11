@@ -9,23 +9,24 @@
 
 namespace model\admin;
 
+use DB;
+
 class options
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
  
-    public function update_options($feather)
+    public function update_options()
     {
         global $lang_admin_options, $lang_common;
 
-        confirm_referrer(get_link_r('admin/options/'), $lang_admin_options['Bad HTTP Referer message']);
+        
 
         $form = array(
             'board_title'            => feather_trim($this->request->post('form_board_title')),
@@ -109,12 +110,12 @@ class options
 
         $languages = forum_list_langs();
         if (!in_array($form['default_lang'], $languages)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         $styles = forum_list_styles();
         if (!in_array($form['default_style'], $styles)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         if ($form['time_format'] == '') {
@@ -196,19 +197,19 @@ class options
         }
 
         if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         if ($form['feed_ttl'] < 0) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         if ($form['timeout_online'] >= $form['timeout_visit']) {
@@ -219,12 +220,12 @@ class options
             // Only update values that have changed
             if (array_key_exists('o_'.$key, $this->config) && $this->config['o_'.$key] != $input) {
                 if ($input != '' || is_int($input)) {
-                    $value = '\''.$this->db->escape($input).'\'';
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
+                                                               ->update_many('conf_value', $input);
                 } else {
-                    $value = 'NULL';
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
+                                                               ->update_many_expr('conf_value', 'NULL');
                 }
-
-                $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$value.' WHERE conf_name=\'o_'.$this->db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());
             }
         }
 

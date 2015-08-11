@@ -14,7 +14,6 @@ class groups
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class groups
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -55,7 +54,7 @@ class groups
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('groups');
 
@@ -77,8 +76,8 @@ class groups
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -86,13 +85,8 @@ class groups
         // Load the admin_groups.php language file
         require FEATHER_ROOT . 'lang/' . $admin_language . '/groups.php';
 
-        confirm_referrer(array(
-            get_link_r('admin/groups/'),
-            get_link_r('admin/groups/delete/'.$id.'/'),
-        ));
-
         if ($id < 5) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message($lang_common['Bad request'], '404');
         }
 
         // Make sure we don't remove the default group
@@ -104,17 +98,17 @@ class groups
         $is_member = $this->model->check_members($id);
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
-        if (!$is_member || $feather->request->post('del_group')) {
+        if (!$is_member || $this->request->post('del_group')) {
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
-                $this->model->delete_group($this->feather, $id);
+                $this->model->delete_group($id);
             } else {
-                $group_title = get_group_title($id);
+                $group_title = $this->model->get_group_title($id);
 
                 $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
 
                 define('FEATHER_ACTIVE_PAGE', 'admin');
 
-                $this->header->display($page_title);
+                $this->header->setTitle($page_title)->display();
 
                 generate_admin_menu('groups');
 
@@ -134,7 +128,7 @@ class groups
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('groups');
 
@@ -155,8 +149,8 @@ class groups
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -179,17 +173,20 @@ class groups
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
-            $this->header->display($page_title, '', $focus_element, '', $required_fields);
+            $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
             generate_admin_menu('groups');
+
+            $group = $this->model->info_add_group($groups, $id);
 
             $this->feather->render('admin/groups/add_edit_group.php', array(
                     'lang_admin_groups'    =>    $lang_admin_groups,
                     'lang_admin_common'    =>    $lang_admin_common,
                     'feather_config'    =>    $this->config,
-                    'group'    =>    $this->model->info_add_group($groups, $this->feather, $id),
+                    'group'    =>    $group,
                     'groups'    =>    $groups,
                     'id'    => $id,
+                    'group_list'    => $this->model->get_group_list($groups, $group),
                 )
             );
 

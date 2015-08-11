@@ -314,7 +314,7 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
             )
         )
     ),
-    
+
     'center' => array(
         'html_name'                => 'div',
         'handlers'                => array(
@@ -387,6 +387,23 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
 						<param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
 						<param name="allowFullScreen" value="true" />
 					</object>'
+            )
+        )
+    ),
+
+    'large' => array(
+        'html_name'                => 'span',
+        'handlers'                => array(
+            'NO_ATTRIB'            => array(
+                'format'        => '<span style="font-size: larger;">%c_str%</span>'
+            )
+        )
+    ),
+    'small' => array(
+        'html_name'                => 'span',
+        'handlers'                => array(
+            'NO_ATTRIB'            => array(
+                'format'        => '<span style="font-size: smaller;">%c_str%</span>'
             )
         )
     ),

@@ -14,7 +14,6 @@ class login
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -33,13 +32,13 @@ class login
     {
         global $lang_common;
 
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->model->get_redirect_url($_SERVER);
@@ -50,7 +49,7 @@ class login
 
         define('FEATHER_ACTIVE_PAGE', 'login');
 
-        $this->header->display($page_title, '', $focus_element, '', $required_fields);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('login/form.php', array(
                             'lang_common' => $lang_common,
@@ -68,15 +67,15 @@ class login
 
         define('FEATHER_QUIET_VISIT', 1);
 
-        if (!$this->user['is_guest']) {
-            header('Location: index.php');
+        if (!$this->user->is_guest) {
+            header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
-        $this->model->login($this->feather);
+        $this->model->login();
     }
 
     public function logmeout($id, $token)
@@ -86,7 +85,7 @@ class login
         define('FEATHER_QUIET_VISIT', 1);
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         $this->model->logout($id, $token);
     }
@@ -97,15 +96,15 @@ class login
 
         define('FEATHER_QUIET_VISIT', 1);
 
-        if (!$this->user['is_guest']) {
-            header('Location: index.php');
+        if (!$this->user->is_guest) {
+            header('Location: '.get_base_url());
             exit;
         }
 
         // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/login.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
-        $errors = $this->model->password_forgotten($this->feather);
+        $errors = $this->model->password_forgotten();
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_login['Request pass']);
         $required_fields = array('req_email' => $lang_common['Email']);
@@ -113,7 +112,7 @@ class login
 
         define('FEATHER_ACTIVE_PAGE', 'login');
 
-        $this->header->display($page_title, '', $focus_element, '', $required_fields);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,

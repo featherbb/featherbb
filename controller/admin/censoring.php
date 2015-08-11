@@ -14,7 +14,6 @@ class censoring
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class censoring
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -46,17 +45,17 @@ class censoring
 
         // Add a censor word
         if ($this->request->post('add_word')) {
-            $this->model->add_word($this->feather);
+            $this->model->add_word();
         }
 
         // Update a censor word
         elseif ($this->request->post('update')) {
-            $this->model->update_word($this->feather);
+            $this->model->update_word();
         }
 
         // Remove a censor word
         elseif ($this->request->post('remove')) {
-            $this->model->remove_word($this->feather);
+            $this->model->remove_word();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
@@ -64,7 +63,7 @@ class censoring
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title, '', $focus_element);
+        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
         generate_admin_menu('censoring');
 

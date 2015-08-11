@@ -14,7 +14,6 @@ class permissions
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -35,8 +34,8 @@ class permissions
 
         require FEATHER_ROOT.'include/common_admin.php';
 
-        if (!$this->user['is_admmod']) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if (!$this->user->is_admmod) {
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -46,14 +45,14 @@ class permissions
 
         // Update permissions
         if ($this->feather->request->isPost()) {
-            $this->model->update_permissions($this->feather);
+            $this->model->update_permissions();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
-        $this->header->display($page_title);
+        $this->header->setTitle($page_title)->display();
 
         generate_admin_menu('permissions');
 

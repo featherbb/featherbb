@@ -14,11 +14,15 @@ class footer
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->dontStop = false;
+    }
+
+    public function dontStop() {
+        $this->dontStop = true;
     }
 
     public function display($footer_style = null, $id = null, $p = null, $pid = null, $forum_id = null, $num_pages = null)
@@ -51,16 +55,17 @@ class footer
                             'feather' => $this->feather,
                             )
                     );
+        
+        // Close Idiorm connection
+        $pdo = \DB::get_db();
+        $pdo = null;
 
-        // End the transaction
-        $this->db->end_transaction();
-
-
-        // Close the db connection (and free up any result data)
-        $this->db->close();
+        // If we need to stop the application outside a route
+        if ($this->dontStop) {
+            die();
+        }
 
         // If we reached this far, we shouldn't execute more code
-
         $this->feather->stop();
     }
 }
