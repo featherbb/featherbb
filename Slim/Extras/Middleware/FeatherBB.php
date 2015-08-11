@@ -12,6 +12,7 @@
  */
 
 namespace Slim\Extras\Middleware;
+use DB;
 
 class FeatherBB extends \Slim\Middleware
 {
@@ -130,12 +131,12 @@ class FeatherBB extends \Slim\Middleware
         require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
 
         // TODO: handle drivers
-        \ORM::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
-        \ORM::configure('username', $this->app->forum_settings['db_user']);
-        \ORM::configure('password', $this->app->forum_settings['db_pass']);
-        \ORM::configure('logging', true);
-        \ORM::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
-        \ORM::configure('id_column_overrides', array(
+        DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
+        DB::configure('username', $this->app->forum_settings['db_user']);
+        DB::configure('password', $this->app->forum_settings['db_pass']);
+        DB::configure('logging', true);
+        DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+        DB::configure('id_column_overrides', array(
             $this->app->forum_settings['db_prefix'].'groups' => 'g_id',
         ));
     }
@@ -159,7 +160,7 @@ class FeatherBB extends \Slim\Middleware
                 $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
                 $where_check_cookie = array('u.id' => intval($cookie['user_id']));
 
-                $result = \ORM::for_table($this->data['forum_settings']['db_prefix'].'users')
+                $result = DB::for_table($this->data['forum_settings']['db_prefix'].'users')
                     ->table_alias('u')
                     ->select_many($select_check_cookie)
                     ->inner_join($this->data['forum_settings']['db_prefix'].'groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -200,7 +201,7 @@ class FeatherBB extends \Slim\Middleware
         $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
         $where_set_default_user = array('u.id' => '1');
 
-        $result = \ORM::for_table($this->data['forum_settings']['db_prefix'].'users')
+        $result = DB::for_table($this->data['forum_settings']['db_prefix'].'users')
             ->table_alias('u')
             ->select_many($select_set_default_user)
             ->inner_join($this->data['forum_settings']['db_prefix'].'groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -235,15 +236,15 @@ class FeatherBB extends \Slim\Middleware
                 case 'mysqli_innodb':
                 case 'sqlite':
                 case 'sqlite3':
-                \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
                     break;
 
                 default:
-                    \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
+                    DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $this->app->user->logged));
                     break;
             }
         } else {
-            \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->where('ident', $remote_addr)
+            DB::for_table($this->data['forum_settings']['db_prefix'].'online')->where('ident', $remote_addr)
                  ->update_many('logged', time());
         }
 
@@ -269,11 +270,11 @@ class FeatherBB extends \Slim\Middleware
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
                         break;
 
                     default:
-                        \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
                         break;
                 }
 
@@ -283,7 +284,7 @@ class FeatherBB extends \Slim\Middleware
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if ($this->app->user->logged < ($now-$this->data['forum_settings']['o_timeout_visit'])) {
-                    \ORM::for_table($this->data['forum_settings']['db_prefix'].'users')->where('id', $this->app->user->id)
+                    DB::for_table($this->data['forum_settings']['db_prefix'].'users')->where('id', $this->app->user->id)
                         ->find_one()
                         ->set('last_visit', $this->app->user->logged)
                         ->save();
@@ -292,7 +293,7 @@ class FeatherBB extends \Slim\Middleware
 
                 $idle_sql = ($this->app->user->idle == '1') ? ', idle=0' : '';
 
-                \ORM::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('UPDATE '.$this->data['forum_settings']['db_prefix'].'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
+                DB::for_table($this->data['forum_settings']['db_prefix'].'online')->raw_execute('UPDATE '.$this->data['forum_settings']['db_prefix'].'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = $this->app->getCookie($this->data['forum_settings']['cookie_name'].'_track');
@@ -308,55 +309,6 @@ class FeatherBB extends \Slim\Middleware
     }
 
     //
-
-    public function init_db_legacy()
-    {
-        switch ($this->app->forum_settings['db_type']) {
-            case 'mysql':
-                require_once FEATHER_ROOT.'include/dblayer/mysql.php';
-                break;
-
-            case 'mysql_innodb':
-                require_once FEATHER_ROOT.'include/dblayer/mysql_innodb.php';
-                break;
-
-            case 'mysqli':
-                require_once FEATHER_ROOT.'include/dblayer/mysqli.php';
-                break;
-
-            case 'mysqli_innodb':
-                require_once FEATHER_ROOT.'include/dblayer/mysqli_innodb.php';
-                break;
-
-            case 'pgsql':
-                require_once FEATHER_ROOT.'include/dblayer/pgsql.php';
-                break;
-
-            case 'sqlite':
-                require_once FEATHER_ROOT.'include/dblayer/sqlite.php';
-                break;
-
-            case 'sqlite3':
-                require_once FEATHER_ROOT.'include/dblayer/sqlite3.php';
-                break;
-
-            default:
-                error('\''.$db_type.'\' is not a valid database type. Please check settings in config.php.', __FILE__, __LINE__);
-                break;
-        }
-
-        $this->app->container->singleton('db', function () {
-            // Create the database adapter object (and open/connect to/select db)
-            return new \DBLayer($this->app->forum_settings['db_host'],
-                               $this->app->forum_settings['db_user'],
-                               $this->app->forum_settings['db_pass'],
-                               $this->app->forum_settings['db_name'],
-                               $this->app->forum_settings['db_prefix'],
-                               false);
-        });
-        $this->app->db->start_transaction();
-        $this->app->prefix = $this->app->forum_settings['db_prefix']; // But, why ? *insert GIF here*
-    }
 
     public function call()
     {
@@ -377,7 +329,6 @@ class FeatherBB extends \Slim\Middleware
 
             $this->set_headers();
             $this->init_db();
-            $this->init_db_legacy();
 
             require_once $this->app->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
             require_once $this->app->forum_env['FEATHER_ROOT'].'include/functions.php';
