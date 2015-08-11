@@ -63,4 +63,4 @@ the forums or in the GitHub bug tracker.
 * [[adaur](http://github.com/adaur)] Project leader
 * [[capkokoon](http://github.com/capkokoon)] contributor
 * [[beaver](http://github.com/beaver-dev)] contributor
-* [[Magicalex](http://github.com/magicalex)] contributor contributor
+* [[Magicalex](http://github.com/magicalex)] contributor
