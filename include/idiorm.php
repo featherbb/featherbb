@@ -1061,9 +1061,6 @@
          */
         public function raw_join($table, $constraint, $table_alias, $parameters = array())
         {
-            $feather = \Slim\Slim::getInstance();
-            $table = $feather->prefix.$table;
-
             // Add table alias if present
             if (!is_null($table_alias)) {
                 $table_alias = $this->_quote_identifier($table_alias);
