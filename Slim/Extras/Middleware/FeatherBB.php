@@ -41,7 +41,8 @@ class FeatherBB extends \Slim\Middleware
                                     'FEATHER_SHOW_QUERIES' => 1
                                     );
 
-        $this->data['forum_settings'] = array_merge(self::load_default_settings(), $this->load_forum_config(), $user_forum_settings);
+        $this->data['forum_settings'] = array_merge(self::load_default_settings(), $user_forum_settings);
+        $this->init_db();
 	}
 
     public function load_forum_config()
@@ -53,7 +54,7 @@ class FeatherBB extends \Slim\Middleware
         } else {
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
             generate_config_cache();
-            require $this->data['forum_env']['FEATHER_ROOT'].'cache_config.php';
+            require $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
         }
         return $feather_config;
     }
@@ -91,7 +92,6 @@ class FeatherBB extends \Slim\Middleware
         foreach ($tmp as $key => $value) {
             $this->app->container->get('forum_settings')[$key] = $value;
         }
-
     }
 
     public function hydrate($data)
@@ -108,8 +108,6 @@ class FeatherBB extends \Slim\Middleware
             define($key, $value);
         }
     }
-
-    //
 
     public function set_headers()
     {
@@ -128,13 +126,13 @@ class FeatherBB extends \Slim\Middleware
 
     public function init_db()
     {
-        // Include IdiORM
+        // Include ORM
         require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
 
         // TODO: handle drivers
         DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
-        DB::configure('username', $this->app->forum_settings['db_user']);
-        DB::configure('password', $this->app->forum_settings['db_pass']);
+        DB::configure('username', $this->data['forum_settings']['db_user']);
+        DB::configure('password', $this->data['forum_settings']['db_pass']);
         DB::configure('logging', true);
         DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
         DB::configure('id_column_overrides', array(
@@ -148,15 +146,13 @@ class FeatherBB extends \Slim\Middleware
 
         // Get FeatherBB cookie
         $cookie_raw = $this->app->getCookie($this->data['forum_settings']['cookie_name']);
-
+        var_dump($cookie_raw);
         // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
         if (isset($cookie_raw)) {
             $cookie = json_decode($cookie_raw, true);
             $checksum = hash_hmac('sha1', $cookie['user_id'].$cookie['expires'], $this->data['forum_settings']['cookie_seed'].'_checksum');
-
             // If cookie has a non-guest user, hasn't expired and is legit
             if ($cookie['user_id'] > 1 && $cookie['expires'] > $now && $checksum == $cookie['checksum']) {
-
                 // Get user info from db
                 $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
                 $where_check_cookie = array('u.id' => intval($cookie['user_id']));
@@ -194,6 +190,7 @@ class FeatherBB extends \Slim\Middleware
                 }
             }
         }
+
         // If there is no cookie, or cookie is guest or expired, let's reconnect.
         $expires = $now + 31536000; // The cookie expires after a year
         $remote_addr = get_remote_address();
@@ -313,28 +310,27 @@ class FeatherBB extends \Slim\Middleware
 
     public function call()
     {
-        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed;
+        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed; // Legacy
 
-        // Block prefetch requests
-        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
+        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
             $this->set_headers();
             $this->app->response->setStatus(403);
         } else {
-            // Populate Feather object
-            $this->hydrate($this->data);
-
-            // Legacy
-            $this->env_to_globals($this->app->forum_env);
-            $this->app->config = $this->data['forum_settings'];
-            extract($this->data['forum_settings']);
-
-            $this->set_headers();
-            $this->init_db();
+            $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
 
             require_once $this->app->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
             require_once $this->app->forum_env['FEATHER_ROOT'].'include/functions.php';
 
-            // TODO : check useness
+            // Populate Feather object
+            $this->data['forum_settings'] = array_merge($this->load_forum_config(), $this->data['forum_settings']);
+            $this->hydrate($this->data);
+
+            $this->app->config = $this->data['forum_settings']; // Legacy
+            extract($this->data['forum_settings']); // Legacy
+
+            $this->set_headers();
+
+            // TODO : check usefulness
             // Strip out "bad" UTF-8 characters
             forum_remove_bad_characters();
             // Reverse the effect of register_globals
@@ -388,8 +384,6 @@ class FeatherBB extends \Slim\Middleware
             update_users_online();
 
             // Configure Slim
-            $this->app->config('cookies.encrypt', true);
-            $this->app->config('debug', true); // As long as we're developing FeatherBB
             $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? FEATHER_ROOT.'style/'.$this->app->user->style.'/view' : FEATHER_ROOT.'view');
             $this->next->call();
         }

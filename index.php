@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Start a session for flash messages
 session_cache_limiter(false);
 session_start();
@@ -32,6 +32,9 @@ $feather->add(new \Slim\Extras\Middleware\FeatherBB($feather_user_settings)); //
 
 // Load the routes
 require 'include/routes.php';
+
+$feather->config('cookies.encrypt', true);
+$feather->config('debug', true); // As long as we're developing FeatherBB
 
 // Run it, baby!
 $feather->run();
