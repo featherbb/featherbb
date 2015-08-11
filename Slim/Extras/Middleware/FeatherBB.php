@@ -331,11 +331,11 @@ class FeatherBB extends \Slim\Middleware
 
             $this->set_headers();
 
-            // TODO : check usefulness
-            // Strip out "bad" UTF-8 characters
-            forum_remove_bad_characters();
-            // Reverse the effect of register_globals
-            forum_unregister_globals();
+            // // TODO : check usefulness
+            // // Strip out "bad" UTF-8 characters
+            // forum_remove_bad_characters();
+            // // Reverse the effect of register_globals
+            // forum_unregister_globals();
 
             // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
             setlocale(LC_CTYPE, 'C');
