@@ -23,13 +23,13 @@ if (!defined('FEATHER')) {
 					<legend><?php echo $lang_profile['Email legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label class="required"><strong><?php echo $lang_profile['New email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_new_email" size="50" maxlength="80" /><br /></label>
-						<label class="required"><strong><?php echo $lang_common['Password'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password" size="16" /><br /></label>
+						<label class="required"><strong><?php echo $lang_profile['New email'] ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_new_email" size="50" maxlength="80" /><br /></label>
+						<label class="required"><strong><?php echo __('Password') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password" size="16" /><br /></label>
 						<p><?php echo $lang_profile['Email instructions'] ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="new_email" value="<?php echo $lang_common['Submit'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="new_email" value="<?php echo __('Submit') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

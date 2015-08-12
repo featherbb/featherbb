@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_ul['User find legend'] ?></legend>
 					<div class="infldset">
-<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php echo $lang_common['Username'] ?><br /><input type="text" name="username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php echo __('Username') ?><br /><input type="text" name="username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php echo $lang_ul['User group']."\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == -1) {
@@ -34,10 +34,10 @@ if (!defined('FEATHER')) {
 						<br /><select name="sort_by">
 							<option value="username"<?php if ($sort_by == 'username') {
     echo ' selected="selected"';
-} ?>><?php echo $lang_common['Username'] ?></option>
+} ?>><?php echo __('Username') ?></option>
 							<option value="registered"<?php if ($sort_by == 'registered') {
     echo ' selected="selected"';
-} ?>><?php echo $lang_common['Registered'] ?></option>
+} ?>><?php echo __('Registered') ?></option>
 <?php if ($show_post_count): ?>							<option value="num_posts"<?php if ($sort_by == 'num_posts') {
     echo ' selected="selected"';
 } ?>><?php echo $lang_ul['No of posts'] ?></option>
@@ -57,7 +57,7 @@ if (!defined('FEATHER')) {
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="search" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /></p>
+			<p class="buttons"><input type="submit" name="search" value="<?php echo __('Submit') ?>" accesskey="s" /></p>
 		</form>
 	</div>
 </div>
@@ -70,16 +70,16 @@ if (!defined('FEATHER')) {
 </div>
 
 <div id="users1" class="blocktable">
-	<h2><span><?php echo $lang_common['User list'] ?></span></h2>
+	<h2><span><?php echo __('User list') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Username'] ?></th>
-					<th class="tc2" scope="col"><?php echo $lang_common['Title'] ?></th>
-<?php if ($show_post_count): ?>					<th class="tc3" scope="col"><?php echo $lang_common['Posts'] ?></th>
-<?php endif; ?>					<th class="tcr" scope="col"><?php echo $lang_common['Registered'] ?></th>
+					<th class="tcl" scope="col"><?php echo __('Username') ?></th>
+					<th class="tc2" scope="col"><?php echo __('Title') ?></th>
+<?php if ($show_post_count): ?>					<th class="tc3" scope="col"><?php echo __('Posts') ?></th>
+<?php endif; ?>					<th class="tcr" scope="col"><?php echo __('Registered') ?></th>
 				</tr>
 			</thead>
 			<tbody>

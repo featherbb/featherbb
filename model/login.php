@@ -118,7 +118,7 @@ class login
 
     public function password_forgotten()
     {
-        global $lang_common, $lang_login;
+        global $lang_login;
 
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
@@ -133,7 +133,7 @@ class login
             // Validate the email address
             $email = strtolower(feather_trim($this->request->post('req_email')));
             if (!is_valid_email($email)) {
-                $errors[] = $lang_common['Invalid email'];
+                $errors[] = __('Invalid email');
             }
 
             // Did everything go according to plan?

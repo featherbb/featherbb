@@ -30,12 +30,12 @@ class userlist
     
     public function display()
     {
-        global $lang_common;
+
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         } elseif ($this->user->g_view_users == '0') {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the userlist.php language file
@@ -61,13 +61,13 @@ class userlist
         $p = (!$this->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['User list']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('User list'));
         if ($this->user->g_search_users == '1') {
             $focus_element = array('userlist', 'username');
         }
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
         define('FEATHER_ALLOW_INDEX', 1);
 
@@ -76,7 +76,6 @@ class userlist
         $this->header->setTitle($page_title)->setPage($p)->setFocusElement($focus_element)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('userlist.php', array(
-                            'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'lang_ul' => $lang_ul,
                             'feather' => $this->feather,

@@ -30,8 +30,6 @@ class login
     
     public function display()
     {
-        global $lang_common;
-
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
@@ -43,8 +41,8 @@ class login
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->model->get_redirect_url($_SERVER);
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Login']);
-        $required_fields = array('req_username' => $lang_common['Username'], 'req_password' => $lang_common['Password']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Login'));
+        $required_fields = array('req_username' => __('Username'), 'req_password' => __('Password'));
         $focus_element = array('login', 'req_username');
 
         define('FEATHER_ACTIVE_PAGE', 'login');
@@ -52,7 +50,6 @@ class login
         $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('login/form.php', array(
-                            'lang_common' => $lang_common,
                             'lang_login' => $lang_login,
                             'redirect_url'    =>    $redirect_url,
                             )
@@ -63,7 +60,7 @@ class login
 
     public function logmein()
     {
-        global $lang_common, $lang_login;
+        global $lang_login;
 
         define('FEATHER_QUIET_VISIT', 1);
 
@@ -80,7 +77,7 @@ class login
 
     public function logmeout($id, $token)
     {
-        global $lang_common;
+
 
         define('FEATHER_QUIET_VISIT', 1);
 
@@ -92,7 +89,7 @@ class login
 
     public function forget()
     {
-        global $lang_common, $lang_login;
+        global $lang_login;
 
         define('FEATHER_QUIET_VISIT', 1);
 
@@ -107,7 +104,7 @@ class login
         $errors = $this->model->password_forgotten();
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_login['Request pass']);
-        $required_fields = array('req_email' => $lang_common['Email']);
+        $required_fields = array('req_email' => __('Email'));
         $focus_element = array('request_pass', 'req_email');
 
         define('FEATHER_ACTIVE_PAGE', 'login');
@@ -117,7 +114,6 @@ class login
         $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,
                             'lang_login'    =>    $lang_login,
-                            'lang_common'    =>    $lang_common,
                             )
                     );
 

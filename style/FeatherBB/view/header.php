@@ -9,7 +9,7 @@
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $lang_common['lang_identifier'] ?>" lang="<?php echo $lang_common['lang_identifier'] ?>" dir="<?php echo $lang_common['lang_direction'] ?>">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo __('lang_identifier') ?>" lang="<?php echo __('lang_identifier') ?>" dir="<?php echo __('lang_direction') ?>">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -57,7 +57,7 @@
                         var elem = the_form.elements[i];
                         if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
                         {
-                            alert('"' + required_fields[elem.name] + '" <?php echo $lang_common['required field'] ?>');
+                            alert('"' + required_fields[elem.name] + '" <?php echo __('required field') ?>');
                             elem.focus();
                             return false;
                         }
@@ -89,7 +89,7 @@
                 <div class="navbar-right">
                     <form method="get" action="search" class="nav-search">
                         <input type="hidden" name="action" value="search">
-                        <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php echo $lang_common['Search'] ?>">
+                        <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php echo __('Search') ?>">
                     </form>
                 </div>
             </div>
@@ -111,7 +111,7 @@
         </div>
         <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
             <div id="announce" class="block">
-                <div class="hd"><h2><span><?php echo $lang_common['Announcement'] ?></span></h2></div>
+                <div class="hd"><h2><span><?php echo __('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
                         <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
@@ -122,7 +122,7 @@
         <?php if (isset($flash['message'])) : ?>
             <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
             <div id="msgflash" class="block">
-                <h2><span><?php echo $lang_common['Info'] ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
+                <h2><span><?php echo __('Info') ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
                 <div class="box">
                     <div class="inbox">
                         <p><?php echo feather_escape($flash['message']) ?></p>

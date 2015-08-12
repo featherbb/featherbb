@@ -30,7 +30,7 @@ class register
     
     public function display()
     {
-        global $lang_common, $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
+        global $lang_antispam_questions, $lang_antispam, $lang_register, $lang_prof_reg;
 
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
@@ -54,7 +54,7 @@ class register
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_register['Register']);
-        $required_fields = array('req_user' => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2', 'captcha' => $lang_antispam['Robot title']);
+        $required_fields = array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => $lang_antispam['Robot title']);
         $focus_element = array('register', 'req_user');
 
         define('FEATHER_ACTIVE_PAGE', 'register');
@@ -79,7 +79,6 @@ class register
                             'errors' => $user['errors'],
                             'feather_config' => $this->config,
                             'lang_register' => $lang_register,
-                            'lang_common' => $lang_common,
                             'lang_prof_reg' => $lang_prof_reg,
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions'    =>    $lang_antispam_questions,
@@ -102,7 +101,7 @@ class register
     public function rules()
     { // TODO: fix $_GET w/ URL rewriting
 
-        global $lang_common, $lang_login, $lang_register;
+        global $lang_login, $lang_register;
 
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {

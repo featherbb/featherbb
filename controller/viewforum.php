@@ -30,14 +30,14 @@ class viewforum
     
     public function display($id, $name = null, $page = null)
     {
-        global $lang_common, $lang_forum;
+        global $lang_forum;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
         if ($id < 1) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Load the viewforum.php language file
@@ -73,7 +73,7 @@ class viewforum
         $url_forum = url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
 
         $forum_actions = $this->model->get_forum_actions($id, $this->config['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
@@ -90,7 +90,6 @@ class viewforum
         $this->feather->render('viewforum.php', array(
                             'id' => $id,
                             'forum_data' => $this->model->print_topics($id, $sort_by, $start_from),
-                            'lang_common' => $lang_common,
                             'lang_forum' => $lang_forum,
                             'cur_forum' => $cur_forum,
                             'paging_links' => $paging_links,

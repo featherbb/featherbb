@@ -43,7 +43,7 @@ if (!empty($errors)) {
 		<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<div class="forminfo">
-					<h3><?php echo $lang_common['Important information'] ?></h3>
+					<h3><?php echo __('Important information') ?></h3>
 					<p><?php echo $lang_register['Desc 1'] ?></p>
 					<p><?php echo $lang_register['Desc 2'] ?></p>
 				</div>
@@ -53,7 +53,7 @@ if (!empty($errors)) {
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="username" value="" />
 						<input type="hidden" name="password" value="" />
-						<label class="required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_user" value="<?php if ($feather->request->post('req_user')) {
+						<label class="required"><strong><?php echo __('Username') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?php if ($feather->request->post('req_user')) {
     echo feather_escape($feather->request->post('req_user'));
 } ?>" size="25" maxlength="25" /><br /></label>
 					</div>
@@ -63,10 +63,10 @@ if (!empty($errors)) {
 				<fieldset>
 					<legend><?php echo $lang_register['Pass legend'] ?></legend>
 					<div class="infldset">
-						<label class="conl required"><strong><?php echo $lang_common['Password'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password1" value="<?php if ($feather->request->post('req_password1')) {
+						<label class="conl required"><strong><?php echo __('Password') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password1" value="<?php if ($feather->request->post('req_password1')) {
     echo feather_escape($feather->request->post('req_password1'));
 } ?>" size="16" /><br /></label>
-						<label class="conl required"><strong><?php echo $lang_prof_reg['Confirm pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password2" value="<?php if ($feather->request->post('req_password2')) {
+						<label class="conl required"><strong><?php echo $lang_prof_reg['Confirm pass'] ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password2" value="<?php if ($feather->request->post('req_password2')) {
     echo feather_escape($feather->request->post('req_password2'));
 } ?>" size="16" /><br /></label>
 						<p class="clearb"><?php echo $lang_register['Pass info'] ?></p>
@@ -78,11 +78,11 @@ if (!empty($errors)) {
 					<legend><?php echo($feather_config['o_regs_verify'] == '1') ? $lang_prof_reg['Email legend 2'] : $lang_prof_reg['Email legend'] ?></legend>
 					<div class="infldset">
 <?php if ($feather_config['o_regs_verify'] == '1'): ?>						<p><?php echo $lang_register['Email info'] ?></p>
-<?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
+<?php endif; ?>						<label class="required"><strong><?php echo __('Email') ?> <span><?php echo __('Required') ?></span></strong><br />
 						<input type="text" name="req_email1" value="<?php if ($feather->request->post('req_email1')) {
     echo feather_escape($feather->request->post('req_email1'));
 } ?>" size="50" maxlength="80" /><br /></label>
-<?php if ($feather_config['o_regs_verify'] == '1'): ?>						<label class="required"><strong><?php echo $lang_register['Confirm email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
+<?php if ($feather_config['o_regs_verify'] == '1'): ?>						<label class="required"><strong><?php echo $lang_register['Confirm email'] ?> <span><?php echo __('Required') ?></span></strong><br />
 						<input type="text" name="req_email2" value="<?php if ($feather->request->post('req_email2')) {
     echo feather_escape($feather->request->post('req_email2'));
 } ?>" size="50" maxlength="80" /><br /></label>
@@ -124,7 +124,7 @@ if (!empty($errors)) {
 					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_antispam['Robot info']    ?></p>
-						<label class="required"><strong><?php echo sprintf($lang_antispam['Robot question'], $question[$index_questions]) ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input name="captcha" id="captcha" type="text" size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /></label>
+						<label class="required"><strong><?php echo sprintf($lang_antispam['Robot question'], $question[$index_questions]) ?> <span><?php echo __('Required') ?></span></strong><br /><input name="captcha" id="captcha" type="text" size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /></label>
 					</div>
 				</fieldset>
 			</div>

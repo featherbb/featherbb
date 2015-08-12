@@ -54,7 +54,7 @@ if (!defined('FEATHER')) {
 					</div>
 				</fieldset>
 			</div>
-<?php endif; ?>				<p class="buttons"><input type="submit" name="update" value="<?php echo $lang_common['Submit'] ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
+<?php endif; ?>				<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
 		</form>
 	</div>
 </div>

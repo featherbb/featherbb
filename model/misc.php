@@ -32,7 +32,7 @@ class misc
 
     public function get_info_mail($recipient_id)
     {
-        global $lang_common;
+
         
         $select_get_info_mail = array('username', 'email', 'email_setting');
         
@@ -42,7 +42,7 @@ class misc
                 ->find_one();
         
         if (!$mail) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
         
         $mail['recipient'] = $mail['username'];
@@ -121,7 +121,7 @@ class misc
 
     public function insert_report($post_id)
     {
-        global $lang_misc, $lang_common;
+        global $lang_misc;
 
         // Clean up reason from POST
         $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));
@@ -141,7 +141,7 @@ class misc
                                                               ->find_one();
 
         if (!$topic) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $select_report = array('subject', 'forum_id');
@@ -152,7 +152,7 @@ class misc
             ->find_one();
 
         if (!$report) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Should we use the internal report handling?
@@ -208,7 +208,7 @@ class misc
 
     public function get_info_report($post_id)
     {
-        global $lang_common;
+
 
         $select_get_info_report = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
         $where_get_info_report = array(
@@ -228,7 +228,7 @@ class misc
             ->find_one();
 
         if (!$cur_post) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_post;
@@ -236,10 +236,10 @@ class misc
 
     public function subscribe_topic($topic_id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Make sure the user can view the topic
@@ -258,7 +258,7 @@ class misc
                     ->find_one();
 
         if (!$authorized) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
@@ -286,10 +286,10 @@ class misc
 
     public function unsubscribe_topic($topic_id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
@@ -312,10 +312,10 @@ class misc
 
     public function unsubscribe_forum($forum_id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
@@ -338,10 +338,10 @@ class misc
 
     public function subscribe_forum($forum_id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Make sure the user can view the forum
@@ -359,7 +359,7 @@ class misc
             ->find_one();
 
         if (!$authorized) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')

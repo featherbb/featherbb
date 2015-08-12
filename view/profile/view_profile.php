@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div id="viewprofile" class="block">
-	<h2><span><?php echo $lang_common['Profile'] ?></span></h2>
+	<h2><span><?php echo __('Profile') ?></span></h2>
 	<div class="box">
 		<div class="fakeform">
 			<div class="inform">

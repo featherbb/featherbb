@@ -29,10 +29,10 @@ class help
     
     public function display()
     {
-        global $lang_common;
+
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
 
@@ -48,7 +48,6 @@ class help
 
         $this->feather->render('help.php', array(
                             'lang_help' => $lang_help,
-                            'lang_common' => $lang_common,
                             )
                     );
 

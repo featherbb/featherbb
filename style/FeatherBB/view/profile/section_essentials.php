@@ -250,7 +250,7 @@ if (!defined('FEATHER')) {
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="update" value="<?php echo $lang_common['Submit'] ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
+			<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
 		</form>
 	</div>
 </div>

@@ -34,14 +34,14 @@ class moderate
 
     public function display_ip_address_post($pid)
     {
-        global $lang_common;
+
 
         $ip = DB::for_table('posts')
             ->where('id', $pid)
             ->find_one_col('poster_ip');
 
         if (!$ip) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Load the misc.php language file
@@ -61,7 +61,7 @@ class moderate
 
     public function get_topic_info($fid, $tid)
     {
-        global $lang_common;
+
         
         // Fetch some info about the topic
         $select_get_topic_info = array('forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id');
@@ -83,7 +83,7 @@ class moderate
             ->find_one();
 
         if (!$cur_topic) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_topic;
@@ -91,7 +91,7 @@ class moderate
 
     public function delete_posts($tid, $fid, $p = null)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         if (empty($posts)) {
@@ -100,7 +100,7 @@ class moderate
 
         if ($this->request->post('delete_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             // Verify that the post IDs are valid
@@ -116,7 +116,7 @@ class moderate
             }
 
             if (count($result) != substr_count($posts, ',') + 1) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             // Delete the posts
@@ -161,7 +161,7 @@ class moderate
 
     public function split_posts($tid, $fid, $p = null)
     {
-        global $lang_common, $lang_misc, $lang_post;
+        global $lang_misc, $lang_post;
 
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         if (empty($posts)) {
@@ -170,12 +170,12 @@ class moderate
 
         if ($this->request->post('split_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
             if ($move_to_forum < 1) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             // How many posts did we just split off?
@@ -190,7 +190,7 @@ class moderate
                 ->find_many();
 
             if (count($result) != $num_posts_splitted) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             // Verify that the move to forum ID is valid
@@ -208,7 +208,7 @@ class moderate
                 ->find_one();
 
             if (!$result) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             // Load the post.php language file
@@ -468,16 +468,16 @@ class moderate
 
     public function move_topics_to($fid, $tfid = null, $param = null)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $topics = explode(',', $this->request->post('topics'));
         $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
         if (empty($topics) || $move_to_forum < 1) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Verify that the topic IDs are valid
@@ -487,7 +487,7 @@ class moderate
             ->find_many();
 
         if (count($result) != count($topics)) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
 
@@ -506,7 +506,7 @@ class moderate
             ->find_one();
 
         if (!$authorized) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
@@ -586,10 +586,10 @@ class moderate
 
     public function merge_topics($fid)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $topics = explode(',', $this->request->post('topics'));
@@ -604,7 +604,7 @@ class moderate
             ->find_many();
 
         if (count($result) != count($topics)) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // The topic that we are merging into is the one with the smallest ID
@@ -697,11 +697,11 @@ class moderate
 
     public function delete_topics($topics, $fid)
     {
-        global $lang_misc, $lang_common;
+        global $lang_misc;
         
 
         if (@preg_match('%[^0-9,]%', $topics)) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         require FEATHER_ROOT.'include/search_idx.php';
@@ -715,7 +715,7 @@ class moderate
             ->find_many();
 
         if (count($result) != substr_count($topics, ',') + 1) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Verify that the posts are not by admins
@@ -725,7 +725,7 @@ class moderate
                 ->where('poster_id', get_admin_ids())
                 ->find_many();
             if ($authorized) {
-                message($lang_common['No permission'], '403');
+                message(__('No permission'), '403');
             }
         }
 
@@ -772,7 +772,7 @@ class moderate
 
     public function get_forum_info($fid)
     {
-        global $lang_common;
+
 
         $select_get_forum_info = array('f.forum_name', 'f.redirect_url', 'f.num_topics', 'f.sort_by');
         $where_get_forum_info = array(
@@ -790,7 +790,7 @@ class moderate
             ->find_one();
 
         if (!$cur_forum) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_forum;
@@ -819,7 +819,7 @@ class moderate
 
     public function display_topics($fid, $sort_by, $start_from)
     {
-        global $lang_forum, $lang_common;
+        global $lang_forum;
 
         $topic_data = array();
 
@@ -861,7 +861,7 @@ class moderate
                 $url_topic = url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -878,13 +878,13 @@ class moderate
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.$lang_forum['Moved'].'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
@@ -893,7 +893,7 @@ class moderate
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -963,14 +963,14 @@ class moderate
     
     public function get_subject_tid($id)
     {
-        global $lang_common;
+
 
         $subject = DB::for_table('topics')
             ->where('id', $id)
             ->find_one_col('subject');
 
         if (!$subject) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $subject;

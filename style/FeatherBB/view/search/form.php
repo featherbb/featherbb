@@ -73,7 +73,7 @@ if (!defined('FEATHER')) {
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="search" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /></p>
+			<p class="buttons"><input type="submit" name="search" value="<?php echo __('Submit') ?>" accesskey="s" /></p>
 		</form>
 	</div>
 </div>

@@ -23,17 +23,17 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php echo $lang_profile['Change pass legend'] ?></legend>
 					<div class="infldset">
-<?php if (!$feather->user->is_admmod): ?>						<label class="required"><strong><?php echo $lang_profile['Old pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
+<?php if (!$feather->user->is_admmod): ?>						<label class="required"><strong><?php echo $lang_profile['Old pass'] ?> <span><?php echo __('Required') ?></span></strong><br />
 						<input type="password" name="req_old_password" size="16" /><br /></label>
-<?php endif; ?>						<label class="conl required"><strong><?php echo $lang_profile['New pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
+<?php endif; ?>						<label class="conl required"><strong><?php echo $lang_profile['New pass'] ?> <span><?php echo __('Required') ?></span></strong><br />
 						<input type="password" name="req_new_password1" size="16" /><br /></label>
-						<label class="conl required"><strong><?php echo $lang_profile['Confirm new pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
+						<label class="conl required"><strong><?php echo $lang_profile['Confirm new pass'] ?> <span><?php echo __('Required') ?></span></strong><br />
 						<input type="password" name="req_new_password2" size="16" /><br /></label>
 						<p class="clearb"><?php echo $lang_profile['Pass info'] ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="update" value="<?php echo $lang_common['Submit'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

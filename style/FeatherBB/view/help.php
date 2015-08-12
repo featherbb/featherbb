@@ -67,7 +67,7 @@ if (!defined('FEATHER')) {
 		<p><code>[quote=James]<?php echo $lang_help['Quote text'] ?>[/quote]</code></p>
 		<p><?php echo $lang_help['produces quote box'] ?></p>
 		<div class="postmsg">
-			<div class="quotebox"><cite>James <?php echo $lang_common['wrote'] ?></cite><blockquote><div><p><?php echo $lang_help['Quote text'] ?></p></div></blockquote></div>
+			<div class="quotebox"><cite>James <?php echo __('wrote') ?></cite><blockquote><div><p><?php echo $lang_help['Quote text'] ?></p></div></blockquote></div>
 		</div>
 		<p><?php echo $lang_help['Quotes info 2'] ?></p>
 		<p><code>[quote]<?php echo $lang_help['Quote text'] ?>[/quote]</code></p>
@@ -133,7 +133,7 @@ foreach ($pd['smilies'] as $smiley_text => $smiley_data) {
 }
 
 foreach ($smiley_groups as $smiley_img => $smiley_texts) {
-    echo "\t\t<p><code>". implode('</code> ' .$lang_common['and']. ' <code>', $smiley_texts).'</code> <span>' .$lang_help['produces']. '</span> <samp>'.$pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
+    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .$lang_help['produces']. '</span> <samp>'.$pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
 }
 
 ?>

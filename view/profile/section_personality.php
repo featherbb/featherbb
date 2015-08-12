@@ -39,16 +39,16 @@ if (!defined('FEATHER')) {
 							<textarea name="signature" rows="4" cols="65"><?php echo feather_escape($user['signature']) ?></textarea><br /></label>
 						</div>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather->user->g_post_links == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['img tag'] ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather_config['p_sig_img_tag'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo $lang_common['Smilies'] ?></a> <?php echo($feather_config['o_smilies_sig'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php echo __('BBCode') ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php echo __('url tag') ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php echo __('img tag') ?></a> <?php echo($feather_config['p_sig_bbcode'] == '1' && $feather_config['p_sig_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php echo __('Smilies') ?></a> <?php echo($feather_config['o_smilies_sig'] == '1') ? __('on') : __('off'); ?></span></li>
 						</ul>
 						<?php echo $signature_preview ?>
 					</div>
 				</fieldset>
 			</div>
-<?php endif; ?>				<p class="buttons"><input type="submit" name="update" value="<?php echo $lang_common['Submit'] ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
+<?php endif; ?>				<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <?php echo $lang_profile['Instructions'] ?></p>
 		</form>
 	</div>
 </div>

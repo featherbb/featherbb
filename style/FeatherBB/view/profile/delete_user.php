@@ -30,7 +30,7 @@ if (!defined('FEATHER')) {
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="delete_user_comply" value="<?php echo $lang_profile['Delete'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="delete_user_comply" value="<?php echo $lang_profile['Delete'] ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

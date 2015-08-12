@@ -115,19 +115,12 @@ if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_
 //
 function error($message, $file = null, $line = null, $db_error = false)
 {
-    global $feather_config, $lang_common;
+    global $feather_config;
     // Set some default settings if the script failed before $feather_config could be populated
     if (empty($feather_config)) {
         $feather_config = array(
             'o_board_title'    => 'FluxBB',
             'o_gzip'        => '0'
-        );
-    }
-    // Set some default translations if the script failed before $lang_common could be populated
-    if (empty($lang_common)) {
-        $lang_common = array(
-            'Title separator'    => ' / ',
-            'Page'                => 'Page %s'
         );
     }
     // Empty all output buffers and stop buffering

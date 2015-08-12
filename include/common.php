@@ -145,10 +145,15 @@ $forum_date_formats = array($feather->config['o_date_format'], 'Y-m-d', 'Y-d-m',
 // Check/update/set cookie and fetch user info
 check_cookie();
 
-// Attempt to load the common language file
-if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php')) {
-    include FEATHER_ROOT.'lang/'.$feather->user->language.'/common.php';
-} else {
+// Load l10n
+require_once FEATHER_ROOT.'include/pomo/MO.php';
+require_once FEATHER_ROOT.'include/l10n.php';
+
+// Attempt to load the language file
+if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo')) {
+    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo');
+}
+else {
     die('There is no valid language pack \''.feather_escape($feather->user->language).'\' installed. Please reinstall a language of that name');
 }
 
@@ -179,7 +184,7 @@ update_users_online();
 
 // Check to see if we logged in without a cookie being set
 if ($feather->user->is_guest && isset($_GET['login'])) {
-    message($lang_common['No cookie']);
+    message(__('No cookie'));
 }
 
 // 32kb should be more than enough for forum posts

@@ -24,7 +24,7 @@ class delete
  
     public function get_info_delete($id)
     {
-        global $lang_common;
+
         
         $select_get_info_delete = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $where_get_info_delete = array(
@@ -44,7 +44,7 @@ class delete
             ->find_one();
         
         if (!$cur_post) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_post;

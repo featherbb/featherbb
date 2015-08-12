@@ -30,14 +30,14 @@ class bans
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_bans;
+        global $lang_admin_common, $lang_admin_bans;
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_bans.php language file
@@ -54,7 +54,7 @@ class bans
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
-            $paging_links = '<span class="pages-label">' . $lang_common['Pages'] . ' </span>' . paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str']));
+            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str']));
 
             $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans'], $lang_admin_bans['Results head']);
             define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -93,14 +93,14 @@ class bans
 
     public function add($id = null)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_bans;
+        global $lang_admin_common, $lang_admin_bans;
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_bans.php language file
@@ -131,12 +131,12 @@ class bans
 
     public function delete($id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_bans;
+        global $lang_admin_common, $lang_admin_bans;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_bans.php language file
@@ -148,14 +148,14 @@ class bans
 
     public function edit($id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_bans;
+        global $lang_admin_common, $lang_admin_bans;
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_bans.php language file

@@ -17,7 +17,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php echo __('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_forum['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_misc['Moderate'] ?></strong></li>
 		</ul>
@@ -38,10 +38,10 @@ if (!defined('FEATHER')) {
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Topic'] ?></th>
-					<th class="tc2" scope="col"><?php echo $lang_common['Replies'] ?></th>
+					<th class="tcl" scope="col"><?php echo __('Topic') ?></th>
+					<th class="tc2" scope="col"><?php echo __('Replies') ?></th>
 <?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo $lang_forum['Views'] ?></th>
-<?php endif; ?>					<th class="tcr"><?php echo $lang_common['Last post'] ?></th>
+<?php endif; ?>					<th class="tcr"><?php echo __('Last post') ?></th>
 					<th class="tcmod" scope="col"><?php echo $lang_misc['Select'] ?></th>
 				</tr>
 			</thead>
@@ -91,7 +91,7 @@ if (!defined('FEATHER')) {
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php echo $lang_common['Index'] ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php echo __('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_forum['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $lang_misc['Moderate'] ?></strong></li>
 		</ul>

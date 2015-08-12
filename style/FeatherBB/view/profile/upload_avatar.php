@@ -24,12 +24,12 @@ if (!defined('FEATHER')) {
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather_config['o_avatars_size'] ?>" />
-						<label class="required"><strong><?php echo $lang_profile['File'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-						<p><?php echo $lang_profile['Avatar desc'].' '.$feather_config['o_avatars_width'].' x '.$feather_config['o_avatars_height'].' '.$lang_profile['pixels'].' '.$lang_common['and'].' '.forum_number_format($feather_config['o_avatars_size']).' '.$lang_profile['bytes'].' ('.file_size($feather_config['o_avatars_size']).').' ?></p>
+						<label class="required"><strong><?php echo $lang_profile['File'] ?> <span><?php echo __('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
+						<p><?php echo $lang_profile['Avatar desc'].' '.$feather_config['o_avatars_width'].' x '.$feather_config['o_avatars_height'].' '.$lang_profile['pixels'].' '.__('and').' '.forum_number_format($feather_config['o_avatars_size']).' '.$lang_profile['bytes'].' ('.file_size($feather_config['o_avatars_size']).').' ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="upload" value="<?php echo $lang_profile['Upload'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="upload" value="<?php echo $lang_profile['Upload'] ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

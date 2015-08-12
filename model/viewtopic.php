@@ -25,7 +25,7 @@ class viewtopic
     // Redirects to a post in particular
     public function redirect_to_post($post_id)
     {
-        global $lang_common;
+
 
         $select_info_topic = array('topic_id', 'posted');
 
@@ -35,7 +35,7 @@ class viewtopic
                       ->find_one();
 
         if (!$result) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $post['topic_id'] = $result['topic_id'];
@@ -55,7 +55,7 @@ class viewtopic
     // Redirects to new posts or last post
     public function handle_actions($topic_id, $action)
     {
-        
+
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
             if (!$this->user->is_guest) {
@@ -94,7 +94,7 @@ class viewtopic
     // Gets some info about the topic
     public function get_info_topic($id)
     {
-        global $lang_common;
+
 
         $where_get_info_topic = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -133,7 +133,7 @@ class viewtopic
         }
 
         if (!$cur_topic) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_topic;
@@ -166,18 +166,18 @@ class viewtopic
     // Should we display the quickpost?
     public function is_quickpost($post_replies, $closed, $is_admmod)
     {
-        global $lang_common;
+
 
         $quickpost = false;
         if ($this->config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $this->user->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
             // Load the post.php language file
             require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
-            $required_fields = array('req_message' => $lang_common['Message']);
+            $required_fields = array('req_message' => __('Message'));
             if ($this->user->is_guest) {
                 $required_fields['req_username'] = $lang_post['Guest name'];
                 if ($this->config['p_force_guest_email'] == '1') {
-                    $required_fields['req_email'] = $lang_common['Email'];
+                    $required_fields['req_email'] = __('Email');
                 }
             }
             $quickpost = true;
@@ -208,7 +208,7 @@ class viewtopic
     // Adds relationship meta tags
     public function get_page_head($topic_id, $num_pages, $p, $url_topic)
     {
-        global $lang_common;
+
 
         $page_head = array();
         $page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
@@ -223,9 +223,9 @@ class viewtopic
         }
 
         if ($this->config['o_feed_type'] == '1') {
-            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.$lang_common['RSS topic feed'].'" />';
+            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.__('RSS topic feed').'" />';
         } elseif ($this->config['o_feed_type'] == '2') {
-            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.$lang_common['Atom topic feed'].'" />';
+            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.__('Atom topic feed').'" />';
         }
 
         return $page_head;
@@ -234,7 +234,7 @@ class viewtopic
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
-        global $lang_topic, $lang_common, $pd;
+        global $lang_topic, $pd;
 
         $post_data = array();
 
@@ -322,9 +322,9 @@ class viewtopic
 
                     // Now let's deal with the contact links (Email and URL)
                     if ((($cur_post['email_setting'] == '0' && !$this->user->is_guest) || $this->user->is_admmod) && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['email']).'">'.__('Email').'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.$lang_common['Email'].'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
                     }
 
                     if ($cur_post['url'] != '') {
@@ -360,7 +360,7 @@ class viewtopic
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['poster_email']).'">'.$lang_common['Email'].'</a></span>';
+                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
                 }
             }
 

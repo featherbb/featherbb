@@ -25,7 +25,7 @@ class edit
     // Fetch some info about the post, the topic and the forum
     public function get_info_edit($id)
     {
-        global $lang_common;
+
      
         $select_get_info_edit = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $where_get_info_edit = array(
@@ -45,7 +45,7 @@ class edit
             ->find_one();
 
         if (!$cur_post) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_post;
@@ -186,15 +186,15 @@ class edit
 
     public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
     {
-        global $lang_post, $lang_common;
+        global $lang_post;
 
         $checkboxes = array();
 
         if ($can_edit_subject && $is_admmod) {
             if ($this->request->post('stick_topic') || $cur_post['sticky'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
             }
         }
 

@@ -30,10 +30,10 @@ class misc
     
     public function rules()
     {
-        global $lang_common;
+
 
         if ($this->config['o_rules'] == '0' || ($this->user->is_guest && $this->user->g_read_board == '0' && $this->config['o_regs_allow'] == '0')) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Load the register.php language file
@@ -54,10 +54,10 @@ class misc
 
     public function markread()
     {
-        global $lang_common;
+
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -73,10 +73,10 @@ class misc
 
     public function markforumread($id)
     {
-        global $lang_common;
+
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -91,10 +91,10 @@ class misc
 
     public function subscribeforum($id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -105,10 +105,10 @@ class misc
 
     public function subscribetopic($id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -119,10 +119,10 @@ class misc
 
     public function unsubscribeforum($id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -133,10 +133,10 @@ class misc
 
     public function unsubscribetopic($id)
     {
-        global $lang_common, $lang_misc;
+        global $lang_misc;
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -147,14 +147,14 @@ class misc
 
     public function email($id)
     {
-        global $lang_common;
+
 
         if ($this->user->is_guest || $this->user->g_send_email == '0') {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         if ($id < 2) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Load the misc.php language file
@@ -191,10 +191,10 @@ class misc
 
     public function report($id)
     {
-        global $lang_common;
+
 
         if ($this->user->is_guest) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the misc.php language file
@@ -222,7 +222,6 @@ class misc
         $this->feather->render('misc/report.php', array(
                 'lang_misc' => $lang_misc,
                 'id' => $id,
-                'lang_common' => $lang_common,
                 'cur_post' => $cur_post,
                 )
         );

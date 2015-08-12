@@ -46,12 +46,12 @@ if (!empty($errors)) {
 					<legend><?php echo $lang_login['Request pass legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label class="required"><strong><?php echo $lang_common['Email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" /><br /></label>
+						<label class="required"><strong><?php echo __('Email') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" /><br /></label>
 						<p><?php echo $lang_login['Request pass info'] ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="request_pass" value="<?php echo $lang_common['Submit'] ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a><?php endif; ?></p>
+			<p class="buttons"><input type="submit" name="request_pass" value="<?php echo __('Submit') ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a><?php endif; ?></p>
 		</form>
 	</div>
 </div>

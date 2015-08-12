@@ -30,14 +30,14 @@ class search
     
     public function display()
     {
-        global $lang_common, $lang_search, $lang_forum, $lang_topic, $pd;
+        global $lang_search, $lang_forum, $lang_topic, $pd;
 
         // Load the search.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/search.php';
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         } elseif ($this->user->g_search == '0') {
             message($lang_search['No search permission'], false, '403 Forbidden');
         }
@@ -57,8 +57,7 @@ class search
                     $this->header->setTitle($page_title)->display();
 
                     $this->feather->render('search/header.php', array(
-                                'lang_common' => $lang_common,
-                                'lang_search' => $lang_search,
+                                    'lang_search' => $lang_search,
                                 'search' => $search,
                                 )
                         );
@@ -89,7 +88,6 @@ class search
         $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
         $this->feather->render('search/form.php', array(
-                            'lang_common' => $lang_common,
                             'lang_search' => $lang_search,
                             'feather_config' => $this->config,
                             'feather' => $this->feather,

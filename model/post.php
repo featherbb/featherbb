@@ -25,7 +25,7 @@ class post
     //  Get some info about the post
     public function get_info_post($tid, $fid)
     {
-        global $lang_common;
+
 
         if ($tid) {
             $select_get_info_post = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
@@ -64,7 +64,7 @@ class post
         }
 
         if (!$cur_posting) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $cur_posting;
@@ -73,7 +73,7 @@ class post
     // Checks the post for errors before posting
     public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
     {
-        global $lang_post, $lang_common, $lang_prof_reg, $lang_register, $lang_antispam, $lang_antispam_questions, $pd;
+        global $lang_post, $lang_prof_reg, $lang_register, $lang_antispam, $lang_antispam_questions, $pd;
 
         // Antispam feature
         if ($this->user->is_guest) {
@@ -105,13 +105,13 @@ class post
                 ->find_one_col('subject');
 
             if (!$subject_tid) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
             $url_subject = url_friendly($subject_tid);
         } else {
             $url_subject = '';
         }
-        
+
         // If it's a new topic
         if ($fid) {
             $subject = feather_trim($this->request->post('req_subject'));
@@ -141,7 +141,7 @@ class post
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
                 require FEATHER_ROOT.'include/email.php';
                 if (!is_valid_email($email)) {
-                    $errors[] = $lang_common['Invalid email'];
+                    $errors[] = __('Invalid email');
                 }
 
                 // Check if it's a banned email address
@@ -693,7 +693,7 @@ class post
     // If we are quoting a message
     public function get_quote_message($qid, $tid)
     {
-        global $lang_common;
+
 
         $select_get_quote_message = array('poster', 'message');
 
@@ -703,7 +703,7 @@ class post
                  ->find_one();
 
         if (!$quote) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
@@ -756,7 +756,7 @@ class post
                 }
             $quote = '[quote='. $quote['poster'] .']'.$quote['message'].'[/quote]'."\n";
         } else {
-            $quote = '> '.$quote['poster'].' '.$lang_common['wrote']."\n\n".'> '.$quote['message']."\n";
+            $quote = '> '.$quote['poster'].' '.__('wrote')."\n\n".'> '.$quote['message']."\n";
         }
 
         return $quote;
@@ -765,13 +765,13 @@ class post
     // Get the current state of checkboxes
     public function get_checkboxes($fid, $is_admmod, $is_subscribed)
     {
-        global $lang_post, $lang_common;
+        global $lang_post;
 
         $cur_index = 1;
 
         $checkboxes = array();
         if ($fid && $is_admmod) {
-            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('stick_topic') ? ' checked="checked"' : '').' />'.$lang_common['Stick topic'].'<br /></label>';
+            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('stick_topic') ? ' checked="checked"' : '').' />'.__('Stick topic').'<br /></label>';
         }
 
         if (!$this->user->is_guest) {

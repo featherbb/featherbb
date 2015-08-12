@@ -24,7 +24,7 @@ class register
  
     public function check_for_errors()
     {
-        global $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
+        global $lang_register, $lang_prof_reg, $lang_antispam, $lang_antispam_questions;
 
         $user = array();
         $user['errors'] = '';
@@ -78,7 +78,7 @@ class register
         require FEATHER_ROOT.'include/email.php';
 
         if (!is_valid_email($user['email1'])) {
-            $user['errors'][] = $lang_common['Invalid email'];
+            $user['errors'][] = __('Invalid email');
         } elseif ($this->config['o_regs_verify'] == '1' && $user['email1'] != $email2) {
             $user['errors'][] = $lang_register['Email not match'];
         }
@@ -112,7 +112,7 @@ class register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];

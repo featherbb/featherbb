@@ -30,10 +30,8 @@ class index
     
     public function display()
     {
-        global $lang_common;
-
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
         // Load the index.php language file
@@ -48,7 +46,6 @@ class index
 
         $this->feather->render('index.php', array(
                             'index_data' => $this->model->print_categories_forums(),
-                            'lang_common' => $lang_common,
                             'lang_index' => $lang_index,
                             'stats' => $this->model->collect_stats(),
                             'feather_config' => $this->config,

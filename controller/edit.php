@@ -30,10 +30,10 @@ class edit
     
     public function editpost($id)
     {
-        global $lang_common, $lang_prof_reg, $lang_post, $lang_register;
+        global $lang_prof_reg, $lang_post, $lang_register;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -52,11 +52,11 @@ class edit
 
         // Do we have permission to edit this post?
         if (($this->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the post.php language file
@@ -88,7 +88,7 @@ class edit
 
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_post['Edit post']);
-        $required_fields = array('req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);
+        $required_fields = array('req_subject' => __('Subject'), 'req_message' => __('Message'));
         $focus_element = array('edit', 'req_message');
 
         define('FEATHER_ACTIVE_PAGE', 'edit');
@@ -103,7 +103,6 @@ class edit
         }
 
         $this->feather->render('edit.php', array(
-                            'lang_common' => $lang_common,
                             'cur_post' => $cur_post,
                             'lang_post' => $lang_post,
                             'errors' => $errors,

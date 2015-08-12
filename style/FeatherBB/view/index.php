@@ -33,10 +33,10 @@ foreach ($index_data as $forum) {
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Forum'] ?></th>
+					<th class="tcl" scope="col"><?php echo __('Forum') ?></th>
 					<th class="tc2" scope="col"><?php echo $lang_index['Topics'] ?></th>
-					<th class="tc3" scope="col"><?php echo $lang_common['Posts'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_common['Last post'] ?></th>
+					<th class="tc3" scope="col"><?php echo __('Posts') ?></th>
+					<th class="tcr" scope="col"><?php echo __('Last post') ?></th>
 				</tr>
 			</thead>
 			<tbody>

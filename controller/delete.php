@@ -30,10 +30,10 @@ class delete
     
     public function deletepost($id)
     {
-        global $lang_common, $lang_post, $pd;
+        global $lang_post, $pd;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -55,11 +55,11 @@ class delete
                 $cur_post['poster_id'] != $this->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the delete.php language file
@@ -81,7 +81,6 @@ class delete
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         $this->feather->render('delete.php', array(
-                            'lang_common' => $lang_common,
                             'lang_delete' => $lang_delete,
                             'cur_post' => $cur_post,
                             'id' => $id,
