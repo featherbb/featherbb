@@ -70,7 +70,7 @@ class FeatherBB extends \Slim\Middleware
 
     public function init_db()
     {
-        require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
+        require $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
         switch ($this->data['forum_settings']['db_type']) {
             case 'mysql':
             case 'mysqli':
@@ -316,7 +316,7 @@ class FeatherBB extends \Slim\Middleware
 
     public function call()
     {
-        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
+        global $feather_bans, $db_type, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
 
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
             $this->set_headers();
@@ -324,14 +324,17 @@ class FeatherBB extends \Slim\Middleware
         } else {
             $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
 
-            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
-            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';
+            require $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
+            require $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';
+
+            // Record the start time (will be used to calculate the generation time for the page)
+            $this->app->start = get_microtime();
 
             // Get forum config and load it into forum_settings array
             if (file_exists($this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php')) {
                 include $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
             } else {
-                require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
+                require $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
                 generate_config_cache();
                 require $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
             }
@@ -354,8 +357,8 @@ class FeatherBB extends \Slim\Middleware
 
             // Attempt to load the common language file
             // Load l10n
-            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/pomo/MO.php';
-            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/l10n.php';
+            require $this->data['forum_env']['FEATHER_ROOT'].'include/pomo/MO.php';
+            require $this->data['forum_env']['FEATHER_ROOT'].'include/l10n.php';
 
             // Attempt to load the language file
             if (file_exists($this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo')) {
@@ -377,11 +380,11 @@ class FeatherBB extends \Slim\Middleware
 
             if (!defined('FEATHER_BANS_LOADED')) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
+                    require $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
                 }
 
                 generate_bans_cache();
-                require_once $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_bans.php';
+                require $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_bans.php';
             }
 
             // Check if current user is banned
