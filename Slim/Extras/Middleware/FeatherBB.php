@@ -46,15 +46,7 @@ class FeatherBB extends \Slim\Middleware
         $this->data['forum_settings'] = array_merge(self::load_default_settings(), $user_forum_settings);
 
         // Load DB settings
-        require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
-        DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
-        DB::configure('username', $this->data['forum_settings']['db_user']);
-        DB::configure('password', $this->data['forum_settings']['db_pass']);
-        DB::configure('logging', true);
-        DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
-        DB::configure('id_column_overrides', array(
-            'groups' => 'g_id',
-        ));
+        $this->init_db();
 	}
 
     public function load_forum_config()
@@ -87,6 +79,32 @@ class FeatherBB extends \Slim\Middleware
                 // Debug
                 'debug' => false,
                 );
+    }
+
+    public function init_db()
+    {
+        require_once $this->data['forum_env']['FEATHER_ROOT'].'include/idiorm.php';
+        switch ($this->data['forum_settings']['db_type']) {
+            case 'mysql':
+            case 'mysqli':
+            case 'mysql_innodb':
+            case 'mysqli_innodb':
+                DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
+                DB::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+                break;
+            case 'sqlite';
+            case 'sqlite3';
+                DB::configure('sqlite:./'.$this->data['forum_settings']['db_name']);
+                break;
+            case 'pgsql':
+                \DB::configure('pgsql:host='.$this->data['forum_settings']['db_host'].'dbname='.$this->data['forum_settings']['db_name']);
+                break;
+        }
+        DB::configure('username', $this->data['forum_settings']['db_user']);
+        DB::configure('password', $this->data['forum_settings']['db_pass']);
+        DB::configure('id_column_overrides', array(
+            'groups' => 'g_id',
+        ));
     }
 
     // Getters / setters for Slim container (avoid magic get error)
@@ -317,7 +335,7 @@ class FeatherBB extends \Slim\Middleware
             $this->app->response->setStatus(403);
         } else {
             $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
-            
+
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';
 
