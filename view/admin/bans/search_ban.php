@@ -16,9 +16,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo $lang_admin_common['Bans'] ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo $lang_admin_bans['Results head'] ?></strong></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo __('Bans') ?></a></li>
+			<li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
@@ -29,19 +29,19 @@ if (!defined('FEATHER')) {
 
 
 <div id="bans1" class="blocktable">
-	<h2><span><?php echo $lang_admin_bans['Results head'] ?></span></h2>
+	<h2><span><?php echo __('Results head') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_admin_bans['Results username head'] ?></th>
-					<th class="tc2" scope="col"><?php echo $lang_admin_bans['Results e-mail head'] ?></th>
-					<th class="tc3" scope="col"><?php echo $lang_admin_bans['Results IP address head'] ?></th>
-					<th class="tc4" scope="col"><?php echo $lang_admin_bans['Results expire head'] ?></th>
-					<th class="tc5" scope="col"><?php echo $lang_admin_bans['Results message head'] ?></th>
-					<th class="tc6" scope="col"><?php echo $lang_admin_bans['Results banned by head'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_admin_bans['Results actions head'] ?></th>
+					<th class="tcl" scope="col"><?php echo __('Results username head') ?></th>
+					<th class="tc2" scope="col"><?php echo __('Results e-mail head') ?></th>
+					<th class="tc3" scope="col"><?php echo __('Results IP address head') ?></th>
+					<th class="tc4" scope="col"><?php echo __('Results expire head') ?></th>
+					<th class="tc5" scope="col"><?php echo __('Results message head') ?></th>
+					<th class="tc6" scope="col"><?php echo __('Results banned by head') ?></th>
+					<th class="tcr" scope="col"><?php echo __('Results actions head') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -55,14 +55,14 @@ if (!defined('FEATHER')) {
 					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? feather_escape($cur_ban['ip']) : '&#160;' ?></td>
 					<td class="tc4"><?php echo format_time($cur_ban['expire'], true) ?></td>
 					<td class="tc5"><?php echo($cur_ban['message'] != '') ? feather_escape($cur_ban['message']) : '&#160;' ?></td>
-					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.get_link('user/'.$cur_ban['ban_creator'].'/').'">'.feather_escape($cur_ban['ban_creator_username']).'</a>' : $lang_admin_bans['Unknown'] ?></td>
-					<td class="tcr"><?php echo '<a href="'.get_link('admin/bans/edit/'.$cur_ban['id'].'/').'">'.$lang_admin_common['Edit'].'</a> | <a href="'.get_link('admin/bans/delete/'.$cur_ban['id'].'/').'">'.$lang_admin_common['Remove'].'</a>' ?></td>
+					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.get_link('user/'.$cur_ban['ban_creator'].'/').'">'.feather_escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
+					<td class="tcr"><?php echo '<a href="'.get_link('admin/bans/edit/'.$cur_ban['id'].'/').'">'.__('Edit').'</a> | <a href="'.get_link('admin/bans/delete/'.$cur_ban['id'].'/').'">'.__('Remove').'</a>' ?></td>
 				</tr>
 <?php
 
         }
         if (empty($ban_data)) {
-            echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.$lang_admin_bans['No match'].'</td></tr>'."\n";
+            echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.__('No match').'</td></tr>'."\n";
         }
 
 ?>
@@ -78,9 +78,9 @@ if (!defined('FEATHER')) {
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
         <ul class="crumbs">
-            <li><a href="<?php echo get_link('admin/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-            <li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo $lang_admin_common['Bans'] ?></a></li>
-            <li><span>»&#160;</span><strong><?php echo $lang_admin_bans['Results head'] ?></strong></li>
+            <li><a href="<?php echo get_link('admin/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo __('Bans') ?></a></li>
+            <li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
         </ul>
 		<div class="clearer"></div>
 	</div>

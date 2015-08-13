@@ -24,16 +24,11 @@ class maintenance
  
     public function rebuild()
     {
-        global $lang_admin_maintenance;
-
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
 
         // Check per page is > 0
         if ($per_page < 1) {
-            message($lang_admin_maintenance['Posts must be integer message']);
+            message(__('Posts must be integer message'));
         }
 
         @set_time_limit(0);
@@ -44,7 +39,7 @@ class maintenance
             DB::for_table('search_matches')->raw_execute('TRUNCATE '.$this->feather->prefix.'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
-            switch ($feather->forum_settings['db_type']) {
+            switch ($this->feather->forum_settings['db_type']) {
                 case 'mysql':
                 case 'mysqli':
                 case 'mysql_innodb':
@@ -60,8 +55,6 @@ class maintenance
 
     public function get_query_str()
     {
-        global $lang_admin_maintenance;
-
         $query_str = '';
 
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
@@ -82,7 +75,7 @@ class maintenance
 
         $end_at = 0;
         foreach ($result as $cur_item) {
-            echo '<p><span>'.sprintf($lang_admin_maintenance['Processing post'], $cur_item['id']).'</span></p>'."\n";
+            echo '<p><span>'.sprintf(__('Processing post'), $cur_item['id']).'</span></p>'."\n";
 
             if ($cur_item['id'] == $cur_item['first_post_id']) {
                 update_search_index('post', $cur_item['id'], $cur_item['message'], $cur_item['subject']);
@@ -168,8 +161,6 @@ class maintenance
 
     public function prune_comply($prune_from, $prune_sticky)
     {
-        global $lang_admin_maintenance;
-
         $prune_days = intval($this->request->post('prune_days'));
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
@@ -209,18 +200,16 @@ class maintenance
                     ->delete_many();
         }
 
-        redirect(get_link('admin/maintenance/'), $lang_admin_maintenance['Posts pruned redirect']);
+        redirect(get_link('admin/maintenance/'), __('Posts pruned redirect'));
     }
 
     public function get_info_prune($prune_sticky, $prune_from)
     {
-        global $lang_admin_maintenance;
-
         $prune = array();
 
         $prune['days'] = feather_trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
-            message($lang_admin_maintenance['Days must be integer message']);
+            message(__('Days must be integer message'));
         }
 
         $prune['date'] = time() - ($prune['days'] * 86400);
@@ -241,13 +230,13 @@ class maintenance
                         ->find_one_col('forum_name');
             $prune['forum'] = '"'.feather_escape($forum).'"';
         } else {
-            $prune['forum'] = $lang_admin_maintenance['All forums'];
+            $prune['forum'] = __('All forums');
         }
 
         $prune['num_topics'] = $query->count('id');
 
         if (!$prune['num_topics']) {
-            message(sprintf($lang_admin_maintenance['No old topics message'], $prune['days']));
+            message(sprintf(__('No old topics message'), $prune['days']));
         }
 
         return $prune;

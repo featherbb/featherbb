@@ -21,6 +21,8 @@ class options
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\options();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/options.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,24 +32,17 @@ class options
     
     public function display()
     {
-        global $lang_admin_common;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/options.php';
-
         if ($this->feather->request->isPost()) {
             $this->model->update_options();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Options']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Options'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -56,7 +51,6 @@ class options
         generate_admin_menu('options');
 
         $this->feather->render('admin/options.php', array(
-                'lang_admin_options'    =>    $lang_admin_options,
                 'feather_config'    =>    $this->config,
                 'feather_user'    =>    $this->user,
                 'languages' => forum_list_langs(),

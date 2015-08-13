@@ -14,20 +14,20 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_forums['Confirm delete head'] ?></span></h2>
+		<h2><span><?php echo __('Confirm delete head') ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/forums/delete/'.$cur_forum['id'].'/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Confirm delete subhead'] ?></legend>
+						<legend><?php echo __('Confirm delete subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf($lang_admin_forums['Confirm delete info'], $cur_forum['forum_name']) ?></p>
-							<p class="warntext"><?php echo $lang_admin_forums['Confirm delete warn'] ?></p>
+							<p><?php printf(__('Confirm delete info'), $cur_forum['forum_name']) ?></p>
+							<p class="warntext"><?php echo __('Confirm delete warn') ?></p>
 						</div>
 					</fieldset>
 				</div>
-				<p class="buttons"><input type="submit" name="del_forum_comply" value="<?php echo $lang_admin_common['Delete'] ?>" /><a href="javascript:history.go(-1)"><?php echo $lang_admin_common['Go back'] ?></a></p>
+				<p class="buttons"><input type="submit" name="del_forum_comply" value="<?php echo __('Delete') ?>" /><a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 			</form>
 		</div>
 	</div>

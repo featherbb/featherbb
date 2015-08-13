@@ -32,7 +32,7 @@ class profile
     
     public function display($id, $section = null)
     {
-        global $lang_profile, $pd, $forum_time_formats, $forum_date_formats;
+        global $pd, $forum_time_formats, $forum_date_formats;
 
         // Include UTF-8 function
         require FEATHER_ROOT.'include/utf8/substr_replace.php';
@@ -278,8 +278,6 @@ class profile
 
     public function action($id, $action)
     {
-        global $lang_profile;
-
         // Include UTF-8 function
         require FEATHER_ROOT.'include/utf8/substr_replace.php';
         require FEATHER_ROOT.'include/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace

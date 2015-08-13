@@ -45,8 +45,6 @@ class categories
 
     public function delete_category($cat_to_delete)
     {
-        global $lang_admin_categories;
-
         $forums_in_cat = DB::for_table('forums')
                             ->select('id')
                             ->where('cat_id', $cat_to_delete)

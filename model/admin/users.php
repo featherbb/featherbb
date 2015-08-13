@@ -115,8 +115,6 @@ class users
 
     public function move_users()
     {
-        global $lang_admin_users;
-
         $move = array();
 
         if ($this->request->post('users')) {
@@ -130,7 +128,7 @@ class users
         }
 
         if (empty($move['user_ids'])) {
-            message($lang_admin_users['No users selected']);
+            message(__('No users selected'));
         }
 
         // Are we trying to batch move any admins?
@@ -138,7 +136,7 @@ class users
                         ->where('group_id', FEATHER_ADMIN)
                         ->find_one();
         if ($is_admin) {
-            message($lang_admin_users['No move admins message']);
+            message(__('No move admins message'));
         }
 
         // Fetch all user groups
@@ -155,7 +153,7 @@ class users
         }
 
         if ($this->request->post('move_users_comply')) {
-            $new_group = $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ? $this->request->post('new_group') : message($lang_admin_users['Invalid group message']);
+            $new_group = $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ? $this->request->post('new_group') : message(__('Invalid group message'));
 
             // Is the new group a moderator group?
             $new_group_mod = DB::for_table('groups')->where('g_id', $new_group)
@@ -219,7 +217,7 @@ class users
             DB::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
-            redirect(get_link('admin/users/'), $lang_admin_users['Users move redirect']);
+            redirect(get_link('admin/users/'), __('Users move redirect'));
         }
 
         return $move;
@@ -227,8 +225,6 @@ class users
 
     public function delete_users()
     {
-        global $lang_admin_users;
-
         if ($this->request->post('users')) {
             $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
             $user_ids = array_map('intval', $user_ids);
@@ -240,7 +236,7 @@ class users
         }
 
         if (empty($user_ids)) {
-            message($lang_admin_users['No users selected']);
+            message(__('No users selected'));
         }
 
         // Are we trying to delete any admins?
@@ -248,7 +244,7 @@ class users
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
-            message($lang_admin_users['No delete admins message']);
+            message(__('No delete admins message'));
         }
 
         if ($this->request->post('delete_users_comply')) {
@@ -376,7 +372,7 @@ class users
 
             generate_users_info_cache();
 
-            redirect(get_link('admin/users/'), $lang_admin_users['Users delete redirect']);
+            redirect(get_link('admin/users/'), __('Users delete redirect'));
         }
 
         return $user_ids;
@@ -384,8 +380,6 @@ class users
 
     public function ban_users()
     {
-        global $lang_admin_users;
-
         if ($this->request->post('users')) {
             $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
             $user_ids = array_map('intval', $user_ids);
@@ -397,7 +391,7 @@ class users
         }
 
         if (empty($user_ids)) {
-            message($lang_admin_users['No users selected']);
+            message(__('No users selected'));
         }
 
         // Are we trying to ban any admins?
@@ -405,7 +399,7 @@ class users
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
-            message($lang_admin_users['No ban admins message']);
+            message(__('No ban admins message'));
         }
 
         // Also, we cannot ban moderators
@@ -415,7 +409,7 @@ class users
             ->where_in('u.id', $user_ids)
             ->find_one();
         if ($is_mod) {
-            message($lang_admin_users['No ban mods message']);
+            message(__('No ban mods message'));
         }
 
         if ($this->request->post('ban_users_comply')) {
@@ -427,14 +421,14 @@ class users
                 $ban_expire = strtotime($ban_expire . ' GMT');
 
                 if ($ban_expire == -1 || !$ban_expire) {
-                    message($lang_admin_users['Invalid date message'] . ' ' . $lang_admin_users['Invalid date reasons']);
+                    message(__('Invalid date message') . ' ' . __('Invalid date reasons'));
                 }
 
                 $diff = ($this->user->timezone + $this->user->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
-                    message($lang_admin_users['Invalid date message'] . ' ' . $lang_admin_users['Invalid date reasons']);
+                    message(__('Invalid date message') . ' ' . __('Invalid date reasons'));
                 }
             } else {
                 $ban_expire = 'NULL';
@@ -491,7 +485,7 @@ class users
 
                 generate_bans_cache();
 
-                redirect(get_link('admin/users/'), $lang_admin_users['Users banned redirect']);
+                redirect(get_link('admin/users/'), __('Users banned redirect'));
             }
         }
         return $user_ids;
@@ -499,11 +493,6 @@ class users
 
     public function get_user_search()
     {
-        global $lang_admin_users;
-
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $form = $this->request->get('form') ? $this->request->get('form') : array();
 
         $search = array();
@@ -528,7 +517,7 @@ class users
         $search['query_str'][] = 'user_group='.$user_group;
 
         if (preg_match('%[^0-9]%', $posts_greater.$posts_less)) {
-            message($lang_admin_users['Non numeric message']);
+            message(__('Non numeric message'));
         }
 
         $search['conditions'] = array();
@@ -539,7 +528,7 @@ class users
 
             $last_post_after = strtotime($last_post_after);
             if ($last_post_after === false || $last_post_after == -1) {
-                message($lang_admin_users['Invalid date time message']);
+                message(__('Invalid date time message'));
             }
 
             $search['conditions'][] = 'u.last_post>'.$last_post_after;
@@ -549,7 +538,7 @@ class users
 
             $last_post_before = strtotime($last_post_before);
             if ($last_post_before === false || $last_post_before == -1) {
-                message($lang_admin_users['Invalid date time message']);
+                message(__('Invalid date time message'));
             }
 
             $search['conditions'][] = 'u.last_post<'.$last_post_before;
@@ -559,7 +548,7 @@ class users
 
             $last_visit_after = strtotime($last_visit_after);
             if ($last_visit_after === false || $last_visit_after == -1) {
-                message($lang_admin_users['Invalid date time message']);
+                message(__('Invalid date time message'));
             }
 
             $search['conditions'][] = 'u.last_visit>'.$last_visit_after;
@@ -569,7 +558,7 @@ class users
 
             $last_visit_before = strtotime($last_visit_before);
             if ($last_visit_before === false || $last_visit_before == -1) {
-                message($lang_admin_users['Invalid date time message']);
+                message(__('Invalid date time message'));
             }
 
             $search['conditions'][] = 'u.last_visit<'.$last_visit_before;
@@ -579,7 +568,7 @@ class users
 
             $registered_after = strtotime($registered_after);
             if ($registered_after === false || $registered_after == -1) {
-                message($lang_admin_users['Invalid date time message']);
+                message(__('Invalid date time message'));
             }
 
             $search['conditions'][] = 'u.registered>'.$registered_after;
@@ -589,13 +578,13 @@ class users
 
             $registered_before = strtotime($registered_before);
             if ($registered_before === false || $registered_before == -1) {
-                message($lang_admin_users['Invalid date time message']);
+                message(__('Invalid date time message'));
             }
 
             $search['conditions'][] = 'u.registered<'.$registered_before;
         }
 
-        $like_command = ($feather->forum_settings['db_type'] == 'pgsql') ? 'ILIKE' : 'LIKE';
+        $like_command = ($this->feather->forum_settings['db_type'] == 'pgsql') ? 'ILIKE' : 'LIKE';
         foreach ($form as $key => $input) {
             if ($input != '' && in_array($key, array('username', 'email', 'title', 'realname', 'url', 'jabber', 'icq', 'msn', 'aim', 'yahoo', 'location', 'signature', 'admin_note'))) {
                 $search['conditions'][] = 'u.'.str_replace("'","''",$key).' '.$like_command.' \''.str_replace("'","''",str_replace('*', '%', $input)).'\'';
@@ -621,8 +610,6 @@ class users
 
     public function print_users($conditions, $order_by, $direction, $start_from)
     {
-        global $lang_admin_users;
-
         $user_data = array();
 
         $select_print_users = array('u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title');
@@ -641,7 +628,7 @@ class users
 
                 // This script is a special case in that we want to display "Not verified" for non-verified users
                 if (($cur_user['g_id'] == '' || $cur_user['g_id'] == FEATHER_UNVERIFIED) && $cur_user['user_title'] != __('Banned')) {
-                    $cur_user['user_title'] = '<span class="warntext">'.$lang_admin_users['Not verified'].'</span>';
+                    $cur_user['user_title'] = '<span class="warntext">'.__('Not verified').'</span>';
                 }
 
                 $user_data[] = $cur_user;

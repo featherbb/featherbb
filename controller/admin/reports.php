@@ -21,6 +21,8 @@ class reports
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\reports();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/reports.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,25 +32,18 @@ class reports
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_reports;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/reports.php';
-
         // Zap a report
         if ($this->feather->request->isPost()) {
             $this->model->zap_report();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Reports']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -57,8 +52,6 @@ class reports
         generate_admin_menu('reports');
 
         $this->feather->render('admin/reports.php', array(
-                'lang_admin_reports'    =>    $lang_admin_reports,
-                'lang_admin_common'    =>    $lang_admin_common,
                 'report_data'   =>  $this->model->get_reports(),
                 'report_zapped_data'   =>  $this->model->get_zapped_reports(),
             )

@@ -1,0 +1,57 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Must enter word message"
+msgstr "You must enter a word to censor."
+
+msgid "Word updated redirect"
+msgstr "Censor word updated."
+
+msgid "Word added redirect"
+msgstr "Censor word added."
+
+msgid "Word removed redirect"
+msgstr "Censor word removed."
+
+msgid "Censoring head"
+msgstr "Censoring"
+
+msgid "Add word subhead"
+msgstr "Add word"
+
+msgid "Add word info"
+msgstr "Enter a word that you want to censor and the replacement text for this word. Wildcards are accepted (i.e. *some* would match somewhere and lonesome). Censor words also affect usernames. New users will not be able to register with usernames containing any censored words. The search is case insensitive."
+
+msgid "Censoring enabled"
+msgstr "<strong>Censoring is enabled in %s.</strong>"
+
+msgid "Censoring disabled"
+msgstr "<strong>Censoring is disabled in %s.</strong>"
+
+msgid "Censored word label"
+msgstr "Censored word"
+
+msgid "Replacement label"
+msgstr "Replacement word(s)"
+
+msgid "Action label"
+msgstr "Action"
+
+msgid "Edit remove subhead"
+msgstr "Edit or remove words"
+
+msgid "No words in list"
+msgstr "No censor words in list."

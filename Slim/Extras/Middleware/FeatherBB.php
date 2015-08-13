@@ -362,7 +362,6 @@ class FeatherBB extends \Slim\Middleware
 
             $this->authenticate();
 
-            // Attempt to load the common language file
             // Load l10n
             require $this->data['forum_env']['FEATHER_ROOT'].'include/pomo/MO.php';
             require $this->data['forum_env']['FEATHER_ROOT'].'include/l10n.php';

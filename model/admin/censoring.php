@@ -24,13 +24,11 @@ class censoring
 
     public function add_word()
     {
-        global $lang_admin_censoring;
-
         $search_for = feather_trim($this->request->post('new_search_for'));
         $replace_with = feather_trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
-            message($lang_admin_censoring['Must enter word message']);
+            message(__('Must enter word message'));
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -48,20 +46,18 @@ class censoring
 
         generate_censoring_cache();
 
-        redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word added redirect']);
+        redirect(get_link('admin/censoring/'), __('Word added redirect'));
     }
 
     public function update_word()
     {
-        global $lang_admin_censoring;
-
         $id = intval(key($this->request->post('update')));
 
         $search_for = feather_trim($this->request->post('search_for')[$id]);
         $replace_with = feather_trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
-            message($lang_admin_censoring['Must enter word message']);
+            message(__('Must enter word message'));
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -79,13 +75,11 @@ class censoring
 
         generate_censoring_cache();
 
-        redirect(get_link('admin/censoring/'), $lang_admin_censoring['Word updated redirect']);
+        redirect(get_link('admin/censoring/'), __('Word updated redirect'));
     }
 
     public function remove_word()
     {
-        global $lang_admin_censoring;
-
         $id = intval(key($this->request->post('remove')));
 
         DB::for_table('censoring')
@@ -99,7 +93,7 @@ class censoring
 
         generate_censoring_cache();
 
-        redirect(get_link('admin/censoring/'),  $lang_admin_censoring['Word removed redirect']);
+        redirect(get_link('admin/censoring/'),  __('Word removed redirect'));
     }
 
     public function get_words()

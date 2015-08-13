@@ -35,8 +35,6 @@ class groups
 
     public function info_add_group($groups, $id)
     {
-
-
         $group = array();
 
         if ($this->request->post('add_group')) {
@@ -96,8 +94,6 @@ class groups
 
     public function add_edit_group($groups)
     {
-        global $lang_admin_groups;
-
         if ($this->request->post('group_id')) {
             $group_id = $this->request->post('group_id');
         } else {
@@ -144,7 +140,7 @@ class groups
         $report_flood = ($this->request->post('report_flood') >= 0) ? $this->request->post('report_flood') : '0';
 
         if ($title == '') {
-            message($lang_admin_groups['Must enter title message']);
+            message(__('Must enter title message'));
         }
 
         $user_title = ($user_title != '') ? $user_title : 'NULL';
@@ -181,7 +177,7 @@ class groups
         if ($this->request->post('mode') == 'add') {
             $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
             if ($title_exists) {
-                message(sprintf($lang_admin_groups['Title already exists message'], feather_escape($title)));
+                message(sprintf(__('Title already exists message'), feather_escape($title)));
             }
 
             DB::for_table('groups')
@@ -213,7 +209,7 @@ class groups
         } else {
             $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
             if ($title_exists) {
-                message(sprintf($lang_admin_groups['Title already exists message'], feather_escape($title)));
+                message(sprintf(__('Title already exists message'), feather_escape($title)));
             }
             DB::for_table('groups')
                     ->find_one($this->request->post('group_id'))
@@ -238,16 +234,14 @@ class groups
         generate_quickjump_cache($group_id);
 
         if ($this->request->post('mode') == 'edit') {
-            redirect(get_link('admin/groups/'), $lang_admin_groups['Group edited redirect']);
+            redirect(get_link('admin/groups/'), __('Group edited redirect'));
         } else {
-            redirect(get_link('admin/groups/'), $lang_admin_groups['Group added redirect']);
+            redirect(get_link('admin/groups/'), __('Group added redirect'));
         }
     }
 
     public function set_default_group($groups)
     {
-        global $lang_admin_groups;
-
         $group_id = intval($this->request->post('default_group'));
 
         // Make sure it's not the admin or guest groups
@@ -270,7 +264,7 @@ class groups
 
         generate_config_cache();
 
-        redirect(get_link('admin/groups/'), $lang_admin_groups['Default group redirect']);
+        redirect(get_link('admin/groups/'), __('Default group redirect'));
     }
 
     public function check_members($group_id)
@@ -289,8 +283,6 @@ class groups
 
     public function delete_group($group_id)
     {
-        global $lang_admin_groups;
-
         if ($this->request->post('del_group')) {
             $move_to_group = intval($this->request->post('move_to_group'));
             DB::for_table('users')->where('group_id', $group_id)
@@ -309,7 +301,7 @@ class groups
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
-        redirect(get_link('admin/groups/'), $lang_admin_groups['Group removed redirect']);
+        redirect(get_link('admin/groups/'), __('Group removed redirect'));
     }
 
     public function get_group_title($group_id)

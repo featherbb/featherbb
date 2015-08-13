@@ -21,6 +21,8 @@ class bans
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\bans();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/bans.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,18 +32,11 @@ class bans
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_bans;
-
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
         // Display bans
         if ($this->request->get('find_ban')) {
@@ -56,7 +51,7 @@ class bans
             // Generate paging links
             $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str']));
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans'], $lang_admin_bans['Results head']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head'));
             define('FEATHER_ACTIVE_PAGE', 'admin');
             
             $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
@@ -64,8 +59,6 @@ class bans
             $ban_data = $this->model->find_ban($start_from);
 
             $this->feather->render('admin/bans/search_ban.php', array(
-                    'lang_admin_bans' => $lang_admin_bans,
-                    'lang_admin_common' => $lang_admin_common,
                     'ban_data' => $ban_data['data'],
                 )
             );
@@ -73,7 +66,7 @@ class bans
             $this->footer->display();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
         $focus_element = array('bans', 'new_ban_user');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -82,35 +75,24 @@ class bans
 
         generate_admin_menu('bans');
 
-        $this->feather->render('admin/bans/admin_bans.php', array(
-                'lang_admin_bans' => $lang_admin_bans,
-                'lang_admin_common' => $lang_admin_common,
-            )
-        );
+        $this->feather->render('admin/bans/admin_bans.php');
 
         $this->footer->display();
     }
 
     public function add($id = null)
     {
-        global $lang_admin_common, $lang_admin_bans;
-
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
 
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
-
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
         $focus_element = array('bans2', 'ban_user');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -120,8 +102,6 @@ class bans
         generate_admin_menu('bans');
 
         $this->feather->render('admin/bans/add_ban.php', array(
-                'lang_admin_bans' => $lang_admin_bans,
-                'lang_admin_common' => $lang_admin_common,
                 'ban' => $this->model->add_ban_info($id),
             )
         );
@@ -131,16 +111,9 @@ class bans
 
     public function delete($id)
     {
-        global $lang_admin_common, $lang_admin_bans;
-
-        require FEATHER_ROOT . 'include/common_admin.php';
-
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
 
         // Remove the ban
         $this->model->remove_ban($id);
@@ -148,24 +121,17 @@ class bans
 
     public function edit($id)
     {
-        global $lang_admin_common, $lang_admin_bans;
-
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
 
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/bans.php';
-
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
         $focus_element = array('bans2', 'ban_user');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -175,8 +141,6 @@ class bans
         generate_admin_menu('bans');
 
         $this->feather->render('admin/bans/add_ban.php', array(
-                'lang_admin_bans' => $lang_admin_bans,
-                'lang_admin_common' => $lang_admin_common,
                 'ban' => $this->model->edit_ban_info($id),
             )
         );

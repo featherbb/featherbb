@@ -1625,7 +1625,7 @@ function breadcrumbs(array $links) {
         if ($name != '' && $url != '') {
             $tmp[] = '<span><a href="' . $url . '">'.feather_escape($name).'</a></span>';
         } else {
-            $tmp[] = '<span>'.$lang_admin_reports['Deleted'].'</span>';
+            $tmp[] = '<span>'.__('Deleted').'</span>';
             return implode(' » ', $tmp);
         }
     }

@@ -14,26 +14,26 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_forums['Edit forum head'] ?></span></h2>
+		<h2><span><?php echo __('Edit forum head') ?></span></h2>
 		<div class="box">
 			<form id="edit_forum" method="post" action="<?php echo get_link('admin/forums/edit/'.$forum_id.'/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="6" /></p>
+				<p class="submittop"><input type="submit" name="save" value="<?php echo __('Save changes') ?>" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Edit details subhead'] ?></legend>
+						<legend><?php echo __('Edit details subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Forum name label'] ?></th>
+									<th scope="row"><?php echo __('Forum name label') ?></th>
 									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo feather_escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Forum description label'] ?></th>
+									<th scope="row"><?php echo __('Forum description label') ?></th>
 									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo feather_escape($cur_forum['forum_desc']) ?></textarea></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Category label'] ?></th>
+									<th scope="row"><?php echo __('Category label') ?></th>
 									<td>
 										<select name="cat_id" tabindex="3">
 											<?php echo $categories_perms ?>
@@ -41,24 +41,24 @@ if (!defined('FEATHER')) {
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Sort by label'] ?></th>
+									<th scope="row"><?php echo __('Sort by label') ?></th>
 									<td>
 										<select name="sort_by" tabindex="4">
 											<option value="0"<?php if ($cur_forum['sort_by'] == '0') {
     echo ' selected="selected"';
-} ?>><?php echo $lang_admin_forums['Last post'] ?></option>
+} ?>><?php echo __('Last post') ?></option>
 											<option value="1"<?php if ($cur_forum['sort_by'] == '1') {
     echo ' selected="selected"';
-} ?>><?php echo $lang_admin_forums['Topic start'] ?></option>
+} ?>><?php echo __('Topic start') ?></option>
 											<option value="2"<?php if ($cur_forum['sort_by'] == '2') {
     echo ' selected="selected"';
-} ?>><?php echo $lang_admin_forums['Subject'] ?></option>
+} ?>><?php echo __('Subject') ?></option>
 										</select>
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Redirect label'] ?></th>
-									<td><?php echo($cur_forum['num_topics']) ? $lang_admin_forums['Redirect help'] : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.feather_escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
+									<th scope="row"><?php echo __('Redirect label') ?></th>
+									<td><?php echo($cur_forum['num_topics']) ? __('Redirect help') : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.feather_escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>
@@ -66,16 +66,16 @@ if (!defined('FEATHER')) {
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Group permissions subhead'] ?></legend>
+						<legend><?php echo __('Group permissions subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf($lang_admin_forums['Group permissions info'], '<a href="admin_groups.php">'.$lang_admin_common['User groups'].'</a>') ?></p>
+							<p><?php printf(__('Group permissions info'), '<a href="admin_groups.php">'.__('User groups').'</a>') ?></p>
 							<table id="forumperms">
 							<thead>
 								<tr>
 									<th class="atcl">&#160;</th>
-									<th><?php echo $lang_admin_forums['Read forum label'] ?></th>
-									<th><?php echo $lang_admin_forums['Post replies label'] ?></th>
-									<th><?php echo $lang_admin_forums['Post topics label'] ?></th>
+									<th><?php echo __('Read forum label') ?></th>
+									<th><?php echo __('Post replies label') ?></th>
+									<th><?php echo __('Post topics label') ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -122,11 +122,11 @@ if (!defined('FEATHER')) {
 ?>
 							</tbody>
 							</table>
-							<div class="fsetsubmit"><input type="submit" name="revert_perms" value="<?php echo $lang_admin_forums['Revert to default'] ?>" tabindex="<?php echo $cur_index++ ?>" /></div>
+							<div class="fsetsubmit"><input type="submit" name="revert_perms" value="<?php echo __('Revert to default') ?>" tabindex="<?php echo $cur_index++ ?>" /></div>
 						</div>
 					</fieldset>
 				</div>
-				<p class="submitend"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
+				<p class="submitend"><input type="submit" name="save" value="<?php echo __('Save changes') ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
 			</form>
 		</div>
 	</div>

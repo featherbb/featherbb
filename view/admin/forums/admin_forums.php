@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_forums['Add forum head'] ?></span></h2>
+		<h2><span><?php echo __('Add forum head') ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/forums/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
@@ -23,16 +23,16 @@ if ($is_forum) {
     ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Create new subhead'] ?></legend>
+						<legend><?php echo __('Create new subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" name="add_forum" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
+									<th scope="row"><?php echo __('Add forum label') ?><div><input type="submit" name="add_forum" value="<?php echo __('Add forum') ?>" tabindex="2" /></div></th>
 									<td>
 										<select name="add_to_cat" tabindex="1">
 											<?php echo $categories_add ?>
 										</select>
-										<span><?php echo $lang_admin_forums['Add forum help'] ?></span>
+										<span><?php echo __('Add forum help') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -45,9 +45,9 @@ if ($is_forum) {
     ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_common['None'] ?></legend>
+						<legend><?php echo __('None') ?></legend>
 						<div class="infldset">
-							<p><?php echo $lang_admin_forums['No categories exist'] ?></p>
+							<p><?php echo __('No categories exist') ?></p>
 						</div>
 					</fieldset>
 				</div>
@@ -61,11 +61,11 @@ if ($is_forum) {
 <?php
 if (!empty($forum_data)) {
     ?>
-		<h2 class="block2"><span><?php echo $lang_admin_forums['Edit forums head'] ?></span></h2>
+		<h2 class="block2"><span><?php echo __('Edit forums head') ?></span></h2>
 		<div class="box">
 			<form id="edforum" method="post" action="<?php echo get_link('admin/forums/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" /></p>
+				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo __('Update positions') ?>" tabindex="3" /></p>
 <?php
     foreach ($forum_data as $forum) {
         if ($forum['cid'] != $cur_category) {
@@ -78,14 +78,14 @@ if (!empty($forum_data)) {
             ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo feather_escape($forum['cat_name']) ?></legend>
+						<legend><?php echo __('Category subhead') ?> <?php echo feather_escape($forum['cat_name']) ?></legend>
 						<div class="infldset">
 							<table>
 							<thead>
 								<tr>
-									<th class="tcl"><?php echo $lang_admin_common['Action'] ?></th>
-									<th class="tc2"><?php echo $lang_admin_forums['Position label'] ?></th>
-									<th class="tcr"><?php echo $lang_admin_forums['Forum label'] ?></th>
+									<th class="tcl"><?php echo __('Action') ?></th>
+									<th class="tc2"><?php echo __('Position label') ?></th>
+									<th class="tcr"><?php echo __('Forum label') ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -96,7 +96,7 @@ if (!empty($forum_data)) {
 
         ?>
 								<tr>
-									<td class="tcl"><a href="<?php echo get_link('admin/forums/edit/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Edit link'] ?></a> | <a href="<?php echo get_link('admin/forums/delete/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Delete link'] ?></a></td>
+									<td class="tcl"><a href="<?php echo get_link('admin/forums/edit/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo __('Edit link') ?></a> | <a href="<?php echo get_link('admin/forums/delete/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo __('Delete link') ?></a></td>
 									<td class="tc2"><input type="text" name="position[<?php echo $forum['fid'] ?>]" size="3" maxlength="3" value="<?php echo $forum['disp_position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
 									<td class="tcr"><strong><?php echo feather_escape($forum['forum_name']) ?></strong></td>
 								</tr>
@@ -110,7 +110,7 @@ if (!empty($forum_data)) {
 						</div>
 					</fieldset>
 				</div>
-				<p class="submitend"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
+				<p class="submitend"><input type="submit" name="update_positions" value="<?php echo __('Update positions') ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
 			</form>
 		</div>
 <?php

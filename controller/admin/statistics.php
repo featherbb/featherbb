@@ -21,6 +21,8 @@ class statistics
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\statistics();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,20 +32,13 @@ class statistics
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_index;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
-        // Load the admin_index.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
-
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Server statistics']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Server statistics'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -54,8 +49,6 @@ class statistics
         $total = $this->model->get_total_size();
 
         $this->feather->render('admin/statistics.php', array(
-                'lang_admin_common'    =>    $lang_admin_common,
-                'lang_admin_index'    =>    $lang_admin_index,
                 'feather_config'    =>    $this->config,
                 'server_load'    =>    $this->model->get_server_load(),
                 'num_online'    =>    $this->model->get_num_online(),
@@ -72,13 +65,6 @@ class statistics
 
     public function phpinfo()
     {
-        global $lang_admin_common, $lang_admin_index;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
-        // Load the admin_index.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
@@ -86,7 +72,7 @@ class statistics
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {
-            message($lang_admin_index['PHPinfo disabled message']);
+            message(__('PHPinfo disabled message'));
         }
 
         phpinfo();

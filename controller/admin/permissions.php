@@ -21,6 +21,8 @@ class permissions
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\permissions();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/permissions.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,25 +32,18 @@ class permissions
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_permissions;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/permissions.php';
-
         // Update permissions
         if ($this->feather->request->isPost()) {
             $this->model->update_permissions();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Permissions']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -57,8 +52,6 @@ class permissions
         generate_admin_menu('permissions');
 
         $this->feather->render('admin/permissions.php', array(
-                'lang_admin_permissions'    =>    $lang_admin_permissions,
-                'lang_admin_common'    =>    $lang_admin_common,
                 'feather_config'    =>    $this->config,
             )
         );

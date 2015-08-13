@@ -24,8 +24,6 @@ class statistics
  
     public function get_server_load()
     {
-        global $lang_admin_index;
-
         if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg')) {
             // We use @ just in case
             $fh = @fopen('/proc/loadavg', 'r');
@@ -40,11 +38,11 @@ class statistics
             }
 
             $load_averages = @explode(' ', $load_averages);
-            $server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : $lang_admin_index['Not available'];
+            $server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : __('Not available');
         } elseif (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages)) {
             $server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
         } else {
-            $server_load = $lang_admin_index['Not available'];
+            $server_load = __('Not available');
         }
 
         return $server_load;
@@ -62,10 +60,7 @@ class statistics
     {
         $total = array();
 
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
-        if ($feather->forum_settings['db_type'] == 'mysql' || $feather->forum_settings['db_type'] == 'mysqli' || $feather->forum_settings['db_type'] == 'mysql_innodb' || $feather->forum_settings['db_type'] == 'mysqli_innodb') {
+        if ($this->feather->forum_settings['db_type'] == 'mysql' || $this->feather->forum_settings['db_type'] == 'mysqli' || $this->feather->forum_settings['db_type'] == 'mysql_innodb' || $this->feather->forum_settings['db_type'] == 'mysqli_innodb') {
             // Calculate total db size/row count
             $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->prefix.'%\'')->find_many();
 
@@ -83,22 +78,20 @@ class statistics
 
     public function get_php_accelerator()
     {
-        global $lang_admin_index;
-
         if (function_exists('mmcache')) {
-            $php_accelerator = '<a href="http://'.$lang_admin_index['Turck MMCache link'].'">'.$lang_admin_index['Turck MMCache'].'</a>';
+            $php_accelerator = '<a href="http://'.__('Turck MMCache link').'">'.__('Turck MMCache').'</a>';
         } elseif (isset($_PHPA)) {
-            $php_accelerator = '<a href="http://'.$lang_admin_index['ionCube PHP Accelerator link'].'">'.$lang_admin_index['ionCube PHP Accelerator'].'</a>';
+            $php_accelerator = '<a href="http://'.__('ionCube PHP Accelerator link').'">'.__('ionCube PHP Accelerator').'</a>';
         } elseif (ini_get('apc.enabled')) {
-            $php_accelerator ='<a href="http://'.$lang_admin_index['Alternative PHP Cache (APC) link'].'">'.$lang_admin_index['Alternative PHP Cache (APC)'].'</a>';
+            $php_accelerator ='<a href="http://'.__('Alternative PHP Cache (APC) link').'">'.__('Alternative PHP Cache (APC)').'</a>';
         } elseif (ini_get('zend_optimizer.optimization_level')) {
-            $php_accelerator = '<a href="http://'.$lang_admin_index['Zend Optimizer link'].'">'.$lang_admin_index['Zend Optimizer'].'</a>';
+            $php_accelerator = '<a href="http://'.__('Zend Optimizer link').'">'.__('Zend Optimizer').'</a>';
         } elseif (ini_get('eaccelerator.enable')) {
-            $php_accelerator = '<a href="http://'.$lang_admin_index['eAccelerator link'].'">'.$lang_admin_index['eAccelerator'].'</a>';
+            $php_accelerator = '<a href="http://'.__('eAccelerator link').'">'.__('eAccelerator').'</a>';
         } elseif (ini_get('xcache.cacher')) {
-            $php_accelerator = '<a href="http://'.$lang_admin_index['XCache link'].'">'.$lang_admin_index['XCache'].'</a>';
+            $php_accelerator = '<a href="http://'.__('XCache link').'">'.__('XCache').'</a>';
         } else {
-            $php_accelerator = $lang_admin_index['NA'];
+            $php_accelerator = __('NA');
         }
 
         return $php_accelerator;

@@ -20,6 +20,8 @@ class index
         $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -44,34 +46,27 @@ class index
     
     public function display($action = null)
     {
-        global $lang_admin_common, $lang_admin_index;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_index.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
-                message($lang_admin_index['fopen disabled message']);
+                message(__('fopen disabled message'));
             }
 
             $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
             if (empty($latest_version)) {
-                message($lang_admin_index['Upgrade check failed message']);
+                message(__('Upgrade check failed message'));
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-                message($lang_admin_index['Running latest version message']);
+                message(__('Running latest version message'));
             } else {
-                message(sprintf($lang_admin_index['New version available message'], '<a href="http://featherbb.org/">FeatherBB.org</a>'));
+                message(sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
         // Remove /install
@@ -79,15 +74,15 @@ class index
             $deleted = $this->remove_install_folder(FEATHER_ROOT.'install');
 
             if ($deleted) {
-                redirect(get_link('admin/'), $lang_admin_index['Deleted install.php redirect']);
+                redirect(get_link('admin/'), __('Deleted install.php redirect'));
             } else {
-                message($lang_admin_index['Delete install.php failed']);
+                message(__('Delete install.php failed'));
             }
         }
 
         $install_folder_exists = is_dir(FEATHER_ROOT.'install');
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Index']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Index'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -96,7 +91,6 @@ class index
         generate_admin_menu('index');
 
         $this->feather->render('admin/index.php', array(
-                            'lang_admin_index'    =>    $lang_admin_index,
                             'install_file_exists'    =>    $install_folder_exists,
                             'feather_config'    =>    $this->config,
                             )

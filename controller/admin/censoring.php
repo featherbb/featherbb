@@ -21,6 +21,8 @@ class censoring
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\censoring();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/censoring.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,18 +32,11 @@ class censoring
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_censoring;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/censoring.php';
 
         // Add a censor word
         if ($this->request->post('add_word')) {
@@ -58,7 +53,7 @@ class censoring
             $this->model->remove_word();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Censoring']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Censoring'));
         $focus_element = array('censoring', 'new_search_for');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -68,8 +63,6 @@ class censoring
         generate_admin_menu('censoring');
 
         $this->feather->render('admin/censoring.php', array(
-                'lang_admin_censoring'    =>    $lang_admin_censoring,
-                'lang_admin_common'    =>    $lang_admin_common,
                 'feather_config'    =>    $this->config,
                 'word_data'    =>    $this->model->get_words(),
             )

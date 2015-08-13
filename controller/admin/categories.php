@@ -21,6 +21,8 @@ class categories
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\categories();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/categories.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,51 +32,38 @@ class categories
 
     public function add_category()
     {
-        global $lang_admin_common, $lang_admin_categories;
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'include/common_admin.php';
-        require FEATHER_ROOT.'lang/'.$admin_language.'/categories.php';
-
         $cat_name = feather_trim($this->request->post('cat_name'));
         if ($cat_name == '') {
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Must enter name message']);
+            redirect(get_link('admin/categories/'), __('Must enter name message'));
         }
 
         if ($this->model->add_category($cat_name)) {
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Category added redirect']);
+            redirect(get_link('admin/categories/'), __('Category added redirect'));
         } else { //TODO, add error message
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Category added redirect']);
+            redirect(get_link('admin/categories/'), __('Category added redirect'));
         }
     }
 
     public function edit_categories()
     {
-        global $lang_admin_common, $lang_admin_categories;
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'include/common_admin.php';
-        require FEATHER_ROOT.'lang/'.$admin_language.'/categories.php';
 
         if (empty($this->request->post('cat'))) {
             message(__('Bad request'), '404');
         }
 
-        $categories = array();
         foreach ($this->request->post('cat') as $cat_id => $properties) {
             $category = array('id' => (int) $cat_id,
                               'name' => feather_escape($properties['name']),
                               'order' => (int) $properties['order'], );
             if ($category['name'] == '') {
-                redirect(get_link('admin/categories/'), $lang_admin_categories['Must enter name message']);
+                redirect(get_link('admin/categories/'), __('Must enter name message'));
             }
             $this->model->update_category($category);
         }
@@ -85,20 +74,14 @@ class categories
         }
         generate_quickjump_cache();
 
-        redirect(get_link('admin/categories/'), $lang_admin_categories['Categories updated redirect']);
+        redirect(get_link('admin/categories/'), __('Categories updated redirect'));
     }
 
     public function delete_category()
     {
-        global $lang_admin_common, $lang_admin_categories;
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'include/common_admin.php';
-        require FEATHER_ROOT.'lang/'.$admin_language.'/categories.php';
 
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
@@ -107,32 +90,25 @@ class categories
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Delete category not validated']);
+            redirect(get_link('admin/categories/'), __('Delete category not validated'));
         }
 
         if ($this->model->delete_category($cat_to_delete)) {
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Category deleted redirect']);
+            redirect(get_link('admin/categories/'), __('Category deleted redirect'));
         } else {
-            redirect(get_link('admin/categories/'), $lang_admin_categories['Unable to delete category']);
+            redirect(get_link('admin/categories/'), __('Unable to delete category'));
         }
     }
 
     public function display()
     {
-        global $lang_admin_common, $lang_admin_categories;
-
-        require FEATHER_ROOT.'include/common_admin.php';
-
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/categories.php';
-
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -141,8 +117,6 @@ class categories
         generate_admin_menu('categories');
 
         $this->feather->render('admin/categories.php', array(
-                'lang_admin_categories' => $lang_admin_categories,
-                'lang_admin_common' => $lang_admin_common,
                 'cat_list' => $this->model->get_cat_list(),
             ));
 

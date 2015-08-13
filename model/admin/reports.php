@@ -24,8 +24,6 @@ class reports
 
     public function zap_report()
     {
-        global $lang_admin_reports;
-
         $zap_id = intval(key($this->request->post('zap_id')));
 
         $result = DB::for_table('reports')
@@ -56,13 +54,11 @@ class reports
                 ->delete_many();
         }
 
-        redirect(get_link('admin/reports/'), $lang_admin_reports['Report zapped redirect']);
+        redirect(get_link('admin/reports/'), __('Report zapped redirect'));
     }
 
     public function get_reports()
     {
-        global $lang_admin_reports;
-
         $reports = array();
         $select_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username');
         $reports = DB::for_table('reports')

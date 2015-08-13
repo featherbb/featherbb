@@ -21,6 +21,8 @@ class users
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\users();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/users.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -30,18 +32,11 @@ class users
 
     public function display()
     {
-        global $lang_admin_common, $lang_admin_users;
-
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/users.php';
 
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
@@ -51,7 +46,7 @@ class users
 
             $move = $this->model->move_users();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Move users']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -60,8 +55,6 @@ class users
             generate_admin_menu('users');
 
             $this->feather->render('admin/users/move_users.php', array(
-                    'lang_admin_users' => $lang_admin_users,
-                    'lang_admin_common' => $lang_admin_common,
                     'move'              =>  $move,
                 )
             );
@@ -78,7 +71,7 @@ class users
 
             $user_ids = $this->model->delete_users();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Delete users']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -87,8 +80,6 @@ class users
             generate_admin_menu('users');
 
             $this->feather->render('admin/users/delete_users.php', array(
-                    'lang_admin_users' => $lang_admin_users,
-                    'lang_admin_common' => $lang_admin_common,
                     'user_ids'          => $user_ids,
                 )
             );
@@ -105,7 +96,7 @@ class users
 
             $user_ids = $this->model->ban_users();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Bans']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
             $focus_element = array('bans2', 'ban_message');
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
@@ -115,8 +106,6 @@ class users
             generate_admin_menu('users');
 
             $this->feather->render('admin/users/ban_users.php', array(
-                    'lang_admin_users' => $lang_admin_users,
-                    'lang_admin_common' => $lang_admin_common,
                     'user_ids'          => $user_ids,
                 )
             );
@@ -147,7 +136,7 @@ class users
             $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
             $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/js/common.js"></script>');
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -155,8 +144,6 @@ class users
             $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
             $this->feather->render('admin/users/find_users.php', array(
-                    'lang_admin_users' => $lang_admin_users,
-                    'lang_admin_common' => $lang_admin_common,
                     'search' => $search,
                     'start_from' => $start_from,
                     'can_delete' => $can_delete,
@@ -170,7 +157,7 @@ class users
             $this->footer->display();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'));
         $focus_element = array('find_user', 'form[username]');
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
@@ -180,8 +167,6 @@ class users
         generate_admin_menu('users');
 
         $this->feather->render('admin/users/admin_users.php', array(
-                'lang_admin_users' => $lang_admin_users,
-                'lang_admin_common' => $lang_admin_common,
                 'group_list' => $this->model->get_group_list(),
             )
         );
@@ -192,18 +177,11 @@ class users
     // Show IP statistics for a certain user ID
     public function ipstats($id)
     {
-        global $lang_admin_common, $lang_admin_users;
-
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
-
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/users.php';
 
         // Fetch ip count
         $num_ips = $this->model->get_num_ip($id);
@@ -217,15 +195,13 @@ class users
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id);
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
         $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/search_ip.php', array(
-                'lang_admin_users' => $lang_admin_users,
-                'lang_admin_common' => $lang_admin_common,
                 'start_from'        =>  $start_from,
                 'ip_data'   =>  $this->model->get_ip_stats($id, $start_from),
             )
@@ -237,21 +213,14 @@ class users
     // Show IP statistics for a certain user IP
     public function showusers($ip)
     {
-        global $lang_admin_common, $lang_admin_users;
-
         define('FEATHER_ADMIN_CONSOLE', 1);
-
-        require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
 
-        // Load the admin_bans.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/users.php';
-
         if (!@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $ip) && !@preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%', $ip)) {
-            message($lang_admin_users['Bad IP message']);
+            message(__('Bad IP message'));
         }
 
         // Fetch user count
@@ -266,15 +235,13 @@ class users
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip);
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
         $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/show_users.php', array(
-                'lang_admin_users' => $lang_admin_users,
-                'lang_admin_common' => $lang_admin_common,
                 'start_from'        =>  $start_from,
                 'info'   =>  $this->model->get_info_poster($ip, $start_from),
             )

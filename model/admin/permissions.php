@@ -24,8 +24,6 @@ class permissions
  
     public function update_permissions()
     {
-        global $lang_admin_permissions;
-
         $form = array_map('intval', $this->request->post('form'));
 
         foreach ($form as $key => $input) {
@@ -48,6 +46,6 @@ class permissions
 
         generate_config_cache();
 
-        redirect(get_link('admin/permissions/'), $lang_admin_permissions['Perms updated redirect']);
+        redirect(get_link('admin/permissions/'), __('Perms updated redirect'));
     }
 }

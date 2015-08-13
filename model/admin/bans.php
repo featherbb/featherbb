@@ -24,8 +24,6 @@ class bans
  
     public function add_ban_info($id = null)
     {
-        global $lang_admin_bans;
-
         $ban = array();
 
         // If the ID of the user to ban was provided through GET (a link from profile.php)
@@ -45,7 +43,7 @@ class bans
                 $ban['ban_user'] = $result['username'];
                 $ban['email'] = $result['email'];
             } else {
-                message($lang_admin_bans['No user ID message']);
+                message(__('No user ID message'));
             }
         } else {
             // Otherwise the username is in POST
@@ -64,7 +62,7 @@ class bans
                     $ban['ban_user'] = $result['username'];
                     $ban['email'] = $result['email'];
                 } else {
-                    message($lang_admin_bans['No user message']);
+                    message(__('No user message'));
                 }
             }
         }
@@ -72,14 +70,14 @@ class bans
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
             if ($group_id == FEATHER_ADMIN) {
-                message(sprintf($lang_admin_bans['User is admin message'], feather_escape($ban['ban_user'])));
+                message(sprintf(__('User is admin message'), feather_escape($ban['ban_user'])));
             }
 
             $is_moderator_group = DB::for_table('groups')->where('g_id', $group_id)
                                         ->find_one_col('g_moderator');
 
             if ($is_moderator_group) {
-                message(sprintf($lang_admin_bans['User is mod message'], feather_escape($ban['ban_user'])));
+                message(sprintf(__('User is mod message'), feather_escape($ban['ban_user'])));
             }
         }
 
@@ -102,8 +100,6 @@ class bans
 
     public function edit_ban_info($id)
     {
-
-
         $ban = array();
 
         $ban['id'] = $id;
@@ -133,8 +129,6 @@ class bans
 
     public function insert_ban()
     {
-        global $lang_admin_bans;
-
         $ban_user = feather_trim($this->request->post('ban_user'));
         $ban_ip = feather_trim($this->request->post('ban_ip'));
         $ban_email = strtolower(feather_trim($this->request->post('ban_email')));
@@ -142,9 +136,9 @@ class bans
         $ban_expire = feather_trim($this->request->post('ban_expire'));
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
-            message($lang_admin_bans['Must enter message']);
+            message(__('Must enter message'));
         } elseif (strtolower($ban_user) == 'guest') {
-            message($lang_admin_bans['Cannot ban guest message']);
+            message(__('Cannot ban guest message'));
         }
 
         // Make sure we're not banning an admin or moderator
@@ -155,14 +149,14 @@ class bans
 
             if ($group_id) {
                 if ($group_id == FEATHER_ADMIN) {
-                    message(sprintf($lang_admin_bans['User is admin message'], feather_escape($ban_user)));
+                    message(sprintf(__('User is admin message'), feather_escape($ban_user)));
                 }
 
                 $is_moderator_group = DB::for_table('groups')->where('g_id', $group_id)
                                             ->find_one_col('g_moderator');
 
                 if ($is_moderator_group) {
-                    message(sprintf($lang_admin_bans['User is mod message'], feather_escape($ban_user)));
+                    message(sprintf(__('User is mod message'), feather_escape($ban_user)));
                 }
             }
         }
@@ -181,7 +175,7 @@ class bans
                         $octets[$c] = ltrim($octets[$c], "0");
 
                         if ($c > 7 || (!empty($octets[$c]) && !ctype_xdigit($octets[$c])) || intval($octets[$c], 16) > 65535) {
-                            message($lang_admin_bans['Invalid IP message']);
+                            message(__('Invalid IP message'));
                         }
                     }
 
@@ -194,7 +188,7 @@ class bans
                         $octets[$c] = (strlen($octets[$c]) > 1) ? ltrim($octets[$c], "0") : $octets[$c];
 
                         if ($c > 3 || preg_match('%[^0-9]%', $octets[$c]) || intval($octets[$c]) > 255) {
-                            message($lang_admin_bans['Invalid IP message']);
+                            message(__('Invalid IP message'));
                         }
                     }
 
@@ -210,7 +204,7 @@ class bans
 
         if ($ban_email != '' && !is_valid_email($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
-                message($lang_admin_bans['Invalid e-mail message']);
+                message(__('Invalid e-mail message'));
             }
         }
 
@@ -218,14 +212,14 @@ class bans
             $ban_expire = strtotime($ban_expire.' GMT');
 
             if ($ban_expire == -1 || !$ban_expire) {
-                message($lang_admin_bans['Invalid date message'].' '.$lang_admin_bans['Invalid date reasons']);
+                message(__('Invalid date message').' '.__('Invalid date reasons'));
             }
 
             $diff = ($this->user->timezone + $this->user->dst) * 3600;
             $ban_expire -= $diff;
 
             if ($ban_expire <= time()) {
-                message($lang_admin_bans['Invalid date message'].' '.$lang_admin_bans['Invalid date reasons']);
+                message(__('Invalid date message').' '.__('Invalid date reasons'));
             }
         } else {
             $ban_expire = 'NULL';
@@ -267,13 +261,11 @@ class bans
 
         generate_bans_cache();
 
-        redirect(get_link('admin/bans/'), $lang_admin_bans['Ban edited redirect']);
+        redirect(get_link('admin/bans/'), __('Ban edited redirect'));
     }
 
     public function remove_ban($ban_id)
     {
-        global $lang_admin_bans;
-
         DB::for_table('bans')->where('id', $ban_id)
                     ->find_one()
                     ->delete();
@@ -285,13 +277,11 @@ class bans
 
         generate_bans_cache();
 
-        redirect(get_link('admin/bans/'), $lang_admin_bans['Ban removed redirect']);
+        redirect(get_link('admin/bans/'), __('Ban removed redirect'));
     }
 
     public function find_ban($start_from = false)
     {
-        global $lang_admin_bans;
-
         $ban_info = array();
 
         // trim() all elements in $form
@@ -315,7 +305,7 @@ class bans
 
             $expire_after = strtotime($expire_after);
             if ($expire_after === false || $expire_after == -1) {
-                message($lang_admin_bans['Invalid date message']);
+                message(__('Invalid date message'));
             }
 
             $result = $result->where_gt('b.expire', $expire_after);
@@ -325,7 +315,7 @@ class bans
 
             $expire_before = strtotime($expire_before);
             if ($expire_before === false || $expire_before == -1) {
-                message($lang_admin_bans['Invalid date message']);
+                message(__('Invalid date message'));
             }
 
             $result = $result->where_lt('b.expire', $expire_before);
