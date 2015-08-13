@@ -1750,24 +1750,6 @@ function display_saved_queries()
 }
 
 //
-// Return the path to load the view file
-//
-function get_path_view($file = null)
-{
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    if ($file && is_file('style/'.$feather->user->style)) {
-        return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
-    }
-    elseif (is_dir('style/'.$feather->user->style.'/view')) {
-        return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
-    } else {
-        return FEATHER_ROOT.'view';
-    }
-}
-
-//
 // Make a string safe to use in a URL
 // Inspired by (c) Panther <http://www.pantherforum.org/>
 //
