@@ -98,6 +98,25 @@ class viewtopic
 
         require FEATHER_ROOT.'include/parser.php';
 
+        $lang_bbeditor = array(
+            'btnBold' => __('btnBold'),
+            'btnItalic' => __('btnItalic'),
+            'btnUnderline' => __('btnUnderline'),
+            'btnColor' => __('btnColor'),
+            'btnLeft' => __('btnLeft'),
+            'btnRight' => __('btnRight'),
+            'btnJustify' => __('btnJustify'),
+            'btnCenter' => __('btnCenter'),
+            'btnLink' => __('btnLink'),
+            'btnPicture' => __('btnPicture'),
+            'btnList' => __('btnList'),
+            'btnQuote' => __('btnQuote'),
+            'btnCode' => __('btnCode'),
+            'promptImage' => __('promptImage'),
+            'promptUrl' => __('promptUrl'),
+            'promptQuote' => __('promptQuote')
+        );
+
         $this->feather->render('viewtopic.php', array(
                             'id' => $id,
                             'p' => $p,
@@ -114,6 +133,7 @@ class viewtopic
                             'quickpost'        =>    $quickpost,
                             'index_questions'        =>    $index_questions,
                             'lang_antispam_questions'        =>    $lang_antispam_questions,
+                            'lang_bbeditor'    =>    $lang_bbeditor,
                             'url_forum'        =>    $url_forum,
                             'url_topic'        =>    $url_topic,
                             'feather'          =>    $this->feather,

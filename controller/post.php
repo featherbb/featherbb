@@ -24,6 +24,7 @@ class post
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function __autoload($class_name)
@@ -196,6 +197,25 @@ class post
             $post_data = '';
         }
 
+        $lang_bbeditor = array(
+            'btnBold' => __('btnBold'),
+            'btnItalic' => __('btnItalic'),
+            'btnUnderline' => __('btnUnderline'),
+            'btnColor' => __('btnColor'),
+            'btnLeft' => __('btnLeft'),
+            'btnRight' => __('btnRight'),
+            'btnJustify' => __('btnJustify'),
+            'btnCenter' => __('btnCenter'),
+            'btnLink' => __('btnLink'),
+            'btnPicture' => __('btnPicture'),
+            'btnList' => __('btnList'),
+            'btnQuote' => __('btnQuote'),
+            'btnCode' => __('btnCode'),
+            'promptImage' => __('promptImage'),
+            'promptUrl' => __('promptUrl'),
+            'promptQuote' => __('promptQuote')
+        );
+
         $this->feather->render('post.php', array(
                             'post' => $post,
                             'tid' => $tid,
@@ -205,6 +225,7 @@ class post
                             'cur_posting' => $cur_posting,
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions' => $lang_antispam_questions,
+                            'lang_bbeditor'    =>    $lang_bbeditor,
                             'index_questions' => $index_questions,
                             'checkboxes' => $checkboxes,
                             'cur_posting' => $cur_posting,
