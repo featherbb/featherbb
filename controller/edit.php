@@ -21,6 +21,10 @@ class edit
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\edit();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function __autoload($class_name)
@@ -30,8 +34,6 @@ class edit
     
     public function editpost($id)
     {
-        global $lang_prof_reg, $lang_post, $lang_register;
-
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
@@ -58,9 +60,6 @@ class edit
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
             message(__('No permission'), '403');
         }
-
-        // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
         
         // Load the bbeditor.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
@@ -80,14 +79,14 @@ class edit
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                redirect(get_link('post/'.$id.'/#p'.$id), $lang_post['Post redirect']);
+                redirect(get_link('post/'.$id.'/#p'.$id), __('Post redirect'));
             }
         } else {
             $post = '';
         }
 
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_post['Edit post']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Edit post'));
         $required_fields = array('req_subject' => __('Subject'), 'req_message' => __('Message'));
         $focus_element = array('edit', 'req_message');
 
@@ -104,7 +103,6 @@ class edit
 
         $this->feather->render('edit.php', array(
                             'cur_post' => $cur_post,
-                            'lang_post' => $lang_post,
                             'errors' => $errors,
                             'preview_message' => $preview_message,
                             'id' => $id,
@@ -114,7 +112,6 @@ class edit
                             'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
                             'post' => $post,
-                            'lang_bbeditor' => $lang_bbeditor,
                             )
                     );
 

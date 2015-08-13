@@ -113,16 +113,14 @@ class viewforum
     // Returns forum action
     public function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
     {
-        global $lang_forum;
-
         $forum_actions = array();
 
         if (!$this->user->is_guest) {
             if ($subscriptions == 1) {
                 if ($is_subscribed) {
-                    $forum_actions[] = '<span>'.$lang_forum['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Unsubscribe'].'</a>';
+                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.get_link('unsubscribe/forum/'.$forum_id.'/').'">'.__('Unsubscribe').'</a>';
                 } else {
-                    $forum_actions[] = '<a href="'.get_link('subscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Subscribe'].'</a>';
+                    $forum_actions[] = '<a href="'.get_link('subscribe/forum/'.$forum_id.'/').'">'.__('Subscribe').'</a>';
                 }
             }
 
@@ -135,8 +133,6 @@ class viewforum
     // Returns the elements needed to display topics
     public function print_topics($forum_id, $sort_by, $start_from)
     {
-        global $lang_forum;
-
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
             $tracked_topics = get_tracked_topics();
@@ -208,18 +204,18 @@ class viewforum
 
                 if ($cur_topic['sticky'] == '1') {
                     $cur_topic['item_status'] .= ' isticky';
-                    $status_text[] = '<span class="stickytext">'.$lang_forum['Sticky'].'</span>';
+                    $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
                     $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
-                    $status_text[] = '<span class="movedtext">'.$lang_forum['Moved'].'</span>';
+                    $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
                     $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                 } else {
                     $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
-                    $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
+                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 

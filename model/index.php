@@ -104,8 +104,6 @@ class index
     // Returns the elements needed to display categories and their forums
     public function print_categories_forums()
     {
-        global $lang_index;
-
         // Get list of forums and topics with new posts since last visit
         if (!$this->user->is_guest) {
             $new_topics = $this->get_new_posts();
@@ -166,7 +164,7 @@ class index
 
             // Is this a redirect forum?
             if ($cur_forum->redirect_url != '') {
-                $cur_forum->forum_field = '<h3><span class="redirtext">'.$lang_index['Link to'].'</span> <a href="'.feather_escape($cur_forum->redirect_url).'" title="'.$lang_index['Link to'].' '.feather_escape($cur_forum->redirect_url).'">'.feather_escape($cur_forum->forum_name).'</a></h3>';
+                $cur_forum->forum_field = '<h3><span class="redirtext">'.__('Link to').'</span> <a href="'.feather_escape($cur_forum->redirect_url).'" title="'.__('Link to').' '.feather_escape($cur_forum->redirect_url).'">'.feather_escape($cur_forum->forum_name).'</a></h3>';
                 $cur_forum->num_topics_formatted = $cur_forum->num_posts_formatted = '-';
                 $cur_forum->item_status .= ' iredirect';
                 $cur_forum->icon_type = 'icon';

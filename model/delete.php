@@ -24,8 +24,6 @@ class delete
  
     public function get_info_delete($id)
     {
-
-        
         $select_get_info_delete = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $where_get_info_delete = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -52,8 +50,6 @@ class delete
 
     public function handle_deletion($is_topic_post, $id, $tid, $fid)
     {
-        global $lang_delete;
-
         require FEATHER_ROOT.'include/search_idx.php';
 
         if ($is_topic_post) {
@@ -61,7 +57,7 @@ class delete
             delete_topic($tid);
             update_forum($fid);
 
-            redirect(get_link('forum/'.$fid.'/'), $lang_delete['Topic del redirect']);
+            redirect(get_link('forum/'.$fid.'/'), __('Topic del redirect'));
         } else {
             // Delete just this one post
             delete_post($id, $tid);
@@ -75,7 +71,7 @@ class delete
                 ->order_by_desc('id')
                 ->find_one();
 
-            redirect(get_link('post/'.$post['id'].'/#p'.$post['id']), $lang_delete['Post del redirect']);
+            redirect(get_link('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
         }
     }
 }

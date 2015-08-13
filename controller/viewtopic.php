@@ -21,6 +21,9 @@ class viewtopic
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\viewtopic();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function __autoload($class_name)
@@ -30,24 +33,15 @@ class viewtopic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        global $lang_post, $lang_topic, $lang_bbeditor, $pd;
+        global $pd;
 
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
-        // Load the viewtopic.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
-
-        // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
-
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
-
-        // BBcode toolbar feature
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
 
         // Load the viewtopic.php model file
         require_once FEATHER_ROOT.'model/viewtopic.php';
@@ -108,9 +102,6 @@ class viewtopic
                             'id' => $id,
                             'p' => $p,
                             'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
-                            'lang_topic' => $lang_topic,
-                            'lang_post' => $lang_post,
-                            'lang_bbeditor' => $lang_bbeditor,
                             'cur_topic'    =>    $cur_topic,
                             'subscraction'    =>    $subscraction,
                             'is_admmod'    =>    $is_admmod,

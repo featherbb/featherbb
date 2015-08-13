@@ -20,7 +20,7 @@ if (!defined('FEATHER')) {
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_login['Login legend'] ?></legend>
+					<legend><?php echo __('Login legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="redirect_url" value="<?php echo feather_escape($redirect_url) ?>" />
@@ -28,11 +28,11 @@ if (!defined('FEATHER')) {
 						<label class="conl required"><strong><?php echo __('Password') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password" size="25" tabindex="2" /><br /></label>
 
 						<div class="rbox clearb">
-							<label><input type="checkbox" name="save_pass" value="1" tabindex="3" /><?php echo $lang_login['Remember me'] ?><br /></label>
+							<label><input type="checkbox" name="save_pass" value="1" tabindex="3" /><?php echo __('Remember me') ?><br /></label>
 						</div>
 
-						<p class="clearb"><?php echo $lang_login['Login info'] ?></p>
-						<p class="actions"><span><a href="<?php echo get_link('register/') ?>" tabindex="5"><?php echo $lang_login['Not registered'] ?></a></span> <span><a href="<?php echo get_link('login/action/forget/') ?>" tabindex="6"><?php echo $lang_login['Forgotten pass'] ?></a></span></p>
+						<p class="clearb"><?php echo __('Login info') ?></p>
+						<p class="actions"><span><a href="<?php echo get_link('register/') ?>" tabindex="5"><?php echo __('Not registered') ?></a></span> <span><a href="<?php echo get_link('login/action/forget/') ?>" tabindex="6"><?php echo __('Forgotten pass') ?></a></span></p>
 					</div>
 				</fieldset>
 			</div>

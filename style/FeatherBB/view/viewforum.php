@@ -36,7 +36,7 @@ if (!defined('FEATHER')) {
 				<tr>
 					<th class="tcl" scope="col"><?php echo __('Topic') ?></th>
 					<th class="tc2" scope="col"><?php echo __('Replies') ?></th>
-<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo $lang_forum['Views'] ?></th>
+<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo __('Views') ?></th>
 <?php endif; ?>					<th class="tcr" scope="col"><?php echo __('Last post') ?></th>
 				</tr>
 			</thead>
@@ -70,7 +70,7 @@ if (!defined('FEATHER')) {
 							<div class="icon inone"><div class="nosize"><!-- --></div></div>
 							<div class="tclcon">
 								<div>
-									<strong><?php echo $lang_forum['Empty forum'] ?></strong>
+									<strong><?php echo __('Empty forum') ?></strong>
 								</div>
 							</div>
 						</td>

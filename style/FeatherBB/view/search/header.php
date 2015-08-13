@@ -31,7 +31,7 @@ if (!defined('FEATHER')) {
 if ($search['show_as'] == 'topics') :
 ?>
 <div id="vf" class="blocktable">
-	<h2><span><?php echo $lang_search['Search results'] ?></span></h2>
+	<h2><span><?php echo __('Search results') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>

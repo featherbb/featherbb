@@ -21,6 +21,9 @@ class moderate
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\moderate();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/topic.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/misc.mo');
     }
 
     public function __autoload($class_name)
@@ -30,17 +33,12 @@ class moderate
     
     public function gethostpost($pid)
     {
-
-
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
         // Load the viewforum.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
@@ -53,17 +51,12 @@ class moderate
 
     public function gethostip($ip)
     {
-
-
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
         // Load the viewforum.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
@@ -76,17 +69,12 @@ class moderate
 
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
-        global $lang_topic, $lang_misc;
-
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
         // Load the viewforum.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
@@ -116,7 +104,7 @@ class moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                message($lang_misc['No topics selected']);
+                message(__('No topics selected'));
             }
 
             $topics = implode(',', array_map('intval', array_keys($topics)));
@@ -124,7 +112,7 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -134,7 +122,6 @@ class moderate
                     'action'    =>    'multi',
                     'id'    =>    $fid,
                     'topics'    =>    $topics,
-                    'lang_misc'    =>    $lang_misc,
                     'list_forums'   => $this->model->get_forum_list_move($fid),
                 )
             );
@@ -148,7 +135,7 @@ class moderate
 
             $this->model->stick_topic($id, $fid);
  
-            redirect(get_link('topic/'.$id.'/'), $lang_misc['Stick topic redirect']);
+            redirect(get_link('topic/'.$id.'/'), __('Stick topic redirect'));
         }
 
 
@@ -158,7 +145,7 @@ class moderate
 
             $this->model->unstick_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), $lang_misc['Unstick topic redirect']);
+            redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
         }
 
         // Open a topic
@@ -167,7 +154,7 @@ class moderate
             
             $this->model->open_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), $lang_misc['Unstick topic redirect']);
+            redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
         }
 
         // Close a topic
@@ -176,7 +163,7 @@ class moderate
 
             $this->model->close_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), $lang_misc['Unstick topic redirect']);
+            redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
         }
 
         $cur_topic = $this->model->get_topic_info($fid, $id);
@@ -193,7 +180,7 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -203,7 +190,6 @@ class moderate
                         'action'    =>    'single',
                         'id'    =>    $id,
                         'topics'    =>    $id,
-                        'lang_misc'    =>    $lang_misc,
                         'list_forums'   => $this->model->get_forum_list_move($fid),
                         )
                 );
@@ -218,14 +204,13 @@ class moderate
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
                     $posts = $this->model->delete_posts($id, $fid, $p);
 
-                    $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+                    $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
                     define('FEATHER_ACTIVE_PAGE', 'moderate');
 
                     $this->header->setTitle($page_title)->setPage($p)->display();
 
                     $this->feather->render('moderate/delete_posts.php', array(
-                        'lang_misc' => $lang_misc,
                         'id' => $id,
                         'posts' => $posts,
                         )
@@ -236,7 +221,7 @@ class moderate
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
                 $posts = $this->model->split_posts($id, $fid, $p);
 
-                $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+                $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
                 $focus_element = array('subject','new_subject');
 
                 define('FEATHER_ACTIVE_PAGE', 'moderate');
@@ -244,7 +229,6 @@ class moderate
                 $this->header->setTitle($page_title)->setPage($p)->setFocusElement($focus_element)->display();
 
                 $this->feather->render('moderate/split_posts.php', array(
-                        'lang_misc' => $lang_misc,
                         'id' => $id,
                         'posts' => $posts,
                         'list_forums' => $this->model->get_forum_list_split($id),
@@ -255,9 +239,6 @@ class moderate
             }
 
                 // Show the moderate posts view
-
-                // Load the viewtopic.php language file
-                require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
 
                 // Used to disable the Move and Delete buttons if there are no replies to this topic
                 $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
@@ -280,8 +261,6 @@ class moderate
             $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
             $this->feather->render('moderate/posts_view.php', array(
-                        'lang_topic' => $lang_topic,
-                        'lang_misc' => $lang_misc,
                         'cur_topic' => $cur_topic,
                         'url_topic' => url_friendly($cur_topic['subject']),
                         'url_forum' => url_friendly($cur_topic['forum_name']),
@@ -300,17 +279,12 @@ class moderate
 
     public function display($id, $name = null, $page = null)
     {
-        global $lang_forum, $lang_misc;
-
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
         // Load the viewforum.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
@@ -347,14 +321,12 @@ class moderate
         $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('moderate/moderator_forum.php', array(
-                            'lang_misc' => $lang_misc,
                             'id' => $id,
                             'p' => $p,
                             'url_forum' => $url_forum,
                             'cur_forum' => $cur_forum,
                             'paging_links' => $paging_links,
                             'feather_config' => $this->config,
-                            'lang_forum' => $lang_forum,
                             'topic_data' => $this->model->display_topics($id, $sort_by, $start_from),
                             'start_from' => $start_from,
                             )
@@ -365,17 +337,12 @@ class moderate
 
     public function dealposts($fid)
     {
-        global $lang_forum, $lang_topic, $lang_misc;
-
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
         // Load the viewforum.php language file
         require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($fid);
@@ -393,7 +360,7 @@ class moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                message($lang_misc['No topics selected']);
+                message(__('No topics selected'));
             }
 
             $topics = implode(',', array_map('intval', array_keys($topics)));
@@ -401,7 +368,7 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -411,7 +378,6 @@ class moderate
                         'action'    =>    'multi',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
-                        'lang_misc'    =>    $lang_misc,
                         'list_forums'   => $this->model->get_forum_list_move($fid),
                         )
                 );
@@ -427,10 +393,10 @@ class moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (count($topics) < 2) {
-                message($lang_misc['Not enough topics selected']);
+                message(__('Not enough topics selected'));
             }
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -439,7 +405,6 @@ class moderate
             $this->feather->render('moderate/merge_topics.php', array(
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
-                        'lang_misc'    =>    $lang_misc,
                         )
                 );
 
@@ -450,14 +415,14 @@ class moderate
         elseif ($this->request->post('delete_topics') || $this->request->post('delete_topics_comply')) {
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                message($lang_misc['No topics selected']);
+                message(__('No topics selected'));
             }
 
             if ($this->request->post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $fid);
             }
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Moderate']);
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
             define('FEATHER_ACTIVE_PAGE', 'moderate');
 
@@ -466,7 +431,6 @@ class moderate
             $this->feather->render('moderate/delete_topics.php', array(
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
-                        'lang_misc'    =>    $lang_misc,
                         )
                 );
 
@@ -482,12 +446,12 @@ class moderate
             if ($this->request->post('open') || $this->request->post('close')) {
                 $topics = $this->request->post('topics') ? @array_map('intval', @array_keys($this->request->post('topics'))) : array();
                 if (empty($topics)) {
-                    message($lang_misc['No topics selected']);
+                    message(__('No topics selected'));
                 }
 
                 $this->model->close_multiple_topics($action, $topics, $fid);
 
-                $redirect_msg = ($action) ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
+                $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
                 redirect(get_link('moderate/forum/'.$fid.'/'), $redirect_msg);
             }
         }

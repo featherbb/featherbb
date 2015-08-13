@@ -70,6 +70,8 @@ $feather = new \Slim\Slim();
 
 require FEATHER_ROOT.'include/common.php';
 
+load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo');
+
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
     define('FORUM_EXTERN_MAX_SUBJECT_LENGTH', 30);
@@ -611,12 +613,12 @@ elseif ($action == 'online' || $action == 'online_full') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf($lang_index['Guests online'], forum_number_format($num_guests)).'<br />'."\n";
+    echo sprintf(__('Guests online'), forum_number_format($num_guests)).'<br />'."\n";
 
     if ($action == 'online_full' && !empty($users)) {
-        echo sprintf($lang_index['Users online'], implode(', ', $users)).'<br />'."\n";
+        echo sprintf(__('Users online'), implode(', ', $users)).'<br />'."\n";
     } else {
-        echo sprintf($lang_index['Users online'], forum_number_format($num_users)).'<br />'."\n";
+        echo sprintf(__('Users online'), forum_number_format($num_users)).'<br />'."\n";
     }
 
     exit;
@@ -655,10 +657,10 @@ elseif ($action == 'stats') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf($lang_index['Newest user'], (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
-    echo sprintf($lang_index['No of topics'], forum_number_format($stats['total_topics'])).'<br />'."\n";
-    echo sprintf($lang_index['No of posts'], forum_number_format($stats['total_posts'])).'<br />'."\n";
+    echo sprintf(__('No of users'), forum_number_format($stats['total_users'])).'<br />'."\n";
+    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf(__('No of topics'), forum_number_format($stats['total_topics'])).'<br />'."\n";
+    echo sprintf(__('No of posts'), forum_number_format($stats['total_posts'])).'<br />'."\n";
 
     exit;
 }

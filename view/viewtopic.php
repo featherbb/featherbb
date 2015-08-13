@@ -64,13 +64,13 @@ foreach ($post_data as $post) {
 				</div>
 				<div class="postright">
 					<h3><?php if ($post['id'] != $cur_topic['first_post_id']) {
-    echo $lang_topic['Re'].' ';
+    echo __('Re').' ';
 }
     ?><?php echo feather_escape($cur_topic['subject']) ?></h3>
 					<div class="postmsg">
 						<?php echo $post['message']."\n" ?>
 <?php if ($post['edited'] != '') {
-    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.$lang_topic['Last edit'].' '.feather_escape($post['edited_by']).' ('.format_time($post['edited']).')</em></p>'."\n";
+    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.feather_escape($post['edited_by']).' ('.format_time($post['edited']).')</em></p>'."\n";
 }
     ?>
 					</div>
@@ -124,7 +124,7 @@ if ($quickpost) {
 
     ?>
 <div id="quickpost" class="blockform">
-	<h2><span><?php echo $lang_topic['Quick post'] ?></span></h2>
+	<h2><span><?php echo __('Quick post') ?></span></h2>
 	<div class="box">
 		<form id="quickpostform" method="post" action="<?php echo get_link('post/reply/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
@@ -142,7 +142,7 @@ if ($quickpost) {
         $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
         $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
         ?>
-						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+						<label class="conl required"><strong><?php echo __('Guest name') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<label class="conl<?php echo($feather_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php
@@ -154,6 +154,7 @@ if ($quickpost) {
 
     ?>
 <!-- Init BBcode editor toolbar -->
+<?php $lang_bbeditor = ''; ?>
 <script>
     var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
@@ -178,13 +179,13 @@ if ($quickpost) {
 			<?php if ($feather->user->is_guest) : ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
+					<legend><?php echo __('Robot title') ?></legend>
 					<div class="infldset">
-						<p><?php echo $lang_antispam['Robot info']    ?></p>
+						<p><?php echo __('Robot info')    ?></p>
 						<label class="required"><strong><?php
                              $question = array_keys($lang_antispam_questions);
     $qencoded = md5($question[$index_questions]);
-    echo sprintf($lang_antispam['Robot question'], $question[$index_questions]);
+    echo sprintf(__('Robot question'), $question[$index_questions]);
     ?>
 							 <span><?php echo __('Required') ?></span></strong>
 							 <br />
@@ -195,7 +196,7 @@ if ($quickpost) {
 			</div>
 			<?php endif;
     ?>
-			<p class="buttons"><input type="submit" name="submit" tabindex="<?php echo $cur_index++ ?>" value="<?php echo __('Submit') ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_topic['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /></p>
+			<p class="buttons"><input type="submit" name="submit" tabindex="<?php echo $cur_index++ ?>" value="<?php echo __('Submit') ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo __('Preview') ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /></p>
 		</form>
 	</div>
 </div>

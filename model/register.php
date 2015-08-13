@@ -24,7 +24,7 @@ class register
  
     public function check_for_errors()
     {
-        global $lang_register, $lang_prof_reg, $lang_antispam, $lang_antispam_questions;
+        global $lang_register, $lang_antispam, $lang_antispam_questions;
 
         $user = array();
         $user['errors'] = '';
@@ -36,7 +36,7 @@ class register
                                   ->find_one();
 
         if ($already_registered) {
-            message($lang_register['Registration flood']);
+            message(__('Registration flood'));
         }
 
 
@@ -57,9 +57,9 @@ class register
         $user['errors'] = check_username($user['username'], $user['errors']);
 
         if (feather_strlen($user['password1']) < 6) {
-            $user['errors'][] = $lang_prof_reg['Pass too short'];
+            $user['errors'][] = __('Pass too short');
         } elseif ($user['password1'] != $password2) {
-            $user['errors'][] = $lang_prof_reg['Pass not match'];
+            $user['errors'][] = __('Pass not match');
         }
 
         // Antispam feature
@@ -71,7 +71,7 @@ class register
             $lang_antispam_questions_array[md5($k)] = strtoupper($v);
         }
         if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
-            $user['errors'][] = $lang_antispam['Robot test fail'];
+            $user['errors'][] = __('Robot test fail');
         }
 
         // Validate email
@@ -80,13 +80,13 @@ class register
         if (!is_valid_email($user['email1'])) {
             $user['errors'][] = __('Invalid email');
         } elseif ($this->config['o_regs_verify'] == '1' && $user['email1'] != $email2) {
-            $user['errors'][] = $lang_register['Email not match'];
+            $user['errors'][] = __('Email not match');
         }
 
         // Check if it's a banned email address
         if (is_banned_email($user['email1'])) {
             if ($this->config['p_allow_banned_email'] == '0') {
-                $user['errors'][] = $lang_prof_reg['Banned email'];
+                $user['errors'][] = __('Banned email');
             }
             $user['banned_email'] = 1; // Used later when we send an alert email
         }
@@ -100,7 +100,7 @@ class register
 
         if ($dupe_mail) {
             if ($this->config['p_allow_dupe_email'] == '0') {
-                $user['errors'][] = $lang_prof_reg['Dupe email'];
+                $user['errors'][] = __('Dupe email');
             }
 
             foreach($dupe_mail as $cur_dupe) {
@@ -123,8 +123,6 @@ class register
 
     public function insert_user($user)
     {
-        global $lang_register;
-
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
@@ -241,11 +239,11 @@ class register
 
             pun_mail($user['email1'], $mail_subject, $mail_message);
 
-            message($lang_register['Reg email'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+            message(__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
 
         feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
 
-        redirect(get_base_url(), $lang_register['Reg complete']);
+        redirect(get_base_url(), __('Reg complete'));
     }
 }

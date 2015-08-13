@@ -15,20 +15,20 @@ if (!defined('FEATHER')) {
 ?>
 
 <div class="blockform">
-	<h2><span><?php echo $lang_misc['Delete topics'] ?></span></h2>
+	<h2><span><?php echo __('Delete topics') ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<input type="hidden" name="topics" value="<?php echo implode(',', array_map('intval', array_keys($topics))) ?>" />
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_misc['Confirm delete legend'] ?></legend>
+					<legend><?php echo __('Confirm delete legend') ?></legend>
 					<div class="infldset">
-						<p><?php echo $lang_misc['Delete topics comply'] ?></p>
+						<p><?php echo __('Delete topics comply') ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="delete_topics_comply" value="<?php echo $lang_misc['Delete'] ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="delete_topics_comply" value="<?php echo __('Delete') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

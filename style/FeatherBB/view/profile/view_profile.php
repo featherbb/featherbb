@@ -19,7 +19,7 @@ if (!defined('FEATHER')) {
 		<div class="fakeform">
 			<div class="inform">
 				<fieldset>
-				<legend><?php echo $lang_profile['Section personal'] ?></legend>
+				<legend><?php echo __('Section personal') ?></legend>
 					<div class="infldset">
 						<dl>
 							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['personal'])."\n" ?>
@@ -30,7 +30,7 @@ if (!defined('FEATHER')) {
 			</div>
 <?php if (!empty($user_info['messaging'])): ?>			<div class="inform">
 				<fieldset>
-				<legend><?php echo $lang_profile['Section messaging'] ?></legend>
+				<legend><?php echo __('Section messaging') ?></legend>
 					<div class="infldset">
 						<dl>
 							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['messaging'])."\n" ?>
@@ -41,7 +41,7 @@ if (!defined('FEATHER')) {
 			</div>
 <?php endif; if (!empty($user_info['personality'])): ?>			<div class="inform">
 				<fieldset>
-				<legend><?php echo $lang_profile['Section personality'] ?></legend>
+				<legend><?php echo __('Section personality') ?></legend>
 					<div class="infldset">
 						<dl>
 							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['personality'])."\n" ?>
@@ -52,7 +52,7 @@ if (!defined('FEATHER')) {
 			</div>
 <?php endif; ?>			<div class="inform">
 				<fieldset>
-				<legend><?php echo $lang_profile['User activity'] ?></legend>
+				<legend><?php echo __('User activity') ?></legend>
 					<div class="infldset">
 						<dl>
 							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['activity'])."\n" ?>

@@ -20,7 +20,7 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
 
     if ($footer_style == 'viewforum') {
         echo "\t\t\t".'<dl>'."\n";
-        echo "\t\t\t\t".'<dt><strong>'.$lang_forum['Mod controls'].'</strong></dt>'."\n";
+        echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
         echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/forum/'.$forum_id.'/page/'.$p.'/').'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
     } elseif ($footer_style == 'viewtopic') {
@@ -34,7 +34,7 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
         
         
         echo "\t\t\t".'<dl>'."\n";
-        echo "\t\t\t\t".'<dt><strong>'.$lang_topic['Mod controls'].'</strong></dt>'."\n";
+        echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
         // TODO: all
         //echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/param/'.$p).'">'.__('Moderate topic').'</a>'.($num_pages > 1 ? ' (<a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/'.$parameter.'/all/').'">'.__('All').'</a>)' : '').'</span></dd>'."\n";
         echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/page/'.$p.'/').'">'.__('Moderate topic').'</a></span></dd>'."\n";

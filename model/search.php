@@ -63,7 +63,7 @@ class search
             }
 
             if (!$keywords && !$author) {
-                message($lang_search['No terms']);
+                message(__('No terms'));
             }
 
             if ($author) {
@@ -117,7 +117,7 @@ class search
 
                 unset($temp);
             } else {
-                message($lang_search['No hits']);
+                message(__('No hits'));
             }
         } else {
             $keyword_results = $author_results = array();
@@ -128,7 +128,7 @@ class search
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
                 if ($this->user->last_search && (time() - $this->user->last_search) < $this->user->g_search_flood && (time() - $this->user->last_search) >= 0) {
-                    message(sprintf($lang_search['Search flood'], $this->user->g_search_flood, $this->user->g_search_flood - (time() - $this->user->last_search)));
+                    message(sprintf(__('Search flood'), $this->user->g_search_flood, $this->user->g_search_flood - (time() - $this->user->last_search)));
                 }
 
                 if (!$this->user->is_guest) {
@@ -172,7 +172,7 @@ class search
                     $keywords_array = split_words($keywords, false);
 
                     if (empty($keywords_array)) {
-                        message($lang_search['No hits']);
+                        message(__('No hits'));
                     }
 
                     // Should we search in message body or topic subject specifically?
@@ -296,7 +296,7 @@ class search
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
-                    message($lang_search['No hits']);
+                    message(__('No hits'));
                 }
             } elseif ($action == 'show_new' || $action == 'show_recent' || $action == 'show_replies' || $action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions' || $action == 'show_unanswered') {
                 $search_type = array('action', $action);
@@ -336,7 +336,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No new posts']);
+                        message(__('No new posts'));
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -360,7 +360,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No recent posts']);
+                        message(__('No recent posts'));
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -384,7 +384,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No user posts']);
+                        message(__('No user posts'));
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -406,7 +406,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No user posts']);
+                        message(__('No user posts'));
                     }
 
                     // Pass on the user ID so that we can later know whose posts we're searching for
@@ -429,7 +429,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No user topics']);
+                        message(__('No user topics'));
                     }
 
                     // Pass on the user ID so that we can later know whose topics we're searching for
@@ -456,7 +456,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No subscriptions']);
+                        message(__('No subscriptions'));
                     }
 
                     // Pass on user ID so that we can later know whose subscriptions we're searching for
@@ -479,7 +479,7 @@ class search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        message($lang_search['No unanswered']);
+                        message(__('No unanswered'));
                     }
                 }
 
@@ -614,13 +614,13 @@ class search
                 $search['search_set'][] = $row;
             }
 
-            $search['crumbs_text']['show_as'] = $lang_search['Search'];
+            $search['crumbs_text']['show_as'] = __('Search');
 
             if ($search_type[0] == 'action') {
                 if ($search_type[1] == 'show_user_topics') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf($lang_search['Quick search show_user_topics'], feather_escape($search['search_set'][0]['poster'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_topics'), feather_escape($search['search_set'][0]['poster'])).'</a>';
                 } elseif ($search_type[1] == 'show_user_posts') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf($lang_search['Quick search show_user_posts'], feather_escape($search['search_set'][0]['pposter'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_posts'), feather_escape($search['search_set'][0]['pposter'])).'</a>';
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
@@ -630,7 +630,7 @@ class search
                         message(__('Bad request'), '404');
                     }
 
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf($lang_search['Quick search show_subscriptions'], feather_escape($subscriber_name)).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), feather_escape($subscriber_name)).'</a>';
                 } else {
                     $search_url = str_replace('_', '/', $search_type[1]);
                     $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/'.$search_url.'/').'">'.$lang_search['Quick search '.$search_type[1]].'</a>';
@@ -660,7 +660,7 @@ class search
 
     public function display_search_results($search)
     {
-        global $lang_forum, $lang_topic, $lang_search, $pd;
+        global $lang_search, $pd;
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
@@ -684,7 +684,7 @@ class search
                 if (!$this->user->is_guest && $cur_search['last_post'] > $this->user->last_visit && (!isset($tracked_topics['topics'][$cur_search['tid']]) || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post']) && (!isset($tracked_topics['forums'][$cur_search['forum_id']]) || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post'])) {
                     $cur_search['item_status'] = 'inew';
                     $cur_search['icon_type'] = 'icon icon-new';
-                    $cur_search['icon_text'] = $lang_topic['New icon'];
+                    $cur_search['icon_text'] = __('New icon');
                 } else {
                     $cur_search['item_status'] = '';
                     $cur_search['icon_text'] = '<!-- -->';
@@ -709,7 +709,6 @@ class search
                     'cur_search' => $cur_search,
                     'forum' => $forum,
                     'lang_search' => $lang_search,
-                    'lang_topic' => $lang_topic,
                     )
                 );
             } else {
@@ -722,11 +721,11 @@ class search
 
                 if ($cur_search['sticky'] == '1') {
                     $cur_search['item_status'] .= ' isticky';
-                    $status_text[] = '<span class="stickytext">'.$lang_forum['Sticky'].'</span>';
+                    $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
                 }
 
                 if ($cur_search['closed'] != '0') {
-                    $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
+                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_search['item_status'] .= ' iclosed';
                 }
 
@@ -800,7 +799,7 @@ class search
 
         // We either show a list of forums of which multiple can be selected
         if ($this->config['o_search_all_forums'] == '1' || $this->user->is_admmod) {
-            $output .= "\t\t\t\t\t\t".'<div class="conl multiselect">'.$lang_search['Forum search']."\n";
+            $output .= "\t\t\t\t\t\t".'<div class="conl multiselect">'.__('Forum search')."\n";
             $output .= "\t\t\t\t\t\t".'<br />'."\n";
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";
 
@@ -832,7 +831,7 @@ class search
         }
         // ... or a simple select list for one forum only
         else {
-            $output .= "\t\t\t\t\t\t".'<label class="conl">'.$lang_search['Forum search']."\n";
+            $output .= "\t\t\t\t\t\t".'<label class="conl">'.__('Forum search')."\n";
             $output .= "\t\t\t\t\t\t".'<br />'."\n";
             $output .= "\t\t\t\t\t\t".'<select id="forum" name="forum">'."\n";
 

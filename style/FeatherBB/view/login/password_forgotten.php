@@ -16,10 +16,10 @@ if (!defined('FEATHER')) {
 if (!empty($errors)) {
     ?>
 <div id="posterror" class="block">
-	<h2><span><?php echo $lang_login['New password errors'] ?></span></h2>
+	<h2><span><?php echo __('New password errors') ?></span></h2>
 	<div class="box">
 		<div class="inbox error-info">
-			<p><?php echo $lang_login['New passworderrors info'] ?></p>
+			<p><?php echo __('New passworderrors info') ?></p>
 			<ul class="error-list">
 <?php
 
@@ -37,17 +37,17 @@ if (!empty($errors)) {
 }
 ?>
 <div class="blockform">
-	<h2><span><?php echo $lang_login['Request pass'] ?></span></h2>
+	<h2><span><?php echo __('Request pass') ?></span></h2>
 	<div class="box">
 		<form id="request_pass" method="post" action="<?php echo get_link('login/action/forget/') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_login['Request pass legend'] ?></legend>
+					<legend><?php echo __('Request pass legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<label class="required"><strong><?php echo __('Email') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" /><br /></label>
-						<p><?php echo $lang_login['Request pass info'] ?></p>
+						<p><?php echo __('Request pass info') ?></p>
 					</div>
 				</fieldset>
 			</div>

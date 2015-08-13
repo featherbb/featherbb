@@ -73,7 +73,7 @@ class post
     // Checks the post for errors before posting
     public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
     {
-        global $lang_post, $lang_prof_reg, $lang_register, $lang_antispam, $lang_antispam_questions, $pd;
+        global $lang_antispam, $lang_antispam_questions, $pd;
 
         // Antispam feature
         if ($this->user->is_guest) {
@@ -90,13 +90,13 @@ class post
             }
 
             if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
-                $errors[] = $lang_antispam['Robot test fail'];
+                $errors[] = __('Robot test fail');
             }
         }
 
         // Flood protection
         if ($this->request->post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < $this->user->g_post_flood) {
-            $errors[] = sprintf($lang_post['Flood start'], $this->user->g_post_flood, $this->user->g_post_flood - (time() - $this->user->last_post));
+            $errors[] = sprintf(__('Flood start'), $this->user->g_post_flood, $this->user->g_post_flood - (time() - $this->user->last_post));
         }
 
         if ($tid) {
@@ -121,13 +121,13 @@ class post
             }
 
             if ($subject == '') {
-                $errors[] = $lang_post['No subject'];
+                $errors[] = __('No subject');
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
-                $errors[] = $lang_post['No subject after censoring'];
+                $errors[] = __('No subject after censoring');
             } elseif (feather_strlen($subject) > 70) {
-                $errors[] = $lang_post['Too long subject'];
+                $errors[] = __('Too long subject');
             } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
-                $errors[] = $lang_post['All caps subject'];
+                $errors[] = __('All caps subject');
             }
         }
 
@@ -148,7 +148,7 @@ class post
                 // we should only check guests because members' addresses are already verified
                 if ($this->user->is_guest && is_banned_email($email)) {
                     if ($this->config['p_allow_banned_email'] == '0') {
-                        $errors[] = $lang_prof_reg['Banned email'];
+                        $errors[] = __('Banned email');
                     }
 
                     $errors['banned_email'] = 1; // Used later when we send an alert email
@@ -161,9 +161,9 @@ class post
 
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
+            $errors[] = sprintf(__('Too long message'), forum_number_format(FEATHER_MAX_POSTSIZE));
         } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user->is_admmod) {
-            $errors[] = $lang_post['All caps message'];
+            $errors[] = __('All caps message');
         }
 
         // Validate BBCode syntax
@@ -174,13 +174,13 @@ class post
 
         if (empty($errors)) {
             if ($message == '') {
-                $errors[] = $lang_post['No message'];
+                $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
                 $censored_message = feather_trim(censor_words($message));
 
                 if ($censored_message == '') {
-                    $errors[] = $lang_post['No message after censoring'];
+                    $errors[] = __('No message after censoring');
                 }
             }
         }
@@ -765,8 +765,6 @@ class post
     // Get the current state of checkboxes
     public function get_checkboxes($fid, $is_admmod, $is_subscribed)
     {
-        global $lang_post;
-
         $cur_index = 1;
 
         $checkboxes = array();
@@ -776,7 +774,7 @@ class post
 
         if (!$this->user->is_guest) {
             if ($this->config['o_smilies'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
             }
 
             if ($this->config['o_topic_subscriptions'] == '1') {
@@ -795,10 +793,10 @@ class post
                     $subscr_checked = true;
                 }
 
-                $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? $lang_post['Stay subscribed'] : $lang_post['Subscribe']).'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
             }
         } elseif ($this->config['o_smilies'] == '1') {
-            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
         return $checkboxes;

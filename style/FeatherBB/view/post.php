@@ -33,10 +33,10 @@ if (!defined('FEATHER')) {
 if (!empty($errors)) {
     ?>
 <div id="posterror" class="block">
-	<h2><span><?php echo $lang_post['Post errors'] ?></span></h2>
+	<h2><span><?php echo __('Post errors') ?></span></h2>
 	<div class="box">
 		<div class="inbox error-info">
-			<p><?php echo $lang_post['Post errors info'] ?></p>
+			<p><?php echo __('Post errors info') ?></p>
 			<ul class="error-list">
 <?php
 
@@ -57,7 +57,7 @@ if (!empty($errors)) {
 
     ?>
 <div id="postpreview" class="blockpost">
-	<h2><span><?php echo $lang_post['Post preview'] ?></span></h2>
+	<h2><span><?php echo __('Post preview') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -80,6 +80,7 @@ $cur_index = 1;
 
 ?>
 <!-- Init BBcode editor toolbar -->
+<?php $lang_bbeditor = ''; ?>
 <script>
     var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
         langBbeditor = JSON.parse('<?= json_encode($lang_bbeditor); ?>');
@@ -101,7 +102,7 @@ if ($feather->user->is_guest) {
     $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
     $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
     ?>
-						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php if ($feather->request->post('req_username')) {
+						<label class="conl required"><strong><?php echo __('Guest name') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php if ($feather->request->post('req_username')) {
     echo feather_escape($post['username']);
 }
     ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
@@ -150,13 +151,13 @@ if (!empty($checkboxes)) {
 			<?php if ($feather->user->is_guest) : ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_antispam['Robot title'] ?></legend>
+					<legend><?php echo __('Robot title') ?></legend>
 					<div class="infldset">
-						<p><?php echo $lang_antispam['Robot info']    ?></p>
+						<p><?php echo __('Robot info')    ?></p>
 						<label class="required"><strong><?php
                              $question = array_keys($lang_antispam_questions);
                              $qencoded = md5($question[$index_questions]);
-                             echo sprintf($lang_antispam['Robot question'], $question[$index_questions]);?>
+                             echo sprintf(__('Robot question'), $question[$index_questions]);?>
 							 <span><?php echo __('Required') ?></span></strong>
 							 <br />
 							 <input	name="captcha" id="captcha"	type="text"	size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /><br />
@@ -165,7 +166,7 @@ if (!empty($checkboxes)) {
 				</fieldset>
 			</div>
 			<?php endif; ?>
-			<p class="buttons"><input type="submit" name="submit" value="<?php echo __('Submit') ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="submit" value="<?php echo __('Submit') ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo __('Preview') ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>
@@ -175,7 +176,7 @@ if (!empty($checkboxes)) {
 if ($tid && $feather_config['o_topic_review'] != '0') :
 ?>
 <div id="postreview">
-	<h2><span><?php echo $lang_post['Topic review'] ?></span></h2>
+	<h2><span><?php echo __('Topic review') ?></span></h2>
 
 	<?php
     // Set background switching on
