@@ -49,20 +49,6 @@ class FeatherBB extends \Slim\Middleware
         $this->init_db();
 	}
 
-    public function load_forum_config()
-    {
-        global $feather_config; // Legacy
-
-        if (file_exists($this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php')) {
-            include $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
-        } else {
-            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
-            generate_config_cache();
-            require $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
-        }
-        return $feather_config;
-    }
-
     public static function load_default_settings()
     {
         return array(
@@ -90,7 +76,7 @@ class FeatherBB extends \Slim\Middleware
             case 'mysql_innodb':
             case 'mysqli_innodb':
                 DB::configure('mysql:host='.$this->data['forum_settings']['db_host'].';dbname='.$this->data['forum_settings']['db_name']);
-                DB::configure('driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+                DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
                 break;
             case 'sqlite';
             case 'sqlite3';
@@ -328,7 +314,7 @@ class FeatherBB extends \Slim\Middleware
 
     public function call()
     {
-        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats; // Legacy
+        global $lang_common, $feather_bans, $db_type, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
 
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
             $this->set_headers();
@@ -339,8 +325,15 @@ class FeatherBB extends \Slim\Middleware
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
             require_once $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';
 
-            // Get forum config
-            $this->data['forum_settings'] = array_merge($this->load_forum_config(), $this->data['forum_settings']);
+            // Get forum config and load it into forum_settings array
+            if (file_exists($this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php')) {
+                include $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
+            } else {
+                require_once $this->data['forum_env']['FEATHER_ROOT'].'include/cache.php';
+                generate_config_cache();
+                require $this->data['forum_env']['FORUM_CACHE_DIR'].'cache_config.php';
+            }
+            $this->data['forum_settings'] = array_merge($feather_config, $this->data['forum_settings']);
             // Define time formats
             $forum_time_formats = array($this->data['forum_settings']['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
             $forum_date_formats = array($this->data['forum_settings']['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
