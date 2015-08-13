@@ -21,6 +21,9 @@ class viewtopic
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\viewtopic();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function __autoload($class_name)
@@ -30,29 +33,20 @@ class viewtopic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        global $lang_common, $lang_post, $lang_topic, $lang_bbeditor, $pd;
+        global $pd;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
-
-        // Load the viewtopic.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
-
-        // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
-        // BBcode toolbar feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/bbeditor.php';
-
         // Load the viewtopic.php model file
         require_once FEATHER_ROOT.'model/viewtopic.php';
 
-        // Fetch some informations about the topic TODO
+        // Fetch some informations about the topic
         $cur_topic = $this->model->get_info_topic($id);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -82,8 +76,7 @@ class viewtopic
         $url_forum = url_friendly($cur_topic['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
-
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
         if ($this->config['o_censoring'] == '1') {
             $cur_topic['subject'] = censor_words($cur_topic['subject']);
@@ -103,18 +96,12 @@ class viewtopic
 
         $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
-        $forum_id = $cur_topic['forum_id'];
-
         require FEATHER_ROOT.'include/parser.php';
 
         $this->feather->render('viewtopic.php', array(
                             'id' => $id,
                             'p' => $p,
                             'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
-                            'lang_common' => $lang_common,
-                            'lang_topic' => $lang_topic,
-                            'lang_post' => $lang_post,
-                            'lang_bbeditor' => $lang_bbeditor,
                             'cur_topic'    =>    $cur_topic,
                             'subscraction'    =>    $subscraction,
                             'is_admmod'    =>    $is_admmod,
@@ -141,17 +128,13 @@ class viewtopic
 
     public function viewpost($pid)
     {
-        global $lang_common;
-
         $post = $this->model->redirect_to_post($pid);
 
-        return self::display($post['topic_id'], null, $post['get_p'], $pid);
+        return $this->display($post['topic_id'], null, $post['get_p'], $pid);
     }
 
     public function action($id, $action)
     {
-        global $lang_common;
-
         $this->model->handle_actions($id, $action);
     }
 }

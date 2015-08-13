@@ -15,22 +15,22 @@ if (!defined('FEATHER')) {
 ?>
 
 <div class="blockform">
-	<h2><span><?php echo $lang_misc['Merge topics'] ?></span></h2>
+	<h2><span><?php echo __('Merge topics') ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<input type="hidden" name="topics" value="<?php echo implode(',', array_map('intval', array_keys($topics))) ?>" />
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_misc['Confirm merge legend'] ?></legend>
+					<legend><?php echo __('Confirm merge legend') ?></legend>
 					<div class="infldset">
 						<div class="rbox">
-							<label><input type="checkbox" name="with_redirect" value="1" /><?php echo $lang_misc['Leave redirect'] ?><br /></label>
+							<label><input type="checkbox" name="with_redirect" value="1" /><?php echo __('Leave redirect') ?><br /></label>
 						</div>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="merge_topics_comply" value="<?php echo $lang_misc['Merge'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="merge_topics_comply" value="<?php echo __('Merge') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

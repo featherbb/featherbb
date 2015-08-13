@@ -24,7 +24,7 @@ class bans
  
     public function add_ban_info($id = null)
     {
-        global $lang_common, $lang_admin_bans;
+        global $lang_admin_bans;
 
         $ban = array();
 
@@ -32,7 +32,7 @@ class bans
         if (is_numeric($id)) {
             $ban['user_id'] = $id;
             if ($ban['user_id'] < 2) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             $select_add_ban_info = array('group_id', 'username', 'email');
@@ -102,7 +102,7 @@ class bans
 
     public function edit_ban_info($id)
     {
-        global $lang_common;
+
 
         $ban = array();
 
@@ -120,7 +120,7 @@ class bans
             $ban['message'] = $result['message'];
             $ban['expire'] = $result['expire'];
         } else {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $diff = ($this->user->timezone + $this->user->dst) * 3600;

@@ -24,8 +24,6 @@ class profile
  
     public function change_pass($id)
     {
-        global $lang_profile, $lang_common, $lang_prof_reg;
-
         if ($this->request->get('key')) {
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
@@ -40,7 +38,7 @@ class profile
                 ->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
-                message($lang_profile['Pass key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
+                message(__('Pass key bad').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
                 DB::for_table('users')
                     ->where('id', $id)
@@ -50,14 +48,14 @@ class profile
                     ->set_expr('activate_key', 'NULL')
                     ->save();
 
-                message($lang_profile['Pass updated'], true);
+                message(__('Pass updated'), true);
             }
         }
 
         // Make sure we are allowed to change this user's password
         if ($this->user->id != $id) {
             if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
-                message($lang_common['No permission'], '403');
+                message(__('No permission'), '403');
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
@@ -71,11 +69,11 @@ class profile
                     ->find_one();
 
                 if (!$user) {
-                    message($lang_common['Bad request'], '404');
+                    message(__('Bad request'), '404');
                 }
 
                 if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
-                    message($lang_common['No permission'], '403');
+                    message(__('No permission'), '403');
                 }
             }
         }
@@ -86,10 +84,10 @@ class profile
             $new_password2 = feather_trim($this->request->post('req_new_password2'));
 
             if ($new_password1 != $new_password2) {
-                message($lang_prof_reg['Pass not match']);
+                message(__('Pass not match'));
             }
             if (feather_strlen($new_password1) < 6) {
-                message($lang_prof_reg['Pass too short']);
+                message(__('Pass too short'));
             }
 
             $cur_user = DB::for_table('users')
@@ -107,7 +105,7 @@ class profile
             }
 
             if (!$authorized) {
-                message($lang_profile['Wrong pass']);
+                message(__('Wrong pass'));
             }
 
             $new_password_hash = feather_hash($new_password1);
@@ -121,18 +119,16 @@ class profile
                 feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
             }
 
-            redirect(get_link('user/'.$id.'/section/essentials/'), $lang_profile['Pass updated redirect']);
+            redirect(get_link('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
         }
     }
 
     public function change_email($id)
     {
-        global $lang_profile, $lang_common, $lang_prof_reg;
-
         // Make sure we are allowed to change this user's email
         if ($this->user->id != $id) {
             if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
-                message($lang_common['No permission'], '403');
+                message(__('No permission'), '403');
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's email?
 
@@ -146,11 +142,11 @@ class profile
                     ->find_one();
 
                 if (!$user) {
-                    message($lang_common['Bad request'], '404');
+                    message(__('Bad request'), '404');
                 }
 
                 if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
-                    message($lang_common['No permission'], '403');
+                    message(__('No permission'), '403');
                 }
             }
         }
@@ -163,7 +159,7 @@ class profile
                 ->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
-                message($lang_profile['Email key bad'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
+                message(__('Email key bad').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
                 DB::for_table('users')
                     ->where('id', $id)
@@ -173,11 +169,11 @@ class profile
                     ->set_expr('activate_key', 'NULL')
                     ->save();
 
-                message($lang_profile['Email updated'], true);
+                message(__('Email updated'), true);
             }
         } elseif ($this->request->isPost()) {
             if (feather_hash($this->request->post('req_password')) !== $this->user->password) {
-                message($lang_profile['Wrong pass']);
+                message(__('Wrong pass'));
             }
 
             require FEATHER_ROOT.'include/email.php';
@@ -185,13 +181,13 @@ class profile
             // Validate the email address
             $new_email = strtolower(feather_trim($this->request->post('req_new_email')));
             if (!is_valid_email($new_email)) {
-                message($lang_common['Invalid email']);
+                message(__('Invalid email'));
             }
 
             // Check if it's a banned email address
             if (is_banned_email($new_email)) {
                 if ($this->config['p_allow_banned_email'] == '0') {
-                    message($lang_prof_reg['Banned email']);
+                    message(__('Banned email'));
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
                     $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
@@ -220,7 +216,7 @@ class profile
 
             if ($result) {
                 if ($this->config['p_allow_dupe_email'] == '0') {
-                    message($lang_prof_reg['Dupe email']);
+                    message(__('Dupe email'));
                 } elseif ($this->config['o_mailing_list'] != '') {
                     foreach($result as $cur_dupe) {
                         $dupe_list[] = $cur_dupe['username'];
@@ -272,16 +268,14 @@ class profile
 
             pun_mail($new_email, $mail_subject, $mail_message);
 
-            message($lang_profile['Activate email sent'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+            message(__('Activate email sent').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
     }
 
     public function upload_avatar($id, $files_data)
     {
-        global $lang_profile;
-
         if (!isset($files_data['req_file'])) {
-            message($lang_profile['No file']);
+            message(__('No file'));
         }
 
         $uploaded_file = $files_data['req_file'];
@@ -291,25 +285,25 @@ class profile
             switch ($uploaded_file['error']) {
                 case 1: // UPLOAD_ERR_INI_SIZE
                 case 2: // UPLOAD_ERR_FORM_SIZE
-                    message($lang_profile['Too large ini']);
+                    message(__('Too large ini'));
                     break;
 
                 case 3: // UPLOAD_ERR_PARTIAL
-                    message($lang_profile['Partial upload']);
+                    message(__('Partial upload'));
                     break;
 
                 case 4: // UPLOAD_ERR_NO_FILE
-                    message($lang_profile['No file']);
+                    message(__('No file'));
                     break;
 
                 case 6: // UPLOAD_ERR_NO_TMP_DIR
-                    message($lang_profile['No tmp directory']);
+                    message(__('No tmp directory'));
                     break;
 
                 default:
                     // No error occured, but was something actually uploaded?
                     if ($uploaded_file['size'] == 0) {
-                        message($lang_profile['No file']);
+                        message(__('No file'));
                     }
                     break;
             }
@@ -319,17 +313,17 @@ class profile
             // Preliminary file check, adequate in most cases
             $allowed_types = array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
             if (!in_array($uploaded_file['type'], $allowed_types)) {
-                message($lang_profile['Bad type']);
+                message(__('Bad type'));
             }
 
             // Make sure the file isn't too big
             if ($uploaded_file['size'] > $this->config['o_avatars_size']) {
-                message($lang_profile['Too large'].' '.forum_number_format($this->config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
+                message(__('Too large').' '.forum_number_format($this->config['o_avatars_size']).' '.__('bytes').'.');
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
             if (!@move_uploaded_file($uploaded_file['tmp_name'], FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
-                message($lang_profile['Move failed'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
+                message(__('Move failed').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             }
 
             list($width, $height, $type, ) = @getimagesize(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
@@ -344,13 +338,13 @@ class profile
             } else {
                 // Invalid type
                 @unlink(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
-                message($lang_profile['Bad type']);
+                message(__('Bad type'));
             }
 
             // Now check the width/height
             if (empty($width) || empty($height) || $width > $this->config['o_avatars_width'] || $height > $this->config['o_avatars_height']) {
                 @unlink(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
-                message($lang_profile['Too wide or high'].' '.$this->config['o_avatars_width'].'x'.$this->config['o_avatars_height'].' '.$lang_profile['pixels'].'.');
+                message(__('Too wide or high').' '.$this->config['o_avatars_width'].'x'.$this->config['o_avatars_height'].' '.__('pixels').'.');
             }
 
             // Delete any old avatars and put the new one in place
@@ -358,16 +352,14 @@ class profile
             @rename(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp', FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.$extension);
             @chmod(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
-            message($lang_profile['Unknown failure']);
+            message(__('Unknown failure'));
         }
 
-        redirect(get_link('user/'.$id.'/section/personality/'), $lang_profile['Avatar upload redirect']);
+        redirect(get_link('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
     }
 
     public function update_group_membership($id)
     {
-        global $lang_profile;
-
         $new_group_id = intval($this->request->post('group_id'));
 
         $old_group_id = DB::for_table('users')
@@ -425,7 +417,7 @@ class profile
             }
         }
 
-        redirect(get_link('user/'.$id.'/section/admin/'), $lang_profile['Group membership redirect']);
+        redirect(get_link('user/'.$id.'/section/admin/'), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -440,8 +432,6 @@ class profile
 
     public function update_mod_forums($id)
     {
-        global $lang_profile;
-
         $username = $this->get_username($id);
 
         $moderator_in = ($this->request->post('moderator_in')) ? array_keys($this->request->post('moderator_in')) : array();
@@ -483,13 +473,11 @@ class profile
             }
         }
 
-        redirect(get_link('user/'.$id.'/section/admin/'), $lang_profile['Update forums redirect']);
+        redirect(get_link('user/'.$id.'/section/admin/'), __('Update forums redirect'));
     }
 
     public function ban_user($id)
     {
-        global $lang_profile;
-
         // Get the username of the user we are banning
         $username = $this->get_username($id);
 
@@ -501,16 +489,14 @@ class profile
             ->find_one_col('id');
 
         if ($ban_id) {
-            redirect(get_link('admin/bans/edit/'.$ban_id.'/'), $lang_profile['Ban redirect']);
+            redirect(get_link('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
         } else {
-            redirect(get_link('admin/bans/add/'.$id.'/'), $lang_profile['Ban redirect']);
+            redirect(get_link('admin/bans/add/'.$id.'/'), __('Ban redirect'));
         }
     }
 
     public function promote_user($id)
     {
-        global $lang_profile, $lang_common;
-
         $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
         // Find the group ID to promote the user to
@@ -521,7 +507,7 @@ class profile
             ->find_one_col('g.g_promote_next_group');
         
         if (!$next_group_id) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Update the user
@@ -530,13 +516,11 @@ class profile
             ->set('group_id', $next_group_id)
             ->save();
         
-        redirect(get_link('post/'.$pid.'/#p'.$pid), $lang_profile['User promote redirect']);
+        redirect(get_link('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
     public function delete_user($id)
     {
-        global $lang_profile;
-
         // Get the username and group of the user we are deleting
         $select_info_delete_user = array('group_id', 'username');
 
@@ -548,7 +532,7 @@ class profile
         $username = $result['username'];
         
         if ($group_id == FEATHER_ADMIN) {
-            message($lang_profile['No delete admin message']);
+            message(__('No delete admin message'));
         }
 
         if ($this->request->post('delete_user_comply')) {
@@ -658,13 +642,13 @@ class profile
                 generate_admins_cache();
             }
 
-            redirect(get_base_url(), $lang_profile['User delete redirect']);
+            redirect(get_base_url(), __('User delete redirect'));
         }
     }
 
     public function fetch_user_group($id)
     {
-        global $lang_common;
+
 
         $info = array();
         
@@ -678,7 +662,7 @@ class profile
             ->find_one();
 
         if (!$info) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $info;
@@ -686,7 +670,7 @@ class profile
 
     public function update_profile($id, $info, $section)
     {
-        global $lang_common, $lang_profile, $lang_prof_reg, $pd;
+        global $pd;
 
         $username_updated = false;
 
@@ -706,7 +690,7 @@ class profile
                     $languages = forum_list_langs();
                     $form['language'] = feather_trim($this->request->post('form_language'));
                     if (!in_array($form['language'], $languages)) {
-                        message($lang_common['Bad request'], '404');
+                        message(__('Bad request'), '404');
                     }
                 }
 
@@ -743,7 +727,7 @@ class profile
                     // Validate the email address
                     $form['email'] = strtolower(feather_trim($this->request->post('req_email')));
                     if (!is_valid_email($form['email'])) {
-                        message($lang_common['Invalid email']);
+                        message(__('Invalid email'));
                     }
                 }
 
@@ -764,14 +748,14 @@ class profile
                         $url = url_valid($form['url']);
 
                         if ($url === false) {
-                            message($lang_profile['Invalid website URL']);
+                            message(__('Invalid website URL'));
                         }
 
                         $form['url'] = $url['url'];
                     }
                 } else {
                     if (!empty($form['url'])) {
-                        message($lang_profile['Website not allowed']);
+                        message(__('Website not allowed'));
                     }
 
                     $form['url'] = '';
@@ -785,10 +769,10 @@ class profile
                     if ($form['title'] != '') {
                         // A list of words that the title may not contain
                         // If the language is English, there will be some duplicates, but it's not the end of the world
-                        $forbidden = array('member', 'moderator', 'administrator', 'banned', 'guest', utf8_strtolower($lang_common['Member']), utf8_strtolower($lang_common['Moderator']), utf8_strtolower($lang_common['Administrator']), utf8_strtolower($lang_common['Banned']), utf8_strtolower($lang_common['Guest']));
+                        $forbidden = array('member', 'moderator', 'administrator', 'banned', 'guest', utf8_strtolower(__('Member')), utf8_strtolower(__('Moderator')), utf8_strtolower(__('Administrator')), utf8_strtolower(__('Banned')), utf8_strtolower(__('Guest')));
 
                         if (in_array(utf8_strtolower($form['title']), $forbidden)) {
-                            message($lang_profile['Forbidden title']);
+                            message(__('Forbidden title'));
                         }
                     }
                 }
@@ -808,7 +792,7 @@ class profile
 
                 // If the ICQ UIN contains anything other than digits it's invalid
                 if (preg_match('%[^0-9]%', $form['icq'])) {
-                    message($lang_prof_reg['Bad ICQ']);
+                    message(__('Bad ICQ'));
                 }
 
                 break;
@@ -824,9 +808,9 @@ class profile
 
                     // Validate signature
                     if (feather_strlen($form['signature']) > $this->config['p_sig_length']) {
-                        message(sprintf($lang_prof_reg['Sig too long'], $this->config['p_sig_length'], feather_strlen($form['signature']) - $this->config['p_sig_length']));
+                        message(sprintf(__('Sig too long'), $this->config['p_sig_length'], feather_strlen($form['signature']) - $this->config['p_sig_length']));
                     } elseif (substr_count($form['signature'], "\n") > ($this->config['p_sig_lines']-1)) {
-                        message(sprintf($lang_prof_reg['Sig too many lines'], $this->config['p_sig_lines']));
+                        message(sprintf(__('Sig too many lines'), $this->config['p_sig_lines']));
                     } elseif ($form['signature'] && $this->config['p_sig_all_caps'] == '0' && is_all_uppercase($form['signature']) && !$this->user->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
@@ -883,7 +867,7 @@ class profile
                     $styles = forum_list_styles();
                     $form['style'] = feather_trim($this->request->post('form_style'));
                     if (!in_array($form['style'], $styles)) {
-                        message($lang_common['Bad request'], '404');
+                        message(__('Bad request'), '404');
                     }
                 }
 
@@ -906,7 +890,7 @@ class profile
             }
 
             default:
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
         }
 
 
@@ -917,7 +901,7 @@ class profile
         }
 
         if (empty($temp)) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         DB::for_table('users')->where('id', $id)
@@ -999,12 +983,12 @@ class profile
             }
         }
 
-        redirect(get_link('user/'.$id.'/section/'.$section.'/'), $lang_profile['Profile redirect']);
+        redirect(get_link('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
     }
 
     public function get_user_info($id)
     {
-        global $lang_common;
+
 
         $select_get_user_info = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
@@ -1016,7 +1000,7 @@ class profile
             ->find_one();
 
         if (!$user) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         return $user;
@@ -1024,81 +1008,79 @@ class profile
 
     public function parse_user_info($user)
     {
-        global $lang_common, $lang_profile;
-
         $user_info = array();
 
-        $user_info['personal'][] = '<dt>'.$lang_common['Username'].'</dt>';
+        $user_info['personal'][] = '<dt>'.__('Username').'</dt>';
         $user_info['personal'][] = '<dd>'.feather_escape($user['username']).'</dd>';
 
         $user_title_field = get_title($user);
-        $user_info['personal'][] = '<dt>'.$lang_common['Title'].'</dt>';
+        $user_info['personal'][] = '<dt>'.__('Title').'</dt>';
         $user_info['personal'][] = '<dd>'.(($this->config['o_censoring'] == '1') ? censor_words($user_title_field) : $user_title_field).'</dd>';
 
         if ($user['realname'] != '') {
-            $user_info['personal'][] = '<dt>'.$lang_profile['Realname'].'</dt>';
+            $user_info['personal'][] = '<dt>'.__('Realname').'</dt>';
             $user_info['personal'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
-            $user_info['personal'][] = '<dt>'.$lang_profile['Location'].'</dt>';
+            $user_info['personal'][] = '<dt>'.__('Location').'</dt>';
             $user_info['personal'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
             $user['url'] = feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
-            $user_info['personal'][] = '<dt>'.$lang_profile['Website'].'</dt>';
+            $user_info['personal'][] = '<dt>'.__('Website').'</dt>';
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
         if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.feather_escape($user['email']).'">'.feather_escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-            $user['email_field'] = '<a href="'.get_link('email/'.$user['id'].'/').'">'.$lang_common['Send email'].'</a>';
+            $user['email_field'] = '<a href="'.get_link('email/'.$user['id'].'/').'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
         }
         if ($user['email_field'] != '') {
-            $user_info['personal'][] = '<dt>'.$lang_common['Email'].'</dt>';
+            $user_info['personal'][] = '<dt>'.__('Email').'</dt>';
             $user_info['personal'][] = '<dd><span class="email">'.$user['email_field'].'</span></dd>';
         }
 
         if ($user['jabber'] != '') {
-            $user_info['messaging'][] = '<dt>'.$lang_profile['Jabber'].'</dt>';
+            $user_info['messaging'][] = '<dt>'.__('Jabber').'</dt>';
             $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
         }
 
         if ($user['icq'] != '') {
-            $user_info['messaging'][] = '<dt>'.$lang_profile['ICQ'].'</dt>';
+            $user_info['messaging'][] = '<dt>'.__('ICQ').'</dt>';
             $user_info['messaging'][] = '<dd>'.$user['icq'].'</dd>';
         }
 
         if ($user['msn'] != '') {
-            $user_info['messaging'][] = '<dt>'.$lang_profile['MSN'].'</dt>';
+            $user_info['messaging'][] = '<dt>'.__('MSN').'</dt>';
             $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
         }
 
         if ($user['aim'] != '') {
-            $user_info['messaging'][] = '<dt>'.$lang_profile['AOL IM'].'</dt>';
+            $user_info['messaging'][] = '<dt>'.__('AOL IM').'</dt>';
             $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
         }
 
         if ($user['yahoo'] != '') {
-            $user_info['messaging'][] = '<dt>'.$lang_profile['Yahoo'].'</dt>';
+            $user_info['messaging'][] = '<dt>'.__('Yahoo').'</dt>';
             $user_info['messaging'][] = '<dd>'.feather_escape(($this->config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
         if ($this->config['o_avatars'] == '1') {
             $avatar_field = generate_avatar_markup($user['id']);
             if ($avatar_field != '') {
-                $user_info['personality'][] = '<dt>'.$lang_profile['Avatar'].'</dt>';
+                $user_info['personality'][] = '<dt>'.__('Avatar').'</dt>';
                 $user_info['personality'][] = '<dd>'.$avatar_field.'</dd>';
             }
         }
 
         if ($this->config['o_signatures'] == '1') {
             if (isset($parsed_signature)) {
-                $user_info['personality'][] = '<dt>'.$lang_profile['Signature'].'</dt>';
+                $user_info['personality'][] = '<dt>'.__('Signature').'</dt>';
                 $user_info['personality'][] = '<dd><div class="postsignature postmsg">'.$parsed_signature.'</div></dd>';
             }
         }
@@ -1110,11 +1092,11 @@ class profile
         if ($this->user->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
-                $quick_searches[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.$lang_profile['Show topics'].'</a>';
-                $quick_searches[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.$lang_profile['Show posts'].'</a>';
+                $quick_searches[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.__('Show topics').'</a>';
+                $quick_searches[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Show posts').'</a>';
             }
             if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
-                $quick_searches[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.$lang_profile['Show subscriptions'].'</a>';
+                $quick_searches[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.__('Show subscriptions').'</a>';
             }
 
             if (!empty($quick_searches)) {
@@ -1122,16 +1104,16 @@ class profile
             }
         }
         if ($posts_field != '') {
-            $user_info['activity'][] = '<dt>'.$lang_common['Posts'].'</dt>';
+            $user_info['activity'][] = '<dt>'.__('Posts').'</dt>';
             $user_info['activity'][] = '<dd>'.$posts_field.'</dd>';
         }
 
         if ($user['num_posts'] > 0) {
-            $user_info['activity'][] = '<dt>'.$lang_common['Last post'].'</dt>';
+            $user_info['activity'][] = '<dt>'.__('Last post').'</dt>';
             $user_info['activity'][] = '<dd>'.format_time($user['last_post']).'</dd>';
         }
 
-        $user_info['activity'][] = '<dt>'.$lang_common['Registered'].'</dt>';
+        $user_info['activity'][] = '<dt>'.__('Registered').'</dt>';
         $user_info['activity'][] = '<dd>'.format_time($user['registered'], true).'</dd>';
 
         return $user_info;
@@ -1139,25 +1121,23 @@ class profile
 
     public function edit_essentials($id, $user)
     {
-        global $lang_profile, $lang_common;
-
         $user_disp = array();
 
         if ($this->user->is_admmod) {
             if ($this->user->g_id == FEATHER_ADMIN || $this->user->g_mod_rename_users == '1') {
-                $user_disp['username_field'] = '<label class="required"><strong>'.$lang_common['Username'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_username" value="'.feather_escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
+                $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.feather_escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
-                $user_disp['username_field'] = '<p>'.sprintf($lang_profile['Username info'], feather_escape($user['username'])).'</p>'."\n";
+                $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), feather_escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.feather_escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.$lang_common['Send email'].'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.feather_escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.__('Send email').'</a></span></p>'."\n";
         } else {
-            $user_disp['username_field'] = '<p>'.$lang_common['Username'].': '.feather_escape($user['username']).'</p>'."\n";
+            $user_disp['username_field'] = '<p>'.__('Username').': '.feather_escape($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf($lang_profile['Email info'], feather_escape($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.$lang_profile['Change email'].'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), feather_escape($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
-                $user_disp['email_field'] = '<label class="required"><strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
+                $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
         }
 
@@ -1165,17 +1145,17 @@ class profile
         $posts_actions = array();
 
         if ($this->user->g_id == FEATHER_ADMIN) {
-            $user_disp['posts_field'] .= '<label>'.$lang_common['Posts'].'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
+            $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
         } elseif ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
-            $posts_actions[] = sprintf($lang_profile['Posts info'], forum_number_format($user['num_posts']));
+            $posts_actions[] = sprintf(__('Posts info'), forum_number_format($user['num_posts']));
         }
 
         if ($this->user->g_search == '1' || $this->user->g_id == FEATHER_ADMIN) {
-            $posts_actions[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.$lang_profile['Show topics'].'</a>';
-            $posts_actions[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.$lang_profile['Show posts'].'</a>';
+            $posts_actions[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.__('Show topics').'</a>';
+            $posts_actions[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.__('Show posts').'</a>';
 
             if ($this->config['o_topic_subscriptions'] == '1') {
-                $posts_actions[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$id).'">'.$lang_profile['Show subscriptions'].'</a>';
+                $posts_actions[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$id).'">'.__('Show subscriptions').'</a>';
             }
         }
 
@@ -1251,10 +1231,7 @@ class profile
     //
     public function generate_profile_menu($page = '', $id)
     {
-        global $lang_profile;
-
         $this->feather->render('profile/menu.php', array(
-            'lang_profile' => $lang_profile,
             'id' => $id,
             'feather_config' => $this->config,
             'feather_user' => $this->user,

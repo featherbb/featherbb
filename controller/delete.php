@@ -21,6 +21,8 @@ class delete
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\delete();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/delete.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
     }
 
     public function __autoload($class_name)
@@ -30,10 +32,10 @@ class delete
     
     public function deletepost($id)
     {
-        global $lang_common, $lang_post, $pd;
+        global $pd;
 
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -55,15 +57,12 @@ class delete
                 $cur_post['poster_id'] != $this->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
-
-        // Load the delete.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/delete.php';
 
 
         if ($this->feather->request()->isPost()) {
@@ -71,7 +70,7 @@ class delete
         }
 
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_delete['Delete post']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Delete post'));
 
         define('FEATHER_ACTIVE_PAGE', 'delete');
 
@@ -81,8 +80,6 @@ class delete
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         $this->feather->render('delete.php', array(
-                            'lang_common' => $lang_common,
-                            'lang_delete' => $lang_delete,
                             'cur_post' => $cur_post,
                             'id' => $id,
                             'is_topic_post' => $is_topic_post,

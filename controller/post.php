@@ -21,6 +21,9 @@ class post
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\post();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.mo');
     }
 
     public function __autoload($class_name)
@@ -30,32 +33,20 @@ class post
 
     public function newreply($fid = null, $tid = null, $qid = null)
     {
-        self::newpost('', $fid, $tid);
+        $this->newpost('', $fid, $tid);
     }
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        global $lang_common, $lang_prof_reg, $lang_antispam_questions, $lang_antispam, $lang_post, $lang_register, $lang_bbeditor;
-
-        // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
-
-        // Load the register.php/profile.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
-        
-        // Load the bbeditor.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
+        global $lang_antispam_questions, $lang_antispam;
 
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
-        // BBcode toolbar feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/bbeditor.php';
-
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->request->post('username')) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Fetch some info about the topic and/or the forum
@@ -65,7 +56,7 @@ class post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -77,11 +68,8 @@ class post
                 ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
-
-        // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
         // Start with a clean slate
         $errors = array();
@@ -91,7 +79,7 @@ class post
         if (!$this->user->is_guest) {
             $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
         } else {
-            $required_fields['req_username'] = $lang_post['Guest name'];
+            $required_fields['req_username'] = __('Guest name');
             $focus_element[] = 'req_username';
         }
 
@@ -152,7 +140,7 @@ class post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    redirect(get_link('post/'.$new['pid'].'/#p'.$new['pid']), $lang_post['Post redirect']);
+                    redirect(get_link('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
                 }
         }
 
@@ -160,7 +148,7 @@ class post
 
         // If a topic ID was specified in the url (it's a reply)
         if ($tid) {
-            $action = $lang_post['Post a reply'];
+            $action = __('Post a reply');
             $form = '<form id="post" method="post" action="'.get_link('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
 
                 // If a quote ID was specified in the url
@@ -171,10 +159,10 @@ class post
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($fid) {
-            $action = $lang_post['Post new topic'];
+            $action = __('Post new topic');
             $form = '<form id="post" method="post" action="'.get_link('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $url_forum = url_friendly($cur_posting['forum_name']);
@@ -188,9 +176,9 @@ class post
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), $action);
-        $required_fields = array('req_email' => $lang_common['Email'], 'req_subject' => $lang_common['Subject'], 'req_message' => $lang_common['Message']);
+        $required_fields = array('req_email' => __('Email'), 'req_subject' => __('Subject'), 'req_message' => __('Message'));
         if ($this->user->is_guest) {
-            $required_fields['captcha'] = $lang_antispam['Robot title'];
+            $required_fields['captcha'] = __('Robot title');
         }
         $focus_element = array('post');
 
@@ -215,11 +203,8 @@ class post
                             'feather_config' => $this->config,
                             'feather_user' => $this->user,
                             'cur_posting' => $cur_posting,
-                            'lang_common' => $lang_common,
-                            'lang_post' => $lang_post,
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions' => $lang_antispam_questions,
-                            'lang_bbeditor' => $lang_bbeditor,
                             'index_questions' => $index_questions,
                             'checkboxes' => $checkboxes,
                             'cur_posting' => $cur_posting,
@@ -231,7 +216,6 @@ class post
                             'url_topic' => $url_topic,
                             'quote' => $quote,
                             'errors'    =>    $errors,
-                            'lang_bbeditor' => $lang_bbeditor,
                             )
                     );
 

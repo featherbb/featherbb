@@ -20,6 +20,7 @@ class help
         $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/help.mo');
     }
 
     public function __autoload($class_name)
@@ -29,28 +30,17 @@ class help
     
     public function display()
     {
-        global $lang_common;
-
         if ($this->user->g_read_board == '0') {
-            message($lang_common['No view'], '403');
+            message(__('No view'), '403');
         }
 
-
-        // Load the help.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/help.php';
-
-
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_help['Help']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Help'));
 
         define('FEATHER_ACTIVE_PAGE', 'help');
 
         $this->header->setTitle($page_title)->display();
 
-        $this->feather->render('help.php', array(
-                            'lang_help' => $lang_help,
-                            'lang_common' => $lang_common,
-                            )
-                    );
+        $this->feather->render('help.php');
 
         $this->footer->display();
     }

@@ -21,6 +21,7 @@ class login
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\login();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/login.mo');
     }
 
     public function __autoload($class_name)
@@ -30,21 +31,16 @@ class login
     
     public function display()
     {
-        global $lang_common;
-
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
 
-        // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
-
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->model->get_redirect_url($_SERVER);
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_common['Login']);
-        $required_fields = array('req_username' => $lang_common['Username'], 'req_password' => $lang_common['Password']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Login'));
+        $required_fields = array('req_username' => __('Username'), 'req_password' => __('Password'));
         $focus_element = array('login', 'req_username');
 
         define('FEATHER_ACTIVE_PAGE', 'login');
@@ -52,8 +48,6 @@ class login
         $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('login/form.php', array(
-                            'lang_common' => $lang_common,
-                            'lang_login' => $lang_login,
                             'redirect_url'    =>    $redirect_url,
                             )
                     );
@@ -63,37 +57,25 @@ class login
 
     public function logmein()
     {
-        global $lang_common, $lang_login;
-
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
         }
-
-        // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         $this->model->login();
     }
 
     public function logmeout($id, $token)
     {
-        global $lang_common;
-
         define('FEATHER_QUIET_VISIT', 1);
-
-        // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
 
         $this->model->logout($id, $token);
     }
 
     public function forget()
     {
-        global $lang_common, $lang_login;
-
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
@@ -101,13 +83,10 @@ class login
             exit;
         }
 
-        // Load the login.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/login.php';
-
         $errors = $this->model->password_forgotten();
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_login['Request pass']);
-        $required_fields = array('req_email' => $lang_common['Email']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Request pass'));
+        $required_fields = array('req_email' => __('Email'));
         $focus_element = array('request_pass', 'req_email');
 
         define('FEATHER_ACTIVE_PAGE', 'login');
@@ -116,8 +95,6 @@ class login
 
         $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,
-                            'lang_login'    =>    $lang_login,
-                            'lang_common'    =>    $lang_common,
                             )
                     );
 
