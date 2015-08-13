@@ -25,7 +25,7 @@ class edit
     // Fetch some info about the post, the topic and the forum
     public function get_info_edit($id)
     {
-
+        global $lang_common;
      
         $select_get_info_edit = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $where_get_info_edit = array(
@@ -45,7 +45,7 @@ class edit
             ->find_one();
 
         if (!$cur_post) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_post;
@@ -53,7 +53,7 @@ class edit
 
     public function check_errors_before_edit($id, $can_edit_subject, $errors)
     {
-        global $pd;
+        global $lang_post, $pd;
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
@@ -64,13 +64,13 @@ class edit
             }
 
             if ($subject == '') {
-                $errors[] = __('No subject');
+                $errors[] = $lang_post['No subject'];
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
-                $errors[] = __('No subject after censoring');
+                $errors[] = $lang_post['No subject after censoring'];
             } elseif (feather_strlen($subject) > 70) {
-                $errors[] = __('Too long subject');
+                $errors[] = $lang_post['Too long subject'];
             } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
-                $errors[] = __('All caps subject');
+                $errors[] = $lang_post['All caps subject'];
             }
         }
 
@@ -79,9 +79,9 @@ class edit
 
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            $errors[] = sprintf(__('Too long message'), forum_number_format(FEATHER_MAX_POSTSIZE));
+            $errors[] = sprintf($lang_post['Too long message'], forum_number_format(FEATHER_MAX_POSTSIZE));
         } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user->is_admmod) {
-            $errors[] = __('All caps message');
+            $errors[] = $lang_post['All caps message'];
         }
 
         // Validate BBCode syntax
@@ -92,13 +92,13 @@ class edit
 
         if (empty($errors)) {
             if ($message == '') {
-                $errors[] = __('No message');
+                $errors[] = $lang_post['No message'];
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
                 $censored_message = feather_trim(censor_words($message));
 
                 if ($censored_message == '') {
-                    $errors[] = __('No message after censoring');
+                    $errors[] = $lang_post['No message after censoring'];
                 }
             }
         }
@@ -186,29 +186,31 @@ class edit
 
     public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
     {
+        global $lang_post, $lang_common;
+
         $checkboxes = array();
 
         if ($can_edit_subject && $is_admmod) {
             if ($this->request->post('stick_topic') || $cur_post['sticky'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
             }
         }
 
         if ($this->config['o_smilies'] == '1') {
             if ($this->request->post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
             }
         }
 
         if ($is_admmod) {
             if ($this->request->isPost() && $this->request->post('silent') || $this->request->isPost() == '') {
-                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.__('Silent edit').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Silent edit'].'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.__('Silent edit').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Silent edit'].'<br /></label>';
             }
         }
 

@@ -30,12 +30,12 @@ class groups
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_groups;
+        global $lang_common, $lang_admin_common, $lang_admin_groups;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -72,12 +72,12 @@ class groups
 
     public function delete($id)
     {
-        global $lang_admin_common, $lang_admin_groups;
+        global $lang_common, $lang_admin_common, $lang_admin_groups;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -86,7 +86,7 @@ class groups
         require FEATHER_ROOT . 'lang/' . $admin_language . '/groups.php';
 
         if ($id < 5) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         // Make sure we don't remove the default group
@@ -145,12 +145,12 @@ class groups
 
     public function addedit($id = '')
     {
-        global $lang_admin_common, $lang_admin_groups;
+        global $lang_common, $lang_admin_common, $lang_admin_groups;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);

@@ -70,8 +70,6 @@ $feather = new \Slim\Slim();
 
 require FEATHER_ROOT.'include/common.php';
 
-load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo');
-
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
     define('FORUM_EXTERN_MAX_SUBJECT_LENGTH', 30);
@@ -130,7 +128,7 @@ if ($feather->user->is_guest && isset($_SERVER['PHP_AUTH_USER'])) {
 
 if ($feather->user->g_read_board == '0') {
     http_authenticate_user();
-    exit(__('No view'));
+    exit($lang_common['No view']);
 }
 
 $action = isset($_GET['action']) ? strtolower($_GET['action']) : 'feed';
@@ -169,7 +167,7 @@ function http_authenticate_user()
 //
 function output_rss($feed)
 {
-    global $feather_config;
+    global $lang_common, $feather_config;
 
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
@@ -214,7 +212,7 @@ function output_rss($feed)
 //
 function output_atom($feed)
 {
-    global $feather_config;
+    global $lang_common, $feather_config;
 
     // Send XML/no cache headers
     header('Content-Type: application/atom+xml; charset=utf-8');
@@ -272,7 +270,7 @@ function output_atom($feed)
 //
 function output_xml($feed)
 {
-    global $feather_config;
+    global $lang_common, $feather_config;
 
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
@@ -372,7 +370,7 @@ if ($action == 'feed') {
 
         if (!$cur_topic) {
             http_authenticate_user();
-            exit(__('Bad request'));
+            exit($lang_common['Bad request']);
         }
 
         if ($feather_config['o_censoring'] == '1') {
@@ -381,9 +379,9 @@ if ($action == 'feed') {
 
         // Setup the feed
         $feed = array(
-            'title'        =>    $feather_config['o_board_title'].__('Title separator').$cur_topic['subject'],
+            'title'        =>    $feather_config['o_board_title'].$lang_common['Title separator'].$cur_topic['subject'],
             'link'            =>    get_link('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
-            'description'        =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
+            'description'        =>    sprintf($lang_common['RSS description topic'], $cur_topic['subject']),
             'items'            =>    array(),
             'type'            =>    'posts'
         );
@@ -405,7 +403,7 @@ if ($action == 'feed') {
 
             $item = array(
                 'id'            =>    $cur_post['id'],
-                'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : __('RSS reply').$cur_topic['subject'],
+                'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : $lang_common['RSS reply'].$cur_topic['subject'],
                 'link'            =>    get_link('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
                 'description'        =>    $cur_post['message'],
                 'author'        =>    array(
@@ -460,7 +458,7 @@ if ($action == 'feed') {
                     ->find_one_col('f.forum_name');
 
                 if ($cur_topic) {
-                    $forum_name = __('Title separator').$cur_topic;
+                    $forum_name = $lang_common['Title separator'].$cur_topic;
                 }
             }
         }
@@ -477,7 +475,7 @@ if ($action == 'feed') {
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
         if ($feather_config['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
-            $cache_id = 'feed'.sha1($feather->user->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
+            $cache_id = 'feed'.sha1($feather->user->g_id.'|'.$lang_common['lang_identifier'].'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
         // Load cached feed
@@ -491,7 +489,7 @@ if ($action == 'feed') {
             $feed = array(
                 'title'        =>    $feather_config['o_board_title'].$forum_name,
                 'link'            =>    '/index.php',
-                'description'    =>    sprintf(__('RSS description'), $feather_config['o_board_title']),
+                'description'    =>    sprintf($lang_common['RSS description'], $feather_config['o_board_title']),
                 'items'            =>    array(),
                 'type'            =>    'topics'
             );
@@ -613,12 +611,12 @@ elseif ($action == 'online' || $action == 'online_full') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf(__('Guests online'), forum_number_format($num_guests)).'<br />'."\n";
+    echo sprintf($lang_index['Guests online'], forum_number_format($num_guests)).'<br />'."\n";
 
     if ($action == 'online_full' && !empty($users)) {
-        echo sprintf(__('Users online'), implode(', ', $users)).'<br />'."\n";
+        echo sprintf($lang_index['Users online'], implode(', ', $users)).'<br />'."\n";
     } else {
-        echo sprintf(__('Users online'), forum_number_format($num_users)).'<br />'."\n";
+        echo sprintf($lang_index['Users online'], forum_number_format($num_users)).'<br />'."\n";
     }
 
     exit;
@@ -657,12 +655,12 @@ elseif ($action == 'stats') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf(__('No of users'), forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
-    echo sprintf(__('No of topics'), forum_number_format($stats['total_topics'])).'<br />'."\n";
-    echo sprintf(__('No of posts'), forum_number_format($stats['total_posts'])).'<br />'."\n";
+    echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
+    echo sprintf($lang_index['Newest user'], (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf($lang_index['No of topics'], forum_number_format($stats['total_topics'])).'<br />'."\n";
+    echo sprintf($lang_index['No of posts'], forum_number_format($stats['total_posts'])).'<br />'."\n";
 
     exit;
 }
 // If we end up here, the script was called with some wacky parameters
-exit(__('Bad request'));
+exit($lang_common['Bad request']);

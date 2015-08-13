@@ -79,15 +79,11 @@ $install_lang = isset($_POST['install_lang']) ? feather_trim($_POST['install_lan
 $install_lang = preg_replace('%[\.\\\/]%', '', $install_lang);
 
 // If such a language pack doesn't exist, or isn't up-to-date enough to translate this page, default to English
-if (!file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/install.mo')) {
+if (!file_exists(FEATHER_ROOT.'lang/'.$install_lang.'/install.php')) {
     $install_lang = 'English';
 }
 
-// Load l10n
-require_once FEATHER_ROOT.'include/pomo/MO.php';
-require_once FEATHER_ROOT.'include/l10n.php';
-
-load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$install_lang.'/install.mo');
+require FEATHER_ROOT.'lang/'.$install_lang.'/install.php';
 
 if (file_exists(FEATHER_ROOT.'include/config.php')) {
     // Check to see whether FeatherBB is already installed
@@ -95,7 +91,7 @@ if (file_exists(FEATHER_ROOT.'include/config.php')) {
 
     // If FEATHER is defined, config.php is probably valid and thus the software is installed
     if (defined('FEATHER')) {
-        exit(__('Already installed'));
+        exit($lang_install['Already installed']);
     }
 }
 
@@ -109,7 +105,7 @@ if (!defined('FORUM_CACHE_DIR')) {
 
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<')) {
-    exit(sprintf(__('You are running error'), 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
+    exit(sprintf($lang_install['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
 }
 
 
@@ -119,12 +115,19 @@ if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_
 //
 function error($message, $file = null, $line = null, $db_error = false)
 {
-    global $feather_config;
+    global $feather_config, $lang_common;
     // Set some default settings if the script failed before $feather_config could be populated
     if (empty($feather_config)) {
         $feather_config = array(
             'o_board_title'    => 'FluxBB',
             'o_gzip'        => '0'
+        );
+    }
+    // Set some default translations if the script failed before $lang_common could be populated
+    if (empty($lang_common)) {
+        $lang_common = array(
+            'Title separator'    => ' / ',
+            'Page'                => 'Page %s'
         );
     }
     // Empty all output buffers and stop buffering
@@ -230,8 +233,8 @@ if (!isset($_POST['form_sent'])) {
 
     $db_type = $db_name = $db_username = $db_prefix = $username = $email = '';
     $db_host = 'localhost';
-    $title = __('My FeatherBB Forum');
-    $description = '<p><span>'.__('Description').'</span></p>';
+    $title = $lang_install['My FeatherBB Forum'];
+    $description = '<p><span>'.$lang_install['Description'].'</span></p>';
     $default_lang = $install_lang;
     $default_style = 'FeatherBB';
 } else {
@@ -259,55 +262,55 @@ if (!isset($_POST['form_sent'])) {
 
     // Validate username and passwords
     if (feather_strlen($username) < 2) {
-        $alerts[] = __('Username 1');
+        $alerts[] = $lang_install['Username 1'];
     } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
-        $alerts[] = __('Username 2');
+        $alerts[] = $lang_install['Username 2'];
     } elseif (!strcasecmp($username, 'Guest')) {
-        $alerts[] = __('Username 3');
+        $alerts[] = $lang_install['Username 3'];
     } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $username) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $username)) {
-        $alerts[] = __('Username 4');
+        $alerts[] = $lang_install['Username 4'];
     } elseif ((strpos($username, '[') !== false || strpos($username, ']') !== false) && strpos($username, '\'') !== false && strpos($username, '"') !== false) {
-        $alerts[] = __('Username 5');
+        $alerts[] = $lang_install['Username 5'];
     } elseif (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|\[(?:code|quote|list)=)%i', $username)) {
-        $alerts[] = __('Username 6');
+        $alerts[] = $lang_install['Username 6'];
     }
 
     if (feather_strlen($password1) < 6) {
-        $alerts[] = __('Short password');
+        $alerts[] = $lang_install['Short password'];
     } elseif ($password1 != $password2) {
-        $alerts[] = __('Passwords not match');
+        $alerts[] = $lang_install['Passwords not match'];
     }
 
     // Validate email
     require FEATHER_ROOT.'include/email.php';
 
     if (!is_valid_email($email)) {
-        $alerts[] = __('Wrong email');
+        $alerts[] = $lang_install['Wrong email'];
     }
 
     if ($title == '') {
-        $alerts[] = __('No board title');
+        $alerts[] = $lang_install['No board title'];
     }
 
     $languages = forum_list_langs();
     if (!in_array($default_lang, $languages)) {
-        $alerts[] = __('Error default language');
+        $alerts[] = $lang_install['Error default language'];
     }
 
     $styles = forum_list_styles();
     if (!in_array($default_style, $styles)) {
-        $alerts[] = __('Error default style');
+        $alerts[] = $lang_install['Error default style'];
     }
 }
 
 // Check if the cache directory is writable
 if (!forum_is_writable(FORUM_CACHE_DIR)) {
-    $alerts[] = sprintf(__('Alert cache'), FORUM_CACHE_DIR);
+    $alerts[] = sprintf($lang_install['Alert cache'], FORUM_CACHE_DIR);
 }
 
 // Check if default avatar directory is writable
 if (!forum_is_writable(FEATHER_ROOT.'img/avatars/')) {
-    $alerts[] = sprintf(__('Alert avatar'), FEATHER_ROOT.'img/avatars/');
+    $alerts[] = sprintf($lang_install['Alert avatar'], FEATHER_ROOT.'img/avatars/');
 }
 
 if (!isset($_POST['form_sent']) || !empty($alerts)) {
@@ -340,7 +343,7 @@ if (!isset($_POST['form_sent']) || !empty($alerts)) {
     }
 
     if (empty($db_extensions)) {
-        error(__('No DB extensions'));
+        error($lang_install['No DB extensions']);
     }
 
     // Fetch a list of installed languages
@@ -351,22 +354,22 @@ if (!isset($_POST['form_sent']) || !empty($alerts)) {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo __('FeatherBB Installation') ?></title>
+<title><?php echo $lang_install['FeatherBB Installation'] ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 <script type="text/javascript">
 /* <![CDATA[ */
 function process_form(the_form)
 {
 	var required_fields = {
-		"req_db_type": "<?php echo __('Database type') ?>",
-		"req_db_host": "<?php echo __('Database server hostname') ?>",
-		"req_db_name": "<?php echo __('Database name') ?>",
-		"req_username": "<?php echo __('Administrator username') ?>",
-		"req_password1": "<?php echo __('Password') ?>",
-		"req_password2": "<?php echo __('Confirm password') ?>",
-		"req_email": "<?php echo __('Administrator email') ?>",
-		"req_title": "<?php echo __('Board title') ?>",
-		"req_base_url": "<?php echo __('Base URL') ?>"
+		"req_db_type": "<?php echo $lang_install['Database type'] ?>",
+		"req_db_host": "<?php echo $lang_install['Database server hostname'] ?>",
+		"req_db_name": "<?php echo $lang_install['Database name'] ?>",
+		"req_username": "<?php echo $lang_install['Administrator username'] ?>",
+		"req_password1": "<?php echo $lang_install['Password'] ?>",
+		"req_password2": "<?php echo $lang_install['Confirm password'] ?>",
+		"req_email": "<?php echo $lang_install['Administrator email'] ?>",
+		"req_title": "<?php echo $lang_install['Board title'] ?>",
+		"req_base_url": "<?php echo $lang_install['Base URL'] ?>"
 	};
 	if (document.all || document.getElementById)
 	{
@@ -375,7 +378,7 @@ function process_form(the_form)
 			var elem = the_form.elements[i];
 			if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
 			{
-				alert('"' + required_fields[elem.name] + '" <?php echo __('Required field') ?>');
+				alert('"' + required_fields[elem.name] + '" <?php echo $lang_install['Required field'] ?>');
 				elem.focus();
 				return false;
 			}
@@ -396,8 +399,8 @@ function process_form(the_form)
 	<div id="brdheader" class="block">
 		<div class="box">
 			<div id="brdtitle" class="inbox">
-				<h1><span><?php echo __('FeatherBB Installation') ?></span></h1>
-				<div id="brddesc"><p><?php echo __('Welcome') ?></p></div>
+				<h1><span><?php echo $lang_install['FeatherBB Installation'] ?></span></h1>
+				<div id="brddesc"><p><?php echo $lang_install['Welcome'] ?></p></div>
 			</div>
 		</div>
 	</div>
@@ -406,15 +409,15 @@ function process_form(the_form)
 <section class="container">
 	<div id="brdmain">
 	<?php if (count($languages) > 1): ?><div class="blockform">
-		<h2><span><?php echo __('Choose install language') ?></span></h2>
+		<h2><span><?php echo $lang_install['Choose install language'] ?></span></h2>
 		<div class="box">
 			<form id="install" method="post" action="">
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Install language') ?></legend>
+						<legend><?php echo $lang_install['Install language'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Choose install language info') ?></p>
-							<label><strong><?php echo __('Install language') ?></strong>
+							<p><?php echo $lang_install['Choose install language info'] ?></p>
+							<label><strong><?php echo $lang_install['Install language'] ?></strong>
 							<br /><select name="install_lang">
 <?php
 
@@ -432,7 +435,7 @@ function process_form(the_form)
 						</div>
 					</fieldset>
 				</div>
-				<p class="buttons"><input type="submit" name="start" value="<?php echo __('Change language') ?>" /></p>
+				<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Change language'] ?>" /></p>
 			</form>
 		</div>
 	</div>
@@ -440,13 +443,13 @@ function process_form(the_form)
     ?>
 
 	<div class="blockform">
-		<h2><span><?php echo sprintf(__('Install'), FORUM_VERSION) ?></span></h2>
+		<h2><span><?php echo sprintf($lang_install['Install'], FORUM_VERSION) ?></span></h2>
 		<div class="box">
 			<form id="install" method="post" action="" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
 			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo feather_escape($install_lang) ?>" /></div>
 				<div class="inform">
 	<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
-						<h3><?php echo __('Errors') ?></h3>
+						<h3><?php echo $lang_install['Errors'] ?></h3>
 						<ul class="error-list">
 <?php
 
@@ -460,14 +463,14 @@ function process_form(the_form)
     ?>			</div>
 				<div class="inform">
 					<div class="forminfo">
-						<h3><?php echo __('Database setup') ?></h3>
-						<p><?php echo __('Info 1') ?></p>
+						<h3><?php echo $lang_install['Database setup'] ?></h3>
+						<p><?php echo $lang_install['Info 1'] ?></p>
 					</div>
 					<fieldset>
-					<legend><?php echo __('Select database') ?></legend>
+					<legend><?php echo $lang_install['Select database'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 2') ?></p>
-							<label class="required"><strong><?php echo __('Database type') ?> <span><?php echo __('Required') ?></span></strong>
+							<p><?php echo $lang_install['Info 2'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Database type'] ?> <span><?php echo $lang_install['Required'] ?></span></strong>
 							<br /><select name="req_db_type">
 <?php
 
@@ -487,71 +490,71 @@ function process_form(the_form)
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database hostname') ?></legend>
+						<legend><?php echo $lang_install['Database hostname'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 3') ?></p>
-							<label class="required"><strong><?php echo __('Database server hostname') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo feather_escape($db_host) ?>" size="50" /><br /></label>
+							<p><?php echo $lang_install['Info 3'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Database server hostname'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo feather_escape($db_host) ?>" size="50" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database enter name') ?></legend>
+						<legend><?php echo $lang_install['Database enter name'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 4') ?></p>
-							<label class="required"><strong><?php echo __('Database name') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo feather_escape($db_name) ?>" size="30" /><br /></label>
+							<p><?php echo $lang_install['Info 4'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Database name'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo feather_escape($db_name) ?>" size="30" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database enter informations') ?></legend>
+						<legend><?php echo $lang_install['Database enter informations'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 5') ?></p>
-							<label class="conl"><?php echo __('Database username') ?><br /><input type="text" name="db_username" value="<?php echo feather_escape($db_username) ?>" size="30" /><br /></label>
-							<label class="conl"><?php echo __('Database password') ?><br /><input type="password" name="db_password" size="30" /><br /></label>
+							<p><?php echo $lang_install['Info 5'] ?></p>
+							<label class="conl"><?php echo $lang_install['Database username'] ?><br /><input type="text" name="db_username" value="<?php echo feather_escape($db_username) ?>" size="30" /><br /></label>
+							<label class="conl"><?php echo $lang_install['Database password'] ?><br /><input type="password" name="db_password" size="30" /><br /></label>
 							<div class="clearer"></div>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database enter prefix') ?></legend>
+						<legend><?php echo $lang_install['Database enter prefix'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 6') ?></p>
-							<label><?php echo __('Table prefix') ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo feather_escape($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
+							<p><?php echo $lang_install['Info 6'] ?></p>
+							<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo feather_escape($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<div class="forminfo">
-						<h3><?php echo __('Administration setup') ?></h3>
-						<p><?php echo __('Info 7') ?></p>
+						<h3><?php echo $lang_install['Administration setup'] ?></h3>
+						<p><?php echo $lang_install['Info 7'] ?></p>
 					</div>
 					<fieldset>
-						<legend><?php echo __('Administration setup') ?></legend>
+						<legend><?php echo $lang_install['Administration setup'] ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 8') ?></p>
-							<label class="required"><strong><?php echo __('Administrator username') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
-							<label class="conl required"><strong><?php echo __('Password') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
-							<label class="conl required"><strong><?php echo __('Confirm password') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
+							<p><?php echo $lang_install['Info 8'] ?></p>
+							<label class="required"><strong><?php echo $lang_install['Administrator username'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
+							<label class="conl required"><strong><?php echo $lang_install['Password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
+							<label class="conl required"><strong><?php echo $lang_install['Confirm password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
 							<div class="clearer"></div>
-							<label class="required"><strong><?php echo __('Administrator email') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo feather_escape($email) ?>" size="50" maxlength="80" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Administrator email'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo feather_escape($email) ?>" size="50" maxlength="80" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<div class="forminfo">
-						<h3><?php echo __('Board setup') ?></h3>
-						<p><?php echo __('Info 11') ?></p>
+						<h3><?php echo $lang_install['Board setup'] ?></h3>
+						<p><?php echo $lang_install['Info 11'] ?></p>
 					</div>
 					<fieldset>
-						<legend><?php echo __('General information') ?></legend>
+						<legend><?php echo $lang_install['General information'] ?></legend>
 						<div class="infldset">
-							<label class="required"><strong><?php echo __('Board title') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo feather_escape($title) ?>" size="60" maxlength="255" /><br /></label>
-							<label><?php echo __('Board description') ?><br /><input id="desc" type="text" name="desc" value="<?php echo feather_escape($description) ?>" size="60" maxlength="255" /><br /></label>
-							<label class="required"><strong><?php echo __('Base URL') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo feather_escape($base_url) ?>" size="60" maxlength="100" /><br /></label>
-							<label class="required"><strong><?php echo __('Default language') ?> <span><?php echo __('Required') ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
+							<label class="required"><strong><?php echo $lang_install['Board title'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo feather_escape($title) ?>" size="60" maxlength="255" /><br /></label>
+							<label><?php echo $lang_install['Board description'] ?><br /><input id="desc" type="text" name="desc" value="<?php echo feather_escape($description) ?>" size="60" maxlength="255" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Base URL'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo feather_escape($base_url) ?>" size="60" maxlength="100" /><br /></label>
+							<label class="required"><strong><?php echo $lang_install['Default language'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
 <?php
 
             $languages = forum_list_langs();
@@ -568,7 +571,7 @@ function process_form(the_form)
 						</div>
 					</fieldset>
 				</div>
-				<p class="buttons"><input type="submit" name="start" value="<?php echo __('Start install') ?>" /></p>
+				<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Start install'] ?>" /></p>
 			</form>
 		</div>
 	</div>
@@ -615,7 +618,7 @@ function process_form(the_form)
             break;
 
         default:
-            error(sprintf(__('DB type not valid'), feather_escape($db_type)));
+            error(sprintf($lang_install['DB type not valid'], feather_escape($db_type)));
     }
 
     // Create the database object (and connect/select db)
@@ -623,7 +626,7 @@ function process_form(the_form)
 
     // Validate prefix
     if (strlen($db_prefix) > 0 && (!preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $db_prefix) || strlen($db_prefix) > 40)) {
-        error(sprintf(__('Table prefix error'), $db->prefix));
+        error(sprintf($lang_install['Table prefix error'], $db->prefix));
     }
 
     // Do some DB type specific checks
@@ -634,21 +637,21 @@ function process_form(the_form)
         case 'mysqli_innodb':
             $mysql_info = $db->get_version();
             if (version_compare($mysql_info['version'], MIN_MYSQL_VERSION, '<')) {
-                error(sprintf(__('You are running error'), 'MySQL', $mysql_info['version'], FORUM_VERSION, MIN_MYSQL_VERSION));
+                error(sprintf($lang_install['You are running error'], 'MySQL', $mysql_info['version'], FORUM_VERSION, MIN_MYSQL_VERSION));
             }
             break;
 
         case 'pgsql':
             $pgsql_info = $db->get_version();
             if (version_compare($pgsql_info['version'], MIN_PGSQL_VERSION, '<')) {
-                error(sprintf(__('You are running error'), 'PostgreSQL', $pgsql_info['version'], FORUM_VERSION, MIN_PGSQL_VERSION));
+                error(sprintf($lang_install['You are running error'], 'PostgreSQL', $pgsql_info['version'], FORUM_VERSION, MIN_PGSQL_VERSION));
             }
             break;
 
         case 'sqlite':
         case 'sqlite3':
             if (strtolower($db_prefix) == 'sqlite_') {
-                error(__('Prefix reserved'));
+                error($lang_install['Prefix reserved']);
             }
             break;
     }
@@ -657,7 +660,7 @@ function process_form(the_form)
     // Make sure FeatherBB isn't already installed
     $result = $db->query('SELECT 1 FROM '.$db_prefix.'users WHERE id=1');
     if ($db->num_rows($result)) {
-        error(sprintf(__('Existing table error'), $db_prefix, $db_name));
+        error(sprintf($lang_install['Existing table error'], $db_prefix, $db_name));
     }
 
     // Check if InnoDB is available
@@ -665,7 +668,7 @@ function process_form(the_form)
         $result = $db->query('SHOW VARIABLES LIKE \'have_innodb\'');
         list(, $result) = $db->fetch_row($result);
         if ((strtoupper($result) != 'YES')) {
-            error(__('InnoDB off'));
+            error($lang_install['InnoDB off']);
         }
     }
 
@@ -1610,16 +1613,16 @@ function process_form(the_form)
     $now = time();
 
     // Insert the four preset groups
-    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '1, ' : '').'\''.$db->escape(__('Administrators')).'\', \''.$db->escape(__('Administrator')).'\', 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
+    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '1, ' : '').'\''.$db->escape($lang_install['Administrators']).'\', \''.$db->escape($lang_install['Administrator']).'\', 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
-    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_mod_promote_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '2, ' : '').'\''.$db->escape(__('Moderators')).'\', \''.$db->escape(__('Moderator')).'\', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
+    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_mod_promote_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '2, ' : '').'\''.$db->escape($lang_install['Moderators']).'\', \''.$db->escape($lang_install['Moderator']).'\', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
-    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '3, ' : '').'\''.$db->escape(__('Guests')).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 60, 30, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
+    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '3, ' : '').'\''.$db->escape($lang_install['Guests']).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 60, 30, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
-    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '4, ' : '').'\''.$db->escape(__('Members')).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 60, 30, 60, 60)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
+    $db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '4, ' : '').'\''.$db->escape($lang_install['Members']).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 60, 30, 60, 60)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
     // Insert guest and first admin user
-    $db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email) VALUES(3, \''.$db->escape(__('Guest')).'\', \''.$db->escape(__('Guest')).'\', \''.$db->escape(__('Guest')).'\')')
+    $db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email) VALUES(3, \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\')')
         or error('Unable to add guest user. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
     $db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email, language, style, num_posts, last_post, registered, registration_ip, last_visit) VALUES(1, \''.$db->escape($username).'\', \''.feather_hash($password1).'\', \''.$email.'\', \''.$db->escape($default_lang).'\', \''.$db->escape($default_style).'\', 1, '.$now.', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')')
@@ -1687,11 +1690,11 @@ function process_form(the_form)
         'o_regs_allow'                => 1,
         'o_regs_verify'                => 0,
         'o_announcement'            => 0,
-        'o_announcement_message'    => __('Announcement'),
+        'o_announcement_message'    => $lang_install['Announcement'],
         'o_rules'                    => 0,
-        'o_rules_message'            => __('Rules'),
+        'o_rules_message'            => $lang_install['Rules'],
         'o_maintenance'                => 0,
-        'o_maintenance_message'        => __('Maintenance message'),
+        'o_maintenance_message'        => $lang_install['Maintenance message'],
         'o_default_dst'                => 0,
         'o_feed_type'                => 2,
         'o_feed_ttl'                => 0,
@@ -1715,13 +1718,13 @@ function process_form(the_form)
     }
 
     // Insert some other default data
-    $subject = __('Test post');
-    $message = __('Message');
+    $subject = $lang_install['Test post'];
+    $message = $lang_install['Message'];
 
-    $db->query('INSERT INTO '.$db_prefix.'categories (cat_name, disp_position) VALUES(\''.$db->escape(__('Test category')).'\', 1)')
+    $db->query('INSERT INTO '.$db_prefix.'categories (cat_name, disp_position) VALUES(\''.$db->escape($lang_install['Test category']).'\', 1)')
         or error('Unable to insert into table '.$db_prefix.'categories. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-    $db->query('INSERT INTO '.$db_prefix.'forums (forum_name, forum_desc, num_topics, num_posts, last_post, last_post_id, last_poster, disp_position, cat_id) VALUES(\''.$db->escape(__('Test forum')).'\', \''.$db->escape(__('This is just a test forum')).'\', 1, 1, '.$now.', 1, \''.$db->escape($username).'\', 1, 1)')
+    $db->query('INSERT INTO '.$db_prefix.'forums (forum_name, forum_desc, num_topics, num_posts, last_post, last_post_id, last_poster, disp_position, cat_id) VALUES(\''.$db->escape($lang_install['Test forum']).'\', \''.$db->escape($lang_install['This is just a test forum']).'\', 1, 1, '.$now.', 1, \''.$db->escape($username).'\', 1, 1)')
         or error('Unable to insert into table '.$db_prefix.'forums. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
     $db->query('INSERT INTO '.$db_prefix.'topics (poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, forum_id) VALUES(\''.$db->escape($username).'\', \''.$db->escape($subject).'\', '.$now.', 1, '.$now.', 1, \''.$db->escape($username).'\', 1)')
@@ -1737,7 +1740,7 @@ function process_form(the_form)
 
     // Check if we disabled uploading avatars because file_uploads was disabled
     if ($avatars == '0') {
-        $alerts[] = __('Alert upload');
+        $alerts[] = $lang_install['Alert upload'];
     }
 
     // Add some random bytes at the end of the cookie name to prevent collisions
@@ -1770,7 +1773,7 @@ function process_form(the_form)
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo __('FeatherBB Installation') ?></title>
+<title><?php echo $lang_install['FeatherBB Installation'] ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
@@ -1783,8 +1786,8 @@ function process_form(the_form)
     <div id="brdheader" class="block">
             <div class="box">
                     <div id="brdtitle" class="inbox">
-                            <h1><span><?php echo __('FeatherBB Installation') ?></span></h1>
-                            <div id="brddesc"><p><?php echo __('FeatherBB has been installed') ?></p></div>
+                            <h1><span><?php echo $lang_install['FeatherBB Installation'] ?></span></h1>
+                            <div id="brddesc"><p><?php echo $lang_install['FeatherBB has been installed'] ?></p></div>
                     </div>
             </div>
     </div>
@@ -1792,7 +1795,7 @@ function process_form(the_form)
     <div id="brdmain">
 
     <div class="blockform">
-            <h2><span><?php echo __('Final instructions') ?></span></h2>
+            <h2><span><?php echo $lang_install['Final instructions'] ?></span></h2>
             <div class="box">
     <?php
 
@@ -1801,8 +1804,8 @@ function process_form(the_form)
                     <form method="post" action="">
                             <div class="inform">
                                     <div class="forminfo">
-                                            <p><?php echo __('Info 17') ?></p>
-                                            <p><?php echo __('Info 18') ?></p>
+                                            <p><?php echo $lang_install['Info 17'] ?></p>
+                                            <p><?php echo $lang_install['Info 18'] ?></p>
                                     </div>
                                     <input type="hidden" name="generate_config" value="1" />
                                     <input type="hidden" name="db_type" value="<?php echo $db_type;
@@ -1834,7 +1837,7 @@ function process_form(the_form)
                                     </div>
     <?php endif;
         ?>			</div>
-                            <p class="buttons"><input type="submit" value="<?php echo __('Download config.php file') ?>" /></p>
+                            <p class="buttons"><input type="submit" value="<?php echo $lang_install['Download config.php file'] ?>" /></p>
                     </form>
 
     <?php
@@ -1844,7 +1847,7 @@ function process_form(the_form)
                     <div class="fakeform">
                             <div class="inform">
                                     <div class="forminfo">
-                                            <p><?php echo __('FeatherBB fully installed') ?></p>
+                                            <p><?php echo $lang_install['FeatherBB fully installed'] ?></p>
                                     </div>
                             </div>
                     </div>

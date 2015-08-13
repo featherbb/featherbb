@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>/"><?php echo __('Index') ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>/"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><strong><a href="<?php get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -34,10 +34,10 @@ if (!defined('FEATHER')) {
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Topic') ?></th>
-					<th class="tc2" scope="col"><?php echo __('Replies') ?></th>
-<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo __('Views') ?></th>
-<?php endif; ?>					<th class="tcr" scope="col"><?php echo __('Last post') ?></th>
+					<th class="tcl" scope="col"><?php echo $lang_common['Topic'] ?></th>
+					<th class="tc2" scope="col"><?php echo $lang_common['Replies'] ?></th>
+<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php echo $lang_forum['Views'] ?></th>
+<?php endif; ?>					<th class="tcr" scope="col"><?php echo $lang_common['Last post'] ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -70,7 +70,7 @@ if (!defined('FEATHER')) {
 							<div class="icon inone"><div class="nosize"><!-- --></div></div>
 							<div class="tclcon">
 								<div>
-									<strong><?php echo __('Empty forum') ?></strong>
+									<strong><?php echo $lang_forum['Empty forum'] ?></strong>
 								</div>
 							</div>
 						</td>
@@ -91,7 +91,7 @@ if (!defined('FEATHER')) {
 <?php echo $post_link ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>/"><?php echo __('Index') ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>/"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><strong><a href="<?php get_link('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>

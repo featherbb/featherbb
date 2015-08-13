@@ -32,6 +32,8 @@ class misc
 
     public function get_info_mail($recipient_id)
     {
+        global $lang_common;
+        
         $select_get_info_mail = array('username', 'email', 'email_setting');
         
         $mail = DB::for_table('users')
@@ -40,7 +42,7 @@ class misc
                 ->find_one();
         
         if (!$mail) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
         
         $mail['recipient'] = $mail['username'];
@@ -51,22 +53,24 @@ class misc
 
     public function send_email($mail, $id)
     {
+        global $lang_misc;
+
         // Clean up message and subject from POST
         $subject = feather_trim($this->request->post('req_subject'));
         $message = feather_trim($this->request->post('req_message'));
 
         if ($subject == '') {
-            message(__('No email subject'));
+            message($lang_misc['No email subject']);
         } elseif ($message == '') {
-            message(__('No email message'));
+            message($lang_misc['No email message']);
         }
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         elseif (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            message(__('Too long email message'));
+            message($lang_misc['Too long email message']);
         }
 
         if ($this->user->last_email_sent != '' && (time() - $this->user->last_email_sent) < $this->user->g_email_flood && (time() - $this->user->last_email_sent) >= 0) {
-            message(sprintf(__('Email flood'), $this->user->g_email_flood, $this->user->g_email_flood - (time() - $this->user->last_email_sent)));
+            message(sprintf($lang_misc['Email flood'], $this->user->g_email_flood, $this->user->g_email_flood - (time() - $this->user->last_email_sent)));
         }
 
         // Load the "form email" template
@@ -95,7 +99,7 @@ class misc
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent)
         //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
-        redirect(get_base_url(), __('Email sent redirect'));
+        redirect(get_base_url(), $lang_misc['Email sent redirect']);
     }
 
     public function get_redirect_url($recipient_id)
@@ -117,16 +121,18 @@ class misc
 
     public function insert_report($post_id)
     {
+        global $lang_misc, $lang_common;
+
         // Clean up reason from POST
         $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));
         if ($reason == '') {
-            message(__('No reason'));
+            message($lang_misc['No reason']);
         } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes
-            message(__('Reason too long'));
+            message($lang_misc['Reason too long']);
         }
 
         if ($this->user->last_report_sent != '' && (time() - $this->user->last_report_sent) < $this->user->g_report_flood && (time() - $this->user->last_report_sent) >= 0) {
-            message(sprintf(__('Report flood'), $this->user->g_report_flood, $this->user->g_report_flood - (time() - $this->user->last_report_sent)));
+            message(sprintf($lang_misc['Report flood'], $this->user->g_report_flood, $this->user->g_report_flood - (time() - $this->user->last_report_sent)));
         }
 
         // Get the topic ID
@@ -135,7 +141,7 @@ class misc
                                                               ->find_one();
 
         if (!$topic) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         $select_report = array('subject', 'forum_id');
@@ -146,7 +152,7 @@ class misc
             ->find_one();
 
         if (!$report) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         // Should we use the internal report handling?
@@ -197,11 +203,13 @@ class misc
             ->set('last_report_sent', time())
             ->save();
 
-        redirect(get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['subject']).'/'), __('Report redirect'));
+        redirect(get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['subject']).'/'), $lang_misc['Report redirect']);
     }
 
     public function get_info_report($post_id)
     {
+        global $lang_common;
+
         $select_get_info_report = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
         $where_get_info_report = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -220,7 +228,7 @@ class misc
             ->find_one();
 
         if (!$cur_post) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_post;
@@ -228,8 +236,10 @@ class misc
 
     public function subscribe_topic($topic_id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Make sure the user can view the topic
@@ -248,7 +258,7 @@ class misc
                     ->find_one();
 
         if (!$authorized) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
@@ -257,7 +267,7 @@ class misc
                         ->find_one();
 
         if ($is_subscribed) {
-            message(__('Already subscribed topic'));
+            message($lang_misc['Already subscribed topic']);
         }
 
         $insert_subscribe_topic = array(
@@ -271,13 +281,15 @@ class misc
             ->set($insert_subscribe_topic)
             ->save();
 
-        redirect(get_link('topic/'.$topic_id.'/'), __('Subscribe redirect'));
+        redirect(get_link('topic/'.$topic_id.'/'), $lang_misc['Subscribe redirect']);
     }
 
     public function unsubscribe_topic($topic_id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
@@ -286,7 +298,7 @@ class misc
             ->find_one();
 
         if (!$is_subscribed) {
-            message(__('Not subscribed topic'));
+            message($lang_misc['Not subscribed topic']);
         }
 
         // Delete the subscription
@@ -295,13 +307,15 @@ class misc
             ->where('topic_id', $topic_id)
             ->delete_many();
 
-        redirect(get_link('topic/'.$topic_id.'/'), __('Unsubscribe redirect'));
+        redirect(get_link('topic/'.$topic_id.'/'), $lang_misc['Unsubscribe redirect']);
     }
 
     public function unsubscribe_forum($forum_id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
@@ -310,7 +324,7 @@ class misc
             ->find_one();
 
         if (!$is_subscribed) {
-            message(__('Not subscribed forum'));
+            message($lang_misc['Not subscribed forum']);
         }
 
         // Delete the subscription
@@ -319,13 +333,15 @@ class misc
             ->where('forum_id', $forum_id)
             ->delete_many();
 
-        redirect(get_link('forum/'.$forum_id.'/'), __('Unsubscribe redirect'));
+        redirect(get_link('forum/'.$forum_id.'/'), $lang_misc['Unsubscribe redirect']);
     }
 
     public function subscribe_forum($forum_id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Make sure the user can view the forum
@@ -343,7 +359,7 @@ class misc
             ->find_one();
 
         if (!$authorized) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
@@ -352,7 +368,7 @@ class misc
             ->find_one();
 
         if ($is_subscribed) {
-            message(__('Already subscribed forum'));
+            message($lang_misc['Already subscribed forum']);
         }
 
         $insert_subscribe_forum = array(
@@ -366,6 +382,6 @@ class misc
             ->set($insert_subscribe_forum)
             ->save();
 
-        redirect(get_link('forum/'.$forum_id.'/'), __('Subscribe redirect'));
+        redirect(get_link('forum/'.$forum_id.'/'), $lang_misc['Subscribe redirect']);
     }
 }

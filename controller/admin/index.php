@@ -44,12 +44,12 @@ class index
     
     public function display($action = null)
     {
-        global $lang_admin_common, $lang_admin_index;
+        global $lang_common, $lang_admin_common, $lang_admin_index;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_index.php language file

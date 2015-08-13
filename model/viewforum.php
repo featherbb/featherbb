@@ -25,7 +25,7 @@ class viewforum
     // Returns basic informations about the forum
     public function get_info_forum($id)
     {
-
+        global $lang_common;
 
         $where_get_info_forum = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -58,7 +58,7 @@ class viewforum
         }
 
         if (!$cur_forum) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_forum;
@@ -87,7 +87,7 @@ class viewforum
     // Adds relationship meta tags
     public function get_page_head($forum_id, $num_pages, $p, $url_forum)
     {
-
+        global $lang_common;
 
         $page_head = array();
         $page_head['canonical'] = "\t".'<link href="'.get_link('forum/'.$forum_id.'/'.$url_forum.'/').'" rel="canonical" />';
@@ -102,9 +102,9 @@ class viewforum
         }
 
         if ($this->config['o_feed_type'] == '1') {
-            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss" title="'.__('RSS forum feed').'" />';
+            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss" title="'.$lang_common['RSS forum feed'].'" />';
         } elseif ($this->config['o_feed_type'] == '2') {
-            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom" title="'.__('Atom forum feed').'" />';
+            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom" title="'.$lang_common['Atom forum feed'].'" />';
         }
 
         return $page_head;
@@ -113,18 +113,20 @@ class viewforum
     // Returns forum action
     public function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
     {
+        global $lang_forum, $lang_common;
+
         $forum_actions = array();
 
         if (!$this->user->is_guest) {
             if ($subscriptions == 1) {
                 if ($is_subscribed) {
-                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.get_link('unsubscribe/forum/'.$forum_id.'/').'">'.__('Unsubscribe').'</a>';
+                    $forum_actions[] = '<span>'.$lang_forum['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Unsubscribe'].'</a>';
                 } else {
-                    $forum_actions[] = '<a href="'.get_link('subscribe/forum/'.$forum_id.'/').'">'.__('Subscribe').'</a>';
+                    $forum_actions[] = '<a href="'.get_link('subscribe/forum/'.$forum_id.'/').'">'.$lang_forum['Subscribe'].'</a>';
                 }
             }
 
-            $forum_actions[] = '<a href="'.get_link('mark-forum-read/'.$forum_id.'/').'">'.__('Mark forum read').'</a>';
+            $forum_actions[] = '<a href="'.get_link('mark-forum-read/'.$forum_id.'/').'">'.$lang_common['Mark forum read'].'</a>';
         }
 
         return $forum_actions;
@@ -133,6 +135,8 @@ class viewforum
     // Returns the elements needed to display topics
     public function print_topics($forum_id, $sort_by, $start_from)
     {
+        global $lang_common, $lang_forum;
+
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
             $tracked_topics = get_tracked_topics();
@@ -193,7 +197,7 @@ class viewforum
                 $url_subject = url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_formatted'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_formatted'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['last_poster']).'</span>';
                 } else {
                     $cur_topic['last_post_formatted'] = '- - -';
                 }
@@ -204,18 +208,18 @@ class viewforum
 
                 if ($cur_topic['sticky'] == '1') {
                     $cur_topic['item_status'] .= ' isticky';
-                    $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                    $status_text[] = '<span class="stickytext">'.$lang_forum['Sticky'].'</span>';
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
-                    $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['poster']).'</span>';
+                    $status_text[] = '<span class="movedtext">'.$lang_forum['Moved'].'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
-                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_topic['poster']).'</span>';
+                    $status_text[] = '<span class="closedtext">'.$lang_forum['Closed'].'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 
@@ -223,7 +227,7 @@ class viewforum
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.$lang_common['New posts info'].'">'.$lang_common['New posts'].'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }

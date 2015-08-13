@@ -21,8 +21,6 @@ class misc
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\misc();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/misc.mo');
     }
 
     public function __autoload($class_name)
@@ -32,17 +30,21 @@ class misc
     
     public function rules()
     {
+        global $lang_common;
+
         if ($this->config['o_rules'] == '0' || ($this->user->is_guest && $this->user->g_read_board == '0' && $this->config['o_regs_allow'] == '0')) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Forum rules'));
+        // Load the register.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
 
-        $this->header->setTitle($page_title)->display();
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_register['Forum rules']);
 
         define('FEATHER_ACTIVE_PAGE', 'rules');
 
         $this->feather->render('misc/rules.php', array(
+                'lang_register' => $lang_register,
                 'feather_config' => $this->config,
                 )
         );
@@ -52,35 +54,47 @@ class misc
 
     public function markread()
     {
+        global $lang_common;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
+
+        // Load the misc.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         $this->model->update_last_visit();
 
         // Reset tracked topics
         set_tracked_topics(null);
 
-        redirect(get_base_url(), __('Mark read redirect'));
+        redirect(get_base_url(), $lang_misc['Mark read redirect']);
     }
 
     public function markforumread($id)
     {
+        global $lang_common;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
+
+        // Load the misc.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         $tracked_topics = get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
         set_tracked_topics($tracked_topics);
 
-        redirect(get_link('forum/'.$id.'/'), __('Mark forum read redirect'));
+        redirect(get_link('forum/'.$id.'/'), $lang_misc['Mark forum read redirect']);
     }
 
     public function subscribeforum($id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -91,8 +105,10 @@ class misc
 
     public function subscribetopic($id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -103,8 +119,10 @@ class misc
 
     public function unsubscribeforum($id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -115,8 +133,10 @@ class misc
 
     public function unsubscribetopic($id)
     {
+        global $lang_common, $lang_misc;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the misc.php language file
@@ -127,12 +147,14 @@ class misc
 
     public function email($id)
     {
+        global $lang_common;
+
         if ($this->user->is_guest || $this->user->g_send_email == '0') {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         if ($id < 2) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         // Load the misc.php language file
@@ -141,7 +163,7 @@ class misc
         $mail = $this->model->get_info_mail($id);
 
         if ($mail['email_setting'] == 2 && !$this->user->is_admmod) {
-            message(__('Form email disabled'));
+            message($lang_misc['Form email disabled']);
         }
 
 
@@ -149,8 +171,8 @@ class misc
             $this->model->send_email($mail, $id);
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Send email to').' '.feather_escape($mail['recipient']));
-        $required_fields = array('req_subject' => __('Email subject'), 'req_message' => __('Email message'));
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Send email to'].' '.feather_escape($mail['recipient']));
+        $required_fields = array('req_subject' => $lang_misc['Email subject'], 'req_message' => $lang_misc['Email message']);
         $focus_element = array('email', 'req_subject');
 
         define('FEATHER_ACTIVE_PAGE', 'email');
@@ -158,6 +180,7 @@ class misc
         $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('misc/email.php', array(
+                'lang_misc' => $lang_misc,
                 'id' => $id,
                 'mail' => $mail,
                 )
@@ -168,9 +191,14 @@ class misc
 
     public function report($id)
     {
+        global $lang_common;
+
         if ($this->user->is_guest) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
+
+        // Load the misc.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         if ($this->feather->request()->isPost()) {
             $this->model->insert_report($id);
@@ -183,8 +211,8 @@ class misc
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Report post'));
-        $required_fields = array('req_reason' => __('Reason'));
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_misc['Report post']);
+        $required_fields = array('req_reason' => $lang_misc['Reason']);
         $focus_element = array('report', 'req_reason');
 
         define('FEATHER_ACTIVE_PAGE', 'report');
@@ -192,7 +220,9 @@ class misc
         $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('misc/report.php', array(
+                'lang_misc' => $lang_misc,
                 'id' => $id,
+                'lang_common' => $lang_common,
                 'cur_post' => $cur_post,
                 )
         );

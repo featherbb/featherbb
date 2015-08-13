@@ -21,7 +21,6 @@ class index
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\index();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/index.mo');
     }
     
     public function __autoload($class_name)
@@ -31,9 +30,14 @@ class index
     
     public function display()
     {
+        global $lang_common;
+
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            message($lang_common['No view'], '403');
         }
+
+        // Load the index.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/index.php';
 
         $page_title = array(feather_escape($this->config['o_board_title']));
         define('FEATHER_ALLOW_INDEX', 1);
@@ -44,6 +48,8 @@ class index
 
         $this->feather->render('index.php', array(
                             'index_data' => $this->model->print_categories_forums(),
+                            'lang_common' => $lang_common,
+                            'lang_index' => $lang_index,
                             'stats' => $this->model->collect_stats(),
                             'feather_config' => $this->config,
                             'online'    =>    $this->model->fetch_users_online(),

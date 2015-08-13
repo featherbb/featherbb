@@ -40,7 +40,7 @@ if (!defined('FEATHER')) {
 								<th scope="row"><?php echo $lang_admin_groups['User title label'] ?></th>
 								<td>
 									<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo feather_escape($group['info']['g_user_title']) ?>" tabindex="2" />
-									<span><?php printf($lang_admin_groups['User title help'], ($group['info']['g_id'] != FEATHER_GUEST ? __('Member') : __('Guest'))) ?></span>
+									<span><?php printf($lang_admin_groups['User title help'], ($group['info']['g_id'] != FEATHER_GUEST ? $lang_common['Member'] : $lang_common['Guest'])) ?></span>
 								</td>
 							</tr>
 							<?php if ($group['info']['g_id'] != FEATHER_ADMIN): if ($group['info']['g_id'] != FEATHER_GUEST): ?>								<tr>

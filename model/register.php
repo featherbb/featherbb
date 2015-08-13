@@ -24,7 +24,7 @@ class register
  
     public function check_for_errors()
     {
-        global $lang_register, $lang_antispam, $lang_antispam_questions;
+        global $lang_register, $lang_prof_reg, $lang_common, $lang_antispam, $lang_antispam_questions;
 
         $user = array();
         $user['errors'] = '';
@@ -36,7 +36,7 @@ class register
                                   ->find_one();
 
         if ($already_registered) {
-            message(__('Registration flood'));
+            message($lang_register['Registration flood']);
         }
 
 
@@ -57,9 +57,9 @@ class register
         $user['errors'] = check_username($user['username'], $user['errors']);
 
         if (feather_strlen($user['password1']) < 6) {
-            $user['errors'][] = __('Pass too short');
+            $user['errors'][] = $lang_prof_reg['Pass too short'];
         } elseif ($user['password1'] != $password2) {
-            $user['errors'][] = __('Pass not match');
+            $user['errors'][] = $lang_prof_reg['Pass not match'];
         }
 
         // Antispam feature
@@ -71,22 +71,22 @@ class register
             $lang_antispam_questions_array[md5($k)] = strtoupper($v);
         }
         if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
-            $user['errors'][] = __('Robot test fail');
+            $user['errors'][] = $lang_antispam['Robot test fail'];
         }
 
         // Validate email
         require FEATHER_ROOT.'include/email.php';
 
         if (!is_valid_email($user['email1'])) {
-            $user['errors'][] = __('Invalid email');
+            $user['errors'][] = $lang_common['Invalid email'];
         } elseif ($this->config['o_regs_verify'] == '1' && $user['email1'] != $email2) {
-            $user['errors'][] = __('Email not match');
+            $user['errors'][] = $lang_register['Email not match'];
         }
 
         // Check if it's a banned email address
         if (is_banned_email($user['email1'])) {
             if ($this->config['p_allow_banned_email'] == '0') {
-                $user['errors'][] = __('Banned email');
+                $user['errors'][] = $lang_prof_reg['Banned email'];
             }
             $user['banned_email'] = 1; // Used later when we send an alert email
         }
@@ -100,7 +100,7 @@ class register
 
         if ($dupe_mail) {
             if ($this->config['p_allow_dupe_email'] == '0') {
-                $user['errors'][] = __('Dupe email');
+                $user['errors'][] = $lang_prof_reg['Dupe email'];
             }
 
             foreach($dupe_mail as $cur_dupe) {
@@ -112,7 +112,7 @@ class register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
-                message(__('Bad request'), '404');
+                message($lang_common['Bad request'], '404');
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
@@ -123,6 +123,8 @@ class register
 
     public function insert_user($user)
     {
+        global $lang_register;
+
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
@@ -239,11 +241,11 @@ class register
 
             pun_mail($user['email1'], $mail_subject, $mail_message);
 
-            message(__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+            message($lang_register['Reg email'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
 
         feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
 
-        redirect(get_base_url(), __('Reg complete'));
+        redirect(get_base_url(), $lang_register['Reg complete']);
     }
 }

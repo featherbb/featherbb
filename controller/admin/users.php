@@ -30,14 +30,14 @@ class users
 
     public function display()
     {
-        global $lang_admin_common, $lang_admin_users;
+        global $lang_common, $lang_admin_common, $lang_admin_users;
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -46,7 +46,7 @@ class users
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message(__('No permission'), '403');
+                message($lang_common['No permission'], '403');
             }
 
             $move = $this->model->move_users();
@@ -73,7 +73,7 @@ class users
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                message(__('No permission'), '403');
+                message($lang_common['No permission'], '403');
             }
 
             $user_ids = $this->model->delete_users();
@@ -100,7 +100,7 @@ class users
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-                message(__('No permission'), '403');
+                message($lang_common['No permission'], '403');
             }
 
             $user_ids = $this->model->ban_users();
@@ -140,7 +140,7 @@ class users
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
-            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
+            $paging_links = '<span class="pages-label">' . $lang_common['Pages'] . ' </span>' . paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
             $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
@@ -192,14 +192,14 @@ class users
     // Show IP statistics for a certain user ID
     public function ipstats($id)
     {
-        global $lang_admin_common, $lang_admin_users;
+        global $lang_common, $lang_admin_common, $lang_admin_users;
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -215,7 +215,7 @@ class users
         $start_from = 50 * ($p - 1);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id);
+        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id);
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
 
@@ -237,14 +237,14 @@ class users
     // Show IP statistics for a certain user IP
     public function showusers($ip)
     {
-        global $lang_admin_common, $lang_admin_users;
+        global $lang_common, $lang_admin_common, $lang_admin_users;
 
         define('FEATHER_ADMIN_CONSOLE', 1);
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Load the admin_bans.php language file
@@ -264,7 +264,7 @@ class users
         $start_from = 50 * ($p - 1);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip);
+        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip);
 
         $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Users'], $lang_admin_users['Results head']);
 

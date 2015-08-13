@@ -30,12 +30,12 @@ class statistics
     
     public function display()
     {
-        global $lang_admin_common, $lang_admin_index;
+        global $lang_common, $lang_admin_common, $lang_admin_index;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
         if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -72,7 +72,7 @@ class statistics
 
     public function phpinfo()
     {
-        global $lang_admin_common, $lang_admin_index;
+        global $lang_common, $lang_admin_common, $lang_admin_index;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
@@ -80,7 +80,7 @@ class statistics
         require FEATHER_ROOT.'lang/'.$admin_language.'/index.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
+            message($lang_common['No permission'], '403');
         }
 
         // Show phpinfo() output

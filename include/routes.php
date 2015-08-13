@@ -157,10 +157,10 @@ $feather->group('/admin', function() use ($feather) {
         $feather->get('/ip-stats/id/:id(/)', '\controller\admin\users:ipstats')->conditions(array('id' => '[0-9]+'));
         $feather->get('/show-users/ip/:ip(/)', '\controller\admin\users:showusers');
     });
-    
+
 });
 
 // 404 not found
-$feather->notFound(function () {
-    message(__('Bad request'), '404');
+$feather->notFound(function () use ($feather) {
+    $feather->halt(404, 'Not found');
 });

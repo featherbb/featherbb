@@ -25,6 +25,8 @@ class viewtopic
     // Redirects to a post in particular
     public function redirect_to_post($post_id)
     {
+        global $lang_common;
+
         $select_info_topic = array('topic_id', 'posted');
 
         $result = DB::for_table('posts')
@@ -33,7 +35,7 @@ class viewtopic
                       ->find_one();
 
         if (!$result) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         $post['topic_id'] = $result['topic_id'];
@@ -53,7 +55,7 @@ class viewtopic
     // Redirects to new posts or last post
     public function handle_actions($topic_id, $action)
     {
-
+        
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
             if (!$this->user->is_guest) {
@@ -92,7 +94,7 @@ class viewtopic
     // Gets some info about the topic
     public function get_info_topic($id)
     {
-
+        global $lang_common;
 
         $where_get_info_topic = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -131,7 +133,7 @@ class viewtopic
         }
 
         if (!$cur_topic) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
 
         return $cur_topic;
@@ -140,17 +142,19 @@ class viewtopic
     // Generates the post link
     public function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
     {
+        global $lang_topic;
+
         if ($closed == '0') {
             if (($post_replies == '' && $this->user->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
-                $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a></p>'."\n";
+                $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/reply/'.$topic_id.'/').'">'.$lang_topic['Post reply'].'</a></p>'."\n";
             } else {
                 $post_link = '';
             }
         } else {
-            $post_link = __('Topic closed');
+            $post_link = $lang_topic['Topic closed'];
 
             if ($is_admmod) {
-                $post_link .= ' / <a href="'.get_link('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a>';
+                $post_link .= ' / <a href="'.get_link('post/reply/'.$topic_id.'/').'">'.$lang_topic['Post reply'].'</a>';
             }
 
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
@@ -162,16 +166,18 @@ class viewtopic
     // Should we display the quickpost?
     public function is_quickpost($post_replies, $closed, $is_admmod)
     {
-
+        global $lang_common;
 
         $quickpost = false;
         if ($this->config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $this->user->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
+            // Load the post.php language file
+            require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
-            $required_fields = array('req_message' => __('Message'));
+            $required_fields = array('req_message' => $lang_common['Message']);
             if ($this->user->is_guest) {
-                $required_fields['req_username'] = __('Guest name');
+                $required_fields['req_username'] = $lang_post['Guest name'];
                 if ($this->config['p_force_guest_email'] == '1') {
-                    $required_fields['req_email'] = __('Email');
+                    $required_fields['req_email'] = $lang_common['Email'];
                 }
             }
             $quickpost = true;
@@ -183,12 +189,14 @@ class viewtopic
     // Subscraction link
     public function get_subscraction($is_subscribed, $topic_id)
     {
+        global $lang_topic;
+
         if (!$this->user->is_guest && $this->config['o_topic_subscriptions'] == '1') {
             if ($is_subscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.get_link('unsubscribe/topic/'.$topic_id.'/').'">'.__('Unsubscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="'.get_link('unsubscribe/topic/'.$topic_id.'/').'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
             } else {
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.get_link('subscribe/topic/'.$topic_id.'/').'">'.__('Subscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.get_link('subscribe/topic/'.$topic_id.'/').'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
             }
         } else {
             $subscraction = '';
@@ -200,7 +208,7 @@ class viewtopic
     // Adds relationship meta tags
     public function get_page_head($topic_id, $num_pages, $p, $url_topic)
     {
-
+        global $lang_common;
 
         $page_head = array();
         $page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
@@ -215,9 +223,9 @@ class viewtopic
         }
 
         if ($this->config['o_feed_type'] == '1') {
-            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.__('RSS topic feed').'" />';
+            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.$lang_common['RSS topic feed'].'" />';
         } elseif ($this->config['o_feed_type'] == '2') {
-            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.__('Atom topic feed').'" />';
+            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.$lang_common['Atom topic feed'].'" />';
         }
 
         return $page_head;
@@ -226,7 +234,7 @@ class viewtopic
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
-        global $pd;
+        global $lang_topic, $lang_common, $pd;
 
         $post_data = array();
 
@@ -257,7 +265,9 @@ class viewtopic
             ->select_many($select_print_posts)
             ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
             ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->raw_join('LEFT OUTER JOIN '.$this->feather->prefix.'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
+            ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o')
+            ->left_outer_join('online', array('o2.user_id', '!=', 1), 'o2', true)
+            ->left_outer_join('online', array('o.idle', '=', 0), null, true)
             ->where_in('p.id', $post_ids)
             ->order_by('p.id')
             ->find_array();
@@ -286,7 +296,7 @@ class viewtopic
                 }
 
                 // Format the online indicator
-                $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.__('Online').'</strong>' : '<span>'.__('Offline').'</span>';
+                $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
 
                 if ($this->config['o_avatars'] == '1' && $this->user->show_avatars != '0') {
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
@@ -303,20 +313,20 @@ class viewtopic
                             $cur_post['location'] = censor_words($cur_post['location']);
                         }
 
-                        $cur_post['user_info'][] = '<dd><span>'.__('From').' '.feather_escape($cur_post['location']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['From'].' '.feather_escape($cur_post['location']).'</span></dd>';
                     }
 
-                    $cur_post['user_info'][] = '<dd><span>'.__('Registered').' '.format_time($cur_post['registered'], true).'</span></dd>';
+                    $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Registered'].' '.format_time($cur_post['registered'], true).'</span></dd>';
 
                     if ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
-                        $cur_post['user_info'][] = '<dd><span>'.__('Posts').' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Posts'].' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
                     if ((($cur_post['email_setting'] == '0' && !$this->user->is_guest) || $this->user->is_admmod) && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['email']).'">'.__('Email').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['email']).'">'.$lang_common['Email'].'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.$lang_common['Email'].'</a></span>';
                     }
 
                     if ($cur_post['url'] != '') {
@@ -324,21 +334,21 @@ class viewtopic
                             $cur_post['url'] = censor_words($cur_post['url']);
                         }
 
-                        $cur_post['user_contacts'][] = '<span class="website"><a href="'.feather_escape($cur_post['url']).'" rel="nofollow">'.__('Website').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="website"><a href="'.feather_escape($cur_post['url']).'" rel="nofollow">'.$lang_topic['Website'].'</a></span>';
                     }
                 }
 
                 if ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
-                        $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
+                        $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.$lang_topic['Promote user'].'</a></span></dd>';
                     }
                 }
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.feather_escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.feather_escape($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
-                        $cur_post['user_info'][] = '<dd><span>'.__('Note').' <strong>'.feather_escape($cur_post['admin_note']).'</strong></span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.$lang_topic['Note'].' <strong>'.feather_escape($cur_post['admin_note']).'</strong></span></dd>';
                     }
                 }
             }
@@ -348,41 +358,41 @@ class viewtopic
                 $cur_post['user_title_formatted'] = get_title($cur_post);
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.feather_escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.feather_escape($cur_post['poster_ip']).'">'.$lang_topic['IP address logged'].'</a></span></dd>';
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
+                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['poster_email']).'">'.$lang_common['Email'].'</a></span>';
                 }
             }
 
             // Generation post action array (quote, edit, delete etc.)
             if (!$is_admmod) {
                 if (!$this->user->is_guest) {
-                    $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.__('Report').'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
                 }
 
                 if ($cur_topic['closed'] == '0') {
                     if ($cur_post['poster_id'] == $this->user->id) {
                         if ((($start_from + $post_count) == 1 && $this->user->g_delete_topics == '1') || (($start_from + $post_count) > 1 && $this->user->g_delete_posts == '1')) {
-                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
                         }
                         if ($this->user->g_edit_posts == '1') {
-                            $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
                         }
                     }
 
                     if (($cur_topic['post_replies'] == '' && $this->user->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
-                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.__('Quote').'</a></span></li>';
+                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.$lang_topic['Quote'].'</a></span></li>';
                     }
                 }
             } else {
-                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.__('Report').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.get_link('report/'.$cur_post['id'].'/').'">'.$lang_topic['Report'].'</a></span></li>';
                 if ($this->user->g_id == FEATHER_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
-                    $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
-                    $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.$lang_topic['Delete'].'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.$lang_topic['Edit'].'</a></span></li>';
                 }
-                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.__('Quote').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.get_link('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.$lang_topic['Quote'].'</a></span></li>';
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)

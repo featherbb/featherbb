@@ -26,12 +26,12 @@ class index
     // Returns page head
     public function get_page_head()
     {
-
+        global $lang_common;
         
         if ($this->config['o_feed_type'] == '1') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
+            $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.$lang_common['RSS active topics feed'].'" />');
         } elseif ($this->config['o_feed_type'] == '2') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
+            $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.$lang_common['Atom active topics feed'].'" />');
         }
 
         return $page_head;
@@ -40,11 +40,13 @@ class index
     // Returns forum action
     public function get_forum_actions()
     {
+        global $lang_common;
+
         $forum_actions = array();
 
         // Display a "mark all as read" link
         if (!$this->user->is_guest) {
-            $forum_actions[] = '<a href="'.get_link('mark-read/').'">'.__('Mark all as read').'</a>';
+            $forum_actions[] = '<a href="'.get_link('mark-read/').'">'.$lang_common['Mark all as read'].'</a>';
         }
 
         return $forum_actions;
@@ -104,6 +106,8 @@ class index
     // Returns the elements needed to display categories and their forums
     public function print_categories_forums()
     {
+        global $lang_common, $lang_index;
+
         // Get list of forums and topics with new posts since last visit
         if (!$this->user->is_guest) {
             $new_topics = $this->get_new_posts();
@@ -158,13 +162,13 @@ class index
             // Are there new posts since our last visit?
             if (isset($new_topics[$cur_forum->fid])) {
                 $cur_forum->item_status .= ' inew';
-                $forum_field_new = '<span class="newtext">[ <a href="'.get_link('search/?action=show_new&amp;fid='.$cur_forum->fid).'">'.__('New posts').'</a> ]</span>';
+                $forum_field_new = '<span class="newtext">[ <a href="'.get_link('search/?action=show_new&amp;fid='.$cur_forum->fid).'">'.$lang_common['New posts'].'</a> ]</span>';
                 $cur_forum->icon_type = 'icon icon-new';
             }
 
             // Is this a redirect forum?
             if ($cur_forum->redirect_url != '') {
-                $cur_forum->forum_field = '<h3><span class="redirtext">'.__('Link to').'</span> <a href="'.feather_escape($cur_forum->redirect_url).'" title="'.__('Link to').' '.feather_escape($cur_forum->redirect_url).'">'.feather_escape($cur_forum->forum_name).'</a></h3>';
+                $cur_forum->forum_field = '<h3><span class="redirtext">'.$lang_index['Link to'].'</span> <a href="'.feather_escape($cur_forum->redirect_url).'" title="'.$lang_index['Link to'].' '.feather_escape($cur_forum->redirect_url).'">'.feather_escape($cur_forum->forum_name).'</a></h3>';
                 $cur_forum->num_topics_formatted = $cur_forum->num_posts_formatted = '-';
                 $cur_forum->item_status .= ' iredirect';
                 $cur_forum->icon_type = 'icon';
@@ -180,11 +184,11 @@ class index
 
             // If there is a last_post/last_poster
             if ($cur_forum->last_post != '') {
-                $cur_forum->last_post_formatted = '<a href="'.get_link('post/'.$cur_forum->last_post_id.'/#p'.$cur_forum->last_post_id).'">'.format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_forum->last_poster).'</span>';
+                $cur_forum->last_post_formatted = '<a href="'.get_link('post/'.$cur_forum->last_post_id.'/#p'.$cur_forum->last_post_id).'">'.format_time($cur_forum->last_post).'</a> <span class="byuser">'.$lang_common['by'].' '.feather_escape($cur_forum->last_poster).'</span>';
             } elseif ($cur_forum->redirect_url != '') {
                 $cur_forum->last_post_formatted = '- - -';
             } else {
-                $cur_forum->last_post_formatted = __('Never');
+                $cur_forum->last_post_formatted = $lang_common['Never'];
             }
 
             if ($cur_forum->moderators != '') {
@@ -199,7 +203,7 @@ class index
                     }
                 }
 
-                $cur_forum->moderators_formatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.__('Moderated by').'</em> '.implode(', ', $moderators).')</p>'."\n";
+                $cur_forum->moderators_formatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.$lang_common['Moderated by'].'</em> '.implode(', ', $moderators).')</p>'."\n";
             } else {
                 $cur_forum->moderators_formatted = '';
             }

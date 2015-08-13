@@ -21,7 +21,6 @@ class viewforum
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\viewforum();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)
@@ -31,13 +30,18 @@ class viewforum
     
     public function display($id, $name = null, $page = null)
     {
+        global $lang_common, $lang_forum;
+
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            message($lang_common['No view'], '403');
         }
 
         if ($id < 1) {
-            message(__('Bad request'), '404');
+            message($lang_common['Bad request'], '404');
         }
+
+        // Load the viewforum.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Fetch some informations about the forum
         $cur_forum = $this->model->get_info_forum($id);
@@ -56,7 +60,7 @@ class viewforum
 
         // Can we or can we not post new topics?
         if (($cur_forum['post_topics'] == '' && $this->user->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/new-topic/'.$id.'/').'">'.__('Post topic').'</a></p>'."\n";
+            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/new-topic/'.$id.'/').'">'.$lang_forum['Post topic'].'</a></p>'."\n";
         } else {
             $post_link = '';
         }
@@ -69,7 +73,7 @@ class viewforum
         $url_forum = url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
+        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
 
         $forum_actions = $this->model->get_forum_actions($id, $this->config['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
@@ -86,6 +90,8 @@ class viewforum
         $this->feather->render('viewforum.php', array(
                             'id' => $id,
                             'forum_data' => $this->model->print_topics($id, $sort_by, $start_from),
+                            'lang_common' => $lang_common,
+                            'lang_forum' => $lang_forum,
                             'cur_forum' => $cur_forum,
                             'paging_links' => $paging_links,
                             'post_link' => $post_link,

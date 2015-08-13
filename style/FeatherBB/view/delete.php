@@ -16,26 +16,26 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox">
 		<ul class="crumbs">
-			<li><a href="index.php"><?php echo __('Index') ?></a></li>
+			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_post['fid'].'/'.$cur_post['forum_name'].'/') ?>"><?php echo feather_escape($cur_post['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('post/'.$id.'/#p'.$id) ?>"><?php echo feather_escape($cur_post['subject']) ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Delete post') ?></strong></li>
+			<li><span>»&#160;</span><strong><?php echo $lang_delete['Delete post'] ?></strong></li>
 		</ul>
 	</div>
 </div>
 
 <div class="blockform">
-	<h2><span><?php echo __('Delete post') ?></span></h2>
+	<h2><span><?php echo $lang_delete['Delete post'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="<?php echo get_link('delete/'.$id.'/') ?>">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<div class="forminfo">
-					<h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.feather_escape($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
-					<p><?php echo($is_topic_post) ? '<strong>'.__('Topic warning').'</strong>' : '<strong>'.__('Warning').'</strong>' ?><br /><?php echo __('Delete info') ?></p>
+					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.feather_escape($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
+					<p><?php echo($is_topic_post) ? '<strong>'.$lang_delete['Topic warning'].'</strong>' : '<strong>'.$lang_delete['Warning'].'</strong>' ?><br /><?php echo $lang_delete['Delete info'] ?></p>
 				</div>
 			</div>
-			<p class="buttons"><input type="submit" name="delete" value="<?php echo __('Delete') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="delete" value="<?php echo $lang_delete['Delete'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>
 </div>

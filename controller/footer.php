@@ -27,6 +27,8 @@ class footer
 
     public function display($footer_style = null, $id = null, $p = null, $pid = null, $forum_id = null, $num_pages = null)
     {
+        global $lang_common;
+
         // Render the footer
         // If no footer style has been specified, we use the default (only copyright/debug info)
         $footer_style = isset($footer_style) ? $footer_style : null;
@@ -40,6 +42,7 @@ class footer
         $num_pages = isset($num_pages) ? $num_pages : null;
 
         $this->feather->render('footer.php', array(
+                            'lang_common' => $lang_common,
                             'id' => $id,
                             'p' => $p,
                             'pid' => $pid,

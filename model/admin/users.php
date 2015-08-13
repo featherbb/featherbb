@@ -499,7 +499,7 @@ class users
 
     public function get_user_search()
     {
-        global $db_type, $lang_admin_users;
+        global $db_type, $lang_common, $lang_admin_users;
 
         $form = $this->request->get('form') ? $this->request->get('form') : array();
 
@@ -618,7 +618,7 @@ class users
 
     public function print_users($conditions, $order_by, $direction, $start_from)
     {
-        global $lang_admin_users;
+        global $lang_common, $lang_admin_users;
 
         $user_data = array();
 
@@ -637,7 +637,7 @@ class users
                 $cur_user['user_title'] = get_title($cur_user);
 
                 // This script is a special case in that we want to display "Not verified" for non-verified users
-                if (($cur_user['g_id'] == '' || $cur_user['g_id'] == FEATHER_UNVERIFIED) && $cur_user['user_title'] != __('Banned')) {
+                if (($cur_user['g_id'] == '' || $cur_user['g_id'] == FEATHER_UNVERIFIED) && $cur_user['user_title'] != $lang_common['Banned']) {
                     $cur_user['user_title'] = '<span class="warntext">'.$lang_admin_users['Not verified'].'</span>';
                 }
 

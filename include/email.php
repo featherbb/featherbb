@@ -261,14 +261,14 @@ function bbcode2email($text, $wrap_length = 72)
 //
 function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
 {
-    global $feather_config;
+    global $feather_config, $lang_common;
 
     // Use \r\n for SMTP servers, the system's line ending for local mailers
     $smtp = $feather_config['o_smtp_host'] != '';
     $EOL = $smtp ? "\r\n" : FORUM_EOL;
 
     // Default sender/return address
-    $from_name = sprintf(__('Mailer'), $feather_config['o_board_title']);
+    $from_name = sprintf($lang_common['Mailer'], $feather_config['o_board_title']);
     $from_email = $feather_config['o_webmaster_email'];
 
     // Do a little spring cleaning

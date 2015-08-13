@@ -21,9 +21,6 @@ class search
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\search();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/search.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)
@@ -33,12 +30,16 @@ class search
     
     public function display()
     {
-        global $pd;
+        global $lang_common, $lang_search, $lang_forum, $lang_topic, $pd;
+
+        // Load the search.php language file
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/search.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            message($lang_common['No view'], '403');
         } elseif ($this->user->g_search == '0') {
-            message(__('No search permission'), false, '403 Forbidden');
+            message($lang_search['No search permission'], false, '403 Forbidden');
         }
 
         require FEATHER_ROOT.'include/search_idx.php';
@@ -49,18 +50,21 @@ class search
 
                 // We have results to display
                 if (isset($search['is_result'])) {
-                    $page_title = array(feather_escape($this->config['o_board_title']), __('Search results'));
+                    $page_title = array(feather_escape($this->config['o_board_title']), $lang_search['Search results']);
 
                     define('FEATHER_ACTIVE_PAGE', 'search');
 
                     $this->header->setTitle($page_title)->display();
 
                     $this->feather->render('search/header.php', array(
+                                'lang_common' => $lang_common,
+                                'lang_search' => $lang_search,
                                 'search' => $search,
                                 )
                         );
 
                     if ($search['show_as'] == 'posts') {
+                        require FEATHER_ROOT.'lang/'.$this->user->language.'/topic.php';
                         require FEATHER_ROOT.'include/parser.php';
                     }
 
@@ -73,11 +77,11 @@ class search
 
                     $this->footer->display();
                 } else {
-                    message(__('No hits'));
+                    message($lang_search['No hits']);
                 }
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Search'));
+        $page_title = array(feather_escape($this->config['o_board_title']), $lang_search['Search']);
         $focus_element = array('search', 'keywords');
 
         define('FEATHER_ACTIVE_PAGE', 'search');
@@ -85,6 +89,8 @@ class search
         $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
 
         $this->feather->render('search/form.php', array(
+                            'lang_common' => $lang_common,
+                            'lang_search' => $lang_search,
                             'feather_config' => $this->config,
                             'feather' => $this->feather,
                             'forums' => $this->model->get_list_forums(),
