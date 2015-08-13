@@ -39,7 +39,8 @@ class FeatherBB extends \Slim\Middleware
                                     'FEATHER_SEARCH_MIN_WORD' => 3,
                                     'FEATHER_SEARCH_MAX_WORD' => 20,
                                     'FORUM_MAX_COOKIE_SIZE' => 4048,
-                                    'FEATHER_SHOW_QUERIES' => 1
+                                    'FEATHER_DEBUG' => 1,
+                                    'FEATHER_SHOW_QUERIES' => 1,
                                     );
 
         // Define forum settings / TODO : handle settings with a class / User input overrides all previous settings
@@ -90,7 +91,7 @@ class FeatherBB extends \Slim\Middleware
         DB::configure('password', $this->data['forum_settings']['db_pass']);
         DB::configure('logging', true);
         DB::configure('id_column_overrides', array(
-            'groups' => 'g_id',
+            $this->data['forum_settings']['db_prefix'].'groups' => 'g_id',
         ));
     }
 
@@ -239,11 +240,11 @@ class FeatherBB extends \Slim\Middleware
                 case 'mysqli_innodb':
                 case 'sqlite':
                 case 'sqlite3':
-                DB::for_table('online')->raw_execute('REPLACE INTO online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
+                DB::for_table('online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
                     break;
 
                 default:
-                    DB::for_table('online')->raw_execute('INSERT INTO online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
+                    DB::for_table('online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
                     break;
             }
         } else {
@@ -273,11 +274,11 @@ class FeatherBB extends \Slim\Middleware
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table('online')->raw_execute('REPLACE INTO online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.$this->data['forum_settings']['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
                         break;
                 }
 
@@ -296,7 +297,7 @@ class FeatherBB extends \Slim\Middleware
 
                 $idle_sql = ($this->app->user->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table('online')->raw_execute('UPDATE online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
+                DB::for_table('online')->raw_execute('UPDATE '.$this->data['forum_settings']['db_prefix'].'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = $this->app->getCookie($this->data['forum_settings']['cookie_name'].'_track');

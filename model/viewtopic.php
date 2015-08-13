@@ -257,7 +257,7 @@ class viewtopic
             ->select_many($select_print_posts)
             ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
             ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->raw_join('LEFT OUTER JOIN '.$this->feather->prefix.'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
+            ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
             ->where_in('p.id', $post_ids)
             ->order_by('p.id')
             ->find_array();

@@ -18,13 +18,9 @@ require 'Slim/Slim.php';
 
 // Instantiate Slim
 $feather = new \Slim\Slim();
-$feather_user_settings = array(
-							'db_name' => 'featherbb',
-							'db_host' => 'localhost',
-							'db_user' => 'featherbb',
-							'db_pass' => 'featherbb',
-							'cookie_name' => 'feather_cookie_45ef0b',
-							'cookie_seed' => '0f320ab07f4afbc5');
+
+// Load the config
+require 'include/config.php';
 
 // Load middlewares
 $feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
