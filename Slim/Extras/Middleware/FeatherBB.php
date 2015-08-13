@@ -41,6 +41,7 @@ class FeatherBB extends \Slim\Middleware
                                     'FORUM_MAX_COOKIE_SIZE' => 4048,
                                     'FEATHER_DEBUG' => 1,
                                     'FEATHER_SHOW_QUERIES' => 1,
+                                    'FEATHER_CACHE_QUERIES' => 0,
                                     );
 
         // Define forum settings / TODO : handle settings with a class / User input overrides all previous settings
@@ -89,7 +90,12 @@ class FeatherBB extends \Slim\Middleware
         }
         DB::configure('username', $this->data['forum_settings']['db_user']);
         DB::configure('password', $this->data['forum_settings']['db_pass']);
-        DB::configure('logging', true);
+        if ($this->data['forum_env']['FEATHER_SHOW_QUERIES'] == 1) {
+            DB::configure('logging', true);
+        }
+        if ($this->data['forum_env']['FEATHER_CACHE_QUERIES'] == 1) {
+            DB::configure('caching', true);
+        }
         DB::configure('id_column_overrides', array(
             $this->data['forum_settings']['db_prefix'].'groups' => 'g_id',
         ));
