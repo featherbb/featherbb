@@ -154,7 +154,6 @@ if ($quickpost) {
 
     ?>
 <!-- Init BBcode editor toolbar -->
-<?php $lang_bbeditor = ''; ?>
 <script>
     var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
