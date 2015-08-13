@@ -16,9 +16,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/index/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo __('Users') ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
+			<li><a href="<?php echo get_link('admin/index/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
@@ -31,19 +31,19 @@ if (!defined('FEATHER')) {
 <form id="search-users-form" action="<?php echo get_link('admin/users/') ?>" method="post">
 <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <div id="users2" class="blocktable">
-	<h2><span><?php echo __('Results head') ?></span></h2>
+	<h2><span><?php _e('Results head') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Results username head') ?></th>
-					<th class="tc2" scope="col"><?php echo __('Results e-mail head') ?></th>
-					<th class="tc3" scope="col"><?php echo __('Results title head') ?></th>
-					<th class="tc4" scope="col"><?php echo __('Results posts head') ?></th>
-					<th class="tc5" scope="col"><?php echo __('Results admin note head') ?></th>
-					<th class="tcr" scope="col"><?php echo __('Results actions head') ?></th>
-<?php if ($can_action): ?>					<th class="tcmod" scope="col"><?php echo __('Select') ?></th>
+					<th class="tcl" scope="col"><?php _e('Results username head') ?></th>
+					<th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
+					<th class="tc3" scope="col"><?php _e('Results title head') ?></th>
+					<th class="tc4" scope="col"><?php _e('Results posts head') ?></th>
+					<th class="tc5" scope="col"><?php _e('Results admin note head') ?></th>
+					<th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
+<?php if ($can_action): ?>					<th class="tcmod" scope="col"><?php _e('Select') ?></th>
 <?php endif;
     ?>
 				</tr>
@@ -82,17 +82,17 @@ if (!defined('FEATHER')) {
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
-<?php if ($can_action): ?>			<p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?php echo __('Unselect all') ?>')"><?php echo __('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?php echo __('Ban') ?>" /><?php endif;
-    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?php echo __('Delete') ?>" /><?php endif;
-    if ($can_move) : ?><input type="submit" name="move_users" value="<?php echo __('Change group') ?>" /><?php endif;
+<?php if ($can_action): ?>			<p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?php _e('Unselect all') ?>')"><?php _e('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?php _e('Ban') ?>" /><?php endif;
+    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?php _e('Delete') ?>" /><?php endif;
+    if ($can_move) : ?><input type="submit" name="move_users" value="<?php _e('Change group') ?>" /><?php endif;
     ?></p>
 <?php endif;
     ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/index/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo __('Users') ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
+			<li><a href="<?php echo get_link('admin/index/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>
 	</div>

@@ -20,18 +20,18 @@ if (!defined('FEATHER')) {
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Contact details legend') ?></legend>
+					<legend><?php _e('Contact details legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label><?php echo __('Jabber') ?><br /><input id="jabber" type="text" name="form_jabber" value="<?php echo feather_escape($user['jabber']) ?>" size="40" maxlength="75" /><br /></label>
-						<label><?php echo __('ICQ') ?><br /><input id="icq" type="text" name="form_icq" value="<?php echo $user['icq'] ?>" size="12" maxlength="12" /><br /></label>
-						<label><?php echo __('MSN') ?><br /><input id="msn" type="text" name="form_msn" value="<?php echo feather_escape($user['msn']) ?>" size="40" maxlength="50" /><br /></label>
-						<label><?php echo __('AOL IM') ?><br /><input id="aim" type="text" name="form_aim" value="<?php echo feather_escape($user['aim']) ?>" size="20" maxlength="30" /><br /></label>
-						<label><?php echo __('Yahoo') ?><br /><input id="yahoo" type="text" name="form_yahoo" value="<?php echo feather_escape($user['yahoo']) ?>" size="20" maxlength="30" /><br /></label>
+						<label><?php _e('Jabber') ?><br /><input id="jabber" type="text" name="form_jabber" value="<?php echo feather_escape($user['jabber']) ?>" size="40" maxlength="75" /><br /></label>
+						<label><?php _e('ICQ') ?><br /><input id="icq" type="text" name="form_icq" value="<?php echo $user['icq'] ?>" size="12" maxlength="12" /><br /></label>
+						<label><?php _e('MSN') ?><br /><input id="msn" type="text" name="form_msn" value="<?php echo feather_escape($user['msn']) ?>" size="40" maxlength="50" /><br /></label>
+						<label><?php _e('AOL IM') ?><br /><input id="aim" type="text" name="form_aim" value="<?php echo feather_escape($user['aim']) ?>" size="20" maxlength="30" /><br /></label>
+						<label><?php _e('Yahoo') ?><br /><input id="yahoo" type="text" name="form_yahoo" value="<?php echo feather_escape($user['yahoo']) ?>" size="20" maxlength="30" /><br /></label>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <?php echo __('Instructions') ?></p>
+			<p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
 		</form>
 	</div>
 </div>

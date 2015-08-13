@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo __('Prune head') ?></span></h2>
+		<h2><span><?php _e('Prune head') ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/maintenance/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
@@ -24,14 +24,14 @@ if (!defined('FEATHER')) {
 					<input type="hidden" name="prune_sticky" value="<?php echo $prune_sticky ?>" />
 					<input type="hidden" name="prune_from" value="<?php echo $prune_from ?>" />
 					<fieldset>
-						<legend><?php echo __('Confirm prune subhead') ?></legend>
+						<legend><?php _e('Confirm prune subhead') ?></legend>
 						<div class="infldset">
 							<p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], forum_number_format($prune['num_topics'])) ?></p>
-							<p class="warntext"><?php echo __('Confirm prune warn') ?></p>
+							<p class="warntext"><?php _e('Confirm prune warn') ?></p>
 						</div>
 					</fieldset>
 				</div>
-				<p class="buttons"><input type="submit" name="prune_comply" value="<?php echo __('Prune') ?>" /><a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+				<p class="buttons"><input type="submit" name="prune_comply" value="<?php _e('Prune') ?>" /><a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 			</form>
 		</div>
 	</div>

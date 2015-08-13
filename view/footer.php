@@ -11,7 +11,7 @@
 </div>
 
 <div id="brdfooter" class="block">
-	<h2><span><?php echo __('Board footer') ?></span></h2>
+	<h2><span><?php _e('Board footer') ?></span></h2>
 	<div class="box">
 <?php
 

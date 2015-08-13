@@ -14,32 +14,32 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo __('Move users') ?></span></h2>
+		<h2><span><?php _e('Move users') ?></span></h2>
 		<div class="box">
 			<form name="confirm_move_users" method="post" action="<?php echo get_link('admin/users/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<input type="hidden" name="users" value="<?php echo implode(',', $move['user_ids']) ?>" />
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Move users subhead') ?></legend>
+						<legend><?php _e('Move users subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo __('New group label') ?></th>
+									<th scope="row"><?php _e('New group label') ?></th>
 									<td>
 										<select name="new_group" tabindex="1">
 <?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo feather_escape($group) ?></option>
 <?php endforeach;
     ?>
 										</select>
-										<span><?php echo __('New group help') ?></span>
+										<span><?php _e('New group help') ?></span>
 									</td>
 								</tr>
 							</table>
 						</div>
 					</fieldset>
 				</div>
-				<p class="submitend"><input type="submit" name="move_users_comply" value="<?php echo __('Save') ?>" tabindex="2" /></p>
+				<p class="submitend"><input type="submit" name="move_users_comply" value="<?php _e('Save') ?>" tabindex="2" /></p>
 			</form>
 		</div>
 	</div>

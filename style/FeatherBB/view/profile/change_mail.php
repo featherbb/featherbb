@@ -14,22 +14,22 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo __('Change email') ?></span></h2>
+	<h2><span><?php _e('Change email') ?></span></h2>
 	<div class="box">
 		<form id="change_email" method="post" action="<?php echo get_link('user/'.$id.'/action/change_email') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Email legend') ?></legend>
+					<legend><?php _e('Email legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label class="required"><strong><?php echo __('New email') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_new_email" size="50" maxlength="80" /><br /></label>
-						<label class="required"><strong><?php echo __('Password') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password" size="16" /><br /></label>
-						<p><?php echo __('Email instructions') ?></p>
+						<label class="required"><strong><?php _e('New email') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_new_email" size="50" maxlength="80" /><br /></label>
+						<label class="required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password" size="16" /><br /></label>
+						<p><?php _e('Email instructions') ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="new_email" value="<?php echo __('Submit') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="new_email" value="<?php _e('Submit') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

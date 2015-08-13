@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo __('New reports head') ?></span></h2>
+		<h2><span><?php _e('New reports head') ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/reports/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
@@ -34,7 +34,7 @@ if (!empty($report_data)) {
 																						sprintf(__('Post ID'), $report['pid']) => get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo __('Reason') ?><div><input type="submit" name="zap_id[<?php echo $report['id'] ?>]" value="<?php echo __('Zap') ?>" /></div></th>
+									<th scope="row"><?php _e('Reason') ?><div><input type="submit" name="zap_id[<?php echo $report['id'] ?>]" value="<?php _e('Zap') ?>" /></div></th>
 									<td><?php echo str_replace("\n", '<br />', feather_escape($report['message'])) ?></td>
 								</tr>
 							</table>
@@ -48,9 +48,9 @@ if (!empty($report_data)) {
     ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('None') ?></legend>
+						<legend><?php _e('None') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('No new reports') ?></p>
+							<p><?php _e('No new reports') ?></p>
 						</div>
 					</fieldset>
 				</div>
@@ -64,7 +64,7 @@ if (!empty($report_data)) {
 	</div>
 
 	<div class="blockform block2">
-		<h2><span><?php echo __('Last 10 head') ?></span></h2>
+		<h2><span><?php _e('Last 10 head') ?></span></h2>
 		<div class="box">
 			<div class="fakeform">
 <?php
@@ -84,7 +84,7 @@ if (!empty($report_zapped_data)) {
 																						sprintf(__('Post ID'), $report['pid']) => get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo __('Reason') ?></th>
+									<th scope="row"><?php _e('Reason') ?></th>
 									<td><?php echo str_replace("\n", '<br />', feather_escape($report['message'])) ?></td>
 								</tr>
 							</table>
@@ -98,9 +98,9 @@ if (!empty($report_zapped_data)) {
     ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('None') ?></legend>
+						<legend><?php _e('None') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('No zapped reports') ?></p>
+							<p><?php _e('No zapped reports') ?></p>
 						</div>
 					</fieldset>
 				</div>

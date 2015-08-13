@@ -16,9 +16,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo __('Bans') ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
@@ -29,19 +29,19 @@ if (!defined('FEATHER')) {
 
 
 <div id="bans1" class="blocktable">
-	<h2><span><?php echo __('Results head') ?></span></h2>
+	<h2><span><?php _e('Results head') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Results username head') ?></th>
-					<th class="tc2" scope="col"><?php echo __('Results e-mail head') ?></th>
-					<th class="tc3" scope="col"><?php echo __('Results IP address head') ?></th>
-					<th class="tc4" scope="col"><?php echo __('Results expire head') ?></th>
-					<th class="tc5" scope="col"><?php echo __('Results message head') ?></th>
-					<th class="tc6" scope="col"><?php echo __('Results banned by head') ?></th>
-					<th class="tcr" scope="col"><?php echo __('Results actions head') ?></th>
+					<th class="tcl" scope="col"><?php _e('Results username head') ?></th>
+					<th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
+					<th class="tc3" scope="col"><?php _e('Results IP address head') ?></th>
+					<th class="tc4" scope="col"><?php _e('Results expire head') ?></th>
+					<th class="tc5" scope="col"><?php _e('Results message head') ?></th>
+					<th class="tc6" scope="col"><?php _e('Results banned by head') ?></th>
+					<th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -78,9 +78,9 @@ if (!defined('FEATHER')) {
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
         <ul class="crumbs">
-            <li><a href="<?php echo get_link('admin/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php echo __('Bans') ?></a></li>
-            <li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
+            <li><a href="<?php echo get_link('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
 		<div class="clearer"></div>
 	</div>

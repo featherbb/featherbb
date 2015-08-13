@@ -1506,14 +1506,14 @@ function display_saved_queries()
     ?>
 
 <div id="debug" class="blocktable">
-	<h2><span><?php echo __('Debug table') ?></span></h2>
+	<h2><span><?php _e('Debug table') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Query times') ?></th>
-					<th class="tcr" scope="col"><?php echo __('Query') ?></th>
+					<th class="tcl" scope="col"><?php _e('Query times') ?></th>
+					<th class="tcr" scope="col"><?php _e('Query') ?></th>
 				</tr>
 			</thead>
 			<tbody>

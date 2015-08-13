@@ -16,9 +16,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo __('Users') ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
@@ -28,18 +28,18 @@ if (!defined('FEATHER')) {
 </div>
 
 <div id="users2" class="blocktable">
-	<h2><span><?php echo __('Results head') ?></span></h2>
+	<h2><span><?php _e('Results head') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Results username head') ?></th>
-					<th class="tc2" scope="col"><?php echo __('Results e-mail head') ?></th>
-					<th class="tc3" scope="col"><?php echo __('Results title head') ?></th>
-					<th class="tc4" scope="col"><?php echo __('Results posts head') ?></th>
-					<th class="tc5" scope="col"><?php echo __('Results admin note head') ?></th>
-					<th class="tcr" scope="col"><?php echo __('Results actions head') ?></th>
+					<th class="tcl" scope="col"><?php _e('Results username head') ?></th>
+					<th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
+					<th class="tc3" scope="col"><?php _e('Results title head') ?></th>
+					<th class="tc4" scope="col"><?php _e('Results posts head') ?></th>
+					<th class="tc5" scope="col"><?php _e('Results admin note head') ?></th>
+					<th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -65,7 +65,7 @@ if (!defined('FEATHER')) {
 				<tr>
 					<td class="tcl"><?php echo feather_escape($cur_poster['poster']) ?></td>
 					<td class="tc2">&#160;</td>
-					<td class="tc3"><?php echo __('Results guest') ?></td>
+					<td class="tc3"><?php _e('Results guest') ?></td>
 					<td class="tc4">&#160;</td>
 					<td class="tc5">&#160;</td>
 					<td class="tcr">&#160;</td>
@@ -91,9 +91,9 @@ if (!defined('FEATHER')) {
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/') ?>"><?php echo __('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo __('Users') ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Results head') ?></strong></li>
+			<li><a href="<?php echo get_link('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>
 	</div>

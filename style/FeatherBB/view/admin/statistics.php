@@ -14,21 +14,21 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="block">
-		<h2><span><?php echo __('Server statistics head') ?></span></h2>
+		<h2><span><?php _e('Server statistics head') ?></span></h2>
 		<div id="adstats" class="box">
 			<div class="inbox">
 				<dl>
-					<dt><?php echo __('Server load label') ?></dt>
+					<dt><?php _e('Server load label') ?></dt>
 					<dd>
 						<?php printf(__('Server load data')."\n", $server_load, $num_online) ?>
 					</dd>
-<?php if ($feather->user->g_id == FEATHER_ADMIN): ?>					<dt><?php echo __('Environment label') ?></dt>
+<?php if ($feather->user->g_id == FEATHER_ADMIN): ?>					<dt><?php _e('Environment label') ?></dt>
 					<dd>
 						<?php printf(__('Environment data OS'), PHP_OS) ?><br />
 						<?php printf(__('Environment data version'), phpversion(), '<a href="'.get_link('admin/phpinfo/').'">'.__('Show info').'</a>') ?><br />
 						<?php printf(__('Environment data acc')."\n", $php_accelerator) ?>
 					</dd>
-					<dt><?php echo __('Database label') ?></dt>
+					<dt><?php _e('Database label') ?></dt>
 					<dd>
 <?php if (isset($total_records) && isset($total_size)): ?>						<?php printf(__('Database data rows')."\n", forum_number_format($total_records)) ?>
 						<br /><?php printf(__('Database data size')."\n", $total_size) ?>

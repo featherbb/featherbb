@@ -9,7 +9,7 @@
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo __('lang_identifier') ?>" lang="<?php echo __('lang_identifier') ?>" dir="<?php echo __('lang_direction') ?>">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php _e('lang_identifier') ?>" lang="<?php _e('lang_identifier') ?>" dir="<?php _e('lang_direction') ?>">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo generate_page_title($page_title, $p) ?></title>
@@ -55,7 +55,7 @@ function process_form(the_form)
 			var elem = the_form.elements[i];
 			if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
 			{
-				alert('"' + required_fields[elem.name] + '" <?php echo __('required field') ?>');
+				alert('"' + required_fields[elem.name] + '" <?php _e('required field') ?>');
 				elem.focus();
 				return false;
 			}
@@ -92,7 +92,7 @@ endif;
 
 <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
 <div id="announce" class="block">
-    <div class="hd"><h2><span><?php echo __('Announcement') ?></span></h2></div>
+    <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
     <div class="box">
         <div id="announce-block" class="inbox">
             <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
@@ -104,7 +104,7 @@ endif;
 <?php if (isset($flash['message'])) : ?>
 <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
 <div id="msgflash" class="block">
-    <h2><span><?php echo __('Info') ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
+    <h2><span><?php _e('Info') ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
     <div class="box">
         <div class="inbox">
             <p><?php echo feather_escape($flash['message']) ?></p>

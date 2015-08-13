@@ -15,27 +15,27 @@ if (!defined('FEATHER')) {
 ?>
 <div id="adminconsole" class="block2col">
 	<div id="adminmenu" class="blockmenu">
-		<h2><span><?php echo __('Moderator menu') ?></span></h2>
+		<h2><span><?php _e('Moderator menu') ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<ul>
 					<li<?php if ($page == 'index') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/') ?>"><?php echo __('Index') ?></a></li>
+    ?>><a href="<?php echo get_link('admin/') ?>"><?php _e('Index') ?></a></li>
 					<li<?php if ($page == 'users') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/users/') ?>"><?php echo __('Users') ?></a></li>
+    ?>><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
 <?php if ($is_admin || $feather->user->g_mod_ban_users == '1'): ?>					<li<?php if ($page == 'bans') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php echo __('Bans') ?></a></li>
+    ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
 <?php endif;
     if ($is_admin || $feather_config['o_report_method'] == '0' || $feather_config['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php echo __('Reports') ?></a></li>
+    ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php _e('Reports') ?></a></li>
 <?php endif;
     ?>				</ul>
 			</div>
@@ -44,42 +44,42 @@ if (!defined('FEATHER')) {
 
     if ($is_admin) {
         ?>
-		<h2 class="block2"><span><?php echo __('Admin menu') ?></span></h2>
+		<h2 class="block2"><span><?php _e('Admin menu') ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<ul>
 					<li<?php if ($page == 'options') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/options/') ?>"><?php echo __('Options') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/options/') ?>"><?php _e('Options') ?></a></li>
 					<li<?php if ($page == 'permissions') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/permissions/') ?>"><?php echo __('Permissions') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/permissions/') ?>"><?php _e('Permissions') ?></a></li>
 					<li<?php if ($page == 'categories') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/categories/') ?>"><?php echo __('Categories') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/categories/') ?>"><?php _e('Categories') ?></a></li>
 					<li<?php if ($page == 'forums') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/forums/') ?>"><?php echo __('Forums') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/forums/') ?>"><?php _e('Forums') ?></a></li>
 					<li<?php if ($page == 'groups') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/groups/') ?>"><?php echo __('User groups') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/groups/') ?>"><?php _e('User groups') ?></a></li>
 					<li<?php if ($page == 'censoring') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/censoring/') ?>"><?php echo __('Censoring') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/censoring/') ?>"><?php _e('Censoring') ?></a></li>
 					<li<?php if ($page == 'parser') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/parser/') ?>"><?php echo __('Parser') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/parser/') ?>"><?php _e('Parser') ?></a></li>
 					<li<?php if ($page == 'maintenance') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/maintenance/') ?>"><?php echo __('Maintenance') ?></a></li>
+        ?>><a href="<?php echo get_link('admin/maintenance/') ?>"><?php _e('Maintenance') ?></a></li>
 				</ul>
 			</div>
 		</div>
@@ -90,7 +90,7 @@ if (!defined('FEATHER')) {
     // Did we find any plugins?
     if (!empty($plugins)) {
         ?>
-		<h2 class="block2"><span><?php echo __('Plugins menu') ?></span></h2>
+		<h2 class="block2"><span><?php _e('Plugins menu') ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<ul>

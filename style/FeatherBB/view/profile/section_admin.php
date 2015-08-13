@@ -25,9 +25,9 @@ if (!defined('FEATHER')) {
 
         if ($feather->user->g_moderator == '1') {
             ?>
-						<legend><?php echo __('Delete ban legend') ?></legend>
+						<legend><?php _e('Delete ban legend') ?></legend>
 						<div class="infldset">
-							<p><input type="submit" name="ban" value="<?php echo __('Ban user') ?>" /></p>
+							<p><input type="submit" name="ban" value="<?php _e('Ban user') ?>" /></p>
 						</div>
 					</fieldset>
 				</div>
@@ -36,12 +36,12 @@ if (!defined('FEATHER')) {
         } else {
             if ($feather->user->id != $id) {
                 ?>
-						<legend><?php echo __('Group membership legend') ?></legend>
+						<legend><?php _e('Group membership legend') ?></legend>
 						<div class="infldset">
 							<select id="group_id" name="group_id">
                                                             <?php echo $group_list ?>
 							</select>
-							<input type="submit" name="update_group_membership" value="<?php echo __('Save') ?>" />
+							<input type="submit" name="update_group_membership" value="<?php _e('Save') ?>" />
 						</div>
 					</fieldset>
 				</div>
@@ -52,9 +52,9 @@ if (!defined('FEATHER')) {
             }
 
             ?>
-						<legend><?php echo __('Delete ban legend') ?></legend>
+						<legend><?php _e('Delete ban legend') ?></legend>
 						<div class="infldset">
-							<input type="submit" name="delete_user" value="<?php echo __('Delete user') ?>" /> <input type="submit" name="ban" value="<?php echo __('Ban user') ?>" />
+							<input type="submit" name="delete_user" value="<?php _e('Delete user') ?>" /> <input type="submit" name="ban" value="<?php _e('Ban user') ?>" />
 						</div>
 					</fieldset>
 				</div>
@@ -64,13 +64,13 @@ if (!defined('FEATHER')) {
                 ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Set mods legend') ?></legend>
+						<legend><?php _e('Set mods legend') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Moderator in info') ?></p>
+							<p><?php _e('Moderator in info') ?></p>
                                                         <?php echo $forum_list ?>
 								</div>
 							</div>
-							<br class="clearb" /><input type="submit" name="update_forums" value="<?php echo __('Update forums') ?>" />
+							<br class="clearb" /><input type="submit" name="update_forums" value="<?php _e('Update forums') ?>" />
 						</div>
 					</fieldset>
 				</div>

@@ -14,50 +14,50 @@ if (!defined('FEATHER')) {
 ?>
 
 <div class="blockform">
-	<h2><span><?php echo __('User search') ?></span></h2>
+	<h2><span><?php _e('User search') ?></span></h2>
 	<div class="box">
 		<form id="userlist" method="get" action="">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('User find legend') ?></legend>
+					<legend><?php _e('User find legend') ?></legend>
 					<div class="infldset">
-<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php echo __('Username') ?><br /><input type="text" name="username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
-<?php endif; ?>						<label class="conl"><?php echo __('User group')."\n" ?>
+<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php endif; ?>						<label class="conl"><?php _e('User group')."\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == -1) {
     echo ' selected="selected"';
-} ?>><?php echo __('All users') ?></option>
+} ?>><?php _e('All users') ?></option>
 <?php echo $dropdown_menu ?>
 						</select>
 						<br /></label>
-						<label class="conl"><?php echo __('Sort by')."\n" ?>
+						<label class="conl"><?php _e('Sort by')."\n" ?>
 						<br /><select name="sort_by">
 							<option value="username"<?php if ($sort_by == 'username') {
     echo ' selected="selected"';
-} ?>><?php echo __('Username') ?></option>
+} ?>><?php _e('Username') ?></option>
 							<option value="registered"<?php if ($sort_by == 'registered') {
     echo ' selected="selected"';
-} ?>><?php echo __('Registered') ?></option>
+} ?>><?php _e('Registered') ?></option>
 <?php if ($show_post_count): ?>							<option value="num_posts"<?php if ($sort_by == 'num_posts') {
     echo ' selected="selected"';
-} ?>><?php echo __('No of posts') ?></option>
+} ?>><?php _e('No of posts') ?></option>
 <?php endif; ?>						</select>
 						<br /></label>
-						<label class="conl"><?php echo __('Sort order')."\n" ?>
+						<label class="conl"><?php _e('Sort order')."\n" ?>
 						<br /><select name="sort_dir">
 							<option value="ASC"<?php if ($sort_dir == 'ASC') {
     echo ' selected="selected"';
-} ?>><?php echo __('Ascending') ?></option>
+} ?>><?php _e('Ascending') ?></option>
 							<option value="DESC"<?php if ($sort_dir == 'DESC') {
     echo ' selected="selected"';
-} ?>><?php echo __('Descending') ?></option>
+} ?>><?php _e('Descending') ?></option>
 						</select>
 						<br /></label>
 						<p class="clearb"><?php echo($feather->user->g_search_users == '1' ? __('User search info').' ' : '').__('User sort info'); ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="search" value="<?php echo __('Submit') ?>" accesskey="s" /></p>
+			<p class="buttons"><input type="submit" name="search" value="<?php _e('Submit') ?>" accesskey="s" /></p>
 		</form>
 	</div>
 </div>
@@ -70,16 +70,16 @@ if (!defined('FEATHER')) {
 </div>
 
 <div id="users1" class="blocktable">
-	<h2><span><?php echo __('User list') ?></span></h2>
+	<h2><span><?php _e('User list') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Username') ?></th>
-					<th class="tc2" scope="col"><?php echo __('Title') ?></th>
-<?php if ($show_post_count): ?>					<th class="tc3" scope="col"><?php echo __('Posts') ?></th>
-<?php endif; ?>					<th class="tcr" scope="col"><?php echo __('Registered') ?></th>
+					<th class="tcl" scope="col"><?php _e('Username') ?></th>
+					<th class="tc2" scope="col"><?php _e('Title') ?></th>
+<?php if ($show_post_count): ?>					<th class="tc3" scope="col"><?php _e('Posts') ?></th>
+<?php endif; ?>					<th class="tcr" scope="col"><?php _e('Registered') ?></th>
 				</tr>
 			</thead>
 			<tbody>

@@ -20,18 +20,18 @@ if (!defined('FEATHER')) {
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Personal details legend') ?></legend>
+					<legend><?php _e('Personal details legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label><?php echo __('Realname') ?><br /><input type="text" name="form_realname" value="<?php echo feather_escape($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
+						<label><?php _e('Realname') ?><br /><input type="text" name="form_realname" value="<?php echo feather_escape($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
 <?php if (isset($title_field)): ?>							<?php echo $title_field ?>
-<?php endif; ?>							<label><?php echo __('Location') ?><br /><input type="text" name="form_location" value="<?php echo feather_escape($user['location']) ?>" size="30" maxlength="30" /><br /></label>
-<?php if ($feather->user->g_post_links == '1' || $feather->user->g_id == FEATHER_ADMIN) : ?>							<label><?php echo __('Website') ?><br /><input type="text" name="form_url" value="<?php echo feather_escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
+<?php endif; ?>							<label><?php _e('Location') ?><br /><input type="text" name="form_location" value="<?php echo feather_escape($user['location']) ?>" size="30" maxlength="30" /><br /></label>
+<?php if ($feather->user->g_post_links == '1' || $feather->user->g_id == FEATHER_ADMIN) : ?>							<label><?php _e('Website') ?><br /><input type="text" name="form_url" value="<?php echo feather_escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <?php echo __('Instructions') ?></p>
+			<p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
 		</form>
 	</div>
 </div>

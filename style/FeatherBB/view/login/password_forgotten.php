@@ -16,10 +16,10 @@ if (!defined('FEATHER')) {
 if (!empty($errors)) {
     ?>
 <div id="posterror" class="block">
-	<h2><span><?php echo __('New password errors') ?></span></h2>
+	<h2><span><?php _e('New password errors') ?></span></h2>
 	<div class="box">
 		<div class="inbox error-info">
-			<p><?php echo __('New passworderrors info') ?></p>
+			<p><?php _e('New passworderrors info') ?></p>
 			<ul class="error-list">
 <?php
 
@@ -37,21 +37,21 @@ if (!empty($errors)) {
 }
 ?>
 <div class="blockform">
-	<h2><span><?php echo __('Request pass') ?></span></h2>
+	<h2><span><?php _e('Request pass') ?></span></h2>
 	<div class="box">
 		<form id="request_pass" method="post" action="<?php echo get_link('login/action/forget/') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Request pass legend') ?></legend>
+					<legend><?php _e('Request pass legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<label class="required"><strong><?php echo __('Email') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" /><br /></label>
-						<p><?php echo __('Request pass info') ?></p>
+						<label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" /><br /></label>
+						<p><?php _e('Request pass info') ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="request_pass" value="<?php echo __('Submit') ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a><?php endif; ?></p>
+			<p class="buttons"><input type="submit" name="request_pass" value="<?php _e('Submit') ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a><?php endif; ?></p>
 		</form>
 	</div>
 </div>

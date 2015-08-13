@@ -14,17 +14,17 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo __('Add groups head') ?></span></h2>
+		<h2><span><?php _e('Add groups head') ?></span></h2>
 		<div class="box">
 				<div class="inform">
 					<fieldset>
                         <form id="groups" method="post" action="<?php echo get_link('admin/groups/add/') ?>">
                         <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-						<legend><?php echo __('Add group subhead') ?></legend>
+						<legend><?php _e('Add group subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo __('New group label') ?><div><input type="submit" name="add_group" value="<?php echo __('Add') ?>" tabindex="2" /></div></th>
+									<th scope="row"><?php _e('New group label') ?><div><input type="submit" name="add_group" value="<?php _e('Add') ?>" tabindex="2" /></div></th>
 									<td>
 										<select id="base_group" name="base_group" tabindex="1">
 <?php
@@ -41,7 +41,7 @@ foreach ($groups as $cur_group) {
 
 ?>
 										</select>
-										<span><?php echo __('New group help') ?></span>
+										<span><?php _e('New group help') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -53,11 +53,11 @@ foreach ($groups as $cur_group) {
 					<fieldset>
                         <form id="groups" method="post" action="<?php echo get_link('admin/groups/') ?>">
                         	<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-						<legend><?php echo __('Default group subhead') ?></legend>
+						<legend><?php _e('Default group subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo __('Default group label') ?><div><input type="submit" name="set_default_group" value="<?php echo __('Save') ?>" tabindex="4" /></div></th>
+									<th scope="row"><?php _e('Default group label') ?><div><input type="submit" name="set_default_group" value="<?php _e('Save') ?>" tabindex="4" /></div></th>
 									<td>
 										<select id="default_group" name="default_group" tabindex="3">
 <?php
@@ -74,7 +74,7 @@ foreach ($groups as $cur_group) {
 
 ?>
 										</select>
-										<span><?php echo __('Default group help') ?></span>
+										<span><?php _e('Default group help') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -84,14 +84,14 @@ foreach ($groups as $cur_group) {
 				</div>
 		</div>
 
-		<h2 class="block2"><span><?php echo __('Existing groups head') ?></span></h2>
+		<h2 class="block2"><span><?php _e('Existing groups head') ?></span></h2>
 		<div class="box">
 			<div class="fakeform">
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Edit groups subhead') ?></legend>
+						<legend><?php _e('Edit groups subhead') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Edit groups info') ?></p>
+							<p><?php _e('Edit groups info') ?></p>
 							<table>
 <?php
 foreach ($groups as $cur_group) {

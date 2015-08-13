@@ -351,22 +351,22 @@ if (!isset($_POST['form_sent']) || !empty($alerts)) {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo __('FeatherBB Installation') ?></title>
+<title><?php _e('FeatherBB Installation') ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 <script type="text/javascript">
 /* <![CDATA[ */
 function process_form(the_form)
 {
 	var required_fields = {
-		"req_db_type": "<?php echo __('Database type') ?>",
-		"req_db_host": "<?php echo __('Database server hostname') ?>",
-		"req_db_name": "<?php echo __('Database name') ?>",
-		"req_username": "<?php echo __('Administrator username') ?>",
-		"req_password1": "<?php echo __('Password') ?>",
-		"req_password2": "<?php echo __('Confirm password') ?>",
-		"req_email": "<?php echo __('Administrator email') ?>",
-		"req_title": "<?php echo __('Board title') ?>",
-		"req_base_url": "<?php echo __('Base URL') ?>"
+		"req_db_type": "<?php _e('Database type') ?>",
+		"req_db_host": "<?php _e('Database server hostname') ?>",
+		"req_db_name": "<?php _e('Database name') ?>",
+		"req_username": "<?php _e('Administrator username') ?>",
+		"req_password1": "<?php _e('Password') ?>",
+		"req_password2": "<?php _e('Confirm password') ?>",
+		"req_email": "<?php _e('Administrator email') ?>",
+		"req_title": "<?php _e('Board title') ?>",
+		"req_base_url": "<?php _e('Base URL') ?>"
 	};
 	if (document.all || document.getElementById)
 	{
@@ -375,7 +375,7 @@ function process_form(the_form)
 			var elem = the_form.elements[i];
 			if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
 			{
-				alert('"' + required_fields[elem.name] + '" <?php echo __('Required field') ?>');
+				alert('"' + required_fields[elem.name] + '" <?php _e('Required field') ?>');
 				elem.focus();
 				return false;
 			}
@@ -396,8 +396,8 @@ function process_form(the_form)
 	<div id="brdheader" class="block">
 		<div class="box">
 			<div id="brdtitle" class="inbox">
-				<h1><span><?php echo __('FeatherBB Installation') ?></span></h1>
-				<div id="brddesc"><p><?php echo __('Welcome') ?></p></div>
+				<h1><span><?php _e('FeatherBB Installation') ?></span></h1>
+				<div id="brddesc"><p><?php _e('Welcome') ?></p></div>
 			</div>
 		</div>
 	</div>
@@ -406,15 +406,15 @@ function process_form(the_form)
 <section class="container">
 	<div id="brdmain">
 	<?php if (count($languages) > 1): ?><div class="blockform">
-		<h2><span><?php echo __('Choose install language') ?></span></h2>
+		<h2><span><?php _e('Choose install language') ?></span></h2>
 		<div class="box">
 			<form id="install" method="post" action="">
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Install language') ?></legend>
+						<legend><?php _e('Install language') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Choose install language info') ?></p>
-							<label><strong><?php echo __('Install language') ?></strong>
+							<p><?php _e('Choose install language info') ?></p>
+							<label><strong><?php _e('Install language') ?></strong>
 							<br /><select name="install_lang">
 <?php
 
@@ -432,7 +432,7 @@ function process_form(the_form)
 						</div>
 					</fieldset>
 				</div>
-				<p class="buttons"><input type="submit" name="start" value="<?php echo __('Change language') ?>" /></p>
+				<p class="buttons"><input type="submit" name="start" value="<?php _e('Change language') ?>" /></p>
 			</form>
 		</div>
 	</div>
@@ -446,7 +446,7 @@ function process_form(the_form)
 			<div><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo feather_escape($install_lang) ?>" /></div>
 				<div class="inform">
 	<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
-						<h3><?php echo __('Errors') ?></h3>
+						<h3><?php _e('Errors') ?></h3>
 						<ul class="error-list">
 <?php
 
@@ -460,14 +460,14 @@ function process_form(the_form)
     ?>			</div>
 				<div class="inform">
 					<div class="forminfo">
-						<h3><?php echo __('Database setup') ?></h3>
-						<p><?php echo __('Info 1') ?></p>
+						<h3><?php _e('Database setup') ?></h3>
+						<p><?php _e('Info 1') ?></p>
 					</div>
 					<fieldset>
-					<legend><?php echo __('Select database') ?></legend>
+					<legend><?php _e('Select database') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 2') ?></p>
-							<label class="required"><strong><?php echo __('Database type') ?> <span><?php echo __('Required') ?></span></strong>
+							<p><?php _e('Info 2') ?></p>
+							<label class="required"><strong><?php _e('Database type') ?> <span><?php _e('Required') ?></span></strong>
 							<br /><select name="req_db_type">
 <?php
 
@@ -487,71 +487,71 @@ function process_form(the_form)
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database hostname') ?></legend>
+						<legend><?php _e('Database hostname') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 3') ?></p>
-							<label class="required"><strong><?php echo __('Database server hostname') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo feather_escape($db_host) ?>" size="50" /><br /></label>
+							<p><?php _e('Info 3') ?></p>
+							<label class="required"><strong><?php _e('Database server hostname') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_db_host" value="<?php echo feather_escape($db_host) ?>" size="50" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database enter name') ?></legend>
+						<legend><?php _e('Database enter name') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 4') ?></p>
-							<label class="required"><strong><?php echo __('Database name') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo feather_escape($db_name) ?>" size="30" /><br /></label>
+							<p><?php _e('Info 4') ?></p>
+							<label class="required"><strong><?php _e('Database name') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_db_name" type="text" name="req_db_name" value="<?php echo feather_escape($db_name) ?>" size="30" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database enter informations') ?></legend>
+						<legend><?php _e('Database enter informations') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 5') ?></p>
-							<label class="conl"><?php echo __('Database username') ?><br /><input type="text" name="db_username" value="<?php echo feather_escape($db_username) ?>" size="30" /><br /></label>
-							<label class="conl"><?php echo __('Database password') ?><br /><input type="password" name="db_password" size="30" /><br /></label>
+							<p><?php _e('Info 5') ?></p>
+							<label class="conl"><?php _e('Database username') ?><br /><input type="text" name="db_username" value="<?php echo feather_escape($db_username) ?>" size="30" /><br /></label>
+							<label class="conl"><?php _e('Database password') ?><br /><input type="password" name="db_password" size="30" /><br /></label>
 							<div class="clearer"></div>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo __('Database enter prefix') ?></legend>
+						<legend><?php _e('Database enter prefix') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 6') ?></p>
-							<label><?php echo __('Table prefix') ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo feather_escape($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
+							<p><?php _e('Info 6') ?></p>
+							<label><?php _e('Table prefix') ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo feather_escape($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<div class="forminfo">
-						<h3><?php echo __('Administration setup') ?></h3>
-						<p><?php echo __('Info 7') ?></p>
+						<h3><?php _e('Administration setup') ?></h3>
+						<p><?php _e('Info 7') ?></p>
 					</div>
 					<fieldset>
-						<legend><?php echo __('Administration setup') ?></legend>
+						<legend><?php _e('Administration setup') ?></legend>
 						<div class="infldset">
-							<p><?php echo __('Info 8') ?></p>
-							<label class="required"><strong><?php echo __('Administrator username') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
-							<label class="conl required"><strong><?php echo __('Password') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
-							<label class="conl required"><strong><?php echo __('Confirm password') ?> <span><?php echo __('Required') ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
+							<p><?php _e('Info 8') ?></p>
+							<label class="required"><strong><?php _e('Administrator username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php echo feather_escape($username) ?>" size="25" maxlength="25" /><br /></label>
+							<label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
+							<label class="conl required"><strong><?php _e('Confirm password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
 							<div class="clearer"></div>
-							<label class="required"><strong><?php echo __('Administrator email') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo feather_escape($email) ?>" size="50" maxlength="80" /><br /></label>
+							<label class="required"><strong><?php _e('Administrator email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo feather_escape($email) ?>" size="50" maxlength="80" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
 				<div class="inform">
 					<div class="forminfo">
-						<h3><?php echo __('Board setup') ?></h3>
-						<p><?php echo __('Info 11') ?></p>
+						<h3><?php _e('Board setup') ?></h3>
+						<p><?php _e('Info 11') ?></p>
 					</div>
 					<fieldset>
-						<legend><?php echo __('General information') ?></legend>
+						<legend><?php _e('General information') ?></legend>
 						<div class="infldset">
-							<label class="required"><strong><?php echo __('Board title') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo feather_escape($title) ?>" size="60" maxlength="255" /><br /></label>
-							<label><?php echo __('Board description') ?><br /><input id="desc" type="text" name="desc" value="<?php echo feather_escape($description) ?>" size="60" maxlength="255" /><br /></label>
-							<label class="required"><strong><?php echo __('Base URL') ?> <span><?php echo __('Required') ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo feather_escape($base_url) ?>" size="60" maxlength="100" /><br /></label>
-							<label class="required"><strong><?php echo __('Default language') ?> <span><?php echo __('Required') ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
+							<label class="required"><strong><?php _e('Board title') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_title" type="text" name="req_title" value="<?php echo feather_escape($title) ?>" size="60" maxlength="255" /><br /></label>
+							<label><?php _e('Board description') ?><br /><input id="desc" type="text" name="desc" value="<?php echo feather_escape($description) ?>" size="60" maxlength="255" /><br /></label>
+							<label class="required"><strong><?php _e('Base URL') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_base_url" type="text" name="req_base_url" value="<?php echo feather_escape($base_url) ?>" size="60" maxlength="100" /><br /></label>
+							<label class="required"><strong><?php _e('Default language') ?> <span><?php _e('Required') ?></span></strong><br /><select id="req_default_lang" name="req_default_lang">
 <?php
 
             $languages = forum_list_langs();
@@ -568,7 +568,7 @@ function process_form(the_form)
 						</div>
 					</fieldset>
 				</div>
-				<p class="buttons"><input type="submit" name="start" value="<?php echo __('Start install') ?>" /></p>
+				<p class="buttons"><input type="submit" name="start" value="<?php _e('Start install') ?>" /></p>
 			</form>
 		</div>
 	</div>
@@ -1770,7 +1770,7 @@ function process_form(the_form)
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo __('FeatherBB Installation') ?></title>
+<title><?php _e('FeatherBB Installation') ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
@@ -1783,8 +1783,8 @@ function process_form(the_form)
     <div id="brdheader" class="block">
             <div class="box">
                     <div id="brdtitle" class="inbox">
-                            <h1><span><?php echo __('FeatherBB Installation') ?></span></h1>
-                            <div id="brddesc"><p><?php echo __('FeatherBB has been installed') ?></p></div>
+                            <h1><span><?php _e('FeatherBB Installation') ?></span></h1>
+                            <div id="brddesc"><p><?php _e('FeatherBB has been installed') ?></p></div>
                     </div>
             </div>
     </div>
@@ -1792,7 +1792,7 @@ function process_form(the_form)
     <div id="brdmain">
 
     <div class="blockform">
-            <h2><span><?php echo __('Final instructions') ?></span></h2>
+            <h2><span><?php _e('Final instructions') ?></span></h2>
             <div class="box">
     <?php
 
@@ -1801,8 +1801,8 @@ function process_form(the_form)
                     <form method="post" action="">
                             <div class="inform">
                                     <div class="forminfo">
-                                            <p><?php echo __('Info 17') ?></p>
-                                            <p><?php echo __('Info 18') ?></p>
+                                            <p><?php _e('Info 17') ?></p>
+                                            <p><?php _e('Info 18') ?></p>
                                     </div>
                                     <input type="hidden" name="generate_config" value="1" />
                                     <input type="hidden" name="db_type" value="<?php echo $db_type;
@@ -1834,7 +1834,7 @@ function process_form(the_form)
                                     </div>
     <?php endif;
         ?>			</div>
-                            <p class="buttons"><input type="submit" value="<?php echo __('Download config.php file') ?>" /></p>
+                            <p class="buttons"><input type="submit" value="<?php _e('Download config.php file') ?>" /></p>
                     </form>
 
     <?php
@@ -1844,7 +1844,7 @@ function process_form(the_form)
                     <div class="fakeform">
                             <div class="inform">
                                     <div class="forminfo">
-                                            <p><?php echo __('FeatherBB fully installed') ?></p>
+                                            <p><?php _e('FeatherBB fully installed') ?></p>
                                     </div>
                             </div>
                     </div>

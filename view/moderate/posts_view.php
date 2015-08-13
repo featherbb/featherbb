@@ -16,10 +16,10 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php echo __('Index') ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$fid.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Moderate') ?></strong></li>
+			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -53,7 +53,7 @@ foreach ($post_data as $post) {
 						</dl>
 					</div>
 					<div class="postright">
-						<h3 class="nosize"><?php echo __('Message') ?></h3>
+						<h3 class="nosize"><?php _e('Message') ?></h3>
 						<div class="postmsg">
 							<?php echo $post['message']."\n" ?>
 	<?php if ($post['edited'] != '') {
@@ -80,14 +80,14 @@ foreach ($post_data as $post) {
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
-			<p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php echo __('Split') ?>"<?php echo $button_status ?> /> <input type="submit" name="delete_posts" value="<?php echo __('Delete') ?>"<?php echo $button_status ?> /></p>
+			<p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php _e('Split') ?>"<?php echo $button_status ?> /> <input type="submit" name="delete_posts" value="<?php _e('Delete') ?>"<?php echo $button_status ?> /></p>
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php echo __('Index') ?></a></li>
+			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$fid.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo __('Moderate') ?></strong></li>
+			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>
 	</div>

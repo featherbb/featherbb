@@ -30,9 +30,9 @@ if (!defined('FEATHER')) {
         ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Style legend') ?></legend>
+					<legend><?php _e('Style legend') ?></legend>
 					<div class="infldset">
-						<label><?php echo __('Styles') ?><br />
+						<label><?php _e('Styles') ?><br />
 						<select name="form_style">
 <?php
 
@@ -58,25 +58,25 @@ if (!defined('FEATHER')) {
 <?php if ($feather_config['o_smilies'] == '1' || $feather_config['o_smilies_sig'] == '1' || $feather_config['o_signatures'] == '1' || $feather_config['o_avatars'] == '1' || ($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1')): ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Post display legend') ?></legend>
+					<legend><?php _e('Post display legend') ?></legend>
 					<div class="infldset">
-						<p><?php echo __('Post display info') ?></p>
+						<p><?php _e('Post display info') ?></p>
 						<div class="rbox">
 <?php if ($feather_config['o_smilies'] == '1' || $feather_config['o_smilies_sig'] == '1'): ?>								<label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
     echo ' checked="checked"';
-} ?> /><?php echo __('Show smilies') ?><br /></label>
+} ?> /><?php _e('Show smilies') ?><br /></label>
 <?php endif; if ($feather_config['o_signatures'] == '1'): ?>								<label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {
     echo ' checked="checked"';
-} ?> /><?php echo __('Show sigs') ?><br /></label>
+} ?> /><?php _e('Show sigs') ?><br /></label>
 <?php endif; if ($feather_config['o_avatars'] == '1'): ?>								<label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {
     echo ' checked="checked"';
-} ?> /><?php echo __('Show avatars') ?><br /></label>
+} ?> /><?php _e('Show avatars') ?><br /></label>
 <?php endif; if ($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img" value="1"<?php if ($user['show_img'] == '1') {
     echo ' checked="checked"';
-} ?> /><?php echo __('Show images') ?><br /></label>
+} ?> /><?php _e('Show images') ?><br /></label>
 <?php endif; if ($feather_config['o_signatures'] == '1' && $feather_config['p_sig_bbcode'] == '1' && $feather_config['p_sig_img_tag'] == '1'): ?>								<label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user['show_img_sig'] == '1') {
     echo ' checked="checked"';
-} ?> /><?php echo __('Show images sigs') ?><br /></label>
+} ?> /><?php _e('Show images sigs') ?><br /></label>
 <?php endif; ?>
 						</div>
 					</div>
@@ -85,15 +85,15 @@ if (!defined('FEATHER')) {
 <?php endif; ?>
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Pagination legend') ?></legend>
+					<legend><?php _e('Pagination legend') ?></legend>
 					<div class="infldset">
-						<label class="conl"><?php echo __('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?php echo $user['disp_topics'] ?>" size="6" maxlength="2" /><br /></label>
-						<label class="conl"><?php echo __('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?php echo $user['disp_posts'] ?>" size="6" maxlength="2" /><br /></label>
-						<p class="clearb"><?php echo __('Paginate info') ?> <?php echo __('Leave blank') ?></p>
+						<label class="conl"><?php _e('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?php echo $user['disp_topics'] ?>" size="6" maxlength="2" /><br /></label>
+						<label class="conl"><?php _e('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?php echo $user['disp_posts'] ?>" size="6" maxlength="2" /><br /></label>
+						<p class="clearb"><?php _e('Paginate info') ?> <?php _e('Leave blank') ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <?php echo __('Instructions') ?></p>
+			<p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
 		</form>
 	</div>
 </div>

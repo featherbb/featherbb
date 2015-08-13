@@ -14,22 +14,22 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo __('Upload avatar') ?></span></h2>
+	<h2><span><?php _e('Upload avatar') ?></span></h2>
 	<div class="box">
 		<form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?php echo get_link('user/'.$id.'/action/upload_avatar2/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo __('Upload avatar legend') ?></legend>
+					<legend><?php _e('Upload avatar legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather_config['o_avatars_size'] ?>" />
-						<label class="required"><strong><?php echo __('File') ?> <span><?php echo __('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-						<p><?php echo __('Avatar desc').' '.$feather_config['o_avatars_width'].' x '.$feather_config['o_avatars_height'].' '.__('pixels').' '.__('and').' '.forum_number_format($feather_config['o_avatars_size']).' '.__('bytes').' ('.file_size($feather_config['o_avatars_size']).').' ?></p>
+						<label class="required"><strong><?php _e('File') ?> <span><?php _e('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
+						<p><?php _e('Avatar desc').' '.$feather_config['o_avatars_width'].' x '.$feather_config['o_avatars_height'].' '.__('pixels').' '.__('and').' '.forum_number_format($feather_config['o_avatars_size']).' '.__('bytes').' ('.file_size($feather_config['o_avatars_size']).').' ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="upload" value="<?php echo __('Upload') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="upload" value="<?php _e('Upload') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

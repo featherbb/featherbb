@@ -13,7 +13,7 @@ if (!defined('FEATHER')) {
 }
 
 if (empty($index_data)): ?>
-    <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo __('Empty board') ?></p></div></div></div>
+    <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php _e('Empty board') ?></p></div></div></div>
 <?php endif;
 foreach ($index_data as $forum) {
     if ($forum->cid != $cur_cat) :
@@ -33,10 +33,10 @@ foreach ($index_data as $forum) {
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo __('Forum') ?></th>
-					<th class="tc2" scope="col"><?php echo __('Topics') ?></th>
-					<th class="tc3" scope="col"><?php echo __('Posts') ?></th>
-					<th class="tcr" scope="col"><?php echo __('Last post') ?></th>
+					<th class="tcl" scope="col"><?php _e('Forum') ?></th>
+					<th class="tc2" scope="col"><?php _e('Topics') ?></th>
+					<th class="tc3" scope="col"><?php _e('Posts') ?></th>
+					<th class="tcr" scope="col"><?php _e('Last post') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -80,17 +80,17 @@ if (!empty($forum_actions)) :
 endif;
 ?>
 <div id="brdstats" class="block">
-	<h2><span><?php echo __('Board info') ?></span></h2>
+	<h2><span><?php _e('Board info') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<dl class="conr">
-				<dt><strong><?php echo __('Board stats') ?></strong></dt>
+				<dt><strong><?php _e('Board stats') ?></strong></dt>
 				<dd><span><?php printf(__('No of users'), '<strong>'.forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
 				<dd><span><?php printf(__('No of topics'), '<strong>'.forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
 				<dd><span><?php printf(__('No of posts'), '<strong>'.forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
 			</dl>
 			<dl class="conl">
-				<dt><strong><?php echo __('User info') ?></strong></dt>
+				<dt><strong><?php _e('User info') ?></strong></dt>
 				<dd><span><?php printf(__('Newest user'), $stats['newest_user']) ?></span></dd>
 				<?php if ($feather_config['o_users_online'] == 1) : ?>
 				<dd><span><?php printf(__('Users online'), '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>

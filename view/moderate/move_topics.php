@@ -22,9 +22,9 @@ if (!defined('FEATHER')) {
 			<div class="inform">
 			<input type="hidden" name="topics" value="<?php echo $topics ?>" />
 				<fieldset>
-					<legend><?php echo __('Move legend') ?></legend>
+					<legend><?php _e('Move legend') ?></legend>
 					<div class="infldset">
-						<label><?php echo __('Move to') ?>
+						<label><?php _e('Move to') ?>
 						<br /><select name="move_to_forum">
 								<?php echo $list_forums ?>
 							</optgroup>
@@ -33,12 +33,12 @@ if (!defined('FEATHER')) {
 						<div class="rbox">
 							<label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') {
     echo ' checked="checked"';
-} ?> /><?php echo __('Leave redirect') ?><br /></label>
+} ?> /><?php _e('Leave redirect') ?><br /></label>
 						</div>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="move_topics_to" value="<?php echo __('Move') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="move_topics_to" value="<?php _e('Move') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

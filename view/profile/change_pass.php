@@ -14,26 +14,26 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo __('Change pass') ?></span></h2>
+	<h2><span><?php _e('Change pass') ?></span></h2>
 	<div class="box">
 		<form id="change_pass" method="post" action="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
 				<fieldset>
-					<legend><?php echo __('Change pass legend') ?></legend>
+					<legend><?php _e('Change pass legend') ?></legend>
 					<div class="infldset">
-<?php if (!$feather->user->is_admmod): ?>						<label class="required"><strong><?php echo __('Old pass') ?> <span><?php echo __('Required') ?></span></strong><br />
+<?php if (!$feather->user->is_admmod): ?>						<label class="required"><strong><?php _e('Old pass') ?> <span><?php _e('Required') ?></span></strong><br />
 						<input type="password" name="req_old_password" size="16" /><br /></label>
-<?php endif; ?>						<label class="conl required"><strong><?php echo __('New pass') ?> <span><?php echo __('Required') ?></span></strong><br />
+<?php endif; ?>						<label class="conl required"><strong><?php _e('New pass') ?> <span><?php _e('Required') ?></span></strong><br />
 						<input type="password" name="req_new_password1" size="16" /><br /></label>
-						<label class="conl required"><strong><?php echo __('Confirm new pass') ?> <span><?php echo __('Required') ?></span></strong><br />
+						<label class="conl required"><strong><?php _e('Confirm new pass') ?> <span><?php _e('Required') ?></span></strong><br />
 						<input type="password" name="req_new_password2" size="16" /><br /></label>
-						<p class="clearb"><?php echo __('Pass info') ?></p>
+						<p class="clearb"><?php _e('Pass info') ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="update" value="<?php echo __('Submit') ?>" /> <a href="javascript:history.go(-1)"><?php echo __('Go back') ?></a></p>
+			<p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 		</form>
 	</div>
 </div>
