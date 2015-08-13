@@ -14,27 +14,28 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_censoring['Censoring head'] ?></span></h2>
+		<h2><span><?php _e('Censoring head') ?></span></h2>
 		<div class="box">
 			<form id="censoring" method="post" action="<?php echo get_link('admin/censoring/') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_censoring['Add word subhead'] ?></legend>
+						<legend><?php _e('Add word subhead') ?></legend>
 						<div class="infldset">
-							<p><?php echo $lang_admin_censoring['Add word info'].' '.($feather_config['o_censoring'] == '1' ? sprintf($lang_admin_censoring['Censoring enabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>') : sprintf($lang_admin_censoring['Censoring disabled'], '<a href="'.get_link('admin/options#censoring').'">'.$lang_admin_common['Options'].'</a>')) ?></p>
+							<p><?php _e('Add word info').' '.($feather_config['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.get_link('admin/options#censoring').'">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.get_link('admin/options#censoring').'">'.__('Options').'</a>')) ?></p>
 							<table>
 							<thead>
 								<tr>
-									<th class="tcl" scope="col"><?php echo $lang_admin_censoring['Censored word label'] ?></th>
-									<th class="tc2" scope="col"><?php echo $lang_admin_censoring['Replacement label'] ?></th>
-									<th class="hidehead" scope="col"><?php echo $lang_admin_censoring['Action label'] ?></th>
+									<th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
+									<th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
+									<th class="hidehead" scope="col"><?php _e('Action label') ?></th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60" tabindex="1" /></td>
 									<td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60" tabindex="2" /></td>
-									<td><input type="submit" name="add_word" value="<?php echo $lang_admin_common['Add'] ?>" tabindex="3" /></td>
+									<td><input type="submit" name="add_word" value="<?php _e('Add') ?>" tabindex="3" /></td>
 								</tr>
 							</tbody>
 							</table>
@@ -43,7 +44,7 @@ if (!defined('FEATHER')) {
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_censoring['Edit remove subhead'] ?></legend>
+						<legend><?php _e('Edit remove subhead') ?></legend>
 						<div class="infldset">
 <?php
 if (!empty($word_data)) {
@@ -51,16 +52,16 @@ if (!empty($word_data)) {
 							<table>
 							<thead>
 								<tr>
-									<th class="tcl" scope="col"><?php echo $lang_admin_censoring['Censored word label'] ?></th>
-									<th class="tc2" scope="col"><?php echo $lang_admin_censoring['Replacement label'] ?></th>
-									<th class="hidehead" scope="col"><?php echo $lang_admin_censoring['Action label'] ?></th>
+									<th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
+									<th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
+									<th class="hidehead" scope="col"><?php _e('Action label') ?></th>
 								</tr>
 							</thead>
 							<tbody>
 <?php
 
     foreach ($word_data as $word) {
-        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.feather_escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.feather_escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.$lang_admin_common['Update'].'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.$lang_admin_common['Remove'].'" /></td></tr>'."\n";
+        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.feather_escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.feather_escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
     }
 
     ?>
@@ -69,7 +70,7 @@ if (!empty($word_data)) {
 <?php
 
 } else {
-    echo "\t\t\t\t\t\t\t".'<p>'.$lang_admin_censoring['No words in list'].'</p>'."\n";
+    echo "\t\t\t\t\t\t\t".'<p>'.__('No words in list').'</p>'."\n";
 }
 
 ?>

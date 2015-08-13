@@ -12,26 +12,29 @@ if (!defined('FEATHER')) {
     exit;
 }
 ?>
-
+	
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_forums['Add forum head'] ?></span></h2>
+		<h2><span><?php _e('Add forum head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/forums/') ?>">
+			<form method="post" action="<?php echo get_link('admin/forums/add') ?>">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
-if ($is_forum) {
+if (!empty($forum_data)) {
     ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Create new subhead'] ?></legend>
+						<legend><?php _e('Create new subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_forums['Add forum label'] ?><div><input type="submit" name="add_forum" value="<?php echo $lang_admin_forums['Add forum'] ?>" tabindex="2" /></div></th>
+									<th scope="row"><?php _e('Add forum label') ?><div><input type="submit" value="<?php _e('Add forum') ?>" tabindex="2" /></div></th>
 									<td>
-										<select name="add_to_cat" tabindex="1">
-											<?php echo $categories_add ?>
+										<select name="cat" tabindex="1">
+											<?php  foreach ($forum_data as $cat_id => $cat_data) {
+												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'">'.feather_escape($cat_data['cat_name']).'</option>'."\n";
+											} ?>
 										</select>
-										<span><?php echo $lang_admin_forums['Add forum help'] ?></span>
+										<span><?php _e('Add forum help') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -44,9 +47,9 @@ if ($is_forum) {
     ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_common['None'] ?></legend>
+						<legend><?php _e('None') ?></legend>
 						<div class="infldset">
-							<p><?php echo $lang_admin_forums['No categories exist'] ?></p>
+							<p><?php _e('No categories exist') ?></p>
 						</div>
 					</fieldset>
 				</div>
@@ -60,62 +63,52 @@ if ($is_forum) {
 <?php
 if (!empty($forum_data)) {
     ?>
-		<h2 class="block2"><span><?php echo $lang_admin_forums['Edit forums head'] ?></span></h2>
+		<h2 class="block2"><span><?php _e('Manage forums head') ?></span></h2>
 		<div class="box">
 			<form id="edforum" method="post" action="<?php echo get_link('admin/forums/') ?>">
-				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" /></p>
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+				<p class="submittop"><input type="submit" name="update_positions" value="<?php _e('Update positions') ?>" tabindex="3" /></p>
 <?php
-    foreach ($forum_data as $forum) {
-        if ($forum['cid'] != $cur_category) {
-            // A new category since last iteration?
-
-        if ($cur_category != 0) {
-            echo "\t\t\t\t\t\t\t".'</tbody>'."\n\t\t\t\t\t\t\t".'</table>'."\n\t\t\t\t\t\t".'</div>'."\n\t\t\t\t\t".'</fieldset>'."\n\t\t\t\t".'</div>'."\n";
-        }
-
+    foreach ($forum_data as $cat_id => $cat_data) {
             ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo feather_escape($forum['cat_name']) ?></legend>
+						<legend><?php _e('Category subhead') ?> <?php echo feather_escape($cat_data['cat_name']) ?></legend>
 						<div class="infldset">
 							<table>
 							<thead>
 								<tr>
-									<th class="tcl"><?php echo $lang_admin_common['Action'] ?></th>
-									<th class="tc2"><?php echo $lang_admin_forums['Position label'] ?></th>
-									<th class="tcr"><?php echo $lang_admin_forums['Forum label'] ?></th>
+									<th class="tcl"><?php _e('Action') ?></th>
+									<th class="tc2"><?php _e('Position label') ?></th>
+									<th class="tcr"><?php _e('Forum label') ?></th>
 								</tr>
 							</thead>
 							<tbody>
 <?php
-
-        $cur_category = $forum['cid'];
-        }
-
+	foreach ($cat_data['cat_forums'] as $forum) {
         ?>
 								<tr>
-									<td class="tcl"><a href="<?php echo get_link('admin/forums/edit/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Edit link'] ?></a> | <a href="<?php echo get_link('admin/forums/delete/'.$forum['fid'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php echo $lang_admin_forums['Delete link'] ?></a></td>
-									<td class="tc2"><input type="text" name="position[<?php echo $forum['fid'] ?>]" size="3" maxlength="3" value="<?php echo $forum['disp_position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
+									<td class="tcl"><a href="<?php echo get_link('admin/forums/edit/'.$forum['forum_id'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Edit link') ?></a> | <a href="<?php echo get_link('admin/forums/delete/'.$forum['forum_id'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Delete link') ?></a></td>
+									<td class="tc2"><input type="text" name="position[<?php echo $forum['forum_id'] ?>]" size="3" maxlength="3" value="<?php echo $forum['position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
 									<td class="tcr"><strong><?php echo feather_escape($forum['forum_name']) ?></strong></td>
 								</tr>
 <?php
-
     }
-
     ?>
 							</tbody>
 							</table>
 						</div>
 					</fieldset>
 				</div>
-				<p class="submitend"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
+<?php
+	}
+?>
+				<p class="submitend"><input type="submit" name="update_positions" value="<?php _e('Update positions') ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
 			</form>
 		</div>
-<?php
-
-}
-
-?>
 	</div>
 	<div class="clearer"></div>
 </div>
+<?php
+	}
+?>

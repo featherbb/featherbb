@@ -16,9 +16,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/index/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
+			<li><a href="<?php echo get_link('admin/index/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
@@ -29,20 +29,21 @@ if (!defined('FEATHER')) {
 
 
 <form id="search-users-form" action="<?php echo get_link('admin/users/') ?>" method="post">
+<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <div id="users2" class="blocktable">
-	<h2><span><?php echo $lang_admin_users['Results head'] ?></span></h2>
+	<h2><span><?php _e('Results head') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_admin_users['Results username head'] ?></th>
-					<th class="tc2" scope="col"><?php echo $lang_admin_users['Results e-mail head'] ?></th>
-					<th class="tc3" scope="col"><?php echo $lang_admin_users['Results title head'] ?></th>
-					<th class="tc4" scope="col"><?php echo $lang_admin_users['Results posts head'] ?></th>
-					<th class="tc5" scope="col"><?php echo $lang_admin_users['Results admin note head'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_admin_users['Results actions head'] ?></th>
-<?php if ($can_action): ?>					<th class="tcmod" scope="col"><?php echo $lang_admin_users['Select'] ?></th>
+					<th class="tcl" scope="col"><?php _e('Results username head') ?></th>
+					<th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
+					<th class="tc3" scope="col"><?php _e('Results title head') ?></th>
+					<th class="tc4" scope="col"><?php _e('Results posts head') ?></th>
+					<th class="tc5" scope="col"><?php _e('Results admin note head') ?></th>
+					<th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
+<?php if ($can_action): ?>					<th class="tcmod" scope="col"><?php _e('Select') ?></th>
 <?php endif;
     ?>
 				</tr>
@@ -58,7 +59,7 @@ if (!defined('FEATHER')) {
 					<td class="tc3"><?php echo $user['user_title'] ?></td>
 					<td class="tc4"><?php echo forum_number_format($user['num_posts']) ?></td>
 					<td class="tc5"><?php echo($user['admin_note'] != '') ? feather_escape($user['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$user['id'].'/').'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.$lang_admin_users['Results show posts link'].'</a>' ?></td>
+					<td class="tcr"><?php echo '<a href="'.get_link('admin/users/ip-stats/id/'.$user['id'].'/').'">'.__('Results view IP link').'</a> | <a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Results show posts link').'</a>' ?></td>
 <?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?php echo $user['id'] ?>]" value="1" /></td>
 <?php endif;
             ?>
@@ -67,7 +68,7 @@ if (!defined('FEATHER')) {
 
         }
     } else {
-        echo "\t\t\t\t".'<tr><td class="tcl" colspan="6">'.$lang_admin_users['No match'].'</td></tr>'."\n";
+        echo "\t\t\t\t".'<tr><td class="tcl" colspan="6">'.__('No match').'</td></tr>'."\n";
     }
 
     ?>
@@ -81,17 +82,17 @@ if (!defined('FEATHER')) {
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
 			<p class="pagelink"><?php echo $paging_links ?></p>
-<?php if ($can_action): ?>			<p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?php echo $lang_admin_users['Unselect all'] ?>')"><?php echo $lang_admin_users['Select all'] ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?php echo $lang_admin_users['Ban'] ?>" /><?php endif;
-    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?php echo $lang_admin_users['Delete'] ?>" /><?php endif;
-    if ($can_move) : ?><input type="submit" name="move_users" value="<?php echo $lang_admin_users['Change group'] ?>" /><?php endif;
+<?php if ($can_action): ?>			<p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?php _e('Unselect all') ?>')"><?php _e('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?php _e('Ban') ?>" /><?php endif;
+    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?php _e('Delete') ?>" /><?php endif;
+    if ($can_move) : ?><input type="submit" name="move_users" value="<?php _e('Change group') ?>" /><?php endif;
     ?></p>
 <?php endif;
     ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/index/') ?>"><?php echo $lang_admin_common['Admin'].' '.$lang_admin_common['Index'] ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php echo $lang_admin_common['Users'] ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo $lang_admin_users['Results head'] ?></strong></li>
+			<li><a href="<?php echo get_link('admin/index/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>
 	</div>

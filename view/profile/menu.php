@@ -15,39 +15,39 @@ if (!defined('FEATHER')) {
 ?>
 <div id="profile" class="block2col">
 	<div class="blockmenu">
-		<h2><span><?php echo $lang_profile['Profile menu'] ?></span></h2>
+		<h2><span><?php _e('Profile menu') ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<ul>
 					<li<?php if ($page == 'essentials') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/essentials/') ?>"><?php echo $lang_profile['Section essentials'] ?></a></li>
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/essentials/') ?>"><?php _e('Section essentials') ?></a></li>
 					<li<?php if ($page == 'personal') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/personal/') ?>"><?php echo $lang_profile['Section personal'] ?></a></li>
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/personal/') ?>"><?php _e('Section personal') ?></a></li>
 					<li<?php if ($page == 'messaging') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/messaging/') ?>"><?php echo $lang_profile['Section messaging'] ?></a></li>
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/messaging/') ?>"><?php _e('Section messaging') ?></a></li>
 <?php if ($feather_config['o_avatars'] == '1' || $feather_config['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/personality/') ?>"><?php echo $lang_profile['Section personality'] ?></a></li>
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/personality/') ?>"><?php _e('Section personality') ?></a></li>
 <?php endif;
     ?>					<li<?php if ($page == 'display') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/display/') ?>"><?php echo $lang_profile['Section display'] ?></a></li>
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/display/') ?>"><?php _e('Section display') ?></a></li>
 					<li<?php if ($page == 'privacy') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/privacy/') ?>"><?php echo $lang_profile['Section privacy'] ?></a></li>
-<?php if ($feather_user['g_id'] == FEATHER_ADMIN || ($feather_user['g_moderator'] == '1' && $feather_user['g_mod_ban_users'] == '1')): ?>					<li<?php if ($page == 'admin') {
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/privacy/') ?>"><?php _e('Section privacy') ?></a></li>
+<?php if ($feather->user->g_id == FEATHER_ADMIN || ($feather->user->g_moderator == '1' && $feather->user->g_mod_ban_users == '1')): ?>					<li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('user/'.$id.'/section/admin/') ?>"><?php echo $lang_profile['Section admin'] ?></a></li>
+    ?>><a href="<?php echo get_link('user/'.$id.'/section/admin/') ?>"><?php _e('Section admin') ?></a></li>
 <?php endif;
     ?>				</ul>
 			</div>

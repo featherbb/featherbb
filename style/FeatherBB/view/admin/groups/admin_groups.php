@@ -14,16 +14,17 @@ if (!defined('FEATHER')) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_groups['Add groups head'] ?></span></h2>
+		<h2><span><?php _e('Add groups head') ?></span></h2>
 		<div class="box">
 				<div class="inform">
 					<fieldset>
                         <form id="groups" method="post" action="<?php echo get_link('admin/groups/add/') ?>">
-						<legend><?php echo $lang_admin_groups['Add group subhead'] ?></legend>
+                        <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+						<legend><?php _e('Add group subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_groups['New group label'] ?><div><input type="submit" name="add_group" value="<?php echo $lang_admin_common['Add'] ?>" tabindex="2" /></div></th>
+									<th scope="row"><?php _e('New group label') ?><div><input type="submit" name="add_group" value="<?php _e('Add') ?>" tabindex="2" /></div></th>
 									<td>
 										<select id="base_group" name="base_group" tabindex="1">
 <?php
@@ -40,7 +41,7 @@ foreach ($groups as $cur_group) {
 
 ?>
 										</select>
-										<span><?php echo $lang_admin_groups['New group help'] ?></span>
+										<span><?php _e('New group help') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -51,11 +52,12 @@ foreach ($groups as $cur_group) {
 				<div class="inform">
 					<fieldset>
                         <form id="groups" method="post" action="<?php echo get_link('admin/groups/') ?>">
-						<legend><?php echo $lang_admin_groups['Default group subhead'] ?></legend>
+                        	<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+						<legend><?php _e('Default group subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_groups['Default group label'] ?><div><input type="submit" name="set_default_group" value="<?php echo $lang_admin_common['Save'] ?>" tabindex="4" /></div></th>
+									<th scope="row"><?php _e('Default group label') ?><div><input type="submit" name="set_default_group" value="<?php _e('Save') ?>" tabindex="4" /></div></th>
 									<td>
 										<select id="default_group" name="default_group" tabindex="3">
 <?php
@@ -72,7 +74,7 @@ foreach ($groups as $cur_group) {
 
 ?>
 										</select>
-										<span><?php echo $lang_admin_groups['Default group help'] ?></span>
+										<span><?php _e('Default group help') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -82,18 +84,18 @@ foreach ($groups as $cur_group) {
 				</div>
 		</div>
 
-		<h2 class="block2"><span><?php echo $lang_admin_groups['Existing groups head'] ?></span></h2>
+		<h2 class="block2"><span><?php _e('Existing groups head') ?></span></h2>
 		<div class="box">
 			<div class="fakeform">
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_groups['Edit groups subhead'] ?></legend>
+						<legend><?php _e('Edit groups subhead') ?></legend>
 						<div class="infldset">
-							<p><?php echo $lang_admin_groups['Edit groups info'] ?></p>
+							<p><?php _e('Edit groups info') ?></p>
 							<table>
 <?php
 foreach ($groups as $cur_group) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.get_link('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Edit link'].'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.get_link('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.$lang_admin_groups['Delete link'].'</a>' : '').'</th><td>'.feather_escape($cur_group['g_title']).'</td></tr>'."\n";
+    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.get_link('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.get_link('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.feather_escape($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>

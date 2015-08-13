@@ -14,7 +14,6 @@ class parser
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -22,6 +21,8 @@ class parser
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\parser();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/parser.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -31,18 +32,16 @@ class parser
     
     public function display()
     {
-        global $lang_common, $lang_admin_parser, $lang_admin_common;
+        global $lang_admin_parser;
 
-        require FEATHER_ROOT.'include/common_admin.php';
-
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
+        // Legacy
+        require FEATHER_ROOT . 'lang/' . $this->user->language . '/admin/parser.php';
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT.'lang/'.$admin_language.'/parser.php';
+        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // This is where the parser data lives and breathes.
         $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
@@ -62,7 +61,7 @@ class parser
         $count = count($bbcd);
 
         if ($this->request->post('form_sent')) {
-            confirm_referrer(get_link_r('admin/parser/'));
+            
 
             // Upload new smiley image to img/smilies
             if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
@@ -213,7 +212,7 @@ class parser
         }
 
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Parser']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Parser'));
 
         define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -223,7 +222,7 @@ class parser
 
         $this->feather->render('admin/parser.php', array(
                 'lang_admin_parser'    =>    $lang_admin_parser,
-                'lang_admin_common'    =>    $lang_admin_common,
+
                 'smiley_files' => $this->model->get_smiley_files(),
                 'bbcd' =>   $bbcd,
                 'config' => $config,

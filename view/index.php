@@ -12,13 +12,11 @@ if (!defined('FEATHER')) {
     exit;
 }
 
-$cur_cat = 0;
+if (empty($index_data)): ?>
+    <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php _e('Empty board') ?></p></div></div></div>
+<?php endif;
 foreach ($index_data as $forum) {
-    if ($forum['cur_category'] == 0) : ?>
-	<div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo $lang_index['Empty board'] ?></p></div></div></div>
-	<?php
-    endif;
-    if ($forum['cid'] != $cur_cat) :
+    if ($forum->cid != $cur_cat) :
         if ($cur_cat != 0) :
     ?>
 				</tbody>
@@ -28,36 +26,36 @@ foreach ($index_data as $forum) {
 	</div>
 	<?php endif;
     ?>
-	<div id="idx<?php echo $forum['cid'] ?>" class="blocktable">
-	<h2><span><?php echo feather_escape($forum['cat_name']) ?></span></h2>
+	<div id="idx<?php echo $forum->cid ?>" class="blocktable">
+	<h2><span><?php echo feather_escape($forum->cat_name) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Forum'] ?></th>
-					<th class="tc2" scope="col"><?php echo $lang_index['Topics'] ?></th>
-					<th class="tc3" scope="col"><?php echo $lang_common['Posts'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_common['Last post'] ?></th>
+					<th class="tcl" scope="col"><?php _e('Forum') ?></th>
+					<th class="tc2" scope="col"><?php _e('Topics') ?></th>
+					<th class="tc3" scope="col"><?php _e('Posts') ?></th>
+					<th class="tcr" scope="col"><?php _e('Last post') ?></th>
 				</tr>
 			</thead>
 			<tbody>
 	<?php
-    $cur_cat = $forum['cid'];
+    $cur_cat = $forum->cid;
     endif;
     ?>
-				<tr class="<?php echo $forum['item_status'] ?>">
+				<tr class="<?php echo $forum->item_status ?>">
 					<td class="tcl">
-						<div class="<?php echo $forum['icon_type'] ?>"><div class="nosize"><?php echo forum_number_format($forum['forum_count_formatted']) ?></div></div>
+						<div class="<?php echo $forum->icon_type ?>"><div class="nosize"><?php echo forum_number_format($forum->forum_count_formatted) ?></div></div>
 						<div class="tclcon">
 							<div>
-								<?php echo $forum['forum_field']."\n".$forum['moderators_formatted'] ?>
+								<?php echo $forum->forum_field."\n".$forum->moderators_formatted ?>
 							</div>
 						</div>
 					</td>
-					<td class="tc2"><?php echo forum_number_format($forum['num_topics_formatted']) ?></td>
-					<td class="tc3"><?php echo forum_number_format($forum['num_posts_formatted']) ?></td>
-					<td class="tcr"><?php echo $forum['last_post_formatted'] ?></td>
+					<td class="tc2"><?php echo forum_number_format($forum->num_topics_formatted) ?></td>
+					<td class="tc3"><?php echo forum_number_format($forum->num_posts_formatted) ?></td>
+					<td class="tcr"><?php echo $forum->last_post_formatted ?></td>
 				</tr>
 	<?php
 
@@ -82,27 +80,27 @@ if (!empty($forum_actions)) :
 endif;
 ?>
 <div id="brdstats" class="block">
-	<h2><span><?php echo $lang_index['Board info'] ?></span></h2>
+	<h2><span><?php _e('Board info') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<dl class="conr">
-				<dt><strong><?php echo $lang_index['Board stats'] ?></strong></dt>
-				<dd><span><?php printf($lang_index['No of users'], '<strong>'.forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
-				<dd><span><?php printf($lang_index['No of topics'], '<strong>'.forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
-				<dd><span><?php printf($lang_index['No of posts'], '<strong>'.forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
+				<dt><strong><?php _e('Board stats') ?></strong></dt>
+				<dd><span><?php printf(__('No of users'), '<strong>'.forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of topics'), '<strong>'.forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of posts'), '<strong>'.forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
 			</dl>
 			<dl class="conl">
-				<dt><strong><?php echo $lang_index['User info'] ?></strong></dt>
-				<dd><span><?php printf($lang_index['Newest user'], $stats['newest_user']) ?></span></dd>
+				<dt><strong><?php _e('User info') ?></strong></dt>
+				<dd><span><?php printf(__('Newest user'), $stats['newest_user']) ?></span></dd>
 				<?php if ($feather_config['o_users_online'] == 1) : ?>
-				<dd><span><?php printf($lang_index['Users online'], '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>
-				<dd><span><?php printf($lang_index['Guests online'], '<strong>'.forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('Users online'), '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('Guests online'), '<strong>'.forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
 				<?php endif; ?>
 			</dl>
 			<?php
             if ($feather_config['o_users_online'] == 1) :
                 if ($online['num_users'] > 0) {
-                    echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
+                    echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.__('Online').' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
                 } else {
                     echo "\t\t\t".'<div class="clearer"></div>'."\n";
                 }

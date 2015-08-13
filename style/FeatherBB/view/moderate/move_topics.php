@@ -15,29 +15,30 @@ if (!defined('FEATHER')) {
 ?>
 
 <div class="blockform">
-	<h2><span><?php echo($action == 'single') ? $lang_misc['Move topic'] : $lang_misc['Move topics'] ?></span></h2>
+	<h2><span><?php echo($action == 'single') ? __('Move topic') : __('Move topics') ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 			<input type="hidden" name="topics" value="<?php echo $topics ?>" />
 				<fieldset>
-					<legend><?php echo $lang_misc['Move legend'] ?></legend>
+					<legend><?php _e('Move legend') ?></legend>
 					<div class="infldset">
-						<label><?php echo $lang_misc['Move to'] ?>
+						<label><?php _e('Move to') ?>
 						<br /><select name="move_to_forum">
-								<?php get_forum_list_move($id); ?>
+								<?php echo $list_forums ?>
 							</optgroup>
 						</select>
 						<br /></label>
 						<div class="rbox">
 							<label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') {
     echo ' checked="checked"';
-} ?> /><?php echo $lang_misc['Leave redirect'] ?><br /></label>
+} ?> /><?php _e('Leave redirect') ?><br /></label>
 						</div>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="move_topics_to" value="<?php echo $lang_misc['Move'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="move_topics_to" value="<?php _e('Move') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

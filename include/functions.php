@@ -18,130 +18,6 @@ function get_microtime()
     return ((float)$usec + (float)$sec);
 }
 
-//
-// Cookie stuff!
-//
-function check_cookie(&$feather_user)
-{
-    global $db, $db_type, $feather_config, $cookie_name, $cookie_seed;
-
-    $now = time();
-    
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    // If the cookie is set and it matches the correct pattern, then read the values from it
-    if (isset($_COOKIE[$cookie_name]) && preg_match('%^(\d+)\|([0-9a-fA-F]+)\|(\d+)\|([0-9a-fA-F]+)$%', $_COOKIE[$cookie_name], $matches)) {
-        $cookie = array(
-            'user_id'            => intval($matches[1]),
-            'password_hash'    => $matches[2],
-            'expiration_time'    => intval($matches[3]),
-            'cookie_hash'        => $matches[4],
-        );
-    }
-
-    // If it has a non-guest user, and hasn't expired
-    if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now) {
-        // If the cookie has been tampered with
-        if (hash_hmac('sha1', $cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash') !== $cookie['cookie_hash']) {           
-            $expire = $now + 31536000; // The cookie expires after a year
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
-            set_default_user();
-
-            return;
-        }
-
-        // Check if there's a user with the user ID and password hash from the cookie
-        $result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE u.id='.intval($cookie['user_id'])) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
-        $feather->container->singleton('user', function () use ($db, $result) {
-            return $db->fetch_assoc($result);
-        });
-        
-        // Backward compatiblity
-        $feather_user = $db->fetch_assoc($result);
-
-        // If user authorisation failed
-        if (!isset($feather_user['id']) || hash_hmac('sha1', $feather_user['password'], $cookie_seed.'_password_hash') !== $cookie['password_hash']) {
-            $expire = $now + 31536000; // The cookie expires after a year
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expire);
-            set_default_user();
-
-            return;
-        }
-
-        // Send a new, updated cookie with a new expiration timestamp
-        $expire = ($cookie['expiration_time'] > $now + $feather_config['o_timeout_visit']) ? $now + 1209600 : $now + $feather_config['o_timeout_visit'];
-        feather_setcookie($feather_user['id'], $feather_user['password'], $expire);
-
-        // Set a default language if the user selected language no longer exists
-        if (!file_exists(FEATHER_ROOT.'lang/'.$feather_user['language'])) {
-            $feather_user['language'] = $feather_config['o_default_lang'];
-        }
-
-        // Set a default style if the user selected style no longer exists
-        if (!file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'.css')) {
-            $feather_user['style'] = $feather_config['o_default_style'];
-        }
-
-        if (!$feather_user['disp_topics']) {
-            $feather_user['disp_topics'] = $feather_config['o_disp_topics_default'];
-        }
-        if (!$feather_user['disp_posts']) {
-            $feather_user['disp_posts'] = $feather_config['o_disp_posts_default'];
-        }
-
-        // Define this if you want this visit to affect the online list and the users last visit data
-        if (!defined('FEATHER_QUIET_VISIT')) {
-            // Update the online list
-            if (!$feather_user['logged']) {
-                $feather_user['logged'] = $now;
-
-                // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch ($db_type) {
-                    case 'mysql':
-                    case 'mysqli':
-                    case 'mysql_innodb':
-                    case 'mysqli_innodb':
-                    case 'sqlite':
-                    case 'sqlite3':
-                        $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES('.$feather_user['id'].', \''.$db->escape($feather_user['username']).'\', '.$feather_user['logged'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-                        break;
-
-                    default:
-                        $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT '.$feather_user['id'].', \''.$db->escape($feather_user['username']).'\', '.$feather_user['logged'].' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$feather_user['id'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-                        break;
-                }
-
-                // Reset tracked topics
-                set_tracked_topics(null);
-            } else {
-                // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if ($feather_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                    $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$feather_user['logged'].' WHERE id='.$feather_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-                    $feather_user['last_visit'] = $feather_user['logged'];
-                }
-
-                $idle_sql = ($feather_user['idle'] == '1') ? ', idle=0' : '';
-                $db->query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id='.$feather_user['id']) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
-
-                // Update tracked topics with the current expire time
-                if (isset($_COOKIE[$cookie_name.'_track'])) {
-                    forum_setcookie($cookie_name.'_track', $_COOKIE[$cookie_name.'_track'], $now + $feather_config['o_timeout_visit']);
-                }
-            }
-        } else {
-            if (!$feather_user['logged']) {
-                $feather_user['logged'] = $feather_user['last_visit'];
-            }
-        }
-
-        $feather_user['is_guest'] = false;
-        $feather_user['is_admmod'] = $feather_user['g_id'] == FEATHER_ADMIN || $feather_user['g_moderator'] == '1';
-    } else {
-        set_default_user();
-    }
-}
-
 
 //
 // Try to determine the current URL
@@ -235,87 +111,19 @@ function get_admin_ids()
 
 
 //
-// Fill $feather_user with default values (for guests)
+// Wrapper for Slim setCookie method
 //
-function set_default_user()
-{
-    global $db, $db_type, $feather_user, $feather_config;
-
-    $remote_addr = get_remote_address();
-
-    // Fetch guest user
-    $result = $db->query('SELECT u.*, g.*, o.logged, o.last_post, o.last_search FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.ident=\''.$db->escape($remote_addr).'\' WHERE u.id=1') or error('Unable to fetch guest information', __FILE__, __LINE__, $db->error());
-    if (!$db->num_rows($result)) {
-        exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
-    }
-
-    $feather_user = $db->fetch_assoc($result);
-
-    // Update online list
-    if (!$feather_user['logged']) {
-        $feather_user['logged'] = time();
-
-        // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-        switch ($db_type) {
-            case 'mysql':
-            case 'mysqli':
-            case 'mysql_innodb':
-            case 'mysqli_innodb':
-            case 'sqlite':
-            case 'sqlite3':
-                $db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, \''.$db->escape($remote_addr).'\', '.$feather_user['logged'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-                break;
-
-            default:
-                $db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, \''.$db->escape($remote_addr).'\', '.$feather_user['logged'].' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-                break;
-        }
-    } else {
-        $db->query('UPDATE '.$db->prefix.'online SET logged='.time().' WHERE ident=\''.$db->escape($remote_addr).'\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
-    }
-
-    $feather_user['disp_topics'] = $feather_config['o_disp_topics_default'];
-    $feather_user['disp_posts'] = $feather_config['o_disp_posts_default'];
-    $feather_user['timezone'] = $feather_config['o_default_timezone'];
-    $feather_user['dst'] = $feather_config['o_default_dst'];
-    $feather_user['language'] = $feather_config['o_default_lang'];
-    $feather_user['style'] = $feather_config['o_default_style'];
-    $feather_user['is_guest'] = true;
-    $feather_user['is_admmod'] = false;
-}
-
-
-//
-// Set a cookie, FluxBB style!
-// Wrapper for forum_setcookie
-//
-function feather_setcookie($user_id, $password_hash, $expire)
+function feather_setcookie($user_id, $password, $expires)
 {
     global $cookie_name, $cookie_seed;
 
-    forum_setcookie($cookie_name, $user_id.'|'.hash_hmac('sha1', $password_hash, $cookie_seed.'_password_hash').'|'.$expire.'|'.hash_hmac('sha1', $user_id.'|'.$expire, $cookie_seed.'_cookie_hash'), $expire);
-}
-
-
-//
-// Set a cookie, FluxBB style!
-//
-function forum_setcookie($name, $value, $expire)
-{
-    global $cookie_path, $cookie_domain, $cookie_secure, $feather_config;
-
-    if ($expire - time() - $feather_config['o_timeout_visit'] < 1) {
-        $expire = 0;
-    }
-
-    // Enable sending of a P3P header
-    header('P3P: CP="CUR ADM"');
-
-    if (version_compare(PHP_VERSION, '5.2.0', '>=')) {
-        setcookie($name, $value, $expire, $cookie_path, $cookie_domain, $cookie_secure, true);
-    } else {
-        setcookie($name, $value, $expire, $cookie_path.'; HttpOnly', $cookie_domain, $cookie_secure);
-    }
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    $cookie_data = array('user_id' => $user_id,
+        'password_hash' => hash_hmac('sha1', $password, $cookie_seed.'_password_hash'),
+        'expires' => $expires,
+        'checksum' => hash_hmac('sha1', $user_id.$expires, $cookie_seed.'_checksum'));
+    $feather->setCookie($cookie_name, json_encode($cookie_data), $expires);
 }
 
 
@@ -324,10 +132,13 @@ function forum_setcookie($name, $value, $expire)
 //
 function check_bans()
 {
-    global $db, $feather_config, $lang_common, $feather_user, $feather_bans;
+    global $feather_config, $feather_bans;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     // Admins and moderators aren't affected
-    if ($feather_user['is_admmod'] || !$feather_bans) {
+    if ($feather->user->is_admmod || !$feather_bans) {
         return;
     }
 
@@ -342,12 +153,13 @@ function check_bans()
     foreach ($feather_bans as $cur_ban) {
         // Has this ban expired?
         if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-            $db->query('DELETE FROM '.$db->prefix.'bans WHERE id='.$cur_ban['id']) or error('Unable to delete expired ban', __FILE__, __LINE__, $db->error());
+            \DB::for_table('bans')->where('id', $cur_ban['id'])
+                                               ->delete_many();
             $bans_altered = true;
             continue;
         }
 
-        if ($cur_ban['username'] != '' && utf8_strtolower($feather_user['username']) == utf8_strtolower($cur_ban['username'])) {
+        if ($cur_ban['username'] != '' && utf8_strtolower($feather->user->username) == utf8_strtolower($cur_ban['username'])) {
             $is_banned = true;
         }
 
@@ -371,8 +183,9 @@ function check_bans()
         }
 
         if ($is_banned) {
-            $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($feather_user['username']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
-            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true);
+            \DB::for_table('online')->where('ident', $feather->user->username)
+                                                 ->delete_many();
+            message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
         }
     }
 
@@ -392,52 +205,55 @@ function check_bans()
 //
 function check_username($username, $errors, $exclude_id = null)
 {
-    global $db, $feather_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $feather_bans;
+    global $feather, $feather_config, $errors, $feather_bans;
 
     // Include UTF-8 function
     require_once FEATHER_ROOT.'include/utf8/strcasecmp.php';
+
+    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/register.mo');
+    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/prof_reg.mo');
 
     // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
     $username = preg_replace('%\s+%s', ' ', $username);
 
     // Validate username
     if (feather_strlen($username) < 2) {
-        $errors[] = $lang_prof_reg['Username too short'];
+        $errors[] = __('Username too short');
     } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
-        $errors[] = $lang_prof_reg['Username too long'];
-    } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest'])) {
-        $errors[] = $lang_prof_reg['Username guest'];
+        $errors[] = __('Username too long');
+    } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
+        $errors[] = __('Username guest');
     } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $username) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $username)) {
-        $errors[] = $lang_prof_reg['Username IP'];
+        $errors[] = __('Username IP');
     } elseif ((strpos($username, '[') !== false || strpos($username, ']') !== false) && strpos($username, '\'') !== false && strpos($username, '"') !== false) {
-        $errors[] = $lang_prof_reg['Username reserved chars'];
+        $errors[] = __('Username reserved chars');
     } elseif (preg_match('%(?:\[/?(?:b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|\*|topic|post|forum|user)\]|\[(?:img|url|quote|list)=)%i', $username)) {
-        $errors[] = $lang_prof_reg['Username BBCode'];
+        $errors[] = __('Username BBCode');
     }
 
     // Check username for any censored words
     if ($feather_config['o_censoring'] == '1' && censor_words($username) != $username) {
-        $errors[] = $lang_register['Username censor'];
+        $errors[] = __('Username censor');
     }
 
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(\''.$db->escape($username).'\') OR UPPER(username)=UPPER(\''.$db->escape(ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)).'\')) AND id>1'.$query) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
-    if ($db->num_rows($result)) {
-        $busy = $db->result($result);
-        $errors[] = $lang_register['Username dupe 1'].' '.feather_escape($busy).'. '.$lang_register['Username dupe 2'];
+    if ($result) {
+        $busy = $result['username'];
+        $errors[] = __('Username dupe 1').' '.feather_escape($busy).'. '.__('Username dupe 2');
     }
 
     // Check username for any banned usernames
     foreach ($feather_bans as $cur_ban) {
         if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
-            $errors[] = $lang_prof_reg['Banned username'];
+            $errors[] = __('Banned username');
             break;
         }
     }
-    
+
     return $errors;
 }
 
@@ -447,23 +263,34 @@ function check_username($username, $errors, $exclude_id = null)
 //
 function update_users_online()
 {
-    global $db, $feather_config;
+    global $feather, $feather_config;
 
     $now = time();
 
     // Fetch all online list entries that are older than "o_timeout_online"
-    $result = $db->query('SELECT user_id, ident, logged, idle FROM '.$db->prefix.'online WHERE logged<'.($now-$feather_config['o_timeout_online'])) or error('Unable to fetch old entries from online list', __FILE__, __LINE__, $db->error());
-    while ($cur_user = $db->fetch_assoc($result)) {
+    $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
+
+    $result = \DB::for_table('online')->select_many($select_update_users_online)
+        ->where_lt('logged', $now-$feather_config['o_timeout_online'])
+        ->find_many();
+
+    foreach ($result as $cur_user) {
         // If the entry is a guest, delete it
         if ($cur_user['user_id'] == '1') {
-            $db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($cur_user['ident']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+            \DB::for_table('online')->where('ident', $cur_user['ident'])
+                                                 ->delete_many();
         } else {
             // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
             if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                $db->query('UPDATE '.$db->prefix.'users SET last_visit='.$cur_user['logged'].' WHERE id='.$cur_user['user_id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-                $db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$cur_user['user_id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+                \DB::for_table('users')->where('id', $cur_user['user_id'])
+                        ->find_one()
+                        ->set('last_visit', $cur_user['logged'])
+                        ->save();
+                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
+                    ->delete_many();
             } elseif ($cur_user['idle'] == '0') {
-                $db->query('UPDATE '.$db->prefix.'online SET idle=1 WHERE user_id='.$cur_user['user_id']) or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
+                        ->update_many('idle', 1);
             }
         }
     }
@@ -498,7 +325,7 @@ function generate_avatar_markup($user_id)
 //
 function generate_page_title($page_title, $p = null)
 {
-    global $lang_common;
+
 
     if (!is_array($page_title)) {
         $page_title = array($page_title);
@@ -507,10 +334,10 @@ function generate_page_title($page_title, $p = null)
     $page_title = array_reverse($page_title);
 
     if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf($lang_common['Page'], forum_number_format($p)).')';
+        $page_title[0] .= ' ('.sprintf(__('Page'), forum_number_format($p)).')';
     }
 
-    $crumbs = implode($lang_common['Title separator'], $page_title);
+    $crumbs = implode(__('Title separator'), $page_title);
 
     return $crumbs;
 }
@@ -519,33 +346,22 @@ function generate_page_title($page_title, $p = null)
 //
 // Save array of tracked topics in cookie
 //
-function set_tracked_topics($tracked_topics)
+function set_tracked_topics($tracked_topics = null)
 {
-    global $cookie_name, $cookie_path, $cookie_domain, $cookie_secure, $feather_config;
+    global $cookie_name;
 
-    $cookie_data = '';
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
     if (!empty($tracked_topics)) {
         // Sort the arrays (latest read first)
         arsort($tracked_topics['topics'], SORT_NUMERIC);
         arsort($tracked_topics['forums'], SORT_NUMERIC);
-
-        // Homebrew serialization (to avoid having to run unserialize() on cookie data)
-        foreach ($tracked_topics['topics'] as $id => $timestamp) {
-            $cookie_data .= 't'.$id.'='.$timestamp.';';
-        }
-        foreach ($tracked_topics['forums'] as $id => $timestamp) {
-            $cookie_data .= 'f'.$id.'='.$timestamp.';';
-        }
-
-        // Enforce a byte size limit (4096 minus some space for the cookie name - defaults to 4048)
-        if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE) {
-            $cookie_data = substr($cookie_data, 0, FORUM_MAX_COOKIE_SIZE);
-            $cookie_data = substr($cookie_data, 0, strrpos($cookie_data, ';')).';';
-        }
+    } else {
+        $tracked_topics = array('topics' => array(), 'forums' => array());
     }
 
-    forum_setcookie($cookie_name.'_track', $cookie_data, time() + $feather_config['o_timeout_visit']);
-    $_COOKIE[$cookie_name.'_track'] = $cookie_data; // Set it directly in $_COOKIE as well
+    return $feather->setCookie($cookie_name . '_track', json_encode($tracked_topics), time() + $feather->config['o_timeout_visit']);
 }
 
 
@@ -556,28 +372,16 @@ function get_tracked_topics()
 {
     global $cookie_name;
 
-    $cookie_data = isset($_COOKIE[$cookie_name.'_track']) ? $_COOKIE[$cookie_name.'_track'] : false;
-    if (!$cookie_data) {
-        return array('topics' => array(), 'forums' => array());
-    }
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE) {
-        return array('topics' => array(), 'forums' => array());
-    }
+    $cookie_raw = $feather->getCookie($cookie_name.'_track');
 
-    // Unserialize data from cookie
-    $tracked_topics = array('topics' => array(), 'forums' => array());
-    $temp = explode(';', $cookie_data);
-    foreach ($temp as $t) {
-        $type = substr($t, 0, 1) == 'f' ? 'forums' : 'topics';
-        $id = intval(substr($t, 1));
-        $timestamp = intval(substr($t, strpos($t, '=') + 1));
-        if ($id > 0 && $timestamp > 0) {
-            $tracked_topics[$type][$id] = $timestamp;
-        }
+    if (isset($cookie_raw)) {
+        $cookie_data = json_decode($cookie_raw, true);
+        return $cookie_data;
     }
-
-    return $tracked_topics;
+    return array('topics' => array(), 'forums' => array());
 }
 
 
@@ -586,23 +390,52 @@ function get_tracked_topics()
 //
 function update_forum($forum_id)
 {
-    global $db;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    $result = $db->query('SELECT COUNT(id), SUM(num_replies) FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id) or error('Unable to fetch forum topic count', __FILE__, __LINE__, $db->error());
-    list($num_topics, $num_posts) = $db->fetch_row($result);
+    $stats_query = \DB::for_table('topics')
+                    ->where('forum_id', $forum_id)
+                    ->select_expr('COUNT(id)', 'total_topics')
+                    ->select_expr('SUM(num_replies)', 'total_replies')
+                    ->find_one();
 
-    $num_posts = $num_posts + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
+    $num_topics = intval($stats_query['total_topics']);
+    $num_replies = intval($stats_query['total_replies']);
 
-    $result = $db->query('SELECT last_post, last_post_id, last_poster FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' AND moved_to IS NULL ORDER BY last_post DESC LIMIT 1') or error('Unable to fetch last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
-    if ($db->num_rows($result)) {
+    $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
+
+    $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
+
+    $result = \DB::for_table('topics')->select_many($select_update_forum)
+        ->where('forum_id', $forum_id)
+        ->where_null('moved_to')
+        ->order_by_desc('last_post')
+        ->find_one();
+
+    if ($result) {
         // There are topics in the forum
-
-        list($last_post, $last_post_id, $last_poster) = $db->fetch_row($result);
-
-        $db->query('UPDATE '.$db->prefix.'forums SET num_topics='.$num_topics.', num_posts='.$num_posts.', last_post='.$last_post.', last_post_id='.$last_post_id.', last_poster=\''.$db->escape($last_poster).'\' WHERE id='.$forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
-    } else { // There are no topics
-        $db->query('UPDATE '.$db->prefix.'forums SET num_topics='.$num_topics.', num_posts='.$num_posts.', last_post=NULL, last_post_id=NULL, last_poster=NULL WHERE id='.$forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error());
+        $insert_update_forum = array(
+            'num_topics' => $num_topics,
+            'num_posts'  => $num_posts,
+            'last_post'  => $result['last_post'],
+            'last_post_id'  => $result['last_post_id'],
+            'last_poster'  => $result['last_poster'],
+        );
+    } else {
+        // There are no topics
+        $insert_update_forum = array(
+            'num_topics' => $num_topics,
+            'num_posts'  => $num_posts,
+            'last_post'  => 'NULL',
+            'last_post_id'  => 'NULL',
+            'last_poster'  => 'NULL',
+        );
     }
+        \DB::for_table('forums')
+            ->where('id', $forum_id)
+            ->find_one()
+            ->set($insert_update_forum)
+            ->save();
 }
 
 
@@ -629,28 +462,28 @@ function delete_avatar($user_id)
 //
 function delete_topic($topic_id)
 {
-    global $db;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
     // Delete the topic and any redirect topics
-    $db->query('DELETE FROM '.$db->prefix.'topics WHERE id='.$topic_id.' OR moved_to='.$topic_id) or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
+    $where_delete_topic = array(
+            array('id' => $topic_id),
+            array('moved_to' => $topic_id)
+        );
 
-    // Create a list of the post IDs in this topic
-    $post_ids = '';
-    $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
-    while ($row = $db->fetch_row($result)) {
-        $post_ids .= ($post_ids != '') ? ','.$row[0] : $row[0];
-    }
+    \DB::for_table('topics')
+        ->where_any_is($where_delete_topic)
+        ->delete_many();
 
-    // Make sure we have a list of post IDs
-    if ($post_ids != '') {
-        strip_search_index($post_ids);
-
-        // Delete posts in topic
-        $db->query('DELETE FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
-    }
+    // Delete posts in topic
+    \DB::for_table('posts')
+        ->where('topic_id', $topic_id)
+        ->delete_many();
 
     // Delete any subscriptions for this topic
-    $db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id='.$topic_id) or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+    \DB::for_table('topic_subscriptions')
+        ->where('topic_id', $topic_id)
+        ->delete_many();
 }
 
 
@@ -659,49 +492,74 @@ function delete_topic($topic_id)
 //
 function delete_post($post_id, $topic_id)
 {
-    global $db;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
 
-    $result = $db->query('SELECT id, poster, posted FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id.' ORDER BY id DESC LIMIT 2') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-    list($last_id, , ) = $db->fetch_row($result);
-    list($second_last_id, $second_poster, $second_posted) = $db->fetch_row($result);
+    $result = \DB::for_table('posts')
+                  ->select_many('id', 'poster', 'posted')
+                  ->where('topic_id', $topic_id)
+                  ->order_by_desc('id')
+                  ->limit(2)
+                  ->find_many();
+
+    $i = 0;
+    foreach ($result as $cur_result) {
+        if ($i == 0) {
+            $last_id = $cur_result['id'];
+        }
+        else {
+            $second_last_id = $cur_result['id'];
+            $second_poster = $cur_result['poster'];
+            $second_posted = $cur_result['posted'];
+        }
+        ++$i;
+   }
 
     // Delete the post
-    $db->query('DELETE FROM '.$db->prefix.'posts WHERE id='.$post_id) or error('Unable to delete post', __FILE__, __LINE__, $db->error());
+    \DB::for_table('posts')
+        ->where('id', $post_id)
+        ->find_one()
+        ->delete();
 
     strip_search_index($post_id);
 
     // Count number of replies in the topic
-    $result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
-    $num_replies = $db->result($result, 0) - 1;
+    $num_replies = \DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
 
     // If the message we deleted is the most recent in the topic (at the end of the topic)
     if ($last_id == $post_id) {
         // If there is a $second_last_id there is more than 1 reply to the topic
-        if (!empty($second_last_id)) {
-            $db->query('UPDATE '.$db->prefix.'topics SET last_post='.$second_posted.', last_post_id='.$second_last_id.', last_poster=\''.$db->escape($second_poster).'\', num_replies='.$num_replies.' WHERE id='.$topic_id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+        if (isset($second_last_id)) {
+             $update_topic = array(
+                'last_post'  => $second_posted,
+                'last_post_id'  => $second_last_id,
+                'last_poster'  => $second_poster,
+                'num_replies'  => $num_replies,
+            );
+            \DB::for_table('topics')
+                ->where('id', $topic_id)
+                ->find_one()
+                ->set($update_topic)
+                ->save();
         } else {
             // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
-            $db->query('UPDATE '.$db->prefix.'topics SET last_post=posted, last_post_id=id, last_poster=poster, num_replies='.$num_replies.' WHERE id='.$topic_id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+            \DB::for_table('topics')
+                ->where('id', $topic_id)
+                ->find_one()
+                ->set_expr('last_post', 'posted')
+                ->set_expr('last_post_id', 'id')
+                ->set_expr('last_poster', 'poster')
+                ->set('num_replies', $num_replies)
+                ->save();
         }
     } else {
         // Otherwise we just decrement the reply counter
-        $db->query('UPDATE '.$db->prefix.'topics SET num_replies='.$num_replies.' WHERE id='.$topic_id) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+        \DB::for_table('topics')
+            ->where('id', $topic_id)
+            ->find_one()
+            ->set('num_replies', $num_replies)
+            ->save();
     }
-}
-
-
-//
-// Delete every .php file in the forum's cache directory
-//
-function forum_clear_cache()
-{
-    $d = dir(FORUM_CACHE_DIR);
-    while (($entry = $d->read()) !== false) {
-        if (substr($entry, -4) == '.php') {
-            @unlink(FORUM_CACHE_DIR.$entry);
-        }
-    }
-    $d->close();
 }
 
 
@@ -710,7 +568,6 @@ function forum_clear_cache()
 //
 function censor_words($text)
 {
-    global $db;
     static $search_for, $replace_with;
 
     // If not already built in a previous call, build an array of censor words and their replacement text
@@ -743,7 +600,7 @@ function censor_words($text)
 //
 function get_title($user)
 {
-    global $feather_bans, $lang_common;
+    global $feather_bans;
     static $ban_list;
 
     // If not already built in a previous call, build an array of lowercase banned usernames
@@ -761,7 +618,7 @@ function get_title($user)
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
-        $user_title = $lang_common['Banned'];
+        $user_title = __('Banned');
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
@@ -769,11 +626,11 @@ function get_title($user)
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
-        $user_title = $lang_common['Guest'];
+        $user_title = __('Guest');
     }
     // If nothing else helps, we assign the default
     else {
-        $user_title = $lang_common['Member'];
+        $user_title = __('Member');
     }
 
     return $user_title;
@@ -785,7 +642,7 @@ function get_title($user)
 //
 function paginate($num_pages, $cur_page, $link, $args = null)
 {
-    global $lang_common;
+
 
     $pages = array();
     $link_to_all = false;
@@ -801,14 +658,14 @@ function paginate($num_pages, $cur_page, $link, $args = null)
     } else {
         // Add a previous page link
         if ($num_pages > 1 && $cur_page > 1) {
-            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.$lang_common['Previous'].'</a>';
+            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
         }
-                        
+
         if ($cur_page > 3) {
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
             if ($cur_page > 5) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
         }
 
@@ -825,7 +682,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 
         if ($cur_page <= ($num_pages-3)) {
             if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4)) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
 
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', $num_pages, $args).'">'.forum_number_format($num_pages).'</a>';
@@ -833,7 +690,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 
         // Add a next page link
         if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.$lang_common['Next'].'</a>';
+            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
         }
     }
 
@@ -846,7 +703,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 //
 function paginate_old($num_pages, $cur_page, $link)
 {
-    global $lang_common;
+
 
     $pages = array();
     $link_to_all = false;
@@ -862,14 +719,14 @@ function paginate_old($num_pages, $cur_page, $link)
     } else {
         // Add a previous page link
         if ($num_pages > 1 && $cur_page > 1) {
-            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page - 1)).'">'.$lang_common['Previous'].'</a>';
+            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page - 1)).'">'.__('Previous').'</a>';
         }
 
         if ($cur_page > 3) {
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
             if ($cur_page > 5) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
         }
 
@@ -886,7 +743,7 @@ function paginate_old($num_pages, $cur_page, $link)
 
         if ($cur_page <= ($num_pages-3)) {
             if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4)) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
 
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.forum_number_format($num_pages).'</a>';
@@ -894,7 +751,7 @@ function paginate_old($num_pages, $cur_page, $link)
 
         // Add a next page link
         if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($cur_page +1).'">'.$lang_common['Next'].'</a>';
+            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($cur_page +1).'">'.__('Next').'</a>';
         }
     }
 
@@ -905,42 +762,53 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 // Display a message
 //
-function message($message, $no_back_link = false, $http_status = null)
-{
-    global $db, $lang_common, $feather_config, $tpl_main, $feather_user;
 
+function message($msg, $http_status = null, $no_back_link = false, $dontStop = false)
+{
     // Did we receive a custom header?
     if (!is_null($http_status)) {
         header('HTTP/1.1 ' . $http_status);
     }
-    
+
+    // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-    if (!defined('FEATHER_HEADER')) {
-        $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Info']);
+    $http_status = (int) $http_status;
+    if ($http_status > 0) {
+        $feather->response->setStatus($http_status);
+    }
 
-        define('FEATHER_ACTIVE_PAGE', 'index');
+    // Overwrite existing body
+    $feather->response->setBody('');
+
+    if (!defined('FEATHER_HEADER')) {
+        $page_title = array(feather_escape($feather->config['o_board_title']), __('Info'));
+
+        if (!defined('FEATHER_ACTIVE_PAGE')) {
+            define('FEATHER_ACTIVE_PAGE', 'index');
+        }
 
         require_once FEATHER_ROOT.'controller/header.php';
-        
+
         $header = new \controller\header();
-        
-        $header->display();
+
+        $header->setTitle($page_title)->display();
     }
 
     $feather->render('message.php', array(
-        'lang_common' => $lang_common,
-        'message'    =>    $message,
-        'no_back_link'    =>    $no_back_link,
-        )
-    );
-    
+        'message'    =>    $msg,
+        'no_back_link'    => $no_back_link,
+        ));
+
     require_once FEATHER_ROOT.'controller/footer.php';
-    
+
     $footer = new \controller\footer();
 
+    if ($dontStop) {
+        $footer->dontStop();
+    }
+
     $footer->display();
-    
 }
 
 
@@ -949,22 +817,25 @@ function message($message, $no_back_link = false, $http_status = null)
 //
 function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
 {
-    global $lang_common, $feather_user, $forum_date_formats, $forum_time_formats;
+    global $forum_date_formats, $forum_time_formats;
 
     if ($timestamp == '') {
-        return $lang_common['Never'];
+        return __('Never');
     }
 
-    $diff = ($feather_user['timezone'] + $feather_user['dst']) * 3600;
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
+    $diff = ($feather->user->timezone + $feather->user->dst) * 3600;
     $timestamp += $diff;
     $now = time();
 
     if (is_null($date_format)) {
-        $date_format = $forum_date_formats[$feather_user['date_format']];
+        $date_format = $forum_date_formats[$feather->user->date_format];
     }
 
     if (is_null($time_format)) {
-        $time_format = $forum_time_formats[$feather_user['time_format']];
+        $time_format = $forum_time_formats[$feather->user->time_format];
     }
 
     $date = gmdate($date_format, $timestamp);
@@ -973,9 +844,9 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 
     if (!$no_text) {
         if ($date == $today) {
-            $date = $lang_common['Today'];
+            $date = __('Today');
         } elseif ($date == $yesterday) {
-            $date = $lang_common['Yesterday'];
+            $date = __('Yesterday');
         }
     }
 
@@ -994,9 +865,7 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 //
 function forum_number_format($number, $decimals = 0)
 {
-    global $lang_common;
-
-    return is_numeric($number) ? number_format($number, $decimals, $lang_common['lang_decimal_point'], $lang_common['lang_thousands_sep']) : $number;
+    return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
 }
 
 
@@ -1025,49 +894,6 @@ function random_key($len, $readable = false, $hash = false)
     }
 
     return $key;
-}
-
-
-//
-// Make sure that HTTP_REFERER matches base_url/script
-//
-function confirm_referrer($scripts, $error_msg = false)
-{
-    global $lang_common;
-    
-    $feather = \Slim\Slim::getInstance();
-
-    if (!is_array($scripts)) {
-        $scripts = array($scripts);
-    }
-
-    // There is no referrer
-    if ($feather->request->getReferrer() == '') {
-        message($error_msg ? $error_msg : $lang_common['Bad referrer']);
-    }
-
-    $referrer = parse_url(strtolower($feather->request->getReferrer()));
-    // Remove www subdomain if it exists
-    if (strpos($referrer['host'], 'www.') === 0) {
-        $referrer['host'] = substr($referrer['host'], 4);
-    }
-
-    $valid_paths = array();
-    foreach ($scripts as $script) {
-        $valid = parse_url(strtolower(get_base_url().'/'.$script));
-        // Remove www subdomain if it exists
-        if (strpos($valid['host'], 'www.') === 0) {
-            $valid['host'] = substr($valid['host'], 4);
-        }
-
-        $valid_host = $valid['host'];
-        $valid_paths[] = $valid['path'];
-    }
-
-    // Check the host and path match. Ignore the scheme, port, etc.
-    if ($referrer['host'] != $valid_host || !in_array($referrer['path'], $valid_paths, true)) {
-        message($error_msg ? $error_msg : $lang_common['Bad referrer']);
-    }
 }
 
 
@@ -1138,7 +964,7 @@ function feather_hash($str)
 function get_remote_address()
 {
     $feather = \Slim\Slim::getInstance();
-    
+
     $remote_addr = $feather->request->getIp();
 
     return $remote_addr;
@@ -1210,119 +1036,48 @@ function is_all_uppercase($string)
 
 
 //
-// Inserts $element into $input at $offset
-// $offset can be either a numerical offset to insert at (eg: 0 inserts at the beginning of the array)
-// or a string, which is the key that the new element should be inserted before
-// $key is optional: it's used when inserting a new key/value pair into an associative array
-//
-function array_insert(&$input, $offset, $element, $key = null)
-{
-    if (is_null($key)) {
-        $key = $offset;
-    }
-
-    // Determine the proper offset if we're using a string
-    if (!is_int($offset)) {
-        $offset = array_search($offset, array_keys($input), true);
-    }
-
-    // Out of bounds checks
-    if ($offset > count($input)) {
-        $offset = count($input);
-    } elseif ($offset < 0) {
-        $offset = 0;
-    }
-
-    $input = array_merge(array_slice($input, 0, $offset), array($key => $element), array_slice($input, $offset));
-}
-
-
-//
 // Display a message when board is in maintenance mode
 //
 function maintenance_message()
 {
-    global $db, $feather_config, $lang_common, $feather_user;
-
-    // Send no-cache headers
-    header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
-    // Send the Content-type header in case the web server is setup to send something else
-    header('Content-type: text/html; charset=utf-8');
+    global $feather_config, $tpl_main;
 
     // Deal with newlines, tabs and multiple spaces
     $pattern = array("\t", '  ', '  ');
     $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
     $message = str_replace($pattern, $replace, $feather_config['o_maintenance_message']);
 
-    if (file_exists(FEATHER_ROOT.'style/'.$feather_user['style'].'/maintenance.tpl')) {
-        $tpl_file = FEATHER_ROOT.'style/'.$feather_user['style'].'/maintenance.tpl';
-        $tpl_inc_dir = FEATHER_ROOT.'style/'.$feather_user['style'].'/';
-    } else {
-        $tpl_file = FEATHER_ROOT.'include/template/maintenance.tpl';
-        $tpl_inc_dir = FEATHER_ROOT.'include/user/';
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
+    $page_title = array(feather_escape($feather_config['o_board_title']), __('Maintenance'));
+
+    if (!defined('FEATHER_ACTIVE_PAGE')) {
+        define('FEATHER_ACTIVE_PAGE', 'index');
     }
 
-    $tpl_maint = file_get_contents($tpl_file);
+    require_once FEATHER_ROOT.'controller/header.php';
+    require_once FEATHER_ROOT.'controller/footer.php';
 
+    $feather->config('templates.path', get_path_view());
 
-    // START SUBST - <pun_language>
-    $tpl_maint = str_replace('<pun_language>', $lang_common['lang_identifier'], $tpl_maint);
-    // END SUBST - <pun_language>
+    $header = new \controller\header();
 
+    $header->setTitle($page_title)->display();
 
-    // START SUBST - <pun_content_direction>
-    $tpl_maint = str_replace('<pun_content_direction>', $lang_common['lang_direction'], $tpl_maint);
-    // END SUBST - <pun_content_direction>
+    $feather->render('message.php', array(
+            'message'    =>    $message,
+            'no_back_link'    =>    '',
+        )
+    );
 
+    require_once FEATHER_ROOT.'controller/footer.php';
 
-    // START SUBST - <pun_head>
-    ob_start();
+    $footer = new \controller\footer();
 
-    $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Maintenance']);
+    $footer->dontStop();
 
-    ?>
-<title><?php echo generate_page_title($page_title) ?></title>
-<link rel="stylesheet" type="text/css" href="style/<?php echo $feather_user['style'].'.css' ?>" />
-<?php
-
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_maint = str_replace('<pun_head>', $tpl_temp, $tpl_maint);
-    ob_end_clean();
-    // END SUBST - <pun_head>
-
-
-    // START SUBST - <pun_maint_main>
-    ob_start();
-
-    ?>
-<div class="block">
-	<h2><?php echo $lang_common['Maintenance'] ?></h2>
-	<div class="box">
-		<div class="inbox">
-			<p><?php echo $message ?></p>
-		</div>
-	</div>
-</div>
-<?php
-
-    $tpl_temp = trim(ob_get_contents());
-    $tpl_maint = str_replace('<pun_maint_main>', $tpl_temp, $tpl_maint);
-    ob_end_clean();
-    // END SUBST - <pun_maint_main>
-
-
-    // End the transaction
-    $db->end_transaction();
-
-
-    // Close the db connection (and free up any result data)
-    $db->close();
-
-    exit($tpl_maint);
+    $footer->display();
 }
 
 
@@ -1333,101 +1088,10 @@ function redirect($destination_url, $message = null)
 {
     $feather = \Slim\Slim::getInstance();
 
+    // Add a flash message
+    $feather->flash('message', $message);
+
     $feather->redirect($destination_url);
-}
-
-
-//
-// Display a simple error message
-//
-function error($message, $file = null, $line = null, $db_error = false)
-{
-    global $feather_config, $lang_common;
-
-    // Set some default settings if the script failed before $feather_config could be populated
-    if (empty($feather_config)) {
-        $feather_config = array(
-            'o_board_title'    => 'FluxBB',
-            'o_gzip'        => '0'
-        );
-    }
-
-    // Set some default translations if the script failed before $lang_common could be populated
-    if (empty($lang_common)) {
-        $lang_common = array(
-            'Title separator'    => ' / ',
-            'Page'                => 'Page %s'
-        );
-    }
-
-    // Empty all output buffers and stop buffering
-    while (@ob_end_clean());
-
-    // "Restart" output buffering if we are using ob_gzhandler (since the gzip header is already sent)
-    if ($feather_config['o_gzip'] && extension_loaded('zlib')) {
-        ob_start('ob_gzhandler');
-    }
-
-    // Send no-cache headers
-    header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
-    // Send the Content-type header in case the web server is setup to send something else
-    header('Content-type: text/html; charset=utf-8');
-
-    ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<?php $page_title = array(feather_escape($feather_config['o_board_title']), 'Error') ?>
-<title><?php echo generate_page_title($page_title) ?></title>
-<style type="text/css">
-<!--
-BODY {MARGIN: 10% 20% auto 20%; font: 10px Verdana, Arial, Helvetica, sans-serif}
-#errorbox {BORDER: 1px solid #B84623}
-H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADDING: 5px 4px}
-#errorbox DIV {PADDING: 6px 5px; BACKGROUND-COLOR: #F1F1F1}
--->
-</style>
-</head>
-<body>
-
-<div id="errorbox">
-	<h2>An error was encountered</h2>
-	<div>
-<?php
-
-    if (defined('FEATHER_DEBUG') && !is_null($file) && !is_null($line)) {
-        echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
-
-        if ($db_error) {
-            echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.feather_escape($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
-
-            if ($db_error['error_sql'] != '') {
-                echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.feather_escape($db_error['error_sql'])."\n";
-            }
-        }
-    } else {
-        echo "\t\t".'Error: <strong>'.$message.'.</strong>'."\n";
-    }
-
-    ?>
-	</div>
-</div>
-
-</body>
-</html>
-<?php
-
-    // If a database connection was established (before this error) we close it
-    if ($db_error) {
-        $GLOBALS['db']->close();
-    }
-
-    exit;
 }
 
 
@@ -1543,15 +1207,13 @@ function remove_bad_characters($array)
 //
 function file_size($size)
 {
-    global $lang_common;
-
     $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
 
     for ($i = 0; $size > 1024; $i++) {
         $size /= 1024;
     }
 
-    return sprintf($lang_common['Size unit '.$units[$i]], round($size, 2));
+    return sprintf(__('Size unit '.$units[$i]), round($size, 2));
 }
 
 
@@ -1777,14 +1439,6 @@ function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
 }
 
 //
-// A wrapper for ucp_preg_replace
-//
-function ucp_preg_replace_callback($pattern, $replace, $subject)
-{
-    return ucp_preg_replace($pattern, $replace, $subject, true);
-}
-
-//
 // Replace four-byte characters with a question mark
 //
 // As MySQL cannot properly handle four-byte characters with the default utf-8
@@ -1847,43 +1501,38 @@ function forum_is_writable($path)
 //
 function display_saved_queries()
 {
-    global $db, $lang_common;
 
-    // Get the queries so that we can print them out
-    $saved_queries = $db->get_saved_queries();
 
     ?>
 
 <div id="debug" class="blocktable">
-	<h2><span><?php echo $lang_common['Debug table'] ?></span></h2>
+	<h2><span><?php _e('Debug table') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Query times'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_common['Query'] ?></th>
+					<th class="tcl" scope="col"><?php _e('Query times') ?></th>
+					<th class="tcr" scope="col"><?php _e('Query') ?></th>
 				</tr>
 			</thead>
 			<tbody>
 <?php
 
     $query_time_total = 0.0;
-    foreach ($saved_queries as $cur_query) {
-        $query_time_total += $cur_query[1];
-
+    $i = 0;
+    foreach (\DB::get_query_log()[1] as $query) {
+        ?>
+                <tr>
+					<td class="tcl"><?php echo feather_escape(round(\DB::get_query_log()[0][$i], 6)) ?></td>
+					<td class="tcr"><?php echo feather_escape($query) ?></td>
+				</tr>
+        <?php
+        ++$i;
+    }
         ?>
 				<tr>
-					<td class="tcl"><?php echo($cur_query[1] != 0) ? $cur_query[1] : '&#160;' ?></td>
-					<td class="tcr"><?php echo feather_escape($cur_query[0]) ?></td>
-				</tr>
-<?php
-
-    }
-
-    ?>
-				<tr>
-					<td class="tcl" colspan="2"><?php printf($lang_common['Total query time'], $query_time_total.' s') ?></td>
+					<td class="tcl" colspan="2"><?php printf(__('Total query time'), $query_time_total.' s') ?></td>
 				</tr>
 			</tbody>
 			</table>
@@ -1892,42 +1541,6 @@ function display_saved_queries()
 </div>
 <?php
 
-}
-
-
-//
-// Dump contents of variable(s)
-//
-function dump()
-{
-    echo '<pre>';
-
-    $num_args = func_num_args();
-
-    for ($i = 0; $i < $num_args; ++$i) {
-        print_r(func_get_arg($i));
-        echo "\n\n";
-    }
-
-    echo '</pre>';
-    exit;
-}
-
-//
-// Return the path to load the view file
-//
-function get_path_view($file = null)
-{
-    global $feather_user;
-    
-    if ($file && is_file('style/'.$feather_user['style'])) {
-        return FEATHER_ROOT.'style/'.$feather_user['style'].'/view';
-    }
-    elseif (is_dir('style/'.$feather_user['style'].'/view')) {
-        return FEATHER_ROOT.'style/'.$feather_user['style'].'/view';
-    } else {
-        return FEATHER_ROOT.'view';
-    }
 }
 
 //
@@ -1941,6 +1554,10 @@ function url_friendly($str)
     $str = strtr($str, $url_replace);
     $str = strtolower(utf8_decode($str));
     $str = feather_trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+
+    if (empty($str)) {
+        $str = 'view';
+    }
 
     return $str;
 }
@@ -1972,22 +1589,6 @@ function get_link($link, $args = null)
     return $gen_link;
 }
 
-//
-// Generate link to another page on the forum for the referrer function
-//
-function get_link_r($link)
-{
-    if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
-        $base_url = '';
-    } else {
-        $base_url = 'index.php';
-    }
-
-    $gen_link = $base_url.$link;
-
-    return $gen_link;
-}
-
 
 //
 // Generate a hyperlink with parameters and anchor and a subsection such as a subpage
@@ -2013,4 +1614,20 @@ function get_sublink($link, $sublink, $subarg, $args = null)
     $gen_link = $base_url.'/'.str_replace('#', str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'), $gen_link);
 
     return $gen_link;
+}
+
+// Generate breadcrumbs from an array of name and URLs
+
+function breadcrumbs(array $links) {
+    global $lang_admin_reports;
+
+    foreach ($links as $name => $url) {
+        if ($name != '' && $url != '') {
+            $tmp[] = '<span><a href="' . $url . '">'.feather_escape($name).'</a></span>';
+        } else {
+            $tmp[] = '<span>'.__('Deleted').'</span>';
+            return implode(' » ', $tmp);
+        }
+    }
+    return implode(' » ', $tmp);
 }

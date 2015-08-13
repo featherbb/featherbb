@@ -261,14 +261,14 @@ function bbcode2email($text, $wrap_length = 72)
 //
 function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
 {
-    global $feather_config, $lang_common;
+    global $feather_config;
 
     // Use \r\n for SMTP servers, the system's line ending for local mailers
     $smtp = $feather_config['o_smtp_host'] != '';
     $EOL = $smtp ? "\r\n" : FORUM_EOL;
 
     // Default sender/return address
-    $from_name = sprintf($lang_common['Mailer'], $feather_config['o_board_title']);
+    $from_name = sprintf(__('Mailer'), $feather_config['o_board_title']);
     $from_email = $feather_config['o_webmaster_email'];
 
     // Do a little spring cleaning
@@ -283,7 +283,7 @@ function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name 
     $from = '"'.encode_mail_text($from_name).'" <'.$from_email.'>';
     $subject = encode_mail_text($subject);
 
-    $headers = 'From: '.$from.$EOL.'Date: '.gmdate('r').$EOL.'MIME-Version: 1.0'.$EOL.'Content-transfer-encoding: 8bit'.$EOL.'Content-type: text/plain; charset=utf-8'.$EOL.'X-Mailer: FluxBB Mailer';
+    $headers = 'From: '.$from.$EOL.'Date: '.gmdate('r').$EOL.'MIME-Version: 1.0'.$EOL.'Content-transfer-encoding: 8bit'.$EOL.'Content-type: text/plain; charset=utf-8'.$EOL.'X-Mailer: FeatherBB Mailer';
 
     // If we specified a reply-to email, we deal with it here
     if (!empty($reply_to_email)) {

@@ -17,8 +17,9 @@ if (!defined('FEATHER')) {
 		<h2><span><?php echo $lang_admin_parser['Parser head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/parser/') ?>" enctype="multipart/form-data">
+				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop">
-					<input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" />
+					<input type="submit" name="save" value="<?php _e('Save changes') ?>" />
 					<input type="submit" name="reset" value="<?php echo $lang_admin_parser['reset defaults'] ?>" />
 				</p>
 				<div class="inform">
@@ -32,9 +33,9 @@ if (!defined('FEATHER')) {
 									<td colspan="2">
 										<input type="radio" name="config[textile]" value="1"<?php if ($config['textile']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>   <input type="radio" name="config[textile]" value="0"<?php if (!$config['textile']) {
+} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[textile]" value="0"<?php if (!$config['textile']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+} ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
 										<span><?php echo $lang_admin_parser['textile help'] ?></span>
@@ -45,9 +46,9 @@ if (!defined('FEATHER')) {
 									<td colspan="2">
 										<input type="radio" name="config[quote_links]" value="1"<?php if ($config['quote_links']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>   <input type="radio" name="config[quote_links]" value="0"<?php if (!$config['quote_links']) {
+} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[quote_links]" value="0"<?php if (!$config['quote_links']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+} ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
 										<span><?php echo $lang_admin_parser['quote_links help'] ?></span>
@@ -58,9 +59,9 @@ if (!defined('FEATHER')) {
 									<td colspan="2">
 										<input type="radio" name="config[quote_imgs]" value="1"<?php if ($config['quote_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>   <input type="radio" name="config[quote_imgs]" value="0"<?php if (!$config['quote_imgs']) {
+} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[quote_imgs]" value="0"<?php if (!$config['quote_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+} ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
 										<span><?php echo $lang_admin_parser['quote_imgs help'] ?></span>
@@ -71,9 +72,9 @@ if (!defined('FEATHER')) {
 									<td colspan="2">
 										<input type="radio" name="config[click_imgs]" value="1"<?php if ($config['click_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>   <input type="radio" name="config[click_imgs]" value="0"<?php if (!$config['click_imgs']) {
+} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[click_imgs]" value="0"<?php if (!$config['click_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+} ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
 										<span><?php echo $lang_admin_parser['click_imgs help'] ?></span>
@@ -87,12 +88,12 @@ if (!defined('FEATHER')) {
     echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'. feather_escape($lang_admin_parser['unavailable']) .'"');
-} ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>
+} ?> /> <strong><?php _e('Yes') ?></strong>
 										<input type="radio" name="config[valid_imgs]" value="0"<?php if (!$config['valid_imgs']) {
     echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'. feather_escape($lang_admin_parser['unavailable']) .'"');
-} ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+} ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td><?php echo $lang_admin_parser['valid_imgs help'] ?></td>
 								</tr>
@@ -256,19 +257,19 @@ foreach ($bbcd as $tagname => $tagdata) {
 										<input type="radio" name="<?php echo($tagname) ?>_in_post" value="1"<?php if ($bbcd[$tagname]['in_post']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
+    ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+    ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
 										<input type="radio" name="<?php echo($tagname) ?>_in_sig" value="1"<?php if ($bbcd[$tagname]['in_sig']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php echo $lang_admin_common['Yes'] ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
+    ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php echo $lang_admin_common['No'] ?></strong>
+    ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
 										<input type="text" size="10" name="<?php echo($tagname) ?>_depth_max" value="<?php echo($bbcd[$tagname]['depth_max']);
@@ -288,7 +289,7 @@ foreach ($bbcd as $tagname => $tagdata) {
 
 
 				<p class="submitend">
-					<input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" />
+					<input type="submit" name="save" value="<?php _e('Save changes') ?>" />
 					<input type="submit" name="reset" value="<?php echo $lang_admin_parser['reset defaults'] ?>" />
 				</p>
 			</form>

@@ -14,7 +14,6 @@ class viewtopic
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -22,6 +21,9 @@ class viewtopic
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\viewtopic();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function __autoload($class_name)
@@ -31,34 +33,25 @@ class viewtopic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        global $lang_common, $lang_post, $lang_topic, $lang_bbeditor, $pd;
+        global $pd;
 
-        if ($this->user['g_read_board'] == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+        if ($this->user->g_read_board == '0') {
+            message(__('No view'), '403');
         }
 
-        // Load the viewtopic.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/topic.php';
-
-        // Load the post.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/post.php';
-
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/antispam.php';
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
-
-        // BBcode toolbar feature
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/bbeditor.php';
 
         // Load the viewtopic.php model file
         require_once FEATHER_ROOT.'model/viewtopic.php';
 
-        // Fetch some informations about the topic TODO
+        // Fetch some informations about the topic
         $cur_topic = $this->model->get_info_topic($id);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && array_key_exists($this->user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
         if ($is_admmod) {
             $admin_ids = get_admin_ids();
         }
@@ -67,24 +60,23 @@ class viewtopic
         $post_link = $this->model->get_post_link($id, $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
 
         // Add/update this topic in our list of tracked topics
-        if (!$this->user['is_guest']) {
+        if (!$this->user->is_guest) {
             $tracked_topics = get_tracked_topics();
             $tracked_topics['topics'][$id] = time();
             set_tracked_topics($tracked_topics);
         }
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->user['disp_posts']);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->user->disp_posts);
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
-        $start_from = $this->user['disp_posts'] * ($p - 1);
+        $start_from = $this->user->disp_posts * ($p - 1);
 
         $url_topic = url_friendly($cur_topic['subject']);
         $url_forum = url_friendly($cur_topic['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
-
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
         if ($this->config['o_censoring'] == '1') {
             $cur_topic['subject'] = censor_words($cur_topic['subject']);
@@ -104,18 +96,12 @@ class viewtopic
 
         $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
-        $forum_id = $cur_topic['forum_id'];
-
         require FEATHER_ROOT.'include/parser.php';
 
         $this->feather->render('viewtopic.php', array(
                             'id' => $id,
                             'p' => $p,
                             'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
-                            'lang_common' => $lang_common,
-                            'lang_topic' => $lang_topic,
-                            'lang_post' => $lang_post,
-                            'lang_bbeditor' => $lang_bbeditor,
                             'cur_topic'    =>    $cur_topic,
                             'subscraction'    =>    $subscraction,
                             'is_admmod'    =>    $is_admmod,
@@ -130,30 +116,25 @@ class viewtopic
                             'lang_antispam_questions'        =>    $lang_antispam_questions,
                             'url_forum'        =>    $url_forum,
                             'url_topic'        =>    $url_topic,
+                            'feather'          =>    $this->feather,
                             )
                     );
 
         // Increment "num_views" for topic
-        if ($this->config['o_topic_views'] == '1') {
-            $this->db->query('UPDATE '.$this->db->prefix.'topics SET num_views=num_views+1 WHERE id='.$id) or error('Unable to update topic', __FILE__, __LINE__, $this->db->error());
-        }
+        $this->model->increment_views($id);
 
         $this->footer->display('viewtopic', $id, $p, $pid, $cur_topic['forum_id'], $num_pages);
     }
 
     public function viewpost($pid)
     {
-        global $lang_common;
-
         $post = $this->model->redirect_to_post($pid);
 
-        return self::display($post['topic_id'], null, $post['get_p'], $pid);
+        return $this->display($post['topic_id'], null, $post['get_p'], $pid);
     }
 
     public function action($id, $action)
     {
-        global $lang_common;
-
         $this->model->handle_actions($id, $action);
     }
 }

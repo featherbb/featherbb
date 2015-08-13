@@ -9,12 +9,13 @@
 
 namespace model\admin;
 
+use DB;
+
 class options
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -23,10 +24,6 @@ class options
  
     public function update_options()
     {
-        global $lang_admin_options, $lang_common;
-
-        confirm_referrer(get_link_r('admin/options/'), $lang_admin_options['Bad HTTP Referer message']);
-
         $form = array(
             'board_title'            => feather_trim($this->request->post('form_board_title')),
             'board_desc'            => feather_trim($this->request->post('form_board_desc')),
@@ -90,7 +87,7 @@ class options
         );
 
         if ($form['board_title'] == '') {
-            message($lang_admin_options['Must enter title message']);
+            message(__('Must enter title message'));
         }
 
         // Make sure base_url doesn't end with a slash
@@ -101,7 +98,7 @@ class options
         // Convert IDN to Punycode if needed
         if (preg_match('/[^\x00-\x7F]/', $form['base_url'])) {
             if (!function_exists('idn_to_ascii')) {
-                message($lang_admin_options['Base URL problem']);
+                message(__('Base URL problem'));
             } else {
                 $form['base_url'] = idn_to_ascii($form['base_url']);
             }
@@ -109,12 +106,12 @@ class options
 
         $languages = forum_list_langs();
         if (!in_array($form['default_lang'], $languages)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message(__('Bad request'), '404');
         }
 
         $styles = forum_list_styles();
         if (!in_array($form['default_style'], $styles)) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message(__('Bad request'), '404');
         }
 
         if ($form['time_format'] == '') {
@@ -129,11 +126,11 @@ class options
         require FEATHER_ROOT.'include/email.php';
 
         if (!is_valid_email($form['admin_email'])) {
-            message($lang_admin_options['Invalid e-mail message']);
+            message(__('Invalid e-mail message'));
         }
 
         if (!is_valid_email($form['webmaster_email'])) {
-            message($lang_admin_options['Invalid webmaster e-mail message']);
+            message(__('Invalid webmaster e-mail message'));
         }
 
         if ($form['mailing_list'] != '') {
@@ -157,28 +154,28 @@ class options
             if ($smtp_pass1 == $smtp_pass2) {
                 $form['smtp_pass'] = $smtp_pass1;
             } else {
-                message($lang_admin_options['SMTP passwords did not match']);
+                message(__('SMTP passwords did not match'));
             }
         }
 
         if ($form['announcement_message'] != '') {
             $form['announcement_message'] = feather_linebreaks($form['announcement_message']);
         } else {
-            $form['announcement_message'] = $lang_admin_options['Enter announcement here'];
+            $form['announcement_message'] = __('Enter announcement here');
             $form['announcement'] = '0';
         }
 
         if ($form['rules_message'] != '') {
             $form['rules_message'] = feather_linebreaks($form['rules_message']);
         } else {
-            $form['rules_message'] = $lang_admin_options['Enter rules here'];
+            $form['rules_message'] = __('Enter rules here');
             $form['rules'] = '0';
         }
 
         if ($form['maintenance_message'] != '') {
             $form['maintenance_message'] = feather_linebreaks($form['maintenance_message']);
         } else {
-            $form['maintenance_message'] = $lang_admin_options['Default maintenance message'];
+            $form['maintenance_message'] = __('Default maintenance message');
             $form['maintenance'] = '0';
         }
 
@@ -196,35 +193,35 @@ class options
         }
 
         if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message(__('Bad request'), '404');
         }
 
         if ($form['feed_ttl'] < 0) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message(__('Bad request'), '404');
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message(__('Bad request'), '404');
         }
 
         if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
-            message($lang_common['Bad request'], false, '404 Not Found');
+            message(__('Bad request'), '404');
         }
 
         if ($form['timeout_online'] >= $form['timeout_visit']) {
-            message($lang_admin_options['Timeout error message']);
+            message(__('Timeout error message'));
         }
 
         foreach ($form as $key => $input) {
             // Only update values that have changed
             if (array_key_exists('o_'.$key, $this->config) && $this->config['o_'.$key] != $input) {
                 if ($input != '' || is_int($input)) {
-                    $value = '\''.$this->db->escape($input).'\'';
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
+                                                               ->update_many('conf_value', $input);
                 } else {
-                    $value = 'NULL';
+                    DB::for_table('config')->where('conf_name', 'o_'.$key)
+                                                               ->update_many_expr('conf_value', 'NULL');
                 }
-
-                $this->db->query('UPDATE '.$this->db->prefix.'config SET conf_value='.$value.' WHERE conf_name=\'o_'.$this->db->escape($key).'\'') or error('Unable to update board config', __FILE__, __LINE__, $this->db->error());
             }
         }
 
@@ -236,12 +233,11 @@ class options
         generate_config_cache();
         clear_feed_cache();
 
-        redirect(get_link('admin/options/'), $lang_admin_options['Options updated redirect']);
+        redirect(get_link('admin/options/'), __('Options updated redirect'));
     }
 
     public function get_styles()
     {
-        
         $styles = forum_list_styles();
         
         $output = '';
@@ -259,14 +255,12 @@ class options
 
     public function get_times()
     {
-        global $lang_admin_options;
-
         $times = array(5, 15, 30, 60);
         
         $output = '';
 
         foreach ($times as $time) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($this->config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf($lang_admin_options['Minutes'], $time).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($this->config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
         
         return $output;

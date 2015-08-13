@@ -14,26 +14,27 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo $lang_misc['Split posts'] ?></span></h2>
+	<h2><span><?php _e('Split posts') ?></span></h2>
 	<div class="box">
 		<form id="subject" method="post" action="">
+			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_misc['Confirm split legend'] ?></legend>
+					<legend><?php _e('Confirm split legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="posts" value="<?php echo implode(',', array_map('intval', array_keys($posts))) ?>" />
-						<label class="required"><strong><?php echo $lang_misc['New subject'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
-						<label><?php echo $lang_misc['Move to'] ?>
+						<label class="required"><strong><?php _e('New subject') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
+						<label><?php _e('Move to') ?>
 						<br /><select name="move_to_forum">
-								<?php get_forum_list_split($id); ?>
+								<?php echo $list_forums ?>
 							</optgroup>
 						</select>
 						<br /></label>
-						<p><?php echo $lang_misc['Split posts comply'] ?></p>
+						<p><?php _e('Split posts comply') ?></p>
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="split_posts_comply" value="<?php echo $lang_misc['Split'] ?>" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
+			<p class="buttons"><input type="submit" name="split_posts_comply" value="<?php _e('Split') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
 		</form>
 	</div>
 </div>

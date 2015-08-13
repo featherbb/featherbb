@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div id="rules" class="block">
-	<div class="hd"><h2><span><?php echo $lang_register['Forum rules'] ?></span></h2></div>
+	<div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
 	<div class="box">
 		<div id="rules-block" class="inbox">
 			<div class="usercontent"><?php echo $feather_config['o_rules_message'] ?></div>

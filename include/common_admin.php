@@ -15,26 +15,24 @@ if (!defined('FEATHER')) {
 // TODO: refactor
 $feather = \Slim\Slim::getInstance();
 
-// Make sure we have a usable language pack for admin.
-if (file_exists(FEATHER_ROOT.'lang/'.$feather->user['language'].'/admin_common.php')) {
-    $admin_language = $feather->user['language'].'/admin/';
-} elseif (file_exists(FEATHER_ROOT.'lang/'.$feather->config['o_default_lang'].'/admin_common.php')) {
-    $admin_language = $feather->config['o_default_lang'].'/admin/';
+// Load the admin common lang file
+if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/admin/common.mo')) {
+    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/admin/common.mo');
 } else {
-    $admin_language = 'English/admin/';
+    die('There is no valid language pack \''.feather_escape($feather->user->language).'\' installed. Please reinstall a language of that name');
 }
 
-// Attempt to load the admin_common language file
-require FEATHER_ROOT.'lang/'.$admin_language.'/common.php';
+// To be removed
+$admin_language = 'English/admin';
 
 //
 // Display the admin navigation menu
 //
 function generate_admin_menu($page = '')
 {
-    global $lang_admin_common, $feather;
+    $feather = \Slim\Slim::getInstance();
 
-    $is_admin = $feather->user['g_id'] == FEATHER_ADMIN ? true : false;
+    $is_admin = $feather->user->g_id == FEATHER_ADMIN ? true : false;
     
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);
@@ -42,7 +40,6 @@ function generate_admin_menu($page = '')
     $feather->render('admin/menu.php', array(
         'page'    =>    $page,
         'is_admin'    =>    $is_admin,
-        'lang_admin_common'    =>    $lang_admin_common,
         'feather_config'    =>    $feather->config,
         'feather_user'    =>    $feather->user,
         'plugins'    =>    $plugins,

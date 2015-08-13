@@ -34,5 +34,5 @@ h1 {
 </head>
 <body>
 
-<h1><?php echo $lang_admin_maintenance['Rebuilding index info'] ?></h1>
+<h1><?php _e('Rebuilding index info') ?></h1>
 <hr />

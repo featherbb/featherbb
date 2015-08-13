@@ -14,7 +14,6 @@ class delete
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -22,6 +21,8 @@ class delete
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\delete();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/delete.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
     }
 
     public function __autoload($class_name)
@@ -31,10 +32,10 @@ class delete
     
     public function deletepost($id)
     {
-        global $lang_common, $lang_post, $pd;
+        global $pd;
 
-        if ($this->user['g_read_board'] == '0') {
-            message($lang_common['No view'], false, '403 Forbidden');
+        if ($this->user->g_read_board == '0') {
+            message(__('No view'), '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -46,25 +47,22 @@ class delete
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->user['g_id'] == FEATHER_ADMIN || ($this->user['g_moderator'] == '1' && array_key_exists($this->user['username'], $mods_array))) ? true : false;
+        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if (($this->user['g_delete_posts'] == '0' ||
-                ($this->user['g_delete_topics'] == '0' && $is_topic_post) ||
-                $cur_post['poster_id'] != $this->user['id'] ||
+        if (($this->user->g_delete_posts == '0' ||
+                ($this->user->g_delete_topics == '0' && $is_topic_post) ||
+                $cur_post['poster_id'] != $this->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+            message(__('No permission'), '403');
         }
 
-        if ($is_admmod && $this->user['g_id'] != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+            message(__('No permission'), '403');
         }
-
-        // Load the delete.php language file
-        require FEATHER_ROOT.'lang/'.$this->user['language'].'/delete.php';
 
 
         if ($this->feather->request()->isPost()) {
@@ -72,7 +70,7 @@ class delete
         }
 
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_delete['Delete post']);
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Delete post'));
 
         define('FEATHER_ACTIVE_PAGE', 'delete');
 
@@ -82,8 +80,6 @@ class delete
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         $this->feather->render('delete.php', array(
-                            'lang_common' => $lang_common,
-                            'lang_delete' => $lang_delete,
                             'cur_post' => $cur_post,
                             'id' => $id,
                             'is_topic_post' => $is_topic_post,

@@ -14,7 +14,6 @@ class forums
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->db = $this->feather->db;
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
@@ -22,131 +21,165 @@ class forums
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\forums();
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/forums.mo');
+        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
-    public function display()
+
+    //
+    // CRUD
+    //
+
+    public function add_forum()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
-
-        require FEATHER_ROOT . 'include/common_admin.php';
-
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
+        $cat_id = (int) $this->request->post('cat');
 
-        // Load the admin_options.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
-
-        // Add a "default" forum
-        if ($this->request->post('add_forum')) {
-            $this->model->add_forum();
-        }  // Update forum positions
-        elseif ($this->request->post('update_positions')) {
-            $this->model->update_positions();
+        if ($cat_id < 1) {
+            redirect(get_link('admin/forums/'), __('Must be valid category'));
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+        if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
+            // Regenerate the quick jump cache
+            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                require FEATHER_ROOT.'include/cache.php';
+            }
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
+            generate_quickjump_cache();
 
-        $this->header->setTitle($page_title)->display();
-
-        generate_admin_menu('forums');
-
-        $this->feather->render('admin/forums/admin_forums.php', array(
-                'lang_admin_forums' => $lang_admin_forums,
-                'lang_admin_common' => $lang_admin_common,
-                'feather_config' => $this->config,
-                'is_forum' => $this->model->check_forums(),
-                'forum_data'    =>  $this->model->get_forums(),
-                'categories_add' => $this->model->get_categories_add(),
-                'cur_index'     =>  4,
-                'cur_category' => 0,
-            )
-        );
-
-        $this->footer->display();
-    }
-
-
-    public function edit($id)
-    {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
-
-        require FEATHER_ROOT . 'include/common_admin.php';
-
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
-        }
-
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
-        // Load the admin_options.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
-
-        // Update forum
-
-        // Update group permissions for $forum_id
-        if ($this->request->post('save')) {
-            $this->model->update_permissions($id);
-        } elseif ($this->request->post('revert_perms')) {
-            $this->model->revert_permissions($id);
-        }
-
-        // Fetch forum info
-        $cur_forum = $this->model->get_forum_info($id);
-
-        $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
-
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
-
-        generate_admin_menu('forums');
-
-        $this->feather->render('admin/forums/permissions.php', array(
-                'lang_admin_forums' => $lang_admin_forums,
-                'lang_admin_common' => $lang_admin_common,
-                'feather_config' => $this->config,
-                'perm_data' => $this->model->get_permissions($id),
-                'cur_index'     =>  7,
-                'cur_forum' => $this->model->get_forum_info($id),
-                'categories_perms' => $this->model->get_categories_permissions($cur_forum),
-                'forum_id'  =>  $id,
-            )
-        );
-
-        $this->footer->display();
-    }
-
-    public function delete($id)
-    {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
-
-        require FEATHER_ROOT . 'include/common_admin.php';
-
-        if ($this->user['g_id'] != FEATHER_ADMIN) {
-            message($lang_common['No permission'], false, '403 Forbidden');
-        }
-
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
-        // Load the admin_options.php language file
-        require FEATHER_ROOT . 'lang/' . $admin_language . '/forums.php';
-
-        if ($this->feather->request->isPost()) { // Delete a forum with all posts
-            $this->model->delete_forum($id);
+            redirect(get_link('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
         } else {
-            // If the user hasn't confirmed the delete
+            redirect(get_link('admin/forums/'), __('Unable to add forum'));
+        }
+    }
 
-            $page_title = array(feather_escape($this->config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Forums']);
+    public function edit_forum($forum_id)
+    {
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message(__('No permission'), '403');
+        }
+
+        if($this->request->isPost()) {
+            if ($this->request->post('save') && $this->request->post('read_forum_old')) {
+
+                // Forums parameters / TODO : better handling of wrong parameters
+                $forum_data = array('forum_name' => feather_escape($this->request->post('forum_name')),
+                                    'forum_desc' => $this->request->post('forum_desc') ? feather_linebreaks(feather_trim($this->request->post('forum_desc'))) : NULL,
+                                    'cat_id' => (int) $this->request->post('cat_id'),
+                                    'sort_by' => (int) $this->request->post('sort_by'),
+                                    'redirect_url' => url_valid($this->request->post('redirect_url')) ? feather_escape($this->request->post('redirect_url')) : NULL);
+
+                if ($forum_data['forum_name'] == '') {
+                    redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Must enter name message'));
+                }
+                if ($forum_data['cat_id'] < 1) {
+                    redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Must be valid category'));
+                }
+
+                $this->model->update_forum($forum_id, $forum_data);
+
+                // Permissions
+                $permissions = $this->model->get_default_group_permissions(false);
+                foreach($permissions as $perm_group) {
+                    $permissions_data = array('group_id' => $perm_group['g_id'],
+                                                'forum_id' => $forum_id);
+                    if ($perm_group['g_read_board'] == '1' && isset($this->request->post('read_forum_new')[$perm_group['g_id']]) && $this->request->post('read_forum_new')[$perm_group['g_id']] == '1') {
+                        $permissions_data['read_forum'] = '1';
+                    }
+                    else {
+                        $permissions_data['read_forum'] = '0';
+                    }
+
+                    $permissions_data['post_replies'] = (isset($this->request->post('post_replies_new')[$perm_group['g_id']])) ? '1' : '0';
+                    $permissions_data['post_topics'] = (isset($this->request->post('post_topics_new')[$perm_group['g_id']])) ? '1' : '0';
+                    // Check if the new settings differ from the old
+                    if ($permissions_data['read_forum'] != $this->request->post('read_forum_old')[$perm_group['g_id']] || 
+                        $permissions_data['post_replies'] != $this->request->post('post_replies_old')[$perm_group['g_id']] || 
+                        $permissions_data['post_topics'] != $this->request->post('post_topics_old')[$perm_group['g_id']]) {
+                            // If there is no group permissions override for this forum
+                            if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['g_post_replies'] && $permissions_data['post_topics'] == $perm_group['g_post_topics']) {
+                                $this->model->delete_permissions($forum_id, $perm_group['g_id']);
+                            } else {
+                            // Run an UPDATE and see if it affected a row, if not, INSERT
+                                $this->model->update_permissions($permissions_data);
+                            }
+                    }
+                }
+
+                // Regenerate the quick jump cache
+                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                    require FEATHER_ROOT.'include/cache.php';
+                }
+                generate_quickjump_cache();
+
+                redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
+                
+            } elseif ($this->request->post('revert_perms')) {
+                $this->model->delete_permissions($forum_id);
+
+                // Regenerate the quick jump cache
+                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                    require FEATHER_ROOT.'include/cache.php';
+                }
+                generate_quickjump_cache();
+
+                redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
+            }
+
+        } else {
+
+            define('FEATHER_ADMIN_CONSOLE', 1);
+
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
+
+            define('FEATHER_ACTIVE_PAGE', 'admin');
+
+            $this->header->setTitle($page_title)->display();
+
+            generate_admin_menu('forums');
+
+            $this->feather->render('admin/forums/permissions.php', array(
+                    'feather_config' => $this->config,
+                    'perm_data' => $this->model->get_permissions($forum_id),
+                    'cur_index'     =>  7,
+                    'cur_forum' => $this->model->get_forum_info($forum_id),
+                    'forum_data' => $this->model->get_forums(),
+                )
+            );
+
+            $this->footer->display();
+        }
+    }
+
+    public function delete_forum($forum_id)
+    {
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message(__('No permission'), '403');
+        }
+
+        define('FEATHER_ADMIN_CONSOLE', 1);
+
+        if($this->request->isPost()) {
+            $this->model->delete_forum($forum_id);
+            // Regenerate the quick jump cache
+            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+                require FEATHER_ROOT.'include/cache.php';
+            }
+
+            generate_quickjump_cache();
+
+            redirect(get_link('admin/forums/'), __('Forum deleted redirect'));
+
+        } else { // If the user hasn't confirmed the delete
+
+            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
             define('FEATHER_ACTIVE_PAGE', 'admin');
 
@@ -155,14 +188,60 @@ class forums
             generate_admin_menu('forums');
 
             $this->feather->render('admin/forums/delete_forum.php', array(
-                    'lang_admin_forums' => $lang_admin_forums,
-                    'lang_admin_common' => $lang_admin_common,
-                    'forum_name' => $this->model->get_forum_name($id),
-                    'forum_id'  =>  $id,
+                    'cur_forum' => $this->model->get_forum_info($forum_id),
                 )
             );
 
             $this->footer->display();
         }
+    }
+    
+    // -- //
+
+    public function edit_positions()
+    {
+        foreach ($this->request->post('position') as $forum_id => $position) {
+            $position = (int) feather_trim($position);
+            $this->model->update_positions($forum_id, $position);
+        }
+
+        // Regenerate the quick jump cache
+        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
+            require FEATHER_ROOT.'include/cache.php';
+        }
+
+        generate_quickjump_cache();
+
+        redirect(get_link('admin/forums/'), __('Forums updated redirect'));
+    }
+    
+    public function display()
+    {
+        if ($this->user->g_id != FEATHER_ADMIN) {
+            message(__('No permission'), '403');
+        }
+
+        define('FEATHER_ADMIN_CONSOLE', 1);
+
+        if ($this->request->post('update_positions')) {
+            $this->edit_positions();
+        }
+
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
+
+        define('FEATHER_ACTIVE_PAGE', 'admin');
+
+        $this->header->setTitle($page_title)->display();
+
+        generate_admin_menu('forums');
+
+        $this->feather->render('admin/forums/admin_forums.php', array(
+                'feather_config' => $this->config,
+                'forum_data'    =>  $this->model->get_forums(),
+                'cur_index'     =>  4,
+            )
+        );
+
+        $this->footer->display();
     }
 }
