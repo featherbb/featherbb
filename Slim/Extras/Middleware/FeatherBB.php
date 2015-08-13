@@ -352,9 +352,15 @@ class FeatherBB extends \Slim\Middleware
             $this->authenticate();
 
             // Attempt to load the common language file
-            if (file_exists($this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php')) {
-                include $this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.php';
-            } else {
+            // Load l10n
+            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/pomo/MO.php';
+            require_once $this->data['forum_env']['FEATHER_ROOT'].'include/l10n.php';
+
+            // Attempt to load the language file
+            if (file_exists($this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo')) {
+                load_textdomain('featherbb', $this->data['forum_env']['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo');
+            }
+            else {
                 die('There is no valid language pack \''.feather_escape($this->app->user->language).'\' installed. Please reinstall a language of that name');
             }
 
