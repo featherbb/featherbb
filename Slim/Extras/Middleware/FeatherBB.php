@@ -322,13 +322,14 @@ class FeatherBB extends \Slim\Middleware
 
     public function call()
     {
-        global $feather_bans, $db_type, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
+        global $feather_bans, $cookie_name, $cookie_seed, $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
 
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
             $this->set_headers();
             $this->app->response->setStatus(403);
         } else {
             $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
+
 
             require $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
             require $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';

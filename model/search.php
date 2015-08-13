@@ -25,7 +25,7 @@ class search
  
     public function get_search_results()
     {
-        global $db_type, $lang_search;
+        global $lang_search;
 
         $search = array();
 
@@ -375,7 +375,9 @@ class search
                                 ->where('p.poster_id', $this->user->id)
                                 ->group_by('t.id');
 
-                    if ($db_type == 'pgsql') {
+                    $feather = \Slim\Slim::getInstance();
+
+                    if ($feather->forum_settings['db_type'] == 'pgsql') {
                         $result = $result->group_by('t.last_post');
                     }
 

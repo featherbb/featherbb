@@ -24,7 +24,10 @@ class maintenance
  
     public function rebuild()
     {
-        global $db_type, $lang_admin_maintenance;
+        global $lang_admin_maintenance;
+
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
 
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
 
@@ -41,7 +44,7 @@ class maintenance
             DB::for_table('search_matches')->raw_execute('TRUNCATE '.$this->feather->prefix.'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
-            switch ($db_type) {
+            switch ($feather->forum_settings['db_type']) {
                 case 'mysql':
                 case 'mysqli':
                 case 'mysql_innodb':

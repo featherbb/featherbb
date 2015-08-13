@@ -37,8 +37,6 @@ class moderate
             message(__('No view'), '403');
         }
 
-        // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
@@ -55,8 +53,6 @@ class moderate
             message(__('No view'), '403');
         }
 
-        // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
@@ -73,8 +69,6 @@ class moderate
             message(__('No view'), '403');
         }
 
-        // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // This particular function doesn't require forum-based moderator access. It can be used
         // by all moderators and admins
@@ -93,8 +87,6 @@ class moderate
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             message(__('No permission'), '403');
         }
-
-        $url_subject = url_friendly($this->model->get_subject_tid($id));
 
         // Move one topic
         if ($this->request->post('move_topics') || $this->request->post('move_topics_to')) {
@@ -131,8 +123,6 @@ class moderate
 
         // Stick a topic
         if ($action == 'stick') {
-            
-
             $this->model->stick_topic($id, $fid);
  
             redirect(get_link('topic/'.$id.'/'), __('Stick topic redirect'));
@@ -141,8 +131,6 @@ class moderate
 
         // Unstick a topic
         if ($action == 'unstick') {
-            
-
             $this->model->unstick_topic($id, $fid);
 
             redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
@@ -150,8 +138,6 @@ class moderate
 
         // Open a topic
         if ($action == 'open') {
-            
-            
             $this->model->open_topic($id, $fid);
 
             redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
@@ -159,8 +145,6 @@ class moderate
 
         // Close a topic
         if ($action == 'close') {
-            
-
             $this->model->close_topic($id, $fid);
 
             redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
@@ -283,8 +267,6 @@ class moderate
             message(__('No view'), '403');
         }
 
-        // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
@@ -340,9 +322,6 @@ class moderate
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
-
-        // Load the viewforum.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/forum.php';
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($fid);

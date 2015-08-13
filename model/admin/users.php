@@ -499,7 +499,10 @@ class users
 
     public function get_user_search()
     {
-        global $db_type, $lang_admin_users;
+        global $lang_admin_users;
+
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
 
         $form = $this->request->get('form') ? $this->request->get('form') : array();
 
@@ -592,7 +595,7 @@ class users
             $search['conditions'][] = 'u.registered<'.$registered_before;
         }
 
-        $like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
+        $like_command = ($feather->forum_settings['db_type'] == 'pgsql') ? 'ILIKE' : 'LIKE';
         foreach ($form as $key => $input) {
             if ($input != '' && in_array($key, array('username', 'email', 'title', 'realname', 'url', 'jabber', 'icq', 'msn', 'aim', 'yahoo', 'location', 'signature', 'admin_note'))) {
                 $search['conditions'][] = 'u.'.str_replace("'","''",$key).' '.$like_command.' \''.str_replace("'","''",str_replace('*', '%', $input)).'\'';

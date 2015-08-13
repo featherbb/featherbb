@@ -18,140 +18,6 @@ function get_microtime()
     return ((float)$usec + (float)$sec);
 }
 
-//
-// Cookie stuff!
-//
-function check_cookie()
-{
-    global $cookie_name, $cookie_seed;
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $now = time();
-
-    // Get FeatherBB cookie
-    $cookie_raw = $feather->getCookie($cookie_name);
-
-    // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
-    if (isset($cookie_raw)) {
-        $cookie = json_decode($cookie_raw, true);
-        $checksum = hash_hmac('sha1', $cookie['user_id'].$cookie['expires'], $cookie_seed . '_checksum');
-
-        // If cookie has a non-guest user, hasn't expired and is legit
-        if ($cookie['user_id'] > 1 && $cookie['expires'] > $now && $checksum == $cookie['checksum']) {
-
-            // Get user info from db
-            $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
-            $where_check_cookie = array('u.id' => intval($cookie['user_id']));
-
-            $result = \DB::for_table('users')
-                ->table_alias('u')
-                ->select_many($select_check_cookie)
-                ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                ->left_outer_join('online', array('o.user_id', '=', 'u.id'), 'o')
-                ->where($where_check_cookie)
-                ->find_result_set();
-
-            foreach ($result as $feather->user);
-
-            // Another security check, to prevent identity fraud by changing the user id in the cookie) (might be useless considering the strength of encryption)
-            if (isset($feather->user->id) && hash_hmac('sha1', $feather->user->password, $cookie_seed.'_password_hash') === $cookie['password_hash']) {
-                $expires = ($cookie['expires'] > $now + $feather->config['o_timeout_visit']) ? $now + 1209600 : $now + $feather->config['o_timeout_visit'];
-                $feather->user->is_guest = false;
-                $feather->user->is_admmod = $feather->user->g_id == FEATHER_ADMIN || $feather->user->g_moderator == '1';
-                feather_setcookie($feather->user->id, $feather->user->password, $expires);
-                set_preferences();
-                return true;
-            }
-        }
-    }
-    // If there is no cookie, or cookie is guest or expired, let's reconnect.
-    $expires = $now + 31536000; // The cookie expires after a year
-    feather_setcookie(1, feather_hash(uniqid(rand(), true)), $expires);
-    return set_default_user();
-}
-
-//
-// Set preferences
-//
-function set_preferences()
-{
-    global $db_type, $cookie_name;
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-    $now = time();
-
-    // Set a default language if the user selected language no longer exists
-    if (!file_exists(FEATHER_ROOT.'lang/'.$feather->user->language)) {
-        $feather->user->language = $feather->config['o_default_lang'];
-    }
-
-    // Set a default style if the user selected style no longer exists
-    if (!file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'.css')) {
-        $feather->user->style = $feather->config['o_default_style'];
-    }
-
-    if (!$feather->user->disp_topics) {
-        $feather->user->disp_topics = $feather->config['o_disp_topics_default'];
-    }
-    if (!$feather->user->disp_posts) {
-        $feather->user->disp_posts = $feather->config['o_disp_posts_default'];
-    }
-
-    // Define this if you want this visit to affect the online list and the users last visit data
-    if (!defined('FEATHER_QUIET_VISIT')) {
-        // Update the online list
-        if (!$feather->user->logged) {
-            $feather->user->logged = $now;
-
-            // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-            switch ($db_type) {
-                case 'mysql':
-                case 'mysqli':
-                case 'mysql_innodb':
-                case 'mysqli_innodb':
-                case 'sqlite':
-                case 'sqlite3':
-                    \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
-                    break;
-
-                default:
-                    \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $feather->user->id, ':ident' => $feather->user->username, ':logged' => $feather->user->logged));
-                    break;
-            }
-
-            // Reset tracked topics
-            set_tracked_topics(null);
-
-        } else {
-            // Special case: We've timed out, but no other user has browsed the forums since we timed out
-            if ($feather->user->logged < ($now-$feather->config['o_timeout_visit'])) {
-                \DB::for_table('users')->where('id', $feather->user->id)
-                    ->find_one()
-                    ->set('last_visit', $feather->user->logged)
-                    ->save();
-                $feather->user->last_visit = $feather->user->logged;
-            }
-
-            $idle_sql = ($feather->user->idle == '1') ? ', idle=0' : '';
-
-            \DB::for_table('online')->raw_execute('UPDATE '.$feather->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $feather->user->id));
-
-            // Update tracked topics with the current expire time
-            $cookie_tracked_topics = $feather->getCookie($cookie_name.'_track');
-            if (isset($cookie_tracked_topics)) {
-                set_tracked_topics(json_decode($cookie_tracked_topics, true));
-            }
-        }
-    } else {
-        if (!$feather->user->logged) {
-            $feather->user->logged = $feather->user->last_visit;
-        }
-    }
-}
-
 
 //
 // Try to determine the current URL
@@ -241,71 +107,6 @@ function get_admin_ids()
     }
 
     return $feather_admins;
-}
-
-
-//
-// Fill $feather->user with default values (for guests)
-//
-function set_default_user()
-{
-    global $db_type, $feather_config;
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $remote_addr = get_remote_address();
-
-    // Fetch guest user
-    $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
-    $where_set_default_user = array('u.id' => '1');
-
-    $result = \DB::for_table('users')
-        ->table_alias('u')
-        ->select_many($select_set_default_user)
-        ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-        ->left_outer_join('online', array('o.ident', '=', $remote_addr), 'o', true)
-        ->where($where_set_default_user)
-        ->find_result_set();
-
-    if (!$result) {
-        exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
-    }
-
-    foreach ($result as $feather->user);
-
-    // Update online list
-    if (!$feather->user->logged) {
-        $feather->user->logged = time();
-
-        // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-        switch ($db_type) {
-            case 'mysql':
-            case 'mysqli':
-            case 'mysql_innodb':
-            case 'mysqli_innodb':
-            case 'sqlite':
-            case 'sqlite3':
-            \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->prefix.'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
-                break;
-
-            default:
-                \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->prefix.'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->prefix.'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
-                break;
-        }
-    } else {
-        \DB::for_table('online')->where('ident', $remote_addr)
-             ->update_many('logged', time());
-    }
-
-    $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
-    $feather->user->disp_posts = $feather_config['o_disp_posts_default'];
-    $feather->user->timezone = $feather_config['o_default_timezone'];
-    $feather->user->dst = $feather_config['o_default_dst'];
-    $feather->user->language = $feather_config['o_default_lang'];
-    $feather->user->style = $feather_config['o_default_style'];
-    $feather->user->is_guest = true;
-    $feather->user->is_admmod = false;
 }
 
 
@@ -438,7 +239,7 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->prefix.'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
     if ($result) {
         $busy = $result['username'];
@@ -964,8 +765,6 @@ function paginate_old($num_pages, $cur_page, $link)
 
 function message($msg, $http_status = null, $no_back_link = false, $dontStop = false)
 {
-
-
     // Did we receive a custom header?
     if (!is_null($http_status)) {
         header('HTTP/1.1 ' . $http_status);
@@ -990,8 +789,6 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
         }
 
         require_once FEATHER_ROOT.'controller/header.php';
-
-        $feather->config('templates.path', get_path_view());
 
         $header = new \controller\header();
 
@@ -1068,8 +865,6 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 //
 function forum_number_format($number, $decimals = 0)
 {
-
-
     return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
 }
 

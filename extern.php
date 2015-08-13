@@ -86,6 +86,70 @@ function escape_cdata($str)
 }
 
 //
+// Fill $feather->user with default values (for guests)
+//
+function set_default_user()
+{
+    global $feather_config;
+
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
+    $remote_addr = get_remote_address();
+
+    // Fetch guest user
+    $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
+    $where_set_default_user = array('u.id' => '1');
+
+    $result = \DB::for_table('users')
+        ->table_alias('u')
+        ->select_many($select_set_default_user)
+        ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+        ->left_outer_join('online', array('o.ident', '=', $remote_addr), 'o', true)
+        ->where($where_set_default_user)
+        ->find_result_set();
+
+    if (!$result) {
+        exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
+    }
+
+    foreach ($result as $feather->user);
+
+    // Update online list
+    if (!$feather->user->logged) {
+        $feather->user->logged = time();
+
+        // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
+        switch ($feather->forum_settings['db_type']) {
+            case 'mysql':
+            case 'mysqli':
+            case 'mysql_innodb':
+            case 'mysqli_innodb':
+            case 'sqlite':
+            case 'sqlite3':
+                \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->forum_settings['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                break;
+
+            default:
+                \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->forum_settings['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->forum_settings['db_prefix'].'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                break;
+        }
+    } else {
+        \DB::for_table('online')->where('ident', $remote_addr)
+            ->update_many('logged', time());
+    }
+
+    $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
+    $feather->user->disp_posts = $feather_config['o_disp_posts_default'];
+    $feather->user->timezone = $feather_config['o_default_timezone'];
+    $feather->user->dst = $feather_config['o_default_dst'];
+    $feather->user->language = $feather_config['o_default_lang'];
+    $feather->user->style = $feather_config['o_default_style'];
+    $feather->user->is_guest = true;
+    $feather->user->is_admmod = false;
+}
+
+//
 // Authenticates the provided username and password against the user database
 // $user can be either a user ID (integer) or a username (string)
 // $password can be either a plaintext password or a password hash including salt ($password_is_hash must be set accordingly)
