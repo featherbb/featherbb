@@ -88,6 +88,7 @@ class FeatherBB extends \Slim\Middleware
         }
         DB::configure('username', $this->data['forum_settings']['db_user']);
         DB::configure('password', $this->data['forum_settings']['db_pass']);
+        DB::configure('logging', true);
         DB::configure('id_column_overrides', array(
             'groups' => 'g_id',
         ));
