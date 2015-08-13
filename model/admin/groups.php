@@ -35,7 +35,7 @@ class groups
 
     public function info_add_group($groups, $id)
     {
-        global $lang_common;
+
 
         $group = array();
 
@@ -47,7 +47,7 @@ class groups
         } else {
             // We are editing a group
             if (!isset($groups[$id])) {
-                message($lang_common['Bad request'], '404');
+                message(__('Bad request'), '404');
             }
 
             $group['info'] = $groups[$id];
@@ -246,18 +246,18 @@ class groups
 
     public function set_default_group($groups)
     {
-        global $lang_admin_groups, $lang_common;
+        global $lang_admin_groups;
 
         $group_id = intval($this->request->post('default_group'));
 
         // Make sure it's not the admin or guest groups
         if ($group_id == FEATHER_ADMIN || $group_id == FEATHER_GUEST) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         // Make sure it's not a moderator group
         if ($groups[$group_id]['g_moderator'] != 0) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         DB::for_table('config')->where('conf_name', 'o_default_user_group')

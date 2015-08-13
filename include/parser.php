@@ -118,7 +118,7 @@ Parameters: (See the BBcode regex to see how each of these parameters are captur
 *********************************************************** */
 function _preparse_bbcode_callback($matches)
 {
-    global $lang_common, $errors, $pd;
+    global $errors, $pd;
     
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
@@ -143,7 +143,7 @@ function _preparse_bbcode_callback($matches)
         if ($contents === null) {
             // On error, preg_replace_callback returns NULL.
  // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-            $new_errors[] = sprintf($lang_common['BBerr pcre'], preg_error());
+            $new_errors[] = sprintf(__('BBerr pcre'), preg_error());
             $contents = ''; // Zero out the contents.
         }
     }
@@ -179,22 +179,22 @@ function _preparse_bbcode_callback($matches)
             // which is either unexpected or unrecognized.
  // Error #2: 'Unexpected attribute: "%1$s". (No attribute allowed for [%2$s].'.
             $handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-            $new_errors[] = sprintf($lang_common['BBerr unexpected attribute'], $attribute, $tagname);
+            $new_errors[] = sprintf(__('BBerr unexpected attribute'), $attribute, $tagname);
         } else { // Error #3: 'Unrecognized attribute: "%1$s", is not valid for [%2$s].'
             $handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-            $new_errors[] = sprintf($lang_common['BBerr unrecognized attribute'], $attribute, $tagname);
+            $new_errors[] = sprintf(__('BBerr unrecognized attribute'), $attribute, $tagname);
         }
         // Make sure attribute does nor contain a valid BBcode tag.
         if (preg_match($pd['re_bbtag'], $attribute)) { // Error #4: 'Attribute may NOT contain open or close bbcode tags'
             $handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-            $new_errors[] = $lang_common['BBerr bbcode attribute'];
+            $new_errors[] = __('BBerr bbcode attribute');
         }
         // Validate and filter tag's attribute value if and according to custom attribute regex.
         if (isset($handler['a_regex'])) { // Check if this tag has an attribute regex? (very rare)
             if (preg_match($handler['a_regex'], $attribute, $m)) { // Yes. Check if regex matches attribute?
                 $attribute = $m[1];
             } else { // Error #4b: 'Invalid attribute, [%s] requires specific attribute.'
-                $new_errors[] = sprintf($lang_common['BBerr invalid attrib'], $tagname);
+                $new_errors[] = sprintf(__('BBerr invalid attrib'), $tagname);
             }
         }
     } else { // Attribute not specified. Use the NO_ATTRIB handler if it exixts else error.
@@ -204,7 +204,7 @@ function _preparse_bbcode_callback($matches)
             $handler =& $tag['handlers']['NO_ATTRIB'];        // no-attribute handler. Otherwise...
         } else { // Error #5: '[%1$s] is missing a required attribute.'.
             $handler =& $pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-            $new_errors[] = sprintf($lang_common['BBerr missing attribute'], $tagname);
+            $new_errors[] = sprintf(__('BBerr missing attribute'), $tagname);
         }
     }
     // -------------------------------------------------------
@@ -220,7 +220,7 @@ function _preparse_bbcode_callback($matches)
             $fmt_open = $fmt_close = '';
             break;
         case 'err':    // Error #6: '[%1$s] tag nesting depth: %2$d exceeds allowable limit: %3$d.'.
-            $new_errors[] = sprintf($lang_common['BBerr nesting overflow'],
+            $new_errors[] = sprintf(__('BBerr nesting overflow'),
                                 $tagname, $tag['depth'], $tag['depth_max']);
             break;
         default:
@@ -231,14 +231,14 @@ function _preparse_bbcode_callback($matches)
         // Are we illegitimate?
     // Yes. Pick between error #6 and #7.
         if ($parent === $tagname) { // Error #7: '[%s] was opened within itself, this is not allowed.'
-            $new_errors[] = sprintf($lang_common['BBerr self-nesting'], $tagname);
+            $new_errors[] = sprintf(__('BBerr self-nesting'), $tagname);
         } else { // Error #8: '[%1$s] was opened within [%2$s], this is not allowed.'
-            $new_errors[] = sprintf($lang_common['BBerr invalid nesting'], $tagname, $parent);
+            $new_errors[] = sprintf(__('BBerr invalid nesting'), $tagname, $parent);
         }
     }
     // Verfify our parent tag is in our 'parents' allowable array if it exists.
     if (isset($tag['parents']) && !isset($tag['parents'][$parent])) { // Error #9: '[%1$s] cannot be within: [%2$s]. Allowable parent tags: %3$s.'.
-        $new_errors[] = sprintf($lang_common['BBerr invalid parent'],
+        $new_errors[] = sprintf(__('BBerr invalid parent'),
             $tagname, $parent, '('. implode('), (', array_keys($tag['parents'])) .')');
     }
     // -----------------------------------------
@@ -266,18 +266,18 @@ function _preparse_bbcode_callback($matches)
         $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
         // Handle special case link to a
         if ($feather->user->g_post_links != '1') {
-            $new_errors[] = $lang_common['BBerr cannot post URLs'];
+            $new_errors[] = __('BBerr cannot post URLs');
         }
         else if (($m = url_valid($contents))) {
             $contents = $m['url']; // Fetch possibly more complete url address.
         } else { // Error #10a: 'Invalid URL name: %s'.
-            $new_errors[] = sprintf($lang_common['BBerr Invalid URL name'], $contents);
+            $new_errors[] = sprintf(__('BBerr Invalid URL name'), $contents);
         }
         break;
 
     case 'email':
         if (filter_var($contents, FILTER_VALIDATE_EMAIL)) { // Error #10c: 'Invalid email address: %s'.
-            $new_errors[] = sprintf($lang_common['BBerr Invalid email address'], $contents);
+            $new_errors[] = sprintf(__('BBerr Invalid email address'), $contents);
         }
         break;
 
@@ -308,20 +308,20 @@ function _preparse_bbcode_callback($matches)
         if (($m = url_valid($attribute))) {
             $attribute = $m['url']; // Fetch possibly more complete url address.
         } else { // Error #10b: 'Invalid URL name: %s'.
-            $new_errors[] = sprintf($lang_common['BBerr Invalid URL name'], $attribute);
+            $new_errors[] = sprintf(__('BBerr Invalid URL name'), $attribute);
         }
         break;
 
     case 'color':
         if (!preg_match($pd['re_color'], $attribute)) { // Error #11: 'Invalid color attribute: %s'.
-            $new_errors[] = sprintf($lang_common['BBerr Invalid color'], $attribute);
+            $new_errors[] = sprintf(__('BBerr Invalid color'), $attribute);
         }
         break;
 
     case 'email':
         // TODO: improve this quick-n-dirty email check.
         if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $attribute)) { // Error #10c: 'Invalid email address: %s'.
-            $new_errors[] = sprintf($lang_common['BBerr Invalid email address'], $attribute);
+            $new_errors[] = sprintf(__('BBerr Invalid email address'), $attribute);
         }
         break;
 
@@ -376,13 +376,13 @@ function _preparse_bbcode_callback($matches)
                                             } // Else remote image fits. Do nothing special with width and height.
                                         }
                                     } else { // Error #13: 'Unable to retrieve image data from remote url: %s'.
-                                        $new_errors[] = sprintf($lang_common['BBerr bad meta data'], $contents);
+                                        $new_errors[] = sprintf(__('BBerr bad meta data'), $contents);
                                     } // NOTE: cannot generate this error.
                                 } else { // Filesize of remote image is too big. Silently convert to link if possible.
                                     if (isset($pd['bbcd']['url']) && $pd['bbcd']['url']['depth'] === 0) {
                                         $fmt_open  = '{[url='. $contents .']';
                                         $fmt_close = '[/url]}';
-                                        $contents = $lang_common['BBmsg big image'];
+                                        $contents = __('BBmsg big image');
                                     } else { // Image within a url cannot be linkified. Just display url name.
                                         $contents = '{'. $contents .'}';
                                         $fmt_open  = '';
@@ -392,16 +392,16 @@ function _preparse_bbcode_callback($matches)
                             } else {
                                 // $size not set.
  // Error #14: 'Unable to determine remote file size.'.
-                                $new_errors[] = $lang_common['BBerr no file size'];
+                                $new_errors[] = __('BBerr no file size');
                             } // NOTE: cannot generate this error.
                         } else { // Error #15: 'Remote url does not have Content-Type: "image".'
-                            $new_errors[] = $lang_common['BBerr non image'];
+                            $new_errors[] = __('BBerr non image');
                         }
                     } else { // Error #16: 'Bad HTTP response header: "%s"'.
-                        $new_errors[] = sprintf($lang_common['BBerr bad http response'], $http[0]);
+                        $new_errors[] = sprintf(__('BBerr bad http response'), $http[0]);
                     }
                 } else { // Error #17: 'Unable to read remote image http headers.'.
-                    $new_errors[] = $lang_common['BBerr bad headers'];
+                    $new_errors[] = __('BBerr bad headers');
                 }
             } // Image validation turned off. Do nothing.
         } else { // Non-Error: IMG tag self nesting. Handle by silently stripping tags with no error.
@@ -507,7 +507,7 @@ function _preparse_bbcode_callback($matches)
         if (preg_match($handler['c_regex'], $contents, $m)) {
             $contents = $m[1];
         } else { // Error #12: 'Invalid content, [%s] requires specific content.'
-            $new_errors[] = sprintf($lang_common['BBerr invalid content'], $tagname);
+            $new_errors[] = sprintf(__('BBerr invalid content'), $tagname);
         }
     }
     // Silently strip empty or all-white tags:
@@ -572,7 +572,7 @@ function _preparse_bbcode_callback($matches)
  */
 function preparse_bbcode($text, &$errors, $is_signature = false)
 {
-    global $lang_common, $feather_config, $pd;
+    global $feather_config, $pd;
 
     $pd['new_errors'] = array(); // Reset the parser error message stack.
     $pd['in_signature'] = ($is_signature) ? true : false;
@@ -581,7 +581,7 @@ function preparse_bbcode($text, &$errors, $is_signature = false)
     if ($newtext === null) {
         // On error, preg_replace_callback returns NULL.
  // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-        $errors[] = sprintf($lang_common['BBerr pcre'], preg_error());
+        $errors[] = sprintf(__('BBerr pcre'), preg_error());
         return $text;
     }
     $newtext = str_replace("\3", '[', $newtext); // Fixup CODE sections.
@@ -628,11 +628,11 @@ function preparse_bbcode($text, &$errors, $is_signature = false)
 //
 function _orphan_callback($matches)
 {
-    global $pd, $lang_common;
+    global $pd;
     if ($matches[0][1] === '/') { // Error #18: 'Orphan close tag: [/%s] is missing its open tag.'
-        $errmsg = sprintf($lang_common['BBerr orphan close'], $matches[1]);
+        $errmsg = sprintf(__('BBerr orphan close'), $matches[1]);
     } else { // Error #19: 'Orphan open tag: [%s] is missing its close tag.'
-        $errmsg = sprintf($lang_common['BBerr orphan open'], $matches[1]);
+        $errmsg = sprintf(__('BBerr orphan open'), $matches[1]);
     }
     $pd['new_errors'][] = $errmsg;    // Append to array of errors so far.
     return '[err='. $errmsg .']'. $matches[0] .'[/err]';
@@ -731,7 +731,7 @@ Parameters:
 *********************************************************** */
 function _parse_bbcode_callback($matches)
 {
-    global $pd, $lang_common;
+    global $pd;
     $tagname =& $matches[1];            // TAGNAME we are currently servicing.
     $contents =& $matches[6];            // Shortcut to contents.
     $tag =& $pd['bbcd'][$tagname];        // Shortcut to bbcd array entry.
@@ -852,10 +852,10 @@ function _parse_bbcode_callback($matches)
                 $format = "{%c_str%}";
             } else {
                 if ($attribute) {
-                    $format = '{<a href="%c_str%" title="%a_str%">'. $lang_common['Image link'] .'</a>}';
+                    $format = '{<a href="%c_str%" title="%a_str%">'. __('Image link') .'</a>}';
                 } else {
-                    $format = '{<a href="%c_str%" title="'. $lang_common['BBmsg images disabled'] .'">'.
-                    $lang_common['Image link'] .'</a>}';
+                    $format = '{<a href="%c_str%" title="'. __('BBmsg images disabled') .'">'.
+                    __('Image link') .'</a>}';
                 }
                 $enabled = true; // Re-enable to override defauslt disabled handling (i.e. dont delete.)
             }
@@ -879,12 +879,12 @@ function _parse_bbcode_callback($matches)
                 // Check for optional embedded post id.
  // Attribute has optional '#1234' quoted post ID number. Convert to link back to quoted post.
                 $attribute = preg_replace('/\s*#\d++$/S', '', $attribute); // Strip post id from attribute.
-                $attribute .= ' '. $lang_common['wrote'];  // Append language-specific "wrote:".
+                $attribute .= ' '. __('wrote');  // Append language-specific "wrote:".
                 if ($pd['config']['quote_links']) {
                     $attribute = ' <a href="'. get_link('post/'.$m[1].'/#p'.$m[1]) .'">'. $attribute .'</a>';
                 }
             } else {
-                $attribute .= ' '. $lang_common['wrote'];
+                $attribute .= ' '. __('wrote');
             } // If no post id, just add "wrote:".
         }
         break;

@@ -1,0 +1,291 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Choose install language"
+msgstr "Choose the install script language"
+
+msgid "Choose install language info"
+msgstr "The language used for this install script. The default language used for the board itself can be set below."
+
+msgid "Install language"
+msgstr "Install language"
+
+msgid "Change language"
+msgstr "Change language"
+
+msgid "Already installed"
+msgstr "It seems like FeatherBB is already installed. You should go <a href=\"../index.php\">here</a> instead."
+
+msgid "You are running error"
+msgstr "You are running %1$s version %2$s. FeatherBB %3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue."
+
+msgid "My FeatherBB Forum"
+msgstr "My FeatherBB Forum"
+
+msgid "Description"
+msgstr "Lighter than a feather."
+
+msgid "Username 1"
+msgstr "Usernames must be at least 2 characters long."
+
+msgid "Username 2"
+msgstr "Usernames must not be more than 25 characters long."
+
+msgid "Username 3"
+msgstr "The username guest is reserved."
+
+msgid "Username 4"
+msgstr "Usernames may not be in the form of an IP address."
+
+msgid "Username 5"
+msgstr "Usernames may not contain all the characters ', \" and [ or ] at once."
+
+msgid "Username 6"
+msgstr "Usernames may not contain any of the text formatting tags (BBCode) that the forum uses."
+
+msgid "Short password"
+msgstr "Passwords must be at least 6 characters long."
+
+msgid "Passwords not match"
+msgstr "Passwords do not match."
+
+msgid "Wrong email"
+msgstr "The administrator email address you entered is invalid."
+
+msgid "No board title"
+msgstr "You must enter a board title."
+
+msgid "Error default language"
+msgstr "The default language chosen doesn't seem to exist."
+
+msgid "Error default style"
+msgstr "The default style chosen doesn't seem to exist."
+
+msgid "No DB extensions"
+msgstr "This PHP environment does not have support for any of the databases that FeatherBB supports. PHP needs to have support for either MySQL, PostgreSQL or SQLite in order for FeatherBB to be installed."
+
+msgid "Administrator username"
+msgstr "Administrator's username"
+
+msgid "Administrator email"
+msgstr "Administrator's email"
+
+msgid "Board title"
+msgstr "Board title"
+
+msgid "Base URL"
+msgstr "The URL (without trailing slash) of your FeatherBB forum. This must be correct."
+
+msgid "Required field"
+msgstr "is a required field in this form."
+
+msgid "FeatherBB Installation"
+msgstr "FeatherBB Installation"
+
+msgid "Welcome"
+msgstr "You are about to install FeatherBB. In order to install FeatherBB, you must complete the form set out below. If you encounter any difficulties with the installation, please refer to the documentation."
+
+msgid "Install"
+msgstr "Install FeatherBB %s"
+
+msgid "Errors"
+msgstr "The following errors need to be corrected:"
+
+msgid "Database setup"
+msgstr "Database setup"
+
+msgid "Info 1"
+msgstr "All information we need to create a connection with your database."
+
+msgid "Select database"
+msgstr "Select your database type"
+
+msgid "Info 2"
+msgstr "Select a database. We support SQLite, MySQL and PostgreSQL."
+
+msgid "Database type"
+msgstr "Database type"
+
+msgid "Required"
+msgstr "(Required)"
+
+msgid "Database hostname"
+msgstr "Enter your database server hostname"
+
+msgid "Info 3"
+msgstr "You should be able to get this info from your web host, if localhost does not work."
+
+msgid "Database server hostname"
+msgstr "Database server hostname"
+
+msgid "Database enter name"
+msgstr "Enter the name of your database"
+
+msgid "Info 4"
+msgstr "The name of the database you want to install FeatherBB on."
+
+msgid "Database name"
+msgstr "Database name"
+
+msgid "Database enter informations"
+msgstr "Enter your database username and password"
+
+msgid "Database username"
+msgstr "Database username"
+
+msgid "Info 5"
+msgstr "Your MySQL username and password (ignore of SQLite)."
+
+msgid "Database password"
+msgstr "Database password"
+
+msgid "Database enter prefix"
+msgstr "Enter database table prefix"
+
+msgid "Info 6"
+msgstr "If you want to run multiple FeatherBB installations in a single database, change this."
+
+msgid "Table prefix"
+msgstr "Table prefix"
+
+msgid "Administration setup"
+msgstr "Administration setup"
+
+msgid "Info 7"
+msgstr "Create the very first account on your board."
+
+msgid "Info 8"
+msgstr "Your username should be between 2 and 25 characters long. Your password must be at least 6 characters long. Remember that passwords are case-sensitive."
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Confirm password"
+msgstr "Confirm password"
+
+msgid "Board setup"
+msgstr "Board setup"
+
+msgid "Info 11"
+msgstr "Settings for your board. You can change this later."
+
+msgid "General information"
+msgstr "Enter your board's title and description."
+
+msgid "Board description"
+msgstr "Board description (supports HTML)"
+
+msgid "Appearance"
+msgstr "Appearance"
+
+msgid "Info 15"
+msgstr "Make your forum yours. Choose a language and a style for your board."
+
+msgid "Default language"
+msgstr "Default language"
+
+msgid "Default style"
+msgstr "Default style"
+
+msgid "Start install"
+msgstr "Start install"
+
+msgid "DB type not valid"
+msgstr "'%s' is not a valid database type"
+
+msgid "Table prefix error"
+msgstr "The table prefix '%s' contains illegal characters or is too long. The prefix may contain the letters a to z, any numbers and the underscore character. They must however not start with a number. The maximum length is 40 characters. Please choose a different prefix"
+
+msgid "Prefix reserved"
+msgstr "The table prefix 'sqlite_' is reserved for use by the SQLite engine. Please choose a different prefix"
+
+msgid "Existing table error"
+msgstr "A table called '%susers' is already present in the database '%s'. This could mean that FeatherBB is already installed or that another piece of software is installed and is occupying one or more of the table names FeatherBB requires. If you want to install multiple copies of FeatherBB in the same database, you must choose a different table prefix"
+
+msgid "InnoDB off"
+msgstr "InnoDB does not seem to be enabled. Please choose a database layer that does not have InnoDB support, or enable InnoDB on your MySQL server"
+
+msgid "Administrators"
+msgstr "Administrators"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Moderators"
+msgstr "Moderators"
+
+msgid "Moderator"
+msgstr "Moderator"
+
+msgid "Guests"
+msgstr "Guests"
+
+msgid "Guest"
+msgstr "Guest"
+
+msgid "Members"
+msgstr "Members"
+
+msgid "Announcement"
+msgstr "Enter your announcement here."
+
+msgid "Rules"
+msgstr "Enter your rules here"
+
+msgid "Maintenance message"
+msgstr "The forums are temporarily down for maintenance. Please try again in a few minutes."
+
+msgid "Test post"
+msgstr "Test topic"
+
+msgid "Message"
+msgstr "You have successfully installed FeatherBB, congratulations! Now log in and head over to the administration control panel to configure your forum."
+
+msgid "Test category"
+msgstr "Test category"
+
+msgid "Test forum"
+msgstr "Test forum"
+
+msgid "This is just a test forum"
+msgstr "This is just a test forum"
+
+msgid "Alert cache"
+msgstr "<strong>The cache directory is currently not writable!</strong> In order for FeatherBB to function properly, the directory <em>%s</em> must be writable by PHP. Use chmod to set the appropriate directory permissions. If in doubt, chmod to 0777."
+
+msgid "Alert avatar"
+msgstr "<strong>The avatar directory is currently not writable!</strong> If you want users to be able to upload their own avatar images you must see to it that the directory <em>%s</em> is writable by PHP. You can later choose to save avatar images in a different directory (see Admin/Options). Use chmod to set the appropriate directory permissions. If in doubt, chmod to 0777."
+
+msgid "Alert upload"
+msgstr "<strong>File uploads appear to be disallowed on this server!</strong> If you want users to be able to upload their own avatar images you must enable the file_uploads configuration setting in PHP. Once file uploads have been enabled, avatar uploads can be enabled in Administration/Options/Features."
+
+msgid "FeatherBB has been installed"
+msgstr "FeatherBB has been installed. To finalize the installation please follow the instructions below."
+
+msgid "Final instructions"
+msgstr "Final instructions"
+
+msgid "Info 17"
+msgstr "To finalize the installation, you need to click on the button below to download a file called config.php. You then need to upload this file to the root directory of your FeatherBB installation."
+
+msgid "Info 18"
+msgstr "Once you have uploaded config.php, FeatherBB will be fully installed! At that point, you may <a href=\"../index.php\">go to the forum index</a>."
+
+msgid "Download config.php file"
+msgstr "Download config.php file"
+
+msgid "FeatherBB fully installed"
+msgstr "FeatherBB has been fully installed! You may now <a href=\"../index.php\">go to the forum index</a>."

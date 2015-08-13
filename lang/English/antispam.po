@@ -1,0 +1,27 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Robot title"
+msgstr "Are you human or robot?"
+
+msgid "Robot question"
+msgstr "Please respond with a <b>number</b> to the question: <b>%s</b>"
+
+msgid "Robot info"
+msgstr "Checking if this is requested by a real person and not an automated program."
+
+msgid "Robot test fail"
+msgstr "You answered incorrectly to the \"Human or Robot\" question."

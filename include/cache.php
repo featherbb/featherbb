@@ -56,7 +56,7 @@ function generate_bans_cache()
 //
 function generate_quickjump_cache($group_id = false)
 {
-    global $lang_common;
+
 
     $groups = array();
 
@@ -103,7 +103,7 @@ function generate_quickjump_cache($group_id = false)
                             ->find_many();
 
             if ($result) {
-                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="">'."\n\t\t\t\t\t".'<div><label><span><?php echo $lang_common[\'Jump to\'] ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\''.get_link('forum/').'\'+this.options[this.selectedIndex].value)">'."\n";
+                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="">'."\n\t\t\t\t\t".'<div><label><span><?php echo __(\'Jump to\') ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\''.get_link('forum/').'\'+this.options[this.selectedIndex].value)">'."\n";
 
                 $cur_category = 0;
                 foreach ($result as $cur_forum) {
@@ -122,7 +122,7 @@ function generate_quickjump_cache($group_id = false)
                     $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.feather_escape($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php echo $lang_common[\'Go\'] ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
+                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php echo __(\'Go\') ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
             }
         }
 

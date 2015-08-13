@@ -30,10 +30,10 @@ class categories
 
     public function add_category()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_categories;
+        global $lang_admin_common, $lang_admin_categories;
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_options.php language file
@@ -54,10 +54,10 @@ class categories
 
     public function edit_categories()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_categories;
+        global $lang_admin_common, $lang_admin_categories;
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_options.php language file
@@ -65,7 +65,7 @@ class categories
         require FEATHER_ROOT.'lang/'.$admin_language.'/categories.php';
 
         if (empty($this->request->post('cat'))) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $categories = array();
@@ -90,10 +90,10 @@ class categories
 
     public function delete_category()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_categories;
+        global $lang_admin_common, $lang_admin_categories;
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_options.php language file
@@ -103,7 +103,7 @@ class categories
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
@@ -119,12 +119,12 @@ class categories
 
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_categories;
+        global $lang_admin_common, $lang_admin_categories;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);

@@ -24,7 +24,7 @@ class options
  
     public function update_options()
     {
-        global $lang_admin_options, $lang_common;
+        global $lang_admin_options;
 
         
 
@@ -110,12 +110,12 @@ class options
 
         $languages = forum_list_langs();
         if (!in_array($form['default_lang'], $languages)) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         $styles = forum_list_styles();
         if (!in_array($form['default_style'], $styles)) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         if ($form['time_format'] == '') {
@@ -197,19 +197,19 @@ class options
         }
 
         if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         if ($form['feed_ttl'] < 0) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
-            message($lang_common['Bad request'], '404');
+            message(__('Bad request'), '404');
         }
 
         if ($form['timeout_online'] >= $form['timeout_visit']) {

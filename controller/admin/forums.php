@@ -34,10 +34,10 @@ class forums
 
     public function add_forum()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
+        global $lang_admin_common, $lang_admin_forums;
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_options.php language file
@@ -66,10 +66,10 @@ class forums
 
     public function edit_forum($forum_id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
+        global $lang_admin_common, $lang_admin_forums;
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         // Load the admin_options.php language file
@@ -172,10 +172,10 @@ class forums
 
     public function delete_forum($forum_id)
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
+        global $lang_admin_common, $lang_admin_forums;
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);
@@ -239,12 +239,12 @@ class forums
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_forums;
+        global $lang_admin_common, $lang_admin_forums;
 
         require FEATHER_ROOT . 'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);

@@ -13,7 +13,7 @@ if (!defined('FEATHER')) {
 }
 
 if (empty($index_data)): ?>
-    <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo $lang_index['Empty board'] ?></p></div></div></div>
+    <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php echo __('Empty board') ?></p></div></div></div>
 <?php endif;
 foreach ($index_data as $forum) {
     if ($forum->cid != $cur_cat) :
@@ -33,10 +33,10 @@ foreach ($index_data as $forum) {
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Forum'] ?></th>
-					<th class="tc2" scope="col"><?php echo $lang_index['Topics'] ?></th>
-					<th class="tc3" scope="col"><?php echo $lang_common['Posts'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_common['Last post'] ?></th>
+					<th class="tcl" scope="col"><?php echo __('Forum') ?></th>
+					<th class="tc2" scope="col"><?php echo __('Topics') ?></th>
+					<th class="tc3" scope="col"><?php echo __('Posts') ?></th>
+					<th class="tcr" scope="col"><?php echo __('Last post') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -80,27 +80,27 @@ if (!empty($forum_actions)) :
 endif;
 ?>
 <div id="brdstats" class="block">
-	<h2><span><?php echo $lang_index['Board info'] ?></span></h2>
+	<h2><span><?php echo __('Board info') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<dl class="conr">
-				<dt><strong><?php echo $lang_index['Board stats'] ?></strong></dt>
-				<dd><span><?php printf($lang_index['No of users'], '<strong>'.forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
-				<dd><span><?php printf($lang_index['No of topics'], '<strong>'.forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
-				<dd><span><?php printf($lang_index['No of posts'], '<strong>'.forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
+				<dt><strong><?php echo __('Board stats') ?></strong></dt>
+				<dd><span><?php printf(__('No of users'), '<strong>'.forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of topics'), '<strong>'.forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of posts'), '<strong>'.forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
 			</dl>
 			<dl class="conl">
-				<dt><strong><?php echo $lang_index['User info'] ?></strong></dt>
-				<dd><span><?php printf($lang_index['Newest user'], $stats['newest_user']) ?></span></dd>
+				<dt><strong><?php echo __('User info') ?></strong></dt>
+				<dd><span><?php printf(__('Newest user'), $stats['newest_user']) ?></span></dd>
 				<?php if ($feather_config['o_users_online'] == 1) : ?>
-				<dd><span><?php printf($lang_index['Users online'], '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>
-				<dd><span><?php printf($lang_index['Guests online'], '<strong>'.forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('Users online'), '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('Guests online'), '<strong>'.forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
 				<?php endif; ?>
 			</dl>
 			<?php
             if ($feather_config['o_users_online'] == 1) :
                 if ($online['num_users'] > 0) {
-                    echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.$lang_index['Online'].' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
+                    echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.__('Online').' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
                 } else {
                     echo "\t\t\t".'<div class="clearer"></div>'."\n";
                 }

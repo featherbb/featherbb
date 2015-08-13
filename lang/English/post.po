@@ -1,0 +1,93 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "No subject"
+msgstr "Topics must contain a subject."
+
+msgid "No subject after censoring"
+msgstr "Topics must contain a subject. After applying censoring filters, your subject was empty."
+
+msgid "Too long subject"
+msgstr "Subjects cannot be longer than 70 characters."
+
+msgid "No message"
+msgstr "You must enter a message."
+
+msgid "No message after censoring"
+msgstr "You must enter a message. After applying censoring filters, your message was empty."
+
+msgid "Too long message"
+msgstr "Posts cannot be longer than %s bytes."
+
+msgid "All caps subject"
+msgstr "Subjects cannot contain only capital letters."
+
+msgid "All caps message"
+msgstr "Posts cannot contain only capital letters."
+
+msgid "Empty after strip"
+msgstr "It seems your post consisted of empty BBCodes only. It is possible that this happened because e.g. the innermost quote was discarded because of the maximum quote depth level."
+
+msgid "Post errors"
+msgstr "Post errors"
+
+msgid "Post errors info"
+msgstr "The following errors need to be corrected before the message can be posted:"
+
+msgid "Post preview"
+msgstr "Post preview"
+
+msgid "Guest name"
+msgstr "Name"
+
+msgid "Post redirect"
+msgstr "Post entered."
+
+msgid "Post a reply"
+msgstr "Post a reply"
+
+msgid "Post new topic"
+msgstr "Post new topic"
+
+msgid "Hide smilies"
+msgstr "Never show smilies as icons for this post"
+
+msgid "Subscribe"
+msgstr "Subscribe to this topic"
+
+msgid "Stay subscribed"
+msgstr "Stay subscribed to this topic"
+
+msgid "Topic review"
+msgstr "Topic review (newest first)"
+
+msgid "Flood start"
+msgstr "At least %s seconds have to pass between posts. Please wait %s seconds and try posting again."
+
+msgid "Preview"
+msgstr "Preview"
+
+msgid "Edit post legend"
+msgstr "Edit the post and submit changes"
+
+msgid "Silent edit"
+msgstr "Silent edit (don't display \"Edited by ...\" in topic view)"
+
+msgid "Edit post"
+msgstr "Edit post"
+
+msgid "Edit redirect"
+msgstr "Post updated."

@@ -27,7 +27,7 @@ function check_cookie()
 
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
-
+    
     $now = time();
 
     // Get FeatherBB cookie
@@ -331,7 +331,7 @@ function feather_setcookie($user_id, $password, $expires)
 //
 function check_bans()
 {
-    global $feather_config, $lang_common, $feather_bans;
+    global $feather_config, $feather_bans;
 
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
@@ -384,7 +384,7 @@ function check_bans()
         if ($is_banned) {
             \DB::for_table('online')->where('ident', $feather->user->username)
                                                  ->delete_many();
-            message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
+            message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
         }
     }
 
@@ -404,32 +404,35 @@ function check_bans()
 //
 function check_username($username, $errors, $exclude_id = null)
 {
-    global $feather, $feather_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $feather_bans;
+    global $feather, $feather_config, $errors, $feather_bans;
 
     // Include UTF-8 function
     require_once FEATHER_ROOT.'include/utf8/strcasecmp.php';
+
+    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/register.mo');
+    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/prof_reg.mo');
 
     // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
     $username = preg_replace('%\s+%s', ' ', $username);
 
     // Validate username
     if (feather_strlen($username) < 2) {
-        $errors[] = $lang_prof_reg['Username too short'];
+        $errors[] = __('Username too short');
     } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
-        $errors[] = $lang_prof_reg['Username too long'];
-    } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest'])) {
-        $errors[] = $lang_prof_reg['Username guest'];
+        $errors[] = __('Username too long');
+    } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
+        $errors[] = __('Username guest');
     } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $username) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $username)) {
-        $errors[] = $lang_prof_reg['Username IP'];
+        $errors[] = __('Username IP');
     } elseif ((strpos($username, '[') !== false || strpos($username, ']') !== false) && strpos($username, '\'') !== false && strpos($username, '"') !== false) {
-        $errors[] = $lang_prof_reg['Username reserved chars'];
+        $errors[] = __('Username reserved chars');
     } elseif (preg_match('%(?:\[/?(?:b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|\*|topic|post|forum|user)\]|\[(?:img|url|quote|list)=)%i', $username)) {
-        $errors[] = $lang_prof_reg['Username BBCode'];
+        $errors[] = __('Username BBCode');
     }
 
     // Check username for any censored words
     if ($feather_config['o_censoring'] == '1' && censor_words($username) != $username) {
-        $errors[] = $lang_register['Username censor'];
+        $errors[] = __('Username censor');
     }
 
     // Check that the username (or a too similar username) is not already registered
@@ -439,13 +442,13 @@ function check_username($username, $errors, $exclude_id = null)
 
     if ($result) {
         $busy = $result['username'];
-        $errors[] = $lang_register['Username dupe 1'].' '.feather_escape($busy).'. '.$lang_register['Username dupe 2'];
+        $errors[] = __('Username dupe 1').' '.feather_escape($busy).'. '.__('Username dupe 2');
     }
 
     // Check username for any banned usernames
     foreach ($feather_bans as $cur_ban) {
         if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
-            $errors[] = $lang_prof_reg['Banned username'];
+            $errors[] = __('Banned username');
             break;
         }
     }
@@ -521,7 +524,7 @@ function generate_avatar_markup($user_id)
 //
 function generate_page_title($page_title, $p = null)
 {
-    global $lang_common;
+
 
     if (!is_array($page_title)) {
         $page_title = array($page_title);
@@ -530,10 +533,10 @@ function generate_page_title($page_title, $p = null)
     $page_title = array_reverse($page_title);
 
     if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf($lang_common['Page'], forum_number_format($p)).')';
+        $page_title[0] .= ' ('.sprintf(__('Page'), forum_number_format($p)).')';
     }
 
-    $crumbs = implode($lang_common['Title separator'], $page_title);
+    $crumbs = implode(__('Title separator'), $page_title);
 
     return $crumbs;
 }
@@ -796,7 +799,7 @@ function censor_words($text)
 //
 function get_title($user)
 {
-    global $feather_bans, $lang_common;
+    global $feather_bans;
     static $ban_list;
 
     // If not already built in a previous call, build an array of lowercase banned usernames
@@ -814,7 +817,7 @@ function get_title($user)
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
-        $user_title = $lang_common['Banned'];
+        $user_title = __('Banned');
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
@@ -822,11 +825,11 @@ function get_title($user)
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
-        $user_title = $lang_common['Guest'];
+        $user_title = __('Guest');
     }
     // If nothing else helps, we assign the default
     else {
-        $user_title = $lang_common['Member'];
+        $user_title = __('Member');
     }
 
     return $user_title;
@@ -838,7 +841,7 @@ function get_title($user)
 //
 function paginate($num_pages, $cur_page, $link, $args = null)
 {
-    global $lang_common;
+
 
     $pages = array();
     $link_to_all = false;
@@ -854,14 +857,14 @@ function paginate($num_pages, $cur_page, $link, $args = null)
     } else {
         // Add a previous page link
         if ($num_pages > 1 && $cur_page > 1) {
-            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.$lang_common['Previous'].'</a>';
+            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
         }
 
         if ($cur_page > 3) {
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
             if ($cur_page > 5) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
         }
 
@@ -878,7 +881,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 
         if ($cur_page <= ($num_pages-3)) {
             if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4)) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
 
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', $num_pages, $args).'">'.forum_number_format($num_pages).'</a>';
@@ -886,7 +889,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 
         // Add a next page link
         if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.$lang_common['Next'].'</a>';
+            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
         }
     }
 
@@ -899,7 +902,7 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 //
 function paginate_old($num_pages, $cur_page, $link)
 {
-    global $lang_common;
+
 
     $pages = array();
     $link_to_all = false;
@@ -915,14 +918,14 @@ function paginate_old($num_pages, $cur_page, $link)
     } else {
         // Add a previous page link
         if ($num_pages > 1 && $cur_page > 1) {
-            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page - 1)).'">'.$lang_common['Previous'].'</a>';
+            $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page - 1)).'">'.__('Previous').'</a>';
         }
 
         if ($cur_page > 3) {
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
             if ($cur_page > 5) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
         }
 
@@ -939,7 +942,7 @@ function paginate_old($num_pages, $cur_page, $link)
 
         if ($cur_page <= ($num_pages-3)) {
             if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4)) {
-                $pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+                $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
             }
 
             $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.forum_number_format($num_pages).'</a>';
@@ -947,7 +950,7 @@ function paginate_old($num_pages, $cur_page, $link)
 
         // Add a next page link
         if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($cur_page +1).'">'.$lang_common['Next'].'</a>';
+            $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($cur_page +1).'">'.__('Next').'</a>';
         }
     }
 
@@ -961,7 +964,7 @@ function paginate_old($num_pages, $cur_page, $link)
 
 function message($msg, $http_status = null, $no_back_link = false, $dontStop = false)
 {
-    global $lang_common;
+
 
     // Did we receive a custom header?
     if (!is_null($http_status)) {
@@ -980,7 +983,7 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
     $feather->response->setBody('');
 
     if (!defined('FEATHER_HEADER')) {
-        $page_title = array(feather_escape($feather->config['o_board_title']), $lang_common['Info']);
+        $page_title = array(feather_escape($feather->config['o_board_title']), __('Info'));
 
         if (!defined('FEATHER_ACTIVE_PAGE')) {
             define('FEATHER_ACTIVE_PAGE', 'index');
@@ -996,7 +999,6 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
     }
 
     $feather->render('message.php', array(
-        'lang_common' => $lang_common,
         'message'    =>    $msg,
         'no_back_link'    => $no_back_link,
         ));
@@ -1018,10 +1020,10 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
 //
 function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
 {
-    global $lang_common, $forum_date_formats, $forum_time_formats;
+    global $forum_date_formats, $forum_time_formats;
 
     if ($timestamp == '') {
-        return $lang_common['Never'];
+        return __('Never');
     }
 
     // Get Slim current session
@@ -1045,9 +1047,9 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 
     if (!$no_text) {
         if ($date == $today) {
-            $date = $lang_common['Today'];
+            $date = __('Today');
         } elseif ($date == $yesterday) {
-            $date = $lang_common['Yesterday'];
+            $date = __('Yesterday');
         }
     }
 
@@ -1066,9 +1068,9 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 //
 function forum_number_format($number, $decimals = 0)
 {
-    global $lang_common;
 
-    return is_numeric($number) ? number_format($number, $decimals, $lang_common['lang_decimal_point'], $lang_common['lang_thousands_sep']) : $number;
+
+    return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
 }
 
 
@@ -1243,7 +1245,7 @@ function is_all_uppercase($string)
 //
 function maintenance_message()
 {
-    global $lang_common, $feather_config, $tpl_main;
+    global $feather_config, $tpl_main;
 
     // Deal with newlines, tabs and multiple spaces
     $pattern = array("\t", '  ', '  ');
@@ -1253,7 +1255,7 @@ function maintenance_message()
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-    $page_title = array(feather_escape($feather_config['o_board_title']), $lang_common['Maintenance']);
+    $page_title = array(feather_escape($feather_config['o_board_title']), __('Maintenance'));
 
     if (!defined('FEATHER_ACTIVE_PAGE')) {
         define('FEATHER_ACTIVE_PAGE', 'index');
@@ -1269,7 +1271,6 @@ function maintenance_message()
     $header->setTitle($page_title)->display();
 
     $feather->render('message.php', array(
-            'lang_common' => $lang_common,
             'message'    =>    $message,
             'no_back_link'    =>    '',
         )
@@ -1411,15 +1412,13 @@ function remove_bad_characters($array)
 //
 function file_size($size)
 {
-    global $lang_common;
-
     $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
 
     for ($i = 0; $size > 1024; $i++) {
         $size /= 1024;
     }
 
-    return sprintf($lang_common['Size unit '.$units[$i]], round($size, 2));
+    return sprintf(__('Size unit '.$units[$i]), round($size, 2));
 }
 
 
@@ -1707,19 +1706,19 @@ function forum_is_writable($path)
 //
 function display_saved_queries()
 {
-    global $lang_common;
+
 
     ?>
 
 <div id="debug" class="blocktable">
-	<h2><span><?php echo $lang_common['Debug table'] ?></span></h2>
+	<h2><span><?php echo __('Debug table') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
 			<thead>
 				<tr>
-					<th class="tcl" scope="col"><?php echo $lang_common['Query times'] ?></th>
-					<th class="tcr" scope="col"><?php echo $lang_common['Query'] ?></th>
+					<th class="tcl" scope="col"><?php echo __('Query times') ?></th>
+					<th class="tcr" scope="col"><?php echo __('Query') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1738,7 +1737,7 @@ function display_saved_queries()
     }
         ?>
 				<tr>
-					<td class="tcl" colspan="2"><?php printf($lang_common['Total query time'], $query_time_total.' s') ?></td>
+					<td class="tcl" colspan="2"><?php printf(__('Total query time'), $query_time_total.' s') ?></td>
 				</tr>
 			</tbody>
 			</table>
@@ -1747,6 +1746,24 @@ function display_saved_queries()
 </div>
 <?php
 
+}
+
+//
+// Return the path to load the view file
+//
+function get_path_view($file = null)
+{
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
+    if ($file && is_file('style/'.$feather->user->style)) {
+        return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
+    }
+    elseif (is_dir('style/'.$feather->user->style.'/view')) {
+        return FEATHER_ROOT.'style/'.$feather->user->style.'/view';
+    } else {
+        return FEATHER_ROOT.'view';
+    }
 }
 
 //

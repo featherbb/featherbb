@@ -1,0 +1,473 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "lang_direction"
+msgstr "ltr"
+
+msgid "lang_identifier"
+msgstr "en"
+
+msgid "lang_decimal_point"
+msgstr "."
+
+msgid "lang_thousands_sep"
+msgstr ","
+
+msgid "Bad request"
+msgstr "Bad request. The link you followed is incorrect or outdated."
+
+msgid "No view"
+msgstr "You do not have permission to view these forums."
+
+msgid "No permission"
+msgstr "You do not have permission to access this page."
+
+msgid "Bad referrer"
+msgstr "Bad HTTP_REFERER. You were referred to this page from an unauthorized source. If the problem persists please make sure that 'Base URL' is correctly set in Admin/Options and that you are visiting the forum by navigating to that URL. More information regarding the referrer check can be found in the FluxBB documentation."
+
+msgid "No cookie"
+msgstr "You appear to have logged in successfully, however a cookie has not been set. Please check your settings and if applicable, enable cookies for this website."
+
+msgid "Pun include extension"
+msgstr "Unable to process user include %s from template %s. \"%s\" files are not allowed"
+
+msgid "Pun include directory"
+msgstr "Unable to process user include %s from template %s. Directory traversal is not allowed"
+
+msgid "Pun include error"
+msgstr "Unable to process user include %s from template %s. There is no such file in neither the template directory nor in the user include directory"
+
+msgid "Announcement"
+msgstr "Announcement"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Submit"
+msgstr "Submit"
+
+msgid "Ban message"
+msgstr "You are banned from this forum."
+
+msgid "Ban message 2"
+msgstr "The ban expires at the end of"
+
+msgid "Ban message 3"
+msgstr "The administrator or moderator that banned you left the following message:"
+
+msgid "Ban message 4"
+msgstr "Please direct any inquiries to the forum administrator at"
+
+msgid "Never"
+msgstr "Never"
+
+msgid "Today"
+msgstr "Today"
+
+msgid "Yesterday"
+msgstr "Yesterday"
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Go back"
+msgstr "Go back"
+
+msgid "Maintenance"
+msgstr "Maintenance"
+
+msgid "Redirecting"
+msgstr "Redirecting"
+
+msgid "Click redirect"
+msgstr "Click here if you do not want to wait any longer (or if your browser does not automatically forward you)"
+
+msgid "on"
+msgstr "on"
+
+msgid "off"
+msgstr "off"
+
+msgid "Invalid email"
+msgstr "The email address you entered is invalid."
+
+msgid "Required"
+msgstr "(Required)"
+
+msgid "required field"
+msgstr "is a required field in this form."
+
+msgid "Last post"
+msgstr "Last post"
+
+msgid "by"
+msgstr "by"
+
+msgid "New posts"
+msgstr "New posts"
+
+msgid "New posts info"
+msgstr "Go to the first new post in this topic."
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Send email"
+msgstr "Send email"
+
+msgid "Moderated by"
+msgstr "Moderated by"
+
+msgid "Registered"
+msgstr "Registered"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Topic"
+msgstr "Topic"
+
+msgid "Forum"
+msgstr "Forum"
+
+msgid "Posts"
+msgstr "Posts"
+
+msgid "Replies"
+msgstr "Replies"
+
+msgid "Pages"
+msgstr "Pages:"
+
+msgid "Page"
+msgstr "Page %s"
+
+msgid "BBCode"
+msgstr "BBCode:"
+
+msgid "url tag"
+msgstr "[url] tag:"
+
+msgid "img tag"
+msgstr "[img] tag:"
+
+msgid "Smilies"
+msgstr "Smilies:"
+
+msgid "and"
+msgstr "and"
+
+msgid "Image link"
+msgstr "image"
+
+msgid "wrote"
+msgstr "wrote:"
+
+msgid "Mailer"
+msgstr "%s Mailer"
+
+msgid "Important information"
+msgstr "Important information"
+
+msgid "Write message legend"
+msgstr "Write your message and submit"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Spacer"
+msgstr "â¦"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Member"
+msgstr "Member"
+
+msgid "Moderator"
+msgstr "Moderator"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Banned"
+msgstr "Banned"
+
+msgid "Guest"
+msgstr "Guest"
+
+msgid "BBerr pcre"
+msgstr "(%s) Message is too long or too complex. Please shorten."
+
+msgid "BBerr unexpected attribute"
+msgstr "Unexpected attribute: \"%1$s\". (No attribute allowed for (%2$s)."
+
+msgid "BBerr unrecognized attribute"
+msgstr "Unrecognized attribute: \"%1$s\", is not valid for (%2$s)."
+
+msgid "BBerr bbcode attribute"
+msgstr "Attribute may NOT contain open or close bbcode tags"
+
+msgid "BBerr missing attribute"
+msgstr "(%1$s) is missing a required attribute."
+
+msgid "BBerr nesting overflow"
+msgstr "(%1$s) tag nesting depth: %2$d exceeds allowable limit: %3$d."
+
+msgid "BBerr self-nesting"
+msgstr "(%s) was opened within itself, this is not allowed."
+
+msgid "BBerr invalid nesting"
+msgstr "(%1$s) was opened within (%2$s), this is not allowed."
+
+msgid "BBerr invalid parent"
+msgstr "(%1$s) cannot be within: (%2$s). Allowable parent tags: %3$s."
+
+msgid "BBerr Invalid URL name"
+msgstr "Invalid URL name: %s"
+
+msgid "BBerr cannot post URLs"
+msgstr "You are not allowed to post links"
+
+msgid "BBerr Invalid email address"
+msgstr "Invalid email address: %s"
+
+msgid "BBerr Invalid color"
+msgstr "Invalid color attribute: %s"
+
+msgid "BBerr invalid content"
+msgstr "Invalid content, (%s) requires specific content."
+
+msgid "BBerr bad meta data"
+msgstr "Unable to retrieve image data from remote url: %s"
+
+msgid "BBerr no file size"
+msgstr "Unable to determine remote file size."
+
+msgid "BBerr non image"
+msgstr "Remote url does not have Content-Type: \"image\"."
+
+msgid "BBerr bad http response"
+msgstr "Bad HTTP response header: \"%s\""
+
+msgid "BBerr bad headers"
+msgstr "Unable to read remote image http headers."
+
+msgid "BBerr orphan close"
+msgstr "Orphan close tag: (/%s) is missing its open tag."
+
+msgid "BBerr orphan open"
+msgstr "Orphan open tag: (%s) is missing its close tag."
+
+msgid "BBmsg big image"
+msgstr "Big image"
+
+msgid "BBmsg images disabled"
+msgstr "Image display not currently enabled in this context"
+
+msgid "Index"
+msgstr "Index"
+
+msgid "User list"
+msgstr "User list"
+
+msgid "Rules"
+msgstr "Rules"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Not logged in"
+msgstr "You are not logged in."
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Logged in as"
+msgstr "Logged in as"
+
+msgid "Admin"
+msgstr "Administration"
+
+msgid "Last visit"
+msgstr "Last visit: %s"
+
+msgid "Topic searches"
+msgstr "Topics:"
+
+msgid "New posts header"
+msgstr "New"
+
+msgid "Active topics"
+msgstr "Active"
+
+msgid "Unanswered topics"
+msgstr "Unanswered"
+
+msgid "Posted topics"
+msgstr "Posted"
+
+msgid "Show new posts"
+msgstr "Find topics with new posts since your last visit."
+
+msgid "Show active topics"
+msgstr "Find topics with recent posts."
+
+msgid "Show unanswered topics"
+msgstr "Find topics with no replies."
+
+msgid "Show posted topics"
+msgstr "Find topics you have posted to."
+
+msgid "Mark all as read"
+msgstr "Mark all topics as read"
+
+msgid "Mark forum read"
+msgstr "Mark this forum as read"
+
+msgid "Title separator"
+msgstr " / "
+
+msgid "Board footer"
+msgstr "Board footer"
+
+msgid "Jump to"
+msgstr "Jump to"
+
+msgid "Go"
+msgstr " Go "
+
+msgid "Moderate topic"
+msgstr "Moderate topic"
+
+msgid "All"
+msgstr "All"
+
+msgid "Move topic"
+msgstr "Move topic"
+
+msgid "Open topic"
+msgstr "Open topic"
+
+msgid "Close topic"
+msgstr "Close topic"
+
+msgid "Unstick topic"
+msgstr "Unstick topic"
+
+msgid "Stick topic"
+msgstr "Stick topic"
+
+msgid "Moderate forum"
+msgstr "Moderate forum"
+
+msgid "Powered by"
+msgstr "Powered by %s"
+
+msgid "Debug table"
+msgstr "Debug information"
+
+msgid "Querytime"
+msgstr "Generated in %1$s seconds, %2$s queries executed"
+
+msgid "Memory usage"
+msgstr "Memory usage: %1$s"
+
+msgid "Peak usage"
+msgstr "(Peak: %1$s)"
+
+msgid "Query times"
+msgstr "Time (s)"
+
+msgid "Query"
+msgstr "Query"
+
+msgid "Total query time"
+msgstr "Total query time: %s"
+
+msgid "RSS description"
+msgstr "The most recent topics at %s."
+
+msgid "RSS description topic"
+msgstr "The most recent posts in %s."
+
+msgid "RSS reply"
+msgstr "Re: "
+
+msgid "RSS active topics feed"
+msgstr "RSS active topics feed"
+
+msgid "Atom active topics feed"
+msgstr "Atom active topics feed"
+
+msgid "RSS forum feed"
+msgstr "RSS forum feed"
+
+msgid "Atom forum feed"
+msgstr "Atom forum feed"
+
+msgid "RSS topic feed"
+msgstr "RSS topic feed"
+
+msgid "Atom topic feed"
+msgstr "Atom topic feed"
+
+msgid "New reports"
+msgstr "There are new reports"
+
+msgid "Maintenance mode enabled"
+msgstr "Maintenance mode is enabled!"
+
+msgid "Size unit B"
+msgstr "%s B"
+
+msgid "Size unit KiB"
+msgstr "%s KiB"
+
+msgid "Size unit MiB"
+msgstr "%s MiB"
+
+msgid "Size unit GiB"
+msgstr "%s GiB"
+
+msgid "Size unit TiB"
+msgstr "%s TiB"
+
+msgid "Size unit PiB"
+msgstr "%s PiB"
+
+msgid "Size unit EiB"
+msgstr "%s EiB"

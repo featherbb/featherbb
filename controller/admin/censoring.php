@@ -30,12 +30,12 @@ class censoring
     
     public function display()
     {
-        global $lang_common, $lang_admin_common, $lang_admin_censoring;
+        global $lang_admin_common, $lang_admin_censoring;
 
         require FEATHER_ROOT.'include/common_admin.php';
 
         if ($this->user->g_id != FEATHER_ADMIN) {
-            message($lang_common['No permission'], '403');
+            message(__('No permission'), '403');
         }
 
         define('FEATHER_ADMIN_CONSOLE', 1);

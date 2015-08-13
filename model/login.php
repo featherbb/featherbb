@@ -24,8 +24,6 @@ class login
  
     public function login()
     {
-        global $db_type, $lang_login;
-
         $form_username = feather_trim($this->request->post('req_username'));
         $form_password = feather_trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
@@ -56,7 +54,7 @@ class login
         }
 
         if (!$authorized) {
-            message($lang_login['Wrong user/pass'].' <a href="'.get_link('login/action/forget/').'">'.$lang_login['Forgotten pass'].'</a>');
+            message(__('Wrong user/pass').' <a href="'.get_link('login/action/forget/').'">'.__('Forgotten pass').'</a>');
         }
 
         // Update the status if this is the first time the user logged in
@@ -87,13 +85,11 @@ class login
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
         $redirect_url = validate_redirect($this->request->post('redirect_url'), get_base_url());
 
-        redirect(feather_escape($redirect_url), $lang_login['Login redirect']);
+        redirect(feather_escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
     {
-        global $lang_login;
-
         if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash(get_remote_address()))) {
             header('Location: '.get_base_url());
             exit;
@@ -113,13 +109,11 @@ class login
 
         feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
 
-        redirect(get_base_url(), $lang_login['Logout redirect']);
+        redirect(get_base_url(), __('Logout redirect'));
     }
 
     public function password_forgotten()
     {
-        global $lang_common, $lang_login;
-
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
@@ -133,7 +127,7 @@ class login
             // Validate the email address
             $email = strtolower(feather_trim($this->request->post('req_email')));
             if (!is_valid_email($email)) {
-                $errors[] = $lang_common['Invalid email'];
+                $errors[] = __('Invalid email');
             }
 
             // Did everything go according to plan?
@@ -161,7 +155,7 @@ class login
                     // Loop through users we found
                     foreach($result as $cur_hit) {
                         if ($cur_hit->last_email_sent != '' && (time() - $cur_hit->last_email_sent) < 3600 && (time() - $cur_hit->last_email_sent) >= 0) {
-                            message(sprintf($lang_login['Email flood'], intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), true);
+                            message(sprintf(__('Email flood'), intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), true);
                         }
 
                         // Generate a new password and a new password activation code
@@ -187,9 +181,9 @@ class login
                         pun_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    message($lang_login['Forget mail'].' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+                    message(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
                 } else {
-                    $errors[] = $lang_login['No email match'].' '.htmlspecialchars($email).'.';
+                    $errors[] = __('No email match').' '.htmlspecialchars($email).'.';
                 }
             }
         }
