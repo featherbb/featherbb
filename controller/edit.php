@@ -60,9 +60,6 @@ class edit
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
             message(__('No permission'), '403');
         }
-        
-        // Load the bbeditor.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.php';
 
         // Start with a clean slate
         $errors = array();
@@ -101,6 +98,25 @@ class edit
             $preview_message = '';
         }
 
+        $lang_bbeditor = array(
+            'btnBold' => __('btnBold'),
+            'btnItalic' => __('btnItalic'),
+            'btnUnderline' => __('btnUnderline'),
+            'btnColor' => __('btnColor'),
+            'btnLeft' => __('btnLeft'),
+            'btnRight' => __('btnRight'),
+            'btnJustify' => __('btnJustify'),
+            'btnCenter' => __('btnCenter'),
+            'btnLink' => __('btnLink'),
+            'btnPicture' => __('btnPicture'),
+            'btnList' => __('btnList'),
+            'btnQuote' => __('btnQuote'),
+            'btnCode' => __('btnCode'),
+            'promptImage' => __('promptImage'),
+            'promptUrl' => __('promptUrl'),
+            'promptQuote' => __('promptQuote')
+        );
+
         $this->feather->render('edit.php', array(
                             'cur_post' => $cur_post,
                             'errors' => $errors,
@@ -111,6 +127,7 @@ class edit
                             'checkboxes' => $this->model->get_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                             'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
+                            'lang_bbeditor'    =>    $lang_bbeditor,
                             'post' => $post,
                             )
                     );

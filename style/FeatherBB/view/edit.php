@@ -68,10 +68,9 @@ elseif ($feather->request->post('preview')):
 endif;
 ?>
 <!-- Init BBcode editor toolbar -->
-<?php $lang_bbeditor = ''; ?>
 <script>
     var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
-        langBbeditor = JSON.parse('<?= json_encode($lang_bbeditor); ?>');
+        langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
 <script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
 <div id="editform" class="blockform">
