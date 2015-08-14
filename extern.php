@@ -68,9 +68,18 @@ require 'Slim/Slim.php';
 // Instantiate Slim
 $feather = new \Slim\Slim();
 
-require FEATHER_ROOT.'include/common.php';
+// Load the config
+require 'include/config.php';
+
+// Load middlewares
+$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
+$feather->add(new \Slim\Extras\Middleware\FeatherBB($feather_user_settings)); // FeatherBB
+
+$feather->config('cookies.encrypt', true);
+$feather->config('debug', true); // As long as we're developing FeatherBB
 
 load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo');
+load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/index.mo');
 
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {

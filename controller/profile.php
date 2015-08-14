@@ -22,6 +22,7 @@ class profile
         $this->footer = new \controller\footer();
         $this->model = new \model\profile();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/profile.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
     }
 

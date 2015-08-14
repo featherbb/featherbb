@@ -23,6 +23,7 @@ class post
         $this->model = new \model\post();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
     }
