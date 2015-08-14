@@ -21,9 +21,9 @@ class viewtopic
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
         $this->model = new \model\viewtopic();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/topic.mo');
     }
 
     public function __autoload($class_name)

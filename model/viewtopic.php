@@ -53,7 +53,6 @@ class viewtopic
     // Redirects to new posts or last post
     public function handle_actions($topic_id, $action)
     {
-
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
             if (!$this->user->is_guest) {
@@ -92,8 +91,6 @@ class viewtopic
     // Gets some info about the topic
     public function get_info_topic($id)
     {
-
-
         $where_get_info_topic = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
