@@ -83,9 +83,6 @@ class misc
             message(__('No permission'), '403');
         }
 
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
-
         $this->model->subscribe_forum($id);
     }
 
@@ -94,9 +91,6 @@ class misc
         if ($this->user->is_guest) {
             message(__('No permission'), '403');
         }
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         $this->model->subscribe_topic($id);
     }
@@ -107,9 +101,6 @@ class misc
             message(__('No permission'), '403');
         }
 
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
-
         $this->model->unsubscribe_forum($id);
     }
 
@@ -118,9 +109,6 @@ class misc
         if ($this->user->is_guest) {
             message(__('No permission'), '403');
         }
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         $this->model->unsubscribe_topic($id);
     }
@@ -134,9 +122,6 @@ class misc
         if ($id < 2) {
             message(__('Bad request'), '404');
         }
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         $mail = $this->model->get_info_mail($id);
 
