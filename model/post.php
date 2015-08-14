@@ -134,10 +134,6 @@ class post
         if ($this->user->is_guest) {
             $email = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
-            // Load the register.php/prof_reg.php language files
-            require FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.php';
-            require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
-
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
                 require FEATHER_ROOT.'include/email.php';
                 if (!is_valid_email($email)) {

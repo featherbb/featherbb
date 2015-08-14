@@ -24,9 +24,6 @@ class moderate
  
     public function display_ip_info($ip)
     {
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
-
         message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
@@ -41,9 +38,6 @@ class moderate
         if (!$ip) {
             message(__('Bad request'), '404');
         }
-
-        // Load the misc.php language file
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/misc.php';
 
         message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
@@ -206,9 +200,6 @@ class moderate
             if (!$result) {
                 message(__('Bad request'), '404');
             }
-
-            // Load the post.php language file
-            require FEATHER_ROOT.'lang/'.$this->user->language.'/post.php';
 
             // Check subject
             $new_subject = $this->request->post('new_subject') ? feather_trim($this->request->post('new_subject')) : '';

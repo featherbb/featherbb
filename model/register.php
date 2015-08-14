@@ -111,7 +111,7 @@ class register
         // Make sure we got a valid language string
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
-            if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.php')) {
+            if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.po')) {
                 message(__('Bad request'), '404');
             }
         } else {

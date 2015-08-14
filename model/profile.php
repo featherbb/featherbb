@@ -702,9 +702,6 @@ class profile
                         $form['username'] = feather_trim($this->request->post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
-                            // Check username
-                            require FEATHER_ROOT.'lang/'.$this->user->language.'/register.php';
-
                             $errors = '';
                             $errors = check_username($form['username'], $errors, $id);
                             if (!empty($errors)) {

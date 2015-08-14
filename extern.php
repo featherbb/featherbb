@@ -645,8 +645,6 @@ if ($action == 'feed') {
 
 // Show users online
 elseif ($action == 'online' || $action == 'online_full') {
-    // Load the index.php language file
-    require FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/index.php';
 
     // Fetch users online info and generate strings for output
     $num_guests = $num_users = 0;
@@ -690,8 +688,6 @@ elseif ($action == 'online' || $action == 'online_full') {
 
 // Show board statistics
 elseif ($action == 'stats') {
-    // Load the index.php language file
-    require FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/index.php';
 
     // Collect some statistics from the database
     if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
