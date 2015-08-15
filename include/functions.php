@@ -909,52 +909,6 @@ function is_all_uppercase($string)
 
 
 //
-// Display a message when board is in maintenance mode
-//
-function maintenance_message()
-{
-    global $feather_config;
-
-    // Deal with newlines, tabs and multiple spaces
-    $pattern = array("\t", '  ', '  ');
-    $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
-    $message = str_replace($pattern, $replace, $feather_config['o_maintenance_message']);
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $page_title = array(feather_escape($feather_config['o_board_title']), __('Maintenance'));
-
-    if (!defined('FEATHER_ACTIVE_PAGE')) {
-        define('FEATHER_ACTIVE_PAGE', 'index');
-    }
-
-    require_once FEATHER_ROOT.'controller/header.php';
-    require_once FEATHER_ROOT.'controller/footer.php';
-
-    $feather->config('templates.path', get_path_view());
-
-    $header = new \controller\header();
-
-    $header->setTitle($page_title)->display();
-
-    $feather->render('message.php', array(
-            'message'    =>    $message,
-            'no_back_link'    =>    '',
-        )
-    );
-
-    require_once FEATHER_ROOT.'controller/footer.php';
-
-    $footer = new \controller\footer();
-
-    $footer->dontStop();
-
-    $footer->display();
-}
-
-
-//
 // Display $message and redirect user to $destination_url
 //
 function redirect($destination_url, $message = null)
@@ -1128,7 +1082,7 @@ function forum_list_langs()
             continue;
         }
 
-        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/common.php')) {
+        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/common.po')) {
             $languages[] = $entry;
         }
     }
