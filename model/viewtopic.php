@@ -21,7 +21,7 @@ class viewtopic
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     // Redirects to a post in particular
     public function redirect_to_post($post_id)
     {
@@ -159,8 +159,6 @@ class viewtopic
     // Should we display the quickpost?
     public function is_quickpost($post_replies, $closed, $is_admmod)
     {
-
-
         $quickpost = false;
         if ($this->config['o_quickpost'] == '1' && ($post_replies == '1' || ($post_replies == '' && $this->user->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
 
@@ -303,10 +301,10 @@ class viewtopic
                         $cur_post['user_info'][] = '<dd><span>'.__('From').' '.feather_escape($cur_post['location']).'</span></dd>';
                     }
 
-                    $cur_post['user_info'][] = '<dd><span>'.__('Registered').' '.format_time($cur_post['registered'], true).'</span></dd>';
+                    $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.format_time($cur_post['registered'], true).'</span></dd>';
 
                     if ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
-                        $cur_post['user_info'][] = '<dd><span>'.__('Posts').' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)

@@ -32,10 +32,10 @@ msgstr "IP address logged"
 msgid "Note"
 msgstr "Note:"
 
-msgid "Posts"
+msgid "Posts topic"
 msgstr "Posts:"
 
-msgid "Registered"
+msgid "Registered topic"
 msgstr "Registered:"
 
 msgid "Replies"
