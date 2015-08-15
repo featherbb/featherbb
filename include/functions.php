@@ -128,79 +128,6 @@ function feather_setcookie($user_id, $password, $expires)
 
 
 //
-// Check whether the connecting user is banned (and delete any expired bans while we're at it)
-//
-function check_bans()
-{
-    global $feather_config, $feather_bans;
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    // Admins and moderators aren't affected
-    if ($feather->user->is_admmod || !$feather_bans) {
-        return;
-    }
-
-    // Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
-    // 192.168.0.5 from matching e.g. 192.168.0.50
-    $user_ip = get_remote_address();
-    $user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
-
-    $bans_altered = false;
-    $is_banned = false;
-
-    foreach ($feather_bans as $cur_ban) {
-        // Has this ban expired?
-        if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-            \DB::for_table('bans')->where('id', $cur_ban['id'])
-                                               ->delete_many();
-            $bans_altered = true;
-            continue;
-        }
-
-        if ($cur_ban['username'] != '' && utf8_strtolower($feather->user->username) == utf8_strtolower($cur_ban['username'])) {
-            $is_banned = true;
-        }
-
-        if ($cur_ban['ip'] != '') {
-            $cur_ban_ips = explode(' ', $cur_ban['ip']);
-
-            $num_ips = count($cur_ban_ips);
-            for ($i = 0; $i < $num_ips; ++$i) {
-                // Add the proper ending to the ban
-                if (strpos($user_ip, '.') !== false) {
-                    $cur_ban_ips[$i] = $cur_ban_ips[$i].'.';
-                } else {
-                    $cur_ban_ips[$i] = $cur_ban_ips[$i].':';
-                }
-
-                if (substr($user_ip, 0, strlen($cur_ban_ips[$i])) == $cur_ban_ips[$i]) {
-                    $is_banned = true;
-                    break;
-                }
-            }
-        }
-
-        if ($is_banned) {
-            \DB::for_table('online')->where('ident', $feather->user->username)
-                                                 ->delete_many();
-            message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
-        }
-    }
-
-    // If we removed any expired bans during our run-through, we need to regenerate the bans cache
-    if ($bans_altered) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_bans_cache();
-    }
-}
-
-
-//
 // Check username
 //
 function check_username($username, $errors, $exclude_id = null)
@@ -259,45 +186,6 @@ function check_username($username, $errors, $exclude_id = null)
 
 
 //
-// Update "Users online"
-//
-function update_users_online()
-{
-    global $feather, $feather_config;
-
-    $now = time();
-
-    // Fetch all online list entries that are older than "o_timeout_online"
-    $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
-
-    $result = \DB::for_table('online')->select_many($select_update_users_online)
-        ->where_lt('logged', $now-$feather_config['o_timeout_online'])
-        ->find_many();
-
-    foreach ($result as $cur_user) {
-        // If the entry is a guest, delete it
-        if ($cur_user['user_id'] == '1') {
-            \DB::for_table('online')->where('ident', $cur_user['ident'])
-                                                 ->delete_many();
-        } else {
-            // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-            if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                \DB::for_table('users')->where('id', $cur_user['user_id'])
-                        ->find_one()
-                        ->set('last_visit', $cur_user['logged'])
-                        ->save();
-                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
-                    ->delete_many();
-            } elseif ($cur_user['idle'] == '0') {
-                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
-                        ->update_many('idle', 1);
-            }
-        }
-    }
-}
-
-
-//
 // Outputs markup to display a user's avatar
 //
 function generate_avatar_markup($user_id)
@@ -325,8 +213,6 @@ function generate_avatar_markup($user_id)
 //
 function generate_page_title($page_title, $p = null)
 {
-
-
     if (!is_array($page_title)) {
         $page_title = array($page_title);
     }
@@ -390,9 +276,6 @@ function get_tracked_topics()
 //
 function update_forum($forum_id)
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     $stats_query = \DB::for_table('topics')
                     ->where('forum_id', $forum_id)
                     ->select_expr('COUNT(id)', 'total_topics')
@@ -462,9 +345,6 @@ function delete_avatar($user_id)
 //
 function delete_topic($topic_id)
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     // Delete the topic and any redirect topics
     $where_delete_topic = array(
             array('id' => $topic_id),
@@ -492,9 +372,6 @@ function delete_topic($topic_id)
 //
 function delete_post($post_id, $topic_id)
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     $result = \DB::for_table('posts')
                   ->select_many('id', 'poster', 'posted')
                   ->where('topic_id', $topic_id)
@@ -703,8 +580,6 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 //
 function paginate_old($num_pages, $cur_page, $link)
 {
-
-
     $pages = array();
     $link_to_all = false;
 
@@ -1617,10 +1492,7 @@ function get_sublink($link, $sublink, $subarg, $args = null)
 }
 
 // Generate breadcrumbs from an array of name and URLs
-
 function breadcrumbs(array $links) {
-    global $lang_admin_reports;
-
     foreach ($links as $name => $url) {
         if ($name != '' && $url != '') {
             $tmp[] = '<span><a href="' . $url . '">'.feather_escape($name).'</a></span>';
