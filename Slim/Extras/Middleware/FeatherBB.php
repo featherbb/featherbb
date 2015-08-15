@@ -320,15 +320,13 @@ class FeatherBB extends \Slim\Middleware
 
     public function update_users_online()
     {
-        global $feather_config;
-
         $now = time();
 
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
         $result = \DB::for_table('online')->select_many($select_update_users_online)
-            ->where_lt('logged', $now-$feather_config['o_timeout_online'])
+            ->where_lt('logged', $now-$this->data['forum_settings']['o_timeout_online'])
             ->find_many();
 
         foreach ($result as $cur_user) {
@@ -338,7 +336,7 @@ class FeatherBB extends \Slim\Middleware
                     ->delete_many();
             } else {
                 // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-                if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
+                if ($cur_user['logged'] < ($now-$this->data['forum_settings']['o_timeout_visit'])) {
                     \DB::for_table('users')->where('id', $cur_user['user_id'])
                         ->find_one()
                         ->set('last_visit', $cur_user['logged'])
@@ -355,13 +353,10 @@ class FeatherBB extends \Slim\Middleware
 
     public function check_bans()
     {
-        global $feather_config, $feather_bans;
-
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
+        global $feather_bans;
 
         // Admins and moderators aren't affected
-        if ($feather->user->is_admmod || !$feather_bans) {
+        if ($this->app->user->is_admmod || !$feather_bans) {
             return;
         }
 
@@ -382,7 +377,7 @@ class FeatherBB extends \Slim\Middleware
                 continue;
             }
 
-            if ($cur_ban['username'] != '' && utf8_strtolower($feather->user->username) == utf8_strtolower($cur_ban['username'])) {
+            if ($cur_ban['username'] != '' && utf8_strtolower($this->app->user->username) == utf8_strtolower($cur_ban['username'])) {
                 $is_banned = true;
             }
 
@@ -406,9 +401,9 @@ class FeatherBB extends \Slim\Middleware
             }
 
             if ($is_banned) {
-                \DB::for_table('online')->where('ident', $feather->user->username)
+                \DB::for_table('online')->where('ident', $this->app->user->username)
                     ->delete_many();
-                message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
+                message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($this->data['forum_settings']['o_admin_email']).'">'.feather_escape($this->data['forum_settings']['o_admin_email']).'</a>.', true, true, true);
             }
         }
 
