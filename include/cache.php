@@ -153,6 +153,26 @@ function generate_censoring_cache()
     featherbb_write_cache_file('cache_censoring.php', $content);
 }
 
+//
+// Generate a cache ID based on the last modification time for all stopwords files
+//
+function generate_stopwords_cache_id()
+{
+    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
+    if ($files === false) {
+        return 'cache_id_error';
+    }
+
+    $hash = array();
+
+    foreach ($files as $file) {
+        $hash[] = $file;
+        $hash[] = filemtime($file);
+    }
+
+    return sha1(implode('|', $hash));
+}
+
 
 //
 // Generate the stopwords cache PHP script

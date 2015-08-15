@@ -95,6 +95,24 @@ function escape_cdata($str)
 }
 
 //
+// Try to determine the current URL
+//
+function get_current_url($max_length = 0)
+{
+    $protocol = get_current_protocol();
+    $port = (isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false) ? ':'.$_SERVER['SERVER_PORT'] : '';
+
+    $url = urldecode($protocol.'://'.$_SERVER['HTTP_HOST'].$port.$_SERVER['REQUEST_URI']);
+
+    if (strlen($url) <= $max_length || $max_length == 0) {
+        return $url;
+    }
+
+    // We can't find a short enough url
+    return null;
+}
+
+//
 // Fill $feather->user with default values (for guests)
 //
 function set_default_user()
