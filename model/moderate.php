@@ -233,7 +233,7 @@ class moderate
                 ->set($insert_topic)
                 ->save();
 
-            $new_tid = DB::get_db()->lastInsertId($this->feather->prefix.'topics');
+            $new_tid = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
             // Move the posts to the new topic
             DB::for_table('posts')->where_in('id', $posts_array)
@@ -242,7 +242,7 @@ class moderate
                 ->save();
 
             // Apply every subscription to both topics
-            DB::for_table('topic_subscriptions')->raw_query('INSERT INTO '.$this->feather->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->feather->prefix.'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
+            DB::for_table('topic_subscriptions')->raw_query('INSERT INTO '.$this->feather->forum_settings['db_prefix'].'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->feather->forum_settings['db_prefix'].'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
             $select_last_post = array('id', 'poster', 'posted');
@@ -599,7 +599,7 @@ class moderate
             ->find_one_col('id');
 
         // Make any redirect topics point to our new, merged topic
-        $query = 'UPDATE '.$this->feather->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
+        $query = 'UPDATE '.$this->feather->forum_settings['db_prefix'].'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
 
         // Should we create redirect topics?
         if ($this->request->post('with_redirect')) {

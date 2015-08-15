@@ -448,7 +448,7 @@ class users
 
             // Overwrite the registration IP with one from the last post (if it exists)
             if ($ban_the_ip != 0) {
-                $result = DB::for_table('posts')->raw_query('SELECT p.poster_id, p.poster_ip FROM ' . $this->feather->prefix . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . $this->feather->prefix . 'posts WHERE poster_id IN (' . implode(',', $user_ids) . ') GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
+                $result = DB::for_table('posts')->raw_query('SELECT p.poster_id, p.poster_ip FROM ' . $this->feather->forum_settings['db_prefix'] . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . $this->feather->forum_settings['db_prefix'] . 'posts WHERE poster_id IN (' . implode(',', $user_ids) . ') GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
                 foreach ($result as $cur_address) {
                     $user_info[$cur_address['poster_id']]['ip'] = $cur_address['poster_ip'];
                 }

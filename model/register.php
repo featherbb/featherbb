@@ -150,7 +150,7 @@ class register
             ->set($insert_user)
             ->save();
 
-        $new_uid = DB::get_db()->lastInsertId($this->feather->prefix.'users');
+        $new_uid = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'users');
 
 
         if ($this->config['o_regs_verify'] == '0') {

@@ -519,8 +519,6 @@ function get_title($user)
 //
 function paginate($num_pages, $cur_page, $link, $args = null)
 {
-
-
     $pages = array();
     $link_to_all = false;
 
@@ -915,7 +913,7 @@ function is_all_uppercase($string)
 //
 function maintenance_message()
 {
-    global $feather_config, $tpl_main;
+    global $feather_config;
 
     // Deal with newlines, tabs and multiple spaces
     $pattern = array("\t", '  ', '  ');
