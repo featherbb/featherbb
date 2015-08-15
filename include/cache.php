@@ -202,7 +202,7 @@ function generate_users_info_cache()
     $stats['last_user'] = $last_user[0];
 
     // Output users info as PHP code
-    $content = '<?php'."\n\n".'define(\'feather_userS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'FEATHER_USERS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
     featherbb_write_cache_file('cache_users_info.php', $content);
 }
 

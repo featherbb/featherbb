@@ -703,7 +703,7 @@ elseif ($action == 'stats') {
         include FORUM_CACHE_DIR.'cache_users_info.php';
     }
 
-    if (!defined('feather_userS_INFO_LOADED')) {
+    if (!defined('FEATHER_USERS_INFO_LOADED')) {
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
             require FEATHER_ROOT.'include/cache.php';
         }

@@ -26,8 +26,6 @@ class index
     // Returns page head
     public function get_page_head()
     {
-
-        
         if ($this->config['o_feed_type'] == '1') {
             $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
         } elseif ($this->config['o_feed_type'] == '2') {
@@ -133,8 +131,6 @@ class index
                 $cur_forum->cur_category = 0;
                 $cur_forum->forum_count_formatted = 0;
             }
-            
-            $moderators = '';
 
             if (isset($cur_forum->cur_category)) {
                 $cur_cat = $cur_forum->cur_category;
@@ -219,7 +215,7 @@ class index
             include FORUM_CACHE_DIR.'cache_users_info.php';
         }
 
-        if (!defined('feather_userS_INFO_LOADED')) {
+        if (!defined('FEATHER_USERS_INFO_LOADED')) {
             if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
                 require FEATHER_ROOT.'include/cache.php';
             }
