@@ -343,7 +343,7 @@ class viewtopic
                 $cur_post['user_title_formatted'] = get_title($cur_post);
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="moderate.php?get_host='.$cur_post['id'].'" title="'.feather_escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.get_link('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.feather_escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
