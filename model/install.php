@@ -30,7 +30,7 @@ class install
             `cat_name` varchar(80) NOT NULL DEFAULT 'New Category',
             `disp_position` int(10) NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'censoring' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `search_for` varchar(60) NOT NULL DEFAULT '',
