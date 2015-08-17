@@ -168,11 +168,6 @@ class install
     {
         \Slim\Extras\Middleware\FeatherBBLoader::init_db($data);
 
-        // Check if FeatherBB DB isn't installed already
-        if ($this->model->is_installed()) {
-            redirect(get_link(''), 'DB already installed');
-        }
-
         // Load appropriate language
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$data['default_lang'].'/install.mo');
 

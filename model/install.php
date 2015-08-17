@@ -14,7 +14,7 @@ use DB;
 class install
 {
     protected $database_scheme = array(
-        'bans' => "CREATE TABLE %t% (
+        'bans' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `username` varchar(200) DEFAULT NULL,
             `ip` varchar(255) DEFAULT NULL,
@@ -25,24 +25,24 @@ class install
             PRIMARY KEY (`id`),
             KEY `bans_username_idx` (`username`(25))
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'categories' => "CREATE TABLE %t% (
+        'categories' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `cat_name` varchar(80) NOT NULL DEFAULT 'New Category',
             `disp_position` int(10) NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;",
-        'censoring' => "CREATE TABLE %t% (
+        'censoring' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `search_for` varchar(60) NOT NULL DEFAULT '',
             `replace_with` varchar(60) NOT NULL DEFAULT '',
             PRIMARY KEY (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'config' => "CREATE TABLE %t% (
+        'config' => "CREATE TABLE IF NOT EXISTS %t% (
             `conf_name` varchar(255) NOT NULL DEFAULT '',
             `conf_value` text,
             PRIMARY KEY (`conf_name`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'forum_perms' => "CREATE TABLE %t% (
+        'forum_perms' => "CREATE TABLE IF NOT EXISTS %t% (
             `group_id` int(10) NOT NULL DEFAULT '0',
             `forum_id` int(10) NOT NULL DEFAULT '0',
             `read_forum` tinyint(1) NOT NULL DEFAULT '1',
@@ -50,12 +50,12 @@ class install
             `post_topics` tinyint(1) NOT NULL DEFAULT '1',
             PRIMARY KEY (`group_id`,`forum_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'forum_subscriptions' => "CREATE TABLE %t% (
+        'forum_subscriptions' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '0',
             `forum_id` int(10) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`user_id`,`forum_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'forums' => "CREATE TABLE %t% (
+        'forums' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `forum_name` varchar(80) NOT NULL DEFAULT 'New forum',
             `forum_desc` text,
@@ -71,7 +71,7 @@ class install
             `cat_id` int(10) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'groups' => "CREATE TABLE %t% (
+        'groups' => "CREATE TABLE IF NOT EXISTS %t% (
             `g_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `g_title` varchar(50) NOT NULL DEFAULT '',
             `g_user_title` varchar(50) DEFAULT NULL,
@@ -101,7 +101,7 @@ class install
             `g_report_flood` smallint(6) NOT NULL DEFAULT '60',
             PRIMARY KEY (`g_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'online' => "CREATE TABLE %t% (
+        'online' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '1',
             `ident` varchar(200) NOT NULL DEFAULT '',
             `logged` int(10) unsigned NOT NULL DEFAULT '0',
@@ -112,7 +112,7 @@ class install
             KEY `online_ident_idx` (`ident`(25)),
             KEY `online_logged_idx` (`logged`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'posts' => "CREATE TABLE %t% (
+        'posts' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `poster` varchar(200) NOT NULL DEFAULT '',
             `poster_id` int(10) unsigned NOT NULL DEFAULT '1',
@@ -128,7 +128,7 @@ class install
             KEY `posts_topic_id_idx` (`topic_id`),
             KEY `posts_multi_idx` (`poster_id`,`topic_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'reports' => "CREATE TABLE %t% (
+        'reports' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `post_id` int(10) unsigned NOT NULL DEFAULT '0',
             `topic_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -141,32 +141,32 @@ class install
             PRIMARY KEY (`id`),
             KEY `reports_zapped_idx` (`zapped`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'search_cache' => "CREATE TABLE %t% (
+        'search_cache' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL DEFAULT '0',
             `ident` varchar(200) NOT NULL DEFAULT '',
             `search_data` mediumtext,
             PRIMARY KEY (`id`),
             KEY `search_cache_ident_idx` (`ident`(8))
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'search_matches' => "CREATE TABLE %t% (
+        'search_matches' => "CREATE TABLE IF NOT EXISTS %t% (
             `post_id` int(10) unsigned NOT NULL DEFAULT '0',
             `word_id` int(10) unsigned NOT NULL DEFAULT '0',
             `subject_match` tinyint(1) NOT NULL DEFAULT '0',
             KEY `search_matches_word_id_idx` (`word_id`),
             KEY `search_matches_post_id_idx` (`post_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'search_words' => "CREATE TABLE %t% (
+        'search_words' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `word` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
             PRIMARY KEY (`word`),
             KEY `search_words_id_idx` (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'topic_subscriptions' => "CREATE TABLE %t% (
+        'topic_subscriptions' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '0',
             `topic_id` int(10) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`user_id`,`topic_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'topics' => "CREATE TABLE %t% (
+        'topics' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `poster` varchar(200) NOT NULL DEFAULT '',
             `subject` varchar(255) NOT NULL DEFAULT '',
@@ -187,7 +187,7 @@ class install
             KEY `topics_last_post_idx` (`last_post`),
             KEY `topics_first_post_id_idx` (`first_post_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'users' => "CREATE TABLE %t% (
+        'users' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `group_id` int(10) unsigned NOT NULL DEFAULT '3',
             `username` varchar(200) NOT NULL DEFAULT '',
@@ -240,20 +240,11 @@ class install
         $this->feather = \Slim\Slim::getInstance();
     }
 
-    public function is_installed()
-    {
-        $db = DB::get_db();
-        //$db->exec('SHOW TABLES like users');
-        return false;
-    }
-
     public function create_table($table_name, $sql)
     {
         $db = DB::get_db();
         $req = preg_replace('/%t%/', '`'.$table_name.'`', $sql);
-        $db->exec($req);
-        echo DB::get_last_query();
-        return true;
+        return $db->exec($req);
     }
 
     public function add_data($table_name, array $data)
