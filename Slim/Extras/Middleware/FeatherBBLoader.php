@@ -92,34 +92,29 @@ class FeatherBBLoader extends \Slim\Middleware
                 );
     }
 
-    public function init_db()
+    public static function init_db(array $config)
     {
-        switch ($this->forum_settings['db_type']) {
+        switch ($config['db_type']) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
             case 'mysqli_innodb':
-                DB::configure('mysql:host='.$this->forum_settings['db_host'].';dbname='.$this->forum_settings['db_name']);
+                DB::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
                 DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
                 break;
             case 'sqlite';
             case 'sqlite3';
-                DB::configure('sqlite:./'.$this->forum_settings['db_name']);
+                DB::configure('sqlite:./'.$config['db_name']);
                 break;
             case 'pgsql':
-                \DB::configure('pgsql:host='.$this->forum_settings['db_host'].'dbname='.$this->forum_settings['db_name']);
+                DB::configure('pgsql:host='.$config['db_host'].'dbname='.$config['db_name']);
                 break;
         }
-        DB::configure('username', $this->forum_settings['db_user']);
-        DB::configure('password', $this->forum_settings['db_pass']);
-        if ($this->forum_env['FEATHER_SHOW_QUERIES'] == 1) {
-            DB::configure('logging', true);
-        }
-        if ($this->forum_env['FEATHER_CACHE_QUERIES'] == 1) {
-            DB::configure('caching', true);
-        }
+        DB::configure('username', $config['db_user']);
+        DB::configure('password', $config['db_pass']);
+        DB::configure('logging', true);
         DB::configure('id_column_overrides', array(
-            $this->forum_settings['db_prefix'].'groups' => 'g_id',
+            $config['db_prefix'].'groups' => 'g_id',
         ));
     }
 
@@ -229,7 +224,7 @@ class FeatherBBLoader extends \Slim\Middleware
         }
 
         // Init DB
-        $this->init_db();
+        self::init_db($this->forum_settings);
 
         // Get forum settings from DB/cache and load it into forum_settings array
         if (file_exists($this->forum_env['FORUM_CACHE_DIR'].'cache_config.php')) {
