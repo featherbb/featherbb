@@ -165,13 +165,12 @@ class install
 
     public function create_db(array $data)
     {
+        \Slim\Extras\Middleware\FeatherBBLoader::init_db($data);
+
         // Check if FeatherBB DB isn't installed already
         if ($this->model->is_installed()) {
-            //redirect(get_link(''), 'DB already installed');
+            redirect(get_link(''), 'DB already installed');
         }
-
-        //
-        \Slim\Extras\Middleware\FeatherBBLoader::init_db($data);
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {

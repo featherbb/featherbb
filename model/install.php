@@ -242,7 +242,9 @@ class install
 
     public function is_installed()
     {
-        return false;
+        $db = DB::get_db();
+        $db->exec('SHOW TABLES like `users`');
+        return (bool) $db;
     }
 
     public function create_table($table_name, $sql)
