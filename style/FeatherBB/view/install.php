@@ -44,6 +44,7 @@ if (!defined('FEATHER')) {
                             <h2><span><?php _e('Choose install language') ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
+                                    <input type="hidden" name="choose_lang" value="1">
                                     <div class="inform">
                                         <fieldset>
                                             <legend><?php _e('Install language') ?></legend>
@@ -54,7 +55,7 @@ if (!defined('FEATHER')) {
                                                         <?php
 
                                                         foreach ($languages as $lang) {
-                                                            echo "\t\t\t\t\t".'<option value="'.$lang.'">'.$lang.'</option>'."\n";
+                                                            echo "\t\t\t\t\t".'<option value="'.$lang.'" '.($data['default_lang'] == $lang ? 'selected' : '').'>'.$lang.'</option>'."\n";
                                                         }
 
                                                         ?>

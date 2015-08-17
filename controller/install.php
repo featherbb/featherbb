@@ -16,7 +16,9 @@ class install
                                      'sqlite' => 'SQLite',
                                      'sqlite3' => 'SQLite3',
                                     );
+    protected $available_langs;
     protected $optional_fields = array('db_user', 'db_pass', 'db_prefix');
+    protected $install_lang = 'English';
     protected $default_style = 'FeatherBB';
     protected $config_keys = array('db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix');
     protected $default_config_path = 'include/config.php';
@@ -26,6 +28,7 @@ class install
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\install();
+        $this->available_langs = forum_list_langs();
 
         // // Check to see whether FeatherBB is already installed
         // if (!is_null($this->feather->forum_env['CONFIG_PATH'])) {
@@ -34,12 +37,18 @@ class install
         //         redirect(get_link(''), __('Already installed'));
         //     }
         // }
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/English/install.mo');
     }
 
     public function run()
     {
-        if ($this->feather->request->isPost()) {
+        if (!empty($this->feather->request->post('choose_lang'))) {
+            if (in_array(feather_trim($this->feather->request->post('install_lang')), $this->available_langs)) {
+                $this->install_lang = $this->feather->request->post('install_lang');
+            }
+        }
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->install_lang.'/install.mo');
+
+        if ($this->feather->request->isPost() && empty($this->feather->request->post('choose_lang'))) {
             $missing_fields = array();
             $data = array_map(function ($item) {
                 return feather_escape(feather_trim($item));
@@ -116,7 +125,7 @@ class install
                 $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
                 $this->feather->view()->display('install.php', array(
                                                         'feather' => $this->feather,
-                                                        'languages' => forum_list_langs(),
+                                                        'languages' => $this->available_langs,
                                                         'supported_dbs' => $this->supported_dbs,
                                                         'data' => $data,
                                                         'errors' => $this->errors,
@@ -130,14 +139,14 @@ class install
             $data = array('title' => __('My FeatherBB Forum'),
                           'description' => '<p><span>'.__('Description').'</span></p>',
                           'base_url' => $this->feather->request->getUrl().$this->feather->request->getRootUri(),
-                          'default_lang' => 'English');
+                          'default_lang' => $this->install_lang);
             if (isset($this->environment['slim.flash'])) {
                 $this->feather->view()->set('flash', $this->environment['slim.flash']);
             }
             $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
             $this->feather->view()->display('install.php', array(
                                                 'feather' => $this->feather,
-                                                'languages' => forum_list_langs(),
+                                                'languages' => $this->available_langs,
                                                 'supported_dbs' => $this->supported_dbs,
                                                 'data' => $data,
                                                 'alerts' => array()));
@@ -171,6 +180,9 @@ class install
         if ($this->model->is_installed()) {
             redirect(get_link(''), 'DB already installed');
         }
+
+        // Load appropriate language
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$data['default_lang'].'/install.mo');
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
