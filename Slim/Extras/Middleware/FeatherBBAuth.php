@@ -289,6 +289,7 @@ class FeatherBBAuth extends \Slim\Middleware
 
         $this->authenticate();
 
+        load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo');
         // Load cached bans
         if (file_exists($this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php')) {
             include $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
