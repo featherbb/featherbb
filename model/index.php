@@ -249,8 +249,8 @@ class index
     public function fetch_users_online()
     {
         // Fetch users online info and generate strings for output
-        $online['num_guests'] = 0;
         $online = array();
+        $online['num_guests'] = 0;
 
         $query['select'] = array('user_id', 'ident');
         $query['where'] = array('idle' => '0');
@@ -261,7 +261,7 @@ class index
                     ->where($query['where'])
                     ->order_by_many($query['order_by']);
 
-        $query = $this->feather->applyHook('query_fetch_users_online', $query);
+        $query = $this->feather->applyHookDB('query_fetch_users_online', $query);
 
         $query = $query->find_result_set();
 
