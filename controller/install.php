@@ -29,14 +29,6 @@ class install
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\install();
         $this->available_langs = forum_list_langs();
-
-        // // Check to see whether FeatherBB is already installed
-        // if (!is_null($this->feather->forum_env['CONFIG_PATH'])) {
-        //     $config = @json_decode(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].$this->feather->forum_env['CONFIG_PATH']), true);
-        //     if (is_array($config)) {
-        //         redirect(get_link(''), __('Already installed'));
-        //     }
-        // }
     }
 
     public function run()
