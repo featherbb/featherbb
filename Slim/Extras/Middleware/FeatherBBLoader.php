@@ -94,6 +94,7 @@ class FeatherBBLoader extends \Slim\Middleware
 
     public static function init_db(array $config)
     {
+        $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
             case 'mysql':
             case 'mysqli':

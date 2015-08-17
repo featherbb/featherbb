@@ -159,8 +159,7 @@ class install
 
         // ... And write it on disk
         if ($this->write_config(json_encode($config, JSON_PRETTY_PRINT))) {
-            //$this->create_db($data);
-            echo 'Config created';
+            $this->create_db($data);
         }
     }
 
@@ -171,14 +170,17 @@ class install
             //redirect(get_link(''), 'DB already installed');
         }
 
+        //
+        \Slim\Extras\Middleware\FeatherBBLoader::init_db($data);
+
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
+            $table = (!empty($data['db_prefix'])) ? $data['db_prefix'].$table : $table;
             if (!$this->model->create_table($table, $sql)) {
                 // Error handling
                 $this->errors[] = 'A problem was encountered while creating table '.$table;
             }
         }
-        echo 'ok';
     }
 
     public function write_config($json)
