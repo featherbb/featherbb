@@ -1206,14 +1206,68 @@ class Slim
                 ksort($this->hooks[$name]);
             }
 
+            $output = array();
+            $count = 0;
+
             foreach ($this->hooks[$name] as $priority) {
                 if (!empty($priority)) {
                     foreach ($priority as $callable) {
-                        $output = call_user_func_array($callable, $args);
-                        return $output;
+                        $output[] = call_user_func_array($callable, $args);
+                        ++$count;
                     }
                 }
             }
+
+            if ($count == 1) {
+                return $output[0];
+            }
+            else {
+                $data = array();
+                // Move all the keys to the same level
+                array_walk_recursive($output, function ($v, $k) use (&$data) {
+                    $data[] = $v;
+                });
+                array_merge_recursive($output);
+                // Remove any duplicate key
+                if (!is_object($data)) {
+                    $data = array_unique($data);
+                }
+                return $data;
+            }
+        }
+    }
+
+    /**
+     * Invoke hook for DB
+     * @param  string $name The hook name
+     * @param  mixed  ...   (Optional) Argument(s) for hooked functions, can specify multiple arguments
+     */
+    public function applyHookDB($name)
+    {
+        $args = func_get_args();
+        array_shift($args);
+
+        if (!isset($this->hooks[$name])) {
+            $this->hooks[$name] = array(array());
+            return $args[0];
+        }
+        if (!empty($this->hooks[$name])) {
+            // Sort by priority, low to high, if there's more than one priority
+            if (count($this->hooks[$name]) > 1) {
+                ksort($this->hooks[$name]);
+            }
+
+            $output = array();
+
+            foreach ($this->hooks[$name] as $priority) {
+                if (!empty($priority)) {
+                    foreach ($priority as $callable) {
+                        $output[] = call_user_func_array($callable, $args);
+                    }
+                }
+            }
+
+            return $output[0];
         }
     }
 

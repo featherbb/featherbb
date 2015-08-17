@@ -32,6 +32,8 @@ class index
             $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
         }
 
+        $page_head = $this->feather->applyHook('get_page_head', $page_head);
+
         return $page_head;
     }
 
@@ -67,7 +69,7 @@ class index
             ->where_any_is($where_get_new_posts_any)
             ->where_gt('f.last_post', $this->user->last_visit)
             ->find_result_set();
-        
+
         $forums = $new_topics = array();
         $tracked_topics = get_tracked_topics();
 
@@ -80,7 +82,7 @@ class index
         if (!empty($forums)) {
             if (empty($tracked_topics['topics'])) {
                 $new_topics = $forums;
-            } else {   
+            } else {
                 $select_get_new_posts_tracked_topics = array('forum_id', 'id', 'last_post');
 
                 $result = DB::for_table('topics')
@@ -108,14 +110,14 @@ class index
         if (!$this->user->is_guest) {
             $new_topics = $this->get_new_posts();
         }
-        
+
         $select_print_categories_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
         $where_print_categories_forums = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
         $order_by_print_categories_forums = array('c.disp_position', 'c.id', 'f.disp_position');
-        
+
         $result = DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_print_categories_forums)
@@ -225,12 +227,12 @@ class index
             generate_users_info_cache();
             require FORUM_CACHE_DIR.'cache_users_info.php';
         }
-        
+
         $stats_query = DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
                         ->select_expr('SUM(num_posts)', 'total_posts')
                         ->find_one();
-        
+
         $stats['total_topics'] = intval($stats_query['total_topics']);
         $stats['total_posts'] = intval($stats_query['total_posts']);
 
@@ -247,20 +249,23 @@ class index
     public function fetch_users_online()
     {
         // Fetch users online info and generate strings for output
-        $num_guests = 0;
+        $online['num_guests'] = 0;
         $online = array();
 
-        $select_fetch_users_online = array('user_id', 'ident');
-        $where_fetch_users_online = array('idle' => '0');
-        $order_by_fetch_users_online = array('ident');
-        
-        $result = DB::for_table('online')
-            ->select_many($select_fetch_users_online)
-            ->where($where_fetch_users_online)
-            ->order_by_many($order_by_fetch_users_online)
-            ->find_result_set();
+        $query['select'] = array('user_id', 'ident');
+        $query['where'] = array('idle' => '0');
+        $query['order_by'] = array('ident');
 
-        foreach($result as $user_online) {
+        $query = DB::for_table('online')
+                    ->select_many($query['select'])
+                    ->where($query['where'])
+                    ->order_by_many($query['order_by']);
+
+        $query = $this->feather->applyHook('query_fetch_users_online', $query);
+
+        $query = $query->find_result_set();
+
+        foreach($query as $user_online) {
             if ($user_online->user_id > 1) {
                 if ($this->user->g_view_users == '1') {
                     $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.get_link('user/'.$user_online->user_id).'/">'.feather_escape($user_online->ident).'</a>';
@@ -268,7 +273,7 @@ class index
                     $online['users'][] = "\n\t\t\t\t".'<dd>'.feather_escape($user_online->ident);
                 }
             } else {
-                ++$num_guests;
+                ++$online['num_guests'];
             }
         }
 
@@ -277,7 +282,8 @@ class index
         } else {
             $online['num_users'] = 0;
         }
-        $online['num_guests'] = $num_guests;
+
+        $online = $this->feather->applyHook('fetch_users_online', $online);
 
         return $online;
     }

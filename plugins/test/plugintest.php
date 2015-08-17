@@ -21,8 +21,23 @@ class plugintest
         $this->request = $this->feather->request;
 
         $this->feather->hook('get_forum_actions', function ($forum_actions) {
-            $forum_actions[] = '<a href="'.get_link('mark-read/').'">Test</a>';
+            $forum_actions[] = '<a href="'.get_link('mark-read/').'">Test1</a>';
             return $forum_actions;
+        });
+
+        $this->feather->hook('get_forum_actions', function ($forum_actions) {
+            $forum_actions[] = '<a href="'.get_link('mark-read/').'">Test2</a>';
+            return $forum_actions;
+        });
+
+        $this->feather->hook('query_fetch_users_online', function ($query) {
+            $query = $query->limit(50);
+            return $query;
+        });
+
+        $this->feather->hook('query_fetch_users_online', function ($query) {
+            $query = $query->offset(50);
+            return $query;
         });
     }
 }
