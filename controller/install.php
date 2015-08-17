@@ -180,6 +180,10 @@ class install
                 $this->errors[] = 'A problem was encountered while creating table '.$table;
             }
         }
+
+        // Populate tables with default values
+        $this->model->add_user($this->model->load_default_user());
+        $this->model->add_user($this->model->load_admin_user($data));
     }
 
     public function write_config($json)

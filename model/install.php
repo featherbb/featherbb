@@ -243,8 +243,8 @@ class install
     public function is_installed()
     {
         $db = DB::get_db();
-        $db->exec('SHOW TABLES like `users`');
-        return (bool) $db;
+        //$db->exec('SHOW TABLES like users');
+        return false;
     }
 
     public function create_table($table_name, $sql)
@@ -256,6 +256,14 @@ class install
         return true;
     }
 
+    public function add_user(array $data)
+    {
+        return (bool) DB::for_table('users')
+                        ->create()
+                        ->set($data)
+                        ->save();
+    }
+
     public function get_database_scheme()
     {
         return $this->database_scheme;
@@ -263,7 +271,7 @@ class install
 
     public static function load_default_groups()
     {
-        $data['Administrators'] = array(
+        $groups['Administrators'] = array(
             'g_id' => 1,
             'g_title' => __('Administrators'),
             'g_user_title' => __('Administrator'),
@@ -287,7 +295,7 @@ class install
             'g_search_flood' => 0,
             'g_email_flood' => 0,
             'g_report_flood' => 0);
-        $data['Moderators'] = array(
+        $groups['Moderators'] = array(
             'g_id' => 2,
             'g_title' => __('Moderators'),
             'g_user_title' => __('Moderator'),
@@ -311,7 +319,7 @@ class install
             'g_search_flood' => 0,
             'g_email_flood' => 0,
             'g_report_flood' => 0);
-        $data['Guests'] = array(
+        $groups['Guests'] = array(
             'g_id' => 3,
             'g_title' => __('Guests'),
             'g_user_title' => __('Guest'),
@@ -335,7 +343,7 @@ class install
             'g_search_flood' => 30,
             'g_email_flood' => 0,
             'g_report_flood' => 0);
-        $data['Members'] = array(
+        $groups['Members'] = array(
             'g_id' => 4,
             'g_title' => __('Members'),
             'g_user_title' => __('Member'),
@@ -360,15 +368,32 @@ class install
             'g_email_flood' => 60,
             'g_report_flood' => 60);
 
-        return $data;
+        return $groups;
     }
 
     public static function load_default_user()
     {
-        return $data['Guest'] = array(
+        return $user = array(
                 'group_id' => 3,
                 'username' => __('Guest'),
                 'password' => __('Guest'),
                 'email' => __('Guest'));
+    }
+
+    public static function load_admin_user(array $data)
+    {
+        $now = time();
+        return $user = array(
+            'group_id' => 1,
+            'username' => $data['username'],
+            'password' => feather_hash($data['password']),
+            'email' => $data['email'],
+            'language' => $data['default_lang'],
+            'style' => $data['default_style'],
+            'num_posts' => 1,
+            'last_post' => $now,
+            'registered' => $now,
+            'registration_ip' => get_remote_address(),
+            'last_visit' => $now);
     }
 }
