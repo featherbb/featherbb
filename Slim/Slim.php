@@ -1193,8 +1193,12 @@ class Slim
      */
     public function applyHook($name)
     {
+        $args = func_get_args();
+        array_shift($args);
+
         if (!isset($this->hooks[$name])) {
             $this->hooks[$name] = array(array());
+            return $args[0];
         }
         if (!empty($this->hooks[$name])) {
             // Sort by priority, low to high, if there's more than one priority
@@ -1202,13 +1206,11 @@ class Slim
                 ksort($this->hooks[$name]);
             }
 
-            $args = func_get_args();
-            array_shift($args);
-
             foreach ($this->hooks[$name] as $priority) {
                 if (!empty($priority)) {
                     foreach ($priority as $callable) {
-                        call_user_func_array($callable, $args);
+                        $output = call_user_func_array($callable, $args);
+                        return $output;
                     }
                 }
             }

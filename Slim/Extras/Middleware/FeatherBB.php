@@ -13,6 +13,7 @@
 
 namespace Slim\Extras\Middleware;
 use DB;
+use model\plugintest;
 
 class FeatherBB extends \Slim\Middleware
 {
@@ -527,6 +528,10 @@ class FeatherBB extends \Slim\Middleware
 
             // Update online list
             $this->update_users_online();
+
+            // Load the test plugin
+            require $this->data['forum_env']['FEATHER_ROOT'].'plugins/test/plugintest.php';
+            new \plugin\plugintest();
 
             // Configure Slim
             $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? FEATHER_ROOT.'style/'.$this->app->user->style.'/view' : FEATHER_ROOT.'view');

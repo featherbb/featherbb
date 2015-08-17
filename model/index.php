@@ -45,6 +45,8 @@ class index
             $forum_actions[] = '<a href="'.get_link('mark-read/').'">'.__('Mark all as read').'</a>';
         }
 
+        $forum_actions = $this->feather->applyHook('get_forum_actions', $forum_actions);
+
         return $forum_actions;
     }
 
