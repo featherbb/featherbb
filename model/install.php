@@ -264,6 +264,24 @@ class install
                         ->save();
     }
 
+    public function add_mock_forum(array $arch)
+    {
+        foreach ($arch as $forum => $data) {
+            DB::for_table($forum)
+                ->create()
+                ->set($data)
+                ->save();
+        }
+    }
+
+    public function add_group(array $data)
+    {
+        return (bool) DB::for_table('groups')
+                        ->create()
+                        ->set($data)
+                        ->save();
+    }
+
     public function get_database_scheme()
     {
         return $this->database_scheme;
@@ -395,5 +413,43 @@ class install
             'registered' => $now,
             'registration_ip' => get_remote_address(),
             'last_visit' => $now);
+    }
+
+    public static function load_mock_forum_data(array $data)
+    {
+        $cat_name = __('Test category');
+        $subject = __('Test post');
+        $message = __('Message');
+        $forum_name = __('Test forum');
+        $forum_desc = __('This is just a test forum');
+        $now = time();
+        $ip = get_remote_address();
+
+        return $mock_data = array(
+            'categories' => array('cat_name' => $cat_name,
+                                  'disp_position' => 1),
+                'forums' => array('forum_name' => $forum_name,
+                                  'forum_desc' => $forum_desc,
+                                  'num_topics' => 1,
+                                  'num_posts' => 1,
+                                  'last_post' => $now,
+                                  'last_post_id' => 1,
+                                  'last_poster' => $data['username'],
+                                  'disp_position' => 1,
+                                  'cat_id' =>  1),
+                'topics' => array('poster' => $data['username'],
+                                  'subject' => $subject,
+                                  'posted' => $now,
+                                  'first_post_id' => 1,
+                                  'last_post' => $now,
+                                  'last_post_id' => 1,
+                                  'last_poster' => $data['username'],
+                                  'forum_id' => 1),
+                'posts' => array('poster' => $data['username'],
+                                 'poster_id' => 2,
+                                 'poster_ip' => $ip,
+                                 'message' => $message,
+                                 'posted' => $now,
+                                 'topic_id' => 1));
     }
 }

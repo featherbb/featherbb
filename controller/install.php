@@ -181,9 +181,15 @@ class install
             }
         }
 
-        // Populate tables with default values
+        // Populate group table with default values
+        foreach ($this->model->load_default_groups() as $group_name => $group_data) {
+            $this->model->add_group($group_data);
+        }
+        // Populate user table with default values
         $this->model->add_user($this->model->load_default_user());
         $this->model->add_user($this->model->load_admin_user($data));
+        // Populate categories, forums, topics, posts
+        $this->model->add_mock_forum($this->model->load_mock_forum_data($data));
     }
 
     public function write_config($json)
