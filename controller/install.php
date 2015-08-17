@@ -183,13 +183,15 @@ class install
 
         // Populate group table with default values
         foreach ($this->model->load_default_groups() as $group_name => $group_data) {
-            $this->model->add_group($group_data);
+            $this->model->add_data('groups', $group_data);
         }
         // Populate user table with default values
-        $this->model->add_user($this->model->load_default_user());
-        $this->model->add_user($this->model->load_admin_user($data));
+        $this->model->add_data('users', $this->model->load_default_user());
+        $this->model->add_data('users', $this->model->load_admin_user($data));
         // Populate categories, forums, topics, posts
         $this->model->add_mock_forum($this->model->load_mock_forum_data($data));
+        // Store config in DB
+        $this->model->save_config($this->load_default_config($data));
     }
 
     public function write_config($json)
@@ -199,7 +201,7 @@ class install
 
     public function load_default_config(array $data)
     {
-        $config = array(
+        return array(
             'o_cur_version'                => $this->feather->forum_env['FORUM_VERSION'],
             'o_database_revision'        => $this->feather->forum_env['FORUM_DB_REVISION'],
             'o_searchindex_revision'    => $this->feather->forum_env['FORUM_SI_REVISION'],
@@ -278,6 +280,5 @@ class install
             'p_allow_dupe_email'        => 0,
             'p_force_guest_email'        => 1
         );
-        return $config;
     }
 }

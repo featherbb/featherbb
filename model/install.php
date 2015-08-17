@@ -256,9 +256,9 @@ class install
         return true;
     }
 
-    public function add_user(array $data)
+    public function add_data($table_name, array $data)
     {
-        return (bool) DB::for_table('users')
+        return (bool) DB::for_table($table_name)
                         ->create()
                         ->set($data)
                         ->save();
@@ -266,20 +266,17 @@ class install
 
     public function add_mock_forum(array $arch)
     {
-        foreach ($arch as $forum => $data) {
-            DB::for_table($forum)
-                ->create()
-                ->set($data)
-                ->save();
+        foreach ($arch as $table_name => $data) {
+            $this->add_data($table_name, $data);
         }
     }
 
-    public function add_group(array $data)
+    public function save_config(array $data)
     {
-        return (bool) DB::for_table('groups')
-                        ->create()
-                        ->set($data)
-                        ->save();
+        foreach ($data as $key => $value) {
+            $this->add_data('config', array('conf_name' => $key,
+                                            'conf_value' => $value));
+        }
     }
 
     public function get_database_scheme()
