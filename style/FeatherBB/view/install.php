@@ -73,14 +73,13 @@ if (!defined('FEATHER')) {
             	<div class="blockform">
             		<h2><span><?php echo sprintf(__('Install'), FORUM_VERSION) ?></span></h2>
             		<div class="box">
-            			<form id="install" method="post" action="">
             				<div class="inform">
-            	<?php if (isset($flash['error'])): ?>
+            	<?php if (!empty($errors)): ?>
                                 <div class="forminfo error-info">
             						<h3><?php _e('Errors') ?></h3>
             						    <ul class="error-list">
             <?php
-                $errors = (!is_array($flash['error'])) ? array($flash['error']) : $flash['error'];
+                $errors = (!is_array($errors)) ? array($errors) : $errors;
                 foreach ($errors as $error) {
                     echo "\t\t\t\t\t\t".'<li><strong>'.$error.'</strong></li>'."\n";
                 }

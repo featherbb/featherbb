@@ -113,15 +113,13 @@ class install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                $this->feather->flashNow('error', $this->errors);
-                $this->feather->view->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
-                $this->feather->view->setData('flash', $this->feather->environment['slim.flash']);
-                $this->feather->view->display('install.php', array(
+                $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
+                $this->feather->view()->display('install.php', array(
                                                         'feather' => $this->feather,
                                                         'languages' => forum_list_langs(),
                                                         'supported_dbs' => $this->supported_dbs,
                                                         'data' => $data,
-                                                        'alerts' => array(),
+                                                        'errors' => $this->errors,
                                                     ));
             } else {
                 $data['default_style'] = $this->default_style;
@@ -133,9 +131,11 @@ class install
                           'description' => '<p><span>'.__('Description').'</span></p>',
                           'base_url' => $this->feather->request->getUrl().$this->feather->request->getRootUri(),
                           'default_lang' => 'English');
-            $this->feather->view->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
-            $this->feather->view->setData('flash', $this->feather->environment['slim.flash']);
-            $this->feather->view->display('install.php', array(
+            if (isset($this->environment['slim.flash'])) {
+                $this->feather->view()->set('flash', $this->environment['slim.flash']);
+            }
+            $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
+            $this->feather->view()->display('install.php', array(
                                                 'feather' => $this->feather,
                                                 'languages' => forum_list_langs(),
                                                 'supported_dbs' => $this->supported_dbs,
