@@ -1152,7 +1152,7 @@ footer .footer-link a {
 	display: inline-block;
 	padding-right: 12px;
 }
-.blockform .box .inform fieldset label input {
+.blockform .box .inform fieldset input {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, .075);
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -1160,7 +1160,7 @@ footer .footer-link a {
     padding: 7px 8px;
     margin: 7px 0
 }
-.blockform .box .inform fieldset label input:focus {
+.blockform .box .inform fieldset input:focus {
     border: 1px solid #51a7e8;
     background-color: #fff;
     box-shadow: 0 0 5px rgba(81, 167, 232, .5);
