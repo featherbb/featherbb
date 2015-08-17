@@ -215,7 +215,8 @@ class FeatherBBLoader extends \Slim\Middleware
         }
 
         if (is_null($this->forum_env['FORUM_CONFIG_FILE'])) {
-            echo 'install !!!!';
+            $installer = new \controller\install;
+            $installer->run();
             return;
         }
 
@@ -245,7 +246,6 @@ class FeatherBBLoader extends \Slim\Middleware
         // Populate FeatherBB Slim object with forum_settings vars
         $this->hydrate('forum_settings', $this->forum_settings);
         $this->app->config = $this->forum_settings; // Legacy
-        var_dump($this->app->config);
         extract($this->forum_settings); // Legacy
 
         // Define time formats
