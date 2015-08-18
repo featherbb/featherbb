@@ -26,10 +26,16 @@ class FeatherBBLoader extends \Slim\Middleware
 
 	public function __construct(array $data)
 	{
+        // Handle empty values in data
+        $data = array_merge(array('config_file' => 'include/config.php',
+                                  'cache_dir' => 'cache/',
+                                  'debug'   => false), $data);
         // Define some core variables
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
         $this->forum_env['FORUM_CONFIG_FILE'] = is_file($this->forum_env['FEATHER_ROOT'].$data['config_file']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['config_file']) : null;
+        $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all');
+        $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
         // Populate forum_env
         $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
         $this->env_to_globals($this->forum_env); // Legacy
@@ -43,8 +49,6 @@ class FeatherBBLoader extends \Slim\Middleware
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
-        // Reset opcache while debugging
-        opcache_reset();
 	}
 
     public static function load_default_forum_env()
@@ -68,9 +72,9 @@ class FeatherBBLoader extends \Slim\Middleware
                 'FEATHER_SEARCH_MIN_WORD' => 3,
                 'FEATHER_SEARCH_MAX_WORD' => 20,
                 'FORUM_MAX_COOKIE_SIZE' => 4048,
-                'FEATHER_DEBUG' => 1,
-                'FEATHER_SHOW_QUERIES' => 1,
-                'FEATHER_CACHE_QUERIES' => 0,
+                'FEATHER_DEBUG' => false,
+                'FEATHER_SHOW_QUERIES' => false,
+                'FEATHER_SHOW_INFO' => false
                 );
     }
 
@@ -87,12 +91,10 @@ class FeatherBBLoader extends \Slim\Middleware
                 // Cookies
                 'cookie_name' => 'feather_cookie',
                 'cookie_seed' => 'changeme', // MUST BE CHANGED !!!
-                // Debug
-                'debug' => false,
                 );
     }
 
-    public static function init_db(array $config)
+    public static function init_db(array $config, $log_queries = false)
     {
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
@@ -110,11 +112,13 @@ class FeatherBBLoader extends \Slim\Middleware
         }
         DB::configure('username', $config['db_user']);
         DB::configure('password', $config['db_pass']);
-        DB::configure('logging', true);
+        DB::configure('prefix', $config['db_prefix']);
+        if ($log_queries) {
+            DB::configure('logging', true);
+        }
         DB::configure('id_column_overrides', array(
             $config['db_prefix'].'groups' => 'g_id',
         ));
-        DB::configure('prefix', $config['db_prefix']);
     }
 
     // Getters / setters for Slim container (avoid magic get error)
@@ -225,8 +229,11 @@ class FeatherBBLoader extends \Slim\Middleware
             return $this->app->response->setBody('Wrong config file format');
         }
 
-        // Init DB
-        self::init_db($this->forum_settings);
+        // Init DB and configure Slim
+        self::init_db($this->forum_settings, $this->forum_env['FEATHER_SHOW_INFO']);
+        $this->app->config(array('debug' => $this->forum_env['FEATHER_DEBUG'],
+                                 'cookies.encrypt' => true,
+                                 'cookies.secret_key' => $this->forum_settings['cookie_seed']));
 
         // Get forum settings from DB/cache and load it into forum_settings array
         if (file_exists($this->forum_env['FORUM_CACHE_DIR'].'cache_config.php')) {
