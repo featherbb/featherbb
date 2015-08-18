@@ -129,7 +129,7 @@ class install
             }
         } else {
             $data = array('title' => __('My FeatherBB Forum'),
-                          'description' => '<p><span>'.__('Description').'</span></p>',
+                          'description' => __('Description'),
                           'base_url' => $this->feather->request->getUrl().$this->feather->request->getRootUri(),
                           'default_lang' => $this->install_lang);
             if (isset($this->environment['slim.flash'])) {
