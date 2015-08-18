@@ -1227,11 +1227,8 @@ class Slim
                 array_walk_recursive($output, function ($v, $k) use (&$data) {
                     $data[] = $v;
                 });
-                array_merge_recursive($output);
                 // Remove any duplicate key
-                if (!is_object($data)) {
-                    $data = array_unique($data);
-                }
+                $data = array_unique($data);
                 return $data;
             }
         }
