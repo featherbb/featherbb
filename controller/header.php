@@ -77,14 +77,45 @@ class header
 
     public function display()
     {
-        // START SUBST - <body> TODO
-        /*if (isset($focus_element)) {
-            $tpl_main = str_replace('<body onload="', '<body onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();', $tpl_main);
-            $tpl_main = str_replace('<body>', '<body onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus()">', $tpl_main);
-        }*/
-        // END SUBST - <body>
+        if (!defined('FEATHER_HEADER')) {
+            define('FEATHER_HEADER', 1);
+        }
 
-        // START SUBST - <pun_navlinks>
+        // Render the header
+        $this->title = isset($this->title) ? $this->title : feather_escape($this->config['o_board_title']);
+
+        // Define $p if it's not set to avoid a PHP notice
+        $this->page = isset($this->page) ? $this->page : null;
+
+        // Set default safe values
+        $this->page_head = isset($this->page_head) ? $this->page_head : null;
+        $this->paging_links = isset($this->paging_links) ? $this->paging_links : null;
+        $this->required_fields = isset($this->required_fields) ? $this->required_fields : null;
+
+        $navlinks = $this->getNavlinks();
+        $page_info = $this->getStatus();
+
+        $focus_element = isset($this->focus_element) ? ' onload="document.getElementById(\''.$this->focus_element[0].'\').elements[\''.$this->focus_element[1].'\'].focus();"' : '';
+
+        $this->feather->render('header.php', array(
+                'page_title' => $this->title,
+                'p' => $this->page,
+                'feather_user' => $this->user,
+                'feather_config' => $this->config,
+                '_SERVER' => $_SERVER,
+                'page_head' => $this->page_head,
+                'paging_links' => $this->paging_links,
+                'required_fields' => $this->required_fields,
+                'feather' => $this->feather,
+                'focus_element' => $focus_element,
+                'navlinks' => $navlinks,
+                'page_info' => $page_info,
+            )
+        );
+    }
+
+    private function getNavlinks()
+    {
         $links = array();
 
         // Index should always be displayed
@@ -127,10 +158,12 @@ class header
         }
 
         $navlinks = '<div id="brdmenu" class="inbox">'."\n\t\t\t".'<ul>'."\n\t\t\t\t".implode("\n\t\t\t\t", $links)."\n\t\t\t".'</ul>'."\n\t\t".'</div>';
-        // END SUBST - <pun_navlinks>
 
+        return $navlinks;
+    }
 
-        // START SUBST - <pun_status>
+    private function getStatus()
+    {
         $page_statusinfo = $page_topicsearches = array();
 
         if ($this->user->is_guest) {
@@ -163,7 +196,6 @@ class header
             $page_topicsearches[] = '<a href="'.get_link('search/show/unanswered/').'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
         }
 
-
         // Generate all that jazz
         $page_info = '<div id="brdwelcome" class="inbox">';
 
@@ -184,40 +216,7 @@ class header
         }
 
         $page_info .= "\n\t\t\t".'<div class="clearer"></div>'."\n\t\t".'</div>';
-        // END SUBST - <pun_status>
 
-
-        // START SUBST - <pun_main>
-
-        if (!defined('FEATHER_HEADER')) {
-            define('FEATHER_HEADER', 1);
-        }
-
-        // Render the header
-        $this->title = isset($this->title) ? $this->title : feather_escape($this->config['o_board_title']);
-
-        // Define $p if it's not set to avoid a PHP notice
-        $this->page = isset($this->page) ? $this->page : null;
-
-        $this->page_head = isset($this->page_head) ? $this->page_head : null;
-        $this->focus_element = isset($this->focus_element) ? $this->focus_element : null;
-        $this->paging_links = isset($this->paging_links) ? $this->paging_links : null;
-        $this->required_fields = isset($this->required_fields) ? $this->required_fields : null;
-
-        $this->feather->render('header.php', array(
-                'page_title' => $this->title,
-                'focus_element' => $this->focus_element,
-                'p' => $this->page,
-                'feather_user' => $this->user,
-                'feather_config' => $this->config,
-                '_SERVER'    =>    $_SERVER,
-                'page_head'        =>    $this->page_head,
-                'navlinks'        =>    $navlinks,
-                'page_info'        =>    $page_info,
-                'paging_links' => $this->paging_links,
-                'required_fields' => $this->required_fields,
-                'feather'    => $this->feather,
-            )
-        );
+        return $page_info;
     }
 }

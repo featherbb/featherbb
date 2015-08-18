@@ -75,7 +75,7 @@
     ?>
 </head>
 
-<body id="pun<?php echo FEATHER_ACTIVE_PAGE ?>">
+<body id="pun<?php echo FEATHER_ACTIVE_PAGE ?>"<?= $focus_element; ?>>
 
 <header>
 
@@ -87,7 +87,7 @@
             <div id="phone">
                 <?php echo $navlinks ?>
                 <div class="navbar-right">
-                    <form method="get" action="search" class="nav-search">
+                    <form method="get" action="/search" class="nav-search">
                         <input type="hidden" name="action" value="search">
                         <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php _e('Search') ?>">
                     </form>
