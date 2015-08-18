@@ -19,13 +19,14 @@ require 'Slim/Slim.php';
 
 // Instantiate Slim
 $feather = new \Slim\Slim();
-
-// Load the config
-require 'include/config.php';
+$feather_settings = array('config_file' => 'include/config.php',
+                          'cache_dir' => 'cache/');
 
 // Load middlewares
 $feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
-$feather->add(new \Slim\Extras\Middleware\FeatherBB($feather_user_settings)); // FeatherBB
+$feather->add(new \Slim\Extras\Middleware\FeatherBBAuth());
+$feather->add(new \Slim\Extras\Middleware\FeatherBBLoader($feather_settings)); // FeatherBB
+ // FeatherBB
 
 // Load the routes
 require 'include/routes.php';

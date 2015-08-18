@@ -74,6 +74,7 @@
             'caching' => false,
             'caching_auto_clear' => false,
             'return_result_sets' => false,
+            'prefix' => null, // Add prefix feature
         );
 
         // Map of configuration settings
@@ -238,8 +239,9 @@
          */
         public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION)
         {
-            $feather = \Slim\Slim::getInstance();
-            $table_name = $feather->forum_settings['db_prefix'].$table_name;
+            if (!empty(self::$_config[$connection_name]['prefix'])) {
+                $table_name = self::$_config[$connection_name]['prefix'].$table_name;
+            }
             self::_setup_db($connection_name);
             return new self($table_name, array(), $connection_name);
         }
