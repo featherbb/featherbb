@@ -122,7 +122,7 @@ function generate_quickjump_cache($group_id = false)
                     $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.feather_escape($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php _e(\'Go\') ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
+                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<noscript><input type="submit" value="<?php _e(\'Go\') ?>" accesskey="g" /></noscript>'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
             }
         }
 
