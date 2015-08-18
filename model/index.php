@@ -55,25 +55,28 @@ class index
     // Detects if a "new" icon has to be displayed
     public function get_new_posts()
     {   
-        $select_get_new_posts = array('f.id', 'f.last_post');
-        $where_get_new_posts_any = array(
+        $query['select'] = array('f.id', 'f.last_post');
+        $query['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
-        $result = DB::for_table('forums')
+        $query = DB::for_table('forums')
             ->table_alias('f')
-            ->select_many($select_get_new_posts)
+            ->select_many($query['select'])
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_new_posts_any)
-            ->where_gt('f.last_post', $this->user->last_visit)
-            ->find_result_set();
+            ->where_any_is($query['where'])
+            ->where_gt('f.last_post', $this->user->last_visit);
+
+        $query = $this->feather->applyHookDB('query_get_new_posts', $query);
+
+        $query = $query->find_result_set();
 
         $forums = $new_topics = array();
         $tracked_topics = get_tracked_topics();
 
-        foreach ($result as $cur_forum) {
+        foreach ($query as $cur_forum) {
             if (!isset($tracked_topics['forums'][$cur_forum->id]) || $tracked_topics['forums'][$cur_forum->id] < $cur_forum->last_post) {
                 $forums[$cur_forum->id] = $cur_forum->last_post;
             }
@@ -83,16 +86,19 @@ class index
             if (empty($tracked_topics['topics'])) {
                 $new_topics = $forums;
             } else {
-                $select_get_new_posts_tracked_topics = array('forum_id', 'id', 'last_post');
+                $query['select'] = array('forum_id', 'id', 'last_post');
 
-                $result = DB::for_table('topics')
-                    ->select_many($select_get_new_posts_tracked_topics)
+                $query = DB::for_table('topics')
+                    ->select_many($query['select'])
                     ->where_in('forum_id', array_keys($forums))
                     ->where_gt('last_post', $this->user->last_visit)
-                    ->where_null('moved_to')
-                    ->find_result_set();
+                    ->where_null('moved_to');
 
-                foreach ($result as $cur_topic) {
+                $query = $this->feather->applyHookDB('query_get_new_posts', $query);
+
+                $query = $query->find_result_set();
+
+                foreach ($query as $cur_topic) {
                     if (!isset($new_topics[$cur_topic->forum_id]) && (!isset($tracked_topics['forums'][$cur_topic->forum_id]) || $tracked_topics['forums'][$cur_topic->forum_id] < $forums[$cur_topic->forum_id]) && (!isset($tracked_topics['topics'][$cur_topic->id]) || $tracked_topics['topics'][$cur_topic->id] < $cur_topic->last_post)) {
                         $new_topics[$cur_topic->forum_id] = $forums[$cur_topic->forum_id];
                     }
@@ -100,7 +106,9 @@ class index
             }
         }
 
-            return $new_topics;
+        $new_topics = $this->feather->applyHook('get_new_posts', $new_topics);
+
+        return $new_topics;
     }
 
     // Returns the elements needed to display categories and their forums
@@ -111,26 +119,29 @@ class index
             $new_topics = $this->get_new_posts();
         }
 
-        $select_print_categories_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
-        $where_print_categories_forums = array(
+        $query['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
+        $query['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $order_by_print_categories_forums = array('c.disp_position', 'c.id', 'f.disp_position');
+        $query['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $result = DB::for_table('categories')
+        $query = DB::for_table('categories')
             ->table_alias('c')
-            ->select_many($select_print_categories_forums)
+            ->select_many($query['select'])
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_print_categories_forums)
-            ->order_by_many($order_by_print_categories_forums)
-            ->find_result_set();
+            ->where_any_is($query['where'])
+            ->order_by_many($query['order_by']);
+
+        $query = $this->feather->applyHookDB('query_print_categories_forums', $query);
+
+        $query = $query->find_result_set();
 
         $index_data = array();
         $i = 0;
-        foreach ($result as $cur_forum) {
+        foreach ($query as $cur_forum) {
             if ($i == 0) {
                 $cur_forum->cur_category = 0;
                 $cur_forum->forum_count_formatted = 0;
@@ -144,7 +155,6 @@ class index
 
             if ($cur_forum->cid != $cur_cat) {
                 // A new category since last iteration?
-
                 $cur_forum->forum_count_formatted = 0;
                 $cur_forum->cur_category = $cur_forum->cid;
             }
@@ -208,6 +218,8 @@ class index
             ++$i;
         }
 
+        $index_data = $this->feather->applyHook('print_categories_forums', $index_data);
+
         return $index_data;
     }
 
@@ -228,19 +240,24 @@ class index
             require FORUM_CACHE_DIR.'cache_users_info.php';
         }
 
-        $stats_query = DB::for_table('forums')
+        $query = DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
-                        ->select_expr('SUM(num_posts)', 'total_posts')
-                        ->find_one();
+                        ->select_expr('SUM(num_posts)', 'total_posts');
 
-        $stats['total_topics'] = intval($stats_query['total_topics']);
-        $stats['total_posts'] = intval($stats_query['total_posts']);
+        $query = $this->feather->applyHookDB('collect_stats_query', $query);
+
+        $query = $query->find_one();
+
+        $stats['total_topics'] = intval($query['total_topics']);
+        $stats['total_posts'] = intval($query['total_posts']);
 
         if ($this->user->g_view_users == '1') {
             $stats['newest_user'] = '<a href="'.get_link('user/'.$stats['last_user']['id']).'/">'.feather_escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = feather_escape($stats['last_user']['username']);
         }
+
+        $stats = $this->feather->applyHook('collect_stats', $stats);
 
         return $stats;
     }
