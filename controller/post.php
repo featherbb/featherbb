@@ -78,13 +78,6 @@ class post
 
         $post = '';
 
-        if (!$this->user->is_guest) {
-            $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
-        } else {
-            $required_fields['req_username'] = __('Guest name');
-            $focus_element[] = 'req_username';
-        }
-
         // Did someone just hit "Submit" or "Preview"?
         if ($this->feather->request()->isPost()) {
 
@@ -182,7 +175,15 @@ class post
         if ($this->user->is_guest) {
             $required_fields['captcha'] = __('Robot title');
         }
-        $focus_element = array('post');
+
+        // Set focus element (new post or new reply to an existing post ?)
+        $focus_element[] = 'post';
+        if (!$this->user->is_guest) {
+            $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
+        } else {
+            $required_fields['req_username'] = __('Guest name');
+            $focus_element[] = 'req_username';
+        }
 
         define('FEATHER_ACTIVE_PAGE', 'post');
 
