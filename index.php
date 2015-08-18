@@ -20,7 +20,8 @@ require 'Slim/Slim.php';
 // Instantiate Slim
 $feather = new \Slim\Slim();
 $feather_settings = array('config_file' => 'include/config.php',
-                          'cache_dir' => 'cache/');
+                          'cache_dir' => 'cache/',
+                          'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 
 // Load middlewares
 $feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
@@ -30,9 +31,6 @@ $feather->add(new \Slim\Extras\Middleware\FeatherBBLoader($feather_settings)); /
 
 // Load the routes
 require 'include/routes.php';
-
-$feather->config('cookies.encrypt', true);
-$feather->config('debug', true); // As long as we're developing FeatherBB
 
 // Run it, baby!
 $feather->run();

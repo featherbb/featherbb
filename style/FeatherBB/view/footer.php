@@ -117,7 +117,7 @@ if ($footer_style == 'index') {
 <?php
 
 // Display debug info (if enabled/defined)
-if (defined('FEATHER_DEBUG')) {
+if ($feather->forum_env['FEATHER_SHOW_INFO']) {
     echo '<p id="debugtime">[ ';
 
     // Calculate script generation time
@@ -135,7 +135,7 @@ if (defined('FEATHER_DEBUG')) {
     echo ' ]</p>'."\n";
 }
 // Display executed queries (if enabled)
-if (defined('FEATHER_SHOW_QUERIES')) {
+if ($feather->forum_env['FEATHER_SHOW_QUERIES']) {
     display_saved_queries();
 }
 ?>
