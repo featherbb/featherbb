@@ -6,20 +6,20 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
 }
 ?>
-	
+
 	<div class="blockform">
 		<h2><span><?php _e('Add forum head') ?></span></h2>
 		<div class="box">
 			<form method="post" action="<?php echo get_link('admin/forums/add') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
-if (!empty($forum_data)) {
+if (!empty($cat_list)) {
     ?>
 				<div class="inform">
 					<fieldset>
@@ -30,8 +30,8 @@ if (!empty($forum_data)) {
 									<th scope="row"><?php _e('Add forum label') ?><div><input type="submit" value="<?php _e('Add forum') ?>" tabindex="2" /></div></th>
 									<td>
 										<select name="cat" tabindex="1">
-											<?php  foreach ($forum_data as $cat_id => $cat_data) {
-												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'">'.feather_escape($cat_data['cat_name']).'</option>'."\n";
+											<?php  foreach ($cat_list as $cat) {
+												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat['id'].'">'.feather_escape($cat['cat_name']).'</option>'."\n";
 											} ?>
 										</select>
 										<span><?php _e('Add forum help') ?></span>
