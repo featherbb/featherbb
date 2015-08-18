@@ -27,7 +27,7 @@ class FeatherBBLoader extends \Slim\Middleware
 	public function __construct(array $data)
 	{
         // Define some core variables
-        $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__). '../../../');
+        $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
         $this->forum_env['FORUM_CONFIG_FILE'] = is_file($this->forum_env['FEATHER_ROOT'].$data['config_file']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['config_file']) : null;
         // Populate forum_env
