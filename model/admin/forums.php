@@ -21,9 +21,9 @@ class forums
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     //
-    // Forum 
+    // Forum
     //
 
     public function add_forum($cat_id, $forum_name)
@@ -192,7 +192,7 @@ class forums
 
     }
 
-    public function delete_permissions($forum_id, $group_id = null) 
+    public function delete_permissions($forum_id, $group_id = null)
     {
         $result = DB::for_table('forum_perms')
                     ->where('forum_id', $forum_id);
