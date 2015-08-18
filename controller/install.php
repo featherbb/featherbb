@@ -195,6 +195,11 @@ class install
         // Store config in DB
         $this->model->save_config($this->load_default_config($data));
 
+        // Handle .htaccess
+        if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
+            $this->write_htaccess();
+        }
+        
         // Redirect to homepage
         redirect(get_link('/'));
     }
@@ -202,6 +207,12 @@ class install
     public function write_config($json)
     {
         return file_put_contents($this->feather->forum_env['FEATHER_ROOT'].$this->config_file, $json);
+    }
+
+    public function write_htaccess()
+    {
+        $data = file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'.htaccess.dist');
+        return file_put_contents($this->feather->forum_env['FEATHER_ROOT'].'.htaccess', $data);
     }
 
     public function load_default_config(array $data)

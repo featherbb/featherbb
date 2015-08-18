@@ -102,7 +102,7 @@
                 <a href="<?php echo get_base_url() ?>" title="" class="site-name">
                     <p><?php echo feather_escape($feather_config['o_board_title']) ?></p>
                 </a>
-                <div id="brddesc"><?php echo $feather_config['o_board_desc'] ?></div>
+                <div id="brddesc"><?php echo htmlspecialchars_decode($feather_config['o_board_desc']) ?></div>
             </h1>
             <div class="status-avatar">
                 <?php echo $page_info ?>
