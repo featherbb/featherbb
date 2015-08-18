@@ -128,9 +128,10 @@ class install
                 $this->create_config($data);
             }
         } else {
+            $base_url = str_replace('index.php', '', $this->feather->request->getUrl().$this->feather->request->getRootUri());
             $data = array('title' => __('My FeatherBB Forum'),
                           'description' => __('Description'),
-                          'base_url' => $this->feather->request->getUrl().$this->feather->request->getRootUri(),
+                          'base_url' => $base_url,
                           'default_lang' => $this->install_lang);
             if (isset($this->environment['slim.flash'])) {
                 $this->feather->view()->set('flash', $this->environment['slim.flash']);
@@ -193,6 +194,9 @@ class install
         $this->model->add_mock_forum($this->model->load_mock_forum_data($data));
         // Store config in DB
         $this->model->save_config($this->load_default_config($data));
+
+        // Redirect to homepage
+        redirect(get_link('/'));
     }
 
     public function write_config($json)
