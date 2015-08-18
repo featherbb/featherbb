@@ -122,7 +122,7 @@ function generate_quickjump_cache($group_id = false)
                     $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.feather_escape($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<input type="submit" value="<?php _e(\'Go\') ?>" accesskey="g" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
+                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<noscript><input type="submit" value="<?php _e(\'Go\') ?>" accesskey="g" /></noscript>'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
             }
         }
 
@@ -151,6 +151,26 @@ function generate_censoring_cache()
     // Output censored words as PHP code
     $content = '<?php'."\n\n".'define(\'FEATHER_CENSOR_LOADED\', 1);'."\n\n".'$search_for = '.var_export($search_for, true).';'."\n\n".'$replace_with = '.var_export($replace_with, true).';'."\n\n".'?>';
     featherbb_write_cache_file('cache_censoring.php', $content);
+}
+
+//
+// Generate a cache ID based on the last modification time for all stopwords files
+//
+function generate_stopwords_cache_id()
+{
+    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
+    if ($files === false) {
+        return 'cache_id_error';
+    }
+
+    $hash = array();
+
+    foreach ($files as $file) {
+        $hash[] = $file;
+        $hash[] = filemtime($file);
+    }
+
+    return sha1(implode('|', $hash));
 }
 
 
@@ -202,7 +222,7 @@ function generate_users_info_cache()
     $stats['last_user'] = $last_user[0];
 
     // Output users info as PHP code
-    $content = '<?php'."\n\n".'define(\'feather_userS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
+    $content = '<?php'."\n\n".'define(\'FEATHER_USERS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
     featherbb_write_cache_file('cache_users_info.php', $content);
 }
 

@@ -62,7 +62,7 @@ class statistics
 
         if ($this->feather->forum_settings['db_type'] == 'mysql' || $this->feather->forum_settings['db_type'] == 'mysqli' || $this->feather->forum_settings['db_type'] == 'mysql_innodb' || $this->feather->forum_settings['db_type'] == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->prefix.'%\'')->find_many();
+            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->forum_settings['db_prefix'].'%\'')->find_many();
 
             $total['size'] = $total['records'] = 0;
             foreach ($result as $status) {

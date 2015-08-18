@@ -247,7 +247,7 @@ class post
                 ->set($insert_post)
                 ->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId($this->feather->prefix.'posts');
+            $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'posts');
 
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1') {
@@ -296,7 +296,7 @@ class post
                 ->save();
 
 
-            $new['pid'] = DB::get_db()->lastInsertId($this->feather->prefix.'posts');
+            $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'posts');
         }
 
         // Update topic
@@ -442,7 +442,7 @@ class post
             ->set($insert_topic)
             ->save();
 
-        $new['tid'] = DB::get_db()->lastInsertId($this->feather->prefix.'topics');
+        $new['tid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
         if (!$this->user->is_guest) {
             // To subscribe or not to subscribe, that ...
@@ -496,7 +496,7 @@ class post
                 ->set($insert_post)
                 ->save();
         }
-        $new['pid'] = DB::get_db()->lastInsertId($this->feather->prefix.'topics');
+        $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
         // Update the topic with last_post_id
         $update_topic = array(

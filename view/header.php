@@ -73,7 +73,7 @@ endif;
 ?>
 </head>
 
-<body>
+<body<?= $focus_element; ?>>
 
 <div id="pun<?php echo FEATHER_ACTIVE_PAGE ?>" class="pun">
 <div class="top-box"></div>

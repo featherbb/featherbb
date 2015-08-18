@@ -38,11 +38,131 @@ require FEATHER_ROOT.'include/functions.php';
 // Load UTF-8 functions
 require FEATHER_ROOT.'include/utf8/utf8.php';
 
-// Strip out "bad" UTF-8 characters
-forum_remove_bad_characters();
+//
+// Check whether a file/folder is writable.
+//
+// This function also works on Windows Server where ACLs seem to be ignored.
+//
+function forum_is_writable($path)
+{
+    if (is_dir($path)) {
+        $path = rtrim($path, '/').'/';
+        return forum_is_writable($path.uniqid(mt_rand()).'.tmp');
+    }
 
-// Reverse the effect of register_globals
-forum_unregister_globals();
+    // Check temporary file for read/write capabilities
+    $rm = file_exists($path);
+    $f = @fopen($path, 'a');
+
+    if ($f === false) {
+        return false;
+    }
+
+    fclose($f);
+
+    if (!$rm) {
+        @unlink($path);
+    }
+
+    return true;
+}
+
+//
+// Removes any "bad" characters (characters which mess with the display of a page, are invisible, etc) from the given string
+// See: http://kb.mozillazine.org/Network.IDN.blacklist_chars
+//
+function remove_bad_characters($array)
+{
+    static $bad_utf8_chars;
+
+    if (!isset($bad_utf8_chars)) {
+        $bad_utf8_chars = array(
+            "\xcc\xb7"        => '',        // COMBINING SHORT SOLIDUS OVERLAY		0337	*
+            "\xcc\xb8"        => '',        // COMBINING LONG SOLIDUS OVERLAY		0338	*
+            "\xe1\x85\x9F"    => '',        // HANGUL CHOSEONG FILLER				115F	*
+            "\xe1\x85\xA0"    => '',        // HANGUL JUNGSEONG FILLER				1160	*
+            "\xe2\x80\x8b"    => '',        // ZERO WIDTH SPACE						200B	*
+            "\xe2\x80\x8c"    => '',        // ZERO WIDTH NON-JOINER				200C
+            "\xe2\x80\x8d"    => '',        // ZERO WIDTH JOINER					200D
+            "\xe2\x80\x8e"    => '',        // LEFT-TO-RIGHT MARK					200E
+            "\xe2\x80\x8f"    => '',        // RIGHT-TO-LEFT MARK					200F
+            "\xe2\x80\xaa"    => '',        // LEFT-TO-RIGHT EMBEDDING				202A
+            "\xe2\x80\xab"    => '',        // RIGHT-TO-LEFT EMBEDDING				202B
+            "\xe2\x80\xac"    => '',        // POP DIRECTIONAL FORMATTING			202C
+            "\xe2\x80\xad"    => '',        // LEFT-TO-RIGHT OVERRIDE				202D
+            "\xe2\x80\xae"    => '',        // RIGHT-TO-LEFT OVERRIDE				202E
+            "\xe2\x80\xaf"    => '',        // NARROW NO-BREAK SPACE				202F	*
+            "\xe2\x81\x9f"    => '',        // MEDIUM MATHEMATICAL SPACE			205F	*
+            "\xe2\x81\xa0"    => '',        // WORD JOINER							2060
+            "\xe3\x85\xa4"    => '',        // HANGUL FILLER						3164	*
+            "\xef\xbb\xbf"    => '',        // ZERO WIDTH NO-BREAK SPACE			FEFF
+            "\xef\xbe\xa0"    => '',        // HALFWIDTH HANGUL FILLER				FFA0	*
+            "\xef\xbf\xb9"    => '',        // INTERLINEAR ANNOTATION ANCHOR		FFF9	*
+            "\xef\xbf\xba"    => '',        // INTERLINEAR ANNOTATION SEPARATOR		FFFA	*
+            "\xef\xbf\xbb"    => '',        // INTERLINEAR ANNOTATION TERMINATOR	FFFB	*
+            "\xef\xbf\xbc"    => '',        // OBJECT REPLACEMENT CHARACTER			FFFC	*
+            "\xef\xbf\xbd"    => '',        // REPLACEMENT CHARACTER				FFFD	*
+            "\xe2\x80\x80"    => ' ',        // EN QUAD								2000	*
+            "\xe2\x80\x81"    => ' ',        // EM QUAD								2001	*
+            "\xe2\x80\x82"    => ' ',        // EN SPACE								2002	*
+            "\xe2\x80\x83"    => ' ',        // EM SPACE								2003	*
+            "\xe2\x80\x84"    => ' ',        // THREE-PER-EM SPACE					2004	*
+            "\xe2\x80\x85"    => ' ',        // FOUR-PER-EM SPACE					2005	*
+            "\xe2\x80\x86"    => ' ',        // SIX-PER-EM SPACE						2006	*
+            "\xe2\x80\x87"    => ' ',        // FIGURE SPACE							2007	*
+            "\xe2\x80\x88"    => ' ',        // FEATHERCTUATION SPACE					2008	*
+            "\xe2\x80\x89"    => ' ',        // THIN SPACE							2009	*
+            "\xe2\x80\x8a"    => ' ',        // HAIR SPACE							200A	*
+            "\xE3\x80\x80"    => ' ',        // IDEOGRAPHIC SPACE					3000	*
+        );
+    }
+
+    if (is_array($array)) {
+        return array_map('remove_bad_characters', $array);
+    }
+
+    // Strip out any invalid characters
+    $array = utf8_bad_strip($array);
+
+    // Remove control characters
+    $array = preg_replace('%[\x00-\x08\x0b-\x0c\x0e-\x1f]%', '', $array);
+
+    // Replace some "bad" characters
+    $array = str_replace(array_keys($bad_utf8_chars), array_values($bad_utf8_chars), $array);
+
+    return $array;
+}
+
+// Strip out "bad" UTF-8 characters
+$_GET = remove_bad_characters($_GET);
+$_POST = remove_bad_characters($_POST);
+$_COOKIE = remove_bad_characters($_COOKIE);
+$_REQUEST = remove_bad_characters($_REQUEST);
+
+//
+// Unset any variables instantiated as a result of register_globals being enabled
+//
+$register_globals = ini_get('register_globals');
+if ($register_globals === '' || $register_globals === '0' || strtolower($register_globals) === 'off') {
+    return;
+}
+
+// Prevent script.php?GLOBALS[foo]=bar
+if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS'])) {
+    exit('I\'ll have a steak sandwich and... a steak sandwich.');
+}
+
+// Variables that shouldn't be unset
+$no_unset = array('GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES');
+
+// Remove elements in $GLOBALS that are present in any of the superglobals
+$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset($_SESSION) && is_array($_SESSION) ? $_SESSION : array());
+foreach ($input as $k => $v) {
+    if (!in_array($k, $no_unset) && isset($GLOBALS[$k])) {
+        unset($GLOBALS[$k]);
+        unset($GLOBALS[$k]); // Double unset to circumvent the zend_hash_del_key_or_index hole in PHP <4.4.3 and <5.1.4
+    }
+}
 
 // Disable error reporting for uninitialized variables
 error_reporting(E_ALL);

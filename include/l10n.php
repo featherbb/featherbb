@@ -39,12 +39,12 @@ function load_textdomain($domain, $mofile) {
 
 function __($text, $domain = 'featherbb') {
 
-	return luna_translate($text, $domain);
+	return feather_translate($text, $domain);
 }
 
 function _e($text, $domain = 'featherbb') {
 
-	echo luna_translate($text, $domain);
+	echo feather_translate($text, $domain);
 }
 
 function _n($single, $plural, $number, $domain = 'featherbb') {
@@ -55,7 +55,7 @@ function _n($single, $plural, $number, $domain = 'featherbb') {
 	return $translation;
 }
 
-function luna_translate($text, $domain = 'featherbb') {
+function feather_translate($text, $domain = 'featherbb') {
 
 	$translations = load_translations($domain);
 	$translations = $translations->translate($text);

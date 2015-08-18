@@ -184,7 +184,7 @@ class groups
                 ->create()
                 ->set($insert_update_group)
                 ->save();
-            $new_group_id = DB::get_db()->lastInsertId($this->feather->prefix.'groups');
+            $new_group_id = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'groups');
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');

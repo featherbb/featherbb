@@ -32,6 +32,30 @@ class DBLayer
         '%^(TINY|MEDIUM|LONG)?TEXT$%i'                                            =>    'TEXT'
     );
 
+    public function forum_is_writable($path)
+    {
+        if (is_dir($path)) {
+            $path = rtrim($path, '/').'/';
+            return forum_is_writable($path.uniqid(mt_rand()).'.tmp');
+        }
+
+        // Check temporary file for read/write capabilities
+        $rm = file_exists($path);
+        $f = @fopen($path, 'a');
+
+        if ($f === false) {
+            return false;
+        }
+
+        fclose($f);
+
+        if (!$rm) {
+            @unlink($path);
+        }
+
+        return true;
+    }
+
 
     public function __construct($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
     {
@@ -52,7 +76,7 @@ class DBLayer
             error('Unable to open database \''.$db_name.'\' for reading. Permission denied', __FILE__, __LINE__);
         }
 
-        if (!forum_is_writable($db_name)) {
+        if (!$this->forum_is_writable($db_name)) {
             error('Unable to open database \''.$db_name.'\' for writing. Permission denied', __FILE__, __LINE__);
         }
 

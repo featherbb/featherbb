@@ -20,25 +20,6 @@ function get_microtime()
 
 
 //
-// Try to determine the current URL
-//
-function get_current_url($max_length = 0)
-{
-    $protocol = get_current_protocol();
-    $port = (isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false) ? ':'.$_SERVER['SERVER_PORT'] : '';
-
-    $url = urldecode($protocol.'://'.$_SERVER['HTTP_HOST'].$port.$_SERVER['REQUEST_URI']);
-
-    if (strlen($url) <= $max_length || $max_length == 0) {
-        return $url;
-    }
-
-    // We can't find a short enough url
-    return null;
-}
-
-
-//
 // Fetch the current protocol in use - http or https
 //
 function get_current_protocol()
@@ -128,79 +109,6 @@ function feather_setcookie($user_id, $password, $expires)
 
 
 //
-// Check whether the connecting user is banned (and delete any expired bans while we're at it)
-//
-function check_bans()
-{
-    global $feather_config, $feather_bans;
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    // Admins and moderators aren't affected
-    if ($feather->user->is_admmod || !$feather_bans) {
-        return;
-    }
-
-    // Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
-    // 192.168.0.5 from matching e.g. 192.168.0.50
-    $user_ip = get_remote_address();
-    $user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
-
-    $bans_altered = false;
-    $is_banned = false;
-
-    foreach ($feather_bans as $cur_ban) {
-        // Has this ban expired?
-        if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-            \DB::for_table('bans')->where('id', $cur_ban['id'])
-                                               ->delete_many();
-            $bans_altered = true;
-            continue;
-        }
-
-        if ($cur_ban['username'] != '' && utf8_strtolower($feather->user->username) == utf8_strtolower($cur_ban['username'])) {
-            $is_banned = true;
-        }
-
-        if ($cur_ban['ip'] != '') {
-            $cur_ban_ips = explode(' ', $cur_ban['ip']);
-
-            $num_ips = count($cur_ban_ips);
-            for ($i = 0; $i < $num_ips; ++$i) {
-                // Add the proper ending to the ban
-                if (strpos($user_ip, '.') !== false) {
-                    $cur_ban_ips[$i] = $cur_ban_ips[$i].'.';
-                } else {
-                    $cur_ban_ips[$i] = $cur_ban_ips[$i].':';
-                }
-
-                if (substr($user_ip, 0, strlen($cur_ban_ips[$i])) == $cur_ban_ips[$i]) {
-                    $is_banned = true;
-                    break;
-                }
-            }
-        }
-
-        if ($is_banned) {
-            \DB::for_table('online')->where('ident', $feather->user->username)
-                                                 ->delete_many();
-            message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($feather_config['o_admin_email']).'">'.feather_escape($feather_config['o_admin_email']).'</a>.', true, true, true);
-        }
-    }
-
-    // If we removed any expired bans during our run-through, we need to regenerate the bans cache
-    if ($bans_altered) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_bans_cache();
-    }
-}
-
-
-//
 // Check username
 //
 function check_username($username, $errors, $exclude_id = null)
@@ -259,45 +167,6 @@ function check_username($username, $errors, $exclude_id = null)
 
 
 //
-// Update "Users online"
-//
-function update_users_online()
-{
-    global $feather, $feather_config;
-
-    $now = time();
-
-    // Fetch all online list entries that are older than "o_timeout_online"
-    $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
-
-    $result = \DB::for_table('online')->select_many($select_update_users_online)
-        ->where_lt('logged', $now-$feather_config['o_timeout_online'])
-        ->find_many();
-
-    foreach ($result as $cur_user) {
-        // If the entry is a guest, delete it
-        if ($cur_user['user_id'] == '1') {
-            \DB::for_table('online')->where('ident', $cur_user['ident'])
-                                                 ->delete_many();
-        } else {
-            // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-            if ($cur_user['logged'] < ($now-$feather_config['o_timeout_visit'])) {
-                \DB::for_table('users')->where('id', $cur_user['user_id'])
-                        ->find_one()
-                        ->set('last_visit', $cur_user['logged'])
-                        ->save();
-                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
-                    ->delete_many();
-            } elseif ($cur_user['idle'] == '0') {
-                \DB::for_table('online')->where('user_id', $cur_user['user_id'])
-                        ->update_many('idle', 1);
-            }
-        }
-    }
-}
-
-
-//
 // Outputs markup to display a user's avatar
 //
 function generate_avatar_markup($user_id)
@@ -325,8 +194,6 @@ function generate_avatar_markup($user_id)
 //
 function generate_page_title($page_title, $p = null)
 {
-
-
     if (!is_array($page_title)) {
         $page_title = array($page_title);
     }
@@ -390,9 +257,6 @@ function get_tracked_topics()
 //
 function update_forum($forum_id)
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     $stats_query = \DB::for_table('topics')
                     ->where('forum_id', $forum_id)
                     ->select_expr('COUNT(id)', 'total_topics')
@@ -462,9 +326,6 @@ function delete_avatar($user_id)
 //
 function delete_topic($topic_id)
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     // Delete the topic and any redirect topics
     $where_delete_topic = array(
             array('id' => $topic_id),
@@ -492,9 +353,6 @@ function delete_topic($topic_id)
 //
 function delete_post($post_id, $topic_id)
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     $result = \DB::for_table('posts')
                   ->select_many('id', 'poster', 'posted')
                   ->where('topic_id', $topic_id)
@@ -642,8 +500,6 @@ function get_title($user)
 //
 function paginate($num_pages, $cur_page, $link, $args = null)
 {
-
-
     $pages = array();
     $link_to_all = false;
 
@@ -703,8 +559,6 @@ function paginate($num_pages, $cur_page, $link, $args = null)
 //
 function paginate_old($num_pages, $cur_page, $link)
 {
-
-
     $pages = array();
     $link_to_all = false;
 
@@ -762,7 +616,6 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 // Display a message
 //
-
 function message($msg, $http_status = null, $no_back_link = false, $dontStop = false)
 {
     // Did we receive a custom header?
@@ -1036,52 +889,6 @@ function is_all_uppercase($string)
 
 
 //
-// Display a message when board is in maintenance mode
-//
-function maintenance_message()
-{
-    global $feather_config, $tpl_main;
-
-    // Deal with newlines, tabs and multiple spaces
-    $pattern = array("\t", '  ', '  ');
-    $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
-    $message = str_replace($pattern, $replace, $feather_config['o_maintenance_message']);
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $page_title = array(feather_escape($feather_config['o_board_title']), __('Maintenance'));
-
-    if (!defined('FEATHER_ACTIVE_PAGE')) {
-        define('FEATHER_ACTIVE_PAGE', 'index');
-    }
-
-    require_once FEATHER_ROOT.'controller/header.php';
-    require_once FEATHER_ROOT.'controller/footer.php';
-
-    $feather->config('templates.path', get_path_view());
-
-    $header = new \controller\header();
-
-    $header->setTitle($page_title)->display();
-
-    $feather->render('message.php', array(
-            'message'    =>    $message,
-            'no_back_link'    =>    '',
-        )
-    );
-
-    require_once FEATHER_ROOT.'controller/footer.php';
-
-    $footer = new \controller\footer();
-
-    $footer->dontStop();
-
-    $footer->display();
-}
-
-
-//
 // Display $message and redirect user to $destination_url
 //
 function redirect($destination_url, $message = null)
@@ -1092,113 +899,6 @@ function redirect($destination_url, $message = null)
     $feather->flash('message', $message);
 
     $feather->redirect($destination_url);
-}
-
-
-//
-// Unset any variables instantiated as a result of register_globals being enabled
-//
-function forum_unregister_globals()
-{
-    $register_globals = ini_get('register_globals');
-    if ($register_globals === '' || $register_globals === '0' || strtolower($register_globals) === 'off') {
-        return;
-    }
-
-    // Prevent script.php?GLOBALS[foo]=bar
-    if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS'])) {
-        exit('I\'ll have a steak sandwich and... a steak sandwich.');
-    }
-
-    // Variables that shouldn't be unset
-    $no_unset = array('GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES');
-
-    // Remove elements in $GLOBALS that are present in any of the superglobals
-    $input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset($_SESSION) && is_array($_SESSION) ? $_SESSION : array());
-    foreach ($input as $k => $v) {
-        if (!in_array($k, $no_unset) && isset($GLOBALS[$k])) {
-            unset($GLOBALS[$k]);
-            unset($GLOBALS[$k]); // Double unset to circumvent the zend_hash_del_key_or_index hole in PHP <4.4.3 and <5.1.4
-        }
-    }
-}
-
-
-//
-// Removes any "bad" characters (characters which mess with the display of a page, are invisible, etc) from user input
-//
-function forum_remove_bad_characters()
-{
-    $_GET = remove_bad_characters($_GET);
-    $_POST = remove_bad_characters($_POST);
-    $_COOKIE = remove_bad_characters($_COOKIE);
-    $_REQUEST = remove_bad_characters($_REQUEST);
-}
-
-//
-// Removes any "bad" characters (characters which mess with the display of a page, are invisible, etc) from the given string
-// See: http://kb.mozillazine.org/Network.IDN.blacklist_chars
-//
-function remove_bad_characters($array)
-{
-    static $bad_utf8_chars;
-
-    if (!isset($bad_utf8_chars)) {
-        $bad_utf8_chars = array(
-            "\xcc\xb7"        => '',        // COMBINING SHORT SOLIDUS OVERLAY		0337	*
-            "\xcc\xb8"        => '',        // COMBINING LONG SOLIDUS OVERLAY		0338	*
-            "\xe1\x85\x9F"    => '',        // HANGUL CHOSEONG FILLER				115F	*
-            "\xe1\x85\xA0"    => '',        // HANGUL JUNGSEONG FILLER				1160	*
-            "\xe2\x80\x8b"    => '',        // ZERO WIDTH SPACE						200B	*
-            "\xe2\x80\x8c"    => '',        // ZERO WIDTH NON-JOINER				200C
-            "\xe2\x80\x8d"    => '',        // ZERO WIDTH JOINER					200D
-            "\xe2\x80\x8e"    => '',        // LEFT-TO-RIGHT MARK					200E
-            "\xe2\x80\x8f"    => '',        // RIGHT-TO-LEFT MARK					200F
-            "\xe2\x80\xaa"    => '',        // LEFT-TO-RIGHT EMBEDDING				202A
-            "\xe2\x80\xab"    => '',        // RIGHT-TO-LEFT EMBEDDING				202B
-            "\xe2\x80\xac"    => '',        // POP DIRECTIONAL FORMATTING			202C
-            "\xe2\x80\xad"    => '',        // LEFT-TO-RIGHT OVERRIDE				202D
-            "\xe2\x80\xae"    => '',        // RIGHT-TO-LEFT OVERRIDE				202E
-            "\xe2\x80\xaf"    => '',        // NARROW NO-BREAK SPACE				202F	*
-            "\xe2\x81\x9f"    => '',        // MEDIUM MATHEMATICAL SPACE			205F	*
-            "\xe2\x81\xa0"    => '',        // WORD JOINER							2060
-            "\xe3\x85\xa4"    => '',        // HANGUL FILLER						3164	*
-            "\xef\xbb\xbf"    => '',        // ZERO WIDTH NO-BREAK SPACE			FEFF
-            "\xef\xbe\xa0"    => '',        // HALFWIDTH HANGUL FILLER				FFA0	*
-            "\xef\xbf\xb9"    => '',        // INTERLINEAR ANNOTATION ANCHOR		FFF9	*
-            "\xef\xbf\xba"    => '',        // INTERLINEAR ANNOTATION SEPARATOR		FFFA	*
-            "\xef\xbf\xbb"    => '',        // INTERLINEAR ANNOTATION TERMINATOR	FFFB	*
-            "\xef\xbf\xbc"    => '',        // OBJECT REPLACEMENT CHARACTER			FFFC	*
-            "\xef\xbf\xbd"    => '',        // REPLACEMENT CHARACTER				FFFD	*
-            "\xe2\x80\x80"    => ' ',        // EN QUAD								2000	*
-            "\xe2\x80\x81"    => ' ',        // EM QUAD								2001	*
-            "\xe2\x80\x82"    => ' ',        // EN SPACE								2002	*
-            "\xe2\x80\x83"    => ' ',        // EM SPACE								2003	*
-            "\xe2\x80\x84"    => ' ',        // THREE-PER-EM SPACE					2004	*
-            "\xe2\x80\x85"    => ' ',        // FOUR-PER-EM SPACE					2005	*
-            "\xe2\x80\x86"    => ' ',        // SIX-PER-EM SPACE						2006	*
-            "\xe2\x80\x87"    => ' ',        // FIGURE SPACE							2007	*
-            "\xe2\x80\x88"    => ' ',        // FEATHERCTUATION SPACE					2008	*
-            "\xe2\x80\x89"    => ' ',        // THIN SPACE							2009	*
-            "\xe2\x80\x8a"    => ' ',        // HAIR SPACE							200A	*
-            "\xE3\x80\x80"    => ' ',        // IDEOGRAPHIC SPACE					3000	*
-        );
-    }
-
-    if (is_array($array)) {
-        return array_map('remove_bad_characters', $array);
-    }
-
-    // Strip out any invalid characters
-    $array = utf8_bad_strip($array);
-
-    // Remove control characters
-    $array = preg_replace('%[\x00-\x08\x0b-\x0c\x0e-\x1f]%', '', $array);
-
-    // Replace some "bad" characters
-    $array = str_replace(array_keys($bad_utf8_chars), array_values($bad_utf8_chars), $array);
-
-    return $array;
 }
 
 
@@ -1255,7 +955,7 @@ function forum_list_langs()
             continue;
         }
 
-        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/common.php')) {
+        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/common.po')) {
             $languages[] = $entry;
         }
     }
@@ -1264,27 +964,6 @@ function forum_list_langs()
     natcasesort($languages);
 
     return $languages;
-}
-
-
-//
-// Generate a cache ID based on the last modification time for all stopwords files
-//
-function generate_stopwords_cache_id()
-{
-    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
-    if ($files === false) {
-        return 'cache_id_error';
-    }
-
-    $hash = array();
-
-    foreach ($files as $file) {
-        $hash[] = $file;
-        $hash[] = filemtime($file);
-    }
-
-    return sha1(implode('|', $hash));
 }
 
 
@@ -1465,85 +1144,6 @@ function strip_bad_multibyte_chars($str)
 }
 
 //
-// Check whether a file/folder is writable.
-//
-// This function also works on Windows Server where ACLs seem to be ignored.
-//
-function forum_is_writable($path)
-{
-    if (is_dir($path)) {
-        $path = rtrim($path, '/').'/';
-        return forum_is_writable($path.uniqid(mt_rand()).'.tmp');
-    }
-
-    // Check temporary file for read/write capabilities
-    $rm = file_exists($path);
-    $f = @fopen($path, 'a');
-
-    if ($f === false) {
-        return false;
-    }
-
-    fclose($f);
-
-    if (!$rm) {
-        @unlink($path);
-    }
-
-    return true;
-}
-
-
-// DEBUG FUNCTIONS BELOW
-
-//
-// Display executed queries (if enabled)
-//
-function display_saved_queries()
-{
-
-
-    ?>
-
-<div id="debug" class="blocktable">
-	<h2><span><?php _e('Debug table') ?></span></h2>
-	<div class="box">
-		<div class="inbox">
-			<table>
-			<thead>
-				<tr>
-					<th class="tcl" scope="col"><?php _e('Query times') ?></th>
-					<th class="tcr" scope="col"><?php _e('Query') ?></th>
-				</tr>
-			</thead>
-			<tbody>
-<?php
-
-    $query_time_total = 0.0;
-    $i = 0;
-    foreach (\DB::get_query_log()[1] as $query) {
-        ?>
-                <tr>
-					<td class="tcl"><?php echo feather_escape(round(\DB::get_query_log()[0][$i], 6)) ?></td>
-					<td class="tcr"><?php echo feather_escape($query) ?></td>
-				</tr>
-        <?php
-        ++$i;
-    }
-        ?>
-				<tr>
-					<td class="tcl" colspan="2"><?php printf(__('Total query time'), $query_time_total.' s') ?></td>
-				</tr>
-			</tbody>
-			</table>
-		</div>
-	</div>
-</div>
-<?php
-
-}
-
-//
 // Make a string safe to use in a URL
 // Inspired by (c) Panther <http://www.pantherforum.org/>
 //
@@ -1617,10 +1217,8 @@ function get_sublink($link, $sublink, $subarg, $args = null)
 }
 
 // Generate breadcrumbs from an array of name and URLs
-
-function breadcrumbs(array $links) {
-    global $lang_admin_reports;
-
+function breadcrumbs_admin(array $links)
+{
     foreach ($links as $name => $url) {
         if ($name != '' && $url != '') {
             $tmp[] = '<span><a href="' . $url . '">'.feather_escape($name).'</a></span>';
@@ -1630,4 +1228,53 @@ function breadcrumbs(array $links) {
         }
     }
     return implode(' » ', $tmp);
+}
+
+
+
+// DEBUG FUNCTIONS BELOW
+
+//
+// Display executed queries (if enabled)
+//
+function display_saved_queries()
+{
+    ?>
+
+<div id="debug" class="blocktable">
+	<h2><span><?php _e('Debug table') ?></span></h2>
+	<div class="box">
+		<div class="inbox">
+			<table>
+			<thead>
+				<tr>
+					<th class="tcl" scope="col"><?php _e('Query times') ?></th>
+					<th class="tcr" scope="col"><?php _e('Query') ?></th>
+				</tr>
+			</thead>
+			<tbody>
+<?php
+
+    $query_time_total = 0.0;
+    $i = 0;
+    foreach (\DB::get_query_log()[1] as $query) {
+        ?>
+                <tr>
+					<td class="tcl"><?php echo feather_escape(round(\DB::get_query_log()[0][$i], 6)) ?></td>
+					<td class="tcr"><?php echo feather_escape($query) ?></td>
+				</tr>
+        <?php
+        ++$i;
+    }
+        ?>
+				<tr>
+					<td class="tcl" colspan="2"><?php printf(__('Total query time'), $query_time_total.' s') ?></td>
+				</tr>
+			</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<?php
+
 }
