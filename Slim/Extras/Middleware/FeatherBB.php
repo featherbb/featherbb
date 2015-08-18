@@ -460,6 +460,9 @@ class FeatherBB extends \Slim\Middleware
         } else {
             $this->env_to_globals($this->data['forum_env']); // Legacy : define globals from forum_env
 
+            // Load hooks
+            require $this->data['forum_env']['FEATHER_ROOT'].'include/hooks.php';
+            $this->app->hooks = new \hooks;
 
             require $this->data['forum_env']['FEATHER_ROOT'].'include/utf8/utf8.php';
             require $this->data['forum_env']['FEATHER_ROOT'].'include/functions.php';

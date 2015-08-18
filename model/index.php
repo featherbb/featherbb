@@ -21,6 +21,7 @@ class index
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
     
     // Returns page head
@@ -32,7 +33,7 @@ class index
             $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
         }
 
-        $page_head = $this->feather->applyHook('get_page_head', $page_head);
+        $page_head = $this->hook->fire('get_page_head', $page_head);
 
         return $page_head;
     }
@@ -47,7 +48,7 @@ class index
             $forum_actions[] = '<a href="'.get_link('mark-read/').'">'.__('Mark all as read').'</a>';
         }
 
-        $forum_actions = $this->feather->applyHook('get_forum_actions', $forum_actions);
+        $forum_actions = $this->hook->fire('get_forum_actions', $forum_actions);
 
         return $forum_actions;
     }
@@ -69,7 +70,7 @@ class index
             ->where_any_is($query['where'])
             ->where_gt('f.last_post', $this->user->last_visit);
 
-        $query = $this->feather->applyHookDB('query_get_new_posts', $query);
+        $query = $this->hook->fireDB('query_get_new_posts', $query);
 
         $query = $query->find_result_set();
 
@@ -94,7 +95,7 @@ class index
                     ->where_gt('last_post', $this->user->last_visit)
                     ->where_null('moved_to');
 
-                $query = $this->feather->applyHookDB('query_get_new_posts', $query);
+                $query = $this->hook->fireDB('query_get_new_posts', $query);
 
                 $query = $query->find_result_set();
 
@@ -106,7 +107,7 @@ class index
             }
         }
 
-        $new_topics = $this->feather->applyHook('get_new_posts', $new_topics);
+        $new_topics = $this->hook->fire('get_new_posts', $new_topics);
 
         return $new_topics;
     }
@@ -135,7 +136,7 @@ class index
             ->where_any_is($query['where'])
             ->order_by_many($query['order_by']);
 
-        $query = $this->feather->applyHookDB('query_print_categories_forums', $query);
+        $query = $this->hook->fireDB('query_print_categories_forums', $query);
 
         $query = $query->find_result_set();
 
@@ -218,7 +219,7 @@ class index
             ++$i;
         }
 
-        $index_data = $this->feather->applyHook('print_categories_forums', $index_data);
+        $index_data = $this->hook->fire('print_categories_forums', $index_data);
 
         return $index_data;
     }
@@ -244,7 +245,7 @@ class index
                         ->select_expr('SUM(num_topics)', 'total_topics')
                         ->select_expr('SUM(num_posts)', 'total_posts');
 
-        $query = $this->feather->applyHookDB('collect_stats_query', $query);
+        $query = $this->hook->fireDB('collect_stats_query', $query);
 
         $query = $query->find_one();
 
@@ -257,7 +258,7 @@ class index
             $stats['newest_user'] = feather_escape($stats['last_user']['username']);
         }
 
-        $stats = $this->feather->applyHook('collect_stats', $stats);
+        $stats = $this->hook->fire('collect_stats', $stats);
 
         return $stats;
     }
@@ -278,7 +279,7 @@ class index
                     ->where($query['where'])
                     ->order_by_many($query['order_by']);
 
-        $query = $this->feather->applyHookDB('query_fetch_users_online', $query);
+        $query = $this->hook->fireDB('query_fetch_users_online', $query);
 
         $query = $query->find_result_set();
 
@@ -300,7 +301,7 @@ class index
             $online['num_users'] = 0;
         }
 
-        $online = $this->feather->applyHook('fetch_users_online', $online);
+        $online = $this->hook->fire('fetch_users_online', $online);
 
         return $online;
     }

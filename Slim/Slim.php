@@ -6,7 +6,7 @@
  * @copyright   2011 Josh Lockhart
  * @link        http://www.slimframework.com
  * @license     http://www.slimframework.com/license
- * @version     2.6.1
+ * @version     2.6.3
  * @package     Slim
  *
  * MIT LICENSE
@@ -54,7 +54,7 @@ class Slim
     /**
      * @const string
      */
-    const VERSION = '2.6.1';
+    const VERSION = '2.6.3';
 
     /**
      * @var \Slim\Helper\Set
@@ -99,10 +99,10 @@ class Slim
     );
 
     /********************************************************************************
-    * PSR-0 Autoloader
-    *
-    * Do not use if you are using Composer to autoload dependencies.
-    *******************************************************************************/
+     * PSR-0 Autoloader
+     *
+     * Do not use if you are using Composer to autoload dependencies.
+     *******************************************************************************/
 
     /**
      * Slim PSR-0 autoloader
@@ -141,8 +141,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Instantiation and Configuration
-    *******************************************************************************/
+     * Instantiation and Configuration
+     *******************************************************************************/
 
     /**
      * Constructor
@@ -179,7 +179,7 @@ class Slim
             $viewClass = $c['settings']['view'];
             $templatesPath = $c['settings']['templates.path'];
 
-            $view = ($viewClass instanceof \Slim\View) ? $viewClass : new $viewClass;
+            $view = ($viewClass instanceOf \Slim\View) ? $viewClass : new $viewClass;
             $view->setTemplatesDirectory($templatesPath);
             return $view;
         });
@@ -353,8 +353,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Application Modes
-    *******************************************************************************/
+     * Application Modes
+     *******************************************************************************/
 
     /**
      * Get application mode
@@ -390,8 +390,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Logging
-    *******************************************************************************/
+     * Logging
+     *******************************************************************************/
 
     /**
      * Get application log
@@ -403,8 +403,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Routing
-    *******************************************************************************/
+     * Routing
+     *******************************************************************************/
 
     /**
      * Add GET|POST|PUT|PATCH|DELETE route
@@ -588,7 +588,7 @@ class Slim
      *
      * @param  mixed $callable Anything that returns true for is_callable()
      */
-    public function notFound($callable = null)
+    public function notFound ($callable = null)
     {
         if (is_callable($callable)) {
             $this->notFound = $callable;
@@ -662,8 +662,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Application Accessors
-    *******************************************************************************/
+     * Application Accessors
+     *******************************************************************************/
 
     /**
      * Get a reference to the Environment object
@@ -720,7 +720,7 @@ class Slim
     {
         if (!is_null($viewClass)) {
             $existingData = is_null($this->view) ? array() : $this->view->getData();
-            if ($viewClass instanceof \Slim\View) {
+            if ($viewClass instanceOf \Slim\View) {
                 $this->view = $viewClass;
             } else {
                 $this->view = new $viewClass();
@@ -733,8 +733,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Rendering
-    *******************************************************************************/
+     * Rendering
+     *******************************************************************************/
 
     /**
      * Render a template
@@ -758,8 +758,8 @@ class Slim
     }
 
     /********************************************************************************
-    * HTTP Caching
-    *******************************************************************************/
+     * HTTP Caching
+     *******************************************************************************/
 
     /**
      * Set Last-Modified HTTP Response Header
@@ -847,8 +847,8 @@ class Slim
     }
 
     /********************************************************************************
-    * HTTP Cookies
-    *******************************************************************************/
+     * HTTP Cookies
+     *******************************************************************************/
 
     /**
      * Set HTTP cookie to be sent with the HTTP response
@@ -981,8 +981,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Helper Methods
-    *******************************************************************************/
+     * Helper Methods
+     *******************************************************************************/
 
     /**
      * Get the absolute path to this Slim application's root directory
@@ -1113,14 +1113,13 @@ class Slim
      * @param string    $route      The route name
      * @param array     $params     Associative array of URL parameters and replacement values
      */
-    public function redirectTo($route, $params = array(), $status = 302)
-    {
+    public function redirectTo($route, $params = array(), $status = 302){
         $this->redirect($this->urlFor($route, $params), $status);
     }
 
     /********************************************************************************
-    * Flash Messages
-    *******************************************************************************/
+     * Flash Messages
+     *******************************************************************************/
 
     /**
      * Set flash message for subsequent request
@@ -1167,8 +1166,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Hooks
-    *******************************************************************************/
+     * Hooks
+     *******************************************************************************/
 
     /**
      * Assign hook
@@ -1193,12 +1192,8 @@ class Slim
      */
     public function applyHook($name)
     {
-        $args = func_get_args();
-        array_shift($args);
-
         if (!isset($this->hooks[$name])) {
             $this->hooks[$name] = array(array());
-            return $args[0];
         }
         if (!empty($this->hooks[$name])) {
             // Sort by priority, low to high, if there's more than one priority
@@ -1206,65 +1201,16 @@ class Slim
                 ksort($this->hooks[$name]);
             }
 
-            $output = array();
-            $count = 0;
+            $args = func_get_args();
+            array_shift($args);
 
             foreach ($this->hooks[$name] as $priority) {
                 if (!empty($priority)) {
                     foreach ($priority as $callable) {
-                        $output[] = call_user_func_array($callable, $args);
-                        ++$count;
+                        call_user_func_array($callable, $args);
                     }
                 }
             }
-
-            if ($count == 1) {
-                return $output[0];
-            }
-            else {
-                $data = array();
-                // Move all the keys to the same level
-                array_walk_recursive($output, function ($v, $k) use (&$data) {
-                    $data[] = $v;
-                });
-                // Remove any duplicate key
-                $data = array_unique($data);
-                return $data;
-            }
-        }
-    }
-
-    /**
-     * Invoke hook for DB
-     * @param  string $name The hook name
-     * @param  mixed  ...   (Optional) Argument(s) for hooked functions, can specify multiple arguments
-     */
-    public function applyHookDB($name)
-    {
-        $args = func_get_args();
-        array_shift($args);
-
-        if (!isset($this->hooks[$name])) {
-            $this->hooks[$name] = array(array());
-            return $args[0];
-        }
-        if (!empty($this->hooks[$name])) {
-            // Sort by priority, low to high, if there's more than one priority
-            if (count($this->hooks[$name]) > 1) {
-                ksort($this->hooks[$name]);
-            }
-
-            $output = array();
-
-            foreach ($this->hooks[$name] as $priority) {
-                if (!empty($priority)) {
-                    foreach ($priority as $callable) {
-                        $output[] = call_user_func_array($callable, $args);
-                    }
-                }
-            }
-
-            return $output[0];
         }
     }
 
@@ -1309,8 +1255,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Middleware
-    *******************************************************************************/
+     * Middleware
+     *******************************************************************************/
 
     /**
      * Add middleware
@@ -1322,7 +1268,7 @@ class Slim
      */
     public function add(\Slim\Middleware $newMiddleware)
     {
-        if (in_array($newMiddleware, $this->middleware)) {
+        if(in_array($newMiddleware, $this->middleware)) {
             $middleware_class = get_class($newMiddleware);
             throw new \RuntimeException("Circular Middleware setup detected. Tried to queue the same Middleware instance ({$middleware_class}) twice.");
         }
@@ -1332,8 +1278,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Runner
-    *******************************************************************************/
+     * Runner
+     *******************************************************************************/
 
     /**
      * Run
@@ -1426,6 +1372,7 @@ class Slim
             $this->response()->write(ob_get_clean());
         } catch (\Exception $e) {
             if ($this->config('debug')) {
+                ob_end_clean();
                 throw $e;
             } else {
                 try {
@@ -1439,8 +1386,8 @@ class Slim
     }
 
     /********************************************************************************
-    * Error Handling and Debugging
-    *******************************************************************************/
+     * Error Handling and Debugging
+     *******************************************************************************/
 
     /**
      * Convert errors into ErrorException objects
