@@ -117,6 +117,7 @@ class FeatherBBLoader extends \Slim\Middleware
         DB::configure('id_column_overrides', array(
             $config['db_prefix'].'groups' => 'g_id',
         ));
+        DB::configure('prefix', $config['db_prefix']);
     }
 
     // Getters / setters for Slim container (avoid magic get error)

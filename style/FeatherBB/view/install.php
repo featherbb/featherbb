@@ -156,7 +156,7 @@ if (!defined('FEATHER')) {
                                             <div class="infldset">
                                                 <p><?php _e('Info 6') ?></p>
                                                 <label><?php _e('Table prefix') ?></label>
-                                                <input id="install[db_prefix]" type="text" name="db_prefix" size="20" maxlength="30" />
+                                                <input type="text" name="install[db_prefix]" size="20" maxlength="30" />
                                             </div>
                                         </fieldset>
                                     </div>

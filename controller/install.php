@@ -171,10 +171,12 @@ class install
         // Load appropriate language
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$data['default_lang'].'/install.mo');
 
+        // Handle db prefix
+        $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
+
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
-            $table = (!empty($data['db_prefix'])) ? $data['db_prefix'].$table : $table;
-            if (!$this->model->create_table($table, $sql)) {
+            if (!$this->model->create_table($data['db_prefix'].$table, $sql)) {
                 // Error handling
                 $this->errors[] = 'A problem was encountered while creating table '.$table;
             }
