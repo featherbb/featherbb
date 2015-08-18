@@ -97,9 +97,6 @@ class FeatherBBLoader extends \Slim\Middleware
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
             case 'mysql':
-            case 'mysqli':
-            case 'mysql_innodb':
-            case 'mysqli_innodb':
                 DB::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
                 DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
                 break;
@@ -207,7 +204,6 @@ class FeatherBBLoader extends \Slim\Middleware
         $this->hydrate('forum_env', $this->forum_env);
 
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
-            $this->set_headers();
             return $this->app->response->setStatus(403); // Send forbidden header
         }
 
@@ -221,8 +217,8 @@ class FeatherBBLoader extends \Slim\Middleware
         if (!is_null($config_file)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $config_file);
         } else {
-            // Erreur
-            echo 'Wrong config format';
+            $this->app->response->setStatus(500); // Send forbidden header
+            return $this->app->response->setBody('Wrong config file format');
         }
 
         // Init DB
