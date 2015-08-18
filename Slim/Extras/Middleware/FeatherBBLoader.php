@@ -199,6 +199,10 @@ class FeatherBBLoader extends \Slim\Middleware
 
         // Record start time
         $this->app->start = get_microtime();
+        // Define now var
+        $this->app->now = function () {
+            return time();
+        };
 
         // Populate FeatherBB Slim object with forum_env vars
         $this->hydrate('forum_env', $this->forum_env);
