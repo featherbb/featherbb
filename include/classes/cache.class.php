@@ -58,14 +58,14 @@ class Cache
     }
 
     /**
-     * Check whether data accociated with a key
+     * Check whether data is associated with a key
      *
      * @param string $key
      * @return boolean
      */
     public function isCached($key)
     {
-        if (false != $this->_loadCache()) {
+        if ($this->_loadCache()) {
             $cachedData = $this->_loadCache();
             $entry = $cachedData[$key];
             if ($entry && true === $this->_checkExpired($entry['time'], $entry['expire'])) {
@@ -73,6 +73,8 @@ class Cache
             } else {
                 return isset($cachedData[$key]['data']);
             }
+        } else {
+            return false; // If cache file doesn't exist or cache is empty, nothing is cached
         }
     }
 
@@ -208,12 +210,12 @@ class Cache
      */
     private function _loadCache()
     {
-        if ($this->cache!=null)
+        if ($this->cache != null)
             return $this->cache;
 
         if (true === file_exists($this->getCacheDir())) {
             $file = file_get_contents($this->getCacheDir());
-            $this->cache=json_decode($file, true);
+            $this->cache = json_decode($file, true);
             return $this->cache;
         } else {
             return false;
@@ -264,12 +266,11 @@ class Cache
      */
     private function _checkExpired($timestamp, $expiration)
     {
-        $result = false;
         if ($expiration !== 0) {
             $timeDiff = time() - $timestamp;
-            ($timeDiff > $expiration) ? $result = true : $result = false;
+            return ($timeDiff > $expiration);
         }
-        return $result;
+        return false;
     }
 
     /**
