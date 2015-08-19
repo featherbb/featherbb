@@ -21,7 +21,6 @@ class install
     protected $install_lang = 'English';
     protected $default_style = 'FeatherBB';
     protected $config_keys = array('db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix');
-    protected $config_file = 'include/config.php';
     protected $errors = array();
 
     public function __construct()
@@ -211,7 +210,7 @@ class install
 
     public function write_config($json)
     {
-        return file_put_contents($this->feather->forum_env['FEATHER_ROOT'].$this->config_file, $json);
+        return file_put_contents($this->feather->forum_env['FORUM_CONFIG_FILE'], $json);
     }
 
     public function write_htaccess()
