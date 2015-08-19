@@ -410,9 +410,9 @@ class post
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
@@ -597,9 +597,9 @@ class post
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
@@ -624,7 +624,7 @@ class post
         $mail_message = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-        pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+        feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
     }
 
     // Increment post count, change group if needed

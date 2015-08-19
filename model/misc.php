@@ -85,7 +85,7 @@ class misc
 
         require_once FEATHER_ROOT.'include/email.php';
 
-        pun_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
+        feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
         DB::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
@@ -188,7 +188,7 @@ class misc
 
                 require FEATHER_ROOT.'include/email.php';
 
-                pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 

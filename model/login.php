@@ -178,7 +178,7 @@ class login
                         $cur_mail_message = str_replace('<activation_url>', get_link('user/'.$cur_hit->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
 
-                        pun_mail($email, $mail_subject, $cur_mail_message);
+                        feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
                     message(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);

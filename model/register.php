@@ -179,7 +179,7 @@ class register
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
 
             // If we previously found out that the email was a dupe
@@ -197,7 +197,7 @@ class register
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
@@ -216,7 +216,7 @@ class register
                 $mail_message = str_replace('<admin_url>', get_link('user/'.$new_uid.'/section/admin/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 
@@ -237,7 +237,7 @@ class register
             $mail_message = str_replace('<login_url>', get_link('login/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-            pun_mail($user['email1'], $mail_subject, $mail_message);
+            feather_mail($user['email1'], $mail_subject, $mail_message);
 
             message(__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }

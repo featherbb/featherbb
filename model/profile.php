@@ -202,7 +202,7 @@ class profile
                     $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                    pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
@@ -235,7 +235,7 @@ class profile
                     $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                    pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
@@ -266,7 +266,7 @@ class profile
             $mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-            pun_mail($new_email, $mail_subject, $mail_message);
+            feather_mail($new_email, $mail_subject, $mail_message);
 
             message(__('Activate email sent').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
