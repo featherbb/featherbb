@@ -1144,6 +1144,26 @@ function strip_bad_multibyte_chars($str)
 }
 
 //
+// Generate a cache ID based on the last modification time for all stopwords files
+//
+function generate_stopwords_cache_id()
+{
+    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
+    if ($files === false) {
+        return 'cache_id_error';
+    }
+
+    $hash = array();
+
+    foreach ($files as $file) {
+        $hash[] = $file;
+        $hash[] = filemtime($file);
+    }
+
+    return sha1(implode('|', $hash));
+}
+
+//
 // Make a string safe to use in a URL
 // Inspired by (c) Panther <http://www.pantherforum.org/>
 //
