@@ -20,29 +20,31 @@ class edit
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     // Fetch some info about the post, the topic and the forum
     public function get_info_edit($id)
     {
-
-     
-        $select_get_info_edit = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
-        $where_get_info_edit = array(
+        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $cur_post['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         $cur_post = DB::for_table('posts')
             ->table_alias('p')
-            ->select_many($select_get_info_edit)
+            ->select_many($cur_post['select'])
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_info_edit)
-            ->where('p.id', $id)
-            ->find_one();
+            ->where_any_is($cur_post['where'])
+            ->where('p.id', $id);
+
+        $cur_post = $this->hook->fireDB('get_info_edit_query', $cur_post);
+
+        $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
             message(__('Bad request'), '404');
@@ -51,7 +53,7 @@ class edit
         return $cur_post;
     }
 
-    public function check_errors_before_edit($id, $can_edit_subject, $errors)
+    public function check_errors_before_edit($can_edit_subject, $errors)
     {
         global $pd;
 
@@ -103,6 +105,8 @@ class edit
             }
         }
 
+        $errors = $this->hook->fire('check_errors_before_edit', $errors);
+
         return $errors;
     }
 
@@ -136,6 +140,8 @@ class edit
             $post['subject'] = feather_trim($this->request->post('req_subject'));
         }
 
+        $post = $this->hook->fire('setup_variables_edit', $post);
+
         return $post;
     }
 
@@ -150,15 +156,18 @@ class edit
                 array('moved_to' => $cur_post['tid'])
             );
             
-            $update_topic = array(
+            $query['update_topic'] = array(
                 'subject' => $post['subject'],
                 'sticky'  => $post['stick_topic']
             );
             
-            DB::for_table('topics')->where_any_is($where_topic)
-                                                       ->find_one()
-                                                       ->set($update_topic)
-                                                       ->save();
+            $query = DB::for_table('topics')->where_any_is($where_topic)
+                                            ->find_one()
+                                            ->set($query['update_topic']);
+
+            $query = $this->hook->fireDB('edit_post_can_edit_subject', $query);
+
+            $query = $query->save();
 
             // We changed the subject, so we need to take that into account when we update the search words
             update_search_index('edit', $id, $post['message'], $post['subject']);
@@ -167,21 +176,23 @@ class edit
         }
         
         // Update the post
-        $update_post = array(
+        $query['update_post'] = array(
             'message' => $post['message'],
             'hide_smilies'  => $post['hide_smilies']
         );
         
         if (!$this->request->post('silent') || !$is_admmod) {
-            $update_post['edited'] = time();
-            $update_post['edited_by'] = $this->user->username;
+            $query['update_post']['edited'] = time();
+            $query['update_post']['edited_by'] = $this->user->username;
         }
 
-        DB::for_table('posts')->where('id', $id)
-                                                   ->find_one()
-                                                   ->set($update_post)
-                                                   ->save();
-        
+        $query = DB::for_table('posts')->where('id', $id)
+                                       ->find_one()
+                                       ->set($query['update_post']);
+
+        $query = $this->hook->fireDB('edit_post_can_edit_subject', $query);
+
+        $query = $query->save();
     }
 
     public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
@@ -211,6 +222,8 @@ class edit
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.__('Silent edit').'<br /></label>';
             }
         }
+
+        $checkboxes = $this->hook->fire('get_checkboxes', $checkboxes);
 
         return $checkboxes;
     }
