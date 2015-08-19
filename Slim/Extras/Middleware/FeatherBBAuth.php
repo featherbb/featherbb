@@ -281,7 +281,7 @@ class FeatherBBAuth extends \Slim\Middleware
 
         // Load bans from cache
         if (!$this->app->cache->isCached('bans')) {
-            $this->app->cache->store('bans', \model\cache::get_config());
+            $this->app->cache->store('bans', \model\cache::get_bans());
         }
         $feather_bans = $this->app->cache->retrieve('bans');
 
