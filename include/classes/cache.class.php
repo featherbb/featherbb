@@ -18,27 +18,10 @@ class Cache
      * @var array
      */
     protected $settings;
-    /**
-     * The path to the cache file folder
-     *
-     * @var string
-     */
-    protected $_cachepath = 'cache/';
 
     /**
-     * The name of the default cache file
-     *
-     * @var string
+     * @var array
      */
-    protected $_cachename = 'default';
-
-    /**
-     * The cache file extension
-     *
-     * @var string
-     */
-    protected $_extension = '.cache';
-
     protected $cache;
 
     /**
@@ -58,6 +41,11 @@ class Cache
         $this->setExtension($this->settings['extension']);
     }
 
+    /**
+     * Return default settings
+     *
+     * @return array
+     */
     protected static function getDefaultSettings()
     {
         return array('name' => 'default',
