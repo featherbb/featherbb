@@ -164,36 +164,6 @@ class FeatherBBLoader extends \Slim\Middleware
         $this->app->expires(0);
     }
 
-    public function maintenance_message()
-    {
-        // Deal with newlines, tabs and multiple spaces
-        $pattern = array("\t", '  ', '  ');
-        $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
-        $message = str_replace($pattern, $replace, $this->forum_settings['o_maintenance_message']);
-
-        $page_title = array(feather_escape($this->forum_settings['o_board_title']), __('Maintenance'));
-
-        define('FEATHER_ACTIVE_PAGE', 'index');
-
-        $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? FEATHER_ROOT.'style/'.$this->app->user->style.'/view' : FEATHER_ROOT.'view');
-
-        $header = new \controller\header();
-
-        $header->setTitle($page_title)->display();
-
-        $this->app->render('message.php', array(
-                'message'    =>    $message,
-                'no_back_link'    =>    '',
-            )
-        );
-
-        $footer = new \controller\footer();
-
-        $footer->dontStop();
-
-        $footer->display();
-    }
-
     public function call()
     {
         global $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
