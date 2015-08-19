@@ -34,4 +34,17 @@ class cache
                 ->find_array();
     }
 
+    public static function get_censoring($select_censoring = 'search_for')
+    {
+        $result = DB::for_table('censoring')
+                    ->select_many($select_censoring)
+                    ->find_array();
+        $output = array();
+
+        foreach ($result as $item) {
+            $output[] = ($select_censoring == 'search_for') ? '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($item['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu' : $item['replace_with'];
+        }
+        return $output;
+    }
+
 }
