@@ -199,7 +199,12 @@ class install
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
             $this->write_htaccess();
         }
-        
+
+        // Install success flash message
+        $flash = new \Slim\Middleware\Flash();
+        $flash->set('message', __('Message'));
+        $flash->save();
+
         // Redirect to homepage
         redirect(get_link('/'));
     }
