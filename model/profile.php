@@ -372,14 +372,14 @@ class profile
             ->save();
 
         // Regenerate the users info cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
+        if (!$this->feather->cache->isCached('users_info')) {
+            $this->feather->cache->store('users_info', \model\cache::get_users_info());
         }
 
-        generate_users_info_cache();
+        $stats = $this->feather->cache->retrieve('users_info');
 
         if ($old_group_id == FEATHER_ADMIN || $new_group_id == FEATHER_ADMIN) {
-            generate_admins_cache();
+            $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
         }
 
         $new_group_mod = DB::for_table('groups')
@@ -632,14 +632,14 @@ class profile
             delete_avatar($id);
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
 
             if ($group_id == FEATHER_ADMIN) {
-                generate_admins_cache();
+                $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
             }
 
             redirect(get_base_url(), __('User delete redirect'));
@@ -968,11 +968,11 @@ class profile
             }
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bans_updated) {

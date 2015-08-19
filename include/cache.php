@@ -7,49 +7,6 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-// Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
-    exit;
-}
-
-
-//
-// Generate the config cache PHP script
-//
-function generate_config_cache()
-{
-    // Get the forum config from the DB
-    $result = \DB::for_table('config')->find_array();
-
-    $output = array();
-    foreach ($result as $cur_config_item) {
-        $output[$cur_config_item['conf_name']] = $cur_config_item['conf_value'];
-    }
-
-    // Output config as PHP code
-    $content = '<?php'."\n\n".'define(\'FEATHER_CONFIG_LOADED\', 1);'."\n\n".'$feather_config = '.var_export($output, true).';'."\n\n".'?>';
-    featherbb_write_cache_file('cache_config.php', $content);
-}
-
-
-//
-// Generate the bans cache PHP script
-//
-function generate_bans_cache()
-{
-    // Get the ban list from the DB
-    $result = \DB::for_table('bans')->find_array();
-
-    $output = array();
-    foreach ($result as $cur_ban) {
-        $output[] = $cur_ban;
-    }
-
-    // Output ban list as PHP code
-    $content = '<?php'."\n\n".'define(\'FEATHER_BANS_LOADED\', 1);'."\n\n".'$feather_bans = '.var_export($output, true).';'."\n\n".'?>';
-    featherbb_write_cache_file('cache_bans.php', $content);
-}
-
 
 //
 // Generate quick jump cache PHP scripts
@@ -128,29 +85,6 @@ function generate_quickjump_cache($group_id = false)
 
         featherbb_write_cache_file('cache_quickjump_'.$group_id.'.php', $output);
     }
-}
-
-
-//
-// Generate the censoring cache PHP script
-//
-function generate_censoring_cache()
-{
-    $select_generate_censoring_cache = array('search_for', 'replace_with');
-    $result = \DB::for_table('censoring')->select_many($select_generate_censoring_cache)
-                    ->find_many();
-
-    $search_for = $replace_with = array();
-    $i = 0;
-    foreach ($result as $row) {
-        $replace_with[$i] = $row['replace_with'];
-        $search_for[$i] = '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($row['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu';
-        ++$i;
-    }
-
-    // Output censored words as PHP code
-    $content = '<?php'."\n\n".'define(\'FEATHER_CENSOR_LOADED\', 1);'."\n\n".'$search_for = '.var_export($search_for, true).';'."\n\n".'$replace_with = '.var_export($replace_with, true).';'."\n\n".'?>';
-    featherbb_write_cache_file('cache_censoring.php', $content);
 }
 
 //

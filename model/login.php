@@ -21,7 +21,7 @@ class login
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     public function login()
     {
         $form_username = feather_trim($this->request->post('req_username'));
@@ -65,11 +65,11 @@ class login
                                                       ->save();
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
         }
 
         // Remove this user's guest entry from the online list
@@ -161,13 +161,13 @@ class login
                         // Generate a new password and a new password activation code
                         $new_password = random_pass(12);
                         $new_password_key = random_pass(8);
- 
+
                         $update_password = array(
                             'activate_string' => feather_hash($new_password),
                             'activate_key'    => $new_password_key,
                             'last_email_sent' => time()
                         );
-                        
+
                         DB::for_table('users')->where('id', $cur_hit->id)
                                                                   ->find_one()
                                                                   ->set($update_password)

@@ -22,7 +22,7 @@ class index
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
-    
+
     // Returns page head
     public function get_page_head()
     {
@@ -50,7 +50,7 @@ class index
 
     // Detects if a "new" icon has to be displayed
     public function get_new_posts()
-    {   
+    {
         $select_get_new_posts = array('f.id', 'f.last_post');
         $where_get_new_posts_any = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -65,7 +65,7 @@ class index
             ->where_any_is($where_get_new_posts_any)
             ->where_gt('f.last_post', $this->user->last_visit)
             ->find_result_set();
-        
+
         $forums = $new_topics = array();
         $tracked_topics = get_tracked_topics();
 
@@ -78,7 +78,7 @@ class index
         if (!empty($forums)) {
             if (empty($tracked_topics['topics'])) {
                 $new_topics = $forums;
-            } else {   
+            } else {
                 $select_get_new_posts_tracked_topics = array('forum_id', 'id', 'last_post');
 
                 $result = DB::for_table('topics')
@@ -106,14 +106,14 @@ class index
         if (!$this->user->is_guest) {
             $new_topics = $this->get_new_posts();
         }
-        
+
         $select_print_categories_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
         $where_print_categories_forums = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
         $order_by_print_categories_forums = array('c.disp_position', 'c.id', 'f.disp_position');
-        
+
         $result = DB::for_table('categories')
             ->table_alias('c')
             ->select_many($select_print_categories_forums)
@@ -210,25 +210,17 @@ class index
     // Returns the elements needed to display stats
     public function collect_stats()
     {
-        // Collect some statistics from the database
-        if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
-            include FORUM_CACHE_DIR.'cache_users_info.php';
+        if (!$this->feather->cache->isCached('users_info')) {
+            $this->feather->cache->store('users_info', \model\cache::get_users_info());
         }
 
-        if (!defined('FEATHER_USERS_INFO_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
+        $stats = $this->feather->cache->retrieve('users_info');
 
-            generate_users_info_cache();
-            require FORUM_CACHE_DIR.'cache_users_info.php';
-        }
-        
         $stats_query = DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
                         ->select_expr('SUM(num_posts)', 'total_posts')
                         ->find_one();
-        
+
         $stats['total_topics'] = intval($stats_query['total_topics']);
         $stats['total_posts'] = intval($stats_query['total_posts']);
 
@@ -251,7 +243,7 @@ class index
         $select_fetch_users_online = array('user_id', 'ident');
         $where_fetch_users_online = array('idle' => '0');
         $order_by_fetch_users_online = array('ident');
-        
+
         $result = DB::for_table('online')
             ->select_many($select_fetch_users_online)
             ->where($where_fetch_users_online)

@@ -74,20 +74,13 @@ function get_base_url($support_https = false)
 //
 function get_admin_ids()
 {
-    if (file_exists(FORUM_CACHE_DIR.'cache_admins.php')) {
-        include FORUM_CACHE_DIR.'cache_admins.php';
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    if (!$this->feather->cache->isCached('admin_ids')) {
+        $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
     }
 
-    if (!defined('FEATHER_ADMINS_LOADED')) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_admins_cache();
-        require FORUM_CACHE_DIR.'cache_admins.php';
-    }
-
-    return $feather_admins;
+    return $this->feather->cache->retrieve('admin_ids');
 }
 
 
