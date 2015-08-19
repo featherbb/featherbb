@@ -278,19 +278,12 @@ class FeatherBBAuth extends \Slim\Middleware
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo');
-        // Load cached bans
-        if (file_exists($this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php')) {
-            include $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
-        }
 
-        if (!defined('FEATHER_BANS_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require $this->app->forum_env['FEATHER_ROOT'].'include/cache.php';
-            }
-
-            generate_bans_cache();
-            require $this->app->forum_env['FORUM_CACHE_DIR'].'cache_bans.php';
+        // Load bans from cache
+        if (!$this->app->cache->isCached('bans')) {
+            $this->app->cache->store('bans', \model\cache::get_config());
         }
+        $feather_bans = $this->app->cache->retrieve('bans');
 
         // Check if current user is banned
         $this->check_bans();
