@@ -21,7 +21,6 @@ class install
     protected $install_lang = 'English';
     protected $default_style = 'FeatherBB';
     protected $config_keys = array('db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix');
-    protected $config_file = 'include/config.php';
     protected $errors = array();
 
     public function __construct()
@@ -199,14 +198,19 @@ class install
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
             $this->write_htaccess();
         }
-        
+
+        // Install success flash message
+        $flash = new \Slim\Middleware\Flash();
+        $flash->set('message', __('Message'));
+        $flash->save();
+
         // Redirect to homepage
         redirect(get_link('/'));
     }
 
     public function write_config($json)
     {
-        return file_put_contents($this->feather->forum_env['FEATHER_ROOT'].$this->config_file, $json);
+        return file_put_contents($this->feather->forum_env['FORUM_CONFIG_FILE'], $json);
     }
 
     public function write_htaccess()
