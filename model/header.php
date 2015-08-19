@@ -25,6 +25,8 @@ class header
 
     public function get_reports()
     {
+        $this->hook->fire('get_reports_start');
+
         $result_header = DB::for_table('reports')->where_null('zapped');
 
         $result_header = $this->hook->fireDB('get_reports_query', $result_header);

@@ -37,7 +37,12 @@ class hooks extends \Slim\Slim
 
         if (!isset($this->hooks[$name])) {
             $this->hooks[$name] = array(array());
-            return $args[0];
+            if (isset ($args[0])) {
+                return $args[0];
+            }
+            else {
+                return;
+            }
         }
         if (!empty($this->hooks[$name])) {
             // Sort by priority, low to high, if there's more than one priority
@@ -76,7 +81,7 @@ class hooks extends \Slim\Slim
     /**
      * Invoke hook for DB
      * @param  string $name The hook name
-     * @param  mixed  ...   (Optional) Argument(s) for hooked functions, can specify multiple arguments
+     * @param  mixed  ...   Argument(s) for hooked functions, can specify multiple arguments
      */
     public function fireDB($name)
     {

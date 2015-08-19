@@ -25,6 +25,8 @@ class delete
  
     public function get_info_delete($id)
     {
+        $this->hook->fire('get_info_delete_start');
+
         $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $query['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -54,6 +56,8 @@ class delete
 
     public function handle_deletion($is_topic_post, $id, $tid, $fid)
     {
+        $this->hook->fire('handle_deletion_start');
+
         require FEATHER_ROOT.'include/search_idx.php';
 
         if ($is_topic_post) {

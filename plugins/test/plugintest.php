@@ -36,9 +36,9 @@ class plugintest
             return $query;
         });
 
-        $this->hook->bind('query_fetch_users_online', function ($query) {
+        /*$this->hook->bind('query_fetch_users_online', function ($query) {
             $query = $query->offset(50);
             return $query;
-        });
+        });*/
     }
 }

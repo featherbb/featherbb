@@ -27,6 +27,8 @@ class index
     // Returns page head
     public function get_page_head()
     {
+        $this->hook->fire('get_page_head_start');
+
         if ($this->config['o_feed_type'] == '1') {
             $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
         } elseif ($this->config['o_feed_type'] == '2') {
@@ -41,6 +43,8 @@ class index
     // Returns forum action
     public function get_forum_actions()
     {
+        $this->hook->fire('get_forum_actions_start');
+
         $forum_actions = array();
 
         // Display a "mark all as read" link
@@ -55,7 +59,9 @@ class index
 
     // Detects if a "new" icon has to be displayed
     public function get_new_posts()
-    {   
+    {
+        $this->hook->fire('get_new_posts_start');
+
         $query['select'] = array('f.id', 'f.last_post');
         $query['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -115,6 +121,8 @@ class index
     // Returns the elements needed to display categories and their forums
     public function print_categories_forums()
     {
+        $this->hook->fire('print_categories_forums_start');
+
         // Get list of forums and topics with new posts since last visit
         if (!$this->user->is_guest) {
             $new_topics = $this->get_new_posts();
@@ -227,6 +235,8 @@ class index
     // Returns the elements needed to display stats
     public function collect_stats()
     {
+        $this->hook->fire('collect_stats_start');
+
         // Collect some statistics from the database
         if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
             include FORUM_CACHE_DIR.'cache_users_info.php';
@@ -266,6 +276,8 @@ class index
     // Returns the elements needed to display users online
     public function fetch_users_online()
     {
+        $this->hook->fire('fetch_users_online_start');
+
         // Fetch users online info and generate strings for output
         $online = array();
         $online['num_guests'] = 0;
