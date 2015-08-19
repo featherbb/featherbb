@@ -211,15 +211,11 @@ class FeatherBBLoader extends \Slim\Middleware
                                  'cookies.encrypt' => true,
                                  'cookies.secret_key' => $this->forum_settings['cookie_seed']));
 
-        // Get forum settings from DB/cache and load it into forum_settings array
-        if (file_exists($this->forum_env['FORUM_CACHE_DIR'].'cache_config.php')) {
-            include $this->forum_env['FORUM_CACHE_DIR'].'cache_config.php';
-        } else {
-            require $this->forum_env['FEATHER_ROOT'].'include/cache.php';
-            generate_config_cache();
-            require $this->forum_env['FORUM_CACHE_DIR'].'cache_config.php';
+        if (!$this->app->cache->isCached('config')) {
+            $this->app->cache->store('config', \model\cache::get_config());
         }
 
+        $feather_config = $this->app->cache->retrieve('config');
         // Finalize forum_settings array
         $this->forum_settings = array_merge($feather_config, $this->forum_settings);
 
