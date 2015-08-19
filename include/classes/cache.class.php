@@ -7,14 +7,17 @@
  * License: BSD http://www.opensource.org/licenses/bsd-license.php
  *
  * FeatherBB Cache class
- *
- * @version 1.6
+ * Usage : $cache = new \FeatherBB\Cache(array('name' => , 'path' =>, 'extension' =>));
  */
 
 namespace FeatherBB;
 
 class Cache
 {
+    /**
+     * @var array
+     */
+    protected $settings;
     /**
      * The path to the cache file folder
      *
@@ -44,17 +47,22 @@ class Cache
      * @param string|array [optional] $config
      * @return void
      */
-    public function __construct($config = null)
+    public function __construct($config = array())
     {
-        if (true === isset($config)) {
-            if (is_string($config)) {
-                $this->setCache($config);
-            } else if (is_array($config)) {
-                $this->setCache($config['name']);
-                $this->setCachePath($config['path']);
-                $this->setExtension($config['extension']);
-            }
+        if (!is_array($config)) {
+            $config = array('name' => (string) $config);
         }
+        $this->settings = array_merge(self::getDefaultSettings(), $config);
+        $this->setCache($this->settings['name']);
+        $this->setCachePath($this->settings['path']);
+        $this->setExtension($this->settings['extension']);
+    }
+
+    protected static function getDefaultSettings()
+    {
+        return array('name' => 'default',
+                     'path' => 'cache/',
+                     'extension' => '.cache');
     }
 
     /**
@@ -298,7 +306,7 @@ class Cache
      */
     public function setCachePath($path)
     {
-        $this->_cachepath = $path;
+        $this->settings['path'] = $path;
         return $this;
     }
 
@@ -309,7 +317,7 @@ class Cache
      */
     public function getCachePath()
     {
-        return $this->_cachepath;
+        return $this->settings['path'];
     }
 
     /**
@@ -320,7 +328,7 @@ class Cache
      */
     public function setCache($name)
     {
-        $this->_cachename = $name;
+        $this->settings['name'] = $name;
         return $this;
     }
 
@@ -331,7 +339,7 @@ class Cache
      */
     public function getCache()
     {
-        return $this->_cachename;
+        return $this->settings['path'];
     }
 
     /**
@@ -342,7 +350,7 @@ class Cache
      */
     public function setExtension($ext)
     {
-        $this->_extension = $ext;
+        $this->settings['extension']= $ext;
         return $this;
     }
 
@@ -353,7 +361,7 @@ class Cache
      */
     public function getExtension()
     {
-        return $this->_extension;
+        return $this->settings['extension'];
     }
 
 
