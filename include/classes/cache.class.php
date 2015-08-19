@@ -61,17 +61,14 @@ class Cache
      */
     public function isCached($key)
     {
-        if ($this->_loadCache()) {
-            $cachedData = $this->_loadCache();
-            $entry = $cachedData[$key];
-            if ($entry && true === $this->_checkExpired($entry['time'], $entry['expire'])) {
-                return false;
-            } else {
-                return isset($cachedData[$key]['data']);
+        if ($cachedData = $this->_loadCache()) {
+            if (isset($cachedData[$key])) {
+                if (!$this->_checkExpired($cachedData[$key]['time'], $cachedData[$key]['expire'])) {
+                    return true;
+                }
             }
-        } else {
-            return false; // If cache file doesn't exist or cache is empty, nothing is cached
         }
+        return false; // If cache file doesn't exist or cache is empty or key doesn't exist in array, key isn't cached
     }
 
     /**
