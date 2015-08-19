@@ -20,23 +20,23 @@ class Cache
      *
      * @var string
      */
-    private $_cachepath = 'cache/';
+    protected $_cachepath = 'cache/';
 
     /**
      * The name of the default cache file
      *
      * @var string
      */
-    private $_cachename = 'default';
+    protected $_cachename = 'default';
 
     /**
      * The cache file extension
      *
      * @var string
      */
-    private $_extension = '.cache';
+    protected $_extension = '.cache';
 
-    private $cache;
+    protected $cache;
 
     /**
      * Default constructor
