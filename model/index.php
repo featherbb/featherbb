@@ -95,7 +95,7 @@ class index
                     ->where_gt('last_post', $this->user->last_visit)
                     ->where_null('moved_to');
 
-                $query = $this->hook->fireDB('query_get_new_posts', $query);
+                $query = $this->hook->fireDB('get_new_posts_query', $query);
 
                 $query = $query->find_result_set();
 
