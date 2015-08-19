@@ -180,6 +180,7 @@ class FeatherBBLoader extends \Slim\Middleware
         $this->app->now = function () {
             return time();
         };
+        // Load cache feature
         $this->app->container->singleton('cache', function ($container) {
             $path = $container->forum_env['FORUM_CACHE_DIR'];
             return new \FeatherBB\Cache(array('name' => 'feather',

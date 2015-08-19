@@ -27,4 +27,11 @@ class cache
         }
         return $config;
     }
+
+    public static function get_bans()
+    {
+        return DB::for_table('bans')
+                ->find_array();
+    }
+
 }

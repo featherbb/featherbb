@@ -181,11 +181,7 @@ class FeatherBBAuth extends \Slim\Middleware
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_bans_cache();
+            $this->app->cache->store('bans', \model\cache::get_bans());
         }
     }
 
