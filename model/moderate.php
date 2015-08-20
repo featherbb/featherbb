@@ -20,24 +20,29 @@ class moderate
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
  
     public function display_ip_info($ip)
     {
+        $ip = $this->hook->fire('display_ip_info', $ip);
         message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function display_ip_address_post($pid)
     {
-
+        $pid = $this->hook->fire('display_ip_address_post_start', $pid);
 
         $ip = DB::for_table('posts')
-            ->where('id', $pid)
-            ->find_one_col('poster_ip');
+            ->where('id', $pid);
+        $ip = $this->hook->fireDB('display_ip_address_post_query', $pid);
+        $ip = $ip->find_one_col('poster_ip');
 
         if (!$ip) {
             message(__('Bad request'), '404');
         }
+
+        $ip = $this->hook->fire('display_ip_address_post', $ip);
 
         message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
@@ -45,34 +50,34 @@ class moderate
     public function get_moderators($fid)
     {
         $moderators = DB::for_table('forums')
-            ->where('id', $fid)
-            ->find_one_col('moderators');
+            ->where('id', $fid);
+        $moderators = $this->hook->fireDB('get_moderators', $moderators);
+        $moderators = $moderators->find_one_col('moderators');
 
         return $moderators;
     }
 
     public function get_topic_info($fid, $tid)
     {
-
-        
         // Fetch some info about the topic
-        $select_get_topic_info = array('forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id');
-        $where_get_topic_info = array(
+        $cur_topic['select'] = array('forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id');
+        $cur_topic['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         $cur_topic = DB::for_table('topics')
             ->table_alias('t')
-            ->select_many($select_get_topic_info)
+            ->select_many($cur_topic['select'])
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_topic_info)
+            ->where_any_is($cur_topic['where'])
             ->where('f.id', $fid)
             ->where('t.id', $tid)
-            ->where_null('t.moved_to')
-            ->find_one();
+            ->where_null('t.moved_to');
+        $cur_topic = $this->hook->fireDB('get_topic_info', $cur_topic);
+        $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
             message(__('Bad request'), '404');
@@ -83,8 +88,9 @@ class moderate
 
     public function delete_posts($tid, $fid, $p = null)
     {
-        
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
+        $posts = $this->hook->fire('delete_posts_start', $posts);
+
         if (empty($posts)) {
             message(__('No posts selected'));
         }
@@ -99,61 +105,68 @@ class moderate
 
             $result = DB::for_table('posts')
                 ->where_in('id', $posts_array)
-                ->where('topic_id', $tid)
-                ->find_many();
+                ->where('topic_id', $tid);
 
             if ($this->user->g_id != FEATHER_ADMIN) {
                 $result->where_not_in('poster_id', get_admin_ids());
             }
+
+            $result = $this->hook->fireDB('delete_posts_first_query', $result);
+            $result = $result->find_many();
 
             if (count($result) != substr_count($posts, ',') + 1) {
                 message(__('Bad request'), '404');
             }
 
             // Delete the posts
-            DB::for_table('posts')
-                ->where_in('id', $posts_array)
-                ->delete_many();
+            $delete_posts = DB::for_table('posts')
+                                ->where_in('id', $posts_array);
+            $delete_posts = $this->hook->fireDB('delete_posts_query', $delete_posts);
+            $delete_posts = $delete_posts->delete_many();
 
             require FEATHER_ROOT.'include/search_idx.php';
             strip_search_index($posts);
 
             // Get last_post, last_post_id, and last_poster for the topic after deletion
-            $select_last_post = array('id', 'poster', 'posted');
+            $last_post['select'] = array('id', 'poster', 'posted');
 
             $last_post = DB::for_table('posts')
-                ->select_many($select_last_post)
-                ->where('topic_id', $tid)
-                ->find_one();
+                ->select_many($last_post['select'])
+                ->where('topic_id', $tid);
+            $last_post = $this->hook->fireDB('delete_posts_last_post_query', $last_post);
+            $last_post = $last_post->find_one();
 
             // How many posts did we just delete?
             $num_posts_deleted = substr_count($posts, ',') + 1;
 
             // Update the topic
-            $update_topic = array(
+            $update_topic['insert'] = array(
                 'last_post' => $this->user->id,
                 'last_post_id'  => $last_post['id'],
                 'last_poster'  => $last_post['poster'],
             );
 
-            DB::for_table('topics')->where('id', $tid)
+            $update_topic = DB::for_table('topics')->where('id', $tid)
                 ->find_one()
-                ->set($update_topic)
-                ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted)
-                ->save();
+                ->set($update_topic['insert'])
+                ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted);
+            $update_topic = $this->hook->fireDB('delete_posts_update_topic_query', $update_topic);
+            $update_topic = $update_topic->save();
 
             update_forum($fid);
 
             redirect(get_link('topic/'.$tid.'/'), __('Delete posts redirect'));
         }
 
+        $posts = $this->hook->fire('delete_posts', $posts);
+
         return $posts;
     }
 
     public function split_posts($tid, $fid, $p = null)
     {
-        
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
+        $posts = $this->hook->fire('split_posts_start', $posts);
         if (empty($posts)) {
             message(__('No posts selected'));
         }
@@ -176,26 +189,30 @@ class moderate
 
             $result = DB::for_table('posts')
                 ->where_in('id', $posts_array)
-                ->where('topic_id', $tid)
-                ->find_many();
+                ->where('topic_id', $tid);
+            $result = $this->hook->fireDB('split_posts_first_query', $result);
+            $result = $result->find_many();
 
             if (count($result) != $num_posts_splitted) {
                 message(__('Bad request'), '404');
             }
 
+            unset($result);
+
             // Verify that the move to forum ID is valid
-            $where_split_posts = array(
+            $result['where'] = array(
                 array('fp.post_topics' => 'IS NULL'),
                 array('fp.post_topics' => '1')
             );
 
             $result = DB::for_table('forums')
-                ->table_alias('f')
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                ->where_any_is($where_split_posts)
-                ->where_null('f.redirect_url')
-                ->find_one();
+                        ->table_alias('f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($result['where'])
+                        ->where_null('f.redirect_url');
+            $result = $this->hook->fireDB('split_posts_second_query', $result);
+            $result = $result->find_one();
 
             if (!$result) {
                 message(__('Bad request'), '404');
@@ -220,7 +237,7 @@ class moderate
                 ->find_one();
 
             // Create the new topic
-            $insert_topic = array(
+            $topic['insert'] = array(
                 'poster' => $first_post_data['poster'],
                 'subject'  => $new_subject,
                 'posted'  => $first_post_data['posted'],
@@ -228,73 +245,81 @@ class moderate
                 'forum_id'  => $move_to_forum,
             );
 
-            DB::for_table('topics')
+            $topic = DB::for_table('topics')
                 ->create()
-                ->set($insert_topic)
-                ->save();
+                ->set($topic['insert']);
+            $topic = $this->hook->fireDB('split_posts_topic_query', $topic);
+            $topic = $topic->save();
 
             $new_tid = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
             // Move the posts to the new topic
-            DB::for_table('posts')->where_in('id', $posts_array)
+            $move_posts = DB::for_table('posts')->where_in('id', $posts_array)
                 ->find_one()
-                ->set('topic_id', $new_tid)
-                ->save();
+                ->set('topic_id', $new_tid);
+            $move_posts = $this->hook->fireDB('split_posts_move_query', $move_posts);
+            $move_posts = $move_posts->save();
 
             // Apply every subscription to both topics
             DB::for_table('topic_subscriptions')->raw_query('INSERT INTO '.$this->feather->forum_settings['db_prefix'].'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$this->feather->forum_settings['db_prefix'].'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
-            $select_last_post = array('id', 'poster', 'posted');
+            $last_old_post_data['select'] = array('id', 'poster', 'posted');
 
             $last_old_post_data = DB::for_table('posts')
-                ->select_many($select_last_post)
+                ->select_many($last_old_post_data['select'])
                 ->where('topic_id', $tid)
-                ->order_by_desc('id')
-                ->find_one();
+                ->order_by_desc('id');
+            $last_old_post_data = $this->hook->fireDB('split_posts_last_old_post_data_query', $last_old_post_data);
+            $last_old_post_data = $last_old_post_data->find_one();
 
             // Update the old topic
-            $update_old_topic = array(
+            $update_old_topic['insert'] = array(
                 'last_post' => $last_old_post_data['posted'],
                 'last_post_id'  => $last_old_post_data['id'],
                 'last_poster'  => $last_old_post_data['poster'],
             );
 
-            DB::for_table('topics')
-                ->where('id', $tid)
-                ->find_one()
-                ->set($update_old_topic)
-                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted)
-                ->save();
+            $update_old_topic = DB::for_table('topics')
+                                ->where('id', $tid)
+                                ->find_one()
+                                ->set($update_old_topic['insert'])
+                                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted);
+            $update_old_topic = $this->hook->fireDB('split_posts_update_old_topic_query', $update_old_topic);
+            $update_old_topic = $update_old_topic->save();
 
             // Get last_post, last_post_id, and last_poster from the new topic and update it
-            $select_new_post = array('id', 'poster', 'posted');
+            $last_new_post_data['select'] = array('id', 'poster', 'posted');
 
             $last_new_post_data = DB::for_table('posts')
-                ->select_many($select_new_post)
-                ->where('topic_id', $new_tid)
-                ->order_by_desc('id')
-                ->find_one();
+                                    ->select_many($last_new_post_data['select'])
+                                    ->where('topic_id', $new_tid)
+                                    ->order_by_desc('id');
+            $last_new_post_data = $this->hook->fireDB('split_posts_last_new_post_query', $last_new_post_data);
+            $last_new_post_data = $last_new_post_data->find_one();
 
             // Update the new topic
-            $update_new_topic = array(
+            $update_new_topic['insert'] = array(
                 'last_post' => $last_new_post_data['posted'],
                 'last_post_id'  => $last_new_post_data['id'],
                 'last_poster'  => $last_new_post_data['poster'],
             );
 
-            DB::for_table('topics')
+            $update_new_topic = DB::for_table('topics')
                 ->where('id', $new_tid)
                 ->find_one()
-                ->set($update_new_topic)
-                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted-1)
-                ->save();
+                ->set($update_new_topic['insert'])
+                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted-1);
+            $update_new_topic = $this->hook->fireDB('split_posts_update_new_topic_query', $update_new_topic);
+            $update_new_topic = $update_new_topic->save();
 
             update_forum($fid);
             update_forum($move_to_forum);
 
             redirect(get_link('topic/'.$new_tid.'/'), __('Split posts redirect'));
         }
+
+        $posts = $this->hook->fire('split_posts', $posts);
 
         return $posts;
     }
@@ -303,23 +328,24 @@ class moderate
     {
         $output = '';
 
-        $select_get_forum_list_split = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
-        $where_get_forum_list_split = array(
+        $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $result['where'] = array(
             array('fp.post_topics' => 'IS NULL'),
             array('fp.post_topics' => '1')
         );
         $order_by_get_forum_list_split = array('c.disp_position', 'c.id', 'f.disp_position');
 
         $result = DB::for_table('categories')
-            ->table_alias('c')
-            ->select_many($select_get_forum_list_split)
-            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_forum_list_split)
-            ->where_null('f.redirect_url')
-            ->order_by_many($order_by_get_forum_list_split)
-            ->find_result_set();
+                    ->table_alias('c')
+                    ->select_many($result['select'])
+                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                    ->where_any_is($result['where'])
+                    ->where_null('f.redirect_url')
+                    ->order_by_many($order_by_get_forum_list_split);
+        $result = $this->hook->fireDB('get_forum_list_split_query', $result);
+        $result = $result->find_result_set();
 
         $cur_category = 0;
 
@@ -338,6 +364,8 @@ class moderate
             $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'"'.($id == $cur_forum->fid ? ' selected="selected"' : '').'>'.feather_escape($cur_forum->forum_name).'</option>'."\n";
         }
 
+        $output = $this->hook->fire('get_forum_list_split', $output);
+
         return $output;
     }
 
@@ -353,15 +381,16 @@ class moderate
         $order_by_get_forum_list_move = array('c.disp_position', 'c.id', 'f.disp_position');
 
         $result = DB::for_table('categories')
-            ->table_alias('c')
-            ->select_many($select_get_forum_list_move)
-            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_forum_list_move)
-            ->where_null('f.redirect_url')
-            ->order_by_many($order_by_get_forum_list_move)
-            ->find_result_set();
+                    ->table_alias('c')
+                    ->select_many($select_get_forum_list_move)
+                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                    ->where_any_is($where_get_forum_list_move)
+                    ->where_null('f.redirect_url')
+                    ->order_by_many($order_by_get_forum_list_move);
+        $result = $this->hook->fireDB('get_forum_list_move_query', $result);
+        $result = $result->find_result_set();
 
         $cur_category = 0;
 
@@ -382,12 +411,16 @@ class moderate
             }
         }
 
+        $output = $this->hook->fire('get_forum_list_move', $output);
+
         return $output;
     }
 
     public function display_posts_view($tid, $start_from)
     {
         global $pd;
+
+        $this->hook->fire('display_posts_view_start');
 
         $post_data = array();
 
@@ -400,24 +433,26 @@ class moderate
             ->where('topic_id', $tid)
             ->order_by('id')
             ->limit($this->user->disp_posts)
-            ->offset($start_from)
-            ->find_many();
+            ->offset($start_from);
+        $find_ids = $this->hook->fireDB('display_posts_view_find_ids', $find_ids);
+        $find_ids = $find_ids->find_many();
 
         foreach ($find_ids as $id) {
             $post_ids[] = $id['id'];
         }
 
         // Retrieve the posts (and their respective poster)
-        $select_display_posts_view = array('u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by');
+        $result['select'] = array('u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by');
 
         $result = DB::for_table('posts')
-            ->table_alias('p')
-            ->select_many($select_display_posts_view)
-            ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
-            ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->where_in('p.id', $post_ids)
-            ->order_by('p.id')
-            ->find_many();
+                    ->table_alias('p')
+                    ->select_many($result['select'])
+                    ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->where_in('p.id', $post_ids)
+                    ->order_by('p.id');
+        $result = $this->hook->fireDB('display_posts_view_query', $result);
+        $result = $result->find_many();
 
         foreach($result as $cur_post) {
             $post_count++;
@@ -449,6 +484,8 @@ class moderate
 
             $post_data[] = $cur_post;
         }
+
+        $post_data = $this->hook->fire('display_posts_view', $post_data);
 
         return $post_data;
     }
@@ -545,7 +582,6 @@ class moderate
 
     public function check_move_possible()
     {
-        
         $select_check_move_possible = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
         $where_check_move_possible = array(
             array('fp.post_topics' => 'IS NULL'),
@@ -571,7 +607,6 @@ class moderate
 
     public function merge_topics($fid)
     {
-        
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message(__('Bad request'), '404');
         }
@@ -681,8 +716,6 @@ class moderate
 
     public function delete_topics($topics, $fid)
     {
-                
-
         if (@preg_match('%[^0-9,]%', $topics)) {
             message(__('Bad request'), '404');
         }
@@ -755,8 +788,6 @@ class moderate
 
     public function get_forum_info($fid)
     {
-
-
         $select_get_forum_info = array('f.forum_name', 'f.redirect_url', 'f.num_topics', 'f.sort_by');
         $where_get_forum_info = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -944,8 +975,6 @@ class moderate
     
     public function get_subject_tid($id)
     {
-
-
         $subject = DB::for_table('topics')
             ->where('id', $id)
             ->find_one_col('subject');
