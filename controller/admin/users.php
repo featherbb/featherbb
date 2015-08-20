@@ -48,9 +48,7 @@ class users
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
 
             generate_admin_menu('users');
 
@@ -73,9 +71,7 @@ class users
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
 
             generate_admin_menu('users');
 
@@ -99,9 +95,7 @@ class users
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
             $focus_element = array('bans2', 'ban_message');
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->setFocusElement($focus_element)->display();
 
             generate_admin_menu('users');
 
@@ -139,9 +133,7 @@ class users
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
             $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/js/common.js"></script>');
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
 
             $this->feather->render('admin/users/find_users.php', array(
                     'search' => $search,
@@ -160,9 +152,7 @@ class users
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'));
         $focus_element = array('find_user', 'form[username]');
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
 
         generate_admin_menu('users');
 
@@ -197,9 +187,7 @@ class users
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/search_ip.php', array(
                 'start_from'        =>  $start_from,
@@ -237,9 +225,7 @@ class users
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('admin/users/show_users.php', array(
                 'start_from'        =>  $start_from,

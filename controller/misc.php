@@ -29,7 +29,7 @@ class misc
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function rules()
     {
         if ($this->config['o_rules'] == '0' || ($this->user->is_guest && $this->user->g_read_board == '0' && $this->config['o_regs_allow'] == '0')) {
@@ -38,9 +38,7 @@ class misc
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Forum rules'));
 
-        $this->header->setTitle($page_title)->display();
-
-        define('FEATHER_ACTIVE_PAGE', 'rules');
+        $this->header->setTitle($page_title)->setActivePage('rules')->display();
 
         $this->feather->render('misc/rules.php', array(
                 'feather_config' => $this->config,
@@ -138,9 +136,7 @@ class misc
         $required_fields = array('req_subject' => __('Email subject'), 'req_message' => __('Email message'));
         $focus_element = array('email', 'req_subject');
 
-        define('FEATHER_ACTIVE_PAGE', 'email');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('email')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('misc/email.php', array(
                 'id' => $id,
@@ -172,9 +168,7 @@ class misc
         $required_fields = array('req_reason' => __('Reason'));
         $focus_element = array('report', 'req_reason');
 
-        define('FEATHER_ACTIVE_PAGE', 'report');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('report')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('misc/report.php', array(
                 'id' => $id,

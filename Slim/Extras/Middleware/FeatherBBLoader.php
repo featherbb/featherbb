@@ -33,7 +33,7 @@ class FeatherBBLoader extends \Slim\Middleware
         // Define some core variables
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
-        $this->forum_env['FORUM_CONFIG_FILE'] = is_file($this->forum_env['FEATHER_ROOT'].$data['config_file']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['config_file']) : null;
+        $this->forum_env['FORUM_CONFIG_FILE'] = $this->forum_env['FEATHER_ROOT'].$data['config_file'];
         $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all');
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
         // Populate forum_env
@@ -192,7 +192,7 @@ class FeatherBBLoader extends \Slim\Middleware
             return $this->app->response->setStatus(403); // Send forbidden header
         }
 
-        if (is_null($this->forum_env['FORUM_CONFIG_FILE'])) {
+        if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
             $installer = new \controller\install;
             $installer->run();
             return;

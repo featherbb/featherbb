@@ -29,7 +29,7 @@ class delete
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function deletepost($id)
     {
         global $pd;
@@ -72,9 +72,7 @@ class delete
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Delete post'));
 
-        define('FEATHER_ACTIVE_PAGE', 'delete');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('delete')->display();
 
         require FEATHER_ROOT.'include/parser.php';
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);

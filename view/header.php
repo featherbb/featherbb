@@ -75,7 +75,7 @@ endif;
 
 <body<?= $focus_element; ?>>
 
-<div id="pun<?php echo FEATHER_ACTIVE_PAGE ?>" class="pun">
+<div id="pun<?= $active_page ?>" class="pun">
 <div class="top-box"></div>
 <div class="punwrap">
 

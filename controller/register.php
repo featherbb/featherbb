@@ -30,11 +30,9 @@ class register
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
-        global $lang_antispam_questions, $lang_antispam;
-
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
@@ -54,8 +52,6 @@ class register
         $required_fields = array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title'));
         $focus_element = array('register', 'req_user');
 
-        define('FEATHER_ACTIVE_PAGE', 'register');
-
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $this->config['o_default_timezone'];
         $user['dst'] = isset($user['dst']) ? $user['dst'] : $this->config['o_default_dst'];
         $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : $this->config['o_default_email_setting'];
@@ -70,13 +66,11 @@ class register
             }
         }
 
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('register')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('register/form.php', array(
                             'errors' => $user['errors'],
                             'feather_config' => $this->config,
-                            'lang_antispam' => $lang_antispam,
-                            'lang_antispam_questions'    =>    $lang_antispam_questions,
                             'index_questions'    =>    $index_questions,
                             'feather'    =>    $this->feather,
                             'languages' => forum_list_langs(),
@@ -114,9 +108,7 @@ class register
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Register'), __('Forum rules'));
 
-        define('FEATHER_ACTIVE_PAGE', 'register');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('register')->display();
 
         $this->feather->render('register/rules.php', array(
                             'feather_config'    =>    $this->config,

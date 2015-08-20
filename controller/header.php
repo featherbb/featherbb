@@ -33,6 +33,8 @@ class header
 
     private $page_head;
 
+    private $active_page;
+
     public function setTitle($title)
     {
         $this->title = $title;
@@ -75,6 +77,13 @@ class header
         return $this;
     }
 
+    public function setActivePage($active_page)
+    {
+        $this->active_page = $active_page;
+
+        return $this;
+    }
+
     public function display()
     {
         if (!defined('FEATHER_HEADER')) {
@@ -104,6 +113,7 @@ class header
                 'feather_config' => $this->config,
                 '_SERVER' => $_SERVER,
                 'page_head' => $this->page_head,
+                'active_page' => $this->active_page,
                 'paging_links' => $this->paging_links,
                 'required_fields' => $this->required_fields,
                 'feather' => $this->feather,
@@ -119,28 +129,28 @@ class header
         $links = array();
 
         // Index should always be displayed
-        $links[] = '<li id="navindex"'.((FEATHER_ACTIVE_PAGE == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.__('Index').'</a></li>';
+        $links[] = '<li id="navindex"'.(($this->active_page == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.__('Index').'</a></li>';
 
         if ($this->user->g_read_board == '1' && $this->user->g_view_users == '1') {
-            $links[] = '<li id="navuserlist"'.((FEATHER_ACTIVE_PAGE == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.__('User list').'</a></li>';
+            $links[] = '<li id="navuserlist"'.(($this->active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.__('User list').'</a></li>';
         }
 
         if ($this->config['o_rules'] == '1' && (!$this->user->is_guest || $this->user->g_read_board == '1' || $this->config['o_regs_allow'] == '1')) {
-            $links[] = '<li id="navrules"'.((FEATHER_ACTIVE_PAGE == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.__('Rules').'</a></li>';
+            $links[] = '<li id="navrules"'.(($this->active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.__('Rules').'</a></li>';
         }
 
         if ($this->user->g_read_board == '1' && $this->user->g_search == '1') {
-            $links[] = '<li id="navsearch"'.((FEATHER_ACTIVE_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.__('Search').'</a></li>';
+            $links[] = '<li id="navsearch"'.(($this->active_page == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.__('Search').'</a></li>';
         }
 
         if ($this->user->is_guest) {
-            $links[] = '<li id="navregister"'.((FEATHER_ACTIVE_PAGE == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.__('Register').'</a></li>';
-            $links[] = '<li id="navlogin"'.((FEATHER_ACTIVE_PAGE == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.__('Login').'</a></li>';
+            $links[] = '<li id="navregister"'.(($this->active_page == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.__('Register').'</a></li>';
+            $links[] = '<li id="navlogin"'.(($this->active_page == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.__('Login').'</a></li>';
         } else {
-            $links[] = '<li id="navprofile"'.((FEATHER_ACTIVE_PAGE == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$this->user->id.'/').'">'.__('Profile').'</a></li>';
+            $links[] = '<li id="navprofile"'.(($this->active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$this->user->id.'/').'">'.__('Profile').'</a></li>';
 
             if ($this->user->is_admmod) {
-                $links[] = '<li id="navadmin"'.((FEATHER_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.__('Admin').'</a></li>';
+                $links[] = '<li id="navadmin"'.(($this->active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.__('Admin').'</a></li>';
             }
 
             $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$this->user->id.'/token/'.feather_hash($this->user->id.feather_hash(get_remote_address()))).'/">'.__('Logout').'</a></li>';

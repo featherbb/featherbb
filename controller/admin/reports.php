@@ -29,7 +29,7 @@ class reports
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if (!$this->user->is_admmod) {
@@ -45,9 +45,7 @@ class reports
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
         generate_admin_menu('reports');
 

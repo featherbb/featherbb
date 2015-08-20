@@ -29,7 +29,7 @@ class maintenance
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_id != FEATHER_ADMIN) {
@@ -66,9 +66,7 @@ class maintenance
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Prune'));
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
             generate_admin_menu('maintenance');
 
@@ -88,9 +86,7 @@ class maintenance
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
         generate_admin_menu('maintenance');
 
