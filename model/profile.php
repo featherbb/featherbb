@@ -21,7 +21,7 @@ class profile
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     public function change_pass($id)
     {
         if ($this->request->get('key')) {
@@ -372,14 +372,14 @@ class profile
             ->save();
 
         // Regenerate the users info cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
+        if (!$this->feather->cache->isCached('users_info')) {
+            $this->feather->cache->store('users_info', \model\cache::get_users_info());
         }
 
-        generate_users_info_cache();
+        $stats = $this->feather->cache->retrieve('users_info');
 
         if ($old_group_id == FEATHER_ADMIN || $new_group_id == FEATHER_ADMIN) {
-            generate_admins_cache();
+            $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
         }
 
         $new_group_mod = DB::for_table('groups')
@@ -505,7 +505,7 @@ class profile
             ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
             ->where('u.id', $id)
             ->find_one_col('g.g_promote_next_group');
-        
+
         if (!$next_group_id) {
             message(__('Bad request'), '404');
         }
@@ -515,7 +515,7 @@ class profile
             ->find_one()
             ->set('group_id', $next_group_id)
             ->save();
-        
+
         redirect(get_link('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
@@ -527,10 +527,10 @@ class profile
         $result = DB::for_table('users')->where('id', $id)
             ->select_many($select_info_delete_user)
             ->find_one();
-        
+
         $group_id = $result['group_id'];
         $username = $result['username'];
-        
+
         if ($group_id == FEATHER_ADMIN) {
             message(__('No delete admin message'));
         }
@@ -547,13 +547,13 @@ class profile
                 $result = DB::for_table('forums')
                     ->select_many($select_info_delete_moderators)
                     ->find_many();
-                
+
                 foreach($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
 
                     if (in_array($id, $cur_moderators)) {
                         unset($cur_moderators[$username]);
-                        
+
                         if (!empty($cur_moderators)) {
                             DB::for_table('forums')->where('id', $cur_forum['id'])
                                 ->find_one()
@@ -590,7 +590,7 @@ class profile
 
                 // Find all posts made by this user
                 $select_user_posts = array('p.id', 'p.topic_id', 't.forum_id');
-                
+
                 $result = DB::for_table('posts')
                     ->table_alias('p')
                     ->select_many($select_user_posts)
@@ -598,7 +598,7 @@ class profile
                     ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                     ->where('p.poster_id', $id)
                     ->find_many();
-                
+
                 if ($result) {
                     foreach($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
@@ -606,7 +606,7 @@ class profile
                             ->where('topic_id', $cur_post['topic_id'])
                             ->order_by('posted')
                             ->find_one_col('id');
-                        
+
                         if ($this->db->result($result2) == $cur_post['id']) {
                             delete_topic($cur_post['topic_id']);
                         } else {
@@ -632,14 +632,14 @@ class profile
             delete_avatar($id);
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
 
             if ($group_id == FEATHER_ADMIN) {
-                generate_admins_cache();
+                $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
             }
 
             redirect(get_base_url(), __('User delete redirect'));
@@ -651,7 +651,7 @@ class profile
 
 
         $info = array();
-        
+
         $select_fetch_user_group = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
 
         $info = DB::for_table('users')
@@ -968,15 +968,15 @@ class profile
             }
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bans_updated) {
-                generate_bans_cache();
+                $this->feather->cache->store('bans', \model\cache::get_bans());
             }
         }
 
@@ -1179,7 +1179,7 @@ class profile
                 $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
             }
         }
-        
+
         return $output;
     }
 
@@ -1219,7 +1219,7 @@ class profile
 
             $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.feather_escape($cur_forum['forum_name']).'<br /></label>'."\n";
         }
-        
+
         return $output;
     }
 

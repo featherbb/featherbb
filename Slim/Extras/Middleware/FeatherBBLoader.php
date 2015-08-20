@@ -46,6 +46,7 @@ class FeatherBBLoader extends \Slim\Middleware
         require $this->forum_env['FEATHER_ROOT'].'include/pomo/MO.php';
         require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
         require $this->forum_env['FEATHER_ROOT'].'include/idiorm.php';
+        require $this->forum_env['FEATHER_ROOT'].'include/classes/cache.class.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -171,15 +172,21 @@ class FeatherBBLoader extends \Slim\Middleware
         // Set headers
         $this->set_headers();
 
+        // Populate FeatherBB Slim object with forum_env vars
+        $this->hydrate('forum_env', $this->forum_env);
         // Record start time
         $this->app->start = get_microtime();
         // Define now var
         $this->app->now = function () {
             return time();
         };
-
-        // Populate FeatherBB Slim object with forum_env vars
-        $this->hydrate('forum_env', $this->forum_env);
+        // Load cache feature
+        $this->app->container->singleton('cache', function ($container) {
+            $path = $container->forum_env['FORUM_CACHE_DIR'];
+            return new \FeatherBB\Cache(array('name' => 'feather',
+                                               'path' => $path,
+                                               'extension' => '.cache'));
+        });
 
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
             return $this->app->response->setStatus(403); // Send forbidden header
@@ -205,15 +212,11 @@ class FeatherBBLoader extends \Slim\Middleware
                                  'cookies.encrypt' => true,
                                  'cookies.secret_key' => $this->forum_settings['cookie_seed']));
 
-        // Get forum settings from DB/cache and load it into forum_settings array
-        if (file_exists($this->forum_env['FORUM_CACHE_DIR'].'cache_config.php')) {
-            include $this->forum_env['FORUM_CACHE_DIR'].'cache_config.php';
-        } else {
-            require $this->forum_env['FEATHER_ROOT'].'include/cache.php';
-            generate_config_cache();
-            require $this->forum_env['FORUM_CACHE_DIR'].'cache_config.php';
+        if (!$this->app->cache->isCached('config')) {
+            $this->app->cache->store('config', \model\cache::get_config());
         }
 
+        $feather_config = $this->app->cache->retrieve('config');
         // Finalize forum_settings array
         $this->forum_settings = array_merge($feather_config, $this->forum_settings);
 

@@ -716,19 +716,11 @@ elseif ($action == 'online' || $action == 'online_full') {
 // Show board statistics
 elseif ($action == 'stats') {
 
-    // Collect some statistics from the database
-    if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
-        include FORUM_CACHE_DIR.'cache_users_info.php';
+    if (!$this->feather->cache->isCached('users_info')) {
+        $this->feather->cache->store('users_info', \model\cache::get_users_info());
     }
 
-    if (!defined('FEATHER_USERS_INFO_LOADED')) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_users_info_cache();
-        require FORUM_CACHE_DIR.'cache_users_info.php';
-    }
+    $stats = $this->feather->cache->retrieve('users_info');
 
     $stats_query = \DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')

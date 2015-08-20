@@ -21,7 +21,7 @@ class register
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     public function check_for_errors()
     {
         global $lang_register, $lang_antispam, $lang_antispam_questions;
@@ -155,11 +155,11 @@ class register
 
         if ($this->config['o_regs_verify'] == '0') {
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
         }
 
         // If the mailing list isn't empty, we may need to send out some alerts

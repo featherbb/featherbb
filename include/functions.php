@@ -74,20 +74,13 @@ function get_base_url($support_https = false)
 //
 function get_admin_ids()
 {
-    if (file_exists(FORUM_CACHE_DIR.'cache_admins.php')) {
-        include FORUM_CACHE_DIR.'cache_admins.php';
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    if (!$this->feather->cache->isCached('admin_ids')) {
+        $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
     }
 
-    if (!defined('FEATHER_ADMINS_LOADED')) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_admins_cache();
-        require FORUM_CACHE_DIR.'cache_admins.php';
-    }
-
-    return $feather_admins;
+    return $this->feather->cache->retrieve('admin_ids');
 }
 
 
@@ -426,27 +419,23 @@ function censor_words($text)
 {
     static $search_for, $replace_with;
 
-    // If not already built in a previous call, build an array of censor words and their replacement text
-    if (!isset($search_for)) {
-        if (file_exists(FORUM_CACHE_DIR.'cache_censoring.php')) {
-            include FORUM_CACHE_DIR.'cache_censoring.php';
-        }
+    $feather = \Slim\Slim::getInstance();
 
-        if (!defined('FEATHER_CENSOR_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_censoring_cache();
-            require FORUM_CACHE_DIR.'cache_censoring.php';
-        }
+    if (!$this->feather->cache->isCached('search_for')) {
+        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
+        $search_for = $this->feather->cache->retrieve('search_for');
     }
 
-    if (!empty($search_for)) {
-        $text = substr(ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+    if (!$this->feather->cache->isCached('replace_with')) {
+        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
+        $replace_with = $this->feather->cache->retrieve('replace_with');
     }
 
-    return $text;
+    if (!empty($search_for) && !empty($replace_with)) {
+        return substr(ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+    } else {
+        return $text;
+    }
 }
 
 
@@ -462,7 +451,6 @@ function get_title($user)
     // If not already built in a previous call, build an array of lowercase banned usernames
     if (empty($ban_list)) {
         $ban_list = array();
-
         foreach ($feather_bans as $cur_ban) {
             $ban_list[] = utf8_strtolower($cur_ban['username']);
         }
