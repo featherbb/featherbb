@@ -76,7 +76,7 @@ class Cache
      *
      * @param string $key
      * @param mixed $data
-     * @param integer [optional] $expiration Seconds to expire the cache
+     * @param integer [optional] $expiration seconds to expire the cache
      * @return object
      */
     public function store($key, $data, $expiration = 0)
