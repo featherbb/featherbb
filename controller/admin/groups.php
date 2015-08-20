@@ -29,7 +29,7 @@ class groups
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_id != FEATHER_ADMIN) {
@@ -47,9 +47,7 @@ class groups
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
         generate_admin_menu('groups');
 
@@ -92,9 +90,7 @@ class groups
 
                 $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups'));
 
-                define('FEATHER_ACTIVE_PAGE', 'admin');
-
-                $this->header->setTitle($page_title)->display();
+                $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
                 generate_admin_menu('groups');
 
@@ -110,9 +106,7 @@ class groups
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
         generate_admin_menu('groups');
 
@@ -146,9 +140,7 @@ class groups
             $required_fields = array('req_title' => __('Group title label'));
             $focus_element = array('groups2', 'req_title');
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
             generate_admin_menu('groups');
 

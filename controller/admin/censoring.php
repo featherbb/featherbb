@@ -29,7 +29,7 @@ class censoring
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_id != FEATHER_ADMIN) {
@@ -56,9 +56,7 @@ class censoring
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Censoring'));
         $focus_element = array('censoring', 'new_search_for');
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
 
         generate_admin_menu('censoring');
 

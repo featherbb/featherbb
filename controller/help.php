@@ -27,7 +27,7 @@ class help
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_read_board == '0') {
@@ -36,9 +36,7 @@ class help
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Help'));
 
-        define('FEATHER_ACTIVE_PAGE', 'help');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('help')->display();
 
         $this->feather->render('help.php');
 

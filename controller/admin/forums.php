@@ -139,9 +139,7 @@ class forums
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
             generate_admin_menu('forums');
 
@@ -181,9 +179,7 @@ class forums
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
             generate_admin_menu('forums');
 
@@ -229,9 +225,7 @@ class forums
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->display();
 
         generate_admin_menu('forums');
 

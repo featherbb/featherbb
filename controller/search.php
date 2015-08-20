@@ -30,7 +30,7 @@ class search
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         global $pd;
@@ -51,9 +51,7 @@ class search
                 if (isset($search['is_result'])) {
                     $page_title = array(feather_escape($this->config['o_board_title']), __('Search results'));
 
-                    define('FEATHER_ACTIVE_PAGE', 'search');
-
-                    $this->header->setTitle($page_title)->display();
+                    $this->header->setTitle($page_title)->setActivePage('search')->display();
 
                     $this->feather->render('search/header.php', array(
                                 'search' => $search,
@@ -80,9 +78,7 @@ class search
         $page_title = array(feather_escape($this->config['o_board_title']), __('Search'));
         $focus_element = array('search', 'keywords');
 
-        define('FEATHER_ACTIVE_PAGE', 'search');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('search')->setFocusElement($focus_element)->display();
 
         $this->feather->render('search/form.php', array(
                             'feather_config' => $this->config,

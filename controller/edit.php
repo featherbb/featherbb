@@ -31,7 +31,7 @@ class edit
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function editpost($id)
     {
         if ($this->user->g_read_board == '0') {
@@ -87,9 +87,7 @@ class edit
         $required_fields = array('req_subject' => __('Subject'), 'req_message' => __('Message'));
         $focus_element = array('edit', 'req_message');
 
-        define('FEATHER_ACTIVE_PAGE', 'edit');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('edit')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         if ($this->request->post('preview')) {
             require_once FEATHER_ROOT.'include/parser.php';

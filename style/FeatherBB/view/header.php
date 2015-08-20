@@ -75,7 +75,7 @@
     ?>
 </head>
 
-<body id="pun<?php echo FEATHER_ACTIVE_PAGE ?>"<?= $focus_element; ?>>
+<body id="pun<?= $active_page ?>"<?= $focus_element; ?>>
 
 <header>
 

@@ -29,7 +29,7 @@ class userlist
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_read_board == '0') {
@@ -64,9 +64,7 @@ class userlist
 
         define('FEATHER_ALLOW_INDEX', 1);
 
-        define('FEATHER_ACTIVE_PAGE', 'userlist');
-
-        $this->header->setTitle($page_title)->setPage($p)->setFocusElement($focus_element)->setPagingLinks($paging_links)->display();
+        $this->header->setTitle($page_title)->setActivePage('userlist')->setPage($p)->setFocusElement($focus_element)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('userlist.php', array(
                             'feather' => $this->feather,

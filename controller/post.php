@@ -40,8 +40,6 @@ class post
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        global $lang_antispam_questions, $lang_antispam;
-
         // Antispam feature
         require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
@@ -185,9 +183,7 @@ class post
             $focus_element[] = 'req_username';
         }
 
-        define('FEATHER_ACTIVE_PAGE', 'post');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('post')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         // Get the current state of checkboxes
         $checkboxes = $this->model->get_checkboxes($fid, $is_admmod, $is_subscribed);
