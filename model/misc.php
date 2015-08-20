@@ -20,24 +20,31 @@ class misc
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
  
     public function update_last_visit()
     {
-        DB::for_table('users')->where('id', $this->user->id)
-                                                  ->find_one()
-                                                  ->set('last_visit', $this->user->logged)
-                                                  ->save();
+        $this->hook->fire('update_last_visit_start');
+
+        $update_last_visit = DB::for_table('users')->where('id', $this->user->id)
+                                                   ->find_one()
+                                                   ->set('last_visit', $this->user->logged);
+        $update_last_visit = $this->hook->fireDB('update_last_visit', $update_last_visit);
+        $update_last_visit = $update_last_visit->save();
     }
 
     public function get_info_mail($recipient_id)
     {
-        $select_get_info_mail = array('username', 'email', 'email_setting');
+        $recipient_id = $this->hook->fire('get_info_mail_start', $recipient_id);
+
+        $mail['select'] = array('username', 'email', 'email_setting');
         
         $mail = DB::for_table('users')
-                ->select_many($select_get_info_mail)
-                ->where('id', $recipient_id)
-                ->find_one();
+                ->select_many($mail['select'])
+                ->where('id', $recipient_id);
+        $mail = $this->hook->fireDB('get_info_mail_query', $mail);
+        $mail = $mail->find_one();
         
         if (!$mail) {
             message(__('Bad request'), '404');
@@ -46,11 +53,15 @@ class misc
         $mail['recipient'] = $mail['username'];
         $mail['recipient_email'] = $mail['email'];
 
+        $mail = $this->hook->fireDB('get_info_mail', $mail);
+
         return $mail;
     }
 
-    public function send_email($mail, $id)
+    public function send_email($mail)
     {
+        $mail = $this->hook->fire('send_email_start', $mail);
+
         // Clean up message and subject from POST
         $subject = feather_trim($this->request->post('req_subject'));
         $message = feather_trim($this->request->post('req_message'));
@@ -71,6 +82,7 @@ class misc
 
         // Load the "form email" template
         $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = $this->hook->fire('send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
@@ -83,16 +95,19 @@ class misc
         $mail_message = str_replace('<mail_message>', $message, $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
+        $mail_message = $this->hook->fire('send_email_mail_message', $mail_message);
+
         require_once FEATHER_ROOT.'include/email.php';
 
         feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
-        DB::for_table('users')->where('id', $this->user->id)
+        $update_last_mail_sent = DB::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
-                                                  ->set('last_email_sent', time())
-                                                  ->save();
+                                                  ->set('last_email_sent', time());
+        $update_last_mail_sent = $this->hook->fireDB('send_email_update_last_mail_sent', $update_last_mail_sent);
+        $update_last_mail_sent = $update_last_mail_sent->save();
 
-        // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent)
+        // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
         //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
         redirect(get_base_url(), __('Email sent redirect'));
@@ -100,6 +115,8 @@ class misc
 
     public function get_redirect_url($recipient_id)
     {
+        $recipient_id = $this->hook->fire('get_redirect_url_start', $recipient_id);
+
         // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
         // TODO
         if ($this->request->getReferrer()) {
@@ -112,11 +129,15 @@ class misc
             $redirect_url .= '#p'.$matches[1];
         }
 
+        $redirect_url = $this->hook->fire('get_redirect_url', $redirect_url);
+
         return $redirect_url;
     }
 
     public function insert_report($post_id)
     {
+        $post_id = $this->hook->fire('insert_report_start', $post_id);
+
         // Clean up reason from POST
         $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));
         if ($reason == '') {
@@ -131,19 +152,20 @@ class misc
 
         // Get the topic ID
         $topic = DB::for_table('posts')->select('topic_id')
-                                                              ->where('id', $post_id)
-                                                              ->find_one();
+                                      ->where('id', $post_id);
+        $topic = $this->hook->fireDB('insert_report_topic_id', $topic);
+        $topic = $topic->find_one();
 
         if (!$topic) {
             message(__('Bad request'), '404');
         }
 
-        $select_report = array('subject', 'forum_id');
-
         // Get the subject and forum ID
-        $report = DB::for_table('topics')->select_many($select_report)
-            ->where('id', $topic['topic_id'])
-            ->find_one();
+        $report['select'] = array('subject', 'forum_id');
+        $report = DB::for_table('topics')->select_many($report['select'])
+                                        ->where('id', $topic['topic_id']);
+        $report = $this->hook->fireDB('insert_report_get_subject', $report);
+        $report = $report->find_one();
 
         if (!$report) {
             message(__('Bad request'), '404');
@@ -151,7 +173,9 @@ class misc
 
         // Should we use the internal report handling?
         if ($this->config['o_report_method'] == '0' || $this->config['o_report_method'] == '2') {
-            $insert_report = array(
+            
+            // Insert the report
+            $query['insert'] = array(
                 'post_id' => $post_id,
                 'topic_id'  => $topic['topic_id'],
                 'forum_id'  => $report['forum_id'],
@@ -159,12 +183,11 @@ class misc
                 'created'  => time(),
                 'message'  => $reason,
             );
-
-            // Insert the report
-            DB::for_table('reports')
+            $query = DB::for_table('reports')
                 ->create()
-                ->set($insert_report)
-                ->save();
+                ->set($query['insert']);
+            $query = $this->hook->fireDB('insert_report_query', $query);
+            $query = $query->save();
         }
 
         // Should we email the report?
@@ -173,6 +196,7 @@ class misc
             if ($this->config['o_mailing_list'] != '') {
                 // Load the "new report" template
                 $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
+                $mail_tpl = $this->hook->fire('insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -186,66 +210,77 @@ class misc
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
+                $mail_message = $this->hook->fire('insert_report_mail_message', $mail_message);
+
                 require FEATHER_ROOT.'include/email.php';
 
                 feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 
-        DB::for_table('users')->where('id', $this->user->id)
+        $last_report_sent = DB::for_table('users')->where('id', $this->user->id)
             ->find_one()
-            ->set('last_report_sent', time())
-            ->save();
+            ->set('last_report_sent', time());
+        $last_report_sent = $this->hook->fireDB('insert_last_report_sent', $last_report_sent);
+        $last_report_sent = $last_report_sent->save();
 
         redirect(get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['subject']).'/'), __('Report redirect'));
     }
 
     public function get_info_report($post_id)
     {
-        $select_get_info_report = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
-        $where_get_info_report = array(
+        $post_id = $this->hook->fire('get_info_report_start', $post_id);
+
+        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
+        $cur_post['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         $cur_post = DB::for_table('posts')
-            ->table_alias('p')
-            ->select_many($select_get_info_report)
-            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
-            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_info_report)
-            ->where('p.id', $post_id)
-            ->find_one();
+                        ->table_alias('p')
+                        ->select_many($cur_post['select'])
+                        ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+                        ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($cur_post['where'])
+                        ->where('p.id', $post_id);
+        $cur_post = $this->hook->fireDB('get_info_report_query', $cur_post);
+        $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
             message(__('Bad request'), '404');
         }
+
+        $cur_post = $this->hook->fire('get_info_report', $cur_post);
 
         return $cur_post;
     }
 
     public function subscribe_topic($topic_id)
     {
+        $topic_id = $this->hook->fire('subscribe_topic_start', $topic_id);
+
         if ($this->config['o_topic_subscriptions'] != '1') {
             message(__('No permission'), '403');
         }
 
         // Make sure the user can view the topic
-        $where_subscribe_topic = array(
+        $authorized['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         $authorized = DB::for_table('topics')
-                    ->table_alias('t')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                    ->where_any_is($where_subscribe_topic)
-                    ->where('t.id', $topic_id)
-                    ->where_null('t.moved_to')
-                    ->find_one();
+                            ->table_alias('t')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($authorized['where'])
+                            ->where('t.id', $topic_id)
+                            ->where_null('t.moved_to');
+        $authorized = $this->hook->fireDB('subscribe_topic_authorized_query', $authorized);
+        $authorized = $authorized->find_one();
 
         if (!$authorized) {
             message(__('Bad request'), '404');
@@ -253,94 +288,107 @@ class misc
 
         $is_subscribed = DB::for_table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
-                        ->where('topic_id', $topic_id)
-                        ->find_one();
+                        ->where('topic_id', $topic_id);
+        $is_subscribed = $this->hook->fireDB('subscribe_topic_is_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
 
         if ($is_subscribed) {
             message(__('Already subscribed topic'));
         }
 
-        $insert_subscribe_topic = array(
+        $subscription['insert'] = array(
             'user_id' => $this->user->id,
             'topic_id'  => $topic_id
         );
 
         // Insert the subscription
-        DB::for_table('topic_subscriptions')
-            ->create()
-            ->set($insert_subscribe_topic)
-            ->save();
+        $subscription = DB::for_table('topic_subscriptions')
+                                    ->create()
+                                    ->set($subscription['insert']);
+        $subscription = $this->hook->fireDB('subscribe_topic_query', $subscription);
+        $subscription = $subscription->save();
 
         redirect(get_link('topic/'.$topic_id.'/'), __('Subscribe redirect'));
     }
 
     public function unsubscribe_topic($topic_id)
     {
+        $topic_id = $this->hook->fire('unsubscribe_topic_start', $topic_id);
+
         if ($this->config['o_topic_subscriptions'] != '1') {
             message(__('No permission'), '403');
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
-            ->where('user_id', $this->user->id)
-            ->where('topic_id', $topic_id)
-            ->find_one();
+                            ->where('user_id', $this->user->id)
+                            ->where('topic_id', $topic_id);
+        $is_subscribed = $this->hook->fireDB('unsubscribe_topic_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
 
         if (!$is_subscribed) {
             message(__('Not subscribed topic'));
         }
 
         // Delete the subscription
-        DB::for_table('topic_subscriptions')
-            ->where('user_id', $this->user->id)
-            ->where('topic_id', $topic_id)
-            ->delete_many();
+        $delete = DB::for_table('topic_subscriptions')
+                    ->where('user_id', $this->user->id)
+                    ->where('topic_id', $topic_id);
+        $delete = $this->hook->fireDB('unsubscribe_topic_query', $delete);
+        $delete = $delete->delete_many();
 
         redirect(get_link('topic/'.$topic_id.'/'), __('Unsubscribe redirect'));
     }
 
     public function unsubscribe_forum($forum_id)
     {
+        $forum_id = $this->hook->fire('unsubscribe_forum_start', $forum_id);
+
         if ($this->config['o_forum_subscriptions'] != '1') {
             message(__('No permission'), '403');
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
-            ->where('forum_id', $forum_id)
-            ->find_one();
+            ->where('forum_id', $forum_id);
+        $is_subscribed = $this->hook->fireDB('unsubscribe_forum_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
 
         if (!$is_subscribed) {
             message(__('Not subscribed forum'));
         }
 
         // Delete the subscription
-        DB::for_table('forum_subscriptions')
+        $delete = DB::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
-            ->where('forum_id', $forum_id)
-            ->delete_many();
+            ->where('forum_id', $forum_id);
+        $delete = $this->hook->fireDB('unsubscribe_forum_query', $delete);
+        $delete = $delete->delete_many();
 
         redirect(get_link('forum/'.$forum_id.'/'), __('Unsubscribe redirect'));
     }
 
     public function subscribe_forum($forum_id)
     {
+        $forum_id = $this->hook->fire('subscribe_forum_start', $forum_id);
+
         if ($this->config['o_forum_subscriptions'] != '1') {
             message(__('No permission'), '403');
         }
 
         // Make sure the user can view the forum
-        $where_subscribe_forum = array(
+        $authorized['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         $authorized = DB::for_table('forums')
-            ->table_alias('f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_subscribe_forum)
-            ->where('f.id', $forum_id)
-            ->find_one();
+                        ->table_alias('f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($authorized['where'])
+                        ->where('f.id', $forum_id);
+        $authorized = $this->hook->fireDB('subscribe_forum_authorized_query', $authorized);
+        $authorized = $authorized->find_one();
 
         if (!$authorized) {
             message(__('Bad request'), '404');
@@ -348,23 +396,24 @@ class misc
 
         $is_subscribed = DB::for_table('forum_subscriptions')
             ->where('user_id', $this->user->id)
-            ->where('forum_id', $forum_id)
-            ->find_one();
+            ->where('forum_id', $forum_id);
+        $is_subscribed = $this->hook->fireDB('subscribe_forum_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
 
         if ($is_subscribed) {
             message(__('Already subscribed forum'));
         }
 
-        $insert_subscribe_forum = array(
+        // Insert the subscription
+        $subscription['insert'] = array(
             'user_id' => $this->user->id,
             'forum_id'  => $forum_id
         );
-
-        // Insert the subscription
-        DB::for_table('forum_subscriptions')
-            ->create()
-            ->set($insert_subscribe_forum)
-            ->save();
+        $subscription = DB::for_table('forum_subscriptions')
+                            ->create()
+                            ->set($subscription['insert']);
+        $subscription = $this->hook->fireDB('subscribe_forum_query', $subscription);
+        $subscription = $subscription->save();
 
         redirect(get_link('forum/'.$forum_id.'/'), __('Subscribe redirect'));
     }

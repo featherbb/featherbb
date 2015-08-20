@@ -184,6 +184,7 @@ class edit
         }
         
         // Update the post
+        unset($query);
         $query['update_post'] = array(
             'message' => $post['message'],
             'hide_smilies'  => $post['hide_smilies']
@@ -197,9 +198,7 @@ class edit
         $query = DB::for_table('posts')->where('id', $id)
                                        ->find_one()
                                        ->set($query['update_post']);
-
-        $query = $this->hook->fireDB('edit_post_can_edit_subject', $query);
-
+        $query = $this->hook->fireDB('edit_post_query', $query);
         $query = $query->save();
     }
 

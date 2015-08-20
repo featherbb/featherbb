@@ -25,7 +25,7 @@ class delete
  
     public function get_info_delete($id)
     {
-        $this->hook->fire('get_info_delete_start');
+        $id = $this->hook->fire('get_info_delete_start', $id);
 
         $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $query['where'] = array(
