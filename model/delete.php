@@ -56,7 +56,7 @@ class delete
 
     public function handle_deletion($is_topic_post, $id, $tid, $fid)
     {
-        $this->hook->fire('handle_deletion_start');
+        $this->hook->fire('handle_deletion_start', $is_topic_post, $id, $tid, $fid);
 
         require FEATHER_ROOT.'include/search_idx.php';
 

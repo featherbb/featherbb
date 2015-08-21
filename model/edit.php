@@ -26,7 +26,7 @@ class edit
     // Fetch some info about the post, the topic and the forum
     public function get_info_edit($id)
     {
-        $this->hook->fire('get_info_edit_start');
+        $id = $this->hook->fire('get_info_edit_start', $id);
 
         $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $cur_post['where'] = array(
@@ -59,7 +59,7 @@ class edit
     {
         global $pd;
 
-        $this->hook->fire('check_errors_before_edit_start');
+        $errors = $this->hook->fire('check_errors_before_edit_start', $errors);
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
@@ -204,7 +204,7 @@ class edit
 
     public function get_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
     {
-        $this->hook->fire('get_checkboxes_start');
+        $this->hook->fire('get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
 
         $checkboxes = array();
 

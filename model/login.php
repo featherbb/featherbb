@@ -87,11 +87,7 @@ class login
 
     public function logout($id, $token)
     {
-        $hook['id'] = $id;
-        $hook['token'] = $token;
-        $hook = $this->hook->fire('logout_start', $hook);
-        $id = $hook['id'];
-        $token = $hook['token'];
+        $token = $this->hook->fire('logout_start', $token, $id);
 
         if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash(get_remote_address()))) {
             header('Location: '.get_base_url());

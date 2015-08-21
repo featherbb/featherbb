@@ -50,7 +50,7 @@ class moderate
     public function get_moderators($fid)
     {
         $moderators = DB::for_table('forums')
-            ->where('id', $fid);
+                        ->where('id', $fid);
         $moderators = $this->hook->fireDB('get_moderators', $moderators);
         $moderators = $moderators->find_one_col('moderators');
 
@@ -89,7 +89,7 @@ class moderate
     public function delete_posts($tid, $fid, $p = null)
     {
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
-        $posts = $this->hook->fire('delete_posts_start', $posts);
+        $posts = $this->hook->fire('delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
             message(__('No posts selected'));
@@ -166,7 +166,7 @@ class moderate
     public function split_posts($tid, $fid, $p = null)
     {
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
-        $posts = $this->hook->fire('split_posts_start', $posts);
+        $posts = $this->hook->fire('split_posts_start', $posts, $tid, $fid);
         if (empty($posts)) {
             message(__('No posts selected'));
         }
@@ -420,7 +420,7 @@ class moderate
     {
         global $pd;
 
-        $this->hook->fire('display_posts_view_start');
+        $this->hook->fire('display_posts_view_start', $tid, $start_from);
 
         $post_data = array();
 
@@ -876,7 +876,7 @@ class moderate
 
     public function display_topics($fid, $sort_by, $start_from)
     {
-        $this->hook->fire('display_topics_start');
+        $this->hook->fire('display_topics_start', $fid, $sort_by, $start_from);
 
         $topic_data = array();
 
