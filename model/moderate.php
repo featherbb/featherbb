@@ -492,6 +492,7 @@ class moderate
 
     public function move_topics_to($fid, $tfid = null, $param = null)
     {
+        $fid = $this->hook->fire('move_topics_to_start', $fid);
         
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message(__('Bad request'), '404');
@@ -505,9 +506,10 @@ class moderate
 
         // Verify that the topic IDs are valid
         $result = DB::for_table('topics')
-            ->where_in('id', $topics)
-            ->where('forum_id', $fid)
-            ->find_many();
+                    ->where_in('id', $topics)
+                    ->where('forum_id', $fid);
+        $result = $this->hook->fireDB('move_topics_to_topic_valid', $result);
+        $result = $result->find_many();
 
         if (count($result) != count($topics)) {
             message(__('Bad request'), '404');
@@ -515,47 +517,51 @@ class moderate
 
 
         // Verify that the move to forum ID is valid
-        $where_move_topics_to = array(
+        $authorized['where'] = array(
             array('fp.post_topics' => 'IS NULL'),
             array('fp.post_topics' => '1')
         );
 
         $authorized = DB::for_table('forums')
-            ->table_alias('f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_move_topics_to)
-            ->where_null('f.redirect_url')
-            ->find_one();
+                        ->table_alias('f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($authorized['where'])
+                        ->where_null('f.redirect_url');
+        $authorized = $this->hook->fireDB('move_topics_to_authorized', $authorized);
+        $authorized = $authorized->find_one();
 
         if (!$authorized) {
             message(__('Bad request'), '404');
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
-        DB::for_table('topics')
-            ->where('forum_id', $move_to_forum)
-            ->where_in('moved_to', $topics)
-            ->delete_many();
+        $delete_redirect = DB::for_table('topics')
+                                ->where('forum_id', $move_to_forum)
+                                ->where_in('moved_to', $topics);
+        $delete_redirect = $this->hook->fireDB('move_topics_to_delete_redirect', $delete_redirect);
+        $delete_redirect = $delete_redirect->delete_many();
 
         // Move the topic(s)
-        DB::for_table('topics')->where_in('id', $topics)
-            ->find_one()
-            ->set('forum_id', $move_to_forum)
-            ->save();
+        $move_topics = DB::for_table('topics')->where_in('id', $topics)
+                        ->find_one()
+                        ->set('forum_id', $move_to_forum);
+        $move_topics = $this->hook->fireDB('move_topics_to_query', $move_topics);
+        $move_topics = $move_topics->save();
 
         // Should we create redirect topics?
         if ($this->request->post('with_redirect')) {
             foreach ($topics as $cur_topic) {
                 // Fetch info for the redirect topic
-                $select_move_topics_to = array('poster', 'subject', 'posted', 'last_post');
+                $moved_to['select'] = array('poster', 'subject', 'posted', 'last_post');
 
-                $moved_to = DB::for_table('topics')->select_many($select_move_topics_to)
-                    ->where('id', $cur_topic)
-                    ->find_one();
+                $moved_to = DB::for_table('topics')->select_many($moved_to['select'])
+                                ->where('id', $cur_topic);
+                $moved_to = $this->hook->fireDB('move_topics_to_fetch_redirect', $moved_to);
+                $moved_to = $moved_to->find_one();
 
                 // Create the redirect topic
-                $insert_move_topics_to = array(
+                $move_topics_to['insert'] = array(
                     'poster' => $moved_to['poster'],
                     'subject'  => $moved_to['subject'],
                     'posted'  => $moved_to['posted'],
@@ -565,10 +571,11 @@ class moderate
                 );
 
                 // Insert the report
-                DB::for_table('topics')
-                    ->create()
-                    ->set($insert_move_topics_to)
-                    ->save();
+                $move_topics_to = DB::for_table('topics')
+                                    ->create()
+                                    ->set($move_topics_to['insert']);
+                $move_topics_to = $this->hook->fireDB('move_topics_to_redirect', $move_topics_to);
+                $move_topics_to = $move_topics_to->save();
 
             }
         }
@@ -577,28 +584,32 @@ class moderate
         update_forum($move_to_forum); // Update the forum TO which the topic was moved
 
         $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
+        $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
         redirect(get_link('forum/'.$move_to_forum.'/'), $redirect_msg);
     }
 
     public function check_move_possible()
     {
-        $select_check_move_possible = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
-        $where_check_move_possible = array(
+        $this->hook->fire('check_move_possible_start');
+
+        $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $result['where'] = array(
             array('fp.post_topics' => 'IS NULL'),
             array('fp.post_topics' => '1')
         );
-        $order_by_check_move_possible = array('c.disp_position', 'c.id', 'f.disp_position');
+        $result['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
 
         $result = DB::for_table('categories')
-            ->table_alias('c')
-            ->select_many($select_check_move_possible)
-            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_check_move_possible)
-            ->where_null('f.redirect_url')
-            ->order_by_many($order_by_check_move_possible)
-            ->find_many();
+                    ->table_alias('c')
+                    ->select_many($result['select'])
+                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                    ->where_any_is($result['where'])
+                    ->where_null('f.redirect_url')
+                    ->order_by_many($result['order_by']);
+        $result = $this->hook->fireDB('check_move_possible');
+        $result = $result->find_many();
 
         if (count($result) < 2) {
             message(__('Nowhere to move'));
@@ -607,6 +618,8 @@ class moderate
 
     public function merge_topics($fid)
     {
+        $fid = $this->hook->fire('merge_topics_start', $fid);
+
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message(__('Bad request'), '404');
         }
@@ -618,9 +631,10 @@ class moderate
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
         $result = DB::for_table('topics')
-            ->where_in('id', $topics)
-            ->where('forum_id', $fid)
-            ->find_many();
+                    ->where_in('id', $topics)
+                    ->where('forum_id', $fid);
+        $result = $this->hook->fireDB('merge_topics_topic_ids', $result);
+        $result = $result->find_many();
 
         if (count($result) != count($topics)) {
             message(__('Bad request'), '404');
@@ -628,10 +642,11 @@ class moderate
 
         // The topic that we are merging into is the one with the smallest ID
         $merge_to_tid = DB::for_table('topics')
-            ->where_in('id', $topics)
-            ->where('forum_id', $fid)
-            ->order_by_asc('id')
-            ->find_one_col('id');
+                            ->where_in('id', $topics)
+                            ->where('forum_id', $fid)
+                            ->order_by_asc('id')
+                            ->find_one_col('id');
+        $merge_to_tid = $this->hook->fire('merge_topics_tid', $merge_to_tid);
 
         // Make any redirect topics point to our new, merged topic
         $query = 'UPDATE '.$this->feather->forum_settings['db_prefix'].'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
@@ -645,69 +660,80 @@ class moderate
         DB::for_table('topics')->raw_execute($query);
 
         // Merge the posts into the topic
-        DB::for_table('posts')
-            ->where_in('topic_id', $topics)
-            ->update_many('topic_id', $merge_to_tid);
+        $merge_posts = DB::for_table('posts')
+                        ->where_in('topic_id', $topics);
+        $merge_posts = $this->hook->fireDB('merge_topics_merge_posts', $merge_posts);
+        $merge_posts = $merge_posts->update_many('topic_id', $merge_to_tid);
 
         // Update any subscriptions
         $find_ids = DB::for_table('topic_subscriptions')->select('user_id')
-            ->distinct()
-            ->where_in('topic_id', $topics)
-            ->find_many();
+                        ->distinct()
+                        ->where_in('topic_id', $topics);
+        $find_ids = $this->hook->fireDB('merge_topics_find_ids', $find_ids);
+        $find_ids = $find_ids->find_many();
 
         foreach ($find_ids as $id) {
             $subscribed_users[] = $id['user_id'];
         }
 
         // Delete the subscriptions
-        DB::for_table('topic_subscriptions')
-            ->where_in('topic_id', $topics)
-            ->delete_many();
+        $delete_subscriptions = DB::for_table('topic_subscriptions')
+                                    ->where_in('topic_id', $topics);
+        $delete_subscriptions = $this->hook->fireDB('merge_topics_delete_subscriptions', $delete_subscriptions);
+        $delete_subscriptions = $delete_subscriptions->delete_many();
 
         foreach ($subscribed_users as $cur_user_id) {
-            $insert_topic_subscription = array(
+            $subscriptions['insert'] = array(
                 'topic_id'  =>  $merge_to_tid,
                 'user_id'   =>  $cur_user_id,
             );
             // Insert the subscription
-            DB::for_table('topic_subscriptions')
-                ->create()
-                ->set($insert_topic_subscription)
-                ->save();
+            $subscriptions = DB::for_table('topic_subscriptions')
+                                ->create()
+                                ->set($subscriptions['insert']);
+            $subscriptions = $this->hook->fireDB('merge_topics_insert_subscriptions', $subscriptions);
+            $subscriptions = $subscriptions->save();
         }
 
         // Without redirection the old topics are removed
         if ($this->request->post('with_redirect') == 0) {
-            DB::for_table('topics')
-                ->where_in('id', $topics)
-                ->where_not_equal('id', $merge_to_tid)
-                ->delete_many();
+            $delete_topics = DB::for_table('topics')
+                                ->where_in('id', $topics)
+                                ->where_not_equal('id', $merge_to_tid);
+            $delete_topics = $this->hook->fireDB('merge_topics_delete_topics', $delete_topics);
+            $delete_topics = $delete_topics->delete_many();
         }
 
         // Count number of replies in the topic
         $num_replies = DB::for_table('posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
+        $num_replies = $this->hook->fire('merge_topics_num_replies', $num_replies);
 
         // Get last_post, last_post_id and last_poster
-        $select_last_post = array('posted', 'id', 'poster');
+        $last_post['select'] = array('posted', 'id', 'poster');
 
-        $last_post = DB::for_table('posts')->select_many($select_last_post)
-            ->where('topic_id', $merge_to_tid)
-            ->order_by_desc('id')
-            ->find_one();
+        $last_post = DB::for_table('posts')
+                        ->select_many($last_post['select'])
+                        ->where('topic_id', $merge_to_tid)
+                        ->order_by_desc('id');
+        $last_post = $this->hook->fireDB('merge_topics_last_post', $last_post);
+        $last_post = $last_post->find_one();
 
         // Update topic
-        $insert_topic = array(
+        $update_topic['insert'] = array(
             'num_replies' => $num_replies,
             'last_post'  => $last_post['posted'],
             'last_post_id'  => $last_post['id'],
             'last_poster'  => $last_post['poster'],
         );
 
-        DB::for_table('topics')
-            ->where('id', $merge_to_tid)
-            ->find_one()
-            ->set($insert_topic)
-            ->save();
+        $topic = DB::for_table('topics')
+                    ->where('id', $merge_to_tid)
+                    ->find_one()
+                    ->set($update_topic['insert']);
+        $topic = $this->hook->fireDB('merge_topics_update_topic', $topic);
+        $topic = $topic->save();
+
+        $this->hook->fire('merge_topics');
 
         // Update the forum FROM which the topic was moved and redirect
         update_forum($fid);
@@ -716,6 +742,8 @@ class moderate
 
     public function delete_topics($topics, $fid)
     {
+        $this->hook->fire('delete_topics');
+
         if (@preg_match('%[^0-9,]%', $topics)) {
             message(__('Bad request'), '404');
         }
