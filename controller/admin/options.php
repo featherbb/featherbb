@@ -36,15 +36,13 @@ class options
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if ($this->feather->request->isPost()) {
             $this->model->update_options();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Options'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('options');
 

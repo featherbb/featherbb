@@ -36,8 +36,6 @@ class reports
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         // Zap a report
         if ($this->feather->request->isPost()) {
             $this->model->zap_report();
@@ -45,7 +43,7 @@ class reports
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('reports');
 

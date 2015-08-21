@@ -135,11 +135,9 @@ class forums
 
         } else {
 
-            define('FEATHER_ADMIN_CONSOLE', 1);
-
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-            $this->header->setTitle($page_title)->setActivePage('admin')->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
             generate_admin_menu('forums');
 
@@ -162,8 +160,6 @@ class forums
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
@@ -179,7 +175,7 @@ class forums
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-            $this->header->setTitle($page_title)->setActivePage('admin')->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
             generate_admin_menu('forums');
 
@@ -217,15 +213,13 @@ class forums
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if ($this->request->post('update_positions')) {
             $this->edit_positions();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('forums');
 

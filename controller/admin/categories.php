@@ -106,11 +106,9 @@ class categories
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('categories');
 

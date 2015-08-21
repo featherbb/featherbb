@@ -35,8 +35,6 @@ class plugins
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         // The plugin to load should be supplied via GET
         $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : '';
         if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin)) {
@@ -61,7 +59,7 @@ class plugins
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4)));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         // Attempt to load the plugin. We don't use @ here to suppress error messages,
         // because if we did and a parse error occurred in the plugin, we would only

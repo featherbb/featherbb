@@ -36,8 +36,6 @@ class permissions
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         // Update permissions
         if ($this->feather->request->isPost()) {
             $this->model->update_permissions();
@@ -45,7 +43,7 @@ class permissions
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('permissions');
 

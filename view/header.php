@@ -15,17 +15,9 @@
 <title><?php echo generate_page_title($page_title, $p) ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
 <?php
-if (!defined('FEATHER_ALLOW_INDEX')) {
-    echo '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />'."\n";
-}
 
-if (defined('FEATHER_ADMIN_CONSOLE')) {
-    if (file_exists(FEATHER_ROOT.'style/'.$feather->user->style.'/base_admin.css')) {
-        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather->user->style.'/base_admin.css" />'."\n";
-    } else {
-        echo '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
-    }
-}
+echo $allow_index;
+echo $admin_console;
 
 if (isset($required_fields)) :
     // Output JavaScript to validate form (make sure required fields are filled out)

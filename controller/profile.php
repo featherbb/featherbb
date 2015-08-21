@@ -114,9 +114,8 @@ class profile
                 $user_info = $this->model->parse_user_info($user);
 
             $page_title = array(feather_escape($this->config['o_board_title']), sprintf(__('Users profile'), feather_escape($user['username'])));
-            define('FEATHER_ALLOW_INDEX', 1);
 
-            $this->header->setTitle($page_title)->setActivePage('profile')->display();
+            $this->header->setTitle($page_title)->setActivePage('profile')->allowIndex()->display();
 
             $this->feather->render('profile/view_profile.php', array(
                         'user_info' => $user_info,
