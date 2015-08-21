@@ -141,14 +141,14 @@ class moderate
         if ($action == 'open') {
             $this->model->open_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
+            redirect(get_link('topic/'.$id.'/'), __('Open topic redirect'));
         }
 
         // Close a topic
         if ($action == 'close') {
             $this->model->close_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
+            redirect(get_link('topic/'.$id.'/'), __('Close topic redirect'));
         }
 
         $cur_topic = $this->model->get_topic_info($fid, $id);

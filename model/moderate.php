@@ -754,9 +754,10 @@ class moderate
 
         // Verify that the topic IDs are valid
         $result = DB::for_table('topics')
-            ->where_in('id', $topics_sql)
-            ->where('forum_id', $fid)
-            ->find_many();
+                    ->where_in('id', $topics_sql)
+                    ->where('forum_id', $fid);
+        $result = $this->hook->fireDB('delete_topics_verify_id', $result);
+        $result = $result->find_many();
 
         if (count($result) != substr_count($topics, ',') + 1) {
             message(__('Bad request'), '404');
@@ -765,33 +766,39 @@ class moderate
         // Verify that the posts are not by admins
         if ($this->user->g_id != FEATHER_ADMIN) {
             $authorized = DB::for_table('posts')
-                ->where_in('topic_id', $topics_sql)
-                ->where('poster_id', get_admin_ids())
-                ->find_many();
+                            ->where_in('topic_id', $topics_sql)
+                            ->where('poster_id', get_admin_ids());
+            $authorized = $this->hook->fireDB('delete_topics_authorized', $authorized);
+            $authorized = $authorized->find_many();
             if ($authorized) {
                 message(__('No permission'), '403');
             }
         }
 
         // Delete the topics
-        DB::for_table('topics')
-            ->where_in('id', $topics_sql)
-            ->delete_many();
+        $delete_topics = DB::for_table('topics')
+                            ->where_in('id', $topics_sql);
+        $delete_topics = $this->hook->fireDB('delete_topics_query', $delete_topics);
+        $delete_topics = $delete_topics->delete_many();
 
         // Delete any redirect topics
-        DB::for_table('topics')
-            ->where_in('moved_to', $topics_sql)
-            ->delete_many();
+        $delete_redirect_topics = DB::for_table('topics')
+                                    ->where_in('moved_to', $topics_sql);
+        $delete_redirect_topics = $this->hook->fireDB('delete_topics_redirect', $delete_redirect_topics);
+        $delete_redirect_topics = $delete_redirect_topics->delete_many();
 
         // Delete any subscriptions
-        DB::for_table('topic_subscriptions')
-            ->where_in('topic_id', $topics_sql)
-            ->delete_many();
+        $delete_subscriptions = DB::for_table('topic_subscriptions')
+                                    ->where_in('topic_id', $topics_sql);
+        $delete_subscriptions = $this->hook->fireDB('delete_topics_subscriptions', $delete_subscriptions);
+        $delete_subscriptions = $delete_subscriptions->delete_many();
 
         // Create a list of the post IDs in this topic and then strip the search index
-        $find_ids = DB::for_table('posts')->select('id')
-            ->where_in('topic_id', $topics_sql)
-            ->find_many();
+        $find_ids = DB::for_table('posts')
+                        ->select('id')
+                        ->where_in('topic_id', $topics_sql);
+        $find_ids = $this->hook->fireDB('delete_topics_find_ids', $find_ids);
+        $find_ids = $find_ids->find_many();
 
         foreach ($find_ids as $id) {
             $ids_post[] = $id['id'];
@@ -805,31 +812,35 @@ class moderate
         }
 
         // Delete posts
-        DB::for_table('posts')
-            ->where_in('topic_id', $topics_sql)
-            ->delete_many();
+        $delete_posts = DB::for_table('posts')
+                            ->where_in('topic_id', $topics_sql);
+        $delete_posts = $this->hook->fireDB('delete_topics_delete_posts', $delete_posts);
+        $delete_posts = $delete_posts->delete_many();
 
         update_forum($fid);
+
+        $this->hook->fire('delete_topics');
 
         redirect(get_link('forum/'.$fid.'/'), __('Delete topics redirect'));
     }
 
     public function get_forum_info($fid)
     {
-        $select_get_forum_info = array('f.forum_name', 'f.redirect_url', 'f.num_topics', 'f.sort_by');
-        $where_get_forum_info = array(
+        $cur_forum['select'] = array('f.forum_name', 'f.redirect_url', 'f.num_topics', 'f.sort_by');
+        $cur_forum['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         $cur_forum = DB::for_table('forums')
-            ->table_alias('f')
-            ->select_many($select_get_forum_info)
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-            ->where_any_is($where_get_forum_info)
-            ->where('f.id', $fid)
-            ->find_one();
+                        ->table_alias('f')
+                        ->select_many($cur_forum['select'])
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($cur_forum['where'])
+                        ->where('f.id', $fid);
+        $cur_forum = $this->hook->fireDB('get_forum_info', $cur_forum);
+        $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
             message(__('Bad request'), '404');
@@ -841,6 +852,8 @@ class moderate
 
     public function forum_sort_by($forum_sort)
     {
+        $forum_sort = $this->hook->fire('forum_sort_by_start', $forum_sort);
+
         switch ($forum_sort) {
             case 0:
                 $sort_by = 'last_post DESC';
@@ -856,11 +869,15 @@ class moderate
                 break;
         }
 
+        $sort_by = $this->hook->fire('forum_sort_by', $sort_by);
+
         return $sort_by;
     }
 
     public function display_topics($fid, $sort_by, $start_from)
     {
+        $this->hook->fire('display_topics_start');
+
         $topic_data = array();
 
         // Get topic/forum tracking data
@@ -870,11 +887,12 @@ class moderate
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
         $result = DB::for_table('topics')->select('id')
-            ->where('forum_id', $fid)
-            ->order_by_expr('sticky DESC, '.$sort_by)
-            ->limit($this->user->disp_topics)
-            ->offset($start_from)
-            ->find_many();
+                    ->where('forum_id', $fid)
+                    ->order_by_expr('sticky DESC, '.$sort_by)
+                    ->limit($this->user->disp_topics)
+                    ->offset($start_from);
+        $result = $this->hook->fireDB('display_topics_list_ids', $result);
+        $result = $result->find_many();
 
         // If there are topics in this forum
         if ($result) {
@@ -883,14 +901,16 @@ class moderate
                 $topic_ids[] = $id['id'];
             }
 
+            unset($result);
             // Select topics
-            $select_display_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
-
-            // TODO: order_by_expr && result_set
-            $result = DB::for_table('topics')->select_many($select_display_topics)
-                ->where_in('id', $topic_ids)
-                ->order_by_expr('sticky DESC, '.$sort_by.', id DESC')
-                ->find_many();
+            $result['select'] = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
+            $result = DB::for_table('topics')->select_many($result['select'])
+                        ->where_in('id', $topic_ids)
+                        ->order_by_desc('sticky')
+                        ->order_by_expr($sort_by)
+                        ->order_by_desc('id');
+            $result = $this->hook->fireDB('display_topics_query', $result);
+            $result = $result->find_many();
 
             $topic_count = 0;
             foreach($result as $cur_topic) {
@@ -959,53 +979,69 @@ class moderate
             }
         }
 
+        $topic_data = $this->hook->fire('display_topics', $topic_data);
+
         return $topic_data;
     }
     
     public function stick_topic($id, $fid)
     {
-        DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
-            ->find_one()
-            ->set('sticky', 1)
-            ->save();
+        $stick_topic = DB::for_table('topics')
+                            ->where('id', $id)
+                            ->where('forum_id', $fid)
+                            ->find_one()
+                            ->set('sticky', 1);
+        $stick_topic = $this->hook->fireDB('stick_topic', $stick_topic);
+        $stick_topic = $stick_topic->save();
     }
 
     public function unstick_topic($id, $fid)
     {
-        DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
+        $unstick_topic = DB::for_table('topics')
+            ->where('id', $id)
+            ->where('forum_id', $fid)
             ->find_one()
-            ->set('sticky', 0)
-            ->save();
+            ->set('sticky', 0);
+        $unstick_topic = $this->hook->fireDB('unstick_topic', $unstick_topic);
+        $unstick_topic = $unstick_topic->save();
     }
     
     public function open_topic($id, $fid)
     {
-        DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
-            ->find_one()
-            ->set('closed', 0)
-            ->save();
+        $open_topic = DB::for_table('topics')
+                        ->where('id', $id)
+                        ->where('forum_id', $fid)
+                        ->find_one()
+                        ->set('closed', 0);
+        $open_topic = $this->hook->fireDB('open_topic', $open_topic);
+        $open_topic = $open_topic->save();
     }
     
     public function close_topic($id, $fid)
     {
-        DB::for_table('topics')->where('id', $id)->where('forum_id', $fid)
-            ->find_one()
-            ->set('closed', 1)
-            ->save();
+        $close_topic = DB::for_table('topics')
+                        ->where('id', $id)
+                        ->where('forum_id', $fid)
+                        ->find_one()
+                        ->set('closed', 1);
+        $close_topic = $this->hook->fireDB('close_topic', $close_topic);
+        $close_topic = $close_topic->save();
     }
     
     public function close_multiple_topics($action, $topics, $fid)
     {
-        DB::for_table('topics')
-            ->where_in('id', $topics)
-            ->update_many('closed', $action);
+        $close_multiple_topics = DB::for_table('topics')
+                                    ->where_in('id', $topics);
+        $close_multiple_topics = $this->hook->fireDB('open_topic', $close_multiple_topics);
+        $close_multiple_topics = $close_multiple_topics->update_many('closed', $action);
     }
     
     public function get_subject_tid($id)
     {
         $subject = DB::for_table('topics')
-            ->where('id', $id)
-            ->find_one_col('subject');
+                    ->where('id', $id);
+        $subject = $this->hook->fireDB('get_subject_tid', $subject);
+        $subject = $subject->find_one_col('subject');
 
         if (!$subject) {
             message(__('Bad request'), '404');
