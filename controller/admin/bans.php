@@ -32,8 +32,6 @@ class bans
 
     public function display()
     {
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
@@ -53,7 +51,7 @@ class bans
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head'));
 
-            $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->enableAdminConsole()->display();
 
             $ban_data = $this->model->find_ban($start_from);
 
@@ -68,7 +66,7 @@ class bans
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
         $focus_element = array('bans', 'new_ban_user');
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
 
         generate_admin_menu('bans');
 
@@ -79,8 +77,6 @@ class bans
 
     public function add($id = null)
     {
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
@@ -92,7 +88,7 @@ class bans
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
         $focus_element = array('bans2', 'ban_user');
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
 
         generate_admin_menu('bans');
 
@@ -116,8 +112,6 @@ class bans
 
     public function edit($id)
     {
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             message(__('No permission'), '403');
         }
@@ -129,7 +123,7 @@ class bans
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
         $focus_element = array('bans2', 'ban_user');
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
 
         generate_admin_menu('bans');
 

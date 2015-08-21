@@ -36,8 +36,6 @@ class maintenance
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         $action = '';
         if ($this->request->post('action')) {
             $action = $this->request->post('action');
@@ -66,7 +64,7 @@ class maintenance
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Prune'));
 
-            $this->header->setTitle($page_title)->setActivePage('admin')->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
             generate_admin_menu('maintenance');
 
@@ -86,7 +84,7 @@ class maintenance
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('maintenance');
 

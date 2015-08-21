@@ -36,8 +36,6 @@ class groups
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         $groups = $this->model->fetch_groups();
 
         // Set default group
@@ -47,7 +45,7 @@ class groups
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('groups');
 
@@ -66,8 +64,6 @@ class groups
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
-
-        define('FEATHER_ADMIN_CONSOLE', 1);
 
         if ($id < 5) {
             message(__('Bad request'), '404');
@@ -106,7 +102,7 @@ class groups
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('groups');
 
@@ -125,8 +121,6 @@ class groups
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         $groups = $this->model->fetch_groups();
 
         // Add/edit a group (stage 2)
@@ -140,7 +134,7 @@ class groups
             $required_fields = array('req_title' => __('Group title label'));
             $focus_element = array('groups2', 'req_title');
 
-            $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->setRequiredFields($required_fields)->enableAdminConsole()->display();
 
             generate_admin_menu('groups');
 

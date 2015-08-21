@@ -36,8 +36,6 @@ class censoring
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         // Add a censor word
         if ($this->request->post('add_word')) {
             $this->model->add_word();
@@ -56,7 +54,7 @@ class censoring
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Censoring'));
         $focus_element = array('censoring', 'new_search_for');
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
 
         generate_admin_menu('censoring');
 

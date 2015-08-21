@@ -35,6 +35,10 @@ class header
 
     private $active_page;
 
+    private $admin_console;
+
+    private $allow_index;
+
     public function setTitle($title)
     {
         $this->title = $title;
@@ -84,6 +88,20 @@ class header
         return $this;
     }
 
+    public function enableAdminConsole()
+    {
+        $this->admin_console = true;
+
+        return $this;
+    }
+
+    public function allowIndex()
+    {
+        $this->allow_index = true;
+
+        return $this;
+    }
+
     public function display()
     {
         if (!defined('FEATHER_HEADER')) {
@@ -103,6 +121,10 @@ class header
 
         $navlinks = $this->getNavlinks();
         $page_info = $this->getStatus();
+        $admin_console = $this->getAdminConsole();
+
+        // Show the robots meta only if enabled
+        $allow_index = ($this->allow_index === true) ? '' : '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />'."\n";
 
         $focus_element = isset($this->focus_element) ? ' onload="document.getElementById(\''.$this->focus_element[0].'\').elements[\''.$this->focus_element[1].'\'].focus();"' : '';
 
@@ -120,6 +142,8 @@ class header
                 'focus_element' => $focus_element,
                 'navlinks' => $navlinks,
                 'page_info' => $page_info,
+                'admin_console' => $admin_console,
+                'allow_index' => $allow_index,
             )
         );
     }
@@ -228,5 +252,18 @@ class header
         $page_info .= "\n\t\t\t".'<div class="clearer"></div>'."\n\t\t".'</div>';
 
         return $page_info;
+    }
+
+    protected function getAdminConsole()
+    {
+        if ($this->admin_console === true) {
+            if (file_exists(FEATHER_ROOT.'style/'.$this->user->style.'/base_admin.css')) {
+                return '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$this->user->style.'/base_admin.css" />'."\n";
+            } else {
+                return '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
+            }
+        } else {
+            return '';
+        }
     }
 }

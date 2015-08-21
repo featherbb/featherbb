@@ -50,8 +50,6 @@ class index
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
@@ -84,7 +82,7 @@ class index
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Index'));
 
-        $this->header->setTitle($page_title)->setActivePage('admin')->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('index');
 

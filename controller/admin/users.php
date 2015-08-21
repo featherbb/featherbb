@@ -22,6 +22,7 @@ class users
         $this->footer = new \controller\footer();
         $this->model = new \model\admin\users();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/users.mo');
+        $this->header->enableAdminConsole();
         require FEATHER_ROOT . 'include/common_admin.php';
     }
 
@@ -32,8 +33,6 @@ class users
 
     public function display()
     {
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
@@ -167,8 +166,6 @@ class users
     // Show IP statistics for a certain user ID
     public function ipstats($id)
     {
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
@@ -201,8 +198,6 @@ class users
     // Show IP statistics for a certain user IP
     public function showusers($ip)
     {
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }

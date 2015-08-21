@@ -36,9 +36,8 @@ class index
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']));
-        define('FEATHER_ALLOW_INDEX', 1);
 
-        $this->header->setTitle($page_title)->setActivePage('index')->display();
+        $this->header->setTitle($page_title)->setActivePage('index')->allowIndex()->display();
 
         $this->feather->render('index.php', array(
                             'index_data' => $this->model->print_categories_forums(),
