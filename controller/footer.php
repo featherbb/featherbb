@@ -39,6 +39,10 @@ class footer
 
         $num_pages = isset($num_pages) ? $num_pages : null;
 
+        if (!$this->feather->cache->isCached('quickjump')) {
+            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+        }
+
         $this->feather->render('footer.php', array(
                             'id' => $id,
                             'p' => $p,
@@ -47,12 +51,13 @@ class footer
                             'feather_config' => $this->config,
                             'feather_start' => $this->start,
                             'footer_style' => $footer_style,
+                            'quickjump' => $this->feather->cache->retrieve('quickjump'),
                             'forum_id' => $forum_id,
                             'num_pages' => $num_pages,
                             'feather' => $this->feather,
                             )
                     );
-        
+
         // Close Idiorm connection
         $pdo = \DB::get_db();
         $pdo = null;

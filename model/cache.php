@@ -71,4 +71,47 @@ class cache
                 ->find_array();
     }
 
+    public static function get_quickjump()
+    {
+        $select_quickjump = array('g_id', 'g_read_board');
+        $read_perms = DB::for_table('groups')
+                        ->select_many($select_quickjump)
+                        ->where('g_read_board', 1)
+                        ->find_array();
+
+        $output = array();
+        foreach ($read_perms as $item) {
+            $select_quickjump = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
+            $where_quickjump = array(
+                array('fp.read_forum' => 'IS NULL'),
+                array('fp.read_forum' => '1')
+            );
+            $order_by_quickjump = array('c.disp_position', 'c.id', 'f.disp_position');
+
+            $result = DB::for_table('categories')
+                        ->table_alias('c')
+                        ->select_many($select_quickjump)
+                        ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $item['g_id']), null, true)
+                        ->where_any_is($where_quickjump)
+                        ->where_null('f.redirect_url')
+                        ->order_by_many($order_by_quickjump)
+                        ->find_many();
+
+            $forum_data = array();
+            foreach ($result as $forum) {
+                if (!isset($forum_data[$forum['cid']])) {
+                    $forum_data[$forum['cid']] = array('cat_name' => $forum['cat_name'],
+                                                       'cat_position' => $forum['cat_position'],
+                                                       'cat_forums' => array());
+                }
+                $forum_data[$forum['cid']]['cat_forums'][] = array('forum_id' => $forum['fid'],
+                                                                   'forum_name' => $forum['forum_name'],
+                                                                   'position' => $forum['forum_position']);
+            }
+            $output[(int) $item['g_id']] = $forum_data;
+        }
+        return $output;
+    }
 }

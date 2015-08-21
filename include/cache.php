@@ -7,86 +7,6 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-
-//
-// Generate quick jump cache PHP scripts
-//
-function generate_quickjump_cache($group_id = false)
-{
-
-
-    $groups = array();
-
-    // If a group_id was supplied, we generate the quick jump cache for that group only
-    if ($group_id !== false) {
-        // Is this group even allowed to read forums?
-        $read_board = \DB::for_table('groups')->where('g_id', $group_id)
-                            ->find_one_col('g_read_board');
-
-        $groups[$group_id] = $read_board;
-    } else {
-        // A group_id was not supplied, so we generate the quick jump cache for all groups
-        $select_quickjump_all_groups = array('g_id', 'g_read_board');
-        $result = \DB::for_table('groups')->select_many($select_quickjump_all_groups)
-                        ->find_many();
-
-        foreach ($result as $row) {
-            $groups[$row['g_id']] = $row['g_read_board'];
-        }
-    }
-
-    // Loop through the groups in $groups and output the cache for each of them
-    foreach ($groups as $group_id => $read_board) {
-        // Output quick jump as PHP code
-        $output = '<?php'."\n\n".'if (!defined(\'FEATHER\')) exit;'."\n".'define(\'FEATHER_QJ_LOADED\', 1);'."\n".'$forum_id = isset($forum_id) ? $forum_id : 0;'."\n\n".'?>';
-
-        if ($read_board == '1') {
-            $select_generate_quickjump_cache = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
-            $where_generate_quickjump_cache = array(
-                array('fp.read_forum' => 'IS NULL'),
-                array('fp.read_forum' => '1')
-            );
-            $order_by_generate_quickjump_cache = array('c.disp_position', 'c.id', 'f.disp_position');
-
-            $result = \DB::for_table('categories')
-                            ->table_alias('c')
-                            ->select_many($select_generate_quickjump_cache)
-                            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $group_id), null, true)
-                            ->where_any_is($where_generate_quickjump_cache)
-                            ->where_null('f.redirect_url')
-                            ->order_by_many($order_by_generate_quickjump_cache)
-                            ->find_many();
-
-            if ($result) {
-                $output .= "\t\t\t\t".'<form id="qjump" method="get" action="">'."\n\t\t\t\t\t".'<div><label><span><?php _e(\'Jump to\') ?>'.'<br /></span>'."\n\t\t\t\t\t".'<select name="id" onchange="window.location=(\''.get_link('forum/').'\'+this.options[this.selectedIndex].value)">'."\n";
-
-                $cur_category = 0;
-                foreach ($result as $cur_forum) {
-                    if ($cur_forum['cid'] != $cur_category) {
-                        // A new category since last iteration?
-
-                        if ($cur_category) {
-                            $output .= "\t\t\t\t\t\t".'</optgroup>'."\n";
-                        }
-
-                        $output .= "\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cur_forum['cat_name']).'">'."\n";
-                        $cur_category = $cur_forum['cid'];
-                    }
-
-                    $redirect_tag = ($cur_forum['redirect_url'] != '') ? ' &gt;&gt;&gt;' : '';
-                    $output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'/'.url_friendly($cur_forum['forum_name']).'/'.'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.feather_escape($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
-                }
-
-                $output .= "\t\t\t\t\t\t".'</optgroup>'."\n\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t".'<noscript><input type="submit" value="<?php _e(\'Go\') ?>" accesskey="g" /></noscript>'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
-            }
-        }
-
-        featherbb_write_cache_file('cache_quickjump_'.$group_id.'.php', $output);
-    }
-}
-
 //
 // Generate a cache ID based on the last modification time for all stopwords files
 //
@@ -134,51 +54,6 @@ function generate_stopwords_cache()
     // Output stopwords as PHP code
     $content = '<?php'."\n\n".'$cache_id = \''.generate_stopwords_cache_id().'\';'."\n".'if ($cache_id != generate_stopwords_cache_id()) return;'."\n\n".'define(\'FEATHER_STOPWORDS_LOADED\', 1);'."\n\n".'$stopwords = '.var_export($stopwords, true).';'."\n\n".'?>';
     featherbb_write_cache_file('cache_stopwords.php', $content);
-}
-
-
-//
-// Load some information about the latest registered users
-//
-function generate_users_info_cache()
-{
-    $stats = array();
-
-    $stats['total_users'] = (\DB::for_table('users')->where_not_equal('group_id', FEATHER_UNVERIFIED)
-                                ->count('id')) - 1;
-
-    $select_generate_users_info_cache = array('id', 'username');
-    $last_user = \DB::for_table('users')->select_many($select_generate_users_info_cache)
-                        ->where_not_equal('group_id', FEATHER_UNVERIFIED)
-                        ->order_by_desc('registered')
-                        ->limit(1)
-                        ->find_array();
-    $stats['last_user'] = $last_user[0];
-
-    // Output users info as PHP code
-    $content = '<?php'."\n\n".'define(\'FEATHER_USERS_INFO_LOADED\', 1);'."\n\n".'$stats = '.var_export($stats, true).';'."\n\n".'?>';
-    featherbb_write_cache_file('cache_users_info.php', $content);
-}
-
-
-//
-// Generate the admins cache PHP script
-//
-function generate_admins_cache()
-{
-    // Get admins from the DB
-    $result = \DB::for_table('users')->select('id')
-                    ->where('group_id', FEATHER_ADMIN)
-                    ->find_array();
-
-    $output = array();
-    foreach ($result as $row) {
-        $output[] = $row['id'];
-    }
-
-    // Output admin list as PHP code
-    $content = '<?php'."\n\n".'define(\'FEATHER_ADMINS_LOADED\', 1);'."\n\n".'$feather_admins = '.var_export($output, true).';'."\n\n".'?>';
-    featherbb_write_cache_file('cache_admins.php', $content);
 }
 
 
