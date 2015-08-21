@@ -21,7 +21,7 @@ class groups
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     public function fetch_groups()
     {
         $result = DB::for_table('groups')->order_by('g_id')->find_many();
@@ -225,13 +225,7 @@ class groups
         }
 
         // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        $group_id = $this->request->post('mode') == 'add' ? $new_group_id : $this->request->post('group_id');
-
-        generate_quickjump_cache($group_id);
+        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
             redirect(get_link('admin/groups/'), __('Group edited redirect'));

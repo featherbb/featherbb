@@ -60,30 +60,29 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
 
 ?>
 		<div id="brdfooternav" class="inbox">
+
 <?php
-
-echo "\t\t\t".'<div class="conl">'."\n";
-
 // Display the "Jump to" drop list
-if ($feather_config['o_quickjump'] == '1') {
-    // Load cached quick jump
-    if (file_exists(FORUM_CACHE_DIR.'cache_quickjump_'.$feather->user->g_id.'.php')) {
-        include FORUM_CACHE_DIR.'cache_quickjump_'.$feather->user->g_id.'.php';
-    }
+if ($feather_config['o_quickjump'] == '1' && !empty($quickjump)) { ?>
+			<div class="conl">
+			<form id="qjump" method="get" action="">
+				<div><label><span><?php _e('Jump to') ?><br /></span></label>
+					<select name="id" onchange="window.location=('<?php echo get_link('forum/') ?>'+this.options[this.selectedIndex].value)">
+<?php
+		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
+			echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cat_data['cat_name']).'">'."\n";
+			foreach ($cat_data['cat_forums'] as $forum) {
+				echo "\t\t\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.url_friendly($forum['forum_name']).'"'.($forum_id == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+			}
+			echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
+		} ?>
+					</select>
+					<noscript><input type="submit" value="<?php _e('Go') ?>" accesskey="g" /></noscript>
+				</div>
+			</form>
+			</div>
+<?php } ?>
 
-    if (!defined('FEATHER_QJ_LOADED')) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_quickjump_cache($feather->user->g_id);
-        require FORUM_CACHE_DIR.'cache_quickjump_'.$feather->user->g_id.'.php';
-    }
-}
-
-echo "\t\t\t".'</div>'."\n";
-
-?>
 			<div class="conr">
 <?php
 

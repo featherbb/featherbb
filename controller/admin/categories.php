@@ -69,10 +69,7 @@ class categories
         }
 
         // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-        generate_quickjump_cache();
+        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         redirect(get_link('admin/categories/'), __('Categories updated redirect'));
     }

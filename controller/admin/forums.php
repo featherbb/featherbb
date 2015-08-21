@@ -48,12 +48,7 @@ class forums
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_quickjump_cache();
-
+            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
             redirect(get_link('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
         } else {
             redirect(get_link('admin/forums/'), __('Unable to add forum'));
@@ -114,10 +109,7 @@ class forums
                 }
 
                 // Regenerate the quick jump cache
-                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'include/cache.php';
-                }
-                generate_quickjump_cache();
+                $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
                 redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
 
@@ -125,10 +117,7 @@ class forums
                 $this->model->delete_permissions($forum_id);
 
                 // Regenerate the quick jump cache
-                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'include/cache.php';
-                }
-                generate_quickjump_cache();
+                $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
                 redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
             }
@@ -163,11 +152,7 @@ class forums
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_quickjump_cache();
+            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
             redirect(get_link('admin/forums/'), __('Forum deleted redirect'));
 
@@ -198,11 +183,7 @@ class forums
         }
 
         // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_quickjump_cache();
+        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         redirect(get_link('admin/forums/'), __('Forums updated redirect'));
     }
