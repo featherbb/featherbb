@@ -291,6 +291,7 @@ class FeatherBBAuth extends \Slim\Middleware
 
         // Configure Slim
         $this->app->config('templates.path', $this->app->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
+        var_dump($this->app->view->getTemplatePathname('header.php'));
         $this->next->call();
     }
 }
