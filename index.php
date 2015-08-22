@@ -17,17 +17,19 @@ ini_set('display_errors', 1);
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
-// Instantiate Slim
+// Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
+$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf'));
+
+// Load FeatherBB
+require 'include/classes/autoload.class.php';
+\FeatherBB\Loader::registerAutoloader();
+
 $feather_settings = array('config_file' => 'include/config.php',
                           'cache_dir' => 'cache/',
                           'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
-
-// Load middlewares
-$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
-$feather->add(new \Slim\Extras\Middleware\FeatherBBAuth());
-$feather->add(new \Slim\Extras\Middleware\FeatherBBLoader($feather_settings)); // FeatherBB
- // FeatherBB
+$feather->add(new \FeatherBB\Auth());
+$feather->add(new \FeatherBB\Core($feather_settings));
 
 // Load the routes
 require 'include/routes.php';

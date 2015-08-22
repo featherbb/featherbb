@@ -11,10 +11,10 @@
  *
  */
 
-namespace Slim\Extras\Middleware;
+namespace FeatherBB;
 use DB;
 
-class FeatherBBAuth extends \Slim\Middleware
+class Auth extends \Slim\Middleware
 {
     protected $model;
 
