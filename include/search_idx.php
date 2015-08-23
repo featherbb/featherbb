@@ -83,24 +83,19 @@ function validate_search_word($word, $idx)
 {
     static $stopwords;
 
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
     // If the word is a keyword we don't want to index it, but we do want to be allowed to search it
     if (is_keyword($word)) {
         return !$idx;
     }
 
     if (!isset($stopwords)) {
-        if (file_exists(FORUM_CACHE_DIR.'cache_stopwords.php')) {
-            include FORUM_CACHE_DIR.'cache_stopwords.php';
+        if (!$feather->cache->isCached('stopwords')) {
+            $feather->cache->store('stopwords', \model\cache::get_config(), '+1 week');
         }
-
-        if (!defined('FEATHER_STOPWORDS_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_stopwords_cache();
-            require FORUM_CACHE_DIR.'cache_stopwords.php';
-        }
+        $stopwords = $feather->cache->retrieve('stopwords');
     }
 
     // If it is a stopword it isn't valid

@@ -716,11 +716,11 @@ elseif ($action == 'online' || $action == 'online_full') {
 // Show board statistics
 elseif ($action == 'stats') {
 
-    if (!$this->feather->cache->isCached('users_info')) {
-        $this->feather->cache->store('users_info', \model\cache::get_users_info());
+    if (!$feather->cache->isCached('users_info')) {
+        $feather->cache->store('users_info', \model\cache::get_users_info());
     }
 
-    $stats = $this->feather->cache->retrieve('users_info');
+    $stats = $feather->cache->retrieve('users_info');
 
     $stats_query = \DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
