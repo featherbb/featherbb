@@ -177,9 +177,10 @@ class login
                             'last_email_sent' => time()
                         );
 
-                        $query = DB::for_table('users')->where('id', $cur_hit->id)
-                            ->find_one()
-                            ->set($query['update']);
+                        $query = DB::for_table('users')
+                                    ->where('id', $cur_hit->id)
+                                    ->find_one()
+                                    ->set($query['update']);
                         $query = $this->hook->fireDB('password_forgotten_mail_query', $query);
                         $query = $query->save();
 
