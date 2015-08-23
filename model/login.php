@@ -20,38 +20,31 @@ class login
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function login()
     {
+        $this->hook->fire('login_start');
+
         $form_username = feather_trim($this->request->post('req_username'));
         $form_password = feather_trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
 
-        $user = DB::for_table('users')->where('username', $form_username)->find_one();
+        $user = DB::for_table('users')->where('username', $form_username);
+
+        $user = $this->hook->fireDB('find_user_login', $user);
+
+        $user = $user->find_one();
 
         $authorized = false;
 
         if (!empty($user->password)) {
             $form_password_hash = feather_hash($form_password); // Will result in a SHA-1 hash
-
-            // If the length isn't 40 then the password isn't using sha1, so it must be md5 from 1.2
-            // Maybe this should be removed
-            if (strlen($user->password) != 40) {
-                if (md5($form_password) == $user->password) {
-                    $authorized = true;
-
-                    DB::for_table('users')->where('id', $user->id)
-                                                              ->find_one()
-                                                              ->set('password', $form_password_hash)
-                                                              ->save();
-                }
-            }
-            // Otherwise we should have a normal sha1 password
-            else {
-                $authorized = ($user->password == $form_password_hash);
-            }
+            $authorized = ($user->password == $form_password_hash);
         }
+
+        $authorized = $this->hook->fire('authorized_login', $authorized);
 
         if (!$authorized) {
             message(__('Wrong user/pass').' <a href="'.get_link('login/action/forget/').'">'.__('Forgotten pass').'</a>');
@@ -59,10 +52,11 @@ class login
 
         // Update the status if this is the first time the user logged in
         if ($user->group_id == FEATHER_UNVERIFIED) {
-            DB::for_table('users')->where('id', $user->id)
-                                                      ->find_one()
-                                                      ->set('group_id', $this->config['o_default_user_group'])
-                                                      ->save();
+            $update_usergroup = DB::for_table('users')->where('id', $user->id)
+                ->find_one()
+                ->set('group_id', $this->config['o_default_user_group']);
+            $update_usergroup = $this->hook->fireDB('update_usergroup_login', $update_usergroup);
+            $update_usergroup = $update_usergroup->save();
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
@@ -73,10 +67,12 @@ class login
         }
 
         // Remove this user's guest entry from the online list
-        DB::for_table('online')->where('ident', get_remote_address())
-                                                   ->delete_many();
+        $delete_online = DB::for_table('online')->where('ident', $this->request->getIp());
+        $delete_online = $this->hook->fireDB('delete_online_login', $delete_online);
+        $delete_online = $delete_online->delete_many();
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
+        $expire = $this->hook->fire('expire_login', $expire);
         feather_setcookie($user->id, $form_password_hash, $expire);
 
         // Reset tracked topics
@@ -84,28 +80,35 @@ class login
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
         $redirect_url = validate_redirect($this->request->post('redirect_url'), get_base_url());
+        $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
 
         redirect(feather_escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
     {
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash(get_remote_address()))) {
+        $token = $this->hook->fire('logout_start', $token, $id);
+
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash($this->request->getIp()))) {
             header('Location: '.get_base_url());
             exit;
         }
 
         // Remove user from "users online" list
-        DB::for_table('online')->where('user_id', $this->user->id)
-                                                   ->delete_many();
+        $delete_online = DB::for_table('online')->where('user_id', $this->user->id);
+        $delete_online = $this->hook->fireDB('delete_online_logout', $delete_online);
+        $delete_online = $delete_online->delete_many();
 
         // Update last_visit (make sure there's something to update it with)
         if (isset($this->user->logged)) {
-            DB::for_table('users')->where('id', $this->user->id)
-                                                      ->find_one()
-                                                      ->set('last_visit', $this->user->logged)
-                                                      ->save();
+            $update_last_visit = DB::for_table('users')->where('id', $this->user->id)
+                ->find_one()
+                ->set('last_visit', $this->user->logged);
+            $update_last_visit = $this->hook->fireDB('update_online_logout', $update_last_visit);
+            $update_last_visit = $update_last_visit->save();
         }
+
+        $this->hook->fire('logout_end');
 
         feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
 
@@ -114,6 +117,8 @@ class login
 
     public function password_forgotten()
     {
+        $this->hook->fire('password_forgotten_start');
+
         if (!$this->user->is_guest) {
             header('Location: '.get_base_url());
             exit;
@@ -132,16 +137,18 @@ class login
 
             // Did everything go according to plan?
             if (empty($errors)) {
-                $select_password_forgotten = array('id', 'username', 'last_email_sent');
+                $result['select'] = array('id', 'username', 'last_email_sent');
 
                 $result = DB::for_table('users')
-                    ->select_many($select_password_forgotten)
-                    ->where('email', $email)
-                    ->find_many();
+                    ->select_many($result['select'])
+                    ->where('email', $email);
+                $result = $this->hook->fireDB('password_forgotten_query', $result);
+                $result = $result->find_many();
 
                 if ($result) {
                     // Load the "activate password" template
                     $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
+                    $mail_tpl = $this->hook->fire('mail_tpl_password_forgotten', $mail_tpl);
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
@@ -151,6 +158,8 @@ class login
                     // Do the generic replacements first (they apply to all emails sent out here)
                     $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+
+                    $mail_message = $this->hook->fire('mail_message_password_forgotten', $mail_message);
 
                     // Loop through users we found
                     foreach($result as $cur_hit) {
@@ -162,23 +171,25 @@ class login
                         $new_password = random_pass(12);
                         $new_password_key = random_pass(8);
 
-                        $update_password = array(
+                        $query['update'] = array(
                             'activate_string' => feather_hash($new_password),
                             'activate_key'    => $new_password_key,
                             'last_email_sent' => time()
                         );
 
-                        DB::for_table('users')->where('id', $cur_hit->id)
-                                                                  ->find_one()
-                                                                  ->set($update_password)
-                                                                  ->save();
+                        $query = DB::for_table('users')->where('id', $cur_hit->id)
+                            ->find_one()
+                            ->set($query['update']);
+                        $query = $this->hook->fireDB('password_forgotten_mail_query', $query);
+                        $query = $query->save();
 
                         // Do the user specific replacements to the template
                         $cur_mail_message = str_replace('<username>', $cur_hit->username, $mail_message);
                         $cur_mail_message = str_replace('<activation_url>', get_link('user/'.$cur_hit->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
+                        $cur_mail_message = $this->hook->fire('cur_mail_message_password_forgotten', $cur_mail_message);
 
-                        pun_mail($email, $mail_subject, $cur_mail_message);
+                        feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
                     message(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
@@ -188,13 +199,17 @@ class login
             }
         }
 
+        $errors = $this->hook->fire('password_forgotten', $errors);
+
         return $errors;
     }
 
-    public function get_redirect_url($server_data)
+    public function get_redirect_url()
     {
-        if (!empty($server_data['HTTP_REFERER'])) {
-            $redirect_url = validate_redirect($server_data['HTTP_REFERER'], null);
+        $this->hook->fire('get_redirect_url_start');
+
+        if (!empty($this->request->getReferrer())) {
+            $redirect_url = validate_redirect($this->request->getReferrer(), null);
         }
 
         if (!isset($redirect_url)) {
@@ -202,6 +217,8 @@ class login
         } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) { // TODO
             $redirect_url .= '#p'.$matches[1];
         }
+
+        $redirect_url = $this->hook->fire('get_redirect_url', $redirect_url);
 
         return $redirect_url;
     }

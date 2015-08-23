@@ -41,12 +41,14 @@ class Core extends \Slim\Middleware
         $this->env_to_globals($this->forum_env); // Legacy
 
         // Load files
-        require $this->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php'; // ?
+        require $this->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
         require $this->forum_env['FEATHER_ROOT'].'include/functions.php';
         require $this->forum_env['FEATHER_ROOT'].'include/pomo/MO.php';
         require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/idiorm.php';
+        require $this->forum_env['FEATHER_ROOT'].'include/classes/database.class.php';
         require $this->forum_env['FEATHER_ROOT'].'include/classes/cache.class.php';
+        require $this->forum_env['FEATHER_ROOT'].'include/classes/hooks.class.php';
+        require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -224,6 +226,10 @@ class Core extends \Slim\Middleware
         $this->hydrate('forum_settings', $this->forum_settings);
         $this->app->config = $this->forum_settings; // Legacy
         extract($this->forum_settings); // Legacy
+
+        // Hooks
+        $this->app->hooks = new \FeatherBB\Hooks();
+        new \plugin\plugintest();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');

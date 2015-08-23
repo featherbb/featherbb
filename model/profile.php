@@ -20,33 +20,40 @@ class profile
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function change_pass($id)
     {
+        $id = $this->hook->fire('change_pass_start', $id);
+
         if ($this->request->get('key')) {
+
+            $key = $this->request->get('key');
+            $key = $this->hook->fire('change_pass_key', $key);
+
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
                 header('Location: '.get_base_url());
                 exit;
             }
 
-            $key = $this->request->get('key');
-
             $cur_user = DB::for_table('users')
-                ->where('id', $id)
-                ->find_one();
+                ->where('id', $id);
+            $cur_user = $this->hook->fireDB('change_pass_user_query', $cur_user);
+            $cur_user = $cur_user->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
                 message(__('Pass key bad').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
-                DB::for_table('users')
+                $query = DB::for_table('users')
                     ->where('id', $id)
                     ->find_one()
                     ->set('password', $cur_user['activate_string'])
                     ->set_expr('activate_string', 'NULL')
-                    ->set_expr('activate_key', 'NULL')
-                    ->save();
+                    ->set_expr('activate_key', 'NULL');
+                $query = $this->hook->fireDB('change_pass_activate_query', $query);
+                $query = $query->save();
 
                 message(__('Pass updated'), true);
             }
@@ -54,19 +61,22 @@ class profile
 
         // Make sure we are allowed to change this user's password
         if ($this->user->id != $id) {
+            $id = $this->hook->fire('change_pass_key_not_id', $id);
+
             if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
                 message(__('No permission'), '403');
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
-                $select_change_password = array('u.group_id', 'g.g_moderator');
+                $user['select'] = array('u.group_id', 'g.g_moderator');
 
                 $user = DB::for_table('users')
                     ->table_alias('u')
-                    ->select_many($select_change_password)
+                    ->select_many($user['select'])
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                    ->where('u.id', $id)
-                    ->find_one();
+                    ->where('u.id', $id);
+                $user = $this->hook->fireDB('change_pass_user_query', $user);
+                $user = $user->find_one();
 
                 if (!$user) {
                     message(__('Bad request'), '404');
@@ -91,8 +101,9 @@ class profile
             }
 
             $cur_user = DB::for_table('users')
-                ->where('id', $id)
-                ->find_one();
+                ->where('id', $id);
+            $cur_user = $this->hook->fireDB('change_pass_find_user', $cur_user);
+            $cur_user = $cur_user->find_one();
 
             $authorized = false;
 
@@ -110,14 +121,18 @@ class profile
 
             $new_password_hash = feather_hash($new_password1);
 
-            DB::for_table('users')->where('id', $id)
+            $update_password = DB::for_table('users')
+                ->where('id', $id)
                 ->find_one()
-                ->set('password', $new_password_hash)
-                ->save();
+                ->set('password', $new_password_hash);
+            $update_password = $this->hook->fireDB('change_pass_query', $update_password);
+            $update_password = $update_password->save();
 
             if ($this->user->id == $id) {
                 feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
             }
+
+            $this->hook->fire('change_pass');
 
             redirect(get_link('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
         }
@@ -125,21 +140,25 @@ class profile
 
     public function change_email($id)
     {
+        $id = $this->hook->fire('change_email_start', $id);
+
         // Make sure we are allowed to change this user's email
         if ($this->user->id != $id) {
+            $id = $this->hook->fire('change_email_not_id', $id);
+
             if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
                 message(__('No permission'), '403');
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's email?
-
-                $select_change_mail = array('u.group_id', 'g.g_moderator');
+                $user['select'] = array('u.group_id', 'g.g_moderator');
 
                 $user = DB::for_table('users')
                     ->table_alias('u')
-                    ->select_many($select_change_mail)
+                    ->select_many($user['select'])
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                    ->where('u.id', $id)
-                    ->find_one();
+                    ->where('u.id', $id);
+                $user = $this->hook->fireDB('change_email_not_id_query', $user);
+                $user = $user->find_one();
 
                 if (!$user) {
                     message(__('Bad request'), '404');
@@ -153,25 +172,30 @@ class profile
 
         if ($this->request->get('key')) {
             $key = $this->request->get('key');
+            $key = $this->hook->fire('change_email_key', $key);
 
             $new_email_key = DB::for_table('users')
-                ->where('id', $id)
-                ->find_one_col('activate_key');
+                ->where('id', $id);
+            $new_email_key = $this->hook->fireDB('change_email_key_query', $new_email_key);
+            $new_email_key = $new_email_key->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
                 message(__('Email key bad').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
             } else {
-                DB::for_table('users')
+                $update_mail = DB::for_table('users')
                     ->where('id', $id)
                     ->find_one()
                     ->set_expr('email', 'activate_string')
                     ->set_expr('activate_string', 'NULL')
-                    ->set_expr('activate_key', 'NULL')
-                    ->save();
+                    ->set_expr('activate_key', 'NULL');
+                $update_mail = $this->hook->fireDB('change_email_query', $update_mail);
+                $update_mail = $update_mail->save();
 
                 message(__('Email updated'), true);
             }
         } elseif ($this->request->isPost()) {
+            $this->hook->fire('change_email_post');
+
             if (feather_hash($this->request->post('req_password')) !== $this->user->password) {
                 message(__('Wrong pass'));
             }
@@ -180,6 +204,7 @@ class profile
 
             // Validate the email address
             $new_email = strtolower(feather_trim($this->request->post('req_new_email')));
+            $new_email = $this->hook->fire('change_email_new_email', $new_email);
             if (!is_valid_email($new_email)) {
                 message(__('Invalid email'));
             }
@@ -191,28 +216,32 @@ class profile
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
                     $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = $this->hook->fire('change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                    $mail_message = trim(substr($mail_tpl, $first_crlf));
+                    $mail_subject = $this->hook->fire('change_email_mail_subject', $mail_subject);
 
+                    $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
                     $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                    $mail_message = $this->hook->fire('change_email_mail_message', $mail_message);
 
-                    pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
             // Check if someone else already has registered with that email address
-            $select_change_mail = array('id', 'username');
+            $result['select'] = array('id', 'username');
 
             $result = DB::for_table('users')
-                ->select_many($select_change_mail)
-                ->where('email', $new_email)
-                ->find_many();
+                ->select_many($result['select'])
+                ->where('email', $new_email);
+            $result = $this->hook->fireDB('change_email_check_mail', $result);
+            $result = $result->find_many();
 
             if ($result) {
                 if ($this->config['p_allow_dupe_email'] == '0') {
@@ -224,56 +253,70 @@ class profile
 
                     // Load the "dupe email change" template
                     $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = $this->hook->fire('change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                    $mail_message = trim(substr($mail_tpl, $first_crlf));
+                    $mail_subject = $this->hook->fire('change_email_mail_dupe_subject', $mail_subject);
 
+                    $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                     $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                    $mail_message = $this->hook->fire('change_email_mail_dupe_message', $mail_message);
 
-                    pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
 
             $new_email_key = random_pass(8);
+            $new_email_key = $this->hook->fire('change_email_new_email_key', $new_email_key);
 
             // Update the user
-            $update_user = array(
+            unset($user);
+            $user['update'] = array(
                 'activate_string' => $new_email,
                 'activate_key'  => $new_email_key,
             );
-
-            DB::for_table('users')->where('id', tid)
+            $user = DB::for_table('users')
+                ->where('id', tid)
                 ->find_one()
-                ->set($update_user)
-                ->save();
+                ->set($user['update']);
+            $user = $this->hook->fireDB('change_email_user_query', $user);
+            $user = $user->save();
 
             // Load the "activate email" template
             $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = $this->hook->fire('change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
             $first_crlf = strpos($mail_tpl, "\n");
             $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-            $mail_message = trim(substr($mail_tpl, $first_crlf));
+            $mail_subject = $this->hook->fire('change_email_mail_activate_subject', $mail_subject);
 
+            $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
             $mail_message = str_replace('<base_url>', get_base_url(), $mail_message);
             $mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+            $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
 
-            pun_mail($new_email, $mail_subject, $mail_message);
+            feather_mail($new_email, $mail_subject, $mail_message);
+
+            $this->hook->fire('change_email_sent');
 
             message(__('Activate email sent').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
+        $this->hook->fire('change_email');
     }
 
     public function upload_avatar($id, $files_data)
     {
+        $files_data = $this->hook->fire('upload_avatar_start', $files_data, $id);
+
         if (!isset($files_data['req_file'])) {
             message(__('No file'));
         }
@@ -310,6 +353,8 @@ class profile
         }
 
         if (is_uploaded_file($uploaded_file['tmp_name'])) {
+            $uploaded_file = $this->hook->fire('upload_avatar_is_uploaded_file', $uploaded_file);
+
             // Preliminary file check, adequate in most cases
             $allowed_types = array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
             if (!in_array($uploaded_file['type'], $allowed_types)) {
@@ -355,21 +400,28 @@ class profile
             message(__('Unknown failure'));
         }
 
+        $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
+
         redirect(get_link('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
     }
 
     public function update_group_membership($id)
     {
+        $id = $this->hook->fire('update_group_membership_start', $id);
+
         $new_group_id = intval($this->request->post('group_id'));
 
         $old_group_id = DB::for_table('users')
-            ->where('id', $id)
-            ->find_one_col('group_id');
+            ->where('id', $id);
+        $old_group_id = $this->hook->fireDB('update_group_membership_old_group', $old_group_id);
+        $old_group_id = $old_group_id->find_one_col('group_id');
 
-        DB::for_table('users')->where('id', $id)
+        $update_group = DB::for_table('users')
+            ->where('id', $id)
             ->find_one()
-            ->set('group_id', $new_group_id)
-            ->save();
+            ->set('group_id', $new_group_id);
+        $update_group = $this->hook->fireDB('update_group_membership_update_group', $update_group);
+        $update_group = $update_group->save();
 
         // Regenerate the users info cache
         if (!$this->feather->cache->isCached('users_info')) {
@@ -383,17 +435,15 @@ class profile
         }
 
         $new_group_mod = DB::for_table('groups')
-            ->where('g_id', $new_group_id)
-            ->find_one_col('g_moderator');
+            ->where('g_id', $new_group_id);
+        $new_group_mod = $this->hook->fireDB('update_group_membership_new_mod', $new_group_mod);
+        $new_group_mod = $new_group_mod->find_one_col('g_moderator');
 
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
         if ($new_group_id != FEATHER_ADMIN && $new_group_mod != '1') {
 
-            $select_mods = array('id', 'moderators');
-
-            $result = DB::for_table('forums')
-                ->select_many($select_mods)
-                ->find_many();
+            // Loop through all forums
+            $result = $this->loop_mod_forums();
 
             foreach($result as $cur_forum) {
                 $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
@@ -402,20 +452,22 @@ class profile
                     $username = array_search($id, $cur_moderators);
                     unset($cur_moderators[$username]);
 
+                    $update_forums = DB::for_table('forums')
+                        ->where('id', $cur_forum['id'])
+                        ->find_one();
+
                     if (!empty($cur_moderators)) {
-                        DB::for_table('forums')->where('id', $cur_forum['id'])
-                            ->find_one()
-                            ->set('moderators', serialize($cur_moderators))
-                            ->save();
+                        $update_forums = $update_forums->set('moderators', serialize($cur_moderators));
                     } else {
-                        DB::for_table('forums')->where('id', $cur_forum['id'])
-                            ->find_one()
-                            ->set_expr('moderators', 'NULL')
-                            ->save();
+                        $update_forums = $update_forums->set_expr('moderators', 'NULL');
                     }
+                    $update_forums = $this->hook->fireDB('update_group_membership_mod_forums', $update_forums);
+                    $update_forums = $update_forums->save();
                 }
             }
         }
+
+        $id = $this->hook->fire('update_group_membership', $id);
 
         redirect(get_link('user/'.$id.'/section/admin/'), __('Group membership redirect'));
     }
@@ -427,7 +479,21 @@ class profile
             ->where('id', $id)
             ->find_one_col('username');
 
+        $username = $this->hook->fire('get_username', $username);
+
         return $username;
+    }
+
+    public function loop_mod_forums()
+    {
+        $result['select'] = array('id', 'moderators');
+
+        $result = DB::for_table('forums')
+            ->select_many($result['select']);
+        $result = $this->hook->fireDB('loop_mod_forums', $result);
+        $result = $result->find_many();
+
+        return $result;
     }
 
     public function update_mod_forums($id)
@@ -437,11 +503,7 @@ class profile
         $moderator_in = ($this->request->post('moderator_in')) ? array_keys($this->request->post('moderator_in')) : array();
 
         // Loop through all forums
-        $select_mods = array('id', 'moderators');
-
-        $result = DB::for_table('forums')
-            ->select_many($select_mods)
-            ->find_many();
+        $result = $this->loop_mod_forums();
 
         foreach($result as $cur_forum) {
             $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
@@ -450,34 +512,40 @@ class profile
                 $cur_moderators[$username] = $id;
                 uksort($cur_moderators, 'utf8_strcasecmp');
 
-                DB::for_table('forums')->where('id', $cur_forum['id'])
+                $update_forums = DB::for_table('forums')
+                    ->where('id', $cur_forum['id'])
                     ->find_one()
-                    ->set('moderators', serialize($cur_moderators))
-                    ->save();
+                    ->set('moderators', serialize($cur_moderators));
+                $update_forums = $this->hook->fireDB('update_mod_forums_query', $update_forums);
+                $update_forums = $update_forums->save();
             }
             // If the user shouldn't have moderator access (and he/she already has it)
             elseif (!in_array($cur_forum['id'], $moderator_in) && in_array($id, $cur_moderators)) {
                 unset($cur_moderators[$username]);
 
+                $update_forums = DB::for_table('forums')
+                    ->where('id', $cur_forum['id'])
+                    ->find_one();
+
                 if (!empty($cur_moderators)) {
-                    DB::for_table('forums')->where('id', $cur_forum['id'])
-                        ->find_one()
-                        ->set('moderators', serialize($cur_moderators))
-                        ->save();
+                    $update_forums = $update_forums->set('moderators', serialize($cur_moderators));
                 } else {
-                    DB::for_table('forums')->where('id', $cur_forum['id'])
-                        ->find_one()
-                        ->set_expr('moderators', 'NULL')
-                        ->save();
+                    $update_forums = $update_forums->set_expr('moderators', 'NULL');
                 }
+                $update_forums = $this->hook->fireDB('update_mod_forums_query', $update_forums);
+                $update_forums = $update_forums->save();
             }
         }
+
+        $id = $this->hook->fire('update_mod_forums', $id);
 
         redirect(get_link('user/'.$id.'/section/admin/'), __('Update forums redirect'));
     }
 
     public function ban_user($id)
     {
+        $id = $this->hook->fire('ban_user_start', $id);
+
         // Get the username of the user we are banning
         $username = $this->get_username($id);
 
@@ -485,8 +553,9 @@ class profile
         $ban_id = DB::for_table('bans')
             ->where('username', $username)
             ->order_by_expr('expire IS NULL DESC')
-            ->order_by_desc('expire')
-            ->find_one_col('id');
+            ->order_by_desc('expire');
+        $ban_id = $this->hook->fireDB('ban_user_query', $ban_id);
+        $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
             redirect(get_link('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
@@ -497,36 +566,47 @@ class profile
 
     public function promote_user($id)
     {
+        $id = $this->hook->fire('promote_user_start', $id);
+
         $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
         // Find the group ID to promote the user to
         $next_group_id = DB::for_table('groups')
             ->table_alias('g')
             ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
-            ->where('u.id', $id)
-            ->find_one_col('g.g_promote_next_group');
+            ->where('u.id', $id);
+        $next_group_id = $this->hook->fireDB('promote_user_group_id', $next_group_id);
+        $next_group_id = $next_group_id->find_one_col('g.g_promote_next_group');
 
         if (!$next_group_id) {
             message(__('Bad request'), '404');
         }
 
         // Update the user
-        DB::for_table('users')->where('id', $id)
+        $update_user = DB::for_table('users')
+            ->where('id', $id)
             ->find_one()
-            ->set('group_id', $next_group_id)
-            ->save();
+            ->set('group_id', $next_group_id);
+        $update_user = $this->hook->fireDB('promote_user_query', $update_user);
+        $update_user = $update_user->save();
+
+        $pid = $this->hook->fire('promote_user', $pid);
 
         redirect(get_link('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
     public function delete_user($id)
     {
-        // Get the username and group of the user we are deleting
-        $select_info_delete_user = array('group_id', 'username');
+        $id = $this->hook->fire('delete_user_start', $id);
 
-        $result = DB::for_table('users')->where('id', $id)
-            ->select_many($select_info_delete_user)
-            ->find_one();
+        // Get the username and group of the user we are deleting
+        $result['select'] = array('group_id', 'username');
+
+        $result = DB::for_table('users')
+            ->where('id', $id)
+            ->select_many($result['select']);
+        $result = $this->hook->fireDB('delete_user_username', $result);
+        $result = $result->find_one();
 
         $group_id = $result['group_id'];
         $username = $result['username'];
@@ -538,15 +618,14 @@ class profile
         if ($this->request->post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
             $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id)
-                ->find_one_col('g_moderator');
+                ->where('g_id', $group_id);
+            $group_mod = $this->hook->fireDB('delete_user_group_mod', $group_mod);
+            $group_mod = $group_mod->find_one_col('g_moderator');
 
             if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
-                $select_info_delete_moderators = array('id', 'moderators');
 
-                $result = DB::for_table('forums')
-                    ->select_many($select_info_delete_moderators)
-                    ->find_many();
+                // Loop through all forums
+                $result = $this->loop_mod_forums();
 
                 foreach($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
@@ -554,33 +633,37 @@ class profile
                     if (in_array($id, $cur_moderators)) {
                         unset($cur_moderators[$username]);
 
+                        $update_forums = DB::for_table('forums')
+                            ->where('id', $cur_forum['id'])
+                            ->find_one();
+
                         if (!empty($cur_moderators)) {
-                            DB::for_table('forums')->where('id', $cur_forum['id'])
-                                ->find_one()
-                                ->set('moderators', serialize($cur_moderators))
-                                ->save();
+                            $update_forums = $update_forums->set('moderators', serialize($cur_moderators));
                         } else {
-                            DB::for_table('forums')->where('id', $cur_forum['id'])
-                                ->find_one()
-                                ->set_expr('moderators', 'NULL')
-                                ->save();
+                            $update_forums = $update_forums->set_expr('moderators', 'NULL');
                         }
+                        $update_forums = $this->hook->fireDB('update_mod_forums_query', $update_forums);
+                        $update_forums = $update_forums->save();
                     }
                 }
             }
 
             // Delete any subscriptions
-            DB::for_table('topic_subscriptions')
-                ->where('user_id', $id)
-                ->delete_many();
-            DB::for_table('forum_subscriptions')
-                ->where('user_id', $id)
-                ->delete_many();
+            $delete_subscriptions = DB::for_table('topic_subscriptions')
+                ->where('user_id', $id);
+            $delete_subscriptions = $this->hook->fireDB('delete_user_subscriptions_topic', $delete_subscriptions);
+            $delete_subscriptions = $delete_subscriptions->delete_many();
+            unset($delete_subscriptions);
+            $delete_subscriptions = DB::for_table('forum_subscriptions')
+                ->where('user_id', $id);
+            $delete_subscriptions = $this->hook->fireDB('delete_user_subscriptions_forum', $delete_subscriptions);
+            $delete_subscriptions = $delete_subscriptions->delete_many();
 
             // Remove him/her from the online list (if they happen to be logged in)
-            DB::for_table('online')
-                ->where('user_id', $id)
-                ->delete_many();
+            $delete_online = DB::for_table('online')
+                ->where('user_id', $id);
+            $delete_online = $this->hook->fireDB('delete_user_online', $delete_online);
+            $delete_online = $delete_online->delete_many();
 
             // Should we delete all posts made by this user?
             if ($this->request->post('delete_posts')) {
@@ -588,24 +671,29 @@ class profile
                 // Hold on, this could take some time!
                 @set_time_limit(0);
 
+                $this->hook->fire('delete_user_posts');
+
                 // Find all posts made by this user
-                $select_user_posts = array('p.id', 'p.topic_id', 't.forum_id');
+                unset($result);
+                $result['select'] = array('p.id', 'p.topic_id', 't.forum_id');
 
                 $result = DB::for_table('posts')
                     ->table_alias('p')
-                    ->select_many($select_user_posts)
+                    ->select_many($result['select'])
                     ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                     ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                    ->where('p.poster_id', $id)
-                    ->find_many();
+                    ->where('p.poster_id', $id);
+                $result = $this->hook->fireDB('delete_user_posts_first_query', $result);
+                $result = $result->find_many();
 
                 if ($result) {
                     foreach($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
                         $result2 = DB::for_table('posts')
                             ->where('topic_id', $cur_post['topic_id'])
-                            ->order_by('posted')
-                            ->find_one_col('id');
+                            ->order_by('posted');
+                        $result2 = $this->hook->fireDB('delete_user_posts_second_query', $result2);
+                        $result2 = $result2->find_one_col('id');
 
                         if ($result2 == $cur_post['id']) {
                             delete_topic($cur_post['topic_id']);
@@ -618,15 +706,16 @@ class profile
                 }
             } else {
                 // Set all his/her posts to guest
-                DB::for_table('posts')
-                    ->where_in('poster_id', '1')
-                    ->update_many('poster_id', $id);
+                $update_guest = DB::for_table('posts')
+                    ->where_in('poster_id', '1');
+                $update_guest = $this->hook->fireDB('delete_user_posts_guest_query', $update_guest);
+                $update_guest = $update_guest->update_many('poster_id', $id);
             }
 
             // Delete the user
-            DB::for_table('users')
-                ->where('id', $id)
-                ->delete_many();
+            $delete_user = DB::for_table('users')
+                ->where('id', $id);
+            $delete_user = $delete_user->delete_many();
 
             // Delete user avatar
             delete_avatar($id);
@@ -642,24 +731,25 @@ class profile
                 $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
             }
 
+            $this->hook->fire('delete_user');
+
             redirect(get_base_url(), __('User delete redirect'));
         }
     }
 
     public function fetch_user_group($id)
     {
-
-
         $info = array();
 
-        $select_fetch_user_group = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
+        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
 
         $info = DB::for_table('users')
             ->table_alias('u')
-            ->select_many($select_fetch_user_group)
+            ->select_many($info['select'])
             ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->where('u.id', $id)
-            ->find_one();
+            ->where('u.id', $id);
+        $info = $this->hook->fireDB('fetch_user_group', $info);
+        $info = $info->find_one();
 
         if (!$info) {
             message(__('Bad request'), '404');
@@ -672,7 +762,11 @@ class profile
     {
         global $pd;
 
+        $info = $this->hook->fire('update_profile_start', $info, $id, $section);
+
         $username_updated = false;
+
+        $section = $this->hook->fire('update_profile_section', $section, $id, $info);
 
         // Validate input depending on section
         switch ($section) {
@@ -890,6 +984,7 @@ class profile
                 message(__('Bad request'), '404');
         }
 
+        $form = $this->hook->fire('update_profile_form', $form, $section, $id, $info);
 
         // Single quotes around non-empty values and nothing for empty values
         $temp = array();
@@ -901,55 +996,65 @@ class profile
             message(__('Bad request'), '404');
         }
 
-        DB::for_table('users')->where('id', $id)
+        $update_user = DB::for_table('users')
+            ->where('id', $id)
             ->find_one()
-            ->set($temp)
-            ->save();
+            ->set($temp);
+        $update_user = $this->hook->fireDB('update_profile_query', $update_user);
+        $update_user = $update_user->save();
 
         // If we changed the username we have to update some stuff
         if ($username_updated) {
-            $bans_updated = DB::for_table('bans')->where('username', $info['old_username'])
-                                ->update_many('username', $form['username']);
+            $bans_updated = DB::for_table('bans')
+                ->where('username', $info['old_username']);
+            $bans_updated = $this->hook->fireDB('update_profile_bans_updated', $bans_updated);
+            $bans_updated = $bans_updated->update_many('username', $form['username']);
 
-            DB::for_table('posts')
-                ->where('poster_id', $id)
-                ->update_many('poster', $form['username']);
+            $update_poster_id = DB::for_table('posts')
+                ->where('poster_id', $id);
+            $update_poster_id = $this->hook->fireDB('update_profile_poster_id', $update_poster_id);
+            $update_poster_id = $update_poster_id->update_many('poster', $form['username']);
 
-            DB::for_table('posts')
-                ->where('edited_by', $info['old_username'])
-                ->update_many('edited_by', $form['username']);
+            $update_posts = DB::for_table('posts')
+                ->where('edited_by', $info['old_username']);
+            $update_posts = $this->hook->fireDB('update_profile_posts', $update_posts);
+            $update_posts = $update_posts->update_many('edited_by', $form['username']);
 
-            DB::for_table('topics')
-                ->where('poster', $info['old_username'])
-                ->update_many('poster', $form['username']);
+            $update_topics_poster = DB::for_table('topics')
+                ->where('poster', $info['old_username']);
+            $update_topics_poster = $this->hook->fireDB('update_profile_topics_poster', $update_topics_poster);
+            $update_topics_poster = $update_topics_poster->update_many('poster', $form['username']);
 
-            DB::for_table('topics')
-                ->where('last_poster', $info['old_username'])
-                ->update_many('last_poster', $form['username']);
+            $update_topics_last_poster = DB::for_table('topics')
+                ->where('last_poster', $info['old_username']);
+            $update_topics_last_poster = $this->hook->fireDB('update_profile_topics_last_poster', $update_topics_last_poster);
+            $update_topics_last_poster = $update_topics_last_poster->update_many('last_poster', $form['username']);
 
-            DB::for_table('forums')
-                ->where('last_poster', $info['old_username'])
-                ->update_many('last_poster', $form['username']);
+            $update_forums = DB::for_table('forums')
+                ->where('last_poster', $info['old_username']);
+            $update_forums = $this->hook->fireDB('update_profile_forums', $update_forums);
+            $update_forums = $update_forums->update_many('last_poster', $form['username']);
 
-            DB::for_table('online')
-                ->where('ident', $info['old_username'])
-                ->update_many('ident', $form['username']);
+            $update_online = DB::for_table('online')
+                ->where('ident', $info['old_username']);
+            $update_online = $this->hook->fireDB('update_profile_online', $update_online);
+            $update_online = $update_online->update_many('ident', $form['username']);
 
             // If the user is a moderator or an administrator we have to update the moderator lists
             $group_id = DB::for_table('users')
-                ->where('id', $id)
-                ->find_one_col('group_id');
+                ->where('id', $id);
+            $group_id = $this->hook->fireDB('update_profile_group_id', $update_online);
+            $group_id = $group_id->find_one_col('group_id');
 
             $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id)
-                ->find_one_col('g_moderator');
+                ->where('g_id', $group_id);
+            $group_mod = $this->hook->fireDB('update_profile_group_mod', $group_mod);
+            $group_mod = $group_mod->find_one_col('g_moderator');
 
             if ($group_id == FEATHER_ADMIN || $group_mod == '1') {
-                $select_mods = array('id', 'moderators');
 
-                $result = DB::for_table('forums')
-                    ->select_many($select_mods)
-                    ->find_many();
+                // Loop through all forums
+                $result = $this->loop_mod_forums();
 
                 foreach($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
@@ -959,10 +1064,12 @@ class profile
                         $cur_moderators[$form['username']] = $id;
                         uksort($cur_moderators, 'utf8_strcasecmp');
 
-                        DB::for_table('forums')->where('id', $cur_forum['id'])
+                        $update_mods = DB::for_table('forums')
+                            ->where('id', $cur_forum['id'])
                             ->find_one()
-                            ->set('moderators', serialize($cur_moderators))
-                            ->save();
+                            ->set('moderators', serialize($cur_moderators));
+                        $update_mods = $this->hook->fireDB('update_profile_mods', $update_mods);
+                        $update_mods = $update_mods->save();
                     }
                 }
             }
@@ -980,21 +1087,22 @@ class profile
             }
         }
 
+        $section = $this->hook->fireDB('update_profile', $section, $id);
+
         redirect(get_link('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
     }
 
     public function get_user_info($id)
     {
-
-
-        $select_get_user_info = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')
-            ->select_many($select_get_user_info)
+            ->select_many($user['select'])
             ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->where('u.id', $id)
-            ->find_one();
+            ->where('u.id', $id);
+        $user = $this->hook->fireDB('get_user_info', $user);
+        $user = $user->find_one();
 
         if (!$user) {
             message(__('Bad request'), '404');
@@ -1006,6 +1114,8 @@ class profile
     public function parse_user_info($user)
     {
         $user_info = array();
+
+        $user_info = $this->hook->fire('parse_user_info_start', $user_info, $user);
 
         $user_info['personal'][] = '<dt>'.__('Username').'</dt>';
         $user_info['personal'][] = '<dd>'.feather_escape($user['username']).'</dd>';
@@ -1113,12 +1223,16 @@ class profile
         $user_info['activity'][] = '<dt>'.__('Registered').'</dt>';
         $user_info['activity'][] = '<dd>'.format_time($user['registered'], true).'</dd>';
 
+        $user_info = $this->hook->fire('parse_user_info', $user_info);
+
         return $user_info;
     }
 
     public function edit_essentials($id, $user)
     {
         $user_disp = array();
+
+        $user_disp = $this->hook->fire('edit_essentials_start', $user_disp, $id, $user);
 
         if ($this->user->is_admmod) {
             if ($this->user->g_id == FEATHER_ADMIN || $this->user->g_mod_rename_users == '1') {
@@ -1158,6 +1272,8 @@ class profile
 
         $user_disp['posts_field'] .= (!empty($posts_actions) ? '<p class="actions">'.implode(' - ', $posts_actions).'</p>' : '')."\n";
 
+        $user_disp = $this->hook->fire('edit_essentials', $user_disp);
+
         return $user_disp;
     }
 
@@ -1165,12 +1281,16 @@ class profile
     {
         $output = '';
 
-        $select_group_list = array('g_id', 'g_title');
+        $user = $this->hook->fire('get_group_list_start', $user);
 
-        $result = DB::for_table('groups')->select_many($select_group_list)
-                      ->where_not_equal('g_id', FEATHER_GUEST)
-                      ->order_by('g_title')
-                      ->find_many();
+        $result['select'] = array('g_id', 'g_title');
+
+        $result = DB::for_table('groups')
+            ->select_many($result['select'])
+            ->where_not_equal('g_id', FEATHER_GUEST)
+            ->order_by('g_title');
+        $result = $this->hook->fireDB('get_group_list_query', $result);
+        $result = $result->find_many();
 
         foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $this->config['o_default_user_group'] && $user['g_id'] == '')) {
@@ -1180,6 +1300,8 @@ class profile
             }
         }
 
+        $output = $this->hook->fire('get_group_list', $output);
+
         return $output;
     }
 
@@ -1187,22 +1309,24 @@ class profile
     {
         $output = '';
 
-        $select_get_forum_list = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators');
-        $order_by_get_forum_list = array('c.disp_position', 'c.id', 'f.disp_position');
+        $id = $this->hook->fire('get_forum_list_start', $id);
+
+        $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators');
+        $result['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
 
         $result = DB::for_table('categories')
             ->table_alias('c')
-            ->select_many($select_get_forum_list)
+            ->select_many($result['select'])
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->where_null('f.redirect_url')
-            ->order_by_many($order_by_get_forum_list)
-            ->find_many();
+            ->order_by_many($result['order_by']);
+        $result = $this->hook->fireDB('get_forum_list', $result);
+        $result = $result->find_many();
 
         $cur_category = 0;
         foreach($result as $cur_forum) {
             if ($cur_forum['cid'] != $cur_category) {
                 // A new category since last iteration?
-
                 if ($cur_category) {
                     $output .= "\n\t\t\t\t\t\t\t\t".'</div>';
                 }
@@ -1220,6 +1344,8 @@ class profile
             $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.feather_escape($cur_forum['forum_name']).'<br /></label>'."\n";
         }
 
+        $output = $this->hook->fire('get_forum_list', $output);
+
         return $output;
     }
 
@@ -1228,11 +1354,13 @@ class profile
     //
     public function generate_profile_menu($page = '', $id)
     {
+        $page = $this->hook->fire('generate_profile_menu', $page, $id);
+
         $this->feather->render('profile/menu.php', array(
-            'id' => $id,
-            'feather_config' => $this->config,
-            'feather_user' => $this->user,
-            'page' => $page,
+                'id' => $id,
+                'feather_config' => $this->config,
+                'feather_user' => $this->user,
+                'page' => $page,
             )
         );
     }

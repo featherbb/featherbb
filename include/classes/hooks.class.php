@@ -7,7 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-class hooks extends \Slim\Slim
+namespace FeatherBB;
+
+class Hooks extends \Slim\Slim
 {
     /**
      * Assign hook
