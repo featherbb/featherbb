@@ -22,7 +22,6 @@ class search
         $this->request = $this->feather->request;
     }
 
-
     public function get_search_results()
     {
         $search = array();

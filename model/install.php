@@ -388,6 +388,7 @@ class install
 
     public static function load_admin_user(array $data)
     {
+        $feather = \Slim\Slim::getInstance();
         $now = time();
         return $user = array(
             'group_id' => 1,
@@ -399,19 +400,20 @@ class install
             'num_posts' => 1,
             'last_post' => $now,
             'registered' => $now,
-            'registration_ip' => get_remote_address(),
+            'registration_ip' => $feather->request->getIp(),
             'last_visit' => $now);
     }
 
     public static function load_mock_forum_data(array $data)
     {
+        $feather = \Slim\Slim::getInstance();
         $cat_name = __('Test category');
         $subject = __('Test post');
         $message = __('Message');
         $forum_name = __('Test forum');
         $forum_desc = __('This is just a test forum');
         $now = time();
-        $ip = get_remote_address();
+        $ip = $feather->request->getIp();
 
         return $mock_data = array(
             'categories' => array('cat_name' => $cat_name,
