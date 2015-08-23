@@ -28,4 +28,3 @@ class Loader
         spl_autoload_register(__NAMESPACE__ . '\Loader::autoload');
     }
 }
- ?>
