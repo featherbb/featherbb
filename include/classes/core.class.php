@@ -11,10 +11,10 @@
  *
  */
 
-namespace Slim\Extras\Middleware;
+namespace FeatherBB;
 use DB;
 
-class FeatherBBLoader extends \Slim\Middleware
+class Core extends \Slim\Middleware
 {
     protected $forum_env,
               $forum_settings;
@@ -31,7 +31,7 @@ class FeatherBBLoader extends \Slim\Middleware
                                   'cache_dir' => 'cache/',
                                   'debug'   => false), $data);
         // Define some core variables
-        $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../../').'/';
+        $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
         $this->forum_env['FORUM_CONFIG_FILE'] = $this->forum_env['FEATHER_ROOT'].$data['config_file'];
         $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all');
