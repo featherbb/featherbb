@@ -98,7 +98,7 @@ class search
 
         // If a valid search_id was supplied we attempt to fetch the search results from the db
         if (isset($search_id)) {
-            $ident = ($this->user->is_guest) ? get_remote_address() : $this->user->username;
+            $ident = ($this->user->is_guest) ? $this->request->getIp() : $this->user->username;
 
             $search_data = DB::for_table('search_cache')
                                 ->where('id', $search_id)
@@ -135,7 +135,7 @@ class search
                     DB::for_table('users')->where('id', $this->user->id)
                                                         ->update_many('last_search', time());
                 } else {
-                    DB::for_table('online')->where('ident', get_remote_address())
+                    DB::for_table('online')->where('ident', $this->request->getIp())
                                                          ->update_many('last_search', time());
                 }
 
@@ -520,7 +520,7 @@ class search
             ));
             $search_id = mt_rand(1, 2147483647);
 
-            $ident = ($this->user->is_guest) ? get_remote_address() : $this->user->username;
+            $ident = ($this->user->is_guest) ? $this->request->getIp() : $this->user->username;
 
             $insert_cache = array(
                 'id'   =>  $search_id,

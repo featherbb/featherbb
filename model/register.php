@@ -24,14 +24,14 @@ class register
  
     public function check_for_errors()
     {
-        global $lang_register, $lang_antispam, $lang_antispam_questions;
+        global $lang_antispam, $lang_antispam_questions;
 
         $user = array();
         $user['errors'] = '';
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
         $already_registered = DB::for_table('users')
-                                  ->where('registration_ip', get_remote_address())
+                                  ->where('registration_ip', $this->request->getIp())
                                   ->where_gt('registered', time() - 3600)
                                   ->find_one();
 
@@ -141,7 +141,7 @@ class register
             'language'        => $user['language'],
             'style'           => $this->config['o_default_style'],
             'registered'      => $now,
-            'registration_ip' => get_remote_address(),
+            'registration_ip' => $this->request->getIp(),
             'last_visit'      => $now,
         );
 

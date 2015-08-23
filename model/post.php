@@ -245,7 +245,7 @@ class post
             $query['insert'] = array(
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -292,7 +292,7 @@ class post
             // It's a guest. Insert the new post
             $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -496,7 +496,7 @@ class post
             $query['insert'] = array(
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -513,7 +513,7 @@ class post
             // Create the post ("topic post")
             $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -712,7 +712,7 @@ class post
         } else {
             // Update the last_post field for guests
             $last_post = DB::for_table('online')
-                            ->where('ident', get_remote_address())
+                            ->where('ident', $this->request->getIp())
                             ->find_one()
                             ->set('last_post', $post['time']);
             $last_post = $this->hook->fireDB('increment_post_count_last_post', $last_post);

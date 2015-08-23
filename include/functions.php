@@ -812,19 +812,6 @@ function feather_hash($str)
 
 
 //
-// Try to determine the correct remote IP-address
-//
-function get_remote_address()
-{
-    $feather = \Slim\Slim::getInstance();
-
-    $remote_addr = $feather->request->getIp();
-
-    return $remote_addr;
-}
-
-
-//
 // Calls htmlspecialchars with a few options already set
 //
 function feather_escape($str)

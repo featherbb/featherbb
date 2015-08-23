@@ -67,7 +67,7 @@ class login
         }
 
         // Remove this user's guest entry from the online list
-        $delete_online = DB::for_table('online')->where('ident', get_remote_address());
+        $delete_online = DB::for_table('online')->where('ident', $this->request->getIp());
         $delete_online = $this->hook->fireDB('delete_online_login', $delete_online);
         $delete_online = $delete_online->delete_many();
 
@@ -89,7 +89,7 @@ class login
     {
         $token = $this->hook->fire('logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash(get_remote_address()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash($this->request->getIp()))) {
             header('Location: '.get_base_url());
             exit;
         }
