@@ -25,8 +25,6 @@ class search
 
     public function get_search_results()
     {
-        global $lang_search;
-
         $search = array();
 
         $action = ($this->request->get('action')) ? $this->request->get('action') : null;
@@ -627,20 +625,20 @@ class search
                     $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), feather_escape($subscriber_name)).'</a>';
                 } else {
                     $search_url = str_replace('_', '/', $search_type[1]);
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/'.$search_url.'/').'">'.$lang_search['Quick search '.$search_type[1]].'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/'.$search_url.'/').'">'.__('Quick search '.$search_type[1]).'</a>';
                 }
             } else {
                 $keywords = $author = '';
 
                 if ($search_type[0] == 'both') {
                     list($keywords, $author) = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By both show as '.$show_as], feather_escape($keywords), feather_escape($author));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By both show as '.$show_as), feather_escape($keywords), feather_escape($author));
                 } elseif ($search_type[0] == 'keywords') {
                     $keywords = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By keywords show as '.$show_as], feather_escape($keywords));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By keywords show as '.$show_as), feather_escape($keywords));
                 } elseif ($search_type[0] == 'author') {
                     $author = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf($lang_search['By user show as '.$show_as], feather_escape($author));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By user show as '.$show_as), feather_escape($author));
                 }
 
                 $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
@@ -654,7 +652,7 @@ class search
 
     public function display_search_results($search)
     {
-        global $lang_search, $pd;
+        global $pd;
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
@@ -702,7 +700,6 @@ class search
                     'url_topic' => $url_topic,
                     'cur_search' => $cur_search,
                     'forum' => $forum,
-                    'lang_search' => $lang_search,
                     )
                 );
             } else {
@@ -769,8 +766,6 @@ class search
 
     public function get_list_forums()
     {
-        global $lang_search;
-
         $output = '';
 
         $select_get_list_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
