@@ -229,7 +229,7 @@ class Core extends \Slim\Middleware
 
         // Hooks
         $this->app->hooks = new \FeatherBB\Hooks();
-        new \plugin\plugintest();
+        new \plugin\plugintest(); // TODO: remove
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
