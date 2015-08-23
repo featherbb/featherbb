@@ -135,7 +135,7 @@ class Auth extends \Slim\Middleware
 
         // Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
         // 192.168.0.5 from matching e.g. 192.168.0.50
-        $user_ip = get_remote_address();
+        $user_ip = $this->app->request->getIp();
         $user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
 
         $bans_altered = false;
@@ -292,7 +292,7 @@ class Auth extends \Slim\Middleware
         $this->update_users_online();
 
         // Configure Slim
-        $this->app->config('templates.path', $this->app->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
+        $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? $this->app->forum_env['FEATHER_ROOT'].'style/'.$this->app->user->style.'/view' : $this->app->forum_env['FEATHER_ROOT'].'view');
         $this->next->call();
     }
 }
