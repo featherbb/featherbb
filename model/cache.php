@@ -114,4 +114,16 @@ class cache
         }
         return $output;
     }
+
+    public static function get_stopwords($lang_path)
+    {
+        $files = new \DirectoryIterator($lang_path);
+        $stopwords = array();
+        foreach($files as $file) {
+            if(!$file->isDot() && $file->getBasename() != '.DS_Store' && $file->isDir() && file_exists($file->getPathName().'/stopwords.txt')) {
+                $stopwords = array_merge($stopwords, file($file->getPathName().'/stopwords.txt'));
+            }
+        }
+        return array_map('feather_trim', $stopwords);
+    }
 }

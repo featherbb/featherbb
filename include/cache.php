@@ -7,55 +7,6 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-//
-// Generate a cache ID based on the last modification time for all stopwords files
-//
-function generate_stopwords_cache_id()
-{
-    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
-    if ($files === false) {
-        return 'cache_id_error';
-    }
-
-    $hash = array();
-
-    foreach ($files as $file) {
-        $hash[] = $file;
-        $hash[] = filemtime($file);
-    }
-
-    return sha1(implode('|', $hash));
-}
-
-
-//
-// Generate the stopwords cache PHP script
-//
-function generate_stopwords_cache()
-{
-    $stopwords = array();
-
-    $d = dir(FEATHER_ROOT.'lang');
-    while (($entry = $d->read()) !== false) {
-        if ($entry{0} == '.') {
-            continue;
-        }
-
-        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/stopwords.txt')) {
-            $stopwords = array_merge($stopwords, file(FEATHER_ROOT.'lang/'.$entry.'/stopwords.txt'));
-        }
-    }
-    $d->close();
-
-    // Tidy up and filter the stopwords
-    $stopwords = array_map('feather_trim', $stopwords);
-    $stopwords = array_filter($stopwords);
-
-    // Output stopwords as PHP code
-    $content = '<?php'."\n\n".'$cache_id = \''.generate_stopwords_cache_id().'\';'."\n".'if ($cache_id != generate_stopwords_cache_id()) return;'."\n\n".'define(\'FEATHER_STOPWORDS_LOADED\', 1);'."\n\n".'$stopwords = '.var_export($stopwords, true).';'."\n\n".'?>';
-    featherbb_write_cache_file('cache_stopwords.php', $content);
-}
-
 
 //
 // Safely write out a cache file.
