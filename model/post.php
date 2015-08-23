@@ -20,52 +20,53 @@ class post
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
  
     //  Get some info about the post
     public function get_info_post($tid, $fid)
     {
+        $this->hook->fire('get_info_post_start', $tid, $fid);
 
+        $cur_posting['where'] = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
 
         if ($tid) {
-            $select_get_info_post = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
-            $where_get_info_post_any = array(
-                array('fp.read_forum' => 'IS NULL'),
-                array('fp.read_forum' => '1')
-            );
+            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
 
             $cur_posting = DB::for_table('topics')
-                ->table_alias('t')
-                ->select_many($select_get_info_post)
-                ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                ->left_outer_join('topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
-                ->where_any_is($where_get_info_post_any)
-                ->where('t.id', $tid)
-                ->find_one();
+                            ->table_alias('t')
+                            ->select_many($cur_posting['select'])
+                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
+                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                            ->where_any_is($cur_posting['where'])
+                            ->where('t.id', $tid);
 
         } else {
-            $select_get_info_post = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics');
-            $where_get_info_post_any = array(
-                array('fp.read_forum' => 'IS NULL'),
-                array('fp.read_forum' => '1')
-            );
+            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics');
 
             $cur_posting = DB::for_table('forums')
-                ->table_alias('f')
-                ->select_many($select_get_info_post)
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                ->where_any_is($where_get_info_post_any)
-                ->where('f.id', $fid)
-                ->find_one();
+                            ->table_alias('f')
+                            ->select_many($cur_posting['select'])
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($cur_posting['where'])
+                            ->where('f.id', $fid);
         }
+
+        $cur_posting = $this->hook->fireDB('get_info_post_query', $cur_posting);
+        $cur_posting = $cur_posting->find_one();
 
         if (!$cur_posting) {
             message(__('Bad request'), '404');
         }
+
+        $cur_posting = $this->hook->fire('get_info_post', $cur_posting);
 
         return $cur_posting;
     }
@@ -75,11 +76,15 @@ class post
     {
         global $lang_antispam, $lang_antispam_questions, $pd;
 
+        $fid = $this->hook->fire('check_errors_before_post_start', $fid);
+
         // Antispam feature
         if ($this->user->is_guest) {
 
             // It's a guest, so we have to validate the username
             $errors = check_username(feather_trim($this->request->post('req_username')), $errors);
+
+            $errors = $this->hook->fire('check_errors_before_post_antispam', $errors);
 
             $question = $this->request->post('captcha_q') ? trim($this->request->post('captcha_q')) : '';
             $answer = $this->request->post('captcha') ? strtoupper(trim($this->request->post('captcha'))) : '';
@@ -99,25 +104,14 @@ class post
             $errors[] = sprintf(__('Flood start'), $this->user->g_post_flood, $this->user->g_post_flood - (time() - $this->user->last_post));
         }
 
-        if ($tid) {
-            $subject_tid = DB::for_table('topics')
-                ->where('id', $tid)
-                ->find_one_col('subject');
-
-            if (!$subject_tid) {
-                message(__('Bad request'), '404');
-            }
-            $url_subject = url_friendly($subject_tid);
-        } else {
-            $url_subject = '';
-        }
-
         // If it's a new topic
         if ($fid) {
             $subject = feather_trim($this->request->post('req_subject'));
+            $subject = $this->hook->fire('check_errors_before_new_topic_subject', $subject);
 
             if ($this->config['o_censoring'] == '1') {
                 $censored_subject = feather_trim(censor_words($subject));
+                $censored_subject = $this->hook->fire('check_errors_before_censored', $censored_subject);
             }
 
             if ($subject == '') {
@@ -129,6 +123,8 @@ class post
             } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
                 $errors[] = __('All caps subject');
             }
+
+            $errors = $this->hook->fire('check_errors_before_new_topic_errors', $errors);
         }
 
         if ($this->user->is_guest) {
@@ -136,6 +132,9 @@ class post
 
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
                 require FEATHER_ROOT.'include/email.php';
+
+                $errors = $this->hook->fire('check_errors_before_post_email', $errors, $email);
+
                 if (!is_valid_email($email)) {
                     $errors[] = __('Invalid email');
                 }
@@ -154,6 +153,7 @@ class post
 
         // Clean up message from POST
         $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
+        $message = $this->hook->fire('check_errors_before_post_message', $message);
 
         // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
@@ -166,9 +166,11 @@ class post
         if ($this->config['p_message_bbcode'] == '1') {
             require FEATHER_ROOT.'include/parser.php';
             $message = preparse_bbcode($message, $errors);
+            $message = $this->hook->fire('check_errors_before_post_bbcode', $message);
         }
 
         if (empty($errors)) {
+            $errors = $this->hook->fire('check_errors_before_post_no_error', $errors);
             if ($message == '') {
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
@@ -181,6 +183,8 @@ class post
             }
         }
 
+        $errors = $this->hook->fire('check_errors_before_post', $errors);
+
         return $errors;
     }
 
@@ -188,6 +192,8 @@ class post
     public function setup_variables($errors, $is_admmod)
     {
         $post = array();
+
+        $post = $this->hook->fire('setup_variables_start', $post, $errors, $is_admmod);
 
         if (!$this->user->is_guest) {
             $post['username'] = $this->user->username;
@@ -220,6 +226,8 @@ class post
 
         $post['time'] = time();
 
+        $post = $this->hook->fire('setup_variables', $post);
+
         return $post;
     }
 
@@ -228,24 +236,27 @@ class post
     {
         $new = array();
 
+        $new = $this->hook->fireDB('insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
+
         if (!$this->user->is_guest) {
             $new['tid'] = $tid;
 
             // Insert the new post
-            $insert_post = array(
+            $query['insert'] = array(
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
             );
 
-            DB::for_table('posts')
-                ->create()
-                ->set($insert_post)
-                ->save();
+            $query = DB::for_table('posts')
+                        ->create()
+                        ->set($query['insert']);
+            $query = $this->hook->fireDB('insert_reply_guest_query', $query);
+            $query = $query->save();
 
             $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'posts');
 
@@ -255,31 +266,33 @@ class post
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
 
-                    $insert_subscription = array(
+                    $subscription['insert'] = array(
                         'user_id'   =>  $this->user->id,
                         'topic_id'  =>  $tid
                     );
 
-                    DB::for_table('topic_subscriptions')
-                        ->create()
-                        ->set($insert_subscription)
-                        ->save();
+                    $subscription = DB::for_table('topic_subscriptions')
+                                        ->create()
+                                        ->set($subscription['insert']);
+                    $subscription = $this->hook->fireDB('insert_reply_subscription', $subscription);
+                    $subscription = $subscription->save();
 
                 // We reply and we don't want to be subscribed anymore
                 } elseif ($post['subscribe'] == '0' && $is_subscribed) {
 
-                    DB::for_table('topic_subscriptions')
-                        ->where('user_id', $this->user->id)
-                        ->where('topic_id', $tid)
-                        ->delete_many();
+                    $unsubscription = DB::for_table('topic_subscriptions')
+                                        ->where('user_id', $this->user->id)
+                                        ->where('topic_id', $tid);
+                    $unsubscription = $this->hook->fireDB('insert_reply_unsubscription', $unsubscription);
+                    $unsubscription = $unsubscription->delete_many();
 
                 }
             }
         } else {
             // It's a guest. Insert the new post
-            $insert_post = array(
+            $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -287,34 +300,38 @@ class post
             );
 
             if ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') {
-                $insert_post['poster_email'] = $post['email'];
+                $query['insert']['poster_email'] = $post['email'];
             }
 
-            DB::for_table('posts')
-                ->create()
-                ->set($insert_post)
-                ->save();
-
+            $query = DB::for_table('posts')
+                        ->create()
+                        ->set($query['insert']);
+            $query = $this->hook->fireDB('insert_reply_member_query', $query);
+            $query = $query->save();
 
             $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'posts');
         }
 
         // Update topic
-        $update_topic = array(
+        $topic['update'] = array(
             'last_post' => $post['time'],
             'last_post_id'  => $new['pid'],
             'last_poster'  => $post['username'],
         );
 
-        DB::for_table('topics')->where('id', $tid)
-            ->find_one()
-            ->set($update_topic)
-            ->set_expr('num_replies', 'num_replies+1')
-            ->save();
+        $topic = DB::for_table('topics')
+                    ->where('id', $tid)
+                    ->find_one()
+                    ->set($topic['update'])
+                    ->set_expr('num_replies', 'num_replies+1');
+        $topic = $this->hook->fireDB('insert_reply_update_query', $topic);
+        $topic = $topic->save();
 
         update_search_index('post', $new['pid'], $post['message']);
 
         update_forum($cur_posting['id']);
+
+        $new = $this->hook->fireDB('insert_reply', $new);
 
         return $new;
     }
@@ -322,33 +339,37 @@ class post
     // Send notifications for replies
     public function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
     {
+        $this->hook->fire('send_notifications_reply_start', $tid, $cur_posting, $new_pid, $post);
+
         // Get the post time for the previous post in this topic
         $previous_post_time = DB::for_table('posts')
-            ->where('topic_id', $tid)
-            ->order_by_desc('id')
-            ->find_one_col('posted');
+                                ->where('topic_id', $tid)
+                                ->order_by_desc('id');
+        $previous_post_time = $this->hook->fireDB('send_notifications_reply_previous', $previous_post_time);
+        $previous_post_time = $previous_post_time->find_one_col('posted');
 
         // Get any subscribed users that should be notified (banned users are excluded)
-        $where_send_notifications_reply = array(
+        $result['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $select_send_notifications_reply = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
 
         $result = DB::for_table('users')
-            ->table_alias('u')
-            ->select_many($select_send_notifications_reply)
-            ->inner_join('topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
-            ->left_outer_join('online', array('u.id', '=', 'o.user_id'), 'o')
-            ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
-            ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time)
-            ->where_null('b.username')
-            ->where_any_is($where_send_notifications_reply)
-            ->where('s.topic_id', $tid)
-            ->where_not_equal('u.id', $this->user->id)
-            ->find_many();
+                    ->table_alias('u')
+                    ->select_many($result['select'])
+                    ->inner_join('topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
+                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
+                    ->left_outer_join('online', array('u.id', '=', 'o.user_id'), 'o')
+                    ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
+                    ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time)
+                    ->where_null('b.username')
+                    ->where_any_is($result['where'])
+                    ->where('s.topic_id', $tid)
+                    ->where_not_equal('u.id', $this->user->id);
+        $result = $this->hook->fireDB('send_notifications_reply_query', $result);
+        $result = $result->find_many();
 
         if ($result) {
             require_once FEATHER_ROOT.'include/email.php';
@@ -370,13 +391,16 @@ class post
                     if (file_exists(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
                         $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+                        $mail_tpl = $this->hook->fire('send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
                         $mail_tpl_full = trim(file_get_contents(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = $this->hook->fire('send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
                         $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
+                        $mail_subject = $this->hook->fire('send_notifications_reply_mail_subject', $mail_subject);
                         $mail_message = trim(substr($mail_tpl, $first_crlf));
 
                         $first_crlf = strpos($mail_tpl_full, "\n");
@@ -387,16 +411,18 @@ class post
                         $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
                         $mail_message = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid, $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', get_link('unsubscribe/topic/'.$tid.'/'), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                        $mail_message = $this->hook->fire('send_notifications_reply_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject_full);
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
                         $mail_message_full = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid, $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', get_link('unsubscribe/topic/'.$tid.'/'), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
+                        $mail_message_full = $this->hook->fire('send_notifications_reply_mail_message_full', $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
                         $notification_emails[$cur_subscriber['language']][1] = $mail_message;
@@ -410,12 +436,14 @@ class post
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
+
+            $this->hook->fire('send_notifications_reply');
 
             unset($cleaned_message);
         }
@@ -426,8 +454,10 @@ class post
     {
         $new = array();
 
+        $new = $this->hook->fireDB('insert_topic_start', $new, $post, $fid);
+
         // Create the topic
-        $insert_topic = array(
+        $topic['insert'] = array(
             'poster' => $post['username'],
             'subject' => $post['subject'],
             'posted'  => $post['time'],
@@ -437,10 +467,11 @@ class post
             'forum_id'  => $fid,
         );
 
-        DB::for_table('topics')
-            ->create()
-            ->set($insert_topic)
-            ->save();
+        $topic = DB::for_table('topics')
+                    ->create()
+                    ->set($topic['insert']);
+        $topic = $this->hook->fireDB('insert_topic_create', $topic);
+        $topic = $topic->save();
 
         $new['tid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
@@ -448,39 +479,41 @@ class post
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1' && $post['subscribe']) {
 
-                $insert_subscription = array(
+                $subscription['insert'] = array(
                     'user_id'   =>  $this->user->id,
                     'topic_id'  =>  $new['tid']
                 );
 
-                DB::for_table('topic_subscriptions')
-                    ->create()
-                    ->set($insert_subscription)
-                    ->save();
+                $subscription = DB::for_table('topic_subscriptions')
+                                    ->create()
+                                    ->set($subscription['insert']);
+                $subscription = $this->hook->fireDB('insert_topic_subscription_member', $subscription);
+                $subscription = $subscription->save();
 
             }
 
             // Create the post ("topic post")
-            $insert_post = array(
+            $query['insert'] = array(
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
             );
 
-            DB::for_table('posts')
-                ->create()
-                ->set($insert_post)
-                ->save();
+            $query = DB::for_table('posts')
+                        ->create()
+                        ->set($query['insert']);
+            $query = $this->hook->fireDB('insert_topic_post_member', $query);
+            $query = $query->save();
         } else {
             // It's a guest
             // Create the post ("topic post")
-            $insert_post = array(
+            $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_ip' => get_remote_address(),
+                'poster_ip' => $this->request->getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -488,30 +521,35 @@ class post
             );
 
             if ($this->config['p_force_guest_email'] == '1' || $post['email'] != '') {
-                $insert_post['poster_email'] = $post['email'];
+                $query['poster_email'] = $post['email'];
             }
 
-            DB::for_table('posts')
+            $query = DB::for_table('posts')
                 ->create()
-                ->set($insert_post)
-                ->save();
+                ->set($query['insert']);
+            $query = $this->hook->fireDB('insert_topic_post_member', $query);
+            $query = $query->save();
         }
         $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
         // Update the topic with last_post_id
-        $update_topic = array(
+        $topic['update'] = array(
             'last_post_id'  =>  $new['pid'],
             'first_post_id' =>  $new['pid'],
         );
 
-        DB::for_table('topics')->where('id', $new['tid'])
-            ->find_one()
-            ->set($update_topic)
-            ->save();
+        $topic = DB::for_table('topics')
+                    ->where('id', $new['tid'])
+                    ->find_one()
+                    ->set($topic['update']);
+        $topic = $this->hook->fireDB('insert_topic_post_topic', $topic);
+        $topic = $topic->save();
 
         update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
         update_forum($fid);
+
+        $new = $this->hook->fireDB('insert_topic', $new);
 
         return $new;
     }
@@ -519,30 +557,36 @@ class post
     // Send notifications for new topics
     public function send_notifications_new_topic($post, $cur_posting, $new_tid)
     {
+        $this->hook->fire('send_notifications_new_topic_start', $post, $cur_posting, $new_tid);
+
         // Get any subscribed users that should be notified (banned users are excluded)
-        $where_send_notifications_reply = array(
+        $result['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $select_send_notifications_reply = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
 
         $result = DB::for_table('users')
-            ->table_alias('u')
-            ->select_many($select_send_notifications_reply)
-            ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
-            ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
-            ->where_null('b.username')
-            ->where_any_is($where_send_notifications_reply)
-            ->where('s.forum_id', $cur_posting['id'])
-            ->where_not_equal('u.id', $this->user->id)
-            ->find_many();
+                    ->table_alias('u')
+                    ->select_many($result['select'])
+                    ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
+                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
+                    ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
+                    ->where_null('b.username')
+                    ->where_any_is($result['where'])
+                    ->where('s.forum_id', $cur_posting['id'])
+                    ->where_not_equal('u.id', $this->user->id);
+        $result = $this->hook->fireDB('send_notifications_new_topic_query');
+        $result = $result->find_many();
 
         if ($result) {
             require_once FEATHER_ROOT.'include/email.php';
 
             $notification_emails = array();
+
+            $censored_message = feather_trim(censor_words($post['message']));
+            $censored_subject = feather_trim(censor_words($post['subject']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = bbcode2email($censored_message, -1);
@@ -557,6 +601,7 @@ class post
                     if (file_exists(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
                         $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+                        $mail_tpl = $this->hook->fire('send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
                         $mail_tpl_full = trim(file_get_contents(FEATHER_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
@@ -575,8 +620,9 @@ class post
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
                         $mail_message = str_replace('<topic_url>', get_link('topic/'.$new_tid.'/'), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'], $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', get_link('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                        $mail_message = $this->hook->fire('send_notifications_new_topic_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
                         $mail_message_full = str_replace('<topic_subject>', $this->config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message_full);
@@ -584,8 +630,9 @@ class post
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
                         $mail_message_full = str_replace('<topic_url>', get_link('topic/'.$new_tid.'/'), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'], $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', get_link('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
+                        $mail_message_full = $this->hook->fire('send_notifications_new_topic_mail_message_full', $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
                         $notification_emails[$cur_subscriber['language']][1] = $mail_message;
@@ -597,12 +644,14 @@ class post
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
+
+            $this->hook->fire('send_notifications_new_topic');
 
             unset($cleaned_message);
         }
@@ -611,8 +660,11 @@ class post
     // Warn the admin if a banned user posts
     public function warn_banned_user($post, $new_pid)
     {
+        $this->hook->fire('warn_banned_user_start', $post, $new_pid);
+
         // Load the "banned email post" template
         $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = $this->hook->fire('warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
@@ -623,29 +675,34 @@ class post
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
         $mail_message = str_replace('<post_url>', get_link('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+        $mail_message = $this->hook->fire('warn_banned_user_mail_message', $mail_message);
 
-        pun_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+        feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
     }
 
     // Increment post count, change group if needed
     public function increment_post_count($post, $new_tid)
     {
+        $this->hook->fire('increment_post_count_start', $post, $new_tid);
+
         if (!$this->user->is_guest) {
-            DB::for_table('users')
-                ->where('id', $this->user->id)
-                ->find_one()
-                ->set('last_post', $post['time'])
-                ->set_expr('num_posts', 'num_posts+1')
-                ->save();
+            $increment = DB::for_table('users')
+                            ->where('id', $this->user->id)
+                            ->find_one()
+                            ->set('last_post', $post['time'])
+                            ->set_expr('num_posts', 'num_posts+1');
+            $increment = $this->hook->fireDB('increment_post_count_query', $increment);
+            $increment = $increment->save();
 
             // Promote this user to a new group if enabled
             if ($this->user->g_promote_next_group != 0 && $this->user->num_posts + 1 >= $this->user->g_promote_min_posts) {
                 $new_group_id = $this->user->g_promote_next_group;
-                DB::for_table('users')
-                    ->where('id', $this->user->id)
-                    ->find_one()
-                    ->set('group_id', $new_group_id)
-                    ->save();
+                $promote = DB::for_table('users')
+                            ->where('id', $this->user->id)
+                            ->find_one()
+                            ->set('group_id', $new_group_id);
+                $promote = $this->hook->fireDB('increment_post_count_query', $promote);
+                $promote = $promote->save();
             }
 
             // Topic tracking stuff...
@@ -654,12 +711,15 @@ class post
             set_tracked_topics($tracked_topics);
         } else {
             // Update the last_post field for guests
-            DB::for_table('online')
-                ->where('ident', get_remote_address())
-                ->find_one()
-                ->set('last_post', $post['time'])
-                ->save();
+            $last_post = DB::for_table('online')
+                            ->where('ident', $this->request->getIp())
+                            ->find_one()
+                            ->set('last_post', $post['time']);
+            $last_post = $this->hook->fireDB('increment_post_count_last_post', $last_post);
+            $last_post = $last_post->save();
         }
+
+        $this->hook->fire('increment_post_count');
     }
 
     //
@@ -668,6 +728,8 @@ class post
     public function split_text($text, $start, $end, $retab = true)
     {
         $result = array(0 => array(), 1 => array()); // 0 = inside, 1 = outside
+
+        $result = $this->hook->fire('split_text_start', $result, $text, $start, $end, $retab);
 
         // split the text into parts
         $parts = preg_split('%'.preg_quote($start, '%').'(.*)'.preg_quote($end, '%').'%Us', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -683,20 +745,25 @@ class post
             $result[1] = str_replace("\t", $spaces, $result[1]);
         }
 
+        $result = $this->hook->fire('split_text_start', $result);
+
         return $result;
     }
 
     // If we are quoting a message
     public function get_quote_message($qid, $tid)
     {
+        $quote = array();
 
+        $quote = $this->hook->fire('get_quote_message', $quote, $qid, $tid);
 
-        $select_get_quote_message = array('poster', 'message');
+        $quote['select'] = array('poster', 'message');
 
-        $quote = DB::for_table('posts')->select_many($select_get_quote_message)
-                 ->where('id', $qid)
-                 ->where('topic_id', $tid)
-                 ->find_one();
+        $quote = DB::for_table('posts')->select_many($quote['select'])
+                     ->where('id', $qid)
+                     ->where('topic_id', $tid);
+        $quote = $this->hook->fireDB('get_quote_message_query', $quote);
+        $quote = $quote->find_one();
 
         if (!$quote) {
             message(__('Bad request'), '404');
@@ -755,12 +822,16 @@ class post
             $quote = '> '.$quote['poster'].' '.__('wrote')."\n\n".'> '.$quote['message']."\n";
         }
 
+        $quote = $this->hook->fire('get_quote_message', $quote);
+
         return $quote;
     }
 
     // Get the current state of checkboxes
     public function get_checkboxes($fid, $is_admmod, $is_subscribed)
     {
+        $this->hook->fire('get_checkboxes_start', $fid, $is_admmod, $is_subscribed);
+
         $cur_index = 1;
 
         $checkboxes = array();
@@ -795,6 +866,8 @@ class post
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
+        $checkboxes = $this->hook->fire('get_checkboxes', $checkboxes);
+
         return $checkboxes;
     }
 
@@ -805,19 +878,24 @@ class post
 
         $post_data = array();
 
+        $post_data = $this->hook->fire('topic_review_start', $post_data, $tid);
+
         require_once FEATHER_ROOT.'include/parser.php';
 
         $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 
         $result = DB::for_table('posts')->select_many($select_topic_review)
-            ->where('topic_id', $tid)
-            ->order_by_desc('id')
-            ->find_many();
+                    ->where('topic_id', $tid)
+                    ->order_by_desc('id');
+        $result = $this->hook->fire('topic_review_query', $result);
+        $result = $result->find_many();
 
         foreach($result as $cur_post) {
             $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
             $post_data[] = $cur_post;
         }
+
+        $post_data = $this->hook->fire('topic_review', $post_data);
 
         return $post_data;
     }

@@ -20,11 +20,18 @@ class header
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function get_reports()
     {
-        $result_header = DB::for_table('reports')->where_null('zapped')->find_one();
+        $this->hook->fire('get_reports_start');
+
+        $result_header = DB::for_table('reports')->where_null('zapped');
+
+        $result_header = $this->hook->fireDB('get_reports_query', $result_header);
+
+        $result_header = $result_header->find_one();
 
         if ($result_header) {
             return true;

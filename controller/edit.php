@@ -66,7 +66,7 @@ class edit
 
         if ($this->feather->request()->isPost()) {
             // Let's see if everything went right
-            $errors = $this->model->check_errors_before_edit($id, $can_edit_subject, $errors);
+            $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
 
             // Setup some variables before post
             $post = $this->model->setup_variables($cur_post, $is_admmod, $can_edit_subject, $errors);

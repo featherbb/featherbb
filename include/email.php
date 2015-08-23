@@ -259,7 +259,7 @@ function bbcode2email($text, $wrap_length = 72)
 //
 // Wrapper for PHP's mail()
 //
-function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
+function feather_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
 {
     global $feather_config;
 

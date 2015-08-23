@@ -311,7 +311,7 @@ class viewtopic
                     if ((($cur_post['email_setting'] == '0' && !$this->user->is_guest) || $this->user->is_admmod) && $this->user->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.feather_escape($cur_post['email']).'">'.__('Email').'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('mail/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.get_link('email/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
                     }
 
                     if ($cur_post['url'] != '') {
@@ -360,7 +360,7 @@ class viewtopic
                 if ($cur_topic['closed'] == '0') {
                     if ($cur_post['poster_id'] == $this->user->id) {
                         if ((($start_from + $post_count) == 1 && $this->user->g_delete_topics == '1') || (($start_from + $post_count) > 1 && $this->user->g_delete_posts == '1')) {
-                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.get_link('delete/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
                         }
                         if ($this->user->g_edit_posts == '1') {
                             $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.get_link('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';

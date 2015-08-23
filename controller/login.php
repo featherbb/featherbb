@@ -37,7 +37,7 @@ class login
         }
 
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
-        $redirect_url = $this->model->get_redirect_url($_SERVER);
+        $redirect_url = $this->model->get_redirect_url();
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Login'));
         $required_fields = array('req_username' => __('Username'), 'req_password' => __('Password'));

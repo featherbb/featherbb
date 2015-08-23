@@ -794,19 +794,6 @@ function feather_hash($str)
 
 
 //
-// Try to determine the correct remote IP-address
-//
-function get_remote_address()
-{
-    $feather = \Slim\Slim::getInstance();
-
-    $remote_addr = $feather->request->getIp();
-
-    return $remote_addr;
-}
-
-
-//
 // Calls htmlspecialchars with a few options already set
 //
 function feather_escape($str)
@@ -1123,6 +1110,26 @@ function strip_bad_multibyte_chars($str)
     }
 
     return $result;
+}
+
+//
+// Generate a cache ID based on the last modification time for all stopwords files
+//
+function generate_stopwords_cache_id()
+{
+    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
+    if ($files === false) {
+        return 'cache_id_error';
+    }
+
+    $hash = array();
+
+    foreach ($files as $file) {
+        $hash[] = $file;
+        $hash[] = filemtime($file);
+    }
+
+    return sha1(implode('|', $hash));
 }
 
 //

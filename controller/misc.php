@@ -129,7 +129,7 @@ class misc
 
 
         if ($this->feather->request()->isPost()) {
-            $this->model->send_email($mail, $id);
+            $this->model->send_email($mail);
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Send email to').' '.feather_escape($mail['recipient']));
