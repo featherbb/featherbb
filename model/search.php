@@ -21,8 +21,8 @@ class search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
- 
+
+
     public function get_search_results()
     {
         global $lang_search;
@@ -533,14 +533,6 @@ class search
                 ->set($insert_cache)
                 ->save();
 
-            if ($search_type[0] != 'action') {
-                $this->db->end_transaction();
-                $this->db->close();
-
-                // Redirect the user to the cached result page
-                header('Location: '.get_link('search/?search_id='.$search_id));
-                exit;
-            }
         }
 
         // If we're on the new posts search, display a "mark all as read" link
@@ -778,7 +770,7 @@ class search
     public function get_list_forums()
     {
         global $lang_search;
-        
+
         $output = '';
 
         $select_get_list_forums = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
@@ -838,7 +830,7 @@ class search
             $output .= "\t\t\t\t\t\t".'<select id="forum" name="forum">'."\n";
 
             $cur_category = 0;
-            while ($cur_forum = $this->db->fetch_assoc($result)) {
+            foreach($result as $cur_forum) {
                 if ($cur_forum['cid'] != $cur_category) {
                     // A new category since last iteration?
 
@@ -857,7 +849,7 @@ class search
             $output .= "\t\t\t\t\t\t".'</select>'."\n";
             $output .= "\t\t\t\t\t\t".'<br /></label>'."\n";
         }
-        
+
         return $output;
     }
 }
