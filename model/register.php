@@ -20,6 +20,7 @@ class register
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
  
     public function check_for_errors()
@@ -29,11 +30,14 @@ class register
         $user = array();
         $user['errors'] = '';
 
+        $user = $this->hook->fire('check_for_errors_start', $user);
+
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
         $already_registered = DB::for_table('users')
                                   ->where('registration_ip', $this->request->getIp())
-                                  ->where_gt('registered', time() - 3600)
-                                  ->find_one();
+                                  ->where_gt('registered', time() - 3600);
+        $already_registered = $this->hook->fireDB('check_for_errors_ip_query', $already_registered);
+        $already_registered = $already_registered->find_one();
 
         if ($already_registered) {
             message(__('Registration flood'));
@@ -94,9 +98,11 @@ class register
         // Check if someone else already has registered with that email address
         $dupe_list = array();
 
-        $dupe_mail = DB::for_table('users')->select('username')
-            ->where('email', $user['email1'])
-            ->find_many();
+        $dupe_mail = DB::for_table('users')
+                        ->select('username')
+                        ->where('email', $user['email1']);
+        $dupe_mail = $this->hook->fireDB('check_for_errors_dupe', $dupe_mail);
+        $dupe_mail = $dupe_mail->find_many();
 
         if ($dupe_mail) {
             if ($this->config['p_allow_dupe_email'] == '0') {
@@ -118,11 +124,15 @@ class register
             $user['language'] = $this->config['o_default_lang'];
         }
 
+        $user = $this->hook->fire('check_for_errors', $user);
+
         return $user;
     }
 
     public function insert_user($user)
     {
+        $user = $this->hook->fire('insert_user_start', $user);
+
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
@@ -130,7 +140,7 @@ class register
         $password_hash = feather_hash($user['password1']);
 
         // Add the user
-        $insert_user = array(
+        $user['insert'] = array(
             'username'        => $user['username'],
             'group_id'        => $intial_group_id,
             'password'        => $password_hash,
@@ -145,10 +155,11 @@ class register
             'last_visit'      => $now,
         );
 
-        DB::for_table('users')
-            ->create()
-            ->set($insert_user)
-            ->save();
+        $user = DB::for_table('users')
+                    ->create()
+                    ->set($user['insert']);
+        $user = $this->hook->fireDB('insert_user_query', $user);
+        $user = $user->save();
 
         $new_uid = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'users');
 
@@ -168,16 +179,19 @@ class register
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
                 $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_register.tpl'));
+                $mail_tpl = $this->hook->fire('insert_user_banned_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
                 $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
+                $mail_subject = $this->hook->fire('insert_user_banned_mail_subject', $mail_subject);
 
+                $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<email>', $user['email1'], $mail_message);
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                $mail_message = $this->hook->fire('insert_user_banned_mail_message', $mail_message);
 
                 feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
@@ -186,16 +200,19 @@ class register
             if (!empty($dupe_list)) {
                 // Load the "dupe email register" template
                 $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/dupe_email_register.tpl'));
+                $mail_tpl = $this->hook->fire('insert_user_dupe_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
                 $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
+                $mail_subject = $this->hook->fire('insert_user_dupe_mail_subject', $mail_subject);
 
+                $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                $mail_message = $this->hook->fire('insert_user_dupe_mail_message', $mail_message);
 
                 feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
@@ -204,17 +221,20 @@ class register
             if ($this->config['o_regs_report'] == '1') {
                 // Load the "new user" template
                 $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/new_user.tpl'));
+                $mail_tpl = $this->hook->fire('insert_user_new_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
                 $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
+                $mail_subject = $this->hook->fire('insert_user_new_mail_subject', $mail_subject);
 
+                $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
                 $mail_message = str_replace('<profile_url>', get_link('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<admin_url>', get_link('user/'.$new_uid.'/section/admin/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                $mail_message = $this->hook->fire('insert_user_new_mail_message', $mail_message);
 
                 feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
@@ -224,18 +244,21 @@ class register
         if ($this->config['o_regs_verify'] == '1') {
             // Load the "welcome" template
             $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/welcome.tpl'));
+            $mail_tpl = $this->hook->fire('insert_user_welcome_mail_tpl', $mail_tpl);
 
             // The first row contains the subject
             $first_crlf = strpos($mail_tpl, "\n");
             $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-            $mail_message = trim(substr($mail_tpl, $first_crlf));
+            $mail_subject = $this->hook->fire('insert_user_welcome_mail_subject', $mail_subject);
 
+            $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_subject = str_replace('<board_title>', $this->config['o_board_title'], $mail_subject);
             $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<password>', $user['password1'], $mail_message);
             $mail_message = str_replace('<login_url>', get_link('login/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+            $mail_message = $this->hook->fire('insert_user_welcome_mail_message', $mail_message);
 
             feather_mail($user['email1'], $mail_subject, $mail_message);
 
@@ -243,6 +266,8 @@ class register
         }
 
         feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
+
+        $this->hook->fire('insert_user');
 
         redirect(get_base_url(), __('Reg complete'));
     }
