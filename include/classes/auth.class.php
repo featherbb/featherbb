@@ -97,9 +97,10 @@ class Auth extends \Slim\Middleware
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
-        $result = \DB::for_table('online')->select_many($select_update_users_online)
-            ->where_lt('logged', $this->app->now-$this->app->forum_settings['o_timeout_online'])
-            ->find_many();
+        $result = \DB::for_table('online')
+                    ->select_many($select_update_users_online)
+                    ->where_lt('logged', $this->app->now-$this->app->forum_settings['o_timeout_online'])
+                    ->find_many();
 
         foreach ($result as $cur_user) {
             // If the entry is a guest, delete it
@@ -173,7 +174,8 @@ class Auth extends \Slim\Middleware
             }
 
             if ($is_banned) {
-                \DB::for_table('online')->where('ident', $this->app->user->username)
+                \DB::for_table('online')
+                    ->where('ident', $this->app->user->username)
                     ->delete_many();
                 message(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.feather_escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.feather_escape($this->app->forum_settings['o_admin_email']).'">'.feather_escape($this->app->forum_settings['o_admin_email']).'</a>.', true, true, true);
             }
