@@ -64,7 +64,9 @@ class Hooks extends \Slim\Slim
                 }
             }
 
-            if ($count == 1) {
+            // If we only have one hook binded or the argument is not an array,
+            // let's return the first output
+            if ($count == 1 || !is_array($args[0])) {
                 return $output[0];
             }
             else {
