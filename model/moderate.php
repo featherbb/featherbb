@@ -22,7 +22,7 @@ class moderate
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
- 
+
     public function display_ip_info($ip)
     {
         $ip = $this->hook->fire('display_ip_info', $ip);
@@ -35,7 +35,7 @@ class moderate
 
         $ip = DB::for_table('posts')
             ->where('id', $pid);
-        $ip = $this->hook->fireDB('display_ip_address_post_query', $pid);
+        $ip = $this->hook->fireDB('display_ip_address_post_query', $ip);
         $ip = $ip->find_one_col('poster_ip');
 
         if (!$ip) {
@@ -493,7 +493,7 @@ class moderate
     public function move_topics_to($fid, $tfid = null, $param = null)
     {
         $fid = $this->hook->fire('move_topics_to_start', $fid);
-        
+
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             message(__('Bad request'), '404');
         }
@@ -983,7 +983,7 @@ class moderate
 
         return $topic_data;
     }
-    
+
     public function stick_topic($id, $fid)
     {
         $stick_topic = DB::for_table('topics')
@@ -1005,7 +1005,7 @@ class moderate
         $unstick_topic = $this->hook->fireDB('unstick_topic', $unstick_topic);
         $unstick_topic = $unstick_topic->save();
     }
-    
+
     public function open_topic($id, $fid)
     {
         $open_topic = DB::for_table('topics')
@@ -1016,7 +1016,7 @@ class moderate
         $open_topic = $this->hook->fireDB('open_topic', $open_topic);
         $open_topic = $open_topic->save();
     }
-    
+
     public function close_topic($id, $fid)
     {
         $close_topic = DB::for_table('topics')
@@ -1027,7 +1027,7 @@ class moderate
         $close_topic = $this->hook->fireDB('close_topic', $close_topic);
         $close_topic = $close_topic->save();
     }
-    
+
     public function close_multiple_topics($action, $topics, $fid)
     {
         $close_multiple_topics = DB::for_table('topics')
@@ -1035,7 +1035,7 @@ class moderate
         $close_multiple_topics = $this->hook->fireDB('open_topic', $close_multiple_topics);
         $close_multiple_topics = $close_multiple_topics->update_many('closed', $action);
     }
-    
+
     public function get_subject_tid($id)
     {
         $subject = DB::for_table('topics')
