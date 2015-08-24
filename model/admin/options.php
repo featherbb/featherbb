@@ -229,11 +229,7 @@ class options
         }
 
         // Regenerate the config cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_config_cache();
+        $this->feather->cache->store('config', \model\cache::get_config());
         $this->clear_feed_cache();
 
         redirect(get_link('admin/options/'), __('Options updated redirect'));
@@ -247,7 +243,11 @@ class options
             if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
                 @unlink(FORUM_CACHE_DIR.$entry);
             }
-            featherbb_invalidate_cached_file(FORUM_CACHE_DIR.$entry);
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate(FORUM_CACHE_DIR.$entry, true);
+            } elseif (function_exists('apc_delete_file')) {
+                @apc_delete_file(FORUM_CACHE_DIR.$entry);
+            }
         }
         $d->close();
     }

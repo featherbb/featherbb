@@ -86,6 +86,28 @@ if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
     define('FORUM_EXTERN_MAX_SUBJECT_LENGTH', 30);
 }
 
+function featherbb_write_cache_file($file, $content)
+{
+    $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
+    if (!$fh) {
+        error('Unable to write cache file '.feather_escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.feather_escape(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
+    }
+
+    flock($fh, LOCK_EX);
+    ftruncate($fh, 0);
+
+    fwrite($fh, $content);
+
+    flock($fh, LOCK_UN);
+    fclose($fh);
+
+    if (function_exists('opcache_invalidate')) {
+        opcache_invalidate(FORUM_CACHE_DIR.$file, true);
+    } elseif (function_exists('apc_delete_file')) {
+        @apc_delete_file(FORUM_CACHE_DIR.$file);
+    }
+}
+
 //
 // Converts the CDATA end sequence ]]> into ]]&gt;
 //
