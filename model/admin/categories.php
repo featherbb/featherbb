@@ -20,10 +20,13 @@ class categories
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function add_category($cat_name)
     {
+        $cat_name = $this->hook->fire('add_category', $cat_name);
+
         $set_add_category = array('cat_name' => $cat_name);
 
         return DB::for_table('categories')
@@ -34,6 +37,8 @@ class categories
 
     public function update_category(array $category)
     {
+        $category = $this->hook->fire('update_category', $category);
+
         $set_update_category = array('cat_name' => $category['name'],
                                     'disp_position' => $category['order']);
 
@@ -45,10 +50,13 @@ class categories
 
     public function delete_category($cat_to_delete)
     {
+        $cat_to_delete = $this->hook->fire('delete_category_start', $cat_to_delete);
+
         $forums_in_cat = DB::for_table('forums')
                             ->select('id')
-                            ->where('cat_id', $cat_to_delete)
-                            ->find_many();
+                            ->where('cat_id', $cat_to_delete);
+        $forums_in_cat = $this->hook->fireDB('delete_forums_in_cat_query', $forums_in_cat);
+        $forums_in_cat = $forums_in_cat->find_many();
 
         foreach ($forums_in_cat as $forum) {
             // Prune all posts and topics
@@ -66,17 +74,18 @@ class categories
                     ->table_alias('t1')
                     ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
                     ->where_null('t2.id')
-                    ->where_not_null('t1.moved_to')
-                    ->find_many();
+                    ->where_not_null('t1.moved_to');
+        $orphans = $this->hook->fireDB('delete_orphan_forums_query', $orphans);
+        $orphans = $orphans->find_many();
 
         if (count($orphans) > 0) {
             $orphans->delete_many();
         }
 
         // Delete category
-        DB::for_table('categories')
-            ->find_one($cat_to_delete)
-            ->delete();
+        $result = DB::for_table('categories');
+        $result = $this->hook->fireDB('find_forums_in_cat', $result);
+        $result = $result->find_one($cat_to_delete)->delete();
 
         return true;
     }
@@ -88,8 +97,9 @@ class categories
 
         $cat_list = DB::for_table('categories')
             ->select($select_get_cat_list)
-            ->order_by_asc('disp_position')
-            ->find_array();
+            ->order_by_asc('disp_position');
+        $cat_list = $this->hook->fireDB('get_cat_list', $cat_list);
+        $cat_list = $cat_list->find_array();
 
         return $cat_list;
     }

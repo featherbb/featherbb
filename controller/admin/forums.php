@@ -100,8 +100,8 @@ class forums
                     $permissions_data['post_replies'] = (isset($this->request->post('post_replies_new')[$perm_group['g_id']])) ? '1' : '0';
                     $permissions_data['post_topics'] = (isset($this->request->post('post_topics_new')[$perm_group['g_id']])) ? '1' : '0';
                     // Check if the new settings differ from the old
-                    if ($permissions_data['read_forum'] != $this->request->post('read_forum_old')[$perm_group['g_id']] || 
-                        $permissions_data['post_replies'] != $this->request->post('post_replies_old')[$perm_group['g_id']] || 
+                    if ($permissions_data['read_forum'] != $this->request->post('read_forum_old')[$perm_group['g_id']] ||
+                        $permissions_data['post_replies'] != $this->request->post('post_replies_old')[$perm_group['g_id']] ||
                         $permissions_data['post_topics'] != $this->request->post('post_topics_old')[$perm_group['g_id']]) {
                             // If there is no group permissions override for this forum
                             if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['g_post_replies'] && $permissions_data['post_topics'] == $perm_group['g_post_topics']) {
@@ -120,7 +120,7 @@ class forums
                 generate_quickjump_cache();
 
                 redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
-                
+
             } elseif ($this->request->post('revert_perms')) {
                 $this->model->delete_permissions($forum_id);
 
@@ -195,7 +195,7 @@ class forums
             $this->footer->display();
         }
     }
-    
+
     // -- //
 
     public function edit_positions()
@@ -214,7 +214,7 @@ class forums
 
         redirect(get_link('admin/forums/'), __('Forums updated redirect'));
     }
-    
+
     public function display()
     {
         if ($this->user->g_id != FEATHER_ADMIN) {

@@ -21,7 +21,7 @@ class maintenance
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     public function rebuild()
     {
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
@@ -272,10 +272,10 @@ class maintenance
 
             $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.feather_escape($forum['forum_name']).'</option>'."\n";
         }
-        
+
         return $output;
     }
-    
+
     public function get_first_id()
     {
         $first_id = '';
@@ -284,7 +284,7 @@ class maintenance
         if ($first_id_sql) {
             $first_id = $first_id_sql;
         }
-        
+
         return $first_id;
     }
 }
