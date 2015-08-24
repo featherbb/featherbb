@@ -21,7 +21,7 @@ class users
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
     }
- 
+
     public function get_num_ip($ip_stats)
     {
         $num_ips = DB::for_table('posts')->where('poster_id', $ip_stats)
@@ -338,7 +338,7 @@ class users
                                         ->order_by('posted')
                                         ->find_one_col('id');
 
-                        if ($this->db->result($result2) == $cur_post['id']) {
+                        if ($result2 == $cur_post['id']) {
                             delete_topic($cur_post['topic_id']);
                         } else {
                             delete_post($cur_post['id'], $cur_post['topic_id']);
@@ -366,11 +366,11 @@ class users
             }
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
 
             redirect(get_link('admin/users/'), __('Users delete redirect'));
         }
@@ -479,11 +479,7 @@ class users
                 }
 
                 // Regenerate the bans cache
-                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT . 'include/cache.php';
-                }
-
-                generate_bans_cache();
+                $this->feather->cache->store('bans', \model\cache::get_bans());
 
                 redirect(get_link('admin/users/'), __('Users banned redirect'));
             }

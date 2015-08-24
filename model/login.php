@@ -22,7 +22,7 @@ class login
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
- 
+
     public function login()
     {
         $this->hook->fire('login_start');
@@ -53,21 +53,21 @@ class login
         // Update the status if this is the first time the user logged in
         if ($user->group_id == FEATHER_UNVERIFIED) {
             $update_usergroup = DB::for_table('users')->where('id', $user->id)
-                                                      ->find_one()
-                                                      ->set('group_id', $this->config['o_default_user_group']);
+                ->find_one()
+                ->set('group_id', $this->config['o_default_user_group']);
             $update_usergroup = $this->hook->fireDB('update_usergroup_login', $update_usergroup);
             $update_usergroup = $update_usergroup->save();
 
             // Regenerate the users info cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
+            if (!$this->feather->cache->isCached('users_info')) {
+                $this->feather->cache->store('users_info', \model\cache::get_users_info());
             }
 
-            generate_users_info_cache();
+            $stats = $this->feather->cache->retrieve('users_info');
         }
 
         // Remove this user's guest entry from the online list
-        $delete_online = DB::for_table('online')->where('ident', get_remote_address());
+        $delete_online = DB::for_table('online')->where('ident', $this->request->getIp());
         $delete_online = $this->hook->fireDB('delete_online_login', $delete_online);
         $delete_online = $delete_online->delete_many();
 
@@ -89,7 +89,7 @@ class login
     {
         $token = $this->hook->fire('logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash(get_remote_address()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash($this->request->getIp()))) {
             header('Location: '.get_base_url());
             exit;
         }
@@ -102,8 +102,8 @@ class login
         // Update last_visit (make sure there's something to update it with)
         if (isset($this->user->logged)) {
             $update_last_visit = DB::for_table('users')->where('id', $this->user->id)
-                                                       ->find_one()
-                                                       ->set('last_visit', $this->user->logged);
+                ->find_one()
+                ->set('last_visit', $this->user->logged);
             $update_last_visit = $this->hook->fireDB('update_online_logout', $update_last_visit);
             $update_last_visit = $update_last_visit->save();
         }
@@ -176,10 +176,11 @@ class login
                             'activate_key'    => $new_password_key,
                             'last_email_sent' => time()
                         );
-                        
-                        $query = DB::for_table('users')->where('id', $cur_hit->id)
-                                                      ->find_one()
-                                                      ->set($query['update']);
+
+                        $query = DB::for_table('users')
+                                    ->where('id', $cur_hit->id)
+                                    ->find_one()
+                                    ->set($query['update']);
                         $query = $this->hook->fireDB('password_forgotten_mail_query', $query);
                         $query = $query->save();
 

@@ -31,7 +31,7 @@ class moderate
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function gethostpost($pid)
     {
         if ($this->user->g_read_board == '0') {
@@ -107,9 +107,7 @@ class moderate
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->setPage($p)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->display();
 
             $this->feather->render('moderate/move_topics.php', array(
                     'action'    =>    'multi',
@@ -125,7 +123,7 @@ class moderate
         // Stick a topic
         if ($action == 'stick') {
             $this->model->stick_topic($id, $fid);
- 
+
             redirect(get_link('topic/'.$id.'/'), __('Stick topic redirect'));
         }
 
@@ -167,9 +165,7 @@ class moderate
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->setPage($p)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->display();
 
             $this->feather->render('moderate/move_topics.php', array(
                         'action'    =>    'single',
@@ -191,9 +187,7 @@ class moderate
 
                     $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
-                    define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-                    $this->header->setTitle($page_title)->setPage($p)->display();
+                    $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->display();
 
                     $this->feather->render('moderate/delete_posts.php', array(
                         'id' => $id,
@@ -209,9 +203,7 @@ class moderate
                 $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
                 $focus_element = array('subject','new_subject');
 
-                define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-                $this->header->setTitle($page_title)->setPage($p)->setFocusElement($focus_element)->display();
+                $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->setFocusElement($focus_element)->display();
 
                 $this->feather->render('moderate/split_posts.php', array(
                         'id' => $id,
@@ -241,9 +233,7 @@ class moderate
 
             $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject']));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->setPagingLinks($paging_links)->display();
 
             $this->feather->render('moderate/posts_view.php', array(
                         'cur_topic' => $cur_topic,
@@ -299,9 +289,7 @@ class moderate
 
         $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name']));
 
-        define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->display();
+        $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->setPagingLinks($paging_links)->display();
 
         $this->feather->render('moderate/moderator_forum.php', array(
                             'id' => $id,
@@ -350,9 +338,7 @@ class moderate
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
 
             $this->feather->render('moderate/move_topics.php', array(
                         'action'    =>    'multi',
@@ -378,9 +364,7 @@ class moderate
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
 
             $this->feather->render('moderate/merge_topics.php', array(
                         'id'    =>    $fid,
@@ -404,9 +388,7 @@ class moderate
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
 
-            define('FEATHER_ACTIVE_PAGE', 'moderate');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
 
             $this->feather->render('moderate/delete_topics.php', array(
                         'id'    =>    $fid,

@@ -23,7 +23,7 @@ class index
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
-    
+
     // Returns page head
     public function get_page_head()
     {
@@ -238,22 +238,15 @@ class index
         $this->hook->fire('collect_stats_start');
 
         // Collect some statistics from the database
-        if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
-            include FORUM_CACHE_DIR.'cache_users_info.php';
+        if (!$this->feather->cache->isCached('users_info')) {
+            $this->feather->cache->store('users_info', \model\cache::get_users_info());
         }
 
-        if (!defined('FEATHER_USERS_INFO_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_users_info_cache();
-            require FORUM_CACHE_DIR.'cache_users_info.php';
-        }
+        $stats = $this->feather->cache->retrieve('users_info');
 
         $query = DB::for_table('forums')
-                        ->select_expr('SUM(num_topics)', 'total_topics')
-                        ->select_expr('SUM(num_posts)', 'total_posts');
+            ->select_expr('SUM(num_topics)', 'total_topics')
+            ->select_expr('SUM(num_posts)', 'total_posts');
 
         $query = $this->hook->fireDB('collect_stats_query', $query);
 
@@ -287,9 +280,9 @@ class index
         $query['order_by'] = array('ident');
 
         $query = DB::for_table('online')
-                    ->select_many($query['select'])
-                    ->where($query['where'])
-                    ->order_by_many($query['order_by']);
+            ->select_many($query['select'])
+            ->where($query['where'])
+            ->order_by_many($query['order_by']);
 
         $query = $this->hook->fireDB('query_fetch_users_online', $query);
 

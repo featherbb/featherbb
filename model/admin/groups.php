@@ -251,15 +251,11 @@ class groups
             }
         }
 
-        // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
         $group_id = $this->request->post('mode') == 'add' ? $new_group_id : $this->request->post('group_id');
         $group_id = $this->hook->fire('add_edit_group.group_id', $group_id);
 
-        generate_quickjump_cache($group_id);
+        // Regenerate the quick jump cache
+        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
             redirect(get_link('admin/groups/'), __('Group edited redirect'));

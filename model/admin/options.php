@@ -231,9 +231,21 @@ class options
         }
 
         generate_config_cache();
-        clear_feed_cache();
+        $this->clear_feed_cache();
 
         redirect(get_link('admin/options/'), __('Options updated redirect'));
+    }
+
+    public function clear_feed_cache()
+    {
+        $d = dir(FORUM_CACHE_DIR);
+        while (($entry = $d->read()) !== false) {
+            if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
+                @unlink(FORUM_CACHE_DIR.$entry);
+            }
+            featherbb_invalidate_cached_file(FORUM_CACHE_DIR.$entry);
+        }
+        $d->close();
     }
 
     public function get_styles()

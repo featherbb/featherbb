@@ -74,20 +74,13 @@ function get_base_url($support_https = false)
 //
 function get_admin_ids()
 {
-    if (file_exists(FORUM_CACHE_DIR.'cache_admins.php')) {
-        include FORUM_CACHE_DIR.'cache_admins.php';
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+    if (!$feather->cache->isCached('admin_ids')) {
+        $feather->cache->store('admin_ids', \model\cache::get_admin_ids());
     }
 
-    if (!defined('FEATHER_ADMINS_LOADED')) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_admins_cache();
-        require FORUM_CACHE_DIR.'cache_admins.php';
-    }
-
-    return $feather_admins;
+    return $feather->cache->retrieve('admin_ids');
 }
 
 
@@ -96,15 +89,13 @@ function get_admin_ids()
 //
 function feather_setcookie($user_id, $password, $expires)
 {
-    global $cookie_name, $cookie_seed;
-
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
     $cookie_data = array('user_id' => $user_id,
-        'password_hash' => hash_hmac('sha1', $password, $cookie_seed.'_password_hash'),
+        'password_hash' => hash_hmac('sha1', $password, $feather->forum_settings['cookie_seed'].'_password_hash'),
         'expires' => $expires,
-        'checksum' => hash_hmac('sha1', $user_id.$expires, $cookie_seed.'_checksum'));
-    $feather->setCookie($cookie_name, json_encode($cookie_data), $expires);
+        'checksum' => hash_hmac('sha1', $user_id.$expires, $feather->forum_settings['cookie_seed'].'_checksum'));
+    $feather->setCookie($feather->forum_settings['cookie_name'], json_encode($cookie_data), $expires);
 }
 
 
@@ -428,27 +419,23 @@ function censor_words($text)
 {
     static $search_for, $replace_with;
 
-    // If not already built in a previous call, build an array of censor words and their replacement text
-    if (!isset($search_for)) {
-        if (file_exists(FORUM_CACHE_DIR.'cache_censoring.php')) {
-            include FORUM_CACHE_DIR.'cache_censoring.php';
-        }
+    $feather = \Slim\Slim::getInstance();
 
-        if (!defined('FEATHER_CENSOR_LOADED')) {
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_censoring_cache();
-            require FORUM_CACHE_DIR.'cache_censoring.php';
-        }
+    if (!$feather->cache->isCached('search_for')) {
+        $feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
+        $search_for = $feather->cache->retrieve('search_for');
     }
 
-    if (!empty($search_for)) {
-        $text = substr(ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+    if (!$feather->cache->isCached('replace_with')) {
+        $feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
+        $replace_with = $feather->cache->retrieve('replace_with');
     }
 
-    return $text;
+    if (!empty($search_for) && !empty($replace_with)) {
+        return substr(ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+    } else {
+        return $text;
+    }
 }
 
 
@@ -464,7 +451,6 @@ function get_title($user)
     // If not already built in a previous call, build an array of lowercase banned usernames
     if (empty($ban_list)) {
         $ban_list = array();
-
         foreach ($feather_bans as $cur_ban) {
             $ban_list[] = utf8_strtolower($cur_ban['username']);
         }
@@ -637,10 +623,6 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
     if (!defined('FEATHER_HEADER')) {
         $page_title = array(feather_escape($feather->config['o_board_title']), __('Info'));
 
-        if (!defined('FEATHER_ACTIVE_PAGE')) {
-            define('FEATHER_ACTIVE_PAGE', 'index');
-        }
-
         require_once FEATHER_ROOT.'controller/header.php';
 
         $header = new \controller\header();
@@ -808,19 +790,6 @@ function random_pass($len)
 function feather_hash($str)
 {
     return sha1($str);
-}
-
-
-//
-// Try to determine the correct remote IP-address
-//
-function get_remote_address()
-{
-    $feather = \Slim\Slim::getInstance();
-
-    $remote_addr = $feather->request->getIp();
-
-    return $remote_addr;
 }
 
 

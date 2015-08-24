@@ -29,14 +29,12 @@ class maintenance
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_id != FEATHER_ADMIN) {
             message(__('No permission'), '403');
         }
-
-        define('FEATHER_ADMIN_CONSOLE', 1);
 
         $action = '';
         if ($this->request->post('action')) {
@@ -66,9 +64,7 @@ class maintenance
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Prune'));
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
             generate_admin_menu('maintenance');
 
@@ -88,9 +84,7 @@ class maintenance
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('maintenance');
 

@@ -43,11 +43,8 @@ class censoring
             ->save();
 
         // Regenerate the censoring cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_censoring_cache();
+        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
 
         redirect(get_link('admin/censoring/'), __('Word added redirect'));
     }
@@ -74,11 +71,8 @@ class censoring
             ->save();
 
         // Regenerate the censoring cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_censoring_cache();
+        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
 
         redirect(get_link('admin/censoring/'), __('Word updated redirect'));
     }
@@ -93,11 +87,8 @@ class censoring
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_censoring_cache();
+        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
 
         redirect(get_link('admin/censoring/'),  __('Word removed redirect'));
     }

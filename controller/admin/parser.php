@@ -29,7 +29,7 @@ class parser
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         global $lang_admin_parser;
@@ -40,8 +40,6 @@ class parser
 
         // Legacy
         require FEATHER_ROOT . 'lang/' . $this->user->language . '/admin/parser.php';
-
-        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // This is where the parser data lives and breathes.
         $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
@@ -61,7 +59,7 @@ class parser
         $count = count($bbcd);
 
         if ($this->request->post('form_sent')) {
-            
+
 
             // Upload new smiley image to img/smilies
             if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
@@ -214,9 +212,7 @@ class parser
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Parser'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('parser');
 

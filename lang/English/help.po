@@ -80,8 +80,8 @@ msgstr "My email address"
 msgid "Images info"
 msgstr "If you want to display an image you can use the img tag. The text appearing after the \"=\" sign in the opening tag is used for the alt attribute and should be included whenever possible."
 
-msgid "FluxBB bbcode test"
-msgstr "FluxBB bbcode test"
+msgid "FeatherBB bbcode test"
+msgstr "FeatherBB bbcode test"
 
 msgid "Test topic"
 msgstr "Test topic"

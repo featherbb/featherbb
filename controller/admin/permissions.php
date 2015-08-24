@@ -29,14 +29,12 @@ class permissions
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
-
-        define('FEATHER_ADMIN_CONSOLE', 1);
 
         // Update permissions
         if ($this->feather->request->isPost()) {
@@ -45,9 +43,7 @@ class permissions
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('permissions');
 

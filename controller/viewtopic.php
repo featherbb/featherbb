@@ -90,11 +90,8 @@ class viewtopic
         $page_head = $this->model->get_page_head($id, $num_pages, $p, $url_topic);
 
         $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject']));
-        define('FEATHER_ALLOW_INDEX', 1);
 
-        define('FEATHER_ACTIVE_PAGE', 'viewtopic');
-
-        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
+        $this->header->setTitle($page_title)->setActivePage('viewtopic')->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->allowIndex()->display();
 
         require FEATHER_ROOT.'include/parser.php';
 

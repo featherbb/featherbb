@@ -23,12 +23,12 @@ class index
         $this->model = new \model\index();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/index.mo');
     }
-    
+
     public function __autoload($class_name)
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if ($this->user->g_read_board == '0') {
@@ -36,11 +36,8 @@ class index
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']));
-        define('FEATHER_ALLOW_INDEX', 1);
 
-        define('FEATHER_ACTIVE_PAGE', 'index');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('index')->allowIndex()->display();
 
         $this->feather->render('index.php', array(
                             'index_data' => $this->model->print_categories_forums(),
@@ -51,7 +48,7 @@ class index
                             'cur_cat'   => 0,
                             )
                     );
-        
+
         $this->footer->display();
     }
 }

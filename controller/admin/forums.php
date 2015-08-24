@@ -48,12 +48,7 @@ class forums
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_quickjump_cache();
-
+            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
             redirect(get_link('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
         } else {
             redirect(get_link('admin/forums/'), __('Unable to add forum'));
@@ -114,10 +109,7 @@ class forums
                 }
 
                 // Regenerate the quick jump cache
-                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'include/cache.php';
-                }
-                generate_quickjump_cache();
+                $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
                 redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
 
@@ -125,23 +117,16 @@ class forums
                 $this->model->delete_permissions($forum_id);
 
                 // Regenerate the quick jump cache
-                if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'include/cache.php';
-                }
-                generate_quickjump_cache();
+                $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
                 redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
             }
 
         } else {
 
-            define('FEATHER_ADMIN_CONSOLE', 1);
-
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
             generate_admin_menu('forums');
 
@@ -164,16 +149,10 @@ class forums
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
-            if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                require FEATHER_ROOT.'include/cache.php';
-            }
-
-            generate_quickjump_cache();
+            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
             redirect(get_link('admin/forums/'), __('Forum deleted redirect'));
 
@@ -181,9 +160,7 @@ class forums
 
             $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-            define('FEATHER_ACTIVE_PAGE', 'admin');
-
-            $this->header->setTitle($page_title)->display();
+            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
             generate_admin_menu('forums');
 
@@ -206,11 +183,7 @@ class forums
         }
 
         // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_quickjump_cache();
+        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         redirect(get_link('admin/forums/'), __('Forums updated redirect'));
     }
@@ -221,22 +194,20 @@ class forums
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         if ($this->request->post('update_positions')) {
             $this->edit_positions();
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('forums');
 
+        $categories_model = new \model\admin\categories();
         $this->feather->render('admin/forums/admin_forums.php', array(
                 'feather_config' => $this->config,
+                'cat_list'      => $categories_model->get_cat_list(),
                 'forum_data'    =>  $this->model->get_forums(),
                 'cur_index'     =>  4,
             )

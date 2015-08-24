@@ -69,10 +69,7 @@ class categories
         }
 
         // Regenerate the quick jump cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-        generate_quickjump_cache();
+        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         redirect(get_link('admin/categories/'), __('Categories updated redirect'));
     }
@@ -106,13 +103,9 @@ class categories
             message(__('No permission'), '403');
         }
 
-        define('FEATHER_ADMIN_CONSOLE', 1);
-
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories'));
 
-        define('FEATHER_ACTIVE_PAGE', 'admin');
-
-        $this->header->setTitle($page_title)->display();
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('categories');
 

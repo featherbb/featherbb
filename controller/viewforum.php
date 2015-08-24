@@ -28,7 +28,7 @@ class viewforum
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display($id, $name = null, $page = null)
     {
         if ($this->user->g_read_board == '0') {
@@ -75,13 +75,10 @@ class viewforum
 
 
         $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name']));
-        define('FEATHER_ALLOW_INDEX', 1);
 
-        define('FEATHER_ACTIVE_PAGE', 'viewforum');
-        
         $page_head = $this->model->get_page_head($id, $num_pages, $p, $url_forum);
 
-        $this->header->setTitle($page_title)->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
+        $this->header->setTitle($page_title)->setActivePage('viewforum')->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->allowIndex()->display();
 
         $this->feather->render('viewforum.php', array(
                             'id' => $id,

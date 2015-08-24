@@ -33,6 +33,12 @@ class header
 
     private $page_head;
 
+    private $active_page;
+
+    private $admin_console;
+
+    private $allow_index;
+
     public function setTitle($title)
     {
         $this->title = $title;
@@ -75,6 +81,27 @@ class header
         return $this;
     }
 
+    public function setActivePage($active_page)
+    {
+        $this->active_page = $active_page;
+
+        return $this;
+    }
+
+    public function enableAdminConsole()
+    {
+        $this->admin_console = true;
+
+        return $this;
+    }
+
+    public function allowIndex()
+    {
+        $this->allow_index = true;
+
+        return $this;
+    }
+
     public function display()
     {
         if (!defined('FEATHER_HEADER')) {
@@ -94,6 +121,10 @@ class header
 
         $navlinks = $this->getNavlinks();
         $page_info = $this->getStatus();
+        $admin_console = $this->getAdminConsole();
+
+        // Show the robots meta only if enabled
+        $allow_index = ($this->allow_index === true) ? '' : '<meta name="ROBOTS" content="NOINDEX, FOLLOW" />'."\n";
 
         $focus_element = isset($this->focus_element) ? ' onload="document.getElementById(\''.$this->focus_element[0].'\').elements[\''.$this->focus_element[1].'\'].focus();"' : '';
 
@@ -104,12 +135,15 @@ class header
                 'feather_config' => $this->config,
                 '_SERVER' => $_SERVER,
                 'page_head' => $this->page_head,
+                'active_page' => $this->active_page,
                 'paging_links' => $this->paging_links,
                 'required_fields' => $this->required_fields,
                 'feather' => $this->feather,
                 'focus_element' => $focus_element,
                 'navlinks' => $navlinks,
                 'page_info' => $page_info,
+                'admin_console' => $admin_console,
+                'allow_index' => $allow_index,
             )
         );
     }
@@ -119,31 +153,31 @@ class header
         $links = array();
 
         // Index should always be displayed
-        $links[] = '<li id="navindex"'.((FEATHER_ACTIVE_PAGE == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.__('Index').'</a></li>';
+        $links[] = '<li id="navindex"'.(($this->active_page == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.__('Index').'</a></li>';
 
         if ($this->user->g_read_board == '1' && $this->user->g_view_users == '1') {
-            $links[] = '<li id="navuserlist"'.((FEATHER_ACTIVE_PAGE == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.__('User list').'</a></li>';
+            $links[] = '<li id="navuserlist"'.(($this->active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.__('User list').'</a></li>';
         }
 
         if ($this->config['o_rules'] == '1' && (!$this->user->is_guest || $this->user->g_read_board == '1' || $this->config['o_regs_allow'] == '1')) {
-            $links[] = '<li id="navrules"'.((FEATHER_ACTIVE_PAGE == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.__('Rules').'</a></li>';
+            $links[] = '<li id="navrules"'.(($this->active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.__('Rules').'</a></li>';
         }
 
         if ($this->user->g_read_board == '1' && $this->user->g_search == '1') {
-            $links[] = '<li id="navsearch"'.((FEATHER_ACTIVE_PAGE == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.__('Search').'</a></li>';
+            $links[] = '<li id="navsearch"'.(($this->active_page == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.__('Search').'</a></li>';
         }
 
         if ($this->user->is_guest) {
-            $links[] = '<li id="navregister"'.((FEATHER_ACTIVE_PAGE == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.__('Register').'</a></li>';
-            $links[] = '<li id="navlogin"'.((FEATHER_ACTIVE_PAGE == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.__('Login').'</a></li>';
+            $links[] = '<li id="navregister"'.(($this->active_page == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.__('Register').'</a></li>';
+            $links[] = '<li id="navlogin"'.(($this->active_page == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.__('Login').'</a></li>';
         } else {
-            $links[] = '<li id="navprofile"'.((FEATHER_ACTIVE_PAGE == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$this->user->id.'/').'">'.__('Profile').'</a></li>';
+            $links[] = '<li id="navprofile"'.(($this->active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$this->user->id.'/').'">'.__('Profile').'</a></li>';
 
             if ($this->user->is_admmod) {
-                $links[] = '<li id="navadmin"'.((FEATHER_ACTIVE_PAGE == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.__('Admin').'</a></li>';
+                $links[] = '<li id="navadmin"'.(($this->active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.__('Admin').'</a></li>';
             }
 
-            $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$this->user->id.'/token/'.feather_hash($this->user->id.feather_hash(get_remote_address()))).'/">'.__('Logout').'</a></li>';
+            $links[] = '<li id="navlogout"><a href="'.get_link('logout/id/'.$this->user->id.'/token/'.feather_hash($this->user->id.feather_hash($this->request->getIp()))).'/">'.__('Logout').'</a></li>';
         }
 
         // Are there any additional navlinks we should insert into the array before imploding it?
@@ -218,5 +252,18 @@ class header
         $page_info .= "\n\t\t\t".'<div class="clearer"></div>'."\n\t\t".'</div>';
 
         return $page_info;
+    }
+
+    protected function getAdminConsole()
+    {
+        if ($this->admin_console === true) {
+            if (file_exists(FEATHER_ROOT.'style/'.$this->user->style.'/base_admin.css')) {
+                return '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$this->user->style.'/base_admin.css" />'."\n";
+            } else {
+                return '<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
+            }
+        } else {
+            return '';
+        }
     }
 }

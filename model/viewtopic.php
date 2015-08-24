@@ -241,7 +241,7 @@ class viewtopic
         }
 
         if (empty($post_ids)) {
-            error('The post table and topic table seem to be out of sync!', __FILE__, __LINE__);
+            message('The post table and topic table seem to be out of sync!');
         }
 
         // Retrieve the posts (and their respective poster/online status)

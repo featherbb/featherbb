@@ -275,11 +275,7 @@ class bans
         }
 
         // Regenerate the bans cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_bans_cache();
+        $this->feather->cache->store('bans', \model\cache::get_bans());
 
         redirect(get_link('admin/bans/'), __('Ban edited redirect'));
     }
@@ -294,11 +290,7 @@ class bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_bans_cache();
+        $this->feather->cache->store('bans', \model\cache::get_bans());
 
         redirect(get_link('admin/bans/'), __('Ban removed redirect'));
     }

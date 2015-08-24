@@ -28,7 +28,7 @@ class login
     {
         require FEATHER_ROOT . $class_name . '.php';
     }
-    
+
     public function display()
     {
         if (!$this->user->is_guest) {
@@ -43,9 +43,7 @@ class login
         $required_fields = array('req_username' => __('Username'), 'req_password' => __('Password'));
         $focus_element = array('login', 'req_username');
 
-        define('FEATHER_ACTIVE_PAGE', 'login');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('login')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('login/form.php', array(
                             'redirect_url'    =>    $redirect_url,
@@ -89,9 +87,7 @@ class login
         $required_fields = array('req_email' => __('Email'));
         $focus_element = array('request_pass', 'req_email');
 
-        define('FEATHER_ACTIVE_PAGE', 'login');
-
-        $this->header->setTitle($page_title)->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->header->setTitle($page_title)->setActivePage('login')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         $this->feather->render('login/password_forgotten.php', array(
                             'errors'    =>    $errors,
