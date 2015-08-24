@@ -20,6 +20,7 @@ class censoring
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function add_word()
@@ -34,7 +35,9 @@ class censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        DB::for_table('censoring')
+        $set_search_word = $this->hook->fire('add_censoring_word_data', $set_search_word);
+
+        $result = DB::for_table('censoring')
             ->create()
             ->set($set_search_word)
             ->save();
@@ -60,7 +63,9 @@ class censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        DB::for_table('censoring')
+        $set_search_word = $this->hook->fire('update_censoring_word_start', $set_search_word);
+
+        $result = DB::for_table('censoring')
             ->find_one($id)
             ->set($set_search_word)
             ->save();
@@ -75,10 +80,11 @@ class censoring
     public function remove_word()
     {
         $id = intval(key($this->request->post('remove')));
+        $id = $this->hook->fire('remove_censoring_word_start', $id);
 
-        DB::for_table('censoring')
-            ->find_one($id)
-            ->delete();
+        $result = DB::for_table('censoring')->find_one($id);
+        $result = $this->hook->fireDB('remove_censoring_word', $result);
+        $result = $result->delete();
 
         // Regenerate the censoring cache
         $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
@@ -92,8 +98,9 @@ class censoring
         $word_data = array();
 
         $word_data = DB::for_table('censoring')
-                        ->order_by_asc('id')
-                        ->find_array();
+                        ->order_by_asc('id');
+        $word_data = $this->hook->fireDB('update_censoring_word_query', $word_data);
+        $word_data = $word_data->find_array();
 
         return $word_data;
     }

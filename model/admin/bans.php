@@ -20,11 +20,14 @@ class bans
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function add_ban_info($id = null)
     {
         $ban = array();
+
+        $id = $this->hook->fire('add_ban_info_start', $id);
 
         // If the ID of the user to ban was provided through GET (a link from profile.php)
         if (is_numeric($id)) {
@@ -35,8 +38,10 @@ class bans
 
             $select_add_ban_info = array('group_id', 'username', 'email');
             $result = DB::for_table('users')->select_many($select_add_ban_info)
-                        ->where('id', $ban['user_id'])
-                        ->find_one();
+                        ->where('id', $ban['user_id']);
+
+            $result = $this->hook->fireDB('add_ban_info_query', $result);
+            $result = $result->find_one();
 
             if ($result) {
                 $group_id = $result['group_id'];
@@ -54,8 +59,11 @@ class bans
                 $select_add_ban_info = array('id', 'group_id', 'username', 'email');
                 $result = DB::for_table('users')->select_many($select_add_ban_info)
                     ->where('username', $ban['ban_user'])
-                    ->where_gt('id', 1)
-                    ->find_one();
+                    ->where_gt('id', 1);
+
+                $result = $this->hook->fireDB('add_ban_info_query', $result);
+                $result = $result->find_one();
+
                 if ($result) {
                     $ban['user_id'] = $result['id'];
                     $group_id = $result['group_id'];
@@ -95,6 +103,8 @@ class bans
 
         $ban['mode'] = 'add';
 
+        $ban = $this->hook->fire('add_ban_info', $ban);
+
         return $ban;
     }
 
@@ -102,12 +112,16 @@ class bans
     {
         $ban = array();
 
+        $id = $this->hook->fire('edit_ban_info_start', $id);
+
         $ban['id'] = $id;
 
         $select_edit_ban_info = array('username', 'ip', 'email', 'message', 'expire');
         $result = DB::for_table('bans')->select_many($select_edit_ban_info)
-            ->where('id', $ban['id'])
-            ->find_one();
+            ->where('id', $ban['id']);
+
+        $result = $this->hook->fireDB('edit_ban_info_query', $result);
+        $result = $result->find_one();
 
         if ($result) {
             $ban['ban_user'] = $result['username'];
@@ -124,6 +138,8 @@ class bans
 
         $ban['mode'] = 'edit';
 
+        $ban = $this->hook->fire('edit_ban_info', $ban);
+
         return $ban;
     }
 
@@ -134,6 +150,8 @@ class bans
         $ban_email = strtolower(feather_trim($this->request->post('ban_email')));
         $ban_message = feather_trim($this->request->post('ban_message'));
         $ban_expire = feather_trim($this->request->post('ban_expire'));
+
+        $this->hook->fire('insert_ban_start', $ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire);
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
             message(__('Must enter message'));
@@ -238,16 +256,18 @@ class bans
             'expire'    =>  $ban_expire,
         );
 
+        $insert_update_ban = $this->hook->fire('insert_ban_data', $insert_update_ban);
+
         if ($this->request->post('mode') == 'add') {
             $insert_update_ban['ban_creator'] = $this->user->id;
 
-            DB::for_table('bans')
+            $result = DB::for_table('bans')
                 ->create()
                 ->set($insert_update_ban)
                 ->save();
         } else {
 
-            DB::for_table('bans')
+            $result = DB::for_table('bans')
                 ->where('id', $this->request->post('ban_id'))
                 ->find_one()
                 ->set($insert_update_ban)
@@ -262,9 +282,12 @@ class bans
 
     public function remove_ban($ban_id)
     {
-        DB::for_table('bans')->where('id', $ban_id)
-                    ->find_one()
-                    ->delete();
+        $ban_id = $this->hook->fire('remove_ban', $ban_id);
+
+        $result = DB::for_table('bans')->where('id', $ban_id)
+                    ->find_one();
+        $result = $this->hook->fireDB('remove_ban_query', $result);
+        $result = $result->delete();
 
         // Regenerate the bans cache
         $this->feather->cache->store('bans', \model\cache::get_bans());
@@ -275,6 +298,8 @@ class bans
     public function find_ban($start_from = false)
     {
         $ban_info = array();
+
+        $this->hook->fire('find_ban_start');
 
         // trim() all elements in $form
         $ban_info['conditions'] = $ban_info['query_str'] = array();
@@ -343,7 +368,7 @@ class bans
                              ->order_by($ban_info['order_by'], $ban_info['direction'])
                              ->offset($start_from)
                              ->limit(50)
-                            ->find_many();
+                             ->find_many();
 
             foreach ($result as $cur_ban) {
                 $ban_info['data'][] = $cur_ban;
@@ -352,6 +377,8 @@ class bans
         else {
             $ban_info['num_bans'] = $result->count('id');
         }
+
+        $this->hook->fire('find_ban', $ban_info);
 
         return $ban_info;
     }

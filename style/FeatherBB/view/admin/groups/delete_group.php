@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -25,7 +25,7 @@ if (!defined('FEATHER')) {
 							<p><?php printf(__('Move users info'), feather_escape($group_info['title']), forum_number_format($group_info['members'])) ?></p>
 							<label><?php _e('Move users label') ?>
 							<select name="move_to_group">
-								<?php get_group_list_delete($id); ?>
+								<?= $group_list_delete; ?>
 							</select>
 							<br /></label>
 						</div>

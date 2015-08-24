@@ -109,6 +109,7 @@ class groups
         $this->feather->render('admin/groups/delete_group.php', array(
                 'id'    => $id,
                 'group_info'      =>  $this->model->get_title_members($id),
+                'group_list_delete'      =>  $this->model->get_group_list_delete($id),
             )
         );
 

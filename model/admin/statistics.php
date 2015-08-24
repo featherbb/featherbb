@@ -20,8 +20,9 @@ class statistics
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
- 
+
     public function get_server_load()
     {
         if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg')) {
@@ -38,6 +39,8 @@ class statistics
             }
 
             $load_averages = @explode(' ', $load_averages);
+            $load_averages = $this->hook->fire('model.statistics.get_server_load.load_averages', $load_averages);
+
             $server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : __('Not available');
         } elseif (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages)) {
             $server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
@@ -45,6 +48,7 @@ class statistics
             $server_load = __('Not available');
         }
 
+        $server_load = $this->hook->fire('model.statistics.get_server_load.server_load', $server_load);
         return $server_load;
     }
 
@@ -53,6 +57,7 @@ class statistics
         $num_online = DB::for_table('online')->where('idle', 0)
                             ->count('user_id');
 
+        $num_online = $this->hook->fire('model.statistics.get_num_online.num_online', $num_online);
         return $num_online;
     }
 
@@ -63,6 +68,7 @@ class statistics
         if ($this->feather->forum_settings['db_type'] == 'mysql' || $this->feather->forum_settings['db_type'] == 'mysqli' || $this->feather->forum_settings['db_type'] == 'mysql_innodb' || $this->feather->forum_settings['db_type'] == 'mysqli_innodb') {
             // Calculate total db size/row count
             $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->forum_settings['db_prefix'].'%\'')->find_many();
+            $result = $this->hook->fire('model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;
             foreach ($result as $status) {
@@ -73,6 +79,7 @@ class statistics
             $total['size'] = file_size($total['size']);
         }
 
+        $total = $this->hook->fire('model.statistics.get_total_size.total', $total);
         return $total;
     }
 
@@ -94,6 +101,7 @@ class statistics
             $php_accelerator = __('NA');
         }
 
+        $php_accelerator = $this->hook->fire('model.statistics.get_php_accelerator', $php_accelerator);
         return $php_accelerator;
     }
 }

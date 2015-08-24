@@ -20,11 +20,13 @@ class maintenance
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
- 
+
     public function rebuild()
     {
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
+        $per_page = $this->hook->fire('maintenance.rebuild.per_page', $per_page);
 
         // Check per page is > 0
         if ($per_page < 1) {
@@ -58,7 +60,9 @@ class maintenance
         $query_str = '';
 
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
+        $per_page = $this->hook->fire('maintenance.get_query_str.per_page', $per_page);
         $start_at = $this->request->get('i_start_at') ? intval($this->request->get('i_start_at')) : 0;
+        $start_at = $this->hook->fire('maintenance.get_query_str.start_at', $start_at);
 
         require FEATHER_ROOT.'include/search_idx.php';
 
@@ -70,8 +74,9 @@ class maintenance
                         ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                         ->where_gte('p.id', $start_at)
                         ->order_by_asc('p.id')
-                        ->limit($per_page)
-                        ->find_many();
+                        ->limit($per_page);
+        $result = $this->hook->fireDB('maintenance.get_query_str.query', $result);
+        $result = $result->find_many();
 
         $end_at = 0;
         foreach ($result as $cur_item) {
@@ -100,6 +105,7 @@ class maintenance
         $pdo = DB::get_db();
         $pdo = null;
 
+        $query_str = $this->hook->fire('maintenance.get_query_str', $query_str);
         return $query_str;
     }
 
@@ -126,6 +132,7 @@ class maintenance
         foreach ($topics_id as $row) {
             $topic_ids[] = $row['id'];
         }
+        $topic_ids = $this->hook->fire('maintenance.prune.topic_ids', $topic_ids);
 
         if (!empty($topic_ids)) {
             // Fetch posts to prune
@@ -137,6 +144,7 @@ class maintenance
             foreach ($posts_id as $row) {
                 $post_ids[] = $row['id'];
             }
+            $post_ids = $this->hook->fire('maintenance.prune.post_ids', $post_ids);
 
             if ($post_ids != '') {
                 // Delete topics
@@ -162,12 +170,15 @@ class maintenance
     public function prune_comply($prune_from, $prune_sticky)
     {
         $prune_days = intval($this->request->post('prune_days'));
+        $prune_days = $this->hook->fire('maintenance.prune_comply.prune_days', $prune_days);
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
         @set_time_limit(0);
 
         if ($prune_from == 'all') {
-            $result = DB::for_table('forums')->select('id')->find_array();
+            $result = DB::for_table('forums')->select('id');
+            $result = $this->hook->fireDB('maintenance.prune_comply.query', $result);
+            $result = $result->find_array();
 
             if (!empty($result)) {
                 foreach ($result as $row) {
@@ -186,14 +197,16 @@ class maintenance
                         ->select('t1.id')
                         ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
                         ->where_null('t2.id')
-                        ->where_not_null('t1.moved_to')
-                        ->find_array();
+                        ->where_not_null('t1.moved_to');
+        $result = $this->hook->fireDB('maintenance.prune_comply.orphans_query', $result);
+        $result = $result->find_array();
 
         $orphans = array();
         if (!empty($result)) {
             foreach ($result as $row) {
                 $orphans[] = $row['id'];
             }
+            $orphans = $this->hook->fire('maintenance.prune_comply.orphans', $orphans);
 
             DB::for_table('topics')
                     ->where_in('id', $orphans)
@@ -214,6 +227,8 @@ class maintenance
 
         $prune['date'] = time() - ($prune['days'] * 86400);
 
+        $prune = $this->hook->fire('maintenance.get_info_prune.prune_dates', $prune);
+
         // Concatenate together the query for counting number of topics to prune
         $query = DB::for_table('topics')->where_lt('last_post', $prune['date'])
                         ->where_null('moved_to');
@@ -226,8 +241,10 @@ class maintenance
             $query = $query->where('forum_id', intval($prune_from));
 
             // Fetch the forum name (just for cosmetic reasons)
-            $forum = DB::for_table('forums')->where('id', $prune_from)
-                        ->find_one_col('forum_name');
+            $forum = DB::for_table('forums')->where('id', $prune_from);
+            $forum = $this->hook->fireDB('maintenance.get_info_prune.forum_query', $forum);
+            $forum = $forum->find_one_col('forum_name');
+
             $prune['forum'] = '"'.feather_escape($forum).'"';
         } else {
             $prune['forum'] = __('All forums');
@@ -239,6 +256,7 @@ class maintenance
             message(sprintf(__('No old topics message'), $prune['days']));
         }
 
+        $prune = $this->hook->fire('maintenance.get_info_prune.prune', $prune);
         return $prune;
     }
 
@@ -254,8 +272,9 @@ class maintenance
                     ->select_many($select_get_categories)
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->where_null('f.redirect_url')
-                    ->order_by_many($order_by_get_categories)
-                    ->find_many();
+                    ->order_by_many($order_by_get_categories);
+        $result = $this->hook->fireDB('maintenance.get_categories.query', $result);
+        $result = $result->find_many();
 
         $cur_category = 0;
         foreach ($result as $forum) {
@@ -272,10 +291,11 @@ class maintenance
 
             $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.feather_escape($forum['forum_name']).'</option>'."\n";
         }
-        
+
+        $output = $this->hook->fire('maintenance.get_categories.output', $output);
         return $output;
     }
-    
+
     public function get_first_id()
     {
         $first_id = '';
@@ -284,7 +304,8 @@ class maintenance
         if ($first_id_sql) {
             $first_id = $first_id_sql;
         }
-        
+
+        $first_id = $this->hook->fire('maintenance.get_first_id', $first_id);
         return $first_id;
     }
 }

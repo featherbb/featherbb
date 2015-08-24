@@ -20,19 +20,22 @@ class reports
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
     public function zap_report()
     {
         $zap_id = intval(key($this->request->post('zap_id')));
+        $zap_id = $this->hook->fire('reports.zap_report.zap_id', $zap_id);
 
-        $result = DB::for_table('reports')
-            ->where('id', $zap_id)
-            ->find_one_col('zapped');
+        $result = DB::for_table('reports')->where('id', $zap_id);
+        $result = $this->hook->fireDB('reports.zap_report.query', $result);
+        $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(),
-            'zapped_by' => $this->user->id);
+        $set_zap_report = array('zapped' => time(), 'zapped_by' => $this->user->id);
+        $set_zap_report = $this->hook->fire('reports.zap_report.set_zap_report', $set_zap_report);
 
+        // Update report to indicate it has been zapped
         if (!$result) {
             DB::for_table('reports')
                 ->where('id', $zap_id)
@@ -41,6 +44,7 @@ class reports
                 ->save();
         }
 
+        // Remove zapped reports to keep only last 10
         $threshold = DB::for_table('reports')
             ->where_not_null('zapped')
             ->order_by_desc('zapped')
@@ -69,16 +73,16 @@ class reports
             ->left_outer_join('forums', array('r.forum_id', '=', 'f.id'), 'f')
             ->left_outer_join('users', array('r.reported_by', '=', 'u.id'), 'u')
             ->where_null('r.zapped')
-            ->order_by_desc('created')
-            ->find_array();
+            ->order_by_desc('created');
+        $reports = $this->hook->fireDB('reports.get_reports.query', $reports);
+        $reports = $reports->find_array();
 
+        $reports = $this->hook->fire('reports.get_reports', $reports);
         return $reports;
     }
 
     public function get_zapped_reports()
     {
-        global $lang_admin_reports;
-
         $zapped_reports = array();
         $select_zapped_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username');
         $zapped_reports = DB::for_table('reports')
@@ -91,9 +95,11 @@ class reports
             ->left_outer_join('users', array('r.zapped_by', '=', 'u2.id'), 'u2')
             ->where_not_null('r.zapped')
             ->order_by_desc('zapped')
-            ->limit(10)
-            ->find_array();
+            ->limit(10);
+        $zapped_reports = $this->hook->fireDB('reports.get_zapped_reports.query', $zapped_reports);
+        $zapped_reports = $zapped_reports->find_array();
 
+        $zapped_reports = $this->hook->fire('reports.get_zapped_reports', $zapped_reports);
         return $zapped_reports;
     }
 }
