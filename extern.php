@@ -122,7 +122,7 @@ function set_default_user()
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-    $remote_addr = get_remote_address();
+    $remote_addr = $feather->request->getIp();
 
     // Fetch guest user
     $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
