@@ -20,11 +20,13 @@ class permissions
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
- 
+
     public function update_permissions()
     {
         $form = array_map('intval', $this->request->post('form'));
+        $form = $this->hook->fire('permissions.update_permissions.form', $form);
 
         foreach ($form as $key => $input) {
             // Make sure the input is never a negative value

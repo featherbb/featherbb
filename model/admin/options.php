@@ -20,8 +20,9 @@ class options
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
- 
+
     public function update_options()
     {
         $form = array(
@@ -85,6 +86,8 @@ class options
             'maintenance'            => $this->request->post('form_maintenance') != '1' ? '0' : '1',
             'maintenance_message'    => feather_trim($this->request->post('form_maintenance_message')),
         );
+
+        $form = $this->hook->fire('options.update_options.form', $form);
 
         if ($form['board_title'] == '') {
             message(__('Must enter title message'));
@@ -239,6 +242,7 @@ class options
     public function clear_feed_cache()
     {
         $d = dir(FORUM_CACHE_DIR);
+        $d = $this->hook->fire('options.clear_feed_cache.directory', $d);
         while (($entry = $d->read()) !== false) {
             if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
                 @unlink(FORUM_CACHE_DIR.$entry);
@@ -251,7 +255,8 @@ class options
     public function get_styles()
     {
         $styles = forum_list_styles();
-        
+        $styles = $this->hook->fire('options.get_styles.styles', $styles);
+
         $output = '';
 
         foreach ($styles as $temp) {
@@ -261,20 +266,23 @@ class options
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
             }
         }
-        
+
+        $output = $this->hook->fire('options.get_styles.output', $output);
         return $output;
     }
 
     public function get_times()
     {
         $times = array(5, 15, 30, 60);
-        
+        $times = $this->hook->fire('options.get_times.times', $times);
+
         $output = '';
 
         foreach ($times as $time) {
             $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($this->config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
-        
+
+        $output = $this->hook->fire('options.get_times.output', $output);
         return $output;
     }
 }
