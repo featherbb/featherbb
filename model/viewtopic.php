@@ -20,17 +20,21 @@ class viewtopic
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
 
-    // Redirects to a post in particular
+    // Redirect to a post in particular
     public function redirect_to_post($post_id)
     {
-        $select_info_topic = array('topic_id', 'posted');
+        $post_id = $this->hook->fire('redirect_to_post', $post_id);
+
+        $result['select'] = array('topic_id', 'posted');
 
         $result = DB::for_table('posts')
-                      ->select_many($select_info_topic)
-                      ->where('id', $post_id)
-                      ->find_one();
+                      ->select_many($result['select'])
+                      ->where('id', $post_id);
+        $result = $this->hook->fireDB('redirect_to_post_query', $result);
+        $result = $result->find_one();
 
         if (!$result) {
             message(__('Bad request'), '404');
@@ -45,14 +49,20 @@ class viewtopic
                         ->where_lt('posted', $posted)
                         ->count('id');
 
+        $num_posts = $this->hook->fire('redirect_to_post_num', $num_posts);
+
         $post['get_p'] = ceil(($num_posts + 1) / $this->user->disp_posts);
+
+        $post = $this->hook->fire('redirect_to_post', $post);
 
         return $post;
     }
 
-    // Redirects to new posts or last post
+    // Redirect to new posts or last post
     public function handle_actions($topic_id, $action)
     {
+        $action = $this->hook->fire('handle_actions_start', $action, $topic_id);
+
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
             if (!$this->user->is_guest) {
@@ -64,6 +74,8 @@ class viewtopic
                                         ->where('topic_id', $topic_id)
                                         ->where_gt('posted', $last_viewed)
                                         ->min('id');
+
+                $first_new_post_id = $this->hook->fire('handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
                     header('Location: '.get_base_url().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
@@ -81,17 +93,21 @@ class viewtopic
                                 ->where('topic_id', $topic_id)
                                 ->max('id');
 
+            $last_post_id = $this->hook->fire('handle_actions_last_post', $last_post_id);
+
             if ($last_post_id) {
                 header('Location: '.get_base_url().'/post/'.$last_post_id.'/#p'.$last_post_id);
                 exit;
             }
         }
+
+        $this->hook->fire('handle_actions', $action, $topic_id);
     }
 
     // Gets some info about the topic
     public function get_info_topic($id)
     {
-        $where_get_info_topic = array(
+        $cur_topic['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
@@ -107,10 +123,9 @@ class viewtopic
                             ->left_outer_join('topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
                             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                            ->where_any_is($where_get_info_topic)
+                            ->where_any_is($cur_topic['where'])
                             ->where('t.id', $id)
-                            ->where_null('t.moved_to')
-                            ->find_one();
+                            ->where_null('t.moved_to');
         } else {
             $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
 
@@ -121,15 +136,19 @@ class viewtopic
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
                             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                            ->where_any_is($where_get_info_topic)
+                            ->where_any_is($cur_topic['where'])
                             ->where('t.id', $id)
-                            ->where_null('t.moved_to')
-                            ->find_one();
+                            ->where_null('t.moved_to');
         }
+
+        $cur_topic = $this->hook->fireDB('get_info_topic_query', $cur_topic);
+        $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
             message(__('Bad request'), '404');
         }
+
+        $cur_topic = $this->hook->fire('get_info_topic', $cur_topic);
 
         return $cur_topic;
     }
@@ -137,6 +156,8 @@ class viewtopic
     // Generates the post link
     public function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
     {
+        $closed = $this->hook->fire('get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
+
         if ($closed == '0') {
             if (($post_replies == '' && $this->user->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
                 $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a></p>'."\n";
@@ -152,6 +173,8 @@ class viewtopic
 
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
         }
+
+        $post_link = $this->hook->fire('get_post_link_start', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
 
         return $post_link;
     }
@@ -172,6 +195,8 @@ class viewtopic
             $quickpost = true;
         }
 
+        $quickpost = $this->hook->fire('is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
+
         return $quickpost;
     }
 
@@ -189,15 +214,18 @@ class viewtopic
             $subscraction = '';
         }
 
+        $subscraction = $this->hook->fire('get_subscraction', $subscraction, $is_subscribed, $topic_id);
+
         return $subscraction;
     }
 
     // Adds relationship meta tags
     public function get_page_head($topic_id, $num_pages, $p, $url_topic)
     {
-
-
         $page_head = array();
+
+        $page_head = $this->hook->fire('get_page_head_start', $page_head, $topic_id, $num_pages, $p, $url_topic);
+
         $page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
 
         if ($num_pages > 1) {
@@ -215,6 +243,8 @@ class viewtopic
             $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.__('Atom topic feed').'" />';
         }
 
+        $page_head = $this->hook->fire('get_page_head', $page_head, $topic_id, $num_pages, $p, $url_topic);
+
         return $page_head;
     }
 
@@ -225,15 +255,19 @@ class viewtopic
 
         $post_data = array();
 
+        $post_data = $this->hook->fire('print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
+
         $post_count = 0; // Keep track of post numbers
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = DB::for_table('posts')->select('id')
+        $result = DB::for_table('posts')
+                    ->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by('id')
                     ->limit($this->user->disp_topics)
-                    ->offset($start_from)
-                    ->find_many();
+                    ->offset($start_from);
+        $result = $this->hook->fireDB('print_posts_ids_query', $result);
+        $result = $result->find_many();
 
         $post_ids = array();
         foreach ($result as $cur_post_id) {
@@ -245,17 +279,18 @@ class viewtopic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $select_print_posts = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
+        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
 
         $result = DB::for_table('posts')
-            ->table_alias('p')
-            ->select_many($select_print_posts)
-            ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
-            ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-            ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
-            ->where_in('p.id', $post_ids)
-            ->order_by('p.id')
-            ->find_array();
+                    ->table_alias('p')
+                    ->select_many($result['select'])
+                    ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
+                    ->where_in('p.id', $post_ids)
+                    ->order_by('p.id');
+        $result = $this->hook->fireDB('print_posts_query', $result);
+        $result = $result->find_array();
 
         foreach($result as $cur_post) {
             $post_count++;
@@ -396,16 +431,20 @@ class viewtopic
             $post_data[] = $cur_post;
         }
 
+        $post_data = $this->hook->fire('print_posts', $post_data);
+
         return $post_data;
     }
     
     public function increment_views($id)
     {
         if ($this->config['o_topic_views'] == '1') {
-            DB::for_table('topics')->where('id', $id)
-                ->find_one()
-                ->set_expr('num_views', 'num_views+1')
-                ->save();
+            $query = DB::for_table('topics')
+                        ->where('id', $id)
+                        ->find_one()
+                        ->set_expr('num_views', 'num_views+1');
+            $query = $this->hook->fire('increment_views', $query);
+            $query = $query->save();
         }
     }
 }

@@ -20,46 +20,50 @@ class viewforum
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        $this->hook = $this->feather->hooks;
     }
  
     // Returns basic informations about the forum
     public function get_info_forum($id)
     {
+        $id = $this->hook->fire('get_info_forum_start', $id);
 
-
-        $where_get_info_forum = array(
+        $cur_forum['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
 
         if (!$this->user->is_guest) {
-            $select_get_info_forum = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id');
+            $cur_forum['select'] = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id');
 
             $cur_forum = DB::for_table('forums')->table_alias('f')
-                            ->select_many($select_get_info_forum)
+                            ->select_many($cur_forum['select'])
                             ->left_outer_join('forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
                             ->left_outer_join('forum_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
                             ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                            ->where_any_is($where_get_info_forum)
-                            ->where('f.id', $id)
-                            ->find_one();
+                            ->where_any_is($cur_forum['where'])
+                            ->where('f.id', $id);
         } else {
-            $select_get_info_forum = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics');
+            $cur_forum['select'] = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics');
 
             $cur_forum = DB::for_table('forums')->table_alias('f')
-                ->select_many($select_get_info_forum)
-                ->select_expr(0, 'is_subscribed')
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                ->where_any_is($where_get_info_forum)
-                ->where('f.id', $id)
-                ->find_one();
+                            ->select_many($cur_forum['select'])
+                            ->select_expr(0, 'is_subscribed')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($cur_forum['where'])
+                            ->where('f.id', $id);
         }
+
+        $cur_forum = $this->hook->fireDB('get_info_forum_query', $cur_forum);
+        $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
             message(__('Bad request'), '404');
         }
+
+        $cur_forum = $this->hook->fire('get_info_forum', $cur_forum);
 
         return $cur_forum;
     }
@@ -67,6 +71,8 @@ class viewforum
     // Returns the text required by the query to sort the forum
     public function sort_forum_by($sort_by_sql)
     {
+        $sort_by_sql = $this->hook->fire('sort_forum_by_start', $sort_by_sql);
+
         switch ($sort_by_sql) {
             case 0:
                 $sort_by = 'last_post DESC';
@@ -81,15 +87,19 @@ class viewforum
                 $sort_by = 'last_post DESC';
                 break;
         }
+
+        $sort_by = $this->hook->fire('sort_forum_by', $sort_by);
+
         return $sort_by;
     }
 
     // Adds relationship meta tags
     public function get_page_head($forum_id, $num_pages, $p, $url_forum)
     {
-
-
         $page_head = array();
+
+        $page_head = $this->hook->fire('get_page_head_start', $page_head, $forum_id, $num_pages, $p, $url_forum);
+
         $page_head['canonical'] = "\t".'<link href="'.get_link('forum/'.$forum_id.'/'.$url_forum.'/').'" rel="canonical" />';
 
         if ($num_pages > 1) {
@@ -107,6 +117,8 @@ class viewforum
             $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom" title="'.__('Atom forum feed').'" />';
         }
 
+        $page_head = $this->hook->fire('get_page_head', $page_head);
+
         return $page_head;
     }
 
@@ -114,6 +126,8 @@ class viewforum
     public function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
     {
         $forum_actions = array();
+
+        $forum_actions = $this->hook->fire('get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
 
         if (!$this->user->is_guest) {
             if ($subscriptions == 1) {
@@ -127,26 +141,32 @@ class viewforum
             $forum_actions[] = '<a href="'.get_link('mark-forum-read/'.$forum_id.'/').'">'.__('Mark forum read').'</a>';
         }
 
+        $forum_actions = $this->hook->fire('get_page_head', $forum_actions);
+
         return $forum_actions;
     }
 
     // Returns the elements needed to display topics
     public function print_topics($forum_id, $sort_by, $start_from)
     {
+        $forum_id = $this->hook->fire('print_topics_start', $forum_id, $sort_by, $start_from);
+
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
             $tracked_topics = get_tracked_topics();
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = DB::for_table('topics')->select('id')
+        $result = DB::for_table('topics')
+                        ->select('id')
                         ->where('forum_id', $forum_id)
                         ->order_by_desc('sticky')
                         ->order_by_expr($sort_by)
                         ->order_by_desc('id')
                         ->limit($this->user->disp_topics)
-                        ->offset($start_from)
-                        ->find_many();
+                        ->offset($start_from);
+        $result = $this->hook->fire('print_topics_ids_query', $result);
+        $result = $result->find_many();
 
         $forum_data = array();
 
@@ -160,29 +180,32 @@ class viewforum
             // Fetch list of topics to display on this page
             if ($this->user->is_guest || $this->config['o_show_dot'] == '0') {
                 // Without "the dot"
-                $select_print_topics = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
+                $result['select'] = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
 
-                $result = DB::for_table('topics')->select_many($select_print_topics)
+                $result = DB::for_table('topics')
+                            ->select_many($result['select'])
                             ->where_in('id', $topic_ids)
                             ->order_by_desc('sticky')
                             ->order_by_expr($sort_by)
-                            ->order_by_desc('id')
-                            ->find_many();
+                            ->order_by_desc('id');
             } else {
                 // With "the dot"
-                $select_print_topics = array('has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to');
+                $result['select'] = array('has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to');
 
-                $result = DB::for_table('topics')->table_alias('t')
-                    ->select_many($select_print_topics)
-                    ->left_outer_join('posts', array('t.id', '=', 'p.topic_id'), 'p')
-                    ->left_outer_join('posts', array('p.poster_id', '=', $this->user->id), null, true)
-                    ->where_in('t.id', $topic_ids)
-                    ->group_by('t.id')
-                    ->order_by_desc('sticky')
-                    ->order_by_expr($sort_by)
-                    ->order_by_desc('id')
-                    ->find_many();
+                $result = DB::for_table('topics')
+                            ->table_alias('t')
+                            ->select_many($result['select'])
+                            ->left_outer_join('posts', array('t.id', '=', 'p.topic_id'), 'p')
+                            ->left_outer_join('posts', array('p.poster_id', '=', $this->user->id), null, true)
+                            ->where_in('t.id', $topic_ids)
+                            ->group_by('t.id')
+                            ->order_by_desc('sticky')
+                            ->order_by_expr($sort_by)
+                            ->order_by_desc('id');
             }
+
+            $result = $this->hook->fireDB('print_topics_query', $result);
+            $result = $result->find_many();
 
             $topic_count = 0;
             foreach ($result as $cur_topic) {
@@ -256,6 +279,8 @@ class viewforum
                 $forum_data[] = $cur_topic;
             }
         }
+
+        $forum_data = $this->hook->fire('print_topics', $forum_data);
 
         return $forum_data;
     }
