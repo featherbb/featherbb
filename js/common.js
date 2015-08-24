@@ -33,6 +33,7 @@ function unselect_checkboxes(curFormId, link, new_string) {
 	return false;
 }
 
+// Useless functions (former flash message show/hide, maybe to use later)
 function fadeOut(id, val) {
 	if (isNaN(val)) {
 		val = 9;

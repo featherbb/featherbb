@@ -113,15 +113,20 @@ endif;
         <?php endif; ?>
         <?php if (isset($flash['message'])) : ?>
             <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
-            <div id="msgflash" class="block">
-                <h2><span><?php _e('Info') ?></span><span style="float:right;cursor:pointer" onclick="fadeOut('msgflash', 9);">&times;</span></h2>
-                <div class="box">
-                    <div class="inbox">
-                        <p><?php echo feather_escape($flash['message']) ?></p>
-                    </div>
-                </div>
+            <script type="text/javascript">
+                window.onload = function() {
+                    var flashMessage = document.getElementById('flashmsg');
+                    flashMessage.className = 'flashmsg show';
+                    setTimeout(function () {
+                        flashMessage.className = 'flashmsg';
+                    }, 10000);
+                    return false;
+                }
+            </script>
+            <div class="flashmsg" id="flashmsg">
+                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
+                <p><?= feather_escape($flash['message']) ?></p>
             </div>
-            <script type="text/javascript">fadeIn('msgflash', 0);</script>
         <?php endif; ?>
     </div>
 

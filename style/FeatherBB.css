@@ -28,7 +28,6 @@ th {
 }
 #announce,
 #msg,
-#msgflash,
 #posterror {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5)
 }
@@ -1239,16 +1238,7 @@ footer .footer-link a {
 #viewprofile .fakeform .inform fieldset dd {
     margin: 0 0 15px
 }
-#msgflash {
-    opacity: 0;
-    position: fixed;
-    top: 40px;
-    right: 40px;
-    min-width: 230px;
-    max-width: 400px;
-}
 #msg,
-#msgflash,
 #posterror {
     margin: 15px 0;
     padding: 8px 35px 8px 14px;
@@ -1258,13 +1248,11 @@ footer .footer-link a {
     border-radius: 4px
 }
 #msg h2,
-#msgflash h2,
 #posterror h2 {
     margin: 0 0 4px;
     font-size: 18px
 }
 #msg p,
-#msgflash p,
 #posterror p {
     margin: 0 0 2px
 }
@@ -1272,6 +1260,48 @@ footer .footer-link a {
     background-color: #f2dede;
     border: 1px solid #ebccd1;
     color: #a94442
+}
+.flashmsg {
+    position: fixed;
+    min-width: 220px;
+    max-width: 500px;
+    top: 5%;
+    right: 5%;
+    margin-left: -250px;
+    padding: 1em;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    border: 1px solid #bbb;
+    color: #147880;
+    background: #d2ecea;
+    background: -webkit-linear-gradient(top, #d2ecea, #b3e1e4);
+    background:    -moz-linear-gradient(top, #d2ecea, #b3e1e4);
+    background:         linear-gradient(top, #d2ecea, #b3e1e4);
+    -webkit-transform: translateY(-100%);
+       -moz-transform: translateY(-100%);
+        -ms-transform: translateY(-100%);
+         -o-transform: translateY(-100%);
+            transform: translateY(-100%);
+    -webkit-transition: all 0.75s ease-out;
+       -moz-transition: all 0.75s ease-out;
+        -ms-transition: all 0.75s ease-out;
+         -o-transition: all 0.75s ease-out;
+            transition: all 0.75s ease-out;
+}
+.flashmsg.show {
+    opacity: 1;
+    pointer-events: auto;
+    -webkit-transform: translateY(0%);
+       -moz-transform: translateY(0%);
+        -ms-transform: translateY(0%);
+         -o-transform: translateY(0%);
+            transform: translateY(0%);
+}
+.flashmsg h2 {
+    margin: 0 0 4px;
+    font-size: 18px
 }
 input[type=submit] {
     border-radius: 3px;
