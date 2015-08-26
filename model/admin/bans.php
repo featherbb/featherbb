@@ -21,6 +21,7 @@ class bans
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
 
     public function add_ban_info($id = null)
@@ -218,9 +219,7 @@ class bans
             $ban_ip = implode(' ', $addresses);
         }
 
-        require FEATHER_ROOT.'include/email.php';
-
-        if ($ban_email != '' && !is_valid_email($ban_email)) {
+        if ($ban_email != '' && !$this->email->is_valid_email($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
                 message(__('Invalid e-mail message'));
             }

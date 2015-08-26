@@ -21,6 +21,7 @@ class post
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
  
     //  Get some info about the post
@@ -131,17 +132,15 @@ class post
             $email = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
-                require FEATHER_ROOT.'include/email.php';
-
                 $errors = $this->hook->fire('check_errors_before_post_email', $errors, $email);
 
-                if (!is_valid_email($email)) {
+                if (!$this->email->is_valid_email($email)) {
                     $errors[] = __('Invalid email');
                 }
 
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
-                if ($this->user->is_guest && is_banned_email($email)) {
+                if ($this->user->is_guest && $this->email->is_banned_email($email)) {
                     if ($this->config['p_allow_banned_email'] == '0') {
                         $errors[] = __('Banned email');
                     }
@@ -372,16 +371,14 @@ class post
         $result = $result->find_many();
 
         if ($result) {
-            require_once FEATHER_ROOT.'include/email.php';
-
             $notification_emails = array();
 
             $censored_message = feather_trim(censor_words($post['message']));
 
             if ($this->config['o_censoring'] == '1') {
-                $cleaned_message = bbcode2email($censored_message, -1);
+                $cleaned_message = $this->email->bbcode2email($censored_message, -1);
             } else {
-                $cleaned_message = bbcode2email($post['message'], -1);
+                $cleaned_message = $this->email->bbcode2email($post['message'], -1);
             }
 
             // Loop through subscribed users and send emails
@@ -436,9 +433,9 @@ class post
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        $this->email->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        $this->email->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
@@ -581,17 +578,15 @@ class post
         $result = $result->find_many();
 
         if ($result) {
-            require_once FEATHER_ROOT.'include/email.php';
-
             $notification_emails = array();
 
             $censored_message = feather_trim(censor_words($post['message']));
             $censored_subject = feather_trim(censor_words($post['subject']));
 
             if ($this->config['o_censoring'] == '1') {
-                $cleaned_message = bbcode2email($censored_message, -1);
+                $cleaned_message = $this->email->bbcode2email($censored_message, -1);
             } else {
-                $cleaned_message = bbcode2email($post['message'], -1);
+                $cleaned_message = $this->email->bbcode2email($post['message'], -1);
             }
 
             // Loop through subscribed users and send emails
@@ -644,9 +639,9 @@ class post
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        $this->email->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        $this->email->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
@@ -677,7 +672,7 @@ class post
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
         $mail_message = $this->hook->fire('warn_banned_user_mail_message', $mail_message);
 
-        feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+        $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
     }
 
     // Increment post count, change group if needed

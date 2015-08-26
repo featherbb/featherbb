@@ -21,6 +21,7 @@ class profile
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
 
     public function change_pass($id)
@@ -200,17 +201,15 @@ class profile
                 message(__('Wrong pass'));
             }
 
-            require FEATHER_ROOT.'include/email.php';
-
             // Validate the email address
             $new_email = strtolower(feather_trim($this->request->post('req_new_email')));
             $new_email = $this->hook->fire('change_email_new_email', $new_email);
-            if (!is_valid_email($new_email)) {
+            if (!$this->email->is_valid_email($new_email)) {
                 message(__('Invalid email'));
             }
 
             // Check if it's a banned email address
-            if (is_banned_email($new_email)) {
+            if ($this->email->is_banned_email($new_email)) {
                 if ($this->config['p_allow_banned_email'] == '0') {
                     message(__('Banned email'));
                 } elseif ($this->config['o_mailing_list'] != '') {
@@ -230,7 +229,7 @@ class profile
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_message', $mail_message);
 
-                    feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
@@ -267,7 +266,7 @@ class profile
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_dupe_message', $mail_message);
 
-                    feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
@@ -304,7 +303,7 @@ class profile
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
 
-            feather_mail($new_email, $mail_subject, $mail_message);
+            $this->email->feather_mail($new_email, $mail_subject, $mail_message);
 
             $this->hook->fire('change_email_sent');
 
@@ -813,11 +812,9 @@ class profile
                 }
 
                 if ($this->config['o_regs_verify'] == '0' || $this->user->is_admmod) {
-                    require FEATHER_ROOT.'include/email.php';
-
                     // Validate the email address
                     $form['email'] = strtolower(feather_trim($this->request->post('req_email')));
-                    if (!is_valid_email($form['email'])) {
+                    if (!$this->email->is_valid_email($form['email'])) {
                         message(__('Invalid email'));
                     }
                 }
