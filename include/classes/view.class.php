@@ -16,7 +16,6 @@
                $app,
                $page,
                $validation = array(
-                   'title' => 'strval',
                    'page_number' => 'intval',
                    'active_page' => 'strval',
                    'focus_element' => 'strval',
@@ -287,8 +286,10 @@
      protected function validate($key, $value)
      {
          $key = (string) $key;
-         if (function_exists($this->validation[$key])) {
-             $value = $this->validation[$key]($value);
+         if (isset($this->validation[$key])) {
+             if (function_exists($this->validation[$key])) {
+                 $value = $this->validation[$key]($value);
+             }
          }
          return array($key, $value);
      }
