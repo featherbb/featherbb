@@ -21,6 +21,7 @@ class login
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
 
     public function login()
@@ -127,11 +128,9 @@ class login
         $errors = array();
 
         if ($this->feather->request()->isPost()) {
-            require FEATHER_ROOT.'include/email.php';
-
             // Validate the email address
             $email = strtolower(feather_trim($this->request->post('req_email')));
-            if (!is_valid_email($email)) {
+            if (!$this->email->is_valid_email($email)) {
                 $errors[] = __('Invalid email');
             }
 
@@ -190,7 +189,7 @@ class login
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                         $cur_mail_message = $this->hook->fire('cur_mail_message_password_forgotten', $cur_mail_message);
 
-                        feather_mail($email, $mail_subject, $cur_mail_message);
+                        $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
                     message(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);

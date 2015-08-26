@@ -21,6 +21,7 @@ class misc
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
  
     public function update_last_visit()
@@ -97,9 +98,7 @@ class misc
 
         $mail_message = $this->hook->fire('send_email_mail_message', $mail_message);
 
-        require_once FEATHER_ROOT.'include/email.php';
-
-        feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
+        $this->email->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
         $update_last_mail_sent = DB::for_table('users')->where('id', $this->user->id)
                                                   ->find_one()
@@ -212,9 +211,7 @@ class misc
 
                 $mail_message = $this->hook->fire('insert_report_mail_message', $mail_message);
 
-                require FEATHER_ROOT.'include/email.php';
-
-                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 

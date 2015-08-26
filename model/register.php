@@ -21,6 +21,7 @@ class register
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
 
     public function check_for_errors()
@@ -79,16 +80,14 @@ class register
         }
 
         // Validate email
-        require FEATHER_ROOT.'include/email.php';
-
-        if (!is_valid_email($user['email1'])) {
+        if (!$this->email->is_valid_email($user['email1'])) {
             $user['errors'][] = __('Invalid email');
         } elseif ($this->config['o_regs_verify'] == '1' && $user['email1'] != $email2) {
             $user['errors'][] = __('Email not match');
         }
 
         // Check if it's a banned email address
-        if (is_banned_email($user['email1'])) {
+        if ($this->email->is_banned_email($user['email1'])) {
             if ($this->config['p_allow_banned_email'] == '0') {
                 $user['errors'][] = __('Banned email');
             }
@@ -193,7 +192,7 @@ class register
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = $this->hook->fire('insert_user_banned_mail_message', $mail_message);
 
-                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
 
             // If we previously found out that the email was a dupe
@@ -214,7 +213,7 @@ class register
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = $this->hook->fire('insert_user_dupe_mail_message', $mail_message);
 
-                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
@@ -236,7 +235,7 @@ class register
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = $this->hook->fire('insert_user_new_mail_message', $mail_message);
 
-                feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
         }
 
@@ -260,7 +259,7 @@ class register
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('insert_user_welcome_mail_message', $mail_message);
 
-            feather_mail($user['email1'], $mail_subject, $mail_message);
+            $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
             message(__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }

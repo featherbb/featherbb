@@ -48,6 +48,7 @@ class Core extends \Slim\Middleware
         require $this->forum_env['FEATHER_ROOT'].'include/classes/database.class.php';
         require $this->forum_env['FEATHER_ROOT'].'include/classes/cache.class.php';
         require $this->forum_env['FEATHER_ROOT'].'include/classes/hooks.class.php';
+        require $this->forum_env['FEATHER_ROOT'].'include/classes/email.class.php';
         require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
@@ -230,6 +231,9 @@ class Core extends \Slim\Middleware
         // Hooks
         $this->app->hooks = new \FeatherBB\Hooks();
         new \plugin\plugintest(); // TODO: remove
+
+        // Email
+        $this->app->email = new \FeatherBB\Email();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
