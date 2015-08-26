@@ -16,6 +16,7 @@
                $data,
                $page,
                $assets,
+               $noReport,
                $validation = array(
                    'page_number' => 'intval',
                    'active_page' => 'strval',
@@ -259,6 +260,7 @@
 
          if ($keep_rendering) {
              if ($keep_rendering == 1) {
+                 $this->noReport = true;
                  require $this->getTemplatePathname('header.new.php');
              }
 
@@ -340,9 +342,10 @@
              'fid' => null,
              'pid' => null,
              'tid' => null,
+             'feather_config' => $this->app->config,
          );
 
-         if ($this->app->user->is_admmod) {
+         if ($this->app->user->is_admmod && !$this->noReport) {
              $header['has_reports'] = \model\header::get_reports();
          }
 

@@ -115,8 +115,9 @@ class profile
 
             $this->feather->view2->display('profile/view_profile.php', array(
                         'user_info' => $user_info,
-                        )
-                );
+                        'id' => $id
+                    ),
+                2);
         } else {
             if (!$section || $section == 'essentials') {
                 $user_disp = $this->model->edit_essentials($id, $user);
@@ -153,9 +154,10 @@ class profile
                 $this->feather->view2->display('profile/section_personal.php', array(
                                 'user' => $user,
                                 'feather' => $this->feather,
-                                'title_field' => $title_field
-                                )
-                        );
+                                'title_field' => $title_field,
+                                'id' => $id
+                                ),
+                        2);
 
             } elseif ($section == 'messaging') {
 
@@ -168,8 +170,9 @@ class profile
 
                 $this->feather->view2->display('profile/section_messaging.php', array(
                                 'user' => $user,
-                                )
-                        );
+                                'id' => $id
+                                ),
+                        2);
 
             } elseif ($section == 'personality') {
                 if ($this->config['o_avatars'] == '0' && $this->config['o_signatures'] == '0') {
@@ -204,8 +207,9 @@ class profile
                                 'signature_preview' => $signature_preview,
                                 'user' => $user,
                                 'feather' => $this->feather,
-                                )
-                        );
+                                'id' => $id
+                            ),
+                    2);
 
             } elseif ($section == 'display') {
 
@@ -218,8 +222,9 @@ class profile
 
                 $this->feather->view2->display('profile/section_display.php', array(
                                 'user' => $user,
-                                )
-                        );
+                                'id' => $id
+                            ),
+                    2);
 
             } elseif ($section == 'privacy') {
 
@@ -232,8 +237,9 @@ class profile
 
                 $this->feather->view2->display('profile/section_privacy.php', array(
                                 'user' => $user,
-                                )
-                        );
+                                'id' => $id
+                            ),
+                    2);
 
             } elseif ($section == 'admin') {
 
@@ -253,8 +259,9 @@ class profile
                                 'forum_list' => $this->model->get_forum_list($id),
                                 'group_list' => $this->model->get_group_list($user),
                                 'feather' => $this->feather,
-                                )
-                        );
+                                'id' => $id
+                            ),
+                    2);
 
             } else {
                 message(__('Bad request'), '404');

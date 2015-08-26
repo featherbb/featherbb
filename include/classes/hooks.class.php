@@ -93,7 +93,7 @@ class Hooks extends \Slim\Slim
         array_shift($args);
 
         if (!isset($this->hooks[$name])) {
-            $this->hooks[$name] = array(array());
+            //$this->hooks[$name] = array(array());
             return $args[0];
         }
         if (!empty($this->hooks[$name])) {
