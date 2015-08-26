@@ -21,7 +21,7 @@ class register
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->email = new \FeatherBB\Email();
+        $this->email = $this->feather->email;
         $this->auth = new \model\auth();
     }
 
