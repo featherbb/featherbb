@@ -74,17 +74,57 @@ endif;
 ?>
 </head>
 
-<body id="pun<?= $active_page ?>"<?= $focus_element; ?>>
-
+<body id="pun<?= $active_page ?>" <?= ($focus_element ? 'onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
 <header>
-
     <nav>
         <div class="container">
             <div class="phone-menu" id="phone-button">
                 <a class="button-phone"></a>
             </div>
             <div id="phone">
-                <?php echo $navlinks ?>
+                <div id="brdmenu" class="inbox">
+                    <ul>
+<?php
+echo "\t\t\t\t\t\t".'<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.__('Index').'</a></li>'."\n";
+
+if ($feather->user->g_read_board == '1' && $feather->user->g_view_users == '1') {
+    echo "\t\t\t\t\t\t".'<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.get_link('userlist/').'">'.__('User list').'</a></li>'."\n";
+}
+
+if ($feather->forum_settings['o_rules'] == '1' && (!$feather->user->is_guest || $feather->user->g_read_board == '1' || $feather->forum_settings['o_regs_allow'] == '1')) {
+    echo "\t\t\t\t\t\t".'<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.get_link('rules/').'">'.__('Rules').'</a></li>'."\n";
+}
+
+if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
+    echo "\t\t\t\t\t\t".'<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.get_link('search/').'">'.__('Search').'</a></li>'."\n";
+}
+
+if ($feather->user->is_guest) {
+    echo "\t\t\t\t\t\t".'<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.get_link('register/').'">'.__('Register').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.get_link('login/').'">'.__('Login').'</a></li>'."\n";
+} else {
+    echo "\t\t\t\t\t\t".'<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.get_link('user/'.$feather->user->id.'/').'">'.__('Profile').'</a></li>'."\n";
+
+    if ($feather->user->is_admmod) {
+        echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.__('Admin').'</a></li>'."\n";
+    }
+
+    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.get_link('logout/id/'.$feather->user->id.'/token/'.feather_hash($feather->user->id.feather_hash($this->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
+}
+
+// // Are there any additional navlinks we should insert into the array before imploding it?
+// if ($feather->user->g_read_board == '1' && $feather->forum_settings['o_additional_navlinks'] != '') {
+//     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $feather->forum_settings['o_additional_navlinks']."\n", $extra_links)) {
+//         // Insert any additional links into the $links array (at the correct index)
+//         $num_links = count($extra_links[1]);
+//         for ($i = 0; $i < $num_links; ++$i) {
+//             array_splice($links, $extra_links[1][$i], 0, array('<li id="navextra'.($i + 1).'">'.$extra_links[2][$i].'</li>'));
+//         }
+//     }
+// }
+?>
+                        </ul>
+                    </div>
                 <div class="navbar-right">
                     <form method="get" action="/search" class="nav-search">
                         <input type="hidden" name="action" value="search">
