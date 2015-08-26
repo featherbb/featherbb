@@ -243,12 +243,10 @@
       */
      protected function render($template, $data = null)
      {
-         $templatePathname = $this->getTemplatePathname($template);
-
-         $data = array_merge($this->data->all(), (array) $data);
+         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
          extract($data);
          ob_start();
-         require $templatePathname;
+         require $this->getTemplatePathname($template);
 
          return ob_get_clean();
      }
