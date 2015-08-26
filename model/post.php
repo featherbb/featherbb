@@ -531,6 +531,7 @@ class post
         $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
 
         // Update the topic with last_post_id
+        unset($topic);
         $topic['update'] = array(
             'last_post_id'  =>  $new['pid'],
             'first_post_id' =>  $new['pid'],
@@ -575,7 +576,7 @@ class post
                     ->where_any_is($result['where'])
                     ->where('s.forum_id', $cur_posting['id'])
                     ->where_not_equal('u.id', $this->user->id);
-        $result = $this->hook->fireDB('send_notifications_new_topic_query');
+        $result = $this->hook->fireDB('send_notifications_new_topic_query', $result);
         $result = $result->find_many();
 
         if ($result) {

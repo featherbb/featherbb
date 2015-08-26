@@ -69,6 +69,7 @@ class register
         }
 
         // Antispam feature
+        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
         $question = $this->request->post('captcha_q') ? trim($this->request->post('captcha_q')) : '';
         $answer = $this->request->post('captcha') ? strtoupper(trim($this->request->post('captcha'))) : '';
         $lang_antispam_questions_array = array();

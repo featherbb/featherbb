@@ -73,14 +73,16 @@ class viewforum
 
         $forum_actions = $this->model->get_forum_actions($id, $this->config['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name'])),
+            'active_page' => 'viewforum',
+            'page_number'  =>  $p,
+            'paging_links'  =>  $paging_links,
+            'page_head'  =>  $this->model->get_page_head($id, $num_pages, $p, $url_forum),
+            'is_indexed' => true,
+        ));
 
-        $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name']));
-
-        $page_head = $this->model->get_page_head($id, $num_pages, $p, $url_forum);
-
-        $this->header->setTitle($page_title)->setActivePage('viewforum')->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->allowIndex()->display();
-
-        $this->feather->render('viewforum.php', array(
+        $this->feather->view2->display('viewforum.php', array(
                             'id' => $id,
                             'forum_data' => $this->model->print_topics($id, $sort_by, $start_from),
                             'cur_forum' => $cur_forum,
@@ -90,9 +92,8 @@ class viewforum
                             'start_from' => $start_from,
                             'url_forum' => $url_forum,
                             'forum_actions' => $forum_actions,
+                            'feather_config' => $this->config,
                             )
                     );
-
-        $this->footer->display('viewforum', $id, $p, '', $id, $num_pages);
     }
 }

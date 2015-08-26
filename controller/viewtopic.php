@@ -86,12 +86,14 @@ class viewtopic
 
         $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $id);
 
-        // Add relationship meta tags
-        $page_head = $this->model->get_page_head($id, $num_pages, $p, $url_topic);
-
-        $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject']));
-
-        $this->header->setTitle($page_title)->setActivePage('viewtopic')->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->allowIndex()->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject'])),
+            'active_page' => 'viewtopic',
+            'page_number'  =>  $p,
+            'paging_links'  =>  $paging_links,
+            'page_head'  =>  $this->model->get_page_head($id, $num_pages, $p, $url_topic),
+            'is_indexed' => true,
+        ));
 
         require FEATHER_ROOT.'include/parser.php';
 
@@ -114,7 +116,7 @@ class viewtopic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->render('viewtopic.php', array(
+        $this->feather->view2->display('viewtopic.php', array(
                             'id' => $id,
                             'p' => $p,
                             'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
@@ -139,8 +141,6 @@ class viewtopic
 
         // Increment "num_views" for topic
         $this->model->increment_views($id);
-
-        $this->footer->display('viewtopic', $id, $p, $pid, $cur_topic['forum_id'], $num_pages);
     }
 
     public function viewpost($pid)

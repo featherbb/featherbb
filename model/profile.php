@@ -1353,12 +1353,12 @@ class profile
     {
         $page = $this->hook->fire('generate_profile_menu', $page, $id);
 
-        $this->feather->render('profile/menu.php', array(
+        $this->feather->view2->display('profile/menu.php', array(
                 'id' => $id,
                 'feather_config' => $this->config,
                 'feather_user' => $this->user,
                 'page' => $page,
             )
-        );
+        , 1);
     }
 }

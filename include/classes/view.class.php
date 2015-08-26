@@ -19,12 +19,12 @@
                $validation = array(
                    'page_number' => 'intval',
                    'active_page' => 'strval',
-                   'focus_element' => 'strval',
+                   //'focus_element' => 'strval',
                    'is_indexed' => 'boolval',
                    'admin_console' => 'boolval',
                    'has_reports' => 'boolval',
                    'paging_links' => 'strval',
-                   'required_fields' => 'strval',
+                   //'required_fields' => 'strval',
                    'has_reports' => 'boolval',
                    'footer_style' => 'strval',
                    'fid' => 'intval',
@@ -216,9 +216,9 @@
       * @param  string   $template   Pathname of template file relative to templates directory
       * @param  array    $data       Any additonal data to be passed to the template.
       */
-     public function display($template, $data = null)
+     public function display($template, $data = null, $keep_rendering = null)
      {
-         echo $this->fetch($template, $data);
+         echo $this->fetch($template, $data, $keep_rendering);
      }
 
      /**
@@ -228,7 +228,7 @@
       * @param    array  $data       Any additonal data to be passed to the template.
       * @return string               The rendered template
       */
-     public function fetch($template, $data = null)
+     public function fetch($template, $data = null, $keep_rendering = null)
      {
          // Force flash messages
          if (isset($this->app->environment['slim.flash'])) {
@@ -238,7 +238,7 @@
          $data['feather'] = \Slim\Slim::getInstance();
          $data['assets'] = $this->getAssets();
          $data = $this->app->hooks->fire('view.alter_data', $data);
-         return $this->render($template, $data);
+         return $this->render($template, $data, $keep_rendering);
      }
 
      /**
@@ -251,15 +251,32 @@
       * @return string               The rendered template
       * @throws \RuntimeException    If resolved template pathname is not a valid file
       */
-     protected function render($template, $data = null)
+     protected function render($template, $data = null, $keep_rendering = null)
      {
          extract($data);
-         ob_start();
-         require $this->getTemplatePathname('header.new.php');
-         require $this->getTemplatePathname($template);
-         require $this->getTemplatePathname('footer.new.php');
 
-         return ob_get_clean();
+         if ($keep_rendering) {
+             ob_start();
+
+             if ($keep_rendering == 1) {
+                 require $this->getTemplatePathname('header.new.php');
+             }
+
+             require $this->getTemplatePathname($template);
+
+             if ($keep_rendering == 2) {
+                 require $this->getTemplatePathname('footer.new.php');
+             }
+
+             return ob_get_clean();
+         }
+         else {
+             ob_start();
+             require $this->getTemplatePathname('header.new.php');
+             require $this->getTemplatePathname($template);
+             require $this->getTemplatePathname('footer.new.php');
+             return ob_get_clean();
+         }
      }
 
      // Getters & Setters
@@ -326,8 +343,6 @@
              'fid' => null,
              'pid' => null,
              'tid' => null,
-             'csrf_key' => 'featherbb_csrf',
-             'csrf_token' => $this->app->csrf->token,
          );
      }
 

@@ -48,10 +48,6 @@ class register
             message(__('No new regs'));
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Register'));
-        $required_fields = array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title'));
-        $focus_element = array('register', 'req_user');
-
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $this->config['o_default_timezone'];
         $user['dst'] = isset($user['dst']) ? $user['dst'] : $this->config['o_default_dst'];
         $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : $this->config['o_default_email_setting'];
@@ -66,9 +62,15 @@ class register
             }
         }
 
-        $this->header->setTitle($page_title)->setActivePage('register')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), __('Register')),
+            'focus_element' => array('register', 'req_user'),
+            'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
+            'active_page' => 'register',
+            'is_indexed' => true,
+        ));
 
-        $this->feather->render('register/form.php', array(
+        $this->feather->view2->display('register/form.php', array(
                             'errors' => $user['errors'],
                             'feather_config' => $this->config,
                             'index_questions'    =>    $index_questions,
@@ -78,8 +80,6 @@ class register
                             'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
                             )
                     );
-
-        $this->footer->display();
     }
 
     public function cancel()
@@ -106,15 +106,14 @@ class register
             redirect(get_link('register/agree/'));
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Register'), __('Forum rules'));
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), __('Register'), __('Forum rules')),
+            'active_page' => 'register',
+        ));
 
-        $this->header->setTitle($page_title)->setActivePage('register')->display();
-
-        $this->feather->render('register/rules.php', array(
+        $this->feather->view2->display('register/rules.php', array(
                             'feather_config'    =>    $this->config,
                             )
                     );
-
-        $this->footer->display();
     }
 }

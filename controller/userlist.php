@@ -54,17 +54,26 @@ class userlist
         $p = (!$this->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('User list'));
         if ($this->user->g_search_users == '1') {
             $focus_element = array('userlist', 'username');
+        }
+        else {
+            $focus_element = array();
         }
 
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
-        $this->header->setTitle($page_title)->setActivePage('userlist')->setPage($p)->setFocusElement($focus_element)->setPagingLinks($paging_links)->allowIndex()->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), __('User list')),
+            'active_page' => 'userlist',
+            'page_number'  =>  $p,
+            'paging_links'  =>  $paging_links,
+            'focus_element' => $focus_element,
+            'is_indexed' => true,
+        ));
 
-        $this->feather->render('userlist.php', array(
+        $this->feather->view2->display('userlist.php', array(
                             'feather' => $this->feather,
                             'username' => $username,
                             'show_group' => $show_group,
@@ -77,7 +86,5 @@ class userlist
                             'userlist_data' => $this->model->print_users($username, $start_from, $sort_by, $sort_dir, $show_group),
                             )
                     );
-
-        $this->footer->display();
     }
 }
