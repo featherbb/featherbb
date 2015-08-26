@@ -248,7 +248,9 @@
          $data = $this->app->hooks->fire('view.alter_data', $data);
          extract($data);
          ob_start();
+         require $this->getTemplatePathname('header.new.php');
          require $this->getTemplatePathname($template);
+         require $this->getTemplatePathname('footer.new.php');
 
          return ob_get_clean();
      }
