@@ -370,7 +370,9 @@ function delete_post($post_id, $topic_id)
         ->find_one()
         ->delete();
 
-    strip_search_index($post_id);
+    $search = new \FeatherBB\Search();
+
+    $search->strip_search_index($post_id);
 
     // Count number of replies in the topic
     $num_replies = \DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;

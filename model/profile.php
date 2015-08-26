@@ -666,7 +666,6 @@ class profile
 
             // Should we delete all posts made by this user?
             if ($this->request->post('delete_posts')) {
-                require FEATHER_ROOT.'include/search_idx.php';
                 // Hold on, this could take some time!
                 @set_time_limit(0);
 

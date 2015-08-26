@@ -21,6 +21,7 @@ class edit
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->search = new \FeatherBB\Search();
     }
 
     // Fetch some info about the post, the topic and the forum
@@ -155,8 +156,6 @@ class edit
     {
         $this->hook->fire('edit_post_start');
 
-        require FEATHER_ROOT.'include/search_idx.php';
-
         if ($can_edit_subject) {
             // Update the topic and any redirect topics
             $where_topic = array(
@@ -178,9 +177,9 @@ class edit
             $query = $query->save();
 
             // We changed the subject, so we need to take that into account when we update the search words
-            update_search_index('edit', $id, $post['message'], $post['subject']);
+            $this->search->update_search_index('edit', $id, $post['message'], $post['subject']);
         } else {
-            update_search_index('edit', $id, $post['message']);
+            $this->search->update_search_index('edit', $id, $post['message']);
         }
         
         // Update the post
