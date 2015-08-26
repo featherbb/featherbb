@@ -43,7 +43,7 @@ class Core extends \Slim\Middleware
         // Load files
         require $this->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
         require $this->forum_env['FEATHER_ROOT'].'include/functions.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/pomo/MO.php';
+        require $this->forum_env['FEATHER_ROOT'].'include/classes/pomo/MO.php';
         require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
         require $this->forum_env['FEATHER_ROOT'].'include/classes/database.class.php';
         require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
