@@ -311,7 +311,7 @@
          }
 
          return array(
-             'title' => $this->app->forum_settings['o_board_title'],
+             'title' => feather_escape($this->app->forum_settings['o_board_title']),
              'page_number' => null,
              'active_page' => 'index',
              'focus_element' => null,
