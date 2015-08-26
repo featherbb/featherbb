@@ -39,4 +39,18 @@ class auth
             return $user;
         }
     }
+
+    //
+    // Wrapper for Slim setCookie method
+    //
+    public function feather_setcookie($user_id, $password, $expires)
+    {
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
+        $cookie_data = array('user_id' => $user_id,
+            'password_hash' => hash_hmac('sha1', $password, $feather->forum_settings['cookie_seed'].'_password_hash'),
+            'expires' => $expires,
+            'checksum' => hash_hmac('sha1', $user_id.$expires, $feather->forum_settings['cookie_seed'].'_checksum'));
+        $feather->setCookie($feather->forum_settings['cookie_name'], json_encode($cookie_data), $expires);
+    }
 }

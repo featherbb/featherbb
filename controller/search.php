@@ -41,8 +41,6 @@ class search
             message(__('No search permission'), false, '403 Forbidden');
         }
 
-        require FEATHER_ROOT.'include/search_idx.php';
-
         // Figure out what to do :-)
         if ($this->request->get('action') || ($this->request->get('search_id'))) {
             $search = $this->model->get_search_results();

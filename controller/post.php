@@ -100,8 +100,6 @@ class post
 
                 // Did everything go according to plan?
                 if (empty($errors) && !$this->request->post('preview')) {
-                    require FEATHER_ROOT.'include/search_idx.php';
-
                         // If it's a reply
                         if ($tid) {
                             // Insert the reply, get the new_pid
