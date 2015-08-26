@@ -18,8 +18,6 @@ class profile
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\profile();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/profile.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');

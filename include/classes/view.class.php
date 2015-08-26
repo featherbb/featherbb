@@ -255,9 +255,9 @@
      {
          extract($data);
 
-         if ($keep_rendering) {
-             ob_start();
+         ob_start();
 
+         if ($keep_rendering) {
              if ($keep_rendering == 1) {
                  require $this->getTemplatePathname('header.new.php');
              }
@@ -267,16 +267,14 @@
              if ($keep_rendering == 2) {
                  require $this->getTemplatePathname('footer.new.php');
              }
-
-             return ob_get_clean();
          }
          else {
-             ob_start();
              require $this->getTemplatePathname('header.new.php');
              require $this->getTemplatePathname($template);
              require $this->getTemplatePathname('footer.new.php');
-             return ob_get_clean();
          }
+
+         return ob_get_clean();
      }
 
      // Getters & Setters
@@ -327,7 +325,7 @@
              $this->app->cache->store('quickjump', \model\cache::get_quickjump());
          }
 
-         return array(
+         $header = array(
              'title' => feather_escape($this->app->forum_settings['o_board_title']),
              'page_number' => null,
              'active_page' => 'index',
@@ -337,13 +335,18 @@
              'page_head' => null,
              'paging_links' => null,
              'required_fields' => null,
-             'has_reports' => \model\header::get_reports(),
              'footer_style' => null,
              'quickjump' => $this->app->cache->retrieve('quickjump'),
              'fid' => null,
              'pid' => null,
              'tid' => null,
          );
+
+         if ($this->app->user->is_admmod) {
+             $header['has_reports'] = \model\header::get_reports();
+         }
+
+         return $header;
      }
 
      public function addAsset($type, $asset, $params = null)
