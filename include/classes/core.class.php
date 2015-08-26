@@ -46,9 +46,6 @@ class Core extends \Slim\Middleware
         require $this->forum_env['FEATHER_ROOT'].'include/pomo/MO.php';
         require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
         require $this->forum_env['FEATHER_ROOT'].'include/classes/database.class.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/classes/cache.class.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/classes/hooks.class.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/classes/email.class.php';
         require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
@@ -204,6 +201,10 @@ class Core extends \Slim\Middleware
         $this->app->container->singleton('hooks', function () {
             return new \FeatherBB\Hooks();
         });
+        // Load FeatherBB email class
+        $this->app->container->singleton('email', function () {
+            return new \FeatherBB\Email();
+        });
 
         if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
             $installer = new \controller\install;
@@ -234,9 +235,8 @@ class Core extends \Slim\Middleware
         // Finalize forum_settings array
         $this->forum_settings = array_merge($feather_config, $this->forum_settings);
 
-        // Set default style
+        // Set default style and assets
         $this->app->view2->setStyle($this->forum_settings['o_default_style']);
-        // Set defaults assets
         $this->app->view2->addAsset('js', 'style/FeatherBB/phone.min.js');
         $this->app->view2->addAsset('js', 'js/common.js');
 
@@ -246,9 +246,6 @@ class Core extends \Slim\Middleware
         extract($this->forum_settings); // Legacy
 
         new \plugin\plugintest();
-
-        // Email
-        $this->app->email = new \FeatherBB\Email();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
