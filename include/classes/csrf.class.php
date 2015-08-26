@@ -11,32 +11,10 @@
  * $app->add(new \Slim\Extras\Middleware\CsrfGuard());
  *
  */
-namespace Slim\Extras\Middleware;
+namespace FeatherBB;
 
-class CsrfGuard extends \Slim\Middleware
+class Csrf extends \Slim\Middleware
 {
-    /**
-     * CSRF token key name.
-     *
-     * @var string
-     */
-    protected $key;
-
-    /**
-     * Constructor.
-     *
-     * @param string    $key        The CSRF token key name.
-     * @return void
-     */
-    public function __construct($key = 'csrf_token')
-    {
-        if (!is_string($key) || empty($key) || preg_match('/[^a-zA-Z0-9\-\_]/', $key)) {
-            throw new \OutOfBoundsException('Invalid CSRF token key "' . $key . '"');
-        }
-
-        $this->key = $key;
-    }
-
     /**
      * Call middleware.
      *
@@ -63,24 +41,27 @@ class CsrfGuard extends \Slim\Middleware
             throw new \Exception('Sessions are required to use the CSRF Guard middleware.');
         }
 
+        $this->key = 'featherbb_csrf';
+
         if (!isset($_SESSION[$this->key])) {
             $_SESSION[$this->key] = sha1(serialize($_SERVER) . rand(0, 0xffffffff));
         }
 
-        $token = $_SESSION[$this->key];
+        $this->token = $_SESSION[$this->key];
 
         // Validate the CSRF token.
         if (in_array($this->app->request()->getMethod(), array('POST', 'PUT', 'DELETE'))) {
             $userToken = $this->app->request()->post($this->key);
-            if ($token !== $userToken) {
+            if ($this->token !== $userToken) {
                 $this->app->halt(400, 'Invalid or missing CSRF token.');
             }
         }
 
         // Assign CSRF token key and value to view.
+        // Legacy
         $this->app->view()->appendData(array(
             'csrf_key'      => $this->key,
-            'csrf_token'    => $token,
+            'csrf_token'    => $this->token,
         ));
     }
 }

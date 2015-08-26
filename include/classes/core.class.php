@@ -193,7 +193,7 @@ class Core extends \Slim\Middleware
                                                'extension' => '.cache'));
         });
         // Load FeatherBB view
-        $this->app->container->singleton('view2', function($container) {
+        $this->app->container->singleton('view2', function() {
             return new \FeatherBB\View();
         });
         // Load FeatherBB hooks

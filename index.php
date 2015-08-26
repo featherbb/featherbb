@@ -17,13 +17,13 @@ ini_set('display_errors', 1);
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
-// Instantiate Slim and add CSRF
-$feather = new \Slim\Slim();
-$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf'));
-
 // Load FeatherBB
 require 'include/classes/autoload.class.php';
 \FeatherBB\Loader::registerAutoloader();
+
+// Instantiate Slim and add CSRF
+$feather = new \Slim\Slim();
+$feather->add($feather->csrf = new \FeatherBB\Csrf());
 
 $feather_settings = array('config_file' => 'include/config.php',
                           'cache_dir' => 'cache/',

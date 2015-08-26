@@ -326,6 +326,8 @@
              'fid' => null,
              'pid' => null,
              'tid' => null,
+             'csrf_key' => 'featherbb_csrf',
+             'csrf_token' => $this->app->csrf->token,
          );
      }
 
