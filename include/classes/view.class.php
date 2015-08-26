@@ -244,7 +244,7 @@
       */
      protected function render($template, $data = null)
      {
-         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), array('feather', \Slim\Slim::getInstance()), (array) $data);
+         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), array('feather' => \Slim\Slim::getInstance()), (array) $data);
          $data = $this->app->hooks->fire('view.alter_data', $data);
          extract($data);
          ob_start();
