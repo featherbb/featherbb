@@ -20,6 +20,7 @@
                    'active_page' => 'strval',
                    'focus_element' => 'strval',
                    'is_indexed' => 'boolval',
+                   'admin_console' => 'boolval',
                    'page_head' => 'strval',
                    'paging_links' => 'strval',
                    'required_fields' => 'strval',
@@ -243,8 +244,8 @@
       */
      protected function render($template, $data = null)
      {
-         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
-         $data = $this->app->hooks('view.alter_data', $data);
+         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), array('feather', \Slim\Slim::getInstance()), (array) $data);
+         $data = $this->app->hooks->fire('view.alter_data', $data);
          extract($data);
          ob_start();
          require $this->getTemplatePathname($template);
@@ -305,6 +306,7 @@
              'active_page' => 'index',
              'focus_element' => null,
              'is_indexed' => true,
+             'admin_console' => false,
              'page_head' => null,
              'paging_links' => null,
              'required_fields' => null,
