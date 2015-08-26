@@ -166,7 +166,7 @@ class install
 
     public function create_db(array $data)
     {
-        \Slim\Extras\Middleware\FeatherBBLoader::init_db($data);
+        \FeatherBB\Core::init_db($data);
 
         // Load appropriate language
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$data['default_lang'].'/install.mo');
