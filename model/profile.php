@@ -22,6 +22,7 @@ class profile
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = new \FeatherBB\Email();
+        $this->auth = new \model\auth();
     }
 
     public function change_pass($id)
@@ -130,7 +131,7 @@ class profile
             $update_password = $update_password->save();
 
             if ($this->user->id == $id) {
-                feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
+                $this->auth->feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
             }
 
             $this->hook->fire('change_pass');

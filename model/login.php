@@ -22,6 +22,7 @@ class login
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = new \FeatherBB\Email();
+        $this->auth = new \model\auth();
     }
 
     public function login()
@@ -74,7 +75,7 @@ class login
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
         $expire = $this->hook->fire('expire_login', $expire);
-        feather_setcookie($user->id, $form_password_hash, $expire);
+        $this->auth->feather_setcookie($user->id, $form_password_hash, $expire);
 
         // Reset tracked topics
         set_tracked_topics(null);
@@ -111,7 +112,7 @@ class login
 
         $this->hook->fire('logout_end');
 
-        feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
+        $this->auth->feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
 
         redirect(get_base_url(), __('Logout redirect'));
     }

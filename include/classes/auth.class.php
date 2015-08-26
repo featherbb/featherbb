@@ -236,7 +236,7 @@ class Auth extends \Slim\Middleware
             if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'style/'.$this->app->user->style.'.css')) {
                 $this->app->user->style = $this->app->forum_settings['o_default_style'];
             }
-            feather_setcookie($this->app->user->id, $this->app->user->password, $expires);
+            $this->model->feather_setcookie($this->app->user->id, $this->app->user->password, $expires);
             $this->update_online();
         } else {
             $this->app->user = $this->model->load_user(1);
@@ -274,7 +274,7 @@ class Auth extends \Slim\Middleware
                      ->update_many('logged', time());
             }
 
-            feather_setcookie(1, feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            $this->model->feather_setcookie(1, feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo');
