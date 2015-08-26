@@ -247,5 +247,23 @@
 
          return ob_get_clean();
      }
+
+     // Getters & Setters
+
+     public function setStyle($style)
+     {
+         if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/'.$style.'/view/')) {
+             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
+         }
+         $this->data->set('style', (string) $style);
+         $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/'.$style.'/view');
+         return $this;
+     }
+
+     public function getStyle()
+     {
+         return $this->data['style'];
+     }
+
  }
  ?>
