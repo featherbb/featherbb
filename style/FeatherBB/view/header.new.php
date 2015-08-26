@@ -109,7 +109,7 @@ if ($feather->user->is_guest) {
         echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.get_link('admin/').'">'.__('Admin').'</a></li>'."\n";
     }
 
-    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.get_link('logout/id/'.$feather->user->id.'/token/'.feather_hash($feather->user->id.feather_hash($this->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.get_link('logout/id/'.$feather->user->id.'/token/'.feather_hash($feather->user->id.feather_hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
 }
 
 // // Are there any additional navlinks we should insert into the array before imploding it?
@@ -139,21 +139,58 @@ if ($feather->user->is_guest) {
         <div class="container-title-status">
             <h1 class="title-site">
                 <a href="<?php echo get_base_url() ?>" title="" class="site-name">
-                    <p><?php echo feather_escape($feather_config['o_board_title']) ?></p>
+                    <p><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
-                <div id="brddesc"><?php echo htmlspecialchars_decode($feather_config['o_board_desc']) ?></div>
+                <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
             </h1>
             <div class="status-avatar">
-                <?php echo $page_info ?>
+                <div id="brdwelcome" class="inbox">
+
+<?php
+if ($feather->user->is_guest) { ?>
+                    <p class="conl"><?= __('Not logged in')?></p>
+<?php } else {
+    echo "\t\t\t\t\t".'<ul class="conl">';
+    echo "\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.feather_escape($feather->user->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), format_time($feather->user->last_visit)).'</span></li>'."\n";
+
+    if ($feather->user->is_admmod) {
+        if ($feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2') {
+            if ($has_reports) {
+                echo "\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.get_link('admin/reports/').'">'.__('New reports').'</a></strong></span></li>'."\n";
+            }
+        }
+
+        if ($feather->forum_settings['o_maintenance'] == '1') {
+            echo "\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.get_link('admin/maintenance/').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+        }
+    }
+    echo "\t\t\t\t\t".'</ul>'."\n";
+}
+
+if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
+    echo "\t\t\t\t\t".'<ul class="conr">'."\n";
+    echo "\t\t\t\t\t\t".'<li><span>'.__('Topic searches').' ';
+    if (!$feather->user->is_guest) {
+        echo '<a href="'.get_link('search/show/replies/').'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
+        echo '<a href="'.get_link('search/show/new/').'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
+    }
+    echo '<a href="'.get_link('search/show/recent/').'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
+    echo '<a href="'.get_link('search/show/unanswered/').'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
+    echo '</li>'."\n";
+    echo "\t\t\t\t".'</ul>'."\n";
+} ?>
+                <div class="clearer"></div>
+                </div>
             </div>
             <div class="clear"></div>
         </div>
-        <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
+        <?php if ($feather->user->g_read_board == '1' && $feather->forum_settings['o_announcement'] == '1') : ?>
             <div id="announce" class="block">
                 <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
-                        <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
+                        <div class="usercontent"><?php echo $feather->forum_settings['o_announcement_message'] ?></div>
                     </div>
                 </div>
             </div>

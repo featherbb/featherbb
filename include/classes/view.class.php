@@ -21,6 +21,7 @@
                    'focus_element' => 'strval',
                    'is_indexed' => 'boolval',
                    'admin_console' => 'boolval',
+                   'has_reports' => 'boolval',
                    'paging_links' => 'strval',
                    'required_fields' => 'strval',
                    'has_reports' => 'boolval',
