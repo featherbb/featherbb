@@ -11,6 +11,7 @@
 // from the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 
 namespace FeatherBB;
+use DB;
 
 class Search
 {
@@ -177,7 +178,7 @@ class Search
 
         if ($mode == 'edit') {
             $select_update_search_index = array('w.id', 'w.word', 'm.subject_match');
-            $result = \DB::for_table('search_words')->table_alias('w')
+            $result = DB::for_table('search_words')->table_alias('w')
                 ->select_many($select_update_search_index)
                 ->inner_join('search_matches', array('w.id', '=', 'm.word_id'), 'm')
                 ->where('m.post_id', $post_id)
@@ -192,7 +193,7 @@ class Search
                 $cur_words[$match_in][$row['word']] = $row['id'];
             }
 
-            $pdo = \DB::get_db();
+            $pdo = DB::get_db();
             $pdo = null;
 
             $words['add']['post'] = array_diff($words_message, array_keys($cur_words['post']));
@@ -214,7 +215,7 @@ class Search
 
         if (!empty($unique_words)) {
             $select_unique_words = array('id', 'word');
-            $result = \DB::for_table('search_words')->select_many($select_unique_words)
+            $result = DB::for_table('search_words')->select_many($select_unique_words)
                 ->where_in('word', $unique_words)
                 ->find_many();
 
@@ -223,7 +224,7 @@ class Search
                 $word_ids[$row['word']] = $row['id'];
             }
 
-            $pdo = \DB::get_db();
+            $pdo = DB::get_db();
             $pdo = null;
 
             $new_words = array_values(array_diff($unique_words, array_keys($word_ids)));
@@ -238,14 +239,14 @@ class Search
                     case 'mysqli_innodb':
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
-                        \DB::for_table('search_words')
+                        DB::for_table('search_words')
                             ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_words (word) VALUES ' . $placeholders, $new_words);
                         break;
 
                     default:
                         foreach ($new_words as $word) {
                             $word_insert['word'] = $word;
-                            \DB::for_table('search_words')
+                            DB::for_table('search_words')
                                 ->create()
                                 ->set($word_insert)
                                 ->save();
@@ -268,7 +269,7 @@ class Search
                     $sql[] = $cur_words[$match_in][$word];
                 }
 
-                \DB::for_table('search_matches')
+                DB::for_table('search_matches')
                     ->where_in('word_id', $sql)
                     ->where('post_id', $post_id)
                     ->where('subject_match', $subject_match)
@@ -283,7 +284,7 @@ class Search
             if (!empty($wordlist)) {
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
-                \DB::for_table('search_words')
+                DB::for_table('search_words')
                     ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . $feather->forum_settings['db_prefix'] . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
@@ -311,7 +312,7 @@ class Search
             case 'mysqli':
             case 'mysql_innodb':
             case 'mysqli_innodb': {
-                $result = \DB::for_table('search_matches')->select('word_id')
+                $result = DB::for_table('search_matches')->select('word_id')
                     ->where_in('post_id', $post_ids_sql)
                     ->group_by('word_id')
                     ->find_many();
@@ -322,7 +323,7 @@ class Search
                         $word_ids[] = $row['word_id'];
                     }
 
-                    $result = \DB::for_table('search_matches')->select('word_id')
+                    $result = DB::for_table('search_matches')->select('word_id')
                         ->where_in('word_id', $word_ids)
                         ->group_by('word_id')
                         ->having_raw('COUNT(word_id)=1')
@@ -334,7 +335,7 @@ class Search
                             $word_ids[] = $row['word_id'];
                         }
 
-                        \DB::for_table('search_words')
+                        DB::for_table('search_words')
                             ->where_in('id', $word_ids)
                             ->delete_many();
                     }
@@ -343,12 +344,12 @@ class Search
             }
 
             default:
-                \DB::for_table('search_matches')
+                DB::for_table('search_matches')
                     ->where_raw('id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
 
-                \DB::for_table('search_matches')
+                DB::for_table('search_matches')
                     ->where_in('post_id', $post_ids_sql)
                     ->delete_many();
         }
