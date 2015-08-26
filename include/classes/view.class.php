@@ -365,5 +365,16 @@
      {
          return $this->assets;
      }
+
+     public function __call($method, $args)
+     {
+         $method = mb_substr(preg_replace_callback('/([A-Z])/', function ($c) {
+             return "_" . strtolower($c[1]);
+         }, $method), 4);
+         if (empty($args)) {
+             $args = null;
+         }
+         list($key, $value) = $this->validate($method, $args);
+         $this->page->set($key, $value);
+     }
  }
- ?>

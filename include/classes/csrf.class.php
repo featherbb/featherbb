@@ -5,22 +5,21 @@
  * Use this middleware with your Slim Framework application
  * to protect you from CSRF attacks.
  *
- * USAGE
- *
- * $app = new \Slim\Slim();
- * $app->add(new \Slim\Extras\Middleware\CsrfGuard());
- *
  */
+
 namespace FeatherBB;
 
 class Csrf extends \Slim\Middleware
 {
+    protected $key,
+        $token;
+
     /**
      * Call middleware.
      *
      * @return void
      */
-    public function call() 
+    public function call()
     {
         // Attach as hook.
         $this->app->hook('slim.before', array($this, 'check'));
@@ -58,8 +57,11 @@ class Csrf extends \Slim\Middleware
         }
 
         // Assign CSRF token key and value to view.
-        // Legacy
         $this->app->view()->appendData(array(
+            'csrf_key'      => $this->key,
+            'csrf_token'    => $this->token,
+        ));
+        $this->app->view2->replace(array(
             'csrf_key'      => $this->key,
             'csrf_token'    => $this->token,
         ));

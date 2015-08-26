@@ -23,7 +23,7 @@ require 'include/classes/autoload.class.php';
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
-$feather->add($feather->csrf = new \FeatherBB\Csrf());
+$feather->add(new \FeatherBB\Csrf());
 
 $feather_settings = array('config_file' => 'include/config.php',
                           'cache_dir' => 'cache/',
