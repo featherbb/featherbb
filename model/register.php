@@ -21,7 +21,8 @@ class register
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->email = $this->feather->email;
+        $this->email = new \FeatherBB\Email();
+        $this->auth = new \model\auth();
     }
 
     public function check_for_errors()
@@ -264,7 +265,7 @@ class register
             message(__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
         }
 
-        feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
+        $this->auth->feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
 
         $this->hook->fire('insert_user');
 

@@ -21,6 +21,7 @@ class moderate
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->search = new \FeatherBB\Search();
     }
 
     public function display_ip_info($ip)
@@ -124,8 +125,7 @@ class moderate
             $delete_posts = $this->hook->fireDB('delete_posts_query', $delete_posts);
             $delete_posts = $delete_posts->delete_many();
 
-            require FEATHER_ROOT.'include/search_idx.php';
-            strip_search_index($posts);
+            $this->search->strip_search_index($posts);
 
             // Get last_post, last_post_id, and last_poster for the topic after deletion
             $last_post['select'] = array('id', 'poster', 'posted');
@@ -748,8 +748,6 @@ class moderate
             message(__('Bad request'), '404');
         }
 
-        require FEATHER_ROOT.'include/search_idx.php';
-
         $topics_sql = explode(',', $topics);
 
         // Verify that the topic IDs are valid
@@ -808,7 +806,7 @@ class moderate
 
         // We have to check that we actually have a list of post IDs since we could be deleting just a redirect topic
         if ($post_ids != '') {
-            strip_search_index($post_ids);
+            $this->search->strip_search_index($post_ids);
         }
 
         // Delete posts

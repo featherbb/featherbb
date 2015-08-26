@@ -21,7 +21,8 @@ class post
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->email = $this->feather->email;
+        $this->email = new \FeatherBB\Email();
+        $this->search = new \FeatherBB\Search();
     }
  
     //  Get some info about the post
@@ -326,7 +327,7 @@ class post
         $topic = $this->hook->fireDB('insert_reply_update_query', $topic);
         $topic = $topic->save();
 
-        update_search_index('post', $new['pid'], $post['message']);
+        $this->search->update_search_index('post', $new['pid'], $post['message']);
 
         update_forum($cur_posting['id']);
 
@@ -542,7 +543,7 @@ class post
         $topic = $this->hook->fireDB('insert_topic_post_topic', $topic);
         $topic = $topic->save();
 
-        update_search_index('post', $new['pid'], $post['message'], $post['subject']);
+        $this->search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
         update_forum($fid);
 

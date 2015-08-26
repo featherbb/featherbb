@@ -21,6 +21,7 @@ class maintenance
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->search = new \FeatherBB\Search();
     }
 
     public function rebuild()
@@ -64,13 +65,11 @@ class maintenance
         $start_at = $this->request->get('i_start_at') ? intval($this->request->get('i_start_at')) : 0;
         $start_at = $this->hook->fire('maintenance.get_query_str.start_at', $start_at);
 
-        require FEATHER_ROOT.'include/search_idx.php';
-
         // Fetch posts to process this cycle
-        $select_get_query_str = array('p.id', 'p.message', 't.subject', 't.first_post_id');
+        $result['select'] = array('p.id', 'p.message', 't.subject', 't.first_post_id');
 
         $result = DB::for_table('posts')->table_alias('p')
-                        ->select_many($select_get_query_str)
+                        ->select_many($result['select'])
                         ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                         ->where_gte('p.id', $start_at)
                         ->order_by_asc('p.id')
@@ -83,9 +82,9 @@ class maintenance
             echo '<p><span>'.sprintf(__('Processing post'), $cur_item['id']).'</span></p>'."\n";
 
             if ($cur_item['id'] == $cur_item['first_post_id']) {
-                update_search_index('post', $cur_item['id'], $cur_item['message'], $cur_item['subject']);
+                $this->search->update_search_index('post', $cur_item['id'], $cur_item['message'], $cur_item['subject']);
             } else {
-                update_search_index('post', $cur_item['id'], $cur_item['message']);
+                $this->search->update_search_index('post', $cur_item['id'], $cur_item['message']);
             }
 
             $end_at = $cur_item['id'];
@@ -161,8 +160,7 @@ class maintenance
                         ->delete_many();
 
                 // We removed a bunch of posts, so now we have to update the search index
-                require_once FEATHER_ROOT.'include/search_idx.php';
-                strip_search_index($post_ids);
+                $this->search->strip_search_index($post_ids);
             }
         }
     }

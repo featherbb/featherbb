@@ -21,6 +21,7 @@ class search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->search = new \FeatherBB\Search();
     }
 
     public function get_search_results()
@@ -54,7 +55,7 @@ class search
             $keywords = ($this->request->get('keywords')) ? utf8_strtolower(feather_trim($this->request->get('keywords'))) : null;
             $author = ($this->request->get('author')) ? utf8_strtolower(feather_trim($this->request->get('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || (feather_strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) || (feather_strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !$this->search->is_cjk($keywords))) {
                 $keywords = '';
             }
 
@@ -175,7 +176,7 @@ class search
                 // If it's a search for keywords
                 if ($keywords) {
                     // split the keywords into words
-                    $keywords_array = split_words($keywords, false);
+                    $keywords_array = $this->search->split_words($keywords, false);
                     $keywords_array = $this->hook->fire('get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
@@ -200,7 +201,7 @@ class search
 
                             default:
                             {
-                                if (is_cjk($cur_word)) {
+                                if ($this->search->is_cjk($cur_word)) {
                                     $where_cond = str_replace('*', '%', $cur_word);
                                     $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 

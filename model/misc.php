@@ -21,7 +21,7 @@ class misc
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->email = $this->feather->email;
+        $this->email = new \FeatherBB\Email();
     }
  
     public function update_last_visit()

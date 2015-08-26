@@ -273,9 +273,10 @@ class users
         if ($this->request->post('delete_users_comply')) {
             // Fetch user groups
             $user_groups = array();
-            $select_fetch_user_groups = array('id', 'group_id');
-            $result = DB::for_table('users')->select_many($select_fetch_user_groups)
-                ->where_in('id', $user_ids)
+            $result['select'] = array('id', 'group_id');
+            $result = DB::for_table('users')
+                        ->select_many($result['select'])
+                        ->where_in('id', $user_ids);
             $result = $this->hook->fireDB('model.users.delete_users.user_groups_query', $result);
             $result = $result->find_many();
 
@@ -344,7 +345,6 @@ class users
 
             // Should we delete all posts made by these users?
             if ($this->request->post('delete_posts')) {
-                require FEATHER_ROOT.'include/search_idx.php';
                 @set_time_limit(0);
 
                 // Find all posts made by this user
