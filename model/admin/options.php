@@ -21,6 +21,7 @@ class options
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
+        $this->email = $this->feather->email;
     }
 
     public function update_options()
@@ -125,14 +126,11 @@ class options
             $form['date_format'] = 'Y-m-d';
         }
 
-
-        require FEATHER_ROOT.'include/email.php';
-
-        if (!is_valid_email($form['admin_email'])) {
+        if (!$this->email->is_valid_email($form['admin_email'])) {
             message(__('Invalid e-mail message'));
         }
 
-        if (!is_valid_email($form['webmaster_email'])) {
+        if (!$this->email->is_valid_email($form['webmaster_email'])) {
             message(__('Invalid webmaster e-mail message'));
         }
 

@@ -4,7 +4,7 @@
 * This is the dynamic loader for the library. It checks whether you have
 * the mbstring extension available and includes relevant files
 * on that basis, falling back to the native (as in written in PHP) version
-* if mbstring is unavailabe.
+* if mbstring is unavailable.
 *
 * It's probably easiest to use this, if you don't want to understand
 * the dependencies involved, in conjunction with PHP versions etc. At
