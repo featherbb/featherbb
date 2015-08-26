@@ -11,25 +11,20 @@
 
  class View
  {
-     /**
-      * Data available to the view templates
-      * @var \Slim\Helper\Set
-      */
-     protected $data;
-
-     /**
-      * Path to templates base directory (without trailing slash)
-      * @var string
-      */
-     protected $templatesDirectory,
-               $app;
+     protected $data,
+               $templatesDirectory,
+               $app,
+               $page,
+               $validation = array(
+                   'title' => 'strval',
+                   'page_number' => 'intval');
 
      /**
       * Constructor
       */
      public function __construct()
      {
-         $this->data = new \Slim\Helper\Set();
+         $this->data = $this->page = new \Slim\Helper\Set();
          $this->app = \Slim\Slim::getInstance();
      }
 
@@ -265,5 +260,26 @@
          return $this->data['style'];
      }
 
+     public function setPageInfo(array $data)
+     {
+         foreach ($data as $key => $value) {
+             list($key, $value) = $this->validate($key, $value);
+             $this->page->set($key, $value);
+         }
+     }
+
+     public function getPageInfo()
+     {
+         return $this->page->all();
+     }
+
+     protected function validate($key, $value)
+     {
+         $key = (string) $key;
+         if (function_exists($this->validation[$key])) {
+             $value = $this->validation[$key]($value);
+         }
+         return array($key, $value);
+     }
  }
  ?>
