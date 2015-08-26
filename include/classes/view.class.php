@@ -244,6 +244,7 @@
      protected function render($template, $data = null)
      {
          $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
+         $data = $this->app->hooks('view.alter_data', $data);
          extract($data);
          ob_start();
          require $this->getTemplatePathname($template);
