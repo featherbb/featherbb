@@ -50,6 +50,7 @@ class Core extends \Slim\Middleware
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
+        opcache_reset();
 	}
 
     public static function load_default_forum_env()
@@ -172,7 +173,12 @@ class Core extends \Slim\Middleware
         // Set headers
         $this->set_headers();
 
-        // Populate FeatherBB Slim object with forum_env vars
+        // Block prefetch requests
+        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
+            return $this->app->response->setStatus(403); // Send forbidden header
+        }
+
+        // Populate Slim object with forum_env vars
         $this->hydrate('forum_env', $this->forum_env);
         // Record start time
         $this->app->start = get_microtime();
@@ -180,17 +186,25 @@ class Core extends \Slim\Middleware
         $this->app->now = function () {
             return time();
         };
-        // Load cache feature
+        // Load FeatherBB cache
         $this->app->container->singleton('cache', function ($container) {
             $path = $container->forum_env['FORUM_CACHE_DIR'];
             return new \FeatherBB\Cache(array('name' => 'feather',
                                                'path' => $path,
                                                'extension' => '.cache'));
         });
-
-        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) { // Block prefetch requests
-            return $this->app->response->setStatus(403); // Send forbidden header
-        }
+        // Load FeatherBB view
+        $this->app->container->singleton('view2', function($container) {
+            return new \FeatherBB\View();
+        });
+        // Load FeatherBB hooks
+        $this->app->container->singleton('hooks', function () {
+            return new \FeatherBB\Hooks();
+        });
+        // Load FeatherBB email class
+        $this->app->container->singleton('email', function () {
+            return new \FeatherBB\Email();
+        });
 
         if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
             $installer = new \controller\install;
@@ -198,6 +212,7 @@ class Core extends \Slim\Middleware
             return;
         }
 
+        // Load config from disk
         $config_file = json_decode(file_get_contents($this->forum_env['FORUM_CONFIG_FILE']), true);
         if (!is_null($config_file)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $config_file);
@@ -220,19 +235,23 @@ class Core extends \Slim\Middleware
         // Finalize forum_settings array
         $this->forum_settings = array_merge($feather_config, $this->forum_settings);
 
+        // Set default style and assets
+        $this->app->view2->setStyle($this->forum_settings['o_default_style']);
+        $this->app->view2->addAsset('js', 'style/FeatherBB/phone.min.js');
+        $this->app->view2->addAsset('js', 'js/common.js');
+
         // Populate FeatherBB Slim object with forum_settings vars
         $this->hydrate('forum_settings', $this->forum_settings);
         $this->app->config = $this->forum_settings; // Legacy
         extract($this->forum_settings); // Legacy
 
-        // Hooks
-        $this->app->hooks = new \FeatherBB\Hooks();
-        new \plugin\plugintest(); // TODO: remove
+        new \plugin\plugintest();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
         $forum_date_formats = array($this->forum_settings['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
 
+        $this->app->config('templates.path', $this->app->forum_env['FEATHER_ROOT'].'style/FeatherBB/view/');
         // Call FeatherBBAuth middleware
         $this->next->call();
     }

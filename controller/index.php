@@ -35,11 +35,14 @@ class index
             message(__('No view'), '403');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']));
 
-        $this->header->setTitle($page_title)->setActivePage('index')->allowIndex()->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title'])),
+            'active_page' => 'index',
+            'is_indexed' => true,
+        ));
 
-        $this->feather->render('index.php', array(
+        $this->feather->view2->display('index.php', array(
                             'index_data' => $this->model->print_categories_forums(),
                             'stats' => $this->model->collect_stats(),
                             'feather_config' => $this->config,
@@ -48,7 +51,5 @@ class index
                             'cur_cat'   => 0,
                             )
                     );
-
-        $this->footer->display();
     }
 }

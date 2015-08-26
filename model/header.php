@@ -13,30 +13,18 @@ use DB;
 
 class header
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
-    }
+    protected static $app;
 
-    public function get_reports()
+    public static function get_reports()
     {
-        $this->hook->fire('get_reports_start');
+        self::$app = \Slim\Slim::getInstance();
+
+        self::$app->hooks->fire('get_reports_start');
 
         $result_header = DB::for_table('reports')->where_null('zapped');
 
-        $result_header = $this->hook->fireDB('get_reports_query', $result_header);
+        $result_header = self::$app->hooks->fireDB('get_reports_query', $result_header);
 
-        $result_header = $result_header->find_one();
-
-        if ($result_header) {
-            return true;
-        }
-
-        return false;
+        return (bool) $result_header->find_one();
     }
 }

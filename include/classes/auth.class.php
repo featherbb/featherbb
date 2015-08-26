@@ -291,8 +291,6 @@ class Auth extends \Slim\Middleware
         // Update online list
         $this->update_users_online();
 
-        // Configure Slim
-        $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? $this->app->forum_env['FEATHER_ROOT'].'style/'.$this->app->user->style.'/view' : $this->app->forum_env['FEATHER_ROOT'].'view');
         $this->next->call();
     }
 }
