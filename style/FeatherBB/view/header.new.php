@@ -19,8 +19,10 @@
     echo "\t".'<meta name="robots" content="noindex, follow">'."\n";
 } ?>
     <title><?php echo generate_page_title($title, $page_number) ?></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
-<?php if ($admin_console) {
+<?php foreach ($assets['css'] as $style) {
+    echo "\t".'<link rel="stylesheet" type="text/css" href="'.get_base_url().'/'.$style['file'].'">'."\n";
+}
+if ($admin_console) {
     if (file_exists($feather->forum_env['FEATHER_ROOT'].'style/'.$feather->user->style.'/base_admin.css')) {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather->user->style.'/base_admin.css" />'."\n";
     } else {

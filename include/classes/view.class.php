@@ -11,10 +11,11 @@
 
  class View
  {
-     protected $data,
-               $templatesDirectory,
+     protected $templatesDirectory,
                $app,
+               $data,
                $page,
+               $assets,
                $validation = array(
                    'page_number' => 'intval',
                    'active_page' => 'strval',
@@ -244,7 +245,7 @@
       */
      protected function render($template, $data = null)
      {
-         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), array('feather' => \Slim\Slim::getInstance()), (array) $data);
+         $data = array_merge($this->getDefaultPageInfo(), array('assets' => $this->assets), $this->page->all(), $this->data->all(), array('feather' => \Slim\Slim::getInstance()), (array) $data);
          $data = $this->app->hooks->fire('view.alter_data', $data);
          extract($data);
          ob_start();
@@ -264,6 +265,7 @@
          }
          $this->data->set('style', (string) $style);
          $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/'.$style.'/view');
+         $this->addAsset('css', 'style/'.$style.'.css');
          return $this;
      }
 
@@ -318,6 +320,21 @@
              'fid' => null,
              'pid' => null,
              'tid' => null,
+         );
+     }
+
+     public function addAsset($type, $asset, $params = null)
+     {
+         $type = (string) $type;
+         if (!in_array($type, array('js', 'css'))) {
+             throw new \Exception('Invalid asset type : ' . $type);
+         }
+         if (!is_file($this->app->forum_env['FEATHER_ROOT'].$asset)) {
+             throw new \Exception('The asset file ' . $asset . ' does not exist');
+         }
+         $this->assets[$type][] = array(
+             'file' => $asset,
+             'params' => $params
          );
      }
  }
