@@ -35,21 +35,21 @@ class index
             message(__('No view'), '403');
         }
 
+
         $this->feather->view2->setPageInfo(array(
             'title' => array(feather_escape($this->config['o_board_title'])),
             'active_page' => 'index',
             'is_indexed' => true,
         ));
-        $this->feather->view2->display('header.new.php');
 
-        // $this->feather->render('index.php', array(
-        //                     'index_data' => $this->model->print_categories_forums(),
-        //                     'stats' => $this->model->collect_stats(),
-        //                     'feather_config' => $this->config,
-        //                     'online'    =>    $this->model->fetch_users_online(),
-        //                     'forum_actions'        =>    $this->model->get_forum_actions(),
-        //                     'cur_cat'   => 0,
-        //                     )
-        //             );
+        $this->feather->view2->display('index.php', array(
+                            'index_data' => $this->model->print_categories_forums(),
+                            'stats' => $this->model->collect_stats(),
+                            'feather_config' => $this->config,
+                            'online'    =>    $this->model->fetch_users_online(),
+                            'forum_actions'        =>    $this->model->get_forum_actions(),
+                            'cur_cat'   => 0,
+                            )
+                    );
     }
 }
