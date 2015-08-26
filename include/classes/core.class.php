@@ -50,7 +50,6 @@ class Core extends \Slim\Middleware
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
-        opcache_reset();
 	}
 
     public static function load_default_forum_env()
