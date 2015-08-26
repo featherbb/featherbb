@@ -21,7 +21,8 @@
       * Path to templates base directory (without trailing slash)
       * @var string
       */
-     protected $templatesDirectory;
+     protected $templatesDirectory,
+               $app;
 
      /**
       * Constructor
@@ -29,6 +30,7 @@
      public function __construct()
      {
          $this->data = new \Slim\Helper\Set();
+         $this->app = \Slim\Slim::getInstance();
      }
 
      /********************************************************************************
@@ -183,10 +185,17 @@
       * @param  string $file The template file pathname relative to templates base directory
       * @return string
       */
-     public function getTemplatePathname($file)
-     {
-         return $this->templatesDirectory . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR);
-     }
+      public function getTemplatePathname($file)
+      {
+          $pathname = $this->templatesDirectory . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR);
+          if (!is_file($pathname)) {
+              $pathname = $this->app->forum_env['FEATHER_ROOT'] . 'view/' . ltrim($file, DIRECTORY_SEPARATOR); // Fallback on default view
+              if (!is_file($pathname)) {
+                  throw new \RuntimeException("View cannot render `$file` because the template does not exist");
+              }
+          }
+          return $pathname;
+      }
 
      /********************************************************************************
       * Rendering
@@ -230,9 +239,6 @@
      protected function render($template, $data = null)
      {
          $templatePathname = $this->getTemplatePathname($template);
-         if (!is_file($templatePathname)) {
-             throw new \RuntimeException("View cannot render `$template` because the template does not exist");
-         }
 
          $data = array_merge($this->data->all(), (array) $data);
          extract($data);
