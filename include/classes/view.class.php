@@ -17,7 +17,18 @@
                $page,
                $validation = array(
                    'title' => 'strval',
-                   'page_number' => 'intval');
+                   'page_number' => 'intval',
+                   'active_page' => 'strval',
+                   'focus_element' => 'strval',
+                   'is_indexed' => 'boolval',
+                   'page_head' => 'strval',
+                   'paging_links' => 'strval',
+                   'required_fields' => 'strval',
+                   'has_reports' => 'boolval',
+                   'footer_style' => 'strval',
+                   'fid' => 'intval',
+                   'pid' => 'intval',
+                   'tid' => 'intval');
 
      /**
       * Constructor
@@ -280,6 +291,30 @@
              $value = $this->validation[$key]($value);
          }
          return array($key, $value);
+     }
+
+     protected function getDefaultPageInfo()
+     {
+         if (!$this->app->cache->isCached('quickjump')) {
+             $this->app->cache->store('quickjump', \model\cache::get_quickjump());
+         }
+
+         return array(
+             'title' => $this->app->forum_settings['o_board_title'],
+             'page_number' => null,
+             'active_page' => 'index',
+             'focus_element' => null,
+             'is_indexed' => true,
+             'page_head' => null,
+             'paging_links' => null,
+             'required_fields' => null,
+             'has_reports' => \model\header::get_reports(),
+             'footer_style' => null,
+             'quickjump' => $this->app->cache->retrieve('quickjump'),
+             'fid' => null,
+             'pid' => null,
+             'tid' => null,
+         );
      }
  }
  ?>
