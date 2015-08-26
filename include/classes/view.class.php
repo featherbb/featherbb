@@ -230,6 +230,14 @@
       */
      public function fetch($template, $data = null)
      {
+         // Force flash messages
+         if (isset($this->app->environment['slim.flash'])) {
+             $this->data->set('flash', $this->app->environment['slim.flash']);
+         }
+         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
+         $data['feather'] = \Slim\Slim::getInstance();
+         $data['assets'] = $this->getAssets();
+         $data = $this->app->hooks->fire('view.alter_data', $data);
          return $this->render($template, $data);
      }
 
@@ -245,8 +253,6 @@
       */
      protected function render($template, $data = null)
      {
-         $data = array_merge($this->getDefaultPageInfo(), array('assets' => $this->assets), $this->page->all(), $this->data->all(), array('feather' => \Slim\Slim::getInstance()), (array) $data);
-         $data = $this->app->hooks->fire('view.alter_data', $data);
          extract($data);
          ob_start();
          require $this->getTemplatePathname('header.new.php');
@@ -336,6 +342,11 @@
              'file' => $asset,
              'params' => $params
          );
+     }
+
+     public function getAssets()
+     {
+         return $this->assets;
      }
  }
  ?>

@@ -19,6 +19,7 @@
     echo "\t".'<meta name="robots" content="noindex, follow">'."\n";
 } ?>
     <title><?php echo generate_page_title($title, $page_number) ?></title>
+    <!-- CSS -->
 <?php foreach ($assets['css'] as $style) {
     echo "\t".'<link rel="stylesheet" type="text/css" href="'.get_base_url().'/'.$style['file'].'">'."\n";
 }
@@ -28,8 +29,7 @@ if ($admin_console) {
     } else {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
     }
-}
-
+}  
 if (isset($required_fields)) :
     // Output JavaScript to validate form (make sure required fields are filled out)
 
@@ -76,7 +76,7 @@ endif;
 ?>
 </head>
 
-<body id="pun<?= $active_page ?>" <?= ($focus_element ? 'onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
+<body id="pun<?= $active_page ?>"<?= ($focus_element ? ' onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
 <header>
     <nav>
         <div class="container">
@@ -198,7 +198,6 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
         </div>
         <?php endif; ?>
         <?php if (isset($flash['message'])) : ?>
-        <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
         <script type="text/javascript">
             window.onload = function() {
                 var flashMessage = document.getElementById('flashmsg');
