@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+* Copyright (C) 2015 FeatherBB
+* based on code by (C) 2008-2012 FluxBB
+* and Rickard Andersson (C) 2002-2008 PunBB
+* License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+*/
 
 namespace controller;
 
@@ -14,43 +14,26 @@ class misc
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\misc();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/misc.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/misc.mo');
     }
 
     public function rules()
     {
-        if ($this->config['o_rules'] == '0' || ($this->user->is_guest && $this->user->g_read_board == '0' && $this->config['o_regs_allow'] == '0')) {
+        if ($this->feather->forum_settings['o_rules'] == '0' || ($this->feather->user->is_guest && $this->feather->user->g_read_board == '0' && $this->feather->forum_settings['o_regs_allow'] == '0')) {
             message(__('Bad request'), '404');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Forum rules'));
-
-        $this->header->setTitle($page_title)->setActivePage('rules')->display();
-
-        $this->feather->render('misc/rules.php', array(
-                'feather_config' => $this->config,
-                )
-        );
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
+            'active_page' => 'rules'
+            ))->addTemplate('misc/rules.php')->display();
     }
 
     public function markread()
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -64,7 +47,7 @@ class misc
 
     public function markforumread($id)
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -77,7 +60,7 @@ class misc
 
     public function subscribeforum($id)
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -86,7 +69,7 @@ class misc
 
     public function subscribetopic($id)
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -95,7 +78,7 @@ class misc
 
     public function unsubscribeforum($id)
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -104,7 +87,7 @@ class misc
 
     public function unsubscribetopic($id)
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -113,7 +96,7 @@ class misc
 
     public function email($id)
     {
-        if ($this->user->is_guest || $this->user->g_send_email == '0') {
+        if ($this->feather->user->is_guest || $this->feather->user->g_send_email == '0') {
             message(__('No permission'), '403');
         }
 
@@ -123,7 +106,7 @@ class misc
 
         $mail = $this->model->get_info_mail($id);
 
-        if ($mail['email_setting'] == 2 && !$this->user->is_admmod) {
+        if ($mail['email_setting'] == 2 && !$this->feather->user->is_admmod) {
             message(__('Form email disabled'));
         }
 
@@ -132,24 +115,19 @@ class misc
             $this->model->send_email($mail);
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Send email to').' '.feather_escape($mail['recipient']));
-        $required_fields = array('req_subject' => __('Email subject'), 'req_message' => __('Email message'));
-        $focus_element = array('email', 'req_subject');
-
-        $this->header->setTitle($page_title)->setActivePage('email')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
-
-        $this->feather->render('misc/email.php', array(
-                'id' => $id,
-                'mail' => $mail,
-                )
-        );
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.feather_escape($mail['recipient'])),
+            'active_page' => 'email',
+            'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
+            'focus_element' => array('email', 'req_subject'),
+            'id' => $id,
+            'mail' => $mail
+            ))->addTemplate('misc/email.php')->display();
     }
 
     public function report($id)
     {
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             message(__('No permission'), '403');
         }
 
@@ -160,22 +138,17 @@ class misc
         // Fetch some info about the post, the topic and the forum
         $cur_post = $this->model->get_info_report($id);
 
-        if ($this->config['o_censoring'] == '1') {
+        if ($this->feather->forum_settings['o_censoring'] == '1') {
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Report post'));
-        $required_fields = array('req_reason' => __('Reason'));
-        $focus_element = array('report', 'req_reason');
-
-        $this->header->setTitle($page_title)->setActivePage('report')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
-
-        $this->feather->render('misc/report.php', array(
-                'id' => $id,
-                'cur_post' => $cur_post,
-                )
-        );
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Report post')),
+            'active_page' => 'report',
+            'required_fields' => array('req_reason' => __('Reason')),
+            'focus_element' => array('report', 'req_reason'),
+            'id' => $id,
+            'cur_post' => $cur_post
+            ))->addTemplate('misc/report.php')->display();
     }
 }
