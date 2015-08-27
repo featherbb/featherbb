@@ -22,7 +22,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php _e('Rules legend') ?></legend>
 					<div class="infldset">
-						<div class="usercontent"><?php echo $feather_config['o_rules_message'] ?></div>
+						<div class="usercontent"><?php echo $feather->forum_settings['o_rules_message'] ?></div>
 					</div>
 				</fieldset>
 			</div>

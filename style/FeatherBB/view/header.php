@@ -92,21 +92,21 @@ endif;
         <div class="container-title-status">
             <h1 class="title-site">
                 <a href="<?php echo get_base_url() ?>" title="" class="site-name">
-                    <p><?php echo feather_escape($feather_config['o_board_title']) ?></p>
+                    <p><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
-                <div id="brddesc"><?php echo htmlspecialchars_decode($feather_config['o_board_desc']) ?></div>
+                <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
             </h1>
             <div class="status-avatar">
                 <?php echo $page_info ?>
             </div>
             <div class="clear"></div>
         </div>
-        <?php if ($feather->user->g_read_board == '1' && $feather_config['o_announcement'] == '1') : ?>
+        <?php if ($feather->user->g_read_board == '1' && $feather->forum_settings['o_announcement'] == '1') : ?>
             <div id="announce" class="block">
                 <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
-                        <div class="usercontent"><?php echo $feather_config['o_announcement_message'] ?></div>
+                        <div class="usercontent"><?php echo $feather->forum_settings['o_announcement_message'] ?></div>
                     </div>
                 </div>
             </div>
