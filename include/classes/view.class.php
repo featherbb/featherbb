@@ -296,6 +296,9 @@ class View
         }
 
         $params = array_merge(static::getDefaultParams($type), $params);
+        if (isset($params['title'])) {
+            $params['title'] = feather_escape($params['title']);
+        }
         $this->assets[$type][] = array(
             'file' => (string) $asset,
             'params' => $params

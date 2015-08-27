@@ -22,7 +22,7 @@ class viewforum
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
- 
+
     // Returns basic informations about the forum
     public function get_info_forum($id)
     {
@@ -91,35 +91,6 @@ class viewforum
         $sort_by = $this->hook->fire('sort_forum_by', $sort_by);
 
         return $sort_by;
-    }
-
-    // Adds relationship meta tags
-    public function get_page_head($forum_id, $num_pages, $p, $url_forum)
-    {
-        $page_head = array();
-
-        $page_head = $this->hook->fire('get_page_head_start', $page_head, $forum_id, $num_pages, $p, $url_forum);
-
-        $page_head['canonical'] = "\t".'<link href="'.get_link('forum/'.$forum_id.'/'.$url_forum.'/').'" rel="canonical" />';
-
-        if ($num_pages > 1) {
-            if ($p > 1) {
-                $page_head['prev'] = "\t".'<link href="'.get_link('forum/'.$forum_id.'/'.$url_forum.'/page/'.($p - 1).'/').'" rel="prev" />';
-            }
-            if ($p < $num_pages) {
-                $page_head['next'] = "\t".'<link href="'.get_link('forum/'.$forum_id.'/'.$url_forum.'/page/'.($p + 1).'/').'" rel="next" />';
-            }
-        }
-
-        if ($this->config['o_feed_type'] == '1') {
-            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss" title="'.__('RSS forum feed').'" />';
-        } elseif ($this->config['o_feed_type'] == '2') {
-            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom" title="'.__('Atom forum feed').'" />';
-        }
-
-        $page_head = $this->hook->fire('get_page_head', $page_head);
-
-        return $page_head;
     }
 
     // Returns forum action

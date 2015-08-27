@@ -219,35 +219,6 @@ class viewtopic
         return $subscraction;
     }
 
-    // Adds relationship meta tags
-    public function get_page_head($topic_id, $num_pages, $p, $url_topic)
-    {
-        $page_head = array();
-
-        $page_head = $this->hook->fire('get_page_head_start', $page_head, $topic_id, $num_pages, $p, $url_topic);
-
-        $page_head['canonical'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/').'" rel="canonical" />';
-
-        if ($num_pages > 1) {
-            if ($p > 1) {
-                $page_head['prev'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p - 1).'/').'" rel="prev" />';
-            }
-            if ($p < $num_pages) {
-                $page_head['next'] = "\t".'<link href="'.get_link('topic/'.$topic_id.'/'.$url_topic.'/page/'.($p + 1).'/').'" rel="next" />';
-            }
-        }
-
-        if ($this->config['o_feed_type'] == '1') {
-            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=rss" title="'.__('RSS topic feed').'" />';
-        } elseif ($this->config['o_feed_type'] == '2') {
-            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;tid='.$topic_id.'&amp;type=atom" title="'.__('Atom topic feed').'" />';
-        }
-
-        $page_head = $this->hook->fire('get_page_head', $page_head, $topic_id, $num_pages, $p, $url_topic);
-
-        return $page_head;
-    }
-
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
@@ -435,7 +406,7 @@ class viewtopic
 
         return $post_data;
     }
-    
+
     public function increment_views($id)
     {
         if ($this->config['o_topic_views'] == '1') {
