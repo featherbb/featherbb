@@ -1345,20 +1345,4 @@ class profile
 
         return $output;
     }
-
-    //
-    // Display the profile navigation menu
-    //
-    public function generate_profile_menu($page = '', $id)
-    {
-        $page = $this->hook->fire('generate_profile_menu', $page, $id);
-
-        $this->feather->view2->display('profile/menu.php', array(
-                'id' => $id,
-                'feather_config' => $this->config,
-                'feather_user' => $this->user,
-                'page' => $page,
-            )
-        , 1);
-    }
 }
