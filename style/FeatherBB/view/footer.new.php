@@ -143,6 +143,11 @@ if ($feather->forum_env['FEATHER_SHOW_QUERIES']) {
 </body>
 <!-- JS -->
 <?php foreach ($assets['js'] as $script) {
-    echo '<script src="'.get_base_url().'/'.$script['file'].'"></script>'."\n";
+
+    echo '<script ';
+    foreach ($script['params'] as $key => $value) {
+        echo $key.'="'.$value.'" ';
+    }
+    echo 'href="'.get_base_url().'/'.$script['file'].'"/>'."\n";
 } ?>
 </html>

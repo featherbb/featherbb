@@ -285,17 +285,19 @@ class View
         return array($key, $value);
     }
 
-    public function addAsset($type, $asset, $params = null)
+    public function addAsset($type, $asset, $params = array())
     {
         $type = (string) $type;
-        if (!in_array($type, array('js', 'css'))) {
+        if (!in_array($type, array('js', 'css', 'alternate'))) {
             throw new \Exception('Invalid asset type : ' . $type);
         }
-        if (!is_file($this->app->forum_env['FEATHER_ROOT'].$asset)) {
+        if (in_array($type, array('js', 'css')) && !is_file($this->app->forum_env['FEATHER_ROOT'].$asset)) {
             throw new \Exception('The asset file ' . $asset . ' does not exist');
         }
+
+        $params = array_merge(static::getDefaultParams($type), $params);
         $this->assets[$type][] = array(
-            'file' => $asset,
+            'file' => (string) $asset,
             'params' => $params
         );
     }
@@ -370,5 +372,19 @@ class View
         }
 
         return $data;
+    }
+
+    protected static function getDefaultParams($type)
+    {
+        switch($type) {
+            case 'js':
+                return array('type' => 'text/javascript');
+            case 'css':
+                return array('rel' => 'stylesheet', 'type' => 'text/css');
+            case 'alternate':
+                return array('rel' => 'alternate', 'type' => 'application/atom+xml');
+            default:
+                return array();
+        }
     }
 }
