@@ -1,24 +1,24 @@
 <?php
 /**
- * CSRF Guard
- *
- * Use this middleware with your Slim Framework application
- * to protect you from CSRF attacks.
- *
- */
+* CSRF Guard
+*
+* Use this middleware with your Slim Framework application
+* to protect you from CSRF attacks.
+*
+*/
 
 namespace FeatherBB;
 
 class Csrf extends \Slim\Middleware
 {
     protected $key,
-        $token;
+    $token;
 
     /**
-     * Call middleware.
-     *
-     * @return void
-     */
+    * Call middleware.
+    *
+    * @return void
+    */
     public function call()
     {
         // Attach as hook.
@@ -29,11 +29,11 @@ class Csrf extends \Slim\Middleware
     }
 
     /**
-     * Check CSRF token is valid.
-     * Note: Also checks POST data to see if a Moneris RVAR CSRF token exists.
-     *
-     * @return void
-     */
+    * Check CSRF token is valid.
+    * Note: Also checks POST data to see if a Moneris RVAR CSRF token exists.
+    *
+    * @return void
+    */
     public function check() {
         // Check sessions are enabled.
         if (session_id() === '') {
