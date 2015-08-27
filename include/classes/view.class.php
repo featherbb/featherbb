@@ -12,6 +12,7 @@
  class View
  {
      protected $templatesDirectory,
+               $templates,
                $app,
                $data,
                $page,
@@ -199,37 +200,22 @@
           if (!is_file($pathname)) {
               $pathname = $this->app->forum_env['FEATHER_ROOT'] . 'view/' . ltrim($file, DIRECTORY_SEPARATOR); // Fallback on default view
               if (!is_file($pathname)) {
-                  throw new \RuntimeException("View cannot render `$file` because the template does not exist");
+                  throw new \RuntimeException("View cannot add template `$file` to stack because the template does not exist");
               }
           }
-          return $pathname;
+          return (string) $pathname;
       }
 
      /********************************************************************************
       * Rendering
       *******************************************************************************/
 
-     /**
-      * Display template
-      *
-      * This method echoes the rendered template to the current output buffer
-      *
-      * @param  string   $template   Pathname of template file relative to templates directory
-      * @param  array    $data       Any additonal data to be passed to the template.
-      */
-     public function display($template, $data = null, $keep_rendering = null)
+     public function display($data = null)
      {
-         echo $this->fetch($template, $data, $keep_rendering);
+         echo $this->fetch($data);
      }
 
-     /**
-      * Return the contents of a rendered template file
-      *
-      * @param    string $template   The template pathname, relative to the template base directory
-      * @param    array  $data       Any additonal data to be passed to the template.
-      * @return string               The rendered template
-      */
-     public function fetch($template, $data = null, $keep_rendering = null)
+     public function fetch($data = null)
      {
          // Force flash messages
          if (isset($this->app->environment['slim.flash'])) {
@@ -239,47 +225,25 @@
          $data['feather'] = \Slim\Slim::getInstance();
          $data['assets'] = $this->getAssets();
          $data = $this->app->hooks->fire('view.alter_data', $data);
-         return $this->render($template, $data, $keep_rendering);
+         return $this->render($data);
      }
 
-     /**
-      * Render a template file
-      *
-      * NOTE: This method should be overridden by custom view subclasses
-      *
-      * @param  string $template     The template pathname, relative to the template base directory
-      * @param  array  $data         Any additonal data to be passed to the template.
-      * @return string               The rendered template
-      * @throws \RuntimeException    If resolved template pathname is not a valid file
-      */
-     protected function render($template, $data = null, $keep_rendering = null)
+     protected function render($data = null)
      {
          extract($data);
-
          ob_start();
 
-         if ($keep_rendering) {
-             if ($keep_rendering == 1) {
-                 $this->noReport = true;
-                 require $this->getTemplatePathname('header.new.php');
-             }
-
-             require $this->getTemplatePathname($template);
-
-             if ($keep_rendering == 2) {
-                 require $this->getTemplatePathname('footer.new.php');
-             }
+         require $this->getTemplatePathname('header.new.php');
+         foreach ($this->getTemplates() as $tpl) {
+             require $tpl;
          }
-         else {
-             require $this->getTemplatePathname('header.new.php');
-             require $this->getTemplatePathname($template);
-             require $this->getTemplatePathname('footer.new.php');
-         }
-
+         require $this->getTemplatePathname('footer.new.php');
          return ob_get_clean();
      }
 
-     // Getters & Setters
+     /********************************************************************************
+      * Getters and setters
+      *******************************************************************************/
 
      public function setStyle($style)
      {
@@ -303,6 +267,7 @@
              list($key, $value) = $this->validate($key, $value);
              $this->page->set($key, $value);
          }
+         return $this;
      }
 
      public function getPageInfo()
@@ -319,37 +284,6 @@
              }
          }
          return array($key, $value);
-     }
-
-     protected function getDefaultPageInfo()
-     {
-         if (!$this->app->cache->isCached('quickjump')) {
-             $this->app->cache->store('quickjump', \model\cache::get_quickjump());
-         }
-
-         $header = array(
-             'title' => feather_escape($this->app->forum_settings['o_board_title']),
-             'page_number' => null,
-             'active_page' => 'index',
-             'focus_element' => null,
-             'is_indexed' => true,
-             'admin_console' => false,
-             'page_head' => null,
-             'paging_links' => null,
-             'required_fields' => null,
-             'footer_style' => null,
-             'quickjump' => $this->app->cache->retrieve('quickjump'),
-             'fid' => null,
-             'pid' => null,
-             'tid' => null,
-             'feather_config' => $this->app->config,
-         );
-
-         if ($this->app->user->is_admmod && !$this->noReport) {
-             $header['has_reports'] = \model\header::get_reports();
-         }
-
-         return $header;
      }
 
      public function addAsset($type, $asset, $params = null)
@@ -372,6 +306,31 @@
          return $this->assets;
      }
 
+     public function addTemplate($tpl, $priority = 10)
+     {
+         $tpl = (array) $tpl;
+         foreach ($tpl as $key => $tpl_file) {
+             $this->templates[(int) $priority][] = $this->getTemplatePathname((string) $tpl_file);
+         }
+         return $this;
+     }
+
+     public function getTemplates()
+     {
+         $output = array();
+         if (count($this->templates) > 1) {
+             ksort($this->templates);
+         }
+         foreach ($this->templates as $priority) {
+             if (!empty($priority)) {
+                 foreach ($priority as $tpl) {
+                    $output[] = $tpl;
+                 }
+             }
+         }
+         return $output;
+     }
+
      public function __call($method, $args)
      {
          $method = mb_substr(preg_replace_callback('/([A-Z])/', function ($c) {
@@ -382,5 +341,36 @@
          }
          list($key, $value) = $this->validate($method, $args);
          $this->page->set($key, $value);
+     }
+
+     protected function getDefaultPageInfo()
+     {
+         if (!$this->app->cache->isCached('quickjump')) {
+             $this->app->cache->store('quickjump', \model\cache::get_quickjump());
+         }
+
+         $data = array(
+             'title' => feather_escape($this->app->forum_settings['o_board_title']),
+             'page_number' => null,
+             'active_page' => 'index',
+             'focus_element' => null,
+             'is_indexed' => true,
+             'admin_console' => false,
+             'page_head' => null,
+             'paging_links' => null,
+             'required_fields' => null,
+             'footer_style' => null,
+             'quickjump' => $this->app->cache->retrieve('quickjump'),
+             'fid' => null,
+             'pid' => null,
+             'tid' => null,
+             'feather_config' => $this->app->config,
+         );
+
+         if ($this->app->user->is_admmod) {
+             $data['has_reports'] = \model\header::get_reports();
+         }
+
+         return $data;
      }
  }
