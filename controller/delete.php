@@ -14,76 +14,58 @@ class delete
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\delete();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/delete.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/delete.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/post.mo');
     }
 
     public function deletepost($id)
     {
         global $pd;
 
-        if ($this->user->g_read_board == '0') {
+        if ($this->feather->user->g_read_board == '0') {
             message(__('No view'), '403');
         }
 
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($id);
 
-        if ($this->config['o_censoring'] == '1') {
+        if ($this->feather->forum_settings['o_censoring'] == '1') {
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $is_admmod = ($this->feather->user->g_id == FEATHER_ADMIN || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if (($this->user->g_delete_posts == '0' ||
-                ($this->user->g_delete_topics == '0' && $is_topic_post) ||
-                $cur_post['poster_id'] != $this->user->id ||
+        if (($this->feather->user->g_delete_posts == '0' ||
+                ($this->feather->user->g_delete_topics == '0' && $is_topic_post) ||
+                $cur_post['poster_id'] != $this->feather->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
             message(__('No permission'), '403');
         }
 
-        if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+        if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
             message(__('No permission'), '403');
         }
-
 
         if ($this->feather->request()->isPost()) {
             $this->model->handle_deletion($is_topic_post, $id, $cur_post['tid'], $cur_post['fid']);
         }
 
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Delete post'));
-
-        $this->header->setTitle($page_title)->setActivePage('delete')->display();
-
-        require FEATHER_ROOT.'include/parser.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'include/parser.php';
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        $this->feather->render('delete.php', array(
-                            'cur_post' => $cur_post,
-                            'id' => $id,
-                            'is_topic_post' => $is_topic_post,
-                            )
-                    );
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
+            'active_page' => 'delete',
+            'cur_post' => $cur_post,
+            'id' => $id,
+            'is_topic_post' => $is_topic_post
+        ))->addTemplate('delete.php')->display();
     }
 }
