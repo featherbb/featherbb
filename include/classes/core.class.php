@@ -205,6 +205,9 @@ class Core extends \Slim\Middleware
             return new \FeatherBB\Email();
         });
 
+        // This is the very first hook fired
+        $this->app->hooks->fire('core.start');
+
         if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
             $installer = new \controller\install;
             $installer->run();
