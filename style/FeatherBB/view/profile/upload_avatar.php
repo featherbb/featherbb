@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -23,9 +23,9 @@ if (!defined('FEATHER')) {
 					<legend><?php _e('Upload avatar legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather_config['o_avatars_size'] ?>" />
+						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather->forum_settings['o_avatars_size'] ?>" />
 						<label class="required"><strong><?php _e('File') ?> <span><?php _e('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-						<p><?php _e('Avatar desc').' '.$feather_config['o_avatars_width'].' x '.$feather_config['o_avatars_height'].' '.__('pixels').' '.__('and').' '.forum_number_format($feather_config['o_avatars_size']).' '.__('bytes').' ('.file_size($feather_config['o_avatars_size']).').' ?></p>
+						<p><?php _e('Avatar desc').' '.$feather->forum_settings['o_avatars_width'].' x '.$feather->forum_settings['o_avatars_height'].' '.__('pixels').' '.__('and').' '.forum_number_format($feather->forum_settings['o_avatars_size']).' '.__('bytes').' ('.file_size($feather->forum_settings['o_avatars_size']).').' ?></p>
 					</div>
 				</fieldset>
 			</div>

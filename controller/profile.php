@@ -66,13 +66,12 @@ class profile
             $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Confirm delete user')),
                 'active_page' => 'profile',
+                'username' => $this->model->get_username($id),
+                'id' => $id,
             ));
 
-            $this->feather->view2->display('profile/delete_user.php', array(
-                                    'username' => $this->model->get_username($id),
-                                    'id' => $id,
-                                    )
-                            );
+            $this->feather->view2->addTemplate('profile/delete_user.php');
+            $this->feather->view2->display();
 
         } elseif ($this->request->post('form_sent')) {
 
@@ -111,12 +110,11 @@ class profile
             $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), sprintf(__('Users profile'), feather_escape($user['username']))),
                 'active_page' => 'profile',
+                'user_info' => $user_info,
+                'id' => $id
             ));
 
-            $this->feather->view2->display('profile/view_profile.php', array(
-                        'user_info' => $user_info,
-                        )
-                );
+            $this->feather->view2->addTemplate('profile/view_profile.php');
         } else {
             if (!$section || $section == 'essentials') {
                 $user_disp = $this->model->edit_essentials($id, $user);
@@ -125,19 +123,16 @@ class profile
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section essentials')),
                     'required_fields' => array('req_username' => __('Username'), 'req_email' => __('Email')),
                     'active_page' => 'profile',
+                    'id' => $id,
+                    'page' => 'essentials',
+                    'user' => $user,
+                    'user_disp' => $user_disp,
+                    'forum_time_formats' => $forum_time_formats,
+                    'forum_date_formats' => $forum_date_formats,
                 ));
 
-                $this->model->generate_profile_menu('essentials', $id);
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
 
-                $this->feather->view2->display('profile/section_essentials.php', array(
-                                'feather' => $this->feather,
-                                'id' => $id,
-                                'user' => $user,
-                                'user_disp' => $user_disp,
-                                'forum_time_formats' => $forum_time_formats,
-                                'forum_date_formats' => $forum_date_formats,
-                                ),
-                    2);
             } elseif ($section == 'personal') {
                 if ($this->user->g_set_title == '1') {
                     $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.feather_escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
@@ -146,30 +141,25 @@ class profile
                 $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section personal')),
                     'active_page' => 'profile',
+                    'id' => $id,
+                    'page' => 'personal',
+                    'user' => $user,
+                    'title_field' => $title_field,
                 ));
 
-                $this->model->generate_profile_menu('personal', $id);
-
-                $this->feather->view2->display('profile/section_personal.php', array(
-                                'user' => $user,
-                                'feather' => $this->feather,
-                                'title_field' => $title_field
-                                )
-                        );
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
 
             } elseif ($section == 'messaging') {
 
                 $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section messaging')),
                     'active_page' => 'profile',
+                    'page' => 'messaging',
+                    'user' => $user,
+                    'id' => $id
                 ));
 
-                $this->model->generate_profile_menu('messaging', $id);
-
-                $this->feather->view2->display('profile/section_messaging.php', array(
-                                'user' => $user,
-                                )
-                        );
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_messaging.php')->display();
 
             } elseif ($section == 'personality') {
                 if ($this->config['o_avatars'] == '0' && $this->config['o_signatures'] == '0') {
@@ -194,46 +184,39 @@ class profile
                 $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section personality')),
                     'active_page' => 'profile',
+                    'user_avatar' => $user_avatar,
+                    'avatar_field' => $avatar_field,
+                    'signature_preview' => $signature_preview,
+                    'page' => 'personality',
+                    'user' => $user,
+                    'id' => $id,
                 ));
 
-                $this->model->generate_profile_menu('personality', $id);
-
-                $this->feather->view2->display('profile/section_personality.php', array(
-                                'user_avatar' => $user_avatar,
-                                'avatar_field' => $avatar_field,
-                                'signature_preview' => $signature_preview,
-                                'user' => $user,
-                                'feather' => $this->feather,
-                                )
-                        );
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personality.php')->display();
 
             } elseif ($section == 'display') {
 
                 $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section display')),
                     'active_page' => 'profile',
+                    'page' => 'display',
+                    'user' => $user,
+                    'id' => $id
                 ));
 
-                $this->model->generate_profile_menu('display', $id);
-
-                $this->feather->view2->display('profile/section_display.php', array(
-                                'user' => $user,
-                                )
-                        );
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
 
             } elseif ($section == 'privacy') {
 
                 $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section privacy')),
                     'active_page' => 'profile',
+                    'page' => 'privacy',
+                    'user' => $user,
+                    'id' => $id
                 ));
 
-                $this->model->generate_profile_menu('privacy', $id);
-
-                $this->feather->view2->display('profile/section_privacy.php', array(
-                                'user' => $user,
-                                )
-                        );
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_privacy.php')->display();
 
             } elseif ($section == 'admin') {
 
@@ -244,18 +227,14 @@ class profile
                 $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section admin')),
                     'active_page' => 'profile',
+                    'page' => 'admin',
+                    'user' => $user,
+                    'forum_list' => $this->model->get_forum_list($id),
+                    'group_list' => $this->model->get_group_list($user),
+                    'id' => $id
                 ));
 
-                $this->model->generate_profile_menu('admin', $id);
-
-                $this->feather->view2->display('profile/section_admin.php', array(
-                                'user' => $user,
-                                'forum_list' => $this->model->get_forum_list($id),
-                                'group_list' => $this->model->get_group_list($user),
-                                'feather' => $this->feather,
-                                )
-                        );
-
+                $this->feather->view2->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
             } else {
                 message(__('Bad request'), '404');
             }
@@ -283,15 +262,13 @@ class profile
             $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Change pass')),
                 'active_page' => 'profile',
+                'id' => $id,
                 'required_fields' => array('req_old_password' => __('Old pass'), 'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')),
                 'focus_element' => array('change_pass', ((!$this->user->is_admmod) ? 'req_old_password' : 'req_new_password1')),
             ));
 
-            $this->feather->view2->display('profile/change_pass.php', array(
-                                    'feather' => $this->feather,
-                                    'id' => $id,
-                                    )
-                            );
+            $this->feather->view2->addTemplate('profile/change_pass.php')->display();
+
         } elseif ($action == 'change_email') {
             $this->model->change_email($id, $this->feather);
 
@@ -300,12 +277,11 @@ class profile
                 'active_page' => 'profile',
                 'required_fields' => array('req_new_email' => __('New email'), 'req_password' => __('Password')),
                 'focus_element' => array('change_email', 'req_new_email'),
+                'id' => $id,
             ));
 
-            $this->feather->view2->display('profile/change_mail.php', array(
-                                    'id' => $id,
-                                    )
-                            );
+            $this->feather->view2->addTemplate('profile/change_mail.php')->display();
+
         } elseif ($action == 'upload_avatar' || $action == 'upload_avatar2') {
             if ($this->config['o_avatars'] == '0') {
                 message(__('Avatars disabled'));
@@ -324,13 +300,10 @@ class profile
                 'active_page' => 'profile',
                 'required_fields' =>  array('req_file' => __('File')),
                 'focus_element' => array('upload_avatar', 'req_file'),
+                'id' => $id,
             ));
 
-            $this->feather->view2->display('profile/upload_avatar.php', array(
-                                    'feather_config' => $this->config,
-                                    'id' => $id,
-                                    )
-                            );
+            $this->feather->view2->addTemplate('profile/upload_avatar.php')->display();
 
         } elseif ($action == 'delete_avatar') {
             if ($this->user->id != $id && !$this->user->is_admmod) {
