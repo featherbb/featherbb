@@ -89,7 +89,7 @@ function get_admin_ids()
 //
 function check_username($username, $errors, $exclude_id = null)
 {
-    global $feather, $feather_config, $errors, $feather_bans;
+    global $feather, $errors, $feather_bans;
 
     // Include UTF-8 function
     require_once FEATHER_ROOT.'include/utf8/strcasecmp.php';
@@ -116,7 +116,7 @@ function check_username($username, $errors, $exclude_id = null)
     }
 
     // Check username for any censored words
-    if ($feather_config['o_censoring'] == '1' && censor_words($username) != $username) {
+    if ($feather->forum_settings['o_censoring'] == '1' && censor_words($username) != $username) {
         $errors[] = __('Username censor');
     }
 
