@@ -15,15 +15,15 @@
 	<div class="box">
 <?php
 
-if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'viewtopic') && $feather->user->is_admmod) {
+if (isset($active_page) && ($active_page == 'viewforum' || $active_page == 'viewtopic') && $feather->user->is_admmod) {
     echo "\t\t".'<div id="modcontrols" class="inbox">'."\n";
 
-    if ($footer_style == 'viewforum') {
+    if ($active_page == 'viewforum') {
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
         echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/forum/'.$fid.'/page/'.$page_number.'/').'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
-    } elseif ($footer_style == 'viewtopic') {
+    } elseif ($active_page == 'viewtopic') {
         if (isset($pid)) {
             $parameter = 'param/'.$pid.'/';
         } elseif (isset($page_number) && $page_number != 1) {
@@ -86,19 +86,19 @@ if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 			<div class="conr">
 <?php
 
-if ($footer_style == 'index') {
+if ($active_page == 'index') {
     if ($feather->forum_settings['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
     } elseif ($feather->forum_settings['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
-} elseif ($footer_style == 'viewforum') {
+} elseif ($active_page == 'viewforum') {
     if ($feather->forum_settings['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
     } elseif ($feather->forum_settings['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
-} elseif ($footer_style == 'viewtopic') {
+} elseif ($active_page == 'viewtopic') {
     if ($feather->forum_settings['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
     } elseif ($feather->forum_settings['o_feed_type'] == '2') {
