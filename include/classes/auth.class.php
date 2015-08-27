@@ -194,25 +194,15 @@ class Auth extends \Slim\Middleware
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, $this->app->forum_settings['o_maintenance_message']);
 
-        $page_title = array(feather_escape($this->app->forum_settings['o_board_title']), __('Maintenance'));
+        $this->app->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
+            'active_page' => 'index',
+            'message'    =>    $message,
+            'no_back_link'    =>    '',
+        ))->addTemplate('message.php')->display();
 
-        $this->app->config('templates.path', (is_dir('style/'.$this->app->user->style.'/view')) ? $this->app->forum_env['FEATHER_ROOT'].'style/'.$this->app->user->style.'/view' : $this->app->forum_env['FEATHER_ROOT'].'view');
-
-        $header = new \controller\header();
-
-        $header->setTitle($page_title)->setActivePage('index')->display();
-
-        $this->app->render('message.php', array(
-                'message'    =>    $message,
-                'no_back_link'    =>    '',
-            )
-        );
-
-        $footer = new \controller\footer();
-
-        $footer->dontStop();
-
-        $footer->display();
+        // Don't display anything after a message
+        $this->app->stop();
     }
 
     public function call()

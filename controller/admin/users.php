@@ -18,8 +18,8 @@ class users
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\users();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/users.mo');
         $this->header->enableAdminConsole();
@@ -56,7 +56,7 @@ class users
                 )
             );
 
-            $this->footer->display();
+
         }
 
 
@@ -79,7 +79,7 @@ class users
                 )
             );
 
-            $this->footer->display();
+
         }
 
 
@@ -103,7 +103,7 @@ class users
                 )
             );
 
-            $this->footer->display();
+
         }
 
         // Display bans
@@ -145,7 +145,7 @@ class users
                 )
             );
 
-            $this->footer->display();
+
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'));
@@ -160,7 +160,7 @@ class users
             )
         );
 
-        $this->footer->display();
+
     }
 
     // Show IP statistics for a certain user ID
@@ -192,7 +192,7 @@ class users
             )
         );
 
-        $this->footer->display();
+
     }
 
     // Show IP statistics for a certain user IP
@@ -228,6 +228,6 @@ class users
             )
         );
 
-        $this->footer->display();
+
     }
 }

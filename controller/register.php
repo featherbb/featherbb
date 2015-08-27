@@ -18,8 +18,8 @@ class register
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\register();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');

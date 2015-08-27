@@ -18,8 +18,6 @@ class help
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/help.mo');
     }
 
@@ -34,12 +32,9 @@ class help
             message(__('No view'), '403');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Help'));
-
-        $this->header->setTitle($page_title)->setActivePage('help')->display();
-
-        $this->feather->render('help.php');
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), __('Help')),
+            'active_page' => 'help',
+        ))->addTemplate('help.php')->display();
     }
 }

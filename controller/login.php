@@ -18,8 +18,8 @@ class login
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\login();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/login.mo');
     }

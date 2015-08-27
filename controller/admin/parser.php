@@ -18,8 +18,8 @@ class parser
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\parser();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/parser.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -226,6 +226,6 @@ class parser
             )
         );
 
-        $this->footer->display();
+
     }
 }

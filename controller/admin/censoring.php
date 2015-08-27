@@ -18,8 +18,6 @@ class censoring
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\admin\censoring();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/censoring.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -51,18 +49,15 @@ class censoring
             $this->model->remove_word();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Censoring'));
-        $focus_element = array('censoring', 'new_search_for');
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
-
         generate_admin_menu('censoring');
 
-        $this->feather->render('admin/censoring.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Censoring')),
+                'focus_element'    =>    array('censoring', 'new_search_for'),
+                'active_page'    =>    'admin',
+                'admin_console'    =>    true,
                 'word_data'    =>    $this->model->get_words(),
             )
-        );
-
-        $this->footer->display();
+        )->addTemplate('admin/censoring.php')->display();
     }
 }

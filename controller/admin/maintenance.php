@@ -18,8 +18,8 @@ class maintenance
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\maintenance();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/maintenance.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -79,7 +79,7 @@ class maintenance
                 )
             );
 
-            $this->footer->display();
+
         }
 
         $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance'));
@@ -94,6 +94,6 @@ class maintenance
             )
         );
 
-        $this->footer->display();
+
     }
 }

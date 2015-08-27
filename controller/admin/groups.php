@@ -18,8 +18,8 @@ class groups
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\groups();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/groups.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -55,7 +55,7 @@ class groups
             )
         );
 
-        $this->footer->display();
+
     }
 
     public function delete($id)
@@ -95,7 +95,7 @@ class groups
                     )
                 );
 
-                $this->footer->display();
+
             }
         }
 
@@ -112,7 +112,7 @@ class groups
             )
         );
 
-        $this->footer->display();
+
     }
 
     public function addedit($id = '')
@@ -148,7 +148,7 @@ class groups
                 )
             );
 
-            $this->footer->display();
+
         }
     }
 }

@@ -18,8 +18,8 @@ class permissions
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\permissions();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/permissions.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -49,6 +49,6 @@ class permissions
 
         $this->feather->render('admin/permissions.php');
 
-        $this->footer->display();
+
     }
 }

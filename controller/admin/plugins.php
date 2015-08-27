@@ -18,8 +18,8 @@ class plugins
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\plugins();
         require FEATHER_ROOT . 'include/common_admin.php';
     }
@@ -71,6 +71,6 @@ class plugins
 
         $this->feather->render('admin/loader.php');
 
-        $this->footer->display();
+
     }
 }

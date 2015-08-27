@@ -18,8 +18,8 @@ class moderate
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\moderate();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/topic.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
@@ -279,7 +279,7 @@ class moderate
                             )
                     )->addTemplate('moderate/moderator_forum.php')->display();
 
-        $this->footer->display();
+
     }
 
     public function dealposts($fid)

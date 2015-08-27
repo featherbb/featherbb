@@ -18,8 +18,8 @@ class reports
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\reports();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/reports.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -53,6 +53,6 @@ class reports
             )
         );
 
-        $this->footer->display();
+
     }
 }

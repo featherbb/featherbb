@@ -18,8 +18,8 @@ class options
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\options();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/options.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -53,6 +53,6 @@ class options
             )
         );
 
-        $this->footer->display();
+
     }
 }

@@ -18,8 +18,6 @@ class categories
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\admin\categories();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/categories.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -103,16 +101,13 @@ class categories
             message(__('No permission'), '403');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('categories');
 
-        $this->feather->render('admin/categories.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories')),
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),
-            ));
-
-        $this->footer->display();
+            ))->addTemplate('admin/categories.php')->display();;
     }
 }

@@ -589,7 +589,7 @@ function paginate_old($num_pages, $cur_page, $link)
 //
 // Display a message
 //
-function message($msg, $http_status = null, $no_back_link = false, $dontStop = false)
+function message($msg, $http_status = null, $no_back_link = false)
 {
     // Did we receive a custom header?
     if (!is_null($http_status)) {
@@ -608,29 +608,18 @@ function message($msg, $http_status = null, $no_back_link = false, $dontStop = f
     $feather->response->setBody('');
 
     if (!defined('FEATHER_HEADER')) {
-        $page_title = array(feather_escape($feather->config['o_board_title']), __('Info'));
-
-        require_once FEATHER_ROOT.'controller/header.php';
-
-        $header = new \controller\header();
-
-        $header->setTitle($page_title)->display();
+        $feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($feather->config['o_board_title']), __('Info')),
+        ));
     }
 
-    $feather->render('message.php', array(
+    $feather->view2->setPageInfo(array(
         'message'    =>    $msg,
         'no_back_link'    => $no_back_link,
-        ));
+        ))->addTemplate('message.php')->display();
 
-    require_once FEATHER_ROOT.'controller/footer.php';
-
-    $footer = new \controller\footer();
-
-    if ($dontStop) {
-        $footer->dontStop();
-    }
-
-    $footer->display();
+    // Don't display anything after a message
+    $feather->stop();
 }
 
 

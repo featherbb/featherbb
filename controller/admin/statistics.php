@@ -18,8 +18,8 @@ class statistics
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\statistics();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -53,7 +53,7 @@ class statistics
             )
         );
 
-        $this->footer->display();
+
     }
 
 
