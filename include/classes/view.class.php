@@ -17,7 +17,6 @@
                $data,
                $page,
                $assets,
-               $noReport,
                $validation = array(
                    'page_number' => 'intval',
                    'active_page' => 'strval',
@@ -364,7 +363,6 @@
              'fid' => null,
              'pid' => null,
              'tid' => null,
-             'feather_config' => $this->app->config,
          );
 
          if ($this->app->user->is_admmod) {
