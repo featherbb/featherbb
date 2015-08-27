@@ -36,24 +36,21 @@ class statistics
             message(__('No permission'), '403');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Server statistics'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('index');
 
         $total = $this->model->get_total_size();
 
-        $this->feather->render('admin/statistics.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),
                 'num_online'    =>    $this->model->get_num_online(),
                 'total_size'    =>    $total['size'],
                 'total_records'    =>    $total['records'],
                 'php_accelerator'    =>    $this->model->get_php_accelerator(),
             )
-        );
-
-
+        )->addTemplate('admin/statistics.php')->display();
     }
 
 

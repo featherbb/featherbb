@@ -108,6 +108,6 @@ class categories
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),
-            ))->addTemplate('admin/categories.php')->display();;
+            ))->addTemplate('admin/categories.php')->display();
     }
 }

@@ -41,18 +41,15 @@ class reports
             $this->model->zap_report();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('reports');
 
-        $this->feather->render('admin/reports.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports')),
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'report_data'   =>  $this->model->get_reports(),
                 'report_zapped_data'   =>  $this->model->get_zapped_reports(),
             )
-        );
-
-
+        )->addTemplate('admin/reports.php')->display();
     }
 }

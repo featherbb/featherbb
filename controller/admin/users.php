@@ -18,11 +18,8 @@ class users
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-
-
         $this->model = new \model\admin\users();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/users.mo');
-        $this->header->enableAdminConsole();
         require FEATHER_ROOT . 'include/common_admin.php';
     }
 
@@ -43,20 +40,15 @@ class users
                 message(__('No permission'), '403');
             }
 
-            $move = $this->model->move_users();
-
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
-
             generate_admin_menu('users');
 
-            $this->feather->render('admin/users/move_users.php', array(
-                    'move'              =>  $move,
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
+                    'active_page' => 'moderate',
+                    'admin_console' => true,
+                    'move'              =>  $this->model->move_users(),
                 )
-            );
-
-
+            )->addTemplate('admin/users/move_users.php')->display();
         }
 
 
@@ -66,20 +58,15 @@ class users
                 message(__('No permission'), '403');
             }
 
-            $user_ids = $this->model->delete_users();
-
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
-
             generate_admin_menu('users');
 
-            $this->feather->render('admin/users/delete_users.php', array(
-                    'user_ids'          => $user_ids,
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
+                    'active_page' => 'moderate',
+                    'admin_console' => true,
+                    'user_ids'          => $this->model->delete_users(),
                 )
-            );
-
-
+            )->addTemplate('admin/users/delete_users.php')->display();
         }
 
 
@@ -89,21 +76,16 @@ class users
                 message(__('No permission'), '403');
             }
 
-            $user_ids = $this->model->ban_users();
-
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
-            $focus_element = array('bans2', 'ban_message');
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->setFocusElement($focus_element)->display();
-
             generate_admin_menu('users');
 
-            $this->feather->render('admin/users/ban_users.php', array(
-                    'user_ids'          => $user_ids,
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
+                    'active_page' => 'moderate',
+                    'focus_element' => array('bans2', 'ban_message'),
+                    'admin_console' => true,
+                    'user_ids'          => $this->model->ban_users(),
                 )
-            );
-
-
+            )->addTemplate('admin/users/ban_users.php')->display();
         }
 
         // Display bans
@@ -128,13 +110,13 @@ class users
             $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
             $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
+            $this->feather->view2->addAsset('js', 'js/common.js', array('type' => 'text/javascript'));
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
-            $page_head = array('js' => '<script type="text/javascript" src="'.get_base_url().'/js/common.js"></script>');
-
-            $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->setPageHead($page_head)->display();
-
-            $this->feather->render('admin/users/find_users.php', array(
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+                    'active_page' => 'admin',
+                    'admin_console' => true,
+                    'paging_links' => $paging_links,
                     'search' => $search,
                     'start_from' => $start_from,
                     'can_delete' => $can_delete,
@@ -143,24 +125,20 @@ class users
                     'can_move' => $can_move,
                     'user_data' =>  $this->model->print_users($search['conditions'], $search['order_by'], $search['direction'], $start_from),
                 )
-            );
-
-
+            )->addTemplate('admin/users/find_users.php')->display();
         }
+        else {
+            generate_admin_menu('users');
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'));
-        $focus_element = array('find_user', 'form[username]');
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->display();
-
-        generate_admin_menu('users');
-
-        $this->feather->render('admin/users/admin_users.php', array(
-                'group_list' => $this->model->get_group_list(),
-            )
-        );
-
-
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users')),
+                    'active_page' => 'admin',
+                    'admin_console' => true,
+                    'focus_element' => array('find_user', 'form[username]'),
+                    'group_list' => $this->model->get_group_list(),
+                )
+            )->addTemplate('admin/users/admin_users.php')->display();
+        }
     }
 
     // Show IP statistics for a certain user ID
@@ -179,20 +157,16 @@ class users
         $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
-        // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id);
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->display();
-
-        $this->feather->render('admin/users/search_ip.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+                'active_page' => 'admin',
+                'admin_console' => true,
+                'page' => $p,
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id),
                 'start_from'        =>  $start_from,
                 'ip_data'   =>  $this->model->get_ip_stats($id, $start_from),
             )
-        );
-
-
+        )->addTemplate('admin/users/search_ip.php')->display();
     }
 
     // Show IP statistics for a certain user IP
@@ -215,19 +189,15 @@ class users
         $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
-        // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip);
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->display();
-
-        $this->feather->render('admin/users/show_users.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+                'active_page' => 'admin',
+                'admin_console' => true,
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip),
+                'page' => $p,
                 'start_from'        =>  $start_from,
                 'info'   =>  $this->model->get_info_poster($ip, $start_from),
             )
-        );
-
-
+        )->addTemplate('admin/users/show_users.php')->display();
     }
 }

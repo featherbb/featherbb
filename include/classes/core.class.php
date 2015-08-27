@@ -237,7 +237,6 @@ class Core extends \Slim\Middleware
         // Set default style and assets
         $this->app->view2->setStyle($this->forum_settings['o_default_style']);
         $this->app->view2->addAsset('js', 'style/FeatherBB/phone.min.js');
-        $this->app->view2->addAsset('js', 'js/common.js');
 
         // Populate FeatherBB Slim object with forum_settings vars
         $this->hydrate('forum_settings', $this->forum_settings);

@@ -62,38 +62,32 @@ class maintenance
             $prune_from = feather_trim($this->request->post('prune_from'));
             $prune_sticky = intval($this->request->post('prune_sticky'));
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Prune'));
-
-            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
             generate_admin_menu('maintenance');
 
             if ($this->request->post('prune_comply')) {
                 $this->model->prune_comply($prune_from, $prune_sticky);
             }
 
-            $this->feather->render('admin/maintenance/prune.php', array(
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Prune')),
+                    'active_page' => 'admin',
+                    'admin_console' => true,
                     'prune_sticky'    =>    $prune_sticky,
                     'prune_from'    =>    $prune_from,
                     'prune' => $this->model->get_info_prune($prune_sticky, $prune_from),
                 )
-            );
-
-
+            )->addTemplate('admin/maintenance/prune.php')->display();
         }
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('maintenance');
 
-        $this->feather->render('admin/maintenance/admin_maintenance.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance')),
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'first_id' => $this->model->get_first_id(),
                 'categories' => $this->model->get_categories(),
             )
-        );
-
-
+        )->addTemplate('admin/maintenance/admin_maintenance.php')->display();
     }
 }

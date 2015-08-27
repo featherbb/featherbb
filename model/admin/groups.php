@@ -283,11 +283,7 @@ class groups
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_config_cache();
+        $this->feather->cache->store('config', \model\cache::get_config());
 
         redirect(get_link('admin/groups/'), __('Default group redirect'));
     }

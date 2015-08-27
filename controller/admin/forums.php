@@ -121,22 +121,18 @@ class forums
             }
 
         } else {
-
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
-
-            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
             generate_admin_menu('forums');
 
-            $this->feather->render('admin/forums/permissions.php', array(
+            $this->feather->view2->setPageInfo(array(
+                    'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+                    'active_page'    =>    'admin',
+                    'admin_console'    =>    true,
                     'perm_data' => $this->model->get_permissions($forum_id),
                     'cur_index'     =>  7,
                     'cur_forum' => $this->model->get_forum_info($forum_id),
                     'forum_data' => $this->model->get_forums(),
                 )
-            );
-
-
+            )->addTemplate('admin/forums/permissions.php')->display();
         }
     }
 
@@ -153,20 +149,17 @@ class forums
 
             redirect(get_link('admin/forums/'), __('Forum deleted redirect'));
 
-        } else { // If the user hasn't confirmed the delete
-
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
-
-            $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
+        } else { // If the user hasn't confirmed
 
             generate_admin_menu('forums');
 
-            $this->feather->render('admin/forums/delete_forum.php', array(
+            $this->feather->view2->setPageInfo(array(
+                    'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+                    'active_page'    =>    'admin',
+                    'admin_console'    =>    true,
                     'cur_forum' => $this->model->get_forum_info($forum_id),
                 )
-            );
-
-
+            )->addTemplate('admin/forums/delete_forum.php')->display();
         }
     }
 
@@ -195,20 +188,17 @@ class forums
             $this->edit_positions();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('forums');
 
         $categories_model = new \model\admin\categories();
-        $this->feather->render('admin/forums/admin_forums.php', array(
-                'cat_list'      => $categories_model->get_cat_list(),
-                'forum_data'    =>  $this->model->get_forums(),
-                'cur_index'     =>  4,
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+                'active_page' => 'admin',
+                'admin_console' => true,
+                'cat_list' => $categories_model->get_cat_list(),
+                'forum_data' => $this->model->get_forums(),
+                'cur_index' => 4,
             )
-        );
-
-
+        )->addTemplate('admin/forums/admin_forums.php')->display();
     }
 }
