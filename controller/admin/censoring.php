@@ -59,7 +59,6 @@ class censoring
         generate_admin_menu('censoring');
 
         $this->feather->render('admin/censoring.php', array(
-                'feather_config'    =>    $this->config,
                 'word_data'    =>    $this->model->get_words(),
             )
         );

@@ -115,7 +115,6 @@ class install
             if (!empty($this->errors)) {
                 $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
                 $this->feather->view()->display('install.php', array(
-                                                        'feather' => $this->feather,
                                                         'languages' => $this->available_langs,
                                                         'supported_dbs' => $this->supported_dbs,
                                                         'data' => $data,
@@ -137,7 +136,6 @@ class install
             }
             $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
             $this->feather->view()->display('install.php', array(
-                                                'feather' => $this->feather,
                                                 'languages' => $this->available_langs,
                                                 'supported_dbs' => $this->supported_dbs,
                                                 'data' => $data,

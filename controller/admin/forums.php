@@ -131,7 +131,6 @@ class forums
             generate_admin_menu('forums');
 
             $this->feather->render('admin/forums/permissions.php', array(
-                    'feather_config' => $this->config,
                     'perm_data' => $this->model->get_permissions($forum_id),
                     'cur_index'     =>  7,
                     'cur_forum' => $this->model->get_forum_info($forum_id),
@@ -206,7 +205,6 @@ class forums
 
         $categories_model = new \model\admin\categories();
         $this->feather->render('admin/forums/admin_forums.php', array(
-                'feather_config' => $this->config,
                 'cat_list'      => $categories_model->get_cat_list(),
                 'forum_data'    =>  $this->model->get_forums(),
                 'cur_index'     =>  4,

@@ -30,7 +30,6 @@ class index
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),
             'stats' => $this->model->collect_stats(),
-            'feather_config' => $this->feather->forum_settings,
             'online'    =>    $this->model->fetch_users_online(),
             'forum_actions'        =>    $this->model->get_forum_actions(),
             'cur_cat'   => 0

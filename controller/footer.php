@@ -47,14 +47,10 @@ class footer
                             'id' => $id,
                             'p' => $p,
                             'pid' => $pid,
-                            'feather_user' => $this->user,
-                            'feather_config' => $this->config,
                             'feather_start' => $this->start,
-                            'footer_style' => $footer_style,
                             'quickjump' => $this->feather->cache->retrieve('quickjump'),
                             'forum_id' => $forum_id,
                             'num_pages' => $num_pages,
-                            'feather' => $this->feather,
                             )
                     );
 

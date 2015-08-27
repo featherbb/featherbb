@@ -45,13 +45,11 @@ class statistics
         $total = $this->model->get_total_size();
 
         $this->feather->render('admin/statistics.php', array(
-                'feather_config'    =>    $this->config,
                 'server_load'    =>    $this->model->get_server_load(),
                 'num_online'    =>    $this->model->get_num_online(),
                 'total_size'    =>    $total['size'],
                 'total_records'    =>    $total['records'],
                 'php_accelerator'    =>    $this->model->get_php_accelerator(),
-                'feather'    =>    $this->feather,
             )
         );
 

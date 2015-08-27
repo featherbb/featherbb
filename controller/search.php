@@ -85,7 +85,6 @@ class search
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,
-                'feather' => $this->feather,
                 'forums' => $this->model->get_list_forums(),
             ))->addTemplate('search/form.php')->display();
         }

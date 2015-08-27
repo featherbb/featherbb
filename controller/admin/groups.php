@@ -50,7 +50,6 @@ class groups
         generate_admin_menu('groups');
 
         $this->feather->render('admin/groups/admin_groups.php', array(
-                'feather_config'    =>    $this->config,
                 'groups' => $groups,
                 'cur_index' => 5,
             )
@@ -142,7 +141,6 @@ class groups
             $group = $this->model->info_add_group($groups, $id);
 
             $this->feather->render('admin/groups/add_edit_group.php', array(
-                    'feather_config'    =>    $this->config,
                     'group'    =>    $group,
                     'groups'    =>    $groups,
                     'id'    => $id,

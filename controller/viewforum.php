@@ -15,7 +15,12 @@ class viewforum
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\viewforum();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/forum.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
+    }
+
+    public function __autoload($class_name)
+    {
+        require FEATHER_ROOT . $class_name . '.php';
     }
 
     public function display($id, $name = null, $page = null)
@@ -85,6 +90,7 @@ class viewforum
             'paging_links'  =>  $paging_links,
             'is_indexed' => true,
             'id' => $id,
+            'fid' => $id,
             'forum_data' => $this->model->print_topics($id, $sort_by, $start_from),
             'cur_forum' => $cur_forum,
             'post_link' => $post_link,

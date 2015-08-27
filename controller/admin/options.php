@@ -47,12 +47,9 @@ class options
         generate_admin_menu('options');
 
         $this->feather->render('admin/options.php', array(
-                'feather_config'    =>    $this->config,
-                'feather_user'    =>    $this->user,
                 'languages' => forum_list_langs(),
                 'styles' => $this->model->get_styles(),
                 'times' => $this->model->get_times(),
-                'feather'    =>    $this->feather,
             )
         );
 

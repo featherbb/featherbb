@@ -115,6 +115,8 @@ class viewtopic
             'is_indexed' => true,
             'id' => $id,
             'pid' => $pid,
+            'tid' => $id,
+            'fid' => $cur_topic['forum_id'],
             'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
             'cur_topic'    =>    $cur_topic,
             'subscraction'    =>    $subscraction,

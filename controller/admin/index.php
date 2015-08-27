@@ -18,8 +18,6 @@ class index
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
     }
@@ -78,20 +76,14 @@ class index
             }
         }
 
-        $install_folder_exists = is_dir(FEATHER_ROOT.'install');
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Index'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('index');
 
-        $this->feather->render('admin/index.php', array(
-                            'install_file_exists'    =>    $install_folder_exists,
-                            'feather_config'    =>    $this->config,
+        $this->feather->view2->setPageInfo(array(
+                            'page_title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Index')),
+                            'active_page' => 'admin',
+                            'admin_console' => true,
+                            'install_file_exists'    =>   is_dir(FEATHER_ROOT.'install'),
                             )
-                    );
-
-        $this->footer->display();
+                    )->addTemplate('admin/index.php')->display();
     }
 }

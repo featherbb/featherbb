@@ -218,11 +218,9 @@ class parser
 
         $this->feather->render('admin/parser.php', array(
                 'lang_admin_parser'    =>    $lang_admin_parser,
-
                 'smiley_files' => $this->model->get_smiley_files(),
                 'bbcd' =>   $bbcd,
                 'config' => $config,
-                'feather_config' => $this->config,
                 'smilies' =>    $smilies,
                 'i'     =>  -1,
             )

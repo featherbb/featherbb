@@ -47,10 +47,7 @@ class permissions
 
         generate_admin_menu('permissions');
 
-        $this->feather->render('admin/permissions.php', array(
-                'feather_config'    =>    $this->config,
-            )
-        );
+        $this->feather->render('admin/permissions.php');
 
         $this->footer->display();
     }
