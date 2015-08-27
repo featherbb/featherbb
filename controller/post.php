@@ -14,23 +14,12 @@ class post
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\post();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/antispam.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/bbeditor.mo');
     }
 
     public function newreply($fid = null, $tid = null, $qid = null)
@@ -41,11 +30,11 @@ class post
     public function newpost($fid = null, $tid = null, $qid = null)
     {
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
-        if ($this->request->post('username')) {
+        if ($this->feather->request->post('username')) {
             message(__('Bad request'), '404');
         }
 
@@ -61,11 +50,11 @@ class post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $is_admmod = ($this->feather->user->g_id == FEATHER_ADMIN || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($tid && (($cur_posting['post_replies'] == '' && $this->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($tid && (($cur_posting['post_replies'] == '' && $this->feather->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
+                ($fid && (($cur_posting['post_topics'] == '' && $this->feather->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
             message(__('No permission'), '403');
@@ -80,14 +69,14 @@ class post
         if ($this->feather->request()->isPost()) {
 
                 // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
-                if ($this->request->post('pid')) {
-                    $pid = $this->request->post('pid');
+                if ($this->feather->request->post('pid')) {
+                    $pid = $this->feather->request->post('pid');
                 } else {
                     $pid = '';
                 }
 
-            if ($this->request->post('page')) {
-                $page = $this->request->post('page');
+            if ($this->feather->request->post('page')) {
+                $page = $this->feather->request->post('page');
             } else {
                 $page = '';
             }
@@ -99,14 +88,14 @@ class post
                 $post = $this->model->setup_variables($errors, $is_admmod);
 
                 // Did everything go according to plan?
-                if (empty($errors) && !$this->request->post('preview')) {
+                if (empty($errors) && !$this->feather->request->post('preview')) {
                         // If it's a reply
                         if ($tid) {
                             // Insert the reply, get the new_pid
                                 $new = $this->model->insert_reply($post, $tid, $cur_posting, $is_subscribed);
 
                                 // Should we send out notifications?
-                                if ($this->config['o_topic_subscriptions'] == '1') {
+                                if ($this->feather->forum_settings['o_topic_subscriptions'] == '1') {
                                     $this->model->send_notifications_reply($tid, $cur_posting, $new['pid'], $post);
                                 }
                         }
@@ -116,18 +105,18 @@ class post
                                 $new = $this->model->insert_topic($post, $fid);
 
                                 // Should we send out notifications?
-                                if ($this->config['o_forum_subscriptions'] == '1') {
+                                if ($this->feather->forum_settings['o_forum_subscriptions'] == '1') {
                                     $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
                                 }
                         }
 
                         // If we previously found out that the email was banned
-                        if ($this->user->is_guest && isset($errors['banned_email']) && $this->config['o_mailing_list'] != '') {
+                        if ($this->feather->user->is_guest && isset($errors['banned_email']) && $this->feather->forum_settings['o_mailing_list'] != '') {
                             $this->model->warn_banned_user($post, $new['pid']);
                         }
 
                         // If the posting user is logged in, increment his/her post count
-                        if (!$this->user->is_guest) {
+                        if (!$this->feather->user->is_guest) {
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
@@ -167,13 +156,13 @@ class post
         }
 
         $required_fields = array('req_email' => __('Email'), 'req_subject' => __('Subject'), 'req_message' => __('Message'));
-        if ($this->user->is_guest) {
+        if ($this->feather->user->is_guest) {
             $required_fields['captcha'] = __('Robot title');
         }
 
         // Set focus element (new post or new reply to an existing post ?)
         $focus_element[] = 'post';
-        if (!$this->user->is_guest) {
+        if (!$this->feather->user->is_guest) {
             $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
         } else {
             $required_fields['req_username'] = __('Guest name');
@@ -184,7 +173,7 @@ class post
         $checkboxes = $this->model->get_checkboxes($fid, $is_admmod, $is_subscribed);
 
         // Check to see if the topic review is to be displayed
-        if ($tid && $this->config['o_topic_review'] != '0') {
+        if ($tid && $this->feather->forum_settings['o_topic_review'] != '0') {
             $post_data = $this->model->topic_review($tid);
         } else {
             $post_data = '';
@@ -210,23 +199,19 @@ class post
         );
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array(feather_escape($this->config['o_board_title']), $action),
+                            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), $action),
                             'required_fields' => $required_fields,
                             'focus_element' => $focus_element,
                             'active_page' => 'post',
                             'post' => $post,
                             'tid' => $tid,
                             'fid' => $fid,
-                            'feather_config' => $this->config,
-                            'feather_user' => $this->user,
                             'cur_posting' => $cur_posting,
                             'lang_antispam' => $lang_antispam,
                             'lang_antispam_questions' => $lang_antispam_questions,
                             'lang_bbeditor'    =>    $lang_bbeditor,
                             'index_questions' => $index_questions,
                             'checkboxes' => $checkboxes,
-                            'cur_posting' => $cur_posting,
-                            'feather' => $this->feather,
                             'action' => $action,
                             'form' => $form,
                             'post_data' => $post_data,
