@@ -166,7 +166,6 @@ class post
             $url_topic = '';
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), $action);
         $required_fields = array('req_email' => __('Email'), 'req_subject' => __('Subject'), 'req_message' => __('Message'));
         if ($this->user->is_guest) {
             $required_fields['captcha'] = __('Robot title');
@@ -180,8 +179,6 @@ class post
             $required_fields['req_username'] = __('Guest name');
             $focus_element[] = 'req_username';
         }
-
-        $this->header->setTitle($page_title)->setActivePage('post')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         // Get the current state of checkboxes
         $checkboxes = $this->model->get_checkboxes($fid, $is_admmod, $is_subscribed);
@@ -212,7 +209,11 @@ class post
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->render('post.php', array(
+        $this->feather->view2->setPageInfo(array(
+                            'title' => array(feather_escape($this->config['o_board_title']), $action),
+                            'required_fields' => $required_fields,
+                            'focus_element' => $focus_element,
+                            'active_page' => 'post',
                             'post' => $post,
                             'tid' => $tid,
                             'fid' => $fid,
@@ -233,9 +234,6 @@ class post
                             'url_topic' => $url_topic,
                             'quote' => $quote,
                             'errors'    =>    $errors,
-                            )
-                    );
-
-        $this->footer->display();
+                            ))->addTemplate('post.php')->display();
     }
 }

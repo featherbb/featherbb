@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -31,7 +31,7 @@ if (!defined('FEATHER')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/messaging/') ?>"><?php _e('Section messaging') ?></a></li>
-<?php if ($feather_config['o_avatars'] == '1' || $feather_config['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
+<?php if ($feather->forum_settings['o_avatars'] == '1' || $feather->forum_settings['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('user/'.$id.'/section/personality/') ?>"><?php _e('Section personality') ?></a></li>

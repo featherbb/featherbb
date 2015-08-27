@@ -536,7 +536,7 @@ class search
                 }
 
                 $delete_cache = DB::for_table('search_cache')
-                    ->where_not_in('ident', $old_searches);
+                                    ->where_not_in('ident', $old_searches);
                 $delete_cache = $this->hook->fireDB('get_search_results_delete_cache', $delete_cache);
                 $delete_cache = $delete_cache->delete_many();
             }
@@ -735,7 +735,7 @@ class search
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
 
-                $this->feather->render('search/posts.php', array(
+                $this->feather->view2->setPageInfo(array(
                     'post_count' => $post_count,
                     'url_topic' => $url_topic,
                     'cur_search' => $cur_search,
@@ -792,12 +792,14 @@ class search
                     $start_from = $cur_search['start_from'];
                 }
 
-                $this->feather->render('search/topics.php', array(
+                $this->feather->view2->setPageInfo(array(
                     'cur_search' => $cur_search,
                     'start_from' => $start_from,
                     'topic_count' => $topic_count,
                     'subject' => $subject,
                     'forum' => $forum,
+                    'post_count' => $post_count,
+                    'url_topic' => $url_topic,
                     )
                 );
             }

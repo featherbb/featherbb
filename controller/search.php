@@ -47,45 +47,48 @@ class search
 
                 // We have results to display
                 if (isset($search['is_result'])) {
-                    $page_title = array(feather_escape($this->config['o_board_title']), __('Search results'));
-
-                    $this->header->setTitle($page_title)->setActivePage('search')->display();
-
-                    $this->feather->render('search/header.php', array(
-                                'search' => $search,
-                                )
-                        );
 
                     if ($search['show_as'] == 'posts') {
                         require FEATHER_ROOT.'include/parser.php';
                     }
 
+                    $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Search results')),
+                        'active_page' => 'search',
+                    ));
+
                     $this->model->display_search_results($search, $this->feather);
 
-                    $this->feather->render('search/footer.php', array(
-                                'search' => $search,
-                                )
-                        );
+                    $this->feather->view2->setPageInfo(array(
+                        'search' => $search,
+                    ));
 
-                    $this->footer->display();
+                    $this->feather->view2->addTemplate('search/header.php', 1);
+
+                    if ($search['show_as'] == 'posts') {
+                        $this->feather->view2->addTemplate('search/posts.php', 5);
+                    }
+                    else {
+                        $this->feather->view2->addTemplate('search/topics.php', 5);
+                    }
+
+                    $this->feather->view2->addTemplate('search/footer.php', 10)->display();
+
                 } else {
                     message(__('No hits'));
                 }
         }
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Search'));
-        $focus_element = array('search', 'keywords');
-
-        $this->header->setTitle($page_title)->setActivePage('search')->setFocusElement($focus_element)->display();
-
-        $this->feather->render('search/form.php', array(
-                            'feather_config' => $this->config,
-                            'feather' => $this->feather,
-                            'forums' => $this->model->get_list_forums(),
-                            )
-                    );
-
-        $this->footer->display();
+        // Display the form
+        else {
+            $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Search')),
+                'active_page' => 'search',
+                'focus_element' => array('search', 'keywords'),
+                'is_indexed' => true,
+                'feather' => $this->feather,
+                'forums' => $this->model->get_list_forums(),
+            ))->addTemplate('search/form.php')->display();
+        }
     }
 
     public function quicksearches($show)
