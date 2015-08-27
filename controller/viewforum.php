@@ -15,7 +15,6 @@ class viewforum
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->header = new \controller\header();
@@ -71,29 +70,40 @@ class viewforum
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
 
-        $forum_actions = $this->model->get_forum_actions($id, $this->config['o_forum_subscriptions'], $cur_forum['is_subscribed']);
+        $forum_actions = $this->model->get_forum_actions($id, $this->feather->forum_settings['o_forum_subscriptions'], $cur_forum['is_subscribed']);
+
+        $page_head = array();
+        $page_head['canonical'] = "\t".'<link href="'.get_link('forum/'.$id.'/'.$url_forum.'/').'" rel="canonical" />';
+
+        if ($num_pages > 1) {
+            if ($p > 1) {
+                $page_head['prev'] = "\t".'<link href="'.get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/').'" rel="prev" />';
+            }
+            if ($p < $num_pages) {
+                $page_head['next'] = "\t".'<link href="'.get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/').'" rel="next" />';
+            }
+        }
+
+        if ($this->feather->forum_settings['o_feed_type'] == '1') {
+            $page_head['feed'] = '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;fid='.$id.'&amp;type=rss" title="'.__('RSS forum feed').'" />';
+        } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
+            $page_head['feed'] = '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;fid='.$id.'&amp;type=atom" title="'.__('Atom forum feed').'" />';
+        }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name'])),
+            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), feather_escape($cur_forum['forum_name'])),
             'active_page' => 'viewforum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
-            'page_head'  =>  $this->model->get_page_head($id, $num_pages, $p, $url_forum),
             'is_indexed' => true,
-        ));
-
-        $this->feather->view2->display('viewforum.php', array(
-                            'id' => $id,
-                            'forum_data' => $this->model->print_topics($id, $sort_by, $start_from),
-                            'cur_forum' => $cur_forum,
-                            'paging_links' => $paging_links,
-                            'post_link' => $post_link,
-                            'is_admmod' => $is_admmod,
-                            'start_from' => $start_from,
-                            'url_forum' => $url_forum,
-                            'forum_actions' => $forum_actions,
-                            'feather_config' => $this->config,
-                            )
-                    );
+            'id' => $id,
+            'forum_data' => $this->model->print_topics($id, $sort_by, $start_from),
+            'cur_forum' => $cur_forum,
+            'page_head' => $page_head,
+            'post_link' => $post_link,
+            'start_from' => $start_from,
+            'url_forum' => $url_forum,
+            'forum_actions' => $forum_actions,
+        ))->addTemplate('viewforum.php')->display();
     }
 }

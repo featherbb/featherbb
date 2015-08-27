@@ -18,17 +18,10 @@ class viewtopic
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\viewtopic();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/topic.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/topic.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function display($id = null, $name = null, $page = null, $pid = null)
@@ -40,11 +33,8 @@ class viewtopic
         }
 
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
-
-        // Load the viewtopic.php model file
-        require_once FEATHER_ROOT.'model/viewtopic.php';
 
         // Fetch some informations about the topic
         $cur_topic = $this->model->get_info_topic($id);
@@ -86,16 +76,7 @@ class viewtopic
 
         $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $id);
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject'])),
-            'active_page' => 'viewtopic',
-            'page_number'  =>  $p,
-            'paging_links'  =>  $paging_links,
-            'page_head'  =>  $this->model->get_page_head($id, $num_pages, $p, $url_topic),
-            'is_indexed' => true,
-        ));
-
-        require FEATHER_ROOT.'include/parser.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'include/parser.php';
 
         $lang_bbeditor = array(
             'btnBold' => __('btnBold'),
@@ -116,28 +97,28 @@ class viewtopic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->display('viewtopic.php', array(
-                            'id' => $id,
-                            'p' => $p,
-                            'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
-                            'cur_topic'    =>    $cur_topic,
-                            'subscraction'    =>    $subscraction,
-                            'is_admmod'    =>    $is_admmod,
-                            'feather_config' => $this->config,
-                            'paging_links' => $paging_links,
-                            'post_link' => $post_link,
-                            'start_from' => $start_from,
-                            'lang_antispam' => $lang_antispam,
-                            'pid' => $pid,
-                            'quickpost'        =>    $quickpost,
-                            'index_questions'        =>    $index_questions,
-                            'lang_antispam_questions'        =>    $lang_antispam_questions,
-                            'lang_bbeditor'    =>    $lang_bbeditor,
-                            'url_forum'        =>    $url_forum,
-                            'url_topic'        =>    $url_topic,
-                            'feather'          =>    $this->feather,
-                            )
-                    );
+        $this->feather->view2->setPageInfo(array(
+            'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject'])),
+            'active_page' => 'viewtopic',
+            'page_number'  =>  $p,
+            'paging_links'  =>  $paging_links,
+            'page_head'  =>  $this->model->get_page_head($id, $num_pages, $p, $url_topic),
+            'is_indexed' => true,
+            'id' => $id,
+            'pid' => $pid,
+            'post_data' => $this->model->print_posts($id, $start_from, $cur_topic, $is_admmod),
+            'cur_topic'    =>    $cur_topic,
+            'subscraction'    =>    $subscraction,
+            'post_link' => $post_link,
+            'start_from' => $start_from,
+            'lang_antispam' => $lang_antispam,
+            'quickpost'        =>    $quickpost,
+            'index_questions'        =>    $index_questions,
+            'lang_antispam_questions'        =>    $lang_antispam_questions,
+            'lang_bbeditor'    =>    $lang_bbeditor,
+            'url_forum'        =>    $url_forum,
+            'url_topic'        =>    $url_topic,
+        ))->addTemplate('viewtopic.php')->display();
 
         // Increment "num_views" for topic
         $this->model->increment_views($id);
