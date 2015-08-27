@@ -22,7 +22,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php _e('Add word subhead') ?></legend>
 						<div class="infldset">
-							<p><?php _e('Add word info').' '.($feather_config['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.get_link('admin/options#censoring').'">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.get_link('admin/options#censoring').'">'.__('Options').'</a>')) ?></p>
+							<p><?php _e('Add word info').' '.($feather->forum_settings['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.get_link('admin/options#censoring').'">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.get_link('admin/options#censoring').'">'.__('Options').'</a>')) ?></p>
 							<table>
 							<thead>
 								<tr>

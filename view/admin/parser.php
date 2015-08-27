@@ -208,7 +208,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo($lang_admin_parser['smiley_upload']); ?></th>
  <?php if (ini_get('file_uploads')) {
     ?>
-									<td><input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather_config['o_avatars_size'] ?>" />
+									<td><input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather->forum_settings['o_avatars_size'] ?>" />
 										<input type="file" name="new_smiley" id="upload_smiley" /></td>
 									<td><input type="submit" name="upload" value="<?php echo($lang_admin_parser['upload_button']);
     ?>" /></td>

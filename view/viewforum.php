@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -36,7 +36,7 @@ if (!defined('FEATHER')) {
 				<tr>
 					<th class="tcl" scope="col"><?php _e('Topic') ?></th>
 					<th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php _e('Views') ?></th>
+<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php _e('Views') ?></th>
 <?php endif; ?>					<th class="tcr" scope="col"><?php _e('Last post') ?></th>
 				</tr>
 			</thead>
@@ -56,7 +56,7 @@ if (!defined('FEATHER')) {
 							</div>
 						</td>
 						<td class="tc2"><?php echo(is_null($topic['moved_to'])) ? forum_number_format($topic['num_replies']) : '-' ?></td>
-	<?php if ($feather_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(is_null($topic['moved_to'])) ? forum_number_format($topic['num_views']) : '-' ?></td>
+	<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(is_null($topic['moved_to'])) ? forum_number_format($topic['num_views']) : '-' ?></td>
 	<?php endif;
                 ?>					<td class="tcr"><?php echo $topic['last_post_formatted'] ?></td>
 					</tr>
@@ -66,7 +66,7 @@ if (!defined('FEATHER')) {
             if (empty($forum_data)):
             ?>
 					<tr class="rowodd inone">
-						<td class="tcl" colspan="<?php echo($feather_config['o_topic_views'] == 1) ? 4 : 3 ?>">
+						<td class="tcl" colspan="<?php echo($feather->forum_settings['o_topic_views'] == 1) ? 4 : 3 ?>">
 							<div class="icon inone"><div class="nosize"><!-- --></div></div>
 							<div class="tclcon">
 								<div>

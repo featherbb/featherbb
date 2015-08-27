@@ -134,16 +134,16 @@ if ($quickpost) {
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="pid" value="<?php echo feather_escape($pid) ?>" />
-						<input type="hidden" name="page" value="<?php echo feather_escape($p) ?>" />
-<?php if ($feather_config['o_topic_subscriptions'] == '1' && ($feather->user->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
+						<input type="hidden" name="page" value="<?php echo feather_escape($page_number) ?>" />
+<?php if ($feather->forum_settings['o_topic_subscriptions'] == '1' && ($feather->user->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
     if ($feather->user->is_guest) {
-        $email_label = ($feather_config['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
-        $email_form_name = ($feather_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
+        $email_label = ($feather->forum_settings['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
+        $email_form_name = ($feather->forum_settings['p_force_guest_email'] == '1') ? 'req_email' : 'email';
         ?>
 						<label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
-						<label class="conl<?php echo($feather_config['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
+						<label class="conl<?php echo($feather->forum_settings['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?php echo $email_label ?><br /><input type="text" name="<?php echo $email_form_name ?>" size="50" maxlength="80" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 						<div class="clearer"></div>
 <?php
 
@@ -163,13 +163,13 @@ if ($quickpost) {
 
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off');
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off');
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off');
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather_config['o_smilies'] == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off');
     ?></span></li>
 						</ul>
 					</div>
