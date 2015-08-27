@@ -19,14 +19,19 @@
     echo "\t".'<meta name="robots" content="noindex, follow">'."\n";
 } ?>
     <title><?php echo generate_page_title($title, $page_number) ?></title>
-    <!-- CSS -->
-<?php foreach ($assets['css'] as $style) {
-
-    echo "\t".'<link ';
-    foreach ($style['params'] as $key => $value) {
-        echo $key.'="'.$value.'" ';
+<?php
+foreach($assets as $type => $items) {
+    if ($type == 'js') {
+        continue;
     }
-    echo 'href="'.get_base_url().'/'.$style['file'].'">'."\n";
+    echo "\t".'<!-- '.ucfirst($type).' -->'."\n";
+    foreach ($items as $item) {
+        echo "\t".'<link ';
+        foreach ($item['params'] as $key => $value) {
+            echo $key.'="'.$value.'" ';
+        }
+        echo 'href="'.get_base_url().'/'.$item['file'].'">'."\n";
+    }
 }
 if ($admin_console) {
     if (file_exists($feather->forum_env['FEATHER_ROOT'].'style/'.$feather->user->style.'/base_admin.css')) {
