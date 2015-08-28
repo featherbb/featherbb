@@ -18,11 +18,6 @@ class statistics
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-<<<<<<< HEAD
-
-
-=======
->>>>>>> development
         $this->model = new \model\admin\statistics();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/index.mo');
     }
@@ -34,15 +29,11 @@ class statistics
 
     public function display()
     {
-<<<<<<< HEAD
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
 
-        generate_admin_menu('index');
-=======
         \FeatherBB\AdminUtils::generateAdminMenu('index');
->>>>>>> development
 
         $total = $this->model->get_total_size();
 

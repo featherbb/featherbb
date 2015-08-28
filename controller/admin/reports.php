@@ -18,11 +18,6 @@ class reports
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-<<<<<<< HEAD
-
-
-=======
->>>>>>> development
         $this->model = new \model\admin\reports();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/reports.mo');
     }
@@ -39,11 +34,7 @@ class reports
             $this->model->zap_report();
         }
 
-<<<<<<< HEAD
-        generate_admin_menu('reports');
-=======
         \FeatherBB\AdminUtils::generateAdminMenu('reports');
->>>>>>> development
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports')),

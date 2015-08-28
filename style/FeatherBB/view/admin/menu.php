@@ -19,17 +19,6 @@ if (!defined('FEATHER')) {
 		<div class="box">
 			<div class="inbox">
 				<ul>
-<<<<<<< HEAD
-					<li<?= ($page == 'index') ? ' class="isactive"' : ''; ?>><a href="<?php echo get_link('admin/') ?>"><?php _e('Index') ?></a></li>
-					<li<?= ($page == 'users') ? ' class="isactive"' : ''; ?>><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
-                <?php if ($is_admin || $feather->user->g_mod_ban_users == '1'): ?>
-                    <li<?= ($page == 'bans') ? ' class="isactive"' : ''; ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
-                <?php endif;
-                if ($is_admin || $feather_config['o_report_method'] == '0' || $feather_config['o_report_method'] == '2'): ?>
-                    <li<?= ($page == 'reports') ? ' class="isactive"' : ''; ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php _e('Reports') ?></a></li>
-                <?php endif; ?>
-				</ul>
-=======
 					<li<?php if ($page == 'index') {
     echo ' class="isactive"';
 }
@@ -49,7 +38,6 @@ if (!defined('FEATHER')) {
     ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php _e('Reports') ?></a></li>
 <?php endif;
     ?>				</ul>
->>>>>>> development
 			</div>
 		</div>
 <?php

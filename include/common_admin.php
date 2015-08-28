@@ -40,10 +40,6 @@ function generate_admin_menu($page = '')
     $feather->view2->setPageInfo(array(
         'page'    =>    $page,
         'is_admin'    =>    $is_admin,
-<<<<<<< HEAD
-        'feather_config'    =>    $feather->config,
-=======
->>>>>>> development
         'plugins'    =>    $plugins,
         ), 1
     )->addTemplate('admin/menu.php');

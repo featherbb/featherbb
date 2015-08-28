@@ -19,12 +19,7 @@ class users
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\users();
-<<<<<<< HEAD
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/users.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
-=======
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/users.mo');
->>>>>>> development
     }
 
     public function __autoload($class_name)
@@ -40,11 +35,7 @@ class users
                 message(__('No permission'), '403');
             }
 
-<<<<<<< HEAD
-            generate_admin_menu('users');
-=======
             \FeatherBB\AdminUtils::generateAdminMenu('users');
->>>>>>> development
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
@@ -62,11 +53,7 @@ class users
                 message(__('No permission'), '403');
             }
 
-<<<<<<< HEAD
-            generate_admin_menu('users');
-=======
             \FeatherBB\AdminUtils::generateAdminMenu('users');
->>>>>>> development
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
@@ -84,11 +71,7 @@ class users
                 message(__('No permission'), '403');
             }
 
-<<<<<<< HEAD
-            generate_admin_menu('users');
-=======
             \FeatherBB\AdminUtils::generateAdminMenu('users');
->>>>>>> development
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
@@ -138,21 +121,6 @@ class users
                     'user_data' =>  $this->model->print_users($search['conditions'], $search['order_by'], $search['direction'], $start_from),
                 )
             )->addTemplate('admin/users/find_users.php')->display();
-<<<<<<< HEAD
-        }
-        else {
-            generate_admin_menu('users');
-
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users')),
-                    'active_page' => 'admin',
-                    'admin_console' => true,
-                    'focus_element' => array('find_user', 'form[username]'),
-                    'group_list' => $this->model->get_group_list(),
-                )
-            )->addTemplate('admin/users/admin_users.php')->display();
-        }
-=======
         }
         else {
             \FeatherBB\AdminUtils::generateAdminMenu('users');
@@ -166,7 +134,6 @@ class users
                 )
             )->addTemplate('admin/users/admin_users.php')->display();
         }
->>>>>>> development
     }
 
     // Show IP statistics for a certain user ID

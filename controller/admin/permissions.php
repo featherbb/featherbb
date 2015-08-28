@@ -34,11 +34,7 @@ class permissions
             $this->model->update_permissions();
         }
 
-<<<<<<< HEAD
-        generate_admin_menu('permissions');
-=======
         \FeatherBB\AdminUtils::generateAdminMenu('permissions');
->>>>>>> development
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions')),

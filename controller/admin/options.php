@@ -33,11 +33,7 @@ class options
             $this->model->update_options();
         }
 
-<<<<<<< HEAD
-        generate_admin_menu('options');
-=======
         \FeatherBB\AdminUtils::generateAdminMenu('options');
->>>>>>> development
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Options')),
