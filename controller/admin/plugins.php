@@ -77,18 +77,18 @@ class plugins
             message(__('Bad request'), '404');
         }
 
-        // Require all valide filenames...
+        // Require all valid filenames...
         \FeatherBB\Plugin::getPluginsList();
         // And make sure the plugin actually extends base Plugin class
         if (!property_exists('\plugin\\'.$plugin, 'isFeatherPlugin')) {
-            message(sprintf(__('No plugin message'), $plugin));
+            message(sprintf(__('No plugin message'), feather_escape($plugin)));
         }
 
         try {
             \FeatherBB\Plugin::activate($plugin);
-            redirect(get_link('admin/plugins/'), "Plugin $plugin activated");
+            redirect(get_link('admin/plugins/'), 'Plugin '.feather_escape($plugin).' activated');
         } catch (\Exception $e) {
-            redirect(get_link('admin/plugins/'), $e->getMessage());
+            redirect(get_link('admin/plugins/'), feather_escape($e->getMessage()));
         }
 
     }
@@ -113,7 +113,7 @@ class plugins
 
         // Make sure the file actually exists
         if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
-            message(sprintf(__('No plugin message'), $plugin));
+            message(sprintf(__('No plugin message'), feather_escape($plugin)));
         }
 
         // Construct REQUEST_URI if it isn't set TODO?
@@ -126,7 +126,7 @@ class plugins
         // get the "blank page of death"
         include FEATHER_ROOT.'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
-            message(sprintf(__('Plugin failed message'), $plugin));
+            message(sprintf(__('Plugin failed message'), feather_escape($plugin)));
         }
 
         $this->feather->view2->setPageInfo(array(

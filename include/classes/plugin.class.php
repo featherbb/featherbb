@@ -81,17 +81,18 @@ class Plugin
     {
         $plugins = array();
 
-        // Get all files declaring a new plugin
-        $directory = new \RecursiveDirectoryIterator('plugins');
-        $iterator = new \RecursiveIteratorIterator($directory);
-        $pluginClasses = new \RegexIterator($iterator, '/^.+\/(\\w+)\.plugin\.php$/i', \RecursiveRegexIterator::GET_MATCH);
-
-        // Require these files to access their properties and display them in view
-        foreach ($pluginClasses as $pluginClass) {
-            // require $pluginClass[0];
-            $className = "\plugin\\".$pluginClass[1];
-            $plugins[$pluginClass[1]] = new $className();
+        $d = dir(FEATHER_ROOT.'plugins');
+        if (!$d) {
+            return $plugins;
         }
+
+        while (($entry = $d->read()) !== false) {
+            if (!is_dir(FEATHER_ROOT.'plugins/'.$entry) && preg_match('%^(\w+)\.plugin\.php$%i', $entry, $plugin)) {
+                $className = "\plugin\\".$plugin[1];
+                $plugins[$plugin[1]] = new $className();
+            }
+        }
+        $d->close();
 
         return $plugins;
     }
@@ -101,23 +102,23 @@ class Plugin
      */
     public static function runActivePlugins()
     {
-        // Get all files declaring a new plugin
-        $directory = new \RecursiveDirectoryIterator('plugins');
-        $iterator = new \RecursiveIteratorIterator($directory);
-        $pluginClasses = new \RegexIterator($iterator, '/^.+\/(\\w+)\.plugin\.php$/i', \RecursiveRegexIterator::GET_MATCH);
-
         $feather = \Slim\Slim::getInstance();
-        $activePlugins = $feather->cache->retrieve('active_plugins') ? $feather->cache->retrieve('active_plugins') : array();
+        //$activePlugins = $feather->cache->retrieve('active_plugins') ? $feather->cache->retrieve('active_plugins') : array();
 
-        // Require these files to access their properties and display them in view
-        foreach ($pluginClasses as $pluginClass) {
-            require $pluginClass[0];
-            $className = "\plugin\\".$pluginClass[1];
-            $plugin = new $className();
-            $plugin->runHooks();
+        $d = dir(FEATHER_ROOT.'plugins');
+
+        while (($entry = $d->read()) !== false) {
+            if (!is_dir(FEATHER_ROOT.'plugins/'.$entry) && preg_match('%^(\w+)\.plugin\.php$%i', $entry, $plugin)) {
+                require FEATHER_ROOT.'plugins/'.$plugin[0];
+                $className = "\plugin\\".$plugin[1];
+                $newPlugin = new $className();
+                $newPlugin->runHooks();
+            }
         }
+        $d->close();
 
         return true;
+
     }
 
     /**
