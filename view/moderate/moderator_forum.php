@@ -40,7 +40,7 @@ if (!defined('FEATHER')) {
 				<tr>
 					<th class="tcl" scope="col"><?php _e('Topic') ?></th>
 					<th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if ($feather_config['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php _e('Views') ?></th>
+<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>					<th class="tc3" scope="col"><?php _e('Views') ?></th>
 <?php endif; ?>					<th class="tcr"><?php _e('Last post') ?></th>
 					<th class="tcmod" scope="col"><?php _e('Select') ?></th>
 				</tr>
@@ -63,7 +63,7 @@ if (!defined('FEATHER')) {
 						</div>
 					</td>
 					<td class="tc2"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_replies']) : '-' ?></td>
-<?php if ($feather_config['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_views']) : '-' ?></td>
+<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(!$topic['ghost_topic']) ? forum_number_format($topic['num_views']) : '-' ?></td>
 <?php endif;
                 ?>					<td class="tcr"><?php echo $topic['last_post_disp'] ?></td>
 					<td class="tcmod"><input type="checkbox" name="topics[<?php echo $topic['id'] ?>]" value="1" /></td>
@@ -72,7 +72,7 @@ if (!defined('FEATHER')) {
 
             }
             if (empty($topic_data)):
-                $colspan = ($feather_config['o_topic_views'] == '1') ? 5 : 4;
+                $colspan = ($feather->forum_settings['o_topic_views'] == '1') ? 5 : 4;
                 $button_status = ' disabled="disabled"';
                 echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.__('Empty forum').'</td></tr>'."\n";
             endif;

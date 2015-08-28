@@ -37,14 +37,13 @@ function generate_admin_menu($page = '')
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);
 
-    $feather->render('admin/menu.php', array(
+    $feather->view2->setPageInfo(array(
         'page'    =>    $page,
         'is_admin'    =>    $is_admin,
         'feather_config'    =>    $feather->config,
-        'feather_user'    =>    $feather->user,
         'plugins'    =>    $plugins,
-        )
-    );
+        ), 1
+    )->addTemplate('admin/menu.php');
 }
 
 //

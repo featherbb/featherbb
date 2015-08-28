@@ -57,26 +57,23 @@
 
 define('FEATHER_QUIET_VISIT', 1);
 
-if (!defined('FEATHER_ROOT')) {
-    define('FEATHER_ROOT', dirname(__FILE__).'/');
-}
-
 // Load Slim Framework
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
-// Instantiate Slim
+// Load FeatherBB
+require 'include/classes/autoload.class.php';
+\FeatherBB\Loader::registerAutoloader();
+
+// Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
+$feather->add(new \FeatherBB\Csrf());
 
-// Load the config
-require 'include/config.php';
-
-// Load middlewares
-$feather->add(new \Slim\Extras\Middleware\CsrfGuard('featherbb_csrf')); // CSRF
-$feather->add(new \Slim\Extras\Middleware\FeatherBB($feather_user_settings)); // FeatherBB
-
-$feather->config('cookies.encrypt', true);
-$feather->config('debug', true); // As long as we're developing FeatherBB
+$feather_settings = array('config_file' => 'include/config.php',
+    'cache_dir' => 'cache/',
+    'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+$feather->add(new \FeatherBB\Auth());
+$feather->add(new \FeatherBB\Core($feather_settings));
 
 load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo');
 load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/index.mo');
@@ -139,8 +136,6 @@ function get_current_url($max_length = 0)
 //
 function set_default_user()
 {
-    global $feather_config;
-
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -188,12 +183,12 @@ function set_default_user()
             ->update_many('logged', time());
     }
 
-    $feather->user->disp_topics = $feather_config['o_disp_topics_default'];
-    $feather->user->disp_posts = $feather_config['o_disp_posts_default'];
-    $feather->user->timezone = $feather_config['o_default_timezone'];
-    $feather->user->dst = $feather_config['o_default_dst'];
-    $feather->user->language = $feather_config['o_default_lang'];
-    $feather->user->style = $feather_config['o_default_style'];
+    $feather->user->disp_topics = $feather->forum_settings['o_disp_topics_default'];
+    $feather->user->disp_posts = $feather->forum_settings['o_disp_posts_default'];
+    $feather->user->timezone = $feather->forum_settings['o_default_timezone'];
+    $feather->user->dst = $feather->forum_settings['o_default_dst'];
+    $feather->user->language = $feather->forum_settings['o_default_lang'];
+    $feather->user->style = $feather->forum_settings['o_default_style'];
     $feather->user->is_guest = true;
     $feather->user->is_admmod = false;
 }
@@ -266,13 +261,13 @@ switch ($action) {
 //
 function http_authenticate_user()
 {
-    global $feather_config, $feather;
+    global $feather;
 
     if (!$feather->user->is_guest) {
         return;
     }
 
-    header('WWW-Authenticate: Basic realm="'.$feather_config['o_board_title'].' External Syndication"');
+    header('WWW-Authenticate: Basic realm="'.$feather->forum_settings['o_board_title'].' External Syndication"');
     header('HTTP/1.0 401 Unauthorized');
 }
 
@@ -282,8 +277,6 @@ function http_authenticate_user()
 //
 function output_rss($feed)
 {
-    global $feather_config;
-
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
     header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -299,8 +292,8 @@ function output_rss($feed)
     echo "\t\t".'<description><![CDATA['.escape_cdata($feed['description']).']]></description>'."\n";
     echo "\t\t".'<lastBuildDate>'.gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</lastBuildDate>'."\n";
 
-    if ($feather_config['o_show_version'] == '1') {
-        echo "\t\t".'<generator>FeatherBB '.$feather_config['o_cur_version'].'</generator>'."\n";
+    if ($feather->forum_settings['o_show_version'] == '1') {
+        echo "\t\t".'<generator>FeatherBB '.$feather->forum_settings['o_cur_version'].'</generator>'."\n";
     } else {
         echo "\t\t".'<generator>FeatherBB</generator>'."\n";
     }
@@ -327,8 +320,6 @@ function output_rss($feed)
 //
 function output_atom($feed)
 {
-    global $feather_config;
-
     // Send XML/no cache headers
     header('Content-Type: application/atom+xml; charset=utf-8');
     header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -343,8 +334,8 @@ function output_atom($feed)
     echo "\t".'<link href="'.feather_escape($feed['link']).'"/>'."\n";
     echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
 
-    if ($feather_config['o_show_version'] == '1') {
-        echo "\t".'<generator version="'.$feather_config['o_cur_version'].'">FluxBB</generator>'."\n";
+    if ($feather->forum_settings['o_show_version'] == '1') {
+        echo "\t".'<generator version="'.$feather->forum_settings['o_cur_version'].'">FluxBB</generator>'."\n";
     } else {
         echo "\t".'<generator>FluxBB</generator>'."\n";
     }
@@ -385,8 +376,6 @@ function output_atom($feed)
 //
 function output_xml($feed)
 {
-    global $feather_config;
-
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
     header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -488,13 +477,13 @@ if ($action == 'feed') {
             exit(__('Bad request'));
         }
 
-        if ($feather_config['o_censoring'] == '1') {
+        if ($feather->forum_settings['o_censoring'] == '1') {
             $cur_topic['subject'] = censor_words($cur_topic['subject']);
         }
 
         // Setup the feed
         $feed = array(
-            'title'        =>    $feather_config['o_board_title'].__('Title separator').$cur_topic['subject'],
+            'title'        =>    $feather->forum_settings['o_board_title'].__('Title separator').$cur_topic['subject'],
             'link'            =>    get_link('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
             'description'        =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
             'items'            =>    array(),
@@ -589,7 +578,7 @@ if ($action == 'feed') {
         }
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
-        if ($feather_config['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
+        if ($feather->forum_settings['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
             $cache_id = 'feed'.sha1($feather->user->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
@@ -602,9 +591,9 @@ if ($action == 'feed') {
         if (!isset($feed) || $cache_expire < $now) {
             // Setup the feed
             $feed = array(
-                'title'        =>    $feather_config['o_board_title'].$forum_name,
+                'title'        =>    $feather->forum_settings['o_board_title'].$forum_name,
                 'link'            =>    '/index.php',
-                'description'    =>    sprintf(__('RSS description'), $feather_config['o_board_title']),
+                'description'    =>    sprintf(__('RSS description'), $feather->forum_settings['o_board_title']),
                 'items'            =>    array(),
                 'type'            =>    'topics'
             );
@@ -628,7 +617,7 @@ if ($action == 'feed') {
                         ->find_array();
 
             foreach ($result as $cur_topic) {
-                if ($feather_config['o_censoring'] == '1') {
+                if ($feather->forum_settings['o_censoring'] == '1') {
                     $cur_topic['subject'] = censor_words($cur_topic['subject']);
                 }
 
@@ -664,7 +653,7 @@ if ($action == 'feed') {
                     require FEATHER_ROOT.'include/cache.php';
                 }
 
-                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather_config['o_feed_ttl'] * 60)).';'."\n\n".'?>';
+                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather->forum_settings['o_feed_ttl'] * 60)).';'."\n\n".'?>';
                 featherbb_write_cache_file('cache_'.$cache_id.'.php', $content);
             }
         }

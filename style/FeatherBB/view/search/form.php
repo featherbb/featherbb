@@ -41,7 +41,7 @@ if (!defined('FEATHER')) {
 						</select>
 						<br /></label>
 						<p class="clearl"><?php _e('Search in info') ?></p>
-<?php echo($feather_config['o_search_all_forums'] == '1' || $feather->user->is_admmod ? '<p>'.__('Search multiple forums info').'</p>' : '') ?>
+<?php echo($feather->forum_settings['o_search_all_forums'] == '1' || $feather->user->is_admmod ? '<p>'.__('Search multiple forums info').'</p>' : '') ?>
 					</div>
 				</fieldset>
 			</div>

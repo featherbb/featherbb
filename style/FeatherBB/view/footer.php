@@ -63,7 +63,7 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
 
 <?php
 // Display the "Jump to" drop list
-if ($feather_config['o_quickjump'] == '1' && !empty($quickjump)) { ?>
+if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 			<div class="conl">
 			<form id="qjump" method="get" action="">
 				<div><label><span><?php _e('Jump to') ?><br /></span></label>
@@ -87,27 +87,27 @@ if ($feather_config['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 <?php
 
 if ($footer_style == 'index') {
-    if ($feather_config['o_feed_type'] == '1') {
+    if ($feather->forum_settings['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
-    } elseif ($feather_config['o_feed_type'] == '2') {
+    } elseif ($feather->forum_settings['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
 } elseif ($footer_style == 'viewforum') {
-    if ($feather_config['o_feed_type'] == '1') {
+    if ($feather->forum_settings['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
-    } elseif ($feather_config['o_feed_type'] == '2') {
+    } elseif ($feather->forum_settings['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
 } elseif ($footer_style == 'viewtopic') {
-    if ($feather_config['o_feed_type'] == '1') {
+    if ($feather->forum_settings['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
-    } elseif ($feather_config['o_feed_type'] == '2') {
+    } elseif ($feather->forum_settings['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
     }
 }
 
 ?>
-				<p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather_config['o_show_version'] == '1') ? ' '.$feather_config['o_cur_version'] : '')) ?></p>
+				<p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather->forum_settings['o_show_version'] == '1') ? ' '.$feather->forum_settings['o_cur_version'] : '')) ?></p>
 			</div>
 			<div class="clearer"></div>
 		</div>

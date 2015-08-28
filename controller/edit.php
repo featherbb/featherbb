@@ -18,8 +18,8 @@ class edit
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\edit();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
@@ -120,16 +120,13 @@ class edit
                             'errors' => $errors,
                             'preview_message' => $preview_message,
                             'id' => $id,
-                            'feather_config' => $this->config,
-                            'feather_user' => $this->user,
                             'checkboxes' => $this->model->get_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
-                            'feather' => $this->feather,
                             'can_edit_subject' => $can_edit_subject,
                             'lang_bbeditor'    =>    $lang_bbeditor,
                             'post' => $post,
                             )
                     );
 
-        $this->footer->display();
+
     }
 }

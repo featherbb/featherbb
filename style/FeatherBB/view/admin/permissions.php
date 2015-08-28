@@ -28,10 +28,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('BBCode label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[message_bbcode]" value="1"<?php if ($feather_config['p_message_bbcode'] == '1') {
+										<label class="conl"><input type="radio" name="form[message_bbcode]" value="1"<?php if ($feather->forum_settings['p_message_bbcode'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[message_bbcode]" value="0"<?php if ($feather_config['p_message_bbcode'] == '0') {
+										<label class="conl"><input type="radio" name="form[message_bbcode]" value="0"<?php if ($feather->forum_settings['p_message_bbcode'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('BBCode help') ?></span>
@@ -40,10 +40,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Image tag label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[message_img_tag]" value="1"<?php if ($feather_config['p_message_img_tag'] == '1') {
+										<label class="conl"><input type="radio" name="form[message_img_tag]" value="1"<?php if ($feather->forum_settings['p_message_img_tag'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[message_img_tag]" value="0"<?php if ($feather_config['p_message_img_tag'] == '0') {
+										<label class="conl"><input type="radio" name="form[message_img_tag]" value="0"<?php if ($feather->forum_settings['p_message_img_tag'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('Image tag help') ?></span>
@@ -52,10 +52,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('All caps message label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[message_all_caps]" value="1"<?php if ($feather_config['p_message_all_caps'] == '1') {
+										<label class="conl"><input type="radio" name="form[message_all_caps]" value="1"<?php if ($feather->forum_settings['p_message_all_caps'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[message_all_caps]" value="0"<?php if ($feather_config['p_message_all_caps'] == '0') {
+										<label class="conl"><input type="radio" name="form[message_all_caps]" value="0"<?php if ($feather->forum_settings['p_message_all_caps'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('All caps message help') ?></span>
@@ -64,10 +64,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('All caps subject label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[subject_all_caps]" value="1"<?php if ($feather_config['p_subject_all_caps'] == '1') {
+										<label class="conl"><input type="radio" name="form[subject_all_caps]" value="1"<?php if ($feather->forum_settings['p_subject_all_caps'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[subject_all_caps]" value="0"<?php if ($feather_config['p_subject_all_caps'] == '0') {
+										<label class="conl"><input type="radio" name="form[subject_all_caps]" value="0"<?php if ($feather->forum_settings['p_subject_all_caps'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('All caps subject help') ?></span>
@@ -76,10 +76,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Require e-mail label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[force_guest_email]" value="1"<?php if ($feather_config['p_force_guest_email'] == '1') {
+										<label class="conl"><input type="radio" name="form[force_guest_email]" value="1"<?php if ($feather->forum_settings['p_force_guest_email'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[force_guest_email]" value="0"<?php if ($feather_config['p_force_guest_email'] == '0') {
+										<label class="conl"><input type="radio" name="form[force_guest_email]" value="0"<?php if ($feather->forum_settings['p_force_guest_email'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('Require e-mail help') ?></span>
@@ -97,10 +97,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('BBCode sigs label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[sig_bbcode]" value="1"<?php if ($feather_config['p_sig_bbcode'] == '1') {
+										<label class="conl"><input type="radio" name="form[sig_bbcode]" value="1"<?php if ($feather->forum_settings['p_sig_bbcode'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[sig_bbcode]" value="0"<?php if ($feather_config['p_sig_bbcode'] == '0') {
+										<label class="conl"><input type="radio" name="form[sig_bbcode]" value="0"<?php if ($feather->forum_settings['p_sig_bbcode'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('BBCode sigs help') ?></span>
@@ -109,10 +109,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Image tag sigs label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[sig_img_tag]" value="1"<?php if ($feather_config['p_sig_img_tag'] == '1') {
+										<label class="conl"><input type="radio" name="form[sig_img_tag]" value="1"<?php if ($feather->forum_settings['p_sig_img_tag'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[sig_img_tag]" value="0"<?php if ($feather_config['p_sig_img_tag'] == '0') {
+										<label class="conl"><input type="radio" name="form[sig_img_tag]" value="0"<?php if ($feather->forum_settings['p_sig_img_tag'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('Image tag sigs help') ?></span>
@@ -121,10 +121,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('All caps sigs label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[sig_all_caps]" value="1"<?php if ($feather_config['p_sig_all_caps'] == '1') {
+										<label class="conl"><input type="radio" name="form[sig_all_caps]" value="1"<?php if ($feather->forum_settings['p_sig_all_caps'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[sig_all_caps]" value="0"<?php if ($feather_config['p_sig_all_caps'] == '0') {
+										<label class="conl"><input type="radio" name="form[sig_all_caps]" value="0"<?php if ($feather->forum_settings['p_sig_all_caps'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('All caps sigs help') ?></span>
@@ -133,14 +133,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Max sig length label') ?></th>
 									<td>
-										<input type="text" name="form[sig_length]" size="5" maxlength="5" value="<?php echo $feather_config['p_sig_length'] ?>" />
+										<input type="text" name="form[sig_length]" size="5" maxlength="5" value="<?php echo $feather->forum_settings['p_sig_length'] ?>" />
 										<span class="clearb"><?php _e('Max sig length help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Max sig lines label') ?></th>
 									<td>
-										<input type="text" name="form[sig_lines]" size="3" maxlength="3" value="<?php echo $feather_config['p_sig_lines'] ?>" />
+										<input type="text" name="form[sig_lines]" size="3" maxlength="3" value="<?php echo $feather->forum_settings['p_sig_lines'] ?>" />
 										<span class="clearb"><?php _e('Max sig lines help') ?></span>
 									</td>
 								</tr>
@@ -156,10 +156,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Banned e-mail label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[allow_banned_email]" value="1"<?php if ($feather_config['p_allow_banned_email'] == '1') {
+										<label class="conl"><input type="radio" name="form[allow_banned_email]" value="1"<?php if ($feather->forum_settings['p_allow_banned_email'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[allow_banned_email]" value="0"<?php if ($feather_config['p_allow_banned_email'] == '0') {
+										<label class="conl"><input type="radio" name="form[allow_banned_email]" value="0"<?php if ($feather->forum_settings['p_allow_banned_email'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('Banned e-mail help') ?></span>
@@ -168,10 +168,10 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Duplicate e-mail label') ?></th>
 									<td>
-										<label class="conl"><input type="radio" name="form[allow_dupe_email]" value="1"<?php if ($feather_config['p_allow_dupe_email'] == '1') {
+										<label class="conl"><input type="radio" name="form[allow_dupe_email]" value="1"<?php if ($feather->forum_settings['p_allow_dupe_email'] == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-										<label class="conl"><input type="radio" name="form[allow_dupe_email]" value="0"<?php if ($feather_config['p_allow_dupe_email'] == '0') {
+										<label class="conl"><input type="radio" name="form[allow_dupe_email]" value="0"<?php if ($feather->forum_settings['p_allow_dupe_email'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
 										<span class="clearb"><?php _e('Duplicate e-mail help') ?></span>

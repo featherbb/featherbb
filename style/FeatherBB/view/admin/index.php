@@ -45,7 +45,7 @@ if (!defined('FEATHER')) {
 				<dl>
 					<dt><?php _e('FeatherBB version label') ?></dt>
 					<dd>
-						<?php printf(__('FeatherBB version data')."\n", $feather_config['o_cur_version'], '<a href="'.get_link('admin/action/check_upgrade/').'">'.__('Check for upgrade').'</a>') ?>
+						<?php printf(__('FeatherBB version data')."\n", $feather->forum_settings['o_cur_version'], '<a href="'.get_link('admin/action/check_upgrade/').'">'.__('Check for upgrade').'</a>') ?>
 					</dd>
 					<dt><?php _e('Server statistics label') ?></dt>
 					<dd>

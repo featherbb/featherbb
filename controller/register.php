@@ -18,8 +18,8 @@ class register
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\register();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
@@ -62,24 +62,19 @@ class register
             }
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->config['o_board_title']), __('Register')),
-            'focus_element' => array('register', 'req_user'),
-            'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
-            'active_page' => 'register',
-            'is_indexed' => true,
-        ));
-
-        $this->feather->view2->display('register/form.php', array(
-                            'errors' => $user['errors'],
-                            'feather_config' => $this->config,
-                            'index_questions'    =>    $index_questions,
-                            'feather'    =>    $this->feather,
-                            'languages' => forum_list_langs(),
-                            'question' => array_keys($lang_antispam_questions),
-                            'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
+            $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Register')),
+                        'focus_element' => array('register', 'req_user'),
+                        'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
+                        'active_page' => 'register',
+                        'is_indexed' => true,
+                        'errors' => $user['errors'],
+                        'index_questions'    =>    $index_questions,
+                        'languages' => forum_list_langs(),
+                        'question' => array_keys($lang_antispam_questions),
+                        'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
                             )
-                    );
+                    )->addTemplate('register/form.php')->display();
     }
 
     public function cancel()
@@ -107,13 +102,9 @@ class register
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->config['o_board_title']), __('Register'), __('Forum rules')),
-            'active_page' => 'register',
-        ));
-
-        $this->feather->view2->display('register/rules.php', array(
-                            'feather_config'    =>    $this->config,
+                            'title' => array(feather_escape($this->config['o_board_title']), __('Register'), __('Forum rules')),
+                            'active_page' => 'register',
                             )
-                    );
+                    )->addTemplate('register/rules.php')->display();
     }
 }

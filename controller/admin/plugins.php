@@ -18,9 +18,6 @@ class plugins
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
-        // $this->model = new \model\admin\plugins();
         require FEATHER_ROOT . 'include/common_admin.php';
     }
 
@@ -40,20 +37,27 @@ class plugins
         //     $this->model->update_permissions();
         // }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
+        // $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
 
         generate_admin_menu('plugins');
 
         $pluginsList = \FeatherBB\Plugin::getPluginsList();
 
-        $this->feather->render('admin/plugins.php', array(
-                'pluginsList'    =>    $pluginsList
+        $this->feather->view2->setPageInfo(array(
+                'admin_console' => true,
+                'active_page' => 'admin',
+                'focus_element' => array('bans', 'new_ban_user'),
+                'pluginsList'    =>    $pluginsList,
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
             )
-        );
+        )->addTemplate('admin/plugins.php')->display();
 
-        $this->footer->display();
+        // $this->feather->render('admin/plugins.php', array(
+        //         'pluginsList'    =>    $pluginsList
+        //     )
+        // );
+        //
+        // $this->footer->display();
     }
 
     public function activate()
@@ -117,10 +121,6 @@ class plugins
             $_SERVER['REQUEST_URI'] = (isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '').'?'.(isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4)));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         // Attempt to load the plugin. We don't use @ here to suppress error messages,
         // because if we did and a parse error occurred in the plugin, we would only
         // get the "blank page of death"
@@ -129,8 +129,11 @@ class plugins
             message(sprintf(__('Plugin failed message'), $plugin));
         }
 
-        $this->feather->render('admin/loader.php');
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4))),
+                'active_page' => 'admin',
+                'admin_console' => true,
+            )
+        )->addTemplate('admin/loader.php')->display();
     }
 }

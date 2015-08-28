@@ -18,8 +18,6 @@ class bans
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\admin\bans();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/bans.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -46,33 +44,27 @@ class bans
             $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
             $start_from = 50 * ($p - 1);
 
-            // Generate paging links
-            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str']));
-
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head'));
-
-            $this->header->setTitle($page_title)->setActivePage('admin')->setPage($p)->setPagingLinks($paging_links)->enableAdminConsole()->display();
-
             $ban_data = $this->model->find_ban($start_from);
 
-            $this->feather->render('admin/bans/search_ban.php', array(
+            $this->feather->view2->setPageInfo(array(
+                    'admin_console' => true,
+                    'page' => $p,
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
                     'ban_data' => $ban_data['data'],
                 )
-            );
-
-            $this->footer->display();
+            )->addTemplate('admin/bans/search_ban.php')->display();
         }
+        else {
+            generate_admin_menu('bans');
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
-        $focus_element = array('bans', 'new_ban_user');
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
-
-        generate_admin_menu('bans');
-
-        $this->feather->render('admin/bans/admin_bans.php');
-
-        $this->footer->display();
+            $this->feather->view2->setPageInfo(array(
+                    'admin_console' => true,
+                    'focus_element' => array('bans', 'new_ban_user'),
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans')),
+                )
+            )->addTemplate('admin/bans/admin_bans.php')->display();
+        }
     }
 
     public function add($id = null)
@@ -85,19 +77,15 @@ class bans
             $this->model->insert_ban();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
-        $focus_element = array('bans2', 'ban_user');
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
-
         generate_admin_menu('bans');
 
-        $this->feather->render('admin/bans/add_ban.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'admin_console' => true,
+                'focus_element' => array('bans2', 'ban_user'),
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans')),
                 'ban' => $this->model->add_ban_info($id),
             )
-        );
-
-        $this->footer->display();
+        )->addTemplate('admin/bans/add_ban.php')->display();
     }
 
     public function delete($id)
@@ -120,18 +108,14 @@ class bans
             $this->model->insert_ban();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans'));
-        $focus_element = array('bans2', 'ban_user');
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->setFocusElement($focus_element)->enableAdminConsole()->display();
-
         generate_admin_menu('bans');
 
-        $this->feather->render('admin/bans/add_ban.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'admin_console' => true,
+                'focus_element' => array('bans2', 'ban_user'),
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Bans')),
                 'ban' => $this->model->edit_ban_info($id),
             )
-        );
-
-        $this->footer->display();
+        )->addTemplate('admin/bans/add_ban.php')->display();
     }
 }

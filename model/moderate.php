@@ -561,7 +561,7 @@ class moderate
                 $moved_to = $moved_to->find_one();
 
                 // Create the redirect topic
-                $move_topics_to['insert'] = array(
+                $insert_move_topics_to = array(
                     'poster' => $moved_to['poster'],
                     'subject'  => $moved_to['subject'],
                     'posted'  => $moved_to['posted'],
@@ -573,7 +573,7 @@ class moderate
                 // Insert the report
                 $move_topics_to = DB::for_table('topics')
                                     ->create()
-                                    ->set($move_topics_to['insert']);
+                                    ->set($insert_move_topics_to);
                 $move_topics_to = $this->hook->fireDB('move_topics_to_redirect', $move_topics_to);
                 $move_topics_to = $move_topics_to->save();
 
@@ -608,7 +608,7 @@ class moderate
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($result['order_by']);
-        $result = $this->hook->fireDB('check_move_possible');
+        $result = $this->hook->fireDB('check_move_possible', $result);
         $result = $result->find_many();
 
         if (count($result) < 2) {
@@ -797,6 +797,8 @@ class moderate
                         ->where_in('topic_id', $topics_sql);
         $find_ids = $this->hook->fireDB('delete_topics_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
+
+        $ids_post = array();
 
         foreach ($find_ids as $id) {
             $ids_post[] = $id['id'];

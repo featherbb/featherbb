@@ -18,8 +18,8 @@ class moderate
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\moderate();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/topic.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
@@ -105,19 +105,15 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->display();
-
-            $this->feather->render('moderate/move_topics.php', array(
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                    'active_page' => 'moderate',
                     'action'    =>    'multi',
                     'id'    =>    $fid,
                     'topics'    =>    $topics,
                     'list_forums'   => $this->model->get_forum_list_move($fid),
                 )
-            );
-
-            $this->footer->display();
+            )->addTemplate('moderate/move_topics.php')->display();
         }
 
         // Stick a topic
@@ -163,19 +159,16 @@ class moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->display();
-
-            $this->feather->render('moderate/move_topics.php', array(
+            $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                        'active_page' => 'moderate',
+                        'page' => $p,
                         'action'    =>    'single',
                         'id'    =>    $id,
                         'topics'    =>    $id,
                         'list_forums'   => $this->model->get_forum_list_move($fid),
                         )
-                );
-
-            $this->footer->display();
+                )->addTemplate('moderate/move_topics.php')->display();
         }
 
         // Moderate a topic
@@ -185,34 +178,28 @@ class moderate
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
                     $posts = $this->model->delete_posts($id, $fid, $p);
 
-                    $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-
-                    $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->display();
-
-                    $this->feather->render('moderate/delete_posts.php', array(
-                        'id' => $id,
-                        'posts' => $posts,
-                        )
-                    );
-
-                    $this->footer->display();
+                    $this->feather->view2->setPageInfo(array(
+                            'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                            'active_page' => 'moderate',
+                            'page' => $p,
+                            'id' => $id,
+                            'posts' => $posts,
+                        ))
+                        ->addTemplate('moderate/delete_posts.php')->display();
                 }
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
-                $posts = $this->model->split_posts($id, $fid, $p);
 
-                $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-                $focus_element = array('subject','new_subject');
-
-                $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->setFocusElement($focus_element)->display();
-
-                $this->feather->render('moderate/split_posts.php', array(
+                $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                        'focus_element' => array('subject','new_subject'),
+                        'page' => $p,
+                        'active_page' => 'moderate',
                         'id' => $id,
-                        'posts' => $posts,
+                        'posts' => $this->model->split_posts($id, $fid, $p),
                         'list_forums' => $this->model->get_forum_list_split($id),
                         )
-                );
+                )->addTemplate('moderate/split_posts.php')->display();
 
-                $this->footer->display();
             }
 
                 // Show the moderate posts view
@@ -224,31 +211,25 @@ class moderate
                         $this->user->disp_posts = $cur_topic['num_replies'] + 1;
                 }*/
 
-                // Generate paging links
-                $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#');
-
             if ($this->config['o_censoring'] == '1') {
                 $cur_topic['subject'] = censor_words($cur_topic['subject']);
             }
 
-            $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject']));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->setPagingLinks($paging_links)->display();
-
-            $this->feather->render('moderate/posts_view.php', array(
+            $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_topic['forum_name']), feather_escape($cur_topic['subject'])),
+                        'page' => $p,
+                        'active_page' => 'moderate',
                         'cur_topic' => $cur_topic,
                         'url_topic' => url_friendly($cur_topic['subject']),
                         'url_forum' => url_friendly($cur_topic['forum_name']),
                         'fid' => $fid,
                         'id' => $id,
-                        'paging_links' => $paging_links,
+                        'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#'),
                         'post_data' => $this->model->display_posts_view($id, $start_from),
                         'button_status' => $button_status,
                         'start_from' => $start_from,
                         )
-                );
-
-            $this->footer->display();
+                )->addTemplate('moderate/posts_view.php')->display();
         }
     }
 
@@ -284,26 +265,21 @@ class moderate
         $start_from = $this->user->disp_topics * ($p - 1);
         $url_forum = url_friendly($cur_forum['forum_name']);
 
-        // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'moderate/forum/'.$id.'/#');
-
-        $page_title = array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name']));
-
-        $this->header->setTitle($page_title)->setActivePage('moderate')->setPage($p)->setPagingLinks($paging_links)->display();
-
-        $this->feather->render('moderate/moderator_forum.php', array(
+        $this->feather->view2->setPageInfo(array(
+                            'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name'])),
+                            'active_page' => 'moderate',
+                            'page' => $p,
                             'id' => $id,
                             'p' => $p,
                             'url_forum' => $url_forum,
                             'cur_forum' => $cur_forum,
-                            'paging_links' => $paging_links,
-                            'feather_config' => $this->config,
+                            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'moderate/forum/'.$id.'/#'),
                             'topic_data' => $this->model->display_topics($id, $sort_by, $start_from),
                             'start_from' => $start_from,
                             )
-                    );
+                    )->addTemplate('moderate/moderator_forum.php')->display();
 
-        $this->footer->display();
+
     }
 
     public function dealposts($fid)
@@ -331,24 +307,18 @@ class moderate
                 message(__('No topics selected'));
             }
 
-            $topics = implode(',', array_map('intval', array_keys($topics)));
-
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
-
-            $this->feather->render('moderate/move_topics.php', array(
+            $this->feather->view2->setPageInfo(array(
                         'action'    =>    'multi',
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                        'active_page' => 'moderate',
                         'id'    =>    $fid,
-                        'topics'    =>    $topics,
+                        'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
                         'list_forums'   => $this->model->get_forum_list_move($fid),
                         )
-                );
-
-            $this->footer->display();
+                )->addTemplate('moderate/move_topics.php')->display();
         }
 
         // Merge two or more topics
@@ -362,17 +332,13 @@ class moderate
                 message(__('Not enough topics selected'));
             }
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
-
-            $this->feather->render('moderate/merge_topics.php', array(
+            $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                        'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
                         )
-                );
-
-            $this->footer->display();
+                )->addTemplate('moderate/merge_topics.php')->display();
         }
 
         // Delete one or more topics
@@ -386,17 +352,13 @@ class moderate
                 $this->model->delete_topics($topics, $fid);
             }
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Moderate'));
-
-            $this->header->setTitle($page_title)->setActivePage('moderate')->display();
-
-            $this->feather->render('moderate/delete_topics.php', array(
+            $this->feather->view2->setPageInfo(array(
+                        'title' => array(feather_escape($this->config['o_board_title']), __('Moderate')),
+                        'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
                         )
-                );
-
-            $this->footer->display();
+                )->addTemplate('moderate/delete_topics.php')->display();
         }
 
 

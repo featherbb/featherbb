@@ -41,7 +41,7 @@ if (!defined('FEATHER')) {
 <div class="box">
 	<div class="inbox">
 		<p><?php _e('Links info') ?></p>
-		<p><a name="url"></a><code>[url=<?php echo feather_escape(get_base_url(true).'/') ?>]<?php echo feather_escape($feather_config['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape(get_base_url(true).'/') ?>"><?php echo feather_escape($feather_config['o_board_title']) ?></a></samp></p>
+		<p><a name="url"></a><code>[url=<?php echo feather_escape(get_base_url(true).'/') ?>]<?php echo feather_escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape(get_base_url(true).'/') ?>"><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
 		<p><code>[url]<?php echo feather_escape(get_base_url(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape(get_base_url(true).'/') ?>"><?php echo feather_escape(get_base_url(true).'/') ?></a></samp></p>
 		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo get_link('/help') ?>"><?php _e('This help page') ?></a></samp></p>
 		<p><code>[email]myname@example.com[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>

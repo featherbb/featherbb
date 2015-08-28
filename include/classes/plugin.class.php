@@ -88,7 +88,7 @@ class Plugin
 
         // Require these files to access their properties and display them in view
         foreach ($pluginClasses as $pluginClass) {
-            require $pluginClass[0];
+            // require $pluginClass[0];
             $className = "\plugin\\".$pluginClass[1];
             $plugins[$pluginClass[1]] = new $className();
         }

@@ -205,6 +205,9 @@ class Core extends \Slim\Middleware
             return new \FeatherBB\Email();
         });
 
+        // This is the very first hook fired
+        $this->app->hooks->fire('core.start');
+
         if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
             $installer = new \controller\install;
             $installer->run();
@@ -237,7 +240,6 @@ class Core extends \Slim\Middleware
         // Set default style and assets
         $this->app->view2->setStyle($this->forum_settings['o_default_style']);
         $this->app->view2->addAsset('js', 'style/FeatherBB/phone.min.js');
-        $this->app->view2->addAsset('js', 'js/common.js');
 
         // Populate FeatherBB Slim object with forum_settings vars
         $this->hydrate('forum_settings', $this->forum_settings);
@@ -251,7 +253,6 @@ class Core extends \Slim\Middleware
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
         $forum_date_formats = array($this->forum_settings['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
 
-        $this->app->config('templates.path', $this->app->forum_env['FEATHER_ROOT'].'style/FeatherBB/view/');
         // Call FeatherBBAuth middleware
         $this->next->call();
     }

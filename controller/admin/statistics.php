@@ -18,8 +18,8 @@ class statistics
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\admin\statistics();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -36,26 +36,21 @@ class statistics
             message(__('No permission'), '403');
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Server statistics'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('index');
 
         $total = $this->model->get_total_size();
 
-        $this->feather->render('admin/statistics.php', array(
-                'feather_config'    =>    $this->config,
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),
                 'num_online'    =>    $this->model->get_num_online(),
                 'total_size'    =>    $total['size'],
                 'total_records'    =>    $total['records'],
                 'php_accelerator'    =>    $this->model->get_php_accelerator(),
-                'feather'    =>    $this->feather,
             )
-        );
-
-        $this->footer->display();
+        )->addTemplate('admin/statistics.php')->display();
     }
 
 

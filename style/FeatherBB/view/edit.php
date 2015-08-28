@@ -89,10 +89,10 @@ endif;
 						<script>postEditorToolbar('req_message');</script>
                         <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo feather_escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather_config['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather_config['p_message_bbcode'] == '1' && $feather_config['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather_config['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
 						</ul>
 					</div>
 				</fieldset>

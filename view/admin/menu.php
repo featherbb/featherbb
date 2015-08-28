@@ -32,7 +32,7 @@ if (!defined('FEATHER')) {
 }
     ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
 <?php endif;
-    if ($is_admin || $feather_config['o_report_method'] == '0' || $feather_config['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
+    if ($is_admin || $feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php _e('Reports') ?></a></li>

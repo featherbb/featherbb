@@ -18,8 +18,6 @@ class parser
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\admin\parser();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/parser.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -209,25 +207,19 @@ class parser
             redirect(get_link('admin/parser/'), $lang_admin_parser['save_success']);
         }
 
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Parser'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('parser');
 
-        $this->feather->render('admin/parser.php', array(
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Parser')),
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,
-
                 'smiley_files' => $this->model->get_smiley_files(),
                 'bbcd' =>   $bbcd,
                 'config' => $config,
-                'feather_config' => $this->config,
                 'smilies' =>    $smilies,
                 'i'     =>  -1,
             )
-        );
-
-        $this->footer->display();
+        )->addTemplate('admin/parser.php')->display();
     }
 }

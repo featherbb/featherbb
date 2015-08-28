@@ -18,8 +18,6 @@ class permissions
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
         $this->model = new \model\admin\permissions();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/permissions.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
@@ -41,17 +39,13 @@ class permissions
             $this->model->update_permissions();
         }
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions'));
-
-        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('permissions');
 
-        $this->feather->render('admin/permissions.php', array(
-                'feather_config'    =>    $this->config,
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions')),
+                'active_page' => 'admin',
+                'admin_console' => true,
             )
-        );
-
-        $this->footer->display();
+        )->addTemplate('admin/permissions.php')->display();
     }
 }

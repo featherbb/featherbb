@@ -18,8 +18,8 @@ class login
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->header = new \controller\header();
-        $this->footer = new \controller\footer();
+
+
         $this->model = new \model\login();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/login.mo');
     }
@@ -39,18 +39,14 @@ class login
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->model->get_redirect_url();
 
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Login'));
-        $required_fields = array('req_username' => __('Username'), 'req_password' => __('Password'));
-        $focus_element = array('login', 'req_username');
-
-        $this->header->setTitle($page_title)->setActivePage('login')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
-
-        $this->feather->render('login/form.php', array(
+        $this->feather->view2->setPageInfo(array(
                             'redirect_url'    =>    $redirect_url,
+                            'active_page' => 'login',
+                            'title' => array(feather_escape($this->config['o_board_title']), __('Login')),
+                            'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
+                            'focus_element' => array('login', 'req_username'),
                             )
-                    );
-
-        $this->footer->display();
+                    )->addTemplate('login/form.php')->display();
     }
 
     public function logmein()
@@ -81,19 +77,13 @@ class login
             exit;
         }
 
-        $errors = $this->model->password_forgotten();
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Request pass'));
-        $required_fields = array('req_email' => __('Email'));
-        $focus_element = array('request_pass', 'req_email');
-
-        $this->header->setTitle($page_title)->setActivePage('login')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
-
-        $this->feather->render('login/password_forgotten.php', array(
-                            'errors'    =>    $errors,
-                            )
-                    );
-
-        $this->footer->display();
+        $this->feather->view2->setPageInfo(array(
+                'errors'    =>    $this->model->password_forgotten(),
+                'active_page' => 'login',
+                'title' => array(feather_escape($this->config['o_board_title']), __('Request pass')),
+                'required_fields' => array('req_email' => __('Email')),
+                'focus_element' => array('request_pass', 'req_email'),
+            )
+        )->addTemplate('login/password_forgotten.php')->display();
     }
 }
