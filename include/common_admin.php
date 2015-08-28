@@ -33,14 +33,13 @@ function generate_admin_menu($page = '')
     $feather = \Slim\Slim::getInstance();
 
     $is_admin = $feather->user->g_id == FEATHER_ADMIN ? true : false;
-    
+
     // See if there are any plugins
     $plugins = forum_list_plugins($is_admin);
 
     $feather->view2->setPageInfo(array(
         'page'    =>    $page,
         'is_admin'    =>    $is_admin,
-        'feather_config'    =>    $feather->config,
         'plugins'    =>    $plugins,
         ), 1
     )->addTemplate('admin/menu.php');
