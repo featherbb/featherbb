@@ -19,13 +19,12 @@ class forums
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\forums();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/forums.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/forums.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     //
@@ -34,10 +33,6 @@ class forums
 
     public function add_forum()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $cat_id = (int) $this->request->post('cat');
 
         if ($cat_id < 1) {
@@ -55,10 +50,6 @@ class forums
 
     public function edit_forum($forum_id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if($this->request->isPost()) {
             if ($this->request->post('save') && $this->request->post('read_forum_old')) {
 
@@ -121,7 +112,7 @@ class forums
             }
 
         } else {
-            generate_admin_menu('forums');
+            \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
             $this->feather->view2->setPageInfo(array(
                     'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
@@ -138,10 +129,6 @@ class forums
 
     public function delete_forum($forum_id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
@@ -151,7 +138,7 @@ class forums
 
         } else { // If the user hasn't confirmed
 
-            generate_admin_menu('forums');
+            \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
             $this->feather->view2->setPageInfo(array(
                     'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
@@ -180,15 +167,11 @@ class forums
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if ($this->request->post('update_positions')) {
             $this->edit_positions();
         }
 
-        generate_admin_menu('forums');
+        \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \model\admin\categories();
         $this->feather->view2->setPageInfo(array(

@@ -14,9 +14,10 @@ use \FeatherBB\Plugin as Plugin;
 class Test2 extends Plugin
 {
     protected $name = 'Test 2 plugin';
+    protected $version = '0.1';
     protected $description = "Just a useless plugin to check everything is all right! And it seems so ;)";
 
-    public function __construct()
+    public function runHooks()
     {
         // $this->feather = \Slim\Slim::getInstance();
         // $this->start = $this->feather->start;
@@ -30,10 +31,10 @@ class Test2 extends Plugin
         //     return $forum_actions;
         // });
         //
-        // $this->hook->bind('get_forum_actions', function ($forum_actions) {
-        //     $forum_actions[] = '<a href="' . get_link('mark-read/') . '">Test2</a>';
-        //     return $forum_actions;
-        // });
+        $this->hook->bind('get_forum_actions', function ($forum_actions) {
+            $forum_actions[] = '<a href="' . get_link('mark-read/') . '">Test2</a>';
+            return $forum_actions;
+        });
         //
         // $this->hook->bind('query_fetch_users_online', function ($query) {
         //     $query = $query->limit(50);

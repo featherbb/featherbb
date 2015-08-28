@@ -18,13 +18,12 @@ class index
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/index.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function remove_install_folder($directory)
@@ -44,10 +43,6 @@ class index
 
     public function display($action = null)
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
@@ -67,7 +62,7 @@ class index
         }
         // Remove /install
         elseif ($action == 'remove_install_file') {
-            $deleted = $this->remove_install_folder(FEATHER_ROOT.'install');
+            $deleted = $this->remove_install_folder($this->feather->forum_env['FEATHER_ROOT'].'install');
 
             if ($deleted) {
                 redirect(get_link('admin/'), __('Deleted install.php redirect'));
@@ -76,13 +71,13 @@ class index
             }
         }
 
-        generate_admin_menu('index');
+        \FeatherBB\AdminUtils::generateAdminMenu('index');
 
         $this->feather->view2->setPageInfo(array(
                             'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Index')),
                             'active_page' => 'admin',
                             'admin_console' => true,
-                            'install_file_exists'    =>   is_dir(FEATHER_ROOT.'install'),
+                            'install_file_exists'    =>   is_dir($this->feather->forum_env['FEATHER_ROOT'].'install'),
                             )
                     )->addTemplate('admin/index.php')->display();
     }

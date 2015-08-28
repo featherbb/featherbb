@@ -18,8 +18,11 @@ class search
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> development
         $this->model = new \model\search();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/search.mo');

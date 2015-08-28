@@ -19,21 +19,16 @@ class censoring
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\censoring();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/censoring.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/censoring.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         // Add a censor word
         if ($this->request->post('add_word')) {
             $this->model->add_word();
@@ -49,7 +44,7 @@ class censoring
             $this->model->remove_word();
         }
 
-        generate_admin_menu('censoring');
+        \FeatherBB\AdminUtils::generateAdminMenu('censoring');
 
         $this->feather->view2->setPageInfo(array(
                 'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Censoring')),

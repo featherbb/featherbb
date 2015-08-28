@@ -15,7 +15,7 @@ class viewforum
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\viewforum();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->feather->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)

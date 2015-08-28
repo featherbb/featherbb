@@ -19,21 +19,16 @@ class categories
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\categories();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/categories.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/categories.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT.$class_name.'.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].$class_name.'.php';
     }
 
     public function add_category()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $cat_name = feather_trim($this->request->post('cat_name'));
         if ($cat_name == '') {
             redirect(get_link('admin/categories/'), __('Must enter name message'));
@@ -48,10 +43,6 @@ class categories
 
     public function edit_categories()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if (empty($this->request->post('cat'))) {
             message(__('Bad request'), '404');
         }
@@ -74,10 +65,6 @@ class categories
 
     public function delete_category()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
@@ -97,11 +84,7 @@ class categories
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
-        generate_admin_menu('categories');
+        \FeatherBB\AdminUtils::generateAdminMenu('categories');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories')),

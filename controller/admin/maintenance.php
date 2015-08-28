@@ -14,62 +14,63 @@ class maintenance
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
+<<<<<<< HEAD
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
 
 
+=======
+>>>>>>> development
         $this->model = new \model\admin\maintenance();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/maintenance.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/admin/maintenance.mo');
     }
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $action = '';
-        if ($this->request->post('action')) {
-            $action = $this->request->post('action');
-        } elseif ($this->request->get('action')) {
-            $action = $this->request->get('action');
+        if ($this->feather->request->post('action')) {
+            $action = $this->feather->request->post('action');
+        } elseif ($this->feather->request->get('action')) {
+            $action = $this->feather->request->get('action');
         }
 
         if ($action == 'rebuild') {
             $this->model->rebuild();
 
-            $page_title = array(feather_escape($this->config['o_board_title']), __('Rebuilding search index'));
-
-            $this->feather->render('admin/maintenance/rebuild.php', array(
-                    'page_title'    =>    $page_title,
+            $this->feather->view2->setPageInfo(array(
+                    'page_title'    =>    array(feather_escape($this->feather->forum_settings['o_board_title']), __('Rebuilding search index')),
+                    'query_str' => $this->model->get_query_str()
                 )
-            );
-
-            $query_str = $this->model->get_query_str();
-
-            exit('<script type="text/javascript">window.location="'.get_link('admin/maintenance/').$query_str.'"</script><hr /><p>'.sprintf(__('Javascript redirect failed'), '<a href="'.get_link('admin/maintenance/').$query_str.'">'.__('Click here').'</a>').'</p>');
+            )->addTemplate('admin/maintenance/rebuild.php')->display();
         }
 
         if ($action == 'prune') {
+<<<<<<< HEAD
             $prune_from = feather_trim($this->request->post('prune_from'));
             $prune_sticky = intval($this->request->post('prune_sticky'));
 
             generate_admin_menu('maintenance');
 
             if ($this->request->post('prune_comply')) {
+=======
+            $prune_from = feather_trim($this->feather->request->post('prune_from'));
+            $prune_sticky = intval($this->feather->request->post('prune_sticky'));
+
+            \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
+
+            if ($this->feather->request->post('prune_comply')) {
+>>>>>>> development
                 $this->model->prune_comply($prune_from, $prune_sticky);
             }
 
             $this->feather->view2->setPageInfo(array(
+<<<<<<< HEAD
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Prune')),
+=======
+                    'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Prune')),
+>>>>>>> development
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'prune_sticky'    =>    $prune_sticky,
@@ -79,10 +80,17 @@ class maintenance
             )->addTemplate('admin/maintenance/prune.php')->display();
         }
 
+<<<<<<< HEAD
         generate_admin_menu('maintenance');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Maintenance')),
+=======
+        \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
+
+        $this->feather->view2->setPageInfo(array(
+                'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Maintenance')),
+>>>>>>> development
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'first_id' => $this->model->get_first_id(),

@@ -19,28 +19,32 @@ class users
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\users();
+<<<<<<< HEAD
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/users.mo');
         require FEATHER_ROOT . 'include/common_admin.php';
+=======
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/users.mo');
+>>>>>>> development
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
                 message(__('No permission'), '403');
             }
 
+<<<<<<< HEAD
             generate_admin_menu('users');
+=======
+            \FeatherBB\AdminUtils::generateAdminMenu('users');
+>>>>>>> development
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
@@ -58,7 +62,11 @@ class users
                 message(__('No permission'), '403');
             }
 
+<<<<<<< HEAD
             generate_admin_menu('users');
+=======
+            \FeatherBB\AdminUtils::generateAdminMenu('users');
+>>>>>>> development
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
@@ -76,7 +84,11 @@ class users
                 message(__('No permission'), '403');
             }
 
+<<<<<<< HEAD
             generate_admin_menu('users');
+=======
+            \FeatherBB\AdminUtils::generateAdminMenu('users');
+>>>>>>> development
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
@@ -126,6 +138,7 @@ class users
                     'user_data' =>  $this->model->print_users($search['conditions'], $search['order_by'], $search['direction'], $start_from),
                 )
             )->addTemplate('admin/users/find_users.php')->display();
+<<<<<<< HEAD
         }
         else {
             generate_admin_menu('users');
@@ -139,15 +152,26 @@ class users
                 )
             )->addTemplate('admin/users/admin_users.php')->display();
         }
+=======
+        }
+        else {
+            \FeatherBB\AdminUtils::generateAdminMenu('users');
+
+            $this->feather->view2->setPageInfo(array(
+                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users')),
+                    'active_page' => 'admin',
+                    'admin_console' => true,
+                    'focus_element' => array('find_user', 'form[username]'),
+                    'group_list' => $this->model->get_group_list(),
+                )
+            )->addTemplate('admin/users/admin_users.php')->display();
+        }
+>>>>>>> development
     }
 
     // Show IP statistics for a certain user ID
     public function ipstats($id)
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Fetch ip count
         $num_ips = $this->model->get_num_ip($id);
 
@@ -172,10 +196,6 @@ class users
     // Show IP statistics for a certain user IP
     public function showusers($ip)
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         if (!@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $ip) && !@preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%', $ip)) {
             message(__('Bad IP message'));
         }

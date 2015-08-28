@@ -19,21 +19,16 @@ class groups
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\groups();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/groups.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/groups.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $groups = $this->model->fetch_groups();
 
         // Set default group
@@ -41,7 +36,7 @@ class groups
             $this->model->set_default_group($groups, $this->feather);
         }
 
-        generate_admin_menu('groups');
+        \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -55,10 +50,6 @@ class groups
 
     public function delete($id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if ($id < 5) {
             message(__('Bad request'), '404');
         }
@@ -76,7 +67,11 @@ class groups
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
                 $this->model->delete_group($id);
             } else {
+<<<<<<< HEAD
                 generate_admin_menu('groups');
+=======
+                \FeatherBB\AdminUtils::generateAdminMenu('groups');
+>>>>>>> development
 
                 $this->feather->view2->setPageInfo(array(
                         'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -89,7 +84,11 @@ class groups
             }
         }
 
+<<<<<<< HEAD
         generate_admin_menu('groups');
+=======
+        \FeatherBB\AdminUtils::generateAdminMenu('groups');
+>>>>>>> development
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -104,10 +103,6 @@ class groups
 
     public function addedit($id = '')
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $groups = $this->model->fetch_groups();
 
         // Add/edit a group (stage 2)
@@ -118,7 +113,11 @@ class groups
         // Add/edit a group (stage 1)
         elseif ($this->request->post('add_group') || isset($id)) {
 
+<<<<<<< HEAD
             generate_admin_menu('groups');
+=======
+            \FeatherBB\AdminUtils::generateAdminMenu('groups');
+>>>>>>> development
 
             $group = $this->model->info_add_group($groups, $id);
 
@@ -133,7 +132,11 @@ class groups
                     'id'    => $id,
                     'group_list'    => $this->model->get_group_list($groups, $group),
                 )
+<<<<<<< HEAD
             )->addTemplate('admin/groups/delete_group.php')->display();
+=======
+            )->addTemplate('admin/groups/add_edit_group.php')->display();
+>>>>>>> development
         }
     }
 }

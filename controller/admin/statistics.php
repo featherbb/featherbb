@@ -18,25 +18,31 @@ class statistics
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> development
         $this->model = new \model\admin\statistics();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/index.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
     {
+<<<<<<< HEAD
         if (!$this->user->is_admmod) {
             message(__('No permission'), '403');
         }
 
         generate_admin_menu('index');
+=======
+        \FeatherBB\AdminUtils::generateAdminMenu('index');
+>>>>>>> development
 
         $total = $this->model->get_total_size();
 
@@ -56,10 +62,6 @@ class statistics
 
     public function phpinfo()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {

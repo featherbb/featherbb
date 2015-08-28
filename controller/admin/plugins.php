@@ -95,10 +95,6 @@ class plugins
 
     public function display()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // The plugin to load should be supplied via GET
         $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : '';
         if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin)) {
