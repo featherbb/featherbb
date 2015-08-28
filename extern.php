@@ -664,13 +664,13 @@ if ($action == 'feed') {
         }
 
         // Prepend the current base URL onto some links. Done after caching to handle http/https correctly
-        $feed['link'] = get_base_url(true).$feed['link'];
+        $feed['link'] = base(true).$feed['link'];
 
         foreach ($feed['items'] as $key => $item) {
-            $feed['items'][$key]['link'] = get_base_url(true).$item['link'];
+            $feed['items'][$key]['link'] = base(true).$item['link'];
 
             if (isset($item['author']['uri'])) {
-                $feed['items'][$key]['author']['uri'] = get_base_url(true).$item['author']['uri'];
+                $feed['items'][$key]['author']['uri'] = base(true).$item['author']['uri'];
             }
         }
 

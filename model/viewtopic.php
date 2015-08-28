@@ -78,7 +78,7 @@ class viewtopic
                 $first_new_post_id = $this->hook->fire('handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
-                    header('Location: '.get_base_url().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
+                    header('Location: '.$this->feather->url->base().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
                     exit;
                 }
             }
@@ -96,7 +96,7 @@ class viewtopic
             $last_post_id = $this->hook->fire('handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
-                header('Location: '.get_base_url().'/post/'.$last_post_id.'/#p'.$last_post_id);
+                header('Location: '.$this->feather->url->base().'/post/'.$last_post_id.'/#p'.$last_post_id);
                 exit;
             }
         }
@@ -275,7 +275,7 @@ class viewtopic
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post['username_formatted'] = '<a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/">'.feather_escape($cur_post['username']).'</a>';
+                    $cur_post['username_formatted'] = '<a href="'.$this->feather->url->base().'/user/'.$cur_post['poster_id'].'/">'.feather_escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = feather_escape($cur_post['username']);
                 }
@@ -331,7 +331,7 @@ class viewtopic
 
                 if ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
-                        $cur_post['user_info'][] = '<dd><span><a href="'.get_base_url().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
+                        $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->base().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
                     }
                 }
 

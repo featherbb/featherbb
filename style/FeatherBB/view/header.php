@@ -15,7 +15,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="<?php echo get_base_url() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $feather->url->base() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
 <?php
 
 echo $allow_index;
@@ -91,7 +91,7 @@ endif;
     <div class="container">
         <div class="container-title-status">
             <h1 class="title-site">
-                <a href="<?php echo get_base_url() ?>" title="" class="site-name">
+                <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
                     <p><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
@@ -112,7 +112,7 @@ endif;
             </div>
         <?php endif; ?>
         <?php if (isset($flash['message'])) : ?>
-            <script type="text/javascript" src="<?=get_base_url();?>/js/common.js"></script>
+            <script type="text/javascript" src="<?=$feather->url->base();?>/js/common.js"></script>
             <script type="text/javascript">
                 window.onload = function() {
                     var flashMessage = document.getElementById('flashmsg');

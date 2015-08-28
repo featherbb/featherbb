@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$fid.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
@@ -84,7 +84,7 @@ foreach ($post_data as $post) {
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$fid.'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>

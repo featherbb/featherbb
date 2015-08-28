@@ -181,7 +181,7 @@ if (!ini_get('allow_url_fopen')) {
 // Validate and compute replacement texts for smilies array.
 $re_keys = array();                                    // Array of regex-safe smiley texts.
 $file_path = FEATHER_ROOT . 'img/smilies/';                // File system path to smilies.
-$url_path = get_base_url(true);                        // Convert abs URL to relative URL.
+$url_path = base(true);                        // Convert abs URL to relative URL.
 $url_path = preg_replace('%^https?://[^/]++(.*)$%i', '$1', $url_path) . '/img/smilies/';
 foreach ($smilies as $smiley_text => $smiley_img) {    // Loop through all smilieys in array.
     $file = $file_path . $smiley_img['file'];        // Local file system address of smiley.

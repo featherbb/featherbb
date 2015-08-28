@@ -109,7 +109,7 @@ class misc
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
         //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
-        redirect(get_base_url(), __('Email sent redirect'));
+        redirect($this->feather->url->base(), __('Email sent redirect'));
     }
 
     public function get_redirect_url($recipient_id)

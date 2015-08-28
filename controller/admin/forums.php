@@ -58,7 +58,7 @@ class forums
                                     'forum_desc' => $this->request->post('forum_desc') ? feather_linebreaks(feather_trim($this->request->post('forum_desc'))) : NULL,
                                     'cat_id' => (int) $this->request->post('cat_id'),
                                     'sort_by' => (int) $this->request->post('sort_by'),
-                                    'redirect_url' => url_valid($this->request->post('redirect_url')) ? feather_escape($this->request->post('redirect_url')) : NULL);
+                                    'redirect_url' => $this->feather->url->is_valid($this->request->post('redirect_url')) ? feather_escape($this->request->post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
                     redirect($this->feather->url->get('admin/forums/edit/'.$forum_id.'/'), __('Must enter name message'));

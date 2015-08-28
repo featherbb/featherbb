@@ -17,7 +17,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>/"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></strong></li>
 		</ul>
@@ -107,7 +107,7 @@ foreach ($post_data as $post) {
 <?php echo $post_link ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>/"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></strong></li>
 		</ul>
@@ -155,10 +155,10 @@ if ($quickpost) {
     ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
+    var baseUrl = '<?php echo feather_escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
+<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
 <script>postEditorToolbar('req_message');</script>
 
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>

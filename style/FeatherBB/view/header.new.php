@@ -30,14 +30,14 @@ foreach($assets as $type => $items) {
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'href="'.get_base_url().'/'.$item['file'].'">'."\n";
+        echo 'href="'.$feather->url->base().'/'.$item['file'].'">'."\n";
     }
 }
 if ($admin_console) {
     if (file_exists($feather->forum_env['FEATHER_ROOT'].'style/'.$feather->user->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/'.$feather->user->style.'/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.$feather->url->base().'/style/'.$feather->user->style.'/base_admin.css" />'."\n";
     } else {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.get_base_url().'/style/imports/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.$feather->url->base().'/style/imports/base_admin.css" />'."\n";
     }
 }
 if (isset($required_fields)) :
@@ -97,7 +97,7 @@ endif;
                 <div id="brdmenu" class="inbox">
                     <ul>
 <?php
-echo "\t\t\t\t\t\t".'<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.get_base_url().'/">'.__('Index').'</a></li>'."\n";
+echo "\t\t\t\t\t\t".'<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.$feather->url->base().'/">'.__('Index').'</a></li>'."\n";
 
 if ($feather->user->g_read_board == '1' && $feather->user->g_view_users == '1') {
     echo "\t\t\t\t\t\t".'<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('userlist/').'">'.__('User list').'</a></li>'."\n";
@@ -150,7 +150,7 @@ if ($feather->user->is_guest) {
     <div class="container">
         <div class="container-title-status">
             <h1 class="title-site">
-                <a href="<?php echo get_base_url() ?>" title="" class="site-name">
+                <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
                     <p><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>

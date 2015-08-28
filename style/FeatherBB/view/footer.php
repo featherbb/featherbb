@@ -88,21 +88,21 @@ if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 
 if ($footer_style == 'index') {
     if ($feather->forum_settings['o_feed_type'] == '1') {
-        echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
+        echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
     } elseif ($feather->forum_settings['o_feed_type'] == '2') {
-        echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
+        echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
 } elseif ($footer_style == 'viewforum') {
     if ($feather->forum_settings['o_feed_type'] == '1') {
-        echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
+        echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
     } elseif ($feather->forum_settings['o_feed_type'] == '2') {
-        echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
+        echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
 } elseif ($footer_style == 'viewtopic') {
     if ($feather->forum_settings['o_feed_type'] == '1') {
-        echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
+        echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
     } elseif ($feather->forum_settings['o_feed_type'] == '2') {
-        echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.get_base_url().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
+        echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
     }
 }
 
@@ -141,7 +141,7 @@ if ($feather->forum_env['FEATHER_SHOW_QUERIES']) {
 
 </section>
 
-<script src="<?php echo get_base_url() ?>/style/FeatherBB/phone.min.js"></script>
+<script src="<?php echo $feather->url->base() ?>/style/FeatherBB/phone.min.js"></script>
 
 </body>
 </html>

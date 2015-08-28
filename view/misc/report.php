@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo feather_escape($cur_post['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('post/'.$id.'/#p'.$id) ?>"><?php echo feather_escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Report post') ?></strong></li>

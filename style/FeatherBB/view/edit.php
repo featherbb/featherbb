@@ -19,7 +19,7 @@ $cur_index = 1;
 <div class="linkst">
 	<div class="inbox">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo feather_escape($cur_post['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('topic/'.$cur_post['tid'].'/'.$feather->url->url_friendly($cur_post['subject']).'/') ?>"><?php echo feather_escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Edit post') ?></strong></li>
@@ -69,10 +69,10 @@ endif;
 ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
+    var baseUrl = '<?php echo feather_escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
+<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
 <div id="editform" class="blockform">
 	<h2><span><?php _e('Edit post') ?></span></h2>
 	<div class="box">

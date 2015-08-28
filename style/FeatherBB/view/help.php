@@ -41,8 +41,8 @@ if (!defined('FEATHER')) {
 <div class="box">
 	<div class="inbox">
 		<p><?php _e('Links info') ?></p>
-		<p><a name="url"></a><code>[url=<?php echo feather_escape(get_base_url(true).'/') ?>]<?php echo feather_escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape(get_base_url(true).'/') ?>"><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
-		<p><code>[url]<?php echo feather_escape(get_base_url(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape(get_base_url(true).'/') ?>"><?php echo feather_escape(get_base_url(true).'/') ?></a></samp></p>
+		<p><a name="url"></a><code>[url=<?php echo feather_escape($feather->url->base(true).'/') ?>]<?php echo feather_escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape($feather->url->base(true).'/') ?>"><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
+		<p><code>[url]<?php echo feather_escape($feather->url->base(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo feather_escape($feather->url->base(true).'/') ?>"><?php echo feather_escape($feather->url->base(true).'/') ?></a></samp></p>
 		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('/help') ?>"><?php _e('This help page') ?></a></samp></p>
 		<p><code>[email]myname@example.com[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
 		<p><code>[email=myname@example.com]<?php _e('My email address') ?>[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com"><?php _e('My email address') ?></a></samp></p>
@@ -57,7 +57,7 @@ if (!defined('FEATHER')) {
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php _e('Images info') ?></p>
-		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo feather_escape(get_base_url(true)) ?>/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo feather_escape(get_base_url(true)) ?>/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
+		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo feather_escape($feather->url->base(true)) ?>/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo feather_escape($feather->url->base(true)) ?>/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
 	</div>
 </div>
 <h2><span><?php _e('Quotes') ?></span></h2>

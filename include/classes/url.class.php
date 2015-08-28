@@ -729,9 +729,9 @@ class Url
     public function get($link, $args = null)
     {
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
-            $base_url = get_base_url();
+            $base_url = $this->base();
         } else {
-            $base_url = get_base_url().'/index.php';
+            $base_url = $this->base().'/index.php';
         }
 
         $gen_link = $link;
@@ -755,7 +755,7 @@ class Url
     //
     private function get_sublink($link, $sublink, $subarg, $args = null)
     {
-        $base_url = get_base_url();
+        $base_url = $this->base();
 
         if ($sublink == 'p$1' && $subarg == 1) {
             return $this->get($link, $args);
@@ -773,5 +773,175 @@ class Url
         $gen_link = $base_url.'/'.str_replace('#', str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'), $gen_link);
 
         return $gen_link;
+    }
+
+    //
+    // Fetch the current protocol in use - http or https
+    //
+    public function protocol()
+    {
+        $protocol = 'http';
+
+        // Check if the server is claiming to using HTTPS
+        if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') {
+            $protocol = 'https';
+        }
+
+        // If we are behind a reverse proxy try to decide which protocol it is using
+        if (defined('FORUM_BEHIND_REVERSE_PROXY')) {
+            // Check if we are behind a Microsoft based reverse proxy
+            if (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) != 'off') {
+                $protocol = 'https';
+            }
+
+            // Check if we're behind a "proper" reverse proxy, and what protocol it's using
+            if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+                $protocol = strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']);
+            }
+        }
+
+        return $protocol;
+    }
+
+    //
+    // Fetch the base_url, optionally support HTTPS and HTTP
+    //
+    public function base($support_https = false)
+    {
+        static $base_url;
+
+        $feather = \Slim\Slim::getInstance();
+
+        if (!$support_https) {
+            return $feather->config['o_base_url'];
+        }
+
+        if (!isset($base_url)) {
+            // Make sure we are using the correct protocol
+            $base_url = str_replace(array('http://', 'https://'), $this->protocol().'://', $feather->config['o_base_url']);
+        }
+
+        return $base_url;
+    }
+
+    //
+    // function is_valid($url) {
+    //
+    // Return associative array of valid URI components, or FALSE if $url is not
+    // RFC-3986 compliant. If the passed URL begins with: "www." or "ftp.", then
+    // "http://" or "ftp://" is prepended and the corrected full-url is stored in
+    // the return array with a key name "url". This value should be used by the caller.
+    //
+    // Return value: FALSE if $url is not valid, otherwise array of URI components:
+    // e.g.
+    // Given: "http://www.jmrware.com:80/articles?height=10&width=75#fragone"
+    // Array(
+    //	  [scheme] => http
+    //	  [authority] => www.jmrware.com:80
+    //	  [userinfo] =>
+    //	  [host] => www.jmrware.com
+    //	  [IP_literal] =>
+    //	  [IPV6address] =>
+    //	  [ls32] =>
+    //	  [IPvFuture] =>
+    //	  [IPv4address] =>
+    //	  [regname] => www.jmrware.com
+    //	  [port] => 80
+    //	  [path_abempty] => /articles
+    //	  [query] => height=10&width=75
+    //	  [fragment] => fragone
+    //	  [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
+    // )
+    public function is_valid($url)
+    {
+        if (strpos($url, 'www.') === 0) {
+            $url = 'http://'. $url;
+        }
+        if (strpos($url, 'ftp.') === 0) {
+            $url = 'ftp://'. $url;
+        }
+        if (!preg_match('/# Valid absolute URI having a non-empty, valid DNS host.
+		^
+		(?P<scheme>[A-Za-z][A-Za-z0-9+\-.]*):\/\/
+		(?P<authority>
+		  (?:(?P<userinfo>(?:[A-Za-z0-9\-._~!$&\'()*+,;=:]|%[0-9A-Fa-f]{2})*)@)?
+		  (?P<host>
+			(?P<IP_literal>
+			  \[
+			  (?:
+				(?P<IPV6address>
+				  (?:												 (?:[0-9A-Fa-f]{1,4}:){6}
+				  |												   ::(?:[0-9A-Fa-f]{1,4}:){5}
+				  | (?:							 [0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}
+				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,1}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}
+				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}
+				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})?::	[0-9A-Fa-f]{1,4}:
+				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})?::
+				  )
+				  (?P<ls32>[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}
+				  | (?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+					   (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)
+				  )
+				|	(?:(?:[0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})?::	[0-9A-Fa-f]{1,4}
+				|	(?:(?:[0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})?::
+				)
+			  | (?P<IPvFuture>[Vv][0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&\'()*+,;=:]+)
+			  )
+			  \]
+			)
+		  | (?P<IPv4address>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+							   (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))
+		  | (?P<regname>(?:[A-Za-z0-9\-._~!$&\'()*+,;=]|%[0-9A-Fa-f]{2})+)
+		  )
+		  (?::(?P<port>[0-9]*))?
+		)
+		(?P<path_abempty>(?:\/(?:[A-Za-z0-9\-._~!$&\'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)
+		(?:\?(?P<query>		  (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
+		(?:\#(?P<fragment>	  (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
+		$
+		/mx', $url, $m)) {
+            return false;
+        }
+        switch ($m['scheme']) {
+            case 'https':
+            case 'http':
+                if ($m['userinfo']) {
+                    return false;
+                } // HTTP scheme does not allow userinfo.
+                break;
+            case 'ftps':
+            case 'ftp':
+                break;
+            default:
+                return false;    // Unrecognised URI scheme. Default to FALSE.
+        }
+        // Validate host name conforms to DNS "dot-separated-parts".
+        if ($m{'regname'}) {
+            // If host regname specified, check for DNS conformance.
+
+            if (!preg_match('/# HTTP DNS host name.
+			^					   # Anchor to beginning of string.
+			(?!.{256})			   # Overall host length is less than 256 chars.
+			(?:					   # Group dot separated host part alternatives.
+			  [0-9A-Za-z]\.		   # Either a single alphanum followed by dot
+			|					   # or... part has more than one char (63 chars max).
+			  [0-9A-Za-z]		   # Part first char is alphanum (no dash).
+			  [\-0-9A-Za-z]{0,61}  # Internal chars are alphanum plus dash.
+			  [0-9A-Za-z]		   # Part last char is alphanum (no dash).
+			  \.				   # Each part followed by literal dot.
+			)*					   # One or more parts before top level domain.
+			(?:					   # Top level domains
+			  [A-Za-z]{2,63}|	   # Country codes are exactly two alpha chars.
+			  xn--[0-9A-Za-z]{4,59})		   # Internationalized Domain Name (IDN)
+			$					   # Anchor to end of string.
+			/ix', $m['host'])) {
+                return false;
+            }
+        }
+        $m['url'] = $url;
+        for ($i = 0; isset($m[$i]); ++$i) {
+            unset($m[$i]);
+        }
+        return $m; // return TRUE == array of useful named $matches plus the valid $url.
     }
 }

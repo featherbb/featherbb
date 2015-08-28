@@ -20,56 +20,6 @@ function get_microtime()
 
 
 //
-// Fetch the current protocol in use - http or https
-//
-function get_current_protocol()
-{
-    $protocol = 'http';
-
-    // Check if the server is claiming to using HTTPS
-    if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') {
-        $protocol = 'https';
-    }
-
-    // If we are behind a reverse proxy try to decide which protocol it is using
-    if (defined('FORUM_BEHIND_REVERSE_PROXY')) {
-        // Check if we are behind a Microsoft based reverse proxy
-        if (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) != 'off') {
-            $protocol = 'https';
-        }
-
-        // Check if we're behind a "proper" reverse proxy, and what protocol it's using
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-            $protocol = strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']);
-        }
-    }
-
-    return $protocol;
-}
-
-
-//
-// Fetch the base_url, optionally support HTTPS and HTTP
-//
-function get_base_url($support_https = false)
-{
-    global $feather_config;
-    static $base_url;
-
-    if (!$support_https) {
-        return $feather_config['o_base_url'];
-    }
-
-    if (!isset($base_url)) {
-        // Make sure we are using the correct protocol
-        $base_url = str_replace(array('http://', 'https://'), get_current_protocol().'://', $feather_config['o_base_url']);
-    }
-
-    return $base_url;
-}
-
-
-//
 // Fetch admin IDs
 //
 function get_admin_ids()
@@ -147,16 +97,16 @@ function check_username($username, $errors, $exclude_id = null)
 //
 function generate_avatar_markup($user_id)
 {
-    global $feather_config;
+    $feather = \Slim\Slim::getInstance();
 
     $filetypes = array('jpg', 'gif', 'png');
     $avatar_markup = '';
 
     foreach ($filetypes as $cur_type) {
-        $path = $feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
+        $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
         if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.feather_escape(get_base_url(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+            $avatar_markup = '<img src="'.feather_escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -596,6 +546,7 @@ function random_key($len, $readable = false, $hash = false)
 function validate_redirect($redirect_url, $fallback_url)
 {
     $referrer = parse_url(strtolower($redirect_url));
+    $feather = \Slim\Slim::getInstance();
 
     // Make sure the host component exists
     if (!isset($referrer['host'])) {
@@ -612,7 +563,7 @@ function validate_redirect($redirect_url, $fallback_url)
         $referrer['path'] = '';
     }
 
-    $valid = parse_url(strtolower(get_base_url()));
+    $valid = parse_url(strtolower($feather->url->base()));
 
     // Remove www subdomain if it exists
     if (strpos($valid['host'], 'www.') === 0) {
@@ -791,128 +742,6 @@ function forum_list_langs()
     natcasesort($languages);
 
     return $languages;
-}
-
-
-//
-// function url_valid($url) {
-//
-// Return associative array of valid URI components, or FALSE if $url is not
-// RFC-3986 compliant. If the passed URL begins with: "www." or "ftp.", then
-// "http://" or "ftp://" is prepended and the corrected full-url is stored in
-// the return array with a key name "url". This value should be used by the caller.
-//
-// Return value: FALSE if $url is not valid, otherwise array of URI components:
-// e.g.
-// Given: "http://www.jmrware.com:80/articles?height=10&width=75#fragone"
-// Array(
-//	  [scheme] => http
-//	  [authority] => www.jmrware.com:80
-//	  [userinfo] =>
-//	  [host] => www.jmrware.com
-//	  [IP_literal] =>
-//	  [IPV6address] =>
-//	  [ls32] =>
-//	  [IPvFuture] =>
-//	  [IPv4address] =>
-//	  [regname] => www.jmrware.com
-//	  [port] => 80
-//	  [path_abempty] => /articles
-//	  [query] => height=10&width=75
-//	  [fragment] => fragone
-//	  [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
-// )
-function url_valid($url)
-{
-    if (strpos($url, 'www.') === 0) {
-        $url = 'http://'. $url;
-    }
-    if (strpos($url, 'ftp.') === 0) {
-        $url = 'ftp://'. $url;
-    }
-    if (!preg_match('/# Valid absolute URI having a non-empty, valid DNS host.
-		^
-		(?P<scheme>[A-Za-z][A-Za-z0-9+\-.]*):\/\/
-		(?P<authority>
-		  (?:(?P<userinfo>(?:[A-Za-z0-9\-._~!$&\'()*+,;=:]|%[0-9A-Fa-f]{2})*)@)?
-		  (?P<host>
-			(?P<IP_literal>
-			  \[
-			  (?:
-				(?P<IPV6address>
-				  (?:												 (?:[0-9A-Fa-f]{1,4}:){6}
-				  |												   ::(?:[0-9A-Fa-f]{1,4}:){5}
-				  | (?:							 [0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,1}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})?::	[0-9A-Fa-f]{1,4}:
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})?::
-				  )
-				  (?P<ls32>[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}
-				  | (?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-					   (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)
-				  )
-				|	(?:(?:[0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})?::	[0-9A-Fa-f]{1,4}
-				|	(?:(?:[0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})?::
-				)
-			  | (?P<IPvFuture>[Vv][0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&\'()*+,;=:]+)
-			  )
-			  \]
-			)
-		  | (?P<IPv4address>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-							   (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))
-		  | (?P<regname>(?:[A-Za-z0-9\-._~!$&\'()*+,;=]|%[0-9A-Fa-f]{2})+)
-		  )
-		  (?::(?P<port>[0-9]*))?
-		)
-		(?P<path_abempty>(?:\/(?:[A-Za-z0-9\-._~!$&\'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)
-		(?:\?(?P<query>		  (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
-		(?:\#(?P<fragment>	  (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
-		$
-		/mx', $url, $m)) {
-        return false;
-    }
-    switch ($m['scheme']) {
-    case 'https':
-    case 'http':
-        if ($m['userinfo']) {
-            return false;
-        } // HTTP scheme does not allow userinfo.
-        break;
-    case 'ftps':
-    case 'ftp':
-        break;
-    default:
-        return false;    // Unrecognised URI scheme. Default to FALSE.
-    }
-    // Validate host name conforms to DNS "dot-separated-parts".
-    if ($m{'regname'}) {
-        // If host regname specified, check for DNS conformance.
-
-        if (!preg_match('/# HTTP DNS host name.
-			^					   # Anchor to beginning of string.
-			(?!.{256})			   # Overall host length is less than 256 chars.
-			(?:					   # Group dot separated host part alternatives.
-			  [0-9A-Za-z]\.		   # Either a single alphanum followed by dot
-			|					   # or... part has more than one char (63 chars max).
-			  [0-9A-Za-z]		   # Part first char is alphanum (no dash).
-			  [\-0-9A-Za-z]{0,61}  # Internal chars are alphanum plus dash.
-			  [0-9A-Za-z]		   # Part last char is alphanum (no dash).
-			  \.				   # Each part followed by literal dot.
-			)*					   # One or more parts before top level domain.
-			(?:					   # Top level domains
-			  [A-Za-z]{2,63}|	   # Country codes are exactly two alpha chars.
-			  xn--[0-9A-Za-z]{4,59})		   # Internationalized Domain Name (IDN)
-			$					   # Anchor to end of string.
-			/ix', $m['host'])) {
-            return false;
-        }
-    }
-    $m['url'] = $url;
-    for ($i = 0; isset($m[$i]); ++$i) {
-        unset($m[$i]);
-    }
-    return $m; // return TRUE == array of useful named $matches plus the valid $url.
 }
 
 //

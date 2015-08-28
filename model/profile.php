@@ -36,7 +36,7 @@ class profile
 
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
-                header('Location: '.get_base_url());
+                header('Location: '.$this->feather->url->base());
                 exit;
             }
 
@@ -299,7 +299,7 @@ class profile
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
-            $mail_message = str_replace('<base_url>', get_base_url(), $mail_message);
+            $mail_message = str_replace('<base_url>', $this->feather->url->base(), $mail_message);
             $mail_message = str_replace('<activation_url>', $this->feather->url->get('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
@@ -732,7 +732,7 @@ class profile
 
             $this->hook->fire('delete_user');
 
-            redirect(get_base_url(), __('User delete redirect'));
+            redirect($this->feather->url->base(), __('User delete redirect'));
         }
     }
 
@@ -833,7 +833,7 @@ class profile
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
                 if ($this->user->g_post_links == '1') {
                     if ($form['url'] != '') {
-                        $url = url_valid($form['url']);
+                        $url = $this->feather->url->is_valid($form['url']);
 
                         if ($url === false) {
                             message(__('Invalid website URL'));

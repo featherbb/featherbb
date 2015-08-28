@@ -17,7 +17,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_posting['id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_posting['forum_name']) ?></a></li>
 <?php if ($feather->request->post('req_subject')): ?>			<li><span>»&#160;</span><?php echo feather_escape($feather->request->post('req_subject')) ?></li>
 <?php endif; ?>
@@ -81,10 +81,10 @@ $cur_index = 1;
 ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
+    var baseUrl = '<?php echo feather_escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
+<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
 
 <div id="postform" class="blockform">
 	<h2><span><?php echo $action ?></span></h2>

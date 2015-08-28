@@ -42,7 +42,7 @@ class misc
         // Reset tracked topics
         set_tracked_topics(null);
 
-        redirect(get_base_url(), __('Mark read redirect'));
+        redirect($this->feather->url->base(), __('Mark read redirect'));
     }
 
     public function markforumread($id)
