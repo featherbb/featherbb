@@ -7,6 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+/**
+ * middleware to check if user is admin, if it's not redirect to homepage.
+ */
+$isAdmin = function() use ($feather) {
+    if($feather->user->g_id != $feather->forum_env['FEATHER_ADMIN']) {
+        redirect(get_link('/'), __('No permission'));
+    }
+};
 
 // Index
 $feather->get('/', '\controller\index:display');
@@ -88,7 +96,7 @@ $feather->group('/moderate', function() use ($feather) {
 });
 
 // Admin routes
-$feather->group('/admin', function() use ($feather) {
+$feather->group('/admin', $isAdmin, function() use ($feather) {
 
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
