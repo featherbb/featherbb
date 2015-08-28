@@ -29,10 +29,6 @@ class statistics
 
     public function display()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         \FeatherBB\AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->get_total_size();
@@ -53,10 +49,6 @@ class statistics
 
     public function phpinfo()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {

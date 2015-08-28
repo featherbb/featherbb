@@ -20,6 +20,10 @@ class bans
         $this->request = $this->feather->request;
         $this->model = new \model\admin\bans();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/bans.mo');
+
+        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            message(__('No permission'), '403');
+        }
     }
 
     public function __autoload($class_name)
@@ -29,10 +33,6 @@ class bans
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message(__('No permission'), '403');
-        }
-
         // Display bans
         if ($this->request->get('find_ban')) {
             $ban_info = $this->model->find_ban();
@@ -68,10 +68,6 @@ class bans
 
     public function add($id = null)
     {
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message(__('No permission'), '403');
-        }
-
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
@@ -89,20 +85,12 @@ class bans
 
     public function delete($id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message(__('No permission'), '403');
-        }
-
         // Remove the ban
         $this->model->remove_ban($id);
     }
 
     public function edit($id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            message(__('No permission'), '403');
-        }
-
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }

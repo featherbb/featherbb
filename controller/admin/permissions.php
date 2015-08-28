@@ -29,10 +29,6 @@ class permissions
 
     public function display()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Update permissions
         if ($this->feather->request->isPost()) {
             $this->model->update_permissions();

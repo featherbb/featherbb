@@ -18,8 +18,6 @@ class reports
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-
-
         $this->model = new \model\admin\reports();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/reports.mo');
     }
@@ -31,10 +29,6 @@ class reports
 
     public function display()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Zap a report
         if ($this->feather->request->isPost()) {
             $this->model->zap_report();

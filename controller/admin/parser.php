@@ -31,10 +31,6 @@ class parser
     {
         global $lang_admin_parser;
 
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         // Legacy
         require FEATHER_ROOT . 'lang/' . $this->user->language . '/admin/parser.php';
 

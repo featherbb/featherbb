@@ -43,10 +43,6 @@ class index
 
     public function display($action = null)
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {

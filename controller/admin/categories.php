@@ -29,10 +29,6 @@ class categories
 
     public function add_category()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $cat_name = feather_trim($this->request->post('cat_name'));
         if ($cat_name == '') {
             redirect(get_link('admin/categories/'), __('Must enter name message'));
@@ -47,10 +43,6 @@ class categories
 
     public function edit_categories()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if (empty($this->request->post('cat'))) {
             message(__('Bad request'), '404');
         }
@@ -73,10 +65,6 @@ class categories
 
     public function delete_category()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
@@ -96,10 +84,6 @@ class categories
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         \FeatherBB\AdminUtils::generateAdminMenu('categories');
 
         $this->feather->view2->setPageInfo(array(

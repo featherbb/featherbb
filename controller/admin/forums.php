@@ -33,10 +33,6 @@ class forums
 
     public function add_forum()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $cat_id = (int) $this->request->post('cat');
 
         if ($cat_id < 1) {
@@ -54,10 +50,6 @@ class forums
 
     public function edit_forum($forum_id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if($this->request->isPost()) {
             if ($this->request->post('save') && $this->request->post('read_forum_old')) {
 
@@ -137,10 +129,6 @@ class forums
 
     public function delete_forum($forum_id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
@@ -179,10 +167,6 @@ class forums
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if ($this->request->post('update_positions')) {
             $this->edit_positions();
         }

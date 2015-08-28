@@ -98,6 +98,15 @@ $feather->group('/moderate', $isAdmmod, function() use ($feather) {
 // Admin routes
 $feather->group('/admin', $isAdmmod, function() use ($feather) {
 
+    /**
+     * Middleware to check if user is admin.
+     */
+    $isAdmin = function() use ($feather) {
+        if($feather->user->g_id != FEATHER_ADMIN) {
+            redirect(get_base_url(), __('No permission'));
+        }
+    };
+
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
     $feather->get('/index(/)', '\controller\admin\index:display');
@@ -111,10 +120,10 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     });
 
     // Admin options
-    $feather->map('/options(/)', '\controller\admin\options:display')->via('GET', 'POST');
+    $feather->map('/options(/)', $isAdmin, '\controller\admin\options:display')->via('GET', 'POST');
 
     // Admin categories
-    $feather->group('/categories', function() use ($feather) {
+    $feather->group('/categories', $isAdmin, function() use ($feather) {
         $feather->get('(/)', '\controller\admin\categories:display');
         $feather->post('/add(/)', '\controller\admin\categories:add_category');
         $feather->post('/edit(/)', '\controller\admin\categories:edit_categories');
@@ -122,20 +131,20 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     });
 
     // Admin censoring
-    $feather->map('/censoring(/)', '\controller\admin\censoring:display')->via('GET', 'POST');
+    $feather->map('/censoring(/)', $isAdmin, '\controller\admin\censoring:display')->via('GET', 'POST');
 
     // Admin reports
     $feather->map('/reports(/)', '\controller\admin\reports:display')->via('GET', 'POST');
 
     // Admin permissions
-    $feather->map('/permissions(/)', '\controller\admin\permissions:display')->via('GET', 'POST');
+    $feather->map('/permissions(/)', $isAdmin, '\controller\admin\permissions:display')->via('GET', 'POST');
 
     // Admin statistics
     $feather->get('/statistics(/)', '\controller\admin\statistics:display');
     $feather->get('/phpinfo(/)', '\controller\admin\statistics:phpinfo');
 
     // Admin forums
-    $feather->group('/forums', function() use ($feather) {
+    $feather->group('/forums', $isAdmin, function() use ($feather) {
         $feather->map('(/)', '\controller\admin\forums:display')->via('GET', 'POST');
         $feather->post('/add(/)', '\controller\admin\forums:add_forum');
         $feather->map('/edit/:id(/)', '\controller\admin\forums:edit_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
@@ -143,7 +152,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     });
 
     // Admin groups
-    $feather->group('/groups', function() use ($feather) {
+    $feather->group('/groups', $isAdmin, function() use ($feather) {
         $feather->map('(/)', '\controller\admin\groups:display')->via('GET', 'POST');
         $feather->map('/add(/)', '\controller\admin\groups:addedit')->via('GET', 'POST');
         $feather->map('/edit/:id(/)', '\controller\admin\groups:addedit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
@@ -154,10 +163,10 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     $feather->map('/loader(/)', '\controller\admin\plugins:display')->via('GET', 'POST');
 
     // Admin maintenance
-    $feather->map('/maintenance(/)', '\controller\admin\maintenance:display')->via('GET', 'POST');
+    $feather->map('/maintenance(/)', $isAdmin, '\controller\admin\maintenance:display')->via('GET', 'POST');
 
     // Admin parser
-    $feather->map('/parser(/)', '\controller\admin\parser:display')->via('GET', 'POST');
+    $feather->map('/parser(/)', $isAdmin, '\controller\admin\parser:display')->via('GET', 'POST');
 
     // Admin users
     $feather->group('/users', function() use ($feather) {

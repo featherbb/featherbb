@@ -20,10 +20,6 @@ class maintenance
 
     public function display()
     {
-        if ($this->feather->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $action = '';
         if ($this->feather->request->post('action')) {
             $action = $this->feather->request->post('action');

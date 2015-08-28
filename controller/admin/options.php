@@ -29,10 +29,6 @@ class options
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if ($this->feather->request->isPost()) {
             $this->model->update_options();
         }

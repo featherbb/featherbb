@@ -29,10 +29,6 @@ class censoring
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         // Add a censor word
         if ($this->request->post('add_word')) {
             $this->model->add_word();

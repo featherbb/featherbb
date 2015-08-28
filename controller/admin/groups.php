@@ -29,10 +29,6 @@ class groups
 
     public function display()
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $groups = $this->model->fetch_groups();
 
         // Set default group
@@ -54,10 +50,6 @@ class groups
 
     public function delete($id)
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         if ($id < 5) {
             message(__('Bad request'), '404');
         }
@@ -103,10 +95,6 @@ class groups
 
     public function addedit($id = '')
     {
-        if ($this->user->g_id != FEATHER_ADMIN) {
-            message(__('No permission'), '403');
-        }
-
         $groups = $this->model->fetch_groups();
 
         // Add/edit a group (stage 2)
@@ -132,7 +120,7 @@ class groups
                     'id'    => $id,
                     'group_list'    => $this->model->get_group_list($groups, $group),
                 )
-            )->addTemplate('admin/groups/delete_group.php')->display();
+            )->addTemplate('admin/groups/add_edit_group.php')->display();
         }
     }
 }
