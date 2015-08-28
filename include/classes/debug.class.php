@@ -62,7 +62,7 @@ class Debug
 
         // Calculate script generation time
         $time_diff = sprintf('%.3f', get_microtime() - $feather->start);
-        echo sprintf(__('Querytime'), $time_diff, count(\DB::get_query_log()[0]));
+        echo sprintf(__('Querytime'), $time_diff, count(DB::get_query_log()[0]));
 
         if (function_exists('memory_get_usage')) {
             echo ' - '.sprintf(__('Memory usage'), file_size(memory_get_usage()));
