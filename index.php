@@ -17,9 +17,12 @@ ini_set('display_errors', 1);
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
+// Load dependencies
+require 'vendor/autoload.php';
+
 // Load FeatherBB
-require 'include/classes/autoload.class.php';
-\FeatherBB\Loader::registerAutoloader();
+// require 'include/classes/autoload.class.php';
+// \FeatherBB\Loader::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();

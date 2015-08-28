@@ -1,0 +1,19 @@
+{
+    "name": "featherbb/featherbb",
+    "type": "project",
+    "license": "GNU General Public Licence",
+    "description": "A multi-framework Composer library installer",
+    "keywords": ["forum", "lightweight", "featherbb"],
+    "homepage": "http://featherbb.github.com/installers/",
+    "authors": [
+        {"name": "adaur"},
+        {"name": "capkokoon"},
+        {"name": "beaver"}
+    ],
+    "autoload": {
+        "classmap": ["plugins", "include/classes"]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.1.*"
+    }
+}

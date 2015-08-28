@@ -46,7 +46,7 @@ class Core extends \Slim\Middleware
         require $this->forum_env['FEATHER_ROOT'].'include/classes/pomo/MO.php';
         require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
         require $this->forum_env['FEATHER_ROOT'].'include/classes/database.class.php';
-        require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
+        // require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -244,7 +244,8 @@ class Core extends \Slim\Middleware
         $this->app->config = $this->forum_settings; // Legacy
         extract($this->forum_settings); // Legacy
 
-        new \plugin\plugintest();
+        // new \plugin\plugintest();
+        \FeatherBB\Plugin::runActivePlugins();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');

@@ -20,13 +20,73 @@ class plugins
         $this->request = $this->feather->request;
         $this->header = new \controller\header();
         $this->footer = new \controller\footer();
-        $this->model = new \model\admin\plugins();
+        // $this->model = new \model\admin\plugins();
         require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
     {
         require FEATHER_ROOT . $class_name . '.php';
+    }
+
+    public function index()
+    {
+        if (!$this->user->is_admmod) {
+            message(__('No permission'), '403');
+        }
+
+        // Update permissions
+        // if ($this->feather->request->isPost()) {
+        //     $this->model->update_permissions();
+        // }
+
+        $page_title = array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions'));
+
+        $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
+
+        generate_admin_menu('plugins');
+
+        $pluginsList = \FeatherBB\Plugin::getPluginsList();
+
+        $this->feather->render('admin/plugins.php', array(
+                'pluginsList'    =>    $pluginsList
+            )
+        );
+
+        $this->footer->display();
+    }
+
+    public function activate()
+    {
+        if (!$this->user->is_admmod) {
+            message(__('No permission'), '403');
+        }
+
+        // Update permissions
+        // if ($this->feather->request->isPost()) {
+        //     $this->model->update_permissions();
+        // }
+
+        // The plugin to load should be supplied via GET
+        $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : null;
+        if (!$plugin) {
+            message(__('Bad request'), '404');
+        }
+
+        // Require all valide filenames...
+        \FeatherBB\Plugin::getPluginsList();
+        // And make sure the plugin actually extends base Plugin class
+        if (!property_exists('\plugin\\'.$plugin, 'isFeatherPlugin')) {
+            message(sprintf(__('No plugin message'), $plugin));
+        }
+
+        try {
+            \FeatherBB\Plugin::activate($plugin);
+            redirect(get_link('admin/plugins/'), "Plugin $plugin activated");
+        } catch (\Exception $e) {
+            redirect(get_link('admin/plugins/'), $e->getMessage());
+        }
+
     }
 
     public function display()

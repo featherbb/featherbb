@@ -4,3 +4,5 @@ include/config.php
 nbproject/
 lang/French
 .htaccess
+vendor
+composer.lock

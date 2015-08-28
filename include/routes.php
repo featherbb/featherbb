@@ -143,7 +143,11 @@ $feather->group('/admin', function() use ($feather) {
     });
 
     // Admin plugins
-    $feather->map('/loader(/)', '\controller\admin\plugins:display')->via('GET', 'POST');
+    $feather->group('/plugins', function() use ($feather) {
+        $feather->map('/(/)', '\controller\admin\plugins:index')->via('GET', 'POST');
+        $feather->map('/activate(/)', '\controller\admin\plugins:activate')->via('GET');
+        // $feather->map('/loader(/)', '\controller\admin\plugins:display')->via('GET', 'POST');
+    });
 
     // Admin maintenance
     $feather->map('/maintenance(/)', '\controller\admin\maintenance:display')->via('GET', 'POST');
