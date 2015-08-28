@@ -19,13 +19,12 @@ class permissions
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\permissions();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/permissions.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/permissions.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
@@ -39,7 +38,7 @@ class permissions
             $this->model->update_permissions();
         }
 
-        generate_admin_menu('permissions');
+        \FeatherBB\AdminUtils::generateAdminMenu('permissions');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Permissions')),

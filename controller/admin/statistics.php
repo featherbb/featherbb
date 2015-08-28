@@ -21,13 +21,12 @@ class statistics
 
 
         $this->model = new \model\admin\statistics();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/index.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/index.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
@@ -36,7 +35,7 @@ class statistics
             message(__('No permission'), '403');
         }
 
-        generate_admin_menu('index');
+        \FeatherBB\AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->get_total_size();
 

@@ -16,7 +16,6 @@ class maintenance
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\admin\maintenance();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/admin/maintenance.mo');
-        require $this->feather->forum_env['FEATHER_ROOT'] . 'include/common_admin.php';
     }
 
     public function display()
@@ -46,7 +45,7 @@ class maintenance
             $prune_from = feather_trim($this->feather->request->post('prune_from'));
             $prune_sticky = intval($this->feather->request->post('prune_sticky'));
 
-            generate_admin_menu('maintenance');
+            \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
 
             if ($this->feather->request->post('prune_comply')) {
                 $this->model->prune_comply($prune_from, $prune_sticky);
@@ -63,7 +62,7 @@ class maintenance
             )->addTemplate('admin/maintenance/prune.php')->display();
         }
 
-        generate_admin_menu('maintenance');
+        \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Maintenance')),

@@ -19,8 +19,7 @@ class parser
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\parser();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/parser.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/parser.mo');
     }
 
     public function __autoload($class_name)
@@ -207,7 +206,7 @@ class parser
             redirect(get_link('admin/parser/'), $lang_admin_parser['save_success']);
         }
 
-        generate_admin_menu('parser');
+        \FeatherBB\AdminUtils::generateAdminMenu('parser');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Parser')),

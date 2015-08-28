@@ -19,8 +19,7 @@ class options
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\options();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/options.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/options.mo');
     }
 
     public function __autoload($class_name)
@@ -38,7 +37,7 @@ class options
             $this->model->update_options();
         }
 
-        generate_admin_menu('options');
+        \FeatherBB\AdminUtils::generateAdminMenu('options');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Options')),

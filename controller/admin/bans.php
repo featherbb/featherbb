@@ -19,13 +19,12 @@ class bans
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\bans();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/bans.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/bans.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
@@ -56,7 +55,7 @@ class bans
             )->addTemplate('admin/bans/search_ban.php')->display();
         }
         else {
-            generate_admin_menu('bans');
+            \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
             $this->feather->view2->setPageInfo(array(
                     'admin_console' => true,
@@ -77,7 +76,7 @@ class bans
             $this->model->insert_ban();
         }
 
-        generate_admin_menu('bans');
+        \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
         $this->feather->view2->setPageInfo(array(
                 'admin_console' => true,
@@ -108,7 +107,7 @@ class bans
             $this->model->insert_ban();
         }
 
-        generate_admin_menu('bans');
+        \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
         $this->feather->view2->setPageInfo(array(
                 'admin_console' => true,

@@ -19,13 +19,12 @@ class groups
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\groups();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/admin/groups.mo');
-        require FEATHER_ROOT . 'include/common_admin.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/groups.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
@@ -41,7 +40,7 @@ class groups
             $this->model->set_default_group($groups, $this->feather);
         }
 
-        generate_admin_menu('groups');
+        \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -76,7 +75,7 @@ class groups
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
                 $this->model->delete_group($id);
             } else {
-                generate_admin_menu('groups');
+                \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
                 $this->feather->view2->setPageInfo(array(
                         'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -89,7 +88,7 @@ class groups
             }
         }
 
-        generate_admin_menu('groups');
+        \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -118,7 +117,7 @@ class groups
         // Add/edit a group (stage 1)
         elseif ($this->request->post('add_group') || isset($id)) {
 
-            generate_admin_menu('groups');
+            \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
             $group = $this->model->info_add_group($groups, $id);
 
