@@ -120,7 +120,7 @@ class post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    redirect($this->feather->url->get_link('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
+                    redirect($this->feather->url->get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
                 }
         }
 
@@ -129,18 +129,18 @@ class post
         // If a topic ID was specified in the url (it's a reply)
         if ($tid) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.$this->feather->url->get_link('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
                     $quote = $this->model->get_quote_message($qid, $tid);
-                    $form = '<form id="post" method="post" action="'.$this->feather->url->get_link('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($fid) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.$this->feather->url->get_link('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
             message(__('Bad request'), '404');
         }

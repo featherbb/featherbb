@@ -98,7 +98,7 @@ class register
         }
 
         if ($this->config['o_rules'] != '1') {
-            redirect($this->feather->url->get_link('register/agree/'));
+            redirect($this->feather->url->get('register/agree/'));
         }
 
         $this->feather->view2->setPageInfo(array(

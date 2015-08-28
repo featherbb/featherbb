@@ -50,7 +50,7 @@ class viewforum
 
         // Can we or can we not post new topics?
         if (($cur_forum['post_topics'] == '' && $this->feather->user->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.$this->feather->url->get_link('post/new-topic/'.$id.'/').'">'.__('Post topic').'</a></p>'."\n";
+            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.$this->feather->url->get('post/new-topic/'.$id.'/').'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $post_link = '';
         }
@@ -67,13 +67,13 @@ class viewforum
 
         $forum_actions = $this->model->get_forum_actions($id, $this->feather->forum_settings['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
-        $this->feather->view2->addAsset('canonical', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->view2->addAsset('canonical', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/'));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->view2->addAsset('prev', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->view2->addAsset('prev', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
             }
             if ($p < $num_pages) {
-                $this->feather->view2->addAsset('next', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->view2->addAsset('next', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
             }
         }
 

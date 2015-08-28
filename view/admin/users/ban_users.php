@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Ban users') ?></span></h2>
 		<div class="box">
-			<form id="bans2" name="confirm_ban_users" method="post" action="<?php echo $feather->url->get_link('admin/users') ?>">
+			<form id="bans2" name="confirm_ban_users" method="post" action="<?php echo $feather->url->get('admin/users') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
 				<div class="inform">

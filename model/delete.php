@@ -65,7 +65,7 @@ class delete
             delete_topic($tid);
             update_forum($fid);
 
-            redirect($this->feather->url->get_link('forum/'.$fid.'/'), __('Topic del redirect'));
+            redirect($this->feather->url->get('forum/'.$fid.'/'), __('Topic del redirect'));
         } else {
             $this->hook->fire('handle_deletion', $tid, $fid, $id);
 
@@ -84,7 +84,7 @@ class delete
 
             $post = $post->find_one();
 
-            redirect($this->feather->url->get_link('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
+            redirect($this->feather->url->get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
         }
     }
 }

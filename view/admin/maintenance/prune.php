@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Prune head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->url->get_link('admin/maintenance/') ?>">
+			<form method="post" action="<?php echo $feather->url->get('admin/maintenance/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />

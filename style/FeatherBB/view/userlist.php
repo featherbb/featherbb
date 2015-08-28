@@ -87,7 +87,7 @@ if (!defined('FEATHER')) {
             foreach ($userlist_data as $user) {
                 ?>
 					<tr>
-						<td class="tcl"><?php echo '<a href="'.$feather->url->get_link('user/'.$user['id'].'/').'">'.feather_escape($user['username']).'</a>' ?></td>
+						<td class="tcl"><?php echo '<a href="'.$feather->url->get('user/'.$user['id'].'/').'">'.feather_escape($user['username']).'</a>' ?></td>
 						<td class="tc2"><?php echo get_title($user) ?></td>
 	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo forum_number_format($user['num_posts']) ?></td>
 	<?php endif;

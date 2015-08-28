@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div id="emailform" class="blockform">
 	<h2><span><?php _e('Send email to') ?> <?php echo feather_escape($mail['recipient']) ?></span></h2>
 	<div class="box">
-		<form id="email" method="post" action="<?php echo $feather->url->get_link('email/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+		<form id="email" method="post" action="<?php echo $feather->url->get('email/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>

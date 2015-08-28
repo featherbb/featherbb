@@ -21,7 +21,7 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
     if ($footer_style == 'viewforum') {
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/forum/'.$forum_id.'/page/'.$p.'/').'">'.__('Moderate forum').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/forum/'.$forum_id.'/page/'.$p.'/').'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
     } elseif ($footer_style == 'viewtopic') {
         if (isset($pid)) {
@@ -36,20 +36,20 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
         // TODO: all
-        //echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/param/'.$p).'">'.__('Moderate topic').'</a>'.($num_pages > 1 ? ' (<a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/'.$parameter.'/all/').'">'.__('All').'</a>)' : '').'</span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/page/'.$p.'/').'">'.__('Moderate topic').'</a></span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/move/'.$parameter).'">'.__('Move topic').'</a></span></dd>'."\n";
+        //echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/param/'.$p).'">'.__('Moderate topic').'</a>'.($num_pages > 1 ? ' (<a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/'.$parameter.'/all/').'">'.__('All').'</a>)' : '').'</span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/moderate/page/'.$p.'/').'">'.__('Moderate topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/move/'.$parameter).'">'.__('Move topic').'</a></span></dd>'."\n";
 
         if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/open/'.$parameter).'">'.__('Open topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/open/'.$parameter).'">'.__('Open topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/close/'.$parameter).'">'.__('Close topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/close/'.$parameter).'">'.__('Close topic').'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/unstick/'.$parameter).'">'.__('Unstick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/unstick/'.$parameter).'">'.__('Unstick topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.get_link('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/stick/'.$parameter).'">'.__('Stick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/topic/'.$id.'/forum/'.$forum_id.'/action/stick/'.$parameter).'">'.__('Stick topic').'</a></span></dd>'."\n";
         }
 
         echo "\t\t\t".'</dl>'."\n";
@@ -67,7 +67,7 @@ if ($feather_config['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 			<div class="conl">
 			<form id="qjump" method="get" action="">
 				<div><label><span><?php _e('Jump to') ?><br /></span></label>
-					<select name="id" onchange="window.location=('<?php echo get_link('forum/') ?>'+this.options[this.selectedIndex].value)">
+					<select name="id" onchange="window.location=('<?php echo get('forum/') ?>'+this.options[this.selectedIndex].value)">
 <?php
 		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
 			echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cat_data['cat_name']).'">'."\n";

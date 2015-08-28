@@ -20,8 +20,8 @@ $cur_index = 1;
 	<div class="inbox">
 		<ul class="crumbs">
 			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get_link('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo feather_escape($cur_post['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get_link('topic/'.$cur_post['tid'].'/'.$feather->url->url_friendly($cur_post['subject']).'/') ?>"><?php echo feather_escape($cur_post['subject']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo feather_escape($cur_post['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('topic/'.$cur_post['tid'].'/'.$feather->url->url_friendly($cur_post['subject']).'/') ?>"><?php echo feather_escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Edit post') ?></strong></li>
 		</ul>
 	</div>
@@ -76,7 +76,7 @@ endif;
 <div id="editform" class="blockform">
 	<h2><span><?php _e('Edit post') ?></span></h2>
 	<div class="box">
-		<form id="edit" method="post" action="<?php echo $feather->url->get_link('edit/'.$id.'/') ?>" onsubmit="return process_form(this)">
+		<form id="edit" method="post" action="<?php echo $feather->url->get('edit/'.$id.'/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
@@ -89,10 +89,10 @@ endif;
 						<script>postEditorToolbar('req_message');</script>
                         <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo feather_escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo $feather->url->get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo $feather->url->get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo $feather->url->get('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo $feather->url->get('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo $feather->url->get('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
 						</ul>
 					</div>
 				</fieldset>

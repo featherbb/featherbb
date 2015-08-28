@@ -726,7 +726,7 @@ class Url
     // Generate link to another page on the forum
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    public function get_link($link, $args = null)
+    public function get($link, $args = null)
     {
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
             $base_url = get_base_url();
@@ -758,7 +758,7 @@ class Url
         $base_url = get_base_url();
 
         if ($sublink == 'p$1' && $subarg == 1) {
-            return $this->get_link($link, $args);
+            return $this->get($link, $args);
         }
 
         $gen_link = $link;

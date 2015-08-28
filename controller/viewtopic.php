@@ -91,13 +91,13 @@ class viewtopic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->addAsset('canonical', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->view2->addAsset('canonical', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/'));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->view2->addAsset('prev', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->view2->addAsset('prev', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
             }
             if ($p < $num_pages) {
-                $this->feather->view2->addAsset('next', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->view2->addAsset('next', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
             }
         }
 

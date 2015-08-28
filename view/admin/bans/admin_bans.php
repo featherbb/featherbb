@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('New ban head') ?></span></h2>
 		<div class="box">
-			<form id="bans" method="post" action="<?php echo $feather->url->get_link('admin/bans/add/') ?>">
+			<form id="bans" method="post" action="<?php echo $feather->url->get('admin/bans/add/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
@@ -39,7 +39,7 @@ if (!defined('FEATHER')) {
 
 		<h2 class="block2"><span><?php _e('Ban search head') ?></span></h2>
 		<div class="box">
-			<form id="find_bans" method="get" action="<?php echo $feather->url->get_link('admin/bans/') ?>">
+			<form id="find_bans" method="get" action="<?php echo $feather->url->get('admin/bans/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="find_ban" value="<?php _e('Submit search') ?>" tabindex="3" /></p>
 				<div class="inform">

@@ -55,7 +55,7 @@ class misc
         $tracked_topics['forums'][$id] = time();
         set_tracked_topics($tracked_topics);
 
-        redirect($this->feather->url->get_link('forum/'.$id.'/'), __('Mark forum read redirect'));
+        redirect($this->feather->url->get('forum/'.$id.'/'), __('Mark forum read redirect'));
     }
 
     public function subscribeforum($id)

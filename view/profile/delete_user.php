@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php _e('Confirm delete user') ?></span></h2>
 	<div class="box">
-		<form id="confirm_del_user" method="post" action="<?php echo $feather->url->get_link('user/'.$id.'/') ?>">
+		<form id="confirm_del_user" method="post" action="<?php echo $feather->url->get('user/'.$id.'/') ?>">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>

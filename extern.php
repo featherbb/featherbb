@@ -484,7 +484,7 @@ if ($action == 'feed') {
         // Setup the feed
         $feed = array(
             'title'        =>    $feather->forum_settings['o_board_title'].__('Title separator').$cur_topic['subject'],
-            'link'            =>    get_link('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
+            'link'            =>    get('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
             'description'        =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
             'items'            =>    array(),
             'type'            =>    'posts'
@@ -508,7 +508,7 @@ if ($action == 'feed') {
             $item = array(
                 'id'            =>    $cur_post['id'],
                 'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : __('RSS reply').$cur_topic['subject'],
-                'link'            =>    get_link('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
+                'link'            =>    get('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
                 'description'        =>    $cur_post['message'],
                 'author'        =>    array(
                     'name'    => $cur_post['poster'],
@@ -521,7 +521,7 @@ if ($action == 'feed') {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
-                $item['author']['uri'] = get_link('user/'.$cur_post['poster_id'].'/');
+                $item['author']['uri'] = get('user/'.$cur_post['poster_id'].'/');
             } elseif ($cur_post['poster_email'] != '' && !$feather->user->is_guest) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
@@ -626,7 +626,7 @@ if ($action == 'feed') {
                 $item = array(
                     'id'            =>    $cur_topic['id'],
                     'title'            =>    $cur_topic['subject'],
-                    'link'            =>    get_link('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
+                    'link'            =>    get('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
                     'description'    =>    $cur_topic['message'],
                     'author'        =>    array(
                         'name'    => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
@@ -639,7 +639,7 @@ if ($action == 'feed') {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
-                    $item['author']['uri'] = get_link('user/'.$cur_topic['poster_id'].'/');
+                    $item['author']['uri'] = get('user/'.$cur_topic['poster_id'].'/');
                 } elseif ($cur_topic['poster_email'] != '' && !$feather->user->is_guest) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
@@ -700,7 +700,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     foreach ($result as $feather_user_online) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$feather_user_online['user_id'].'/').'">'.feather_escape($feather_user_online['ident']).'</a>' : feather_escape($feather_user_online['ident']);
+            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$feather_user_online['user_id'].'/').'">'.feather_escape($feather_user_online['ident']).'</a>' : feather_escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -748,7 +748,7 @@ elseif ($action == 'stats') {
     header('Pragma: public');
 
     echo sprintf(__('No of users'), forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
     echo sprintf(__('No of topics'), forum_number_format($stats['total_topics'])).'<br />'."\n";
     echo sprintf(__('No of posts'), forum_number_format($stats['total_posts'])).'<br />'."\n";
 

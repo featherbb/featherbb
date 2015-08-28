@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php echo feather_escape($user['username']).' - '.__('Section messaging') ?></span></h2>
 	<div class="box">
-		<form id="profile3" method="post" action="<?php echo $feather->url->get_link('user/'.$id.'/section/messaging/') ?>">
+		<form id="profile3" method="post" action="<?php echo $feather->url->get('user/'.$id.'/section/messaging/') ?>">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>

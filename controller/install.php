@@ -203,7 +203,7 @@ class install
         $flash->save();
 
         // Redirect to homepage
-        redirect($this->feather->url->get_link('/'));
+        redirect($this->feather->url->get('/'));
     }
 
     public function write_config($json)
