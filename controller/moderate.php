@@ -38,13 +38,6 @@ class moderate
             message(__('No view'), '403');
         }
 
-
-        // This particular function doesn't require forum-based moderator access. It can be used
-        // by all moderators and admins
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         $this->model->display_ip_address_post($pid);
     }
 
@@ -52,13 +45,6 @@ class moderate
     {
         if ($this->user->g_read_board == '0') {
             message(__('No view'), '403');
-        }
-
-
-        // This particular function doesn't require forum-based moderator access. It can be used
-        // by all moderators and admins
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
         }
 
         $this->model->display_ip_info($ip);
@@ -70,14 +56,7 @@ class moderate
             message(__('No view'), '403');
         }
 
-
-        // This particular function doesn't require forum-based moderator access. It can be used
-        // by all moderators and admins
         if ($action == 'get_host') {
-            if (!$this->user->is_admmod) {
-                message(__('No permission'), '403');
-            }
-
             $this->model->display_ip_address();
         }
 
@@ -239,7 +218,6 @@ class moderate
             message(__('No view'), '403');
         }
 
-
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
@@ -278,8 +256,6 @@ class moderate
                             'start_from' => $start_from,
                             )
                     )->addTemplate('moderate/moderator_forum.php')->display();
-
-
     }
 
     public function dealposts($fid)

@@ -7,15 +7,6 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-/**
- * middleware to check if user is admin, if it's not redirect to homepage.
- */
-$isAdmin = function() use ($feather) {
-    if($feather->user->g_id != $feather->forum_env['FEATHER_ADMIN']) {
-        redirect(get_link('/'), __('No permission'));
-    }
-};
-
 // Index
 $feather->get('/', '\controller\index:display');
 
@@ -85,8 +76,17 @@ $feather->group('/user', function() use ($feather) {
     $feather->map('/:id(/action/:action)(/)', '\controller\profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST');
 });
 
+/**
+ * Middleware to check if user is allowed to moderate, if he's not redirect to homepage.
+ */
+$isAdmmod = function() use ($feather) {
+    if(!$feather->user->is_admmod) {
+        redirect(get_base_url(), __('No permission'));
+    }
+};
+
 // Moderate routes
-$feather->group('/moderate', function() use ($feather) {
+$feather->group('/moderate', $isAdmmod, function() use ($feather) {
     $feather->get('/forum/:id(/:name)(/page/:page)(/)', '\controller\moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'));
     $feather->get('/get-host/post/:pid(/)', '\controller\moderate:gethostpost')->conditions(array('pid' => '[0-9]+'));
     $feather->get('/get-host/ip/:ip(/)', '\controller\moderate:gethostip');
@@ -96,7 +96,7 @@ $feather->group('/moderate', function() use ($feather) {
 });
 
 // Admin routes
-$feather->group('/admin', $isAdmin, function() use ($feather) {
+$feather->group('/admin', $isAdmmod, function() use ($feather) {
 
     // Admin index
     $feather->get('(/action/:action)(/)', '\controller\admin\index:display');
