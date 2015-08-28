@@ -281,6 +281,12 @@ class Auth extends \Slim\Middleware
         // Update online list
         $this->update_users_online();
 
+        $this->app->hook('slim.before.dispatch', function() {
+            if(preg_match('/\/admin/', $this->app->router->getCurrentRoute()->getPattern()) && $this->app->user->g_id != $this->app->forum_env['FEATHER_ADMIN']) {
+                $this->app->flash('message', __('No permission'));
+                $this->app->redirect(get_link('/'), 403);
+            }
+        });
         $this->next->call();
     }
 }
