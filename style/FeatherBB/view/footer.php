@@ -117,25 +117,11 @@ if ($footer_style == 'index') {
 
 // Display debug info (if enabled/defined)
 if ($feather->forum_env['FEATHER_SHOW_INFO']) {
-    echo '<p id="debugtime">[ ';
-
-    // Calculate script generation time
-    $time_diff = sprintf('%.3f', get_microtime() - $feather_start);
-    echo sprintf(__('Querytime'), $time_diff, count(\DB::get_query_log()[0]));
-
-    if (function_exists('memory_get_usage')) {
-        echo ' - '.sprintf(__('Memory usage'), file_size(memory_get_usage()));
-
-        if (function_exists('memory_get_peak_usage')) {
-            echo ' '.sprintf(__('Peak usage'), file_size(memory_get_peak_usage()));
-        }
-    }
-
-    echo ' ]</p>'."\n";
+    $feather->debug->info();
 }
 // Display executed queries (if enabled)
 if ($feather->forum_env['FEATHER_SHOW_QUERIES']) {
-    display_saved_queries();
+    $feather->debug->queries();
 }
 ?>
 
