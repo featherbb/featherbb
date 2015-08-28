@@ -27,7 +27,7 @@ class moderate
     public function display_ip_info($ip)
     {
         $ip = $this->hook->fire('display_ip_info', $ip);
-        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function display_ip_address_post($pid)
@@ -45,7 +45,7 @@ class moderate
 
         $ip = $this->hook->fire('display_ip_address_post', $ip);
 
-        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get_link('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function get_moderators($fid)
@@ -155,7 +155,7 @@ class moderate
 
             update_forum($fid);
 
-            redirect(get_link('topic/'.$tid.'/'), __('Delete posts redirect'));
+            redirect($this->feather->url->get_link('topic/'.$tid.'/'), __('Delete posts redirect'));
         }
 
         $posts = $this->hook->fire('delete_posts', $posts);
@@ -316,7 +316,7 @@ class moderate
             update_forum($fid);
             update_forum($move_to_forum);
 
-            redirect(get_link('topic/'.$new_tid.'/'), __('Split posts redirect'));
+            redirect($this->feather->url->get_link('topic/'.$new_tid.'/'), __('Split posts redirect'));
         }
 
         $posts = $this->hook->fire('split_posts', $posts);
@@ -460,7 +460,7 @@ class moderate
             // If the poster is a registered user
             if ($cur_post->poster_id > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post->poster_disp = '<a href="'.get_link('user/'.$cur_post->poster_id.'/').'">'.feather_escape($cur_post->poster).'</a>';
+                    $cur_post->poster_disp = '<a href="'.$this->feather->url->get_link('user/'.$cur_post->poster_id.'/').'">'.feather_escape($cur_post->poster).'</a>';
                 } else {
                     $cur_post->poster_disp = feather_escape($cur_post->poster);
                 }
@@ -585,7 +585,7 @@ class moderate
 
         $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
         $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
-        redirect(get_link('forum/'.$move_to_forum.'/'), $redirect_msg);
+        redirect($this->feather->url->get_link('forum/'.$move_to_forum.'/'), $redirect_msg);
     }
 
     public function check_move_possible()
@@ -737,7 +737,7 @@ class moderate
 
         // Update the forum FROM which the topic was moved and redirect
         update_forum($fid);
-        redirect(get_link('forum/'.$fid.'/'), __('Merge topics redirect'));
+        redirect($this->feather->url->get_link('forum/'.$fid.'/'), __('Merge topics redirect'));
     }
 
     public function delete_topics($topics, $fid)
@@ -821,7 +821,7 @@ class moderate
 
         $this->hook->fire('delete_topics');
 
-        redirect(get_link('forum/'.$fid.'/'), __('Delete topics redirect'));
+        redirect($this->feather->url->get_link('forum/'.$fid.'/'), __('Delete topics redirect'));
     }
 
     public function get_forum_info($fid)
@@ -918,10 +918,10 @@ class moderate
                 $status_text = array();
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
-                $url_topic = url_friendly($cur_topic['subject']);
+                $url_topic = $this->feather->url->url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.$this->feather->url->get_link('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -938,13 +938,13 @@ class moderate
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->url->get_link('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->url->get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_disp'] = '<a href="'.get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->url->get_link('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
@@ -953,7 +953,7 @@ class moderate
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->url->get_link('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -964,7 +964,7 @@ class moderate
                 $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $this->user->disp_posts);
 
                 if ($num_pages_topic > 1) {
-                    $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.$this->feather->url->paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }

@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Add categories head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/categories/add/') ?>">
+			<form method="post" action="<?php echo $feather->url->get_link('admin/categories/add/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Add categories subhead') ?></legend>
@@ -27,7 +27,7 @@ if (!defined('FEATHER')) {
 									<td>
 										<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 										<input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
-										<span><?php printf(__('Add category help'), '<a href="'.get_link('admin/forums').'">'.__('Forums').'</a>') ?></span>
+										<span><?php printf(__('Add category help'), '<a href="'.$feather->url->get_link('admin/forums').'">'.__('Forums').'</a>') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -39,7 +39,7 @@ if (!defined('FEATHER')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php _e('Delete categories head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/categories/delete') ?>">
+			<form method="post" action="<?php echo $feather->url->get_link('admin/categories/delete') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
@@ -71,7 +71,7 @@ if (!defined('FEATHER')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php _e('Edit categories head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/categories/edit/') ?>">
+			<form method="post" action="<?php echo $feather->url->get_link('admin/categories/edit/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>

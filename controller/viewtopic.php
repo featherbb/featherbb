@@ -58,11 +58,11 @@ class viewtopic
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user->disp_posts * ($p - 1);
 
-        $url_topic = url_friendly($cur_topic['subject']);
-        $url_forum = url_friendly($cur_topic['forum_name']);
+        $url_topic = $this->feather->url->url_friendly($cur_topic['subject']);
+        $url_forum = $this->feather->url->url_friendly($cur_topic['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
         if ($this->feather->forum_settings['o_censoring'] == '1') {
             $cur_topic['subject'] = censor_words($cur_topic['subject']);
@@ -91,13 +91,13 @@ class viewtopic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->addAsset('canonical', get_link('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->view2->addAsset('canonical', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/'));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->view2->addAsset('prev', get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->view2->addAsset('prev', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
             }
             if ($p < $num_pages) {
-                $this->feather->view2->addAsset('next', get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->view2->addAsset('next', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
             }
         }
 

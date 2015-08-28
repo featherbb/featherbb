@@ -136,7 +136,7 @@ class profile
 
             $this->hook->fire('change_pass');
 
-            redirect(get_link('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
+            redirect($this->feather->url->get_link('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
         }
     }
 
@@ -226,7 +226,7 @@ class profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
-                    $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
+                    $mail_message = str_replace('<profile_url>', $this->feather->url->get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_message', $mail_message);
 
@@ -263,7 +263,7 @@ class profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                    $mail_message = str_replace('<profile_url>', get_link('user/'.$id.'/'), $mail_message);
+                    $mail_message = str_replace('<profile_url>', $this->feather->url->get_link('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_dupe_message', $mail_message);
 
@@ -300,7 +300,7 @@ class profile
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
             $mail_message = str_replace('<base_url>', get_base_url(), $mail_message);
-            $mail_message = str_replace('<activation_url>', get_link('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
+            $mail_message = str_replace('<activation_url>', $this->feather->url->get_link('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
 
@@ -402,7 +402,7 @@ class profile
 
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
 
-        redirect(get_link('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
+        redirect($this->feather->url->get_link('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
     }
 
     public function update_group_membership($id)
@@ -469,7 +469,7 @@ class profile
 
         $id = $this->hook->fire('update_group_membership', $id);
 
-        redirect(get_link('user/'.$id.'/section/admin/'), __('Group membership redirect'));
+        redirect($this->feather->url->get_link('user/'.$id.'/section/admin/'), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -539,7 +539,7 @@ class profile
 
         $id = $this->hook->fire('update_mod_forums', $id);
 
-        redirect(get_link('user/'.$id.'/section/admin/'), __('Update forums redirect'));
+        redirect($this->feather->url->get_link('user/'.$id.'/section/admin/'), __('Update forums redirect'));
     }
 
     public function ban_user($id)
@@ -558,9 +558,9 @@ class profile
         $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
-            redirect(get_link('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
+            redirect($this->feather->url->get_link('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
         } else {
-            redirect(get_link('admin/bans/add/'.$id.'/'), __('Ban redirect'));
+            redirect($this->feather->url->get_link('admin/bans/add/'.$id.'/'), __('Ban redirect'));
         }
     }
 
@@ -592,7 +592,7 @@ class profile
 
         $pid = $this->hook->fire('promote_user', $pid);
 
-        redirect(get_link('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
+        redirect($this->feather->url->get_link('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -1086,7 +1086,7 @@ class profile
 
         $section = $this->hook->fireDB('update_profile', $section, $id);
 
-        redirect(get_link('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
+        redirect($this->feather->url->get_link('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
     }
 
     public function get_user_info($id)
@@ -1140,7 +1140,7 @@ class profile
         if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.feather_escape($user['email']).'">'.feather_escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-            $user['email_field'] = '<a href="'.get_link('email/'.$user['id'].'/').'">'.__('Send email').'</a>';
+            $user['email_field'] = '<a href="'.$this->feather->url->get_link('email/'.$user['id'].'/').'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
         }
@@ -1196,11 +1196,11 @@ class profile
         if ($this->user->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
-                $quick_searches[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.__('Show topics').'</a>';
-                $quick_searches[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Show posts').'</a>';
+                $quick_searches[] = '<a href="'.$this->feather->url->get_link('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.__('Show topics').'</a>';
+                $quick_searches[] = '<a href="'.$this->feather->url->get_link('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Show posts').'</a>';
             }
             if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
-                $quick_searches[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.__('Show subscriptions').'</a>';
+                $quick_searches[] = '<a href="'.$this->feather->url->get_link('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.__('Show subscriptions').'</a>';
             }
 
             if (!empty($quick_searches)) {
@@ -1238,12 +1238,12 @@ class profile
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), feather_escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.feather_escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.get_link('email/'.$id.'/').'">'.__('Send email').'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.feather_escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.$this->feather->url->get_link('email/'.$id.'/').'">'.__('Send email').'</a></span></p>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.feather_escape($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), feather_escape($user['email']).' - <a href="'.get_link('user/'.$id.'/action/change_email/').'">'.__('Change email').'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), feather_escape($user['email']).' - <a href="'.$this->feather->url->get_link('user/'.$id.'/action/change_email/').'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
@@ -1259,11 +1259,11 @@ class profile
         }
 
         if ($this->user->g_search == '1' || $this->user->g_id == FEATHER_ADMIN) {
-            $posts_actions[] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.__('Show topics').'</a>';
-            $posts_actions[] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.__('Show posts').'</a>';
+            $posts_actions[] = '<a href="'.$this->feather->url->get_link('search/?action=show_user_topics&amp;user_id='.$id).'">'.__('Show topics').'</a>';
+            $posts_actions[] = '<a href="'.$this->feather->url->get_link('search/?action=show_user_posts&amp;user_id='.$id).'">'.__('Show posts').'</a>';
 
             if ($this->config['o_topic_subscriptions'] == '1') {
-                $posts_actions[] = '<a href="'.get_link('search/?action=show_subscriptions&amp;user_id='.$id).'">'.__('Show subscriptions').'</a>';
+                $posts_actions[] = '<a href="'.$this->feather->url->get_link('search/?action=show_subscriptions&amp;user_id='.$id).'">'.__('Show subscriptions').'</a>';
             }
         }
 

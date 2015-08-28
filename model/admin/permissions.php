@@ -48,6 +48,6 @@ class permissions
 
         generate_config_cache();
 
-        redirect(get_link('admin/permissions/'), __('Perms updated redirect'));
+        redirect($this->feather->url->get_link('admin/permissions/'), __('Perms updated redirect'));
     }
 }

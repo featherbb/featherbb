@@ -50,7 +50,7 @@ class viewforum
 
         // Can we or can we not post new topics?
         if (($cur_forum['post_topics'] == '' && $this->feather->user->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.get_link('post/new-topic/'.$id.'/').'">'.__('Post topic').'</a></p>'."\n";
+            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.$this->feather->url->get_link('post/new-topic/'.$id.'/').'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $post_link = '';
         }
@@ -60,20 +60,20 @@ class viewforum
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user->disp_topics * ($p - 1);
-        $url_forum = url_friendly($cur_forum['forum_name']);
+        $url_forum = $this->feather->url->url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'forum/'.$id.'/'.$url_forum.'/#');
 
         $forum_actions = $this->model->get_forum_actions($id, $this->feather->forum_settings['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
-        $this->feather->view2->addAsset('canonical', get_link('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->view2->addAsset('canonical', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/'));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->view2->addAsset('prev', get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->view2->addAsset('prev', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
             }
             if ($p < $num_pages) {
-                $this->feather->view2->addAsset('next', get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->view2->addAsset('next', $this->feather->url->get_link('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
             }
         }
 

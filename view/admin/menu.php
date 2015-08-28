@@ -22,20 +22,20 @@ if (!defined('FEATHER')) {
 					<li<?php if ($page == 'index') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/') ?>"><?php _e('Index') ?></a></li>
+    ?>><a href="<?php echo $feather->url->get_link('admin/') ?>"><?php _e('Index') ?></a></li>
 					<li<?php if ($page == 'users') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
+    ?>><a href="<?php echo $feather->url->get_link('admin/users/') ?>"><?php _e('Users') ?></a></li>
 <?php if ($is_admin || $feather->user->g_mod_ban_users == '1'): ?>					<li<?php if ($page == 'bans') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+    ?>><a href="<?php echo $feather->url->get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
 <?php endif;
     if ($is_admin || $feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2'): ?>					<li<?php if ($page == 'reports') {
     echo ' class="isactive"';
 }
-    ?>><a href="<?php echo get_link('admin/reports/') ?>"><?php _e('Reports') ?></a></li>
+    ?>><a href="<?php echo $feather->url->get_link('admin/reports/') ?>"><?php _e('Reports') ?></a></li>
 <?php endif;
     ?>				</ul>
 			</div>
@@ -51,35 +51,35 @@ if (!defined('FEATHER')) {
 					<li<?php if ($page == 'options') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/options/') ?>"><?php _e('Options') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/options/') ?>"><?php _e('Options') ?></a></li>
 					<li<?php if ($page == 'permissions') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/permissions/') ?>"><?php _e('Permissions') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/permissions/') ?>"><?php _e('Permissions') ?></a></li>
 					<li<?php if ($page == 'categories') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/categories/') ?>"><?php _e('Categories') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/categories/') ?>"><?php _e('Categories') ?></a></li>
 					<li<?php if ($page == 'forums') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/forums/') ?>"><?php _e('Forums') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/forums/') ?>"><?php _e('Forums') ?></a></li>
 					<li<?php if ($page == 'groups') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/groups/') ?>"><?php _e('User groups') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/groups/') ?>"><?php _e('User groups') ?></a></li>
 					<li<?php if ($page == 'censoring') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/censoring/') ?>"><?php _e('Censoring') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/censoring/') ?>"><?php _e('Censoring') ?></a></li>
 					<li<?php if ($page == 'parser') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/parser/') ?>"><?php _e('Parser') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/parser/') ?>"><?php _e('Parser') ?></a></li>
 					<li<?php if ($page == 'maintenance') {
     echo ' class="isactive"';
 }
-        ?>><a href="<?php echo get_link('admin/maintenance/') ?>"><?php _e('Maintenance') ?></a></li>
+        ?>><a href="<?php echo $feather->url->get_link('admin/maintenance/') ?>"><?php _e('Maintenance') ?></a></li>
 				</ul>
 			</div>
 		</div>
@@ -97,7 +97,7 @@ if (!defined('FEATHER')) {
 <?php
 
         foreach ($plugins as $plugin_name => $plugin) {
-            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="'.get_link('admin/loader/?plugin='.$plugin_name).'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
+            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="'.$feather->url->get_link('admin/loader/?plugin='.$plugin_name).'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
         }
 
         ?>

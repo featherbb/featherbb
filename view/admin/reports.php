@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('New reports head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/reports/') ?>">
+			<form method="post" action="<?php echo $feather->url->get_link('admin/reports/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 if (!empty($report_data)) {
@@ -28,10 +28,10 @@ if (!empty($report_data)) {
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.get_link('users/'.$report['reported_by'].'/').'">'.feather_escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?php echo breadcrumbs_admin(array($report['forum_name'] => get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['forum_name']).'/'),
-																						$report['subject'] => get_link('forum/'.$report['topic_id'].'/'.url_friendly($report['subject'])),
-																						sprintf(__('Post ID'), $report['pid']) => get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
+									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->url->get_link('users/'.$report['reported_by'].'/').'">'.feather_escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
+									<td class="location"><?php echo breadcrumbs_admin(array($report['forum_name'] => $feather->url->get_link('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+																						$report['subject'] => $feather->url->get_link('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
+																						sprintf(__('Post ID'), $report['pid']) => $feather->url->get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Reason') ?><div><input type="submit" name="zap_id[<?php echo $report['id'] ?>]" value="<?php _e('Zap') ?>" /></div></th>
@@ -74,14 +74,14 @@ if (!empty($report_zapped_data)) {
         ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php printf(__('Zapped subhead'), format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.get_link('user/'.$report['zapped_by_id'].'/').'">'.feather_escape($report['zapped_by']).'</a>' : __('NA')) ?></legend>
+						<legend><?php printf(__('Zapped subhead'), format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.$feather->url->get_link('user/'.$report['zapped_by_id'].'/').'">'.feather_escape($report['zapped_by']).'</a>' : __('NA')) ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
 								<tr>
-									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.get_link('users/'.$report['reported_by'].'/').'">'.feather_escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?php echo breadcrumbs_admin(array($report['forum_name'] => get_link('forum/'.$report['forum_id'].'/'.url_friendly($report['forum_name']).'/'),
-																						$report['subject'] => get_link('forum/'.$report['topic_id'].'/'.url_friendly($report['subject'])),
-																						sprintf(__('Post ID'), $report['pid']) => get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
+									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->url->get_link('users/'.$report['reported_by'].'/').'">'.feather_escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
+									<td class="location"><?php echo breadcrumbs_admin(array($report['forum_name'] => $feather->url->get_link('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+																						$report['subject'] => $feather->url->get_link('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
+																						sprintf(__('Post ID'), $report['pid']) => $feather->url->get_link('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Reason') ?></th>

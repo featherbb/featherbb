@@ -196,6 +196,10 @@ class Core extends \Slim\Middleware
         $this->app->container->singleton('view2', function() {
             return new \FeatherBB\View();
         });
+        // Load FeatherBB url class
+        $this->app->container->singleton('url', function () {
+            return new \FeatherBB\Url();
+        });
         // Load FeatherBB hooks
         $this->app->container->singleton('hooks', function () {
             return new \FeatherBB\Hooks();

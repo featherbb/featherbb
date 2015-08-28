@@ -166,13 +166,13 @@ class profile
                     message(__('Bad request'), '404');
                 }
 
-                $avatar_field = '<span><a href="'.get_link('user/'.$id.'/action/upload_avatar/').'">'.__('Change avatar').'</a></span>';
+                $avatar_field = '<span><a href="'.$this->feather->url->get_link('user/'.$id.'/action/upload_avatar/').'">'.__('Change avatar').'</a></span>';
 
                 $user_avatar = generate_avatar_markup($id);
                 if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.get_link('user/'.$id.'/action/delete_avatar/').'">'.__('Delete avatar').'</a></span>';
+                    $avatar_field .= ' <span><a href="'.$this->feather->url->get_link('user/'.$id.'/action/delete_avatar/').'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.get_link('user/'.$id.'/action/upload_avatar/').'">'.__('Upload avatar').'</a></span>';
+                    $avatar_field = '<span><a href="'.$this->feather->url->get_link('user/'.$id.'/action/upload_avatar/').'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user['signature'] != '') {
@@ -312,7 +312,7 @@ class profile
 
             $this->model->delete_avatar($id);
 
-            redirect(get_link('user/'.$id.'/section/personality/'), __('Avatar deleted redirect'));
+            redirect($this->feather->url->get_link('user/'.$id.'/section/personality/'), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
                 message(__('No permission'), '403');

@@ -76,7 +76,7 @@ class edit
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                redirect(get_link('post/'.$id.'/#p'.$id), __('Post redirect'));
+                redirect($this->feather->url->get_link('post/'.$id.'/#p'.$id), __('Post redirect'));
             }
         } else {
             $post = '';

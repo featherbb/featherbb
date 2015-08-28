@@ -230,7 +230,7 @@ class options
         $this->feather->cache->store('config', \model\cache::get_config());
         $this->clear_feed_cache();
 
-        redirect(get_link('admin/options/'), __('Options updated redirect'));
+        redirect($this->feather->url->get_link('admin/options/'), __('Options updated redirect'));
     }
 
     public function clear_feed_cache()

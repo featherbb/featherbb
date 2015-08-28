@@ -41,7 +41,7 @@ class parser
         if ($this->request->post('reset') || !file_exists($cache_file)) {
             require_once(FEATHER_ROOT.'include/bbcd_source.php');
             require_once(FEATHER_ROOT.'include/bbcd_compile.php');
-            redirect(get_link('admin/parser/'), $lang_admin_parser['reset_success']);
+            redirect($this->feather->url->get_link('admin/parser/'), $lang_admin_parser['reset_success']);
         }
 
         // Load the current BBCode $pd array from include/parser_data.inc.php.
@@ -65,7 +65,7 @@ class parser
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
                                     if (move_uploaded_file($f['tmp_name'], FEATHER_ROOT .'img/smilies/'. $name)) {
-                                        redirect(get_link('admin/parser/'), $lang_admin_parser['upload success']);
+                                        redirect($this->feather->url->get_link('admin/parser/'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         message($lang_admin_parser['upload_err_1']);
                                     }
@@ -199,7 +199,7 @@ class parser
             }
 
             require_once('include/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
-            redirect(get_link('admin/parser/'), $lang_admin_parser['save_success']);
+            redirect($this->feather->url->get_link('admin/parser/'), $lang_admin_parser['save_success']);
         }
 
         \FeatherBB\AdminUtils::generateAdminMenu('parser');

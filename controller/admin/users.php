@@ -99,7 +99,7 @@ class users
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
-            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
+            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . $this->feather->url->paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
             $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
@@ -153,7 +153,7 @@ class users
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'page' => $p,
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$id),
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?ip_stats='.$id),
                 'start_from'        =>  $start_from,
                 'ip_data'   =>  $this->model->get_ip_stats($id, $start_from),
             )
@@ -180,7 +180,7 @@ class users
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?ip_stats='.$ip),
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?ip_stats='.$ip),
                 'page' => $p,
                 'start_from'        =>  $start_from,
                 'info'   =>  $this->model->get_info_poster($ip, $start_from),

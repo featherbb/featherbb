@@ -36,15 +36,15 @@ class forums
         $cat_id = (int) $this->request->post('cat');
 
         if ($cat_id < 1) {
-            redirect(get_link('admin/forums/'), __('Must be valid category'));
+            redirect($this->feather->url->get_link('admin/forums/'), __('Must be valid category'));
         }
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
             $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
-            redirect(get_link('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
+            redirect($this->feather->url->get_link('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
         } else {
-            redirect(get_link('admin/forums/'), __('Unable to add forum'));
+            redirect($this->feather->url->get_link('admin/forums/'), __('Unable to add forum'));
         }
     }
 
@@ -61,10 +61,10 @@ class forums
                                     'redirect_url' => url_valid($this->request->post('redirect_url')) ? feather_escape($this->request->post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
-                    redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Must enter name message'));
+                    redirect($this->feather->url->get_link('admin/forums/edit/'.$forum_id.'/'), __('Must enter name message'));
                 }
                 if ($forum_data['cat_id'] < 1) {
-                    redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Must be valid category'));
+                    redirect($this->feather->url->get_link('admin/forums/edit/'.$forum_id.'/'), __('Must be valid category'));
                 }
 
                 $this->model->update_forum($forum_id, $forum_data);
@@ -100,7 +100,7 @@ class forums
                 // Regenerate the quick jump cache
                 $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
-                redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
+                redirect($this->feather->url->get_link('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
 
             } elseif ($this->request->post('revert_perms')) {
                 $this->model->delete_permissions($forum_id);
@@ -108,7 +108,7 @@ class forums
                 // Regenerate the quick jump cache
                 $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
-                redirect(get_link('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
+                redirect($this->feather->url->get_link('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
             }
 
         } else {
@@ -134,7 +134,7 @@ class forums
             // Regenerate the quick jump cache
             $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
-            redirect(get_link('admin/forums/'), __('Forum deleted redirect'));
+            redirect($this->feather->url->get_link('admin/forums/'), __('Forum deleted redirect'));
 
         } else { // If the user hasn't confirmed
 
@@ -162,7 +162,7 @@ class forums
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
-        redirect(get_link('admin/forums/'), __('Forums updated redirect'));
+        redirect($this->feather->url->get_link('admin/forums/'), __('Forums updated redirect'));
     }
 
     public function display()

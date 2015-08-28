@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php echo feather_escape($user['username']).' - '.__('Section essentials') ?></span></h2>
 	<div class="box">
-		<form id="profile1" method="post" action="<?php echo get_link('user/'.$id.'/section/essentials/') ?>" onsubmit="return process_form(this)">
+		<form id="profile1" method="post" action="<?php echo $feather->url->get_link('user/'.$id.'/section/essentials/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
@@ -24,7 +24,7 @@ if (!defined('FEATHER')) {
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<?php echo $user_disp['username_field'] ?>
-<?php if ($feather->user->id == $id || $feather->user->g_id == FEATHER_ADMIN || ($user['g_moderator'] == '0' && $feather->user->g_mod_change_passwords == '1')): ?>							<p class="actions"><span><a href="<?php echo get_link('user/'.$id.'/action/change_pass/') ?>"><?php _e('Change pass') ?></a></span></p>
+<?php if ($feather->user->id == $id || $feather->user->g_id == FEATHER_ADMIN || ($user['g_moderator'] == '0' && $feather->user->g_mod_change_passwords == '1')): ?>							<p class="actions"><span><a href="<?php echo $feather->url->get_link('user/'.$id.'/action/change_pass/') ?>"><?php _e('Change pass') ?></a></span></p>
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>
@@ -241,7 +241,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php _e('User activity') ?></legend>
 					<div class="infldset">
-						<p><?php printf(__('Registered info'), format_time($user['registered'], true).(($feather->user->is_admmod) ? ' (<a href="'.get_link('admin/users/show-users/ip/'.$user['registration_ip'].'/').'">'.feather_escape($user['registration_ip']).'</a>)' : '')) ?></p>
+						<p><?php printf(__('Registered info'), format_time($user['registered'], true).(($feather->user->is_admmod) ? ' (<a href="'.$feather->url->get_link('admin/users/show-users/ip/'.$user['registration_ip'].'/').'">'.feather_escape($user['registration_ip']).'</a>)' : '')) ?></p>
 						<p><?php printf(__('Last post info'), format_time($user['last_post'])) ?></p>
 						<p><?php printf(__('Last visit info'), format_time($user['last_visit'])) ?></p>
 						<?php echo $user_disp['posts_field'] ?>
