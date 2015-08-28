@@ -213,7 +213,7 @@ class Auth extends \Slim\Middleware
             $this->app->user = $this->model->load_user($cookie['user_id']);
             $expires = ($cookie['expires'] > $this->app->now + $this->app->forum_settings['o_timeout_visit']) ? $this->app->now + 1209600 : $this->app->now + $this->app->forum_settings['o_timeout_visit'];
             $this->app->user->is_guest = false;
-            $this->app->user->is_admmod = $this->app->user->g_id == $this->app->forum_env['FEATHER_ADMIN'] || $this->app->g_moderator == '1';
+            $this->app->user->is_admmod = $this->app->user->g_id == $this->app->forum_env['FEATHER_ADMIN'] || $this->app->user->g_moderator == '1';
             if (!$this->app->user->disp_topics) {
                 $this->app->user->disp_topics = $this->app->forum_settings['o_disp_topics_default'];
             }
