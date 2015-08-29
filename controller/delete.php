@@ -24,7 +24,7 @@ class delete
         global $pd;
 
         if ($this->feather->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -46,11 +46,11 @@ class delete
                 $cur_post['poster_id'] != $this->feather->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         if ($this->feather->request()->isPost()) {

@@ -22,15 +22,10 @@ class statistics
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/index.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
-    }
-
     public function display()
     {
         if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         \FeatherBB\AdminUtils::generateAdminMenu('index');
@@ -56,7 +51,7 @@ class statistics
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {
-            message(__('PHPinfo disabled message'));
+            throw new \FeatherBB\Error(__('PHPinfo disabled message'), 404);
         }
 
         phpinfo();

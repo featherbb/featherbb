@@ -67,26 +67,26 @@ class parser
                                     if (move_uploaded_file($f['tmp_name'], FEATHER_ROOT .'img/smilies/'. $name)) {
                                         redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
-                                        message($lang_admin_parser['upload_err_1']);
+                                        throw new \FeatherBB\Error($lang_admin_parser['upload_err_1'], 500);
                                     }
                                 } else { // Error #2: 'Smiley upload failed. File is too big.'
-                                    message($lang_admin_parser['upload_err_2']);
+                                    throw new \FeatherBB\Error($lang_admin_parser['upload_err_2'], 400);
                                 }
                             } else { // Error #3: 'Smiley upload failed. File type is not an image.'.
-                                message($lang_admin_parser['upload_err_3']);
+                                throw new \FeatherBB\Error($lang_admin_parser['upload_err_3'], 400);
                             }
                         } else { // Error #4: 'Smiley upload failed. Bad filename.'
-                            message($lang_admin_parser['upload_err_4']);
+                            throw new \FeatherBB\Error($lang_admin_parser['upload_err_4'], 400);
                         }
                         break;
                     case 1: // case 1 similar to case 2 so fall through...
-                    case 2: message($lang_admin_parser['upload_err_2']);    // File exceeds MAX_FILE_SIZE.
-                    case 3: message($lang_admin_parser['upload_err_5']);    // File only partially uploaded.
+                    case 2: throw new \FeatherBB\Error($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
+                    case 3: throw new \FeatherBB\Error($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
                     //		case 4: break; // No error. Normal response when this form element left empty
-                    case 4: message($lang_admin_parser['upload_err_6']);    // No filename.
-                    case 6: message($lang_admin_parser['upload_err_7']);    // No temp folder.
-                    case 7: message($lang_admin_parser['upload_err_8']);    // Cannot write to disk.
-                    default: message($lang_admin_parser['upload_err_9']);        // Generic/unknown error
+                    case 4: throw new \FeatherBB\Error($lang_admin_parser['upload_err_6'], 400);    // No filename.
+                    case 6: throw new \FeatherBB\Error($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
+                    case 7: throw new \FeatherBB\Error($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.
+                    default: throw new \FeatherBB\Error($lang_admin_parser['upload_err_9'], 500);        // Generic/unknown error
                 }
             }
 

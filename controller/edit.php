@@ -33,7 +33,7 @@ class edit
     public function editpost($id)
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -52,11 +52,11 @@ class edit
 
         // Do we have permission to edit this post?
         if (($this->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Start with a clean slate

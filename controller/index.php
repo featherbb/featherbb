@@ -21,7 +21,7 @@ class index
     public function display()
     {
         if ($this->feather->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         $this->feather->view2->setPageInfo(array(

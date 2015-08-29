@@ -81,7 +81,7 @@ $feather->group('/user', function() use ($feather) {
  */
 $isAdmmod = function() use ($feather) {
     if(!$feather->user->is_admmod) {
-        redirect(base(), __('No permission'));
+        redirect($feather->url->base(), __('No permission'));
     }
 };
 

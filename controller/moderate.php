@@ -33,7 +33,7 @@ class moderate
     public function gethostpost($pid)
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         $this->model->display_ip_address_post($pid);
@@ -42,7 +42,7 @@ class moderate
     public function gethostip($ip)
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         $this->model->display_ip_info($ip);
@@ -51,7 +51,7 @@ class moderate
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         if ($action == 'get_host') {
@@ -63,7 +63,7 @@ class moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Move one topic
@@ -74,7 +74,7 @@ class moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                message(__('No topics selected'));
+                throw new \FeatherBB\Error(__('No topics selected'), 400);
             }
 
             $topics = implode(',', array_map('intval', array_keys($topics)));
@@ -213,7 +213,7 @@ class moderate
     public function display($id, $name = null, $page = null)
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         // Make sure that only admmods allowed access this page
@@ -221,7 +221,7 @@ class moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Fetch some info about the forum
@@ -229,7 +229,7 @@ class moderate
 
         // Is this a redirect forum? In that case, abort!
         if ($cur_forum['redirect_url'] != '') {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), '404');
         }
 
         $sort_by = $this->model->forum_sort_by($cur_forum['sort_by']);
@@ -259,7 +259,7 @@ class moderate
     public function dealposts($fid)
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         // Make sure that only admmods allowed access this page
@@ -267,7 +267,7 @@ class moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Move one or more topics
@@ -278,7 +278,7 @@ class moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                message(__('No topics selected'));
+                throw new \FeatherBB\Error(__('No topics selected'), 400);
             }
 
             // Check if there are enough forums to move the topic
@@ -303,7 +303,7 @@ class moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (count($topics) < 2) {
-                message(__('Not enough topics selected'));
+                throw new \FeatherBB\Error(__('Not enough topics selected'), 400);
             }
 
             $this->feather->view2->setPageInfo(array(
@@ -319,7 +319,7 @@ class moderate
         elseif ($this->request->post('delete_topics') || $this->request->post('delete_topics_comply')) {
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                message(__('No topics selected'));
+                throw new \FeatherBB\Error(__('No topics selected'), 400);
             }
 
             if ($this->request->post('delete_topics_comply')) {
@@ -344,7 +344,7 @@ class moderate
             if ($this->request->post('open') || $this->request->post('close')) {
                 $topics = $this->request->post('topics') ? @array_map('intval', @array_keys($this->request->post('topics'))) : array();
                 if (empty($topics)) {
-                    message(__('No topics selected'));
+                    throw new \FeatherBB\Error(__('No topics selected'), 400);
                 }
 
                 $this->model->close_multiple_topics($action, $topics, $fid);

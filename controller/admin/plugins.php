@@ -55,12 +55,12 @@ class plugins
         // The plugin to load should be supplied via GET
         $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
         if (!$class) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // Check if plugin follows PSR-4 conventions and extends base forum plugin
         if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
-            message(sprintf(__('No plugin message'), feather_escape($class)));
+            throw new \FeatherBB\Error(sprintf(__('No plugin message'), feather_escape($class)), 400);
         }
 
         $plugin = new $class;
@@ -78,7 +78,7 @@ class plugins
         // The plugin to load should be supplied via GET
         $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
         if (!$class) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         $plugin = new $class;
@@ -96,18 +96,18 @@ class plugins
         // The plugin to load should be supplied via GET
         $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : '';
         if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // AP_ == Admins only, AMP_ == admins and moderators
         $prefix = substr($plugin, 0, strpos($plugin, '_'));
         if ($this->user->g_moderator == '1' && $prefix == 'AP') {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Make sure the file actually exists
         if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
-            message(sprintf(__('No plugin message'), feather_escape($plugin)));
+            throw new \FeatherBB\Error(sprintf(__('No plugin message'), feather_escape($plugin)), 400);
         }
 
         // Construct REQUEST_URI if it isn't set TODO?
@@ -120,7 +120,7 @@ class plugins
         // get the "blank page of death"
         include FEATHER_ROOT.'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
-            message(sprintf(__('Plugin failed message'), feather_escape($plugin)));
+            throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), feather_escape($plugin)));
         }
 
         $this->feather->view2->setPageInfo(array(

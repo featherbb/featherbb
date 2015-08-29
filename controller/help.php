@@ -29,7 +29,7 @@ class help
     public function display()
     {
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         }
 
         $this->feather->view2->setPageInfo(array(
