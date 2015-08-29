@@ -133,7 +133,7 @@ class post
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
-                    $quote = $this->model->get_quote_throw new \FeatherBB\Error($qid, $tid);
+                    $quote = $this->model->get_quote_message($qid, $tid);
                     $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
