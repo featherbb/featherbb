@@ -28,69 +28,67 @@ class plugins
 
     public function index()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
         // Update permissions
         // if ($this->feather->request->isPost()) {
         //     $this->model->update_permissions();
         // }
 
-        // $this->header->setTitle($page_title)->setActivePage('admin')->enableAdminConsole()->display();
-
         generate_admin_menu('plugins');
 
-        $pluginsList = \FeatherBB\Plugin::getPluginsList();
+        $pluginsList = \FeatherBB\AdminUtils::getValidPlugins();
+        // var_dump($pluginsList);
+        $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
+        // var_dump($activePlugins);
 
         $this->feather->view2->setPageInfo(array(
                 'admin_console' => true,
                 'active_page' => 'admin',
-                'focus_element' => array('bans', 'new_ban_user'),
                 'pluginsList'    =>    $pluginsList,
+                'activePlugins'    =>    $activePlugins,
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
             )
         )->addTemplate('admin/plugins.php')->display();
-
-        // $this->feather->render('admin/plugins.php', array(
-        //         'pluginsList'    =>    $pluginsList
-        //     )
-        // );
-        //
-        // $this->footer->display();
     }
 
     public function activate()
     {
-        if (!$this->user->is_admmod) {
-            message(__('No permission'), '403');
-        }
-
-        // Update permissions
-        // if ($this->feather->request->isPost()) {
-        //     $this->model->update_permissions();
-        // }
-
         // The plugin to load should be supplied via GET
-        $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : null;
-        if (!$plugin) {
+        $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
+        if (!$class) {
             message(__('Bad request'), '404');
         }
 
-        // Require all valid filenames...
-        \FeatherBB\Plugin::getPluginsList();
-        // And make sure the plugin actually extends base Plugin class
-        if (!property_exists('\plugin\\'.$plugin, 'isFeatherPlugin')) {
-            message(sprintf(__('No plugin message'), feather_escape($plugin)));
+        // Check if plugin follows PSR-4 conventions and extends base forum plugin
+        if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
+            message(sprintf(__('No plugin message'), feather_escape($class)));
         }
 
+        $plugin = new $class;
         try {
-            \FeatherBB\Plugin::activate($plugin);
-            redirect(get_link('admin/plugins/'), 'Plugin '.feather_escape($plugin).' activated');
+            $plugin->activate($class);
         } catch (\Exception $e) {
             redirect(get_link('admin/plugins/'), feather_escape($e->getMessage()));
         }
+        // Plugin has been activated, confirm and redirect
+        redirect(get_link('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
+    }
 
+    public function deactivate()
+    {
+        // The plugin to load should be supplied via GET
+        $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
+        if (!$class) {
+            message(__('Bad request'), '404');
+        }
+
+        $plugin = new $class;
+        try {
+            $plugin->deactivate($class);
+        } catch (\Exception $e) {
+            redirect(get_link('admin/plugins/'), feather_escape($e->getMessage()));
+        }
+        // Plugin has been activated, confirm and redirect
+        redirect(get_link('admin/plugins/'), 'Plugin "'.$class::$name.'" deactivated!');
     }
 
     public function display()

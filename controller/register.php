@@ -34,7 +34,7 @@ class register
     public function display()
     {
         if (!$this->user->is_guest) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
 
@@ -79,7 +79,7 @@ class register
 
     public function cancel()
     {
-        redirect(get_base_url());
+        redirect($this->feather->url->base());
     }
 
     public function rules()
@@ -88,7 +88,7 @@ class register
 
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
 
@@ -98,7 +98,7 @@ class register
         }
 
         if ($this->config['o_rules'] != '1') {
-            redirect(get_link('register/agree/'));
+            redirect($this->feather->url->get('register/agree/'));
         }
 
         $this->feather->view2->setPageInfo(array(

@@ -569,7 +569,7 @@ class search
 
         // If we're on the new posts search, display a "mark all as read" link
         if (!$this->user->is_guest && $search_type[0] == 'action' && $search_type[1] == 'show_new') {
-            $search['forum_actions'][] = '<a href="'.get_link('mark-read/').'">'.__('Mark all as read').'</a>';
+            $search['forum_actions'][] = '<a href="'.$this->feather->url->get('mark-read/').'">'.__('Mark all as read').'</a>';
         }
 
         // Fetch results to display
@@ -604,7 +604,7 @@ class search
             $search['start_from'] = $start_from;
 
             // Generate paging links
-            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.paginate_old($num_pages, $p, '?search_id='.$search_id);
+            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?search_id='.$search_id);
 
             // throw away the first $start_from of $search_ids, only keep the top $per_page of $search_ids
             $search_ids = array_slice($search_ids, $start_from, $per_page);
@@ -643,9 +643,9 @@ class search
 
             if ($search_type[0] == 'action') {
                 if ($search_type[1] == 'show_user_topics') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_topics'), feather_escape($search['search_set'][0]['poster'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_topics'), feather_escape($search['search_set'][0]['poster'])).'</a>';
                 } elseif ($search_type[1] == 'show_user_posts') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_posts'), feather_escape($search['search_set'][0]['pposter'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_posts'), feather_escape($search['search_set'][0]['pposter'])).'</a>';
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
@@ -658,10 +658,10 @@ class search
                         message(__('Bad request'), '404');
                     }
 
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), feather_escape($subscriber_name)).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), feather_escape($subscriber_name)).'</a>';
                 } else {
                     $search_url = str_replace('_', '/', $search_type[1]);
-                    $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/'.$search_url.'/').'">'.__('Quick search '.$search_type[1]).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/'.$search_url.'/').'">'.__('Quick search '.$search_type[1]).'</a>';
                 }
             } else {
                 $keywords = $author = '';
@@ -677,7 +677,7 @@ class search
                     $search['crumbs_text']['search_type'] = sprintf(__('By user show as '.$show_as), feather_escape($author));
                 }
 
-                $search['crumbs_text']['search_type'] = '<a href="'.get_link('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
+                $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
             }
         }
 
@@ -702,8 +702,8 @@ class search
         $post_count = $topic_count = 0;
 
         foreach ($search['search_set'] as $cur_search) {
-            $forum = '<a href="'.get_link('forum/'.$cur_search['forum_id'].'/'.url_friendly($cur_search['forum_name']).'/').'">'.feather_escape($cur_search['forum_name']).'</a>';
-            $url_topic = url_friendly($cur_search['subject']);
+            $forum = '<a href="'.$this->feather->url->get('forum/'.$cur_search['forum_id'].'/'.$this->feather->url->url_friendly($cur_search['forum_name']).'/').'">'.feather_escape($cur_search['forum_name']).'</a>';
+            $url_topic = $this->feather->url->url_friendly($cur_search['subject']);
 
             if ($this->config['o_censoring'] == '1') {
                 $cur_search['subject'] = censor_words($cur_search['subject']);
@@ -730,7 +730,7 @@ class search
                 $pposter = feather_escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && $this->user->g_view_users == '1') {
-                    $cur_search['pposter_disp'] = '<strong><a href="'.get_link('user/'.$cur_search['poster_id'].'/').'">'.$pposter.'</a></strong>';
+                    $cur_search['pposter_disp'] = '<strong><a href="'.$this->feather->url->get('user/'.$cur_search['poster_id'].'/').'">'.$pposter.'</a></strong>';
                 } else {
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
@@ -748,7 +748,7 @@ class search
                 $cur_search['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_search['icon_type'] = 'icon';
 
-                $subject = '<a href="'.get_link('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.feather_escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_search['poster']).'</span>';
+                $subject = '<a href="'.$this->feather->url->get('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.feather_escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_search['poster']).'</span>';
 
                 if ($cur_search['sticky'] == '1') {
                     $cur_search['item_status'] .= ' isticky';
@@ -764,7 +764,7 @@ class search
                     $cur_search['item_status'] .= ' inew';
                     $cur_search['icon_type'] = 'icon icon-new';
                     $subject = '<strong>'.$subject.'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.get_link('topic/'.$cur_search['tid'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->url->get('topic/'.$cur_search['tid'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -775,7 +775,7 @@ class search
                 $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / $this->user->disp_posts);
 
                 if ($num_pages_topic > 1) {
-                    $subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.$this->feather->url->paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }

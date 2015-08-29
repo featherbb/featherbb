@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Options head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/options/') ?>">
+			<form method="post" action="<?php echo $feather->url->get('admin/options/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
 				<div class="inform">
@@ -421,7 +421,7 @@ if (!defined('FEATHER')) {
 										<label class="conl"><input type="radio" name="form_censoring" value="0"<?php if ($feather->forum_settings['o_censoring'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
-										<span class="clearb"><?php printf(__('Censor words help'), '<a href="'.get_link('admin/censoring/').'">'.__('Censoring').'</a>') ?></span>
+										<span class="clearb"><?php printf(__('Censor words help'), '<a href="'.$feather->url->get('admin/censoring/').'">'.__('Censoring').'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>

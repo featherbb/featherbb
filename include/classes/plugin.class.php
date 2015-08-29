@@ -13,6 +13,45 @@ use DB;
 
 class Plugin
 {
+    /**
+     * Ensure daughter plugin classes (users ones) are extending
+     * this default class
+     *
+     * @var boolval
+     */
+    public static $isValidFBPlugin = true;
+
+    /**
+     * @var string
+     */
+    public static $name;
+
+    /**
+     * @var string
+     */
+    public static $version;
+
+    /**
+     * @var string
+     */
+    public static $author;
+
+    /**
+     * @var string
+     */
+    public static $description;
+
+    /**
+     * @var string
+     */
+    public static $updateUrl;
+
+    /**
+     * Structure of database table to create.
+     *
+     * @var array
+     */
+    protected $databaseScheme = array();
 
     /**
      * @var object
@@ -24,45 +63,6 @@ class Plugin
      */
     protected $hooks;
 
-    /**
-     * Ensure daughter plugin classes (users ones) are extending
-     * this default class
-     *
-     * @var boolval
-     */
-    protected $isFeatherPlugin;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $version;
-
-    /**
-     * @var string
-     */
-    protected $author;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var string
-     */
-    protected $updateUrl;
-
-    /**
-     * Structure of database table to create.
-     *
-     * @var array
-     */
-    protected $databaseScheme = array();
 
     /**
      * Constructor
@@ -70,31 +70,7 @@ class Plugin
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->user = $this->feather->user;
-        $this->hook = $this->feather->hooks;
-    }
-
-    /**
-     * Get a list of all available plugins.
-     */
-    public static function getPluginsList()
-    {
-        $plugins = array();
-
-        $d = dir(FEATHER_ROOT.'plugins');
-        if (!$d) {
-            return $plugins;
-        }
-
-        while (($entry = $d->read()) !== false) {
-            if (!is_dir(FEATHER_ROOT.'plugins/'.$entry) && preg_match('%^(\w+)\.plugin\.php$%i', $entry, $plugin)) {
-                $className = "\plugin\\".$plugin[1];
-                $plugins[$plugin[1]] = new $className();
-            }
-        }
-        $d->close();
-
-        return $plugins;
+        $this->hooks = $this->feather->hooks;
     }
 
     /**
@@ -103,33 +79,24 @@ class Plugin
     public static function runActivePlugins()
     {
         $feather = \Slim\Slim::getInstance();
-        //$activePlugins = $feather->cache->retrieve('active_plugins') ? $feather->cache->retrieve('active_plugins') : array();
+        $activePlugins = $feather->cache->isCached('active_plugins') ? $feather->cache->retrieve('active_plugins') : array();
+        // $activePlugins = array();
+        // var_dump($activePlugins);
 
-        $d = dir(FEATHER_ROOT.'plugins');
-
-        while (($entry = $d->read()) !== false) {
-            if (!is_dir(FEATHER_ROOT.'plugins/'.$entry) && preg_match('%^(\w+)\.plugin\.php$%i', $entry, $plugin)) {
-                require FEATHER_ROOT.'plugins/'.$plugin[0];
-                $className = "\plugin\\".$plugin[1];
-                $newPlugin = new $className();
-                $newPlugin->runHooks();
+        foreach ($activePlugins as $name => $plugin) {
+            if (class_exists($name)) {
+                $newPlugin = new $name();
+                $newPlugin->run();
             }
         }
-        $d->close();
-
         return true;
-
     }
 
     /**
      * Activate a plugin based on class name
      */
-    public static function activate($pluginName)
+    public function activate($pluginName)
     {
-        // Instantiate the plugin
-        $className = "\plugin\\".$pluginName;
-        $plugin = new $className;
-
         // TODO: Allow creation of new tables in database
         // \FeatherBB\Core::init_db($data);;
         // $feather = \Slim\Slim::getInstance();
@@ -147,17 +114,41 @@ class Plugin
         //     $this->model->addData('groups', $group_data);
         // }
 
-        $feather = \Slim\Slim::getInstance();
-        $activePlugins = $feather->cache->isCached('active_plugins') ? $feather->cache->retrieve('active_plugins') : array();
+        // TODO: Install assets in public folder if _assets folder exists
 
-        // $feather->cache->delete('active_plugins');
+        $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
+
         // Check if plugin isn't already activated
         if (!array_key_exists($pluginName, $activePlugins)) {
             $activePlugins[$pluginName] = true;
-            $feather->cache->store('active_plugins', $activePlugins);
-            return true;
+            $this->feather->cache->store('active_plugins', $activePlugins);
+        } else {
+            throw new \Exception('Plugin "'.$pluginName::$name.'" already activated', 1);
         }
-        throw new \Exception("Plugin $pluginName already activated", 1);
+    }
+
+    /**
+     * Deactivate a plugin based on class name
+     */
+    public function deactivate($pluginName)
+    {
+        $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
+
+        // Check if plugin is actually activated
+        if (array_key_exists($pluginName, $activePlugins)) {
+            unset($activePlugins[$pluginName]);
+            $this->feather->cache->store('active_plugins', $activePlugins);
+        } else {
+            throw new \Exception("Plugin ".$pluginName::$name." not yet activated", 1);
+        }
+    }
+
+    /**
+     * Run an activated plugin
+     */
+    public function run()
+    {
+        $this->runHooks();
     }
 
     protected function runHooks()
@@ -169,9 +160,19 @@ class Plugin
      * Getters
      */
 
-    public function getName()
+    public function getInfos()
     {
-        return $this->name;
+        return array(
+            'name' => $this->name,
+            'version' => $this->version,
+            'author' => $this->author,
+            'description' => $this->description,
+        );
+    }
+
+    public static function getName()
+    {
+        return self::$name;
     }
 
     public function getVersion()

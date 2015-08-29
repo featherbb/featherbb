@@ -90,6 +90,6 @@ class search
 
     public function quicksearches($show)
     {
-        redirect(get_link('search/?action=show_'.$show));
+        redirect($this->feather->url->get('search/?action=show_'.$show));
     }
 }

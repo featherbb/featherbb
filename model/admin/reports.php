@@ -58,7 +58,7 @@ class reports
                 ->delete_many();
         }
 
-        redirect(get_link('admin/reports/'), __('Report zapped redirect'));
+        redirect($this->feather->url->get('admin/reports/'), __('Report zapped redirect'));
     }
 
     public function get_reports()

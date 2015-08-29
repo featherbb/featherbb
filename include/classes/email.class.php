@@ -121,7 +121,7 @@ class Email
         static $base_url;
 
         if (!isset($base_url)) {
-            $base_url = get_base_url();
+            $base_url = base();
         }
 
         $text = feather_trim($text, "\t\n ");

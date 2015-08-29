@@ -32,7 +32,7 @@ class login
     public function display()
     {
         if (!$this->user->is_guest) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
 
@@ -54,7 +54,7 @@ class login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
 
@@ -73,7 +73,7 @@ class login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
 

@@ -97,7 +97,7 @@ class moderate
         if ($action == 'stick') {
             $this->model->stick_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), __('Stick topic redirect'));
+            redirect($this->feather->url->get('topic/'.$id.'/'), __('Stick topic redirect'));
         }
 
 
@@ -105,21 +105,21 @@ class moderate
         if ($action == 'unstick') {
             $this->model->unstick_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), __('Unstick topic redirect'));
+            redirect($this->feather->url->get('topic/'.$id.'/'), __('Unstick topic redirect'));
         }
 
         // Open a topic
         if ($action == 'open') {
             $this->model->open_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), __('Open topic redirect'));
+            redirect($this->feather->url->get('topic/'.$id.'/'), __('Open topic redirect'));
         }
 
         // Close a topic
         if ($action == 'close') {
             $this->model->close_topic($id, $fid);
 
-            redirect(get_link('topic/'.$id.'/'), __('Close topic redirect'));
+            redirect($this->feather->url->get('topic/'.$id.'/'), __('Close topic redirect'));
         }
 
         $cur_topic = $this->model->get_topic_info($fid, $id);
@@ -197,11 +197,11 @@ class moderate
                         'page' => $p,
                         'active_page' => 'moderate',
                         'cur_topic' => $cur_topic,
-                        'url_topic' => url_friendly($cur_topic['subject']),
-                        'url_forum' => url_friendly($cur_topic['forum_name']),
+                        'url_topic' => $this->feather->url->url_friendly($cur_topic['subject']),
+                        'url_forum' => $this->feather->url->url_friendly($cur_topic['forum_name']),
                         'fid' => $fid,
                         'id' => $id,
-                        'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#'),
+                        'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#'),
                         'post_data' => $this->model->display_posts_view($id, $start_from),
                         'button_status' => $button_status,
                         'start_from' => $start_from,
@@ -239,7 +239,7 @@ class moderate
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->user->disp_topics * ($p - 1);
-        $url_forum = url_friendly($cur_forum['forum_name']);
+        $url_forum = $this->feather->url->url_friendly($cur_forum['forum_name']);
 
         $this->feather->view2->setPageInfo(array(
                             'title' => array(feather_escape($this->config['o_board_title']), feather_escape($cur_forum['forum_name'])),
@@ -249,7 +249,7 @@ class moderate
                             'p' => $p,
                             'url_forum' => $url_forum,
                             'cur_forum' => $cur_forum,
-                            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.paginate($num_pages, $p, 'moderate/forum/'.$id.'/#'),
+                            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'moderate/forum/'.$id.'/#'),
                             'topic_data' => $this->model->display_topics($id, $sort_by, $start_from),
                             'start_from' => $start_from,
                             )
@@ -350,7 +350,7 @@ class moderate
                 $this->model->close_multiple_topics($action, $topics, $fid);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-                redirect(get_link('moderate/forum/'.$fid.'/'), $redirect_msg);
+                redirect($this->feather->url->get('moderate/forum/'.$fid.'/'), $redirect_msg);
             }
         }
     }

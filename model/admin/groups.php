@@ -258,9 +258,9 @@ class groups
         $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
-            redirect(get_link('admin/groups/'), __('Group edited redirect'));
+            redirect($this->feather->url->get('admin/groups/'), __('Group edited redirect'));
         } else {
-            redirect(get_link('admin/groups/'), __('Group added redirect'));
+            redirect($this->feather->url->get('admin/groups/'), __('Group added redirect'));
         }
     }
 
@@ -285,7 +285,7 @@ class groups
         // Regenerate the config cache
         $this->feather->cache->store('config', \model\cache::get_config());
 
-        redirect(get_link('admin/groups/'), __('Default group redirect'));
+        redirect($this->feather->url->get('admin/groups/'), __('Default group redirect'));
     }
 
     public function check_members($group_id)
@@ -328,7 +328,7 @@ class groups
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
-        redirect(get_link('admin/groups/'), __('Group removed redirect'));
+        redirect($this->feather->url->get('admin/groups/'), __('Group removed redirect'));
     }
 
     public function get_group_title($group_id)

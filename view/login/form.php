@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php _e('Login') ?></span></h2>
 	<div class="box">
-		<form id="login" method="post" action="<?php echo get_link('login/action/in/') ?>" onsubmit="return process_form(this)">
+		<form id="login" method="post" action="<?php echo $feather->url->get('login/action/in/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
@@ -32,7 +32,7 @@ if (!defined('FEATHER')) {
 						</div>
 
 						<p class="clearb"><?php _e('Login info') ?></p>
-						<p class="actions"><span><a href="<?php echo get_link('register/') ?>" tabindex="5"><?php _e('Not registered') ?></a></span> <span><a href="<?php echo get_link('login/action/forget/') ?>" tabindex="6"><?php _e('Forgotten pass') ?></a></span></p>
+						<p class="actions"><span><a href="<?php echo $feather->url->get('register/') ?>" tabindex="5"><?php _e('Not registered') ?></a></span> <span><a href="<?php echo $feather->url->get('login/action/forget/') ?>" tabindex="6"><?php _e('Forgotten pass') ?></a></span></p>
 					</div>
 				</fieldset>
 			</div>

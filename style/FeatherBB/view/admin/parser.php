@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_parser['Parser head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo get_link('admin/parser/') ?>" enctype="multipart/form-data">
+			<form method="post" action="<?php echo $feather->url->get('admin/parser/') ?>" enctype="multipart/form-data">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop">
 					<input type="submit" name="save" value="<?php _e('Save changes') ?>" />

@@ -49,7 +49,7 @@ class login
         $authorized = $this->hook->fire('authorized_login', $authorized);
 
         if (!$authorized) {
-            message(__('Wrong user/pass').' <a href="'.get_link('login/action/forget/').'">'.__('Forgotten pass').'</a>');
+            message(__('Wrong user/pass').' <a href="'.$this->feather->url->get('login/action/forget/').'">'.__('Forgotten pass').'</a>');
         }
 
         // Update the status if this is the first time the user logged in
@@ -81,7 +81,7 @@ class login
         set_tracked_topics(null);
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
-        $redirect_url = validate_redirect($this->request->post('redirect_url'), get_base_url());
+        $redirect_url = validate_redirect($this->request->post('redirect_url'), $this->feather->url->base());
         $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
 
         redirect(feather_escape($redirect_url), __('Login redirect'));
@@ -92,7 +92,7 @@ class login
         $token = $this->hook->fire('logout_start', $token, $id);
 
         if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash($this->request->getIp()))) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
 
@@ -114,7 +114,7 @@ class login
 
         $this->auth->feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
 
-        redirect(get_base_url(), __('Logout redirect'));
+        redirect($this->feather->url->base(), __('Logout redirect'));
     }
 
     public function password_forgotten()
@@ -122,7 +122,7 @@ class login
         $this->hook->fire('password_forgotten_start');
 
         if (!$this->user->is_guest) {
-            header('Location: '.get_base_url());
+            header('Location: '.$this->feather->url->base());
             exit;
         }
         // Start with a clean slate
@@ -156,7 +156,7 @@ class login
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
 
                     // Do the generic replacements first (they apply to all emails sent out here)
-                    $mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
+                    $mail_message = str_replace('<base_url>', $this->feather->url->base().'/', $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
                     $mail_message = $this->hook->fire('mail_message_password_forgotten', $mail_message);
@@ -186,7 +186,7 @@ class login
 
                         // Do the user specific replacements to the template
                         $cur_mail_message = str_replace('<username>', $cur_hit->username, $mail_message);
-                        $cur_mail_message = str_replace('<activation_url>', get_link('user/'.$cur_hit->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
+                        $cur_mail_message = str_replace('<activation_url>', $this->feather->url->get('user/'.$cur_hit->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                         $cur_mail_message = $this->hook->fire('cur_mail_message_password_forgotten', $cur_mail_message);
 
@@ -214,7 +214,7 @@ class login
         }
 
         if (!isset($redirect_url)) {
-            $redirect_url = get_base_url();
+            $redirect_url = $this->feather->url->base();
         } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) { // TODO
             $redirect_url .= '#p'.$matches[1];
         }

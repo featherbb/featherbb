@@ -209,13 +209,14 @@ class View
     * Rendering
     *******************************************************************************/
 
-    public function display($data = null)
+    public function display($nested = true)
     {
-        echo $this->fetch($data);
+        echo $this->fetch($nested);
     }
 
-    public function fetch($data = null)
+    protected function fetch($nested = true)
     {
+        $data = array();
         // Force flash messages
         if (isset($this->app->environment['slim.flash'])) {
             $this->data->set('flash', $this->app->environment['slim.flash']);
@@ -224,19 +225,23 @@ class View
         $data['feather'] = \Slim\Slim::getInstance();
         $data['assets'] = $this->getAssets();
         $data = $this->app->hooks->fire('view.alter_data', $data);
-        return $this->render($data);
+        return $this->render($data, $nested);
     }
 
-    protected function render($data = null)
+    protected function render($data = null, $nested = true)
     {
         extract($data);
         ob_start();
 
-        require $this->getTemplatePathname('header.new.php');
+        if ($nested) {
+            require $this->getTemplatePathname('header.new.php');
+        }
         foreach ($this->getTemplates() as $tpl) {
             require $tpl;
         }
-        require $this->getTemplatePathname('footer.new.php');
+        if ($nested) {
+            require $this->getTemplatePathname('footer.new.php');
+        }
         return ob_get_clean();
     }
 
@@ -370,8 +375,15 @@ class View
             'tid' => null,
         );
 
-        if ($this->app->user->is_admmod) {
+        if (is_object($this->app->user) && $this->app->user->is_admmod) {
             $data['has_reports'] = \model\header::get_reports();
+        }
+
+        if ($this->app->forum_env['FEATHER_SHOW_INFO']) {
+            $data['exec_info'] = \model\debug::get_info();
+            if ($this->app->forum_env['FEATHER_SHOW_QUERIES']) {
+                $data['queries_info'] = \model\debug::get_queries();
+            }
         }
 
         return $data;

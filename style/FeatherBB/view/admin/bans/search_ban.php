@@ -16,8 +16,8 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_link('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+			<li><a href="<?php echo $feather->url->get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -55,8 +55,8 @@ if (!defined('FEATHER')) {
 					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? feather_escape($cur_ban['ip']) : '&#160;' ?></td>
 					<td class="tc4"><?php echo format_time($cur_ban['expire'], true) ?></td>
 					<td class="tc5"><?php echo($cur_ban['message'] != '') ? feather_escape($cur_ban['message']) : '&#160;' ?></td>
-					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.get_link('user/'.$cur_ban['ban_creator'].'/').'">'.feather_escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
-					<td class="tcr"><?php echo '<a href="'.get_link('admin/bans/edit/'.$cur_ban['id'].'/').'">'.__('Edit').'</a> | <a href="'.get_link('admin/bans/delete/'.$cur_ban['id'].'/').'">'.__('Remove').'</a>' ?></td>
+					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.$feather->url->get('user/'.$cur_ban['ban_creator'].'/').'">'.feather_escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
+					<td class="tcr"><?php echo '<a href="'.$feather->url->get('admin/bans/edit/'.$cur_ban['id'].'/').'">'.__('Edit').'</a> | <a href="'.$feather->url->get('admin/bans/delete/'.$cur_ban['id'].'/').'">'.__('Remove').'</a>' ?></td>
 				</tr>
 <?php
 
@@ -78,8 +78,8 @@ if (!defined('FEATHER')) {
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
         <ul class="crumbs">
-            <li><a href="<?php echo get_link('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?php echo get_link('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+            <li><a href="<?php echo $feather->url->get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?php echo $feather->url->get('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
 		<div class="clearer"></div>

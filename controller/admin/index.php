@@ -65,7 +65,7 @@ class index
             $deleted = $this->remove_install_folder($this->feather->forum_env['FEATHER_ROOT'].'install');
 
             if ($deleted) {
-                redirect(get_link('admin/'), __('Deleted install.php redirect'));
+                redirect($this->feather->url->get('admin/'), __('Deleted install.php redirect'));
             } else {
                 message(__('Delete install.php failed'));
             }

@@ -18,8 +18,6 @@ class edit
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-
-
         $this->model = new \model\edit();
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
@@ -76,18 +74,11 @@ class edit
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                redirect(get_link('post/'.$id.'/#p'.$id), __('Post redirect'));
+                redirect($this->feather->url->get('post/'.$id.'/#p'.$id), __('Post redirect'));
             }
         } else {
             $post = '';
         }
-
-
-        $page_title = array(feather_escape($this->config['o_board_title']), __('Edit post'));
-        $required_fields = array('req_subject' => __('Subject'), 'req_message' => __('Message'));
-        $focus_element = array('edit', 'req_message');
-
-        $this->header->setTitle($page_title)->setActivePage('edit')->setFocusElement($focus_element)->setRequiredFields($required_fields)->display();
 
         if ($this->request->post('preview')) {
             require_once FEATHER_ROOT.'include/parser.php';
@@ -115,7 +106,10 @@ class edit
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->render('edit.php', array(
+        $this->feather->view2->setPageInfo(array(
+                            'title' => array(feather_escape($this->config['o_board_title']), __('Edit post')),
+                            'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
+                            'focus_element' => array('edit', 'req_message'),
                             'cur_post' => $cur_post,
                             'errors' => $errors,
                             'preview_message' => $preview_message,
@@ -125,8 +119,6 @@ class edit
                             'lang_bbeditor'    =>    $lang_bbeditor,
                             'post' => $post,
                             )
-                    );
-
-
+                    )->addTemplate('edit.php')->display();
     }
 }

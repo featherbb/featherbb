@@ -25,20 +25,23 @@ if (!defined('FEATHER')) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($pluginsList as $class => $plugin) : ?>
+                    <?php foreach ($pluginsList as $plugin => $class) : ?>
                         <tr>
                             <td>
-                                <strong><?= $plugin->getName(); ?></strong>
+                                <strong><?= $class::$name; ?></strong>
                                 <div class="plugin-actions">
-                                    <a href="<?= get_link('/admin/plugins/activate?plugin='.$class) ?>">Activate</a>
-
+                                    <?php if (array_key_exists($class, $activePlugins)) { ?>
+                                        <a href="<?= get_link('/admin/plugins/deactivate?plugin='.$class) ?>">Deactivate</a>
+                                    <?php } else { ?>
+                                        <a href="<?= get_link('/admin/plugins/activate?plugin='.$class) ?>">Activate</a>
+                                    <?php } ?>
                                 </div>
                             </td>
                             <td>
-                                <?= $plugin->getDescription(); ?>
+                                <?= $class::$description; ?>
                                 <div class="plugin-details">
-                                    Version <?= $plugin->getVersion(); ?> |
-                                    By <?= $plugin->getAuthor(); ?>
+                                    Version <?= $class::$version; ?> |
+                                    By <?= $class::$author; ?>
                                 </div>
                             </td>
                         </tr>

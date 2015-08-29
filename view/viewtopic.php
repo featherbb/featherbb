@@ -17,9 +17,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></strong></li>
+			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -40,7 +40,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-	<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?php echo get_link('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
+	<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?php echo $feather->url->get('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo format_time($post['posted']) ?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -107,9 +107,9 @@ foreach ($post_data as $post) {
 <?php echo $post_link ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo get_link('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></strong></li>
+			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo feather_escape($cur_topic['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo feather_escape($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 <?php echo $subscraction ?>
 		<div class="clearer"></div>
@@ -126,7 +126,7 @@ if ($quickpost) {
 <div id="quickpost" class="blockform">
 	<h2><span><?php _e('Quick post') ?></span></h2>
 	<div class="box">
-		<form id="quickpostform" method="post" action="<?php echo get_link('post/reply/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+		<form id="quickpostform" method="post" action="<?php echo $feather->url->get('post/reply/'.$id.'/') ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
@@ -155,21 +155,21 @@ if ($quickpost) {
     ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo feather_escape(get_base_url(true)); ?>',
+    var baseUrl = '<?php echo feather_escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo get_base_url() ?>/js/bbeditor.js"></script>
+<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
 <script>postEditorToolbar('req_message');</script>
 
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo get_link('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo $feather->url->get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off');
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo $feather->url->get('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off');
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo $feather->url->get('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off');
     ?></span></li>
-							<li><span><a href="<?php echo get_link('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off');
+							<li><span><a href="<?php echo $feather->url->get('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off');
     ?></span></li>
 						</ul>
 					</div>

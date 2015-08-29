@@ -30,8 +30,8 @@ endif;
 			<p class="pagelink"><?php echo $search['paging_links'] ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo get_base_url() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo get_link('search/') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('search/') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $search['crumbs_text']['search_type'] ?></strong></li>
 		</ul>
 <?php echo(!empty($search['forum_actions']) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $search['forum_actions']).'</p>'."\n" : '') ?>

@@ -167,7 +167,7 @@ class Core extends \Slim\Middleware
 
     public function call()
     {
-        global $forum_time_formats, $forum_date_formats, $feather_config; // Legacy
+        global $forum_time_formats, $forum_date_formats; // Legacy
 
         // Set headers
         $this->set_headers();
@@ -196,6 +196,10 @@ class Core extends \Slim\Middleware
         $this->app->container->singleton('view2', function() {
             return new \FeatherBB\View();
         });
+        // Load FeatherBB url class
+        $this->app->container->singleton('url', function () {
+            return new \FeatherBB\Url();
+        });
         // Load FeatherBB hooks
         $this->app->container->singleton('hooks', function () {
             return new \FeatherBB\Hooks();
@@ -215,9 +219,9 @@ class Core extends \Slim\Middleware
         }
 
         // Load config from disk
-        $config_file = json_decode(file_get_contents($this->forum_env['FORUM_CONFIG_FILE']), true);
-        if (!is_null($config_file)) {
-            $this->forum_settings = array_merge(self::load_default_forum_settings(), $config_file);
+        include $this->forum_env['FORUM_CONFIG_FILE'];
+        if (isset($featherbb_config) && is_array($featherbb_config)) {
+            $this->forum_settings = array_merge(self::load_default_forum_settings(), $featherbb_config);
         } else {
             $this->app->response->setStatus(500); // Send forbidden header
             return $this->app->response->setBody('Wrong config file format');
@@ -233,9 +237,8 @@ class Core extends \Slim\Middleware
             $this->app->cache->store('config', \model\cache::get_config());
         }
 
-        $feather_config = $this->app->cache->retrieve('config');
         // Finalize forum_settings array
-        $this->forum_settings = array_merge($feather_config, $this->forum_settings);
+        $this->forum_settings = array_merge($this->app->cache->retrieve('config'), $this->forum_settings);
 
         // Set default style and assets
         $this->app->view2->setStyle($this->forum_settings['o_default_style']);
