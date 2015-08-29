@@ -206,8 +206,8 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
                 </div>
             </div>
         </div>
-        <?php endif; ?>
-        <?php if (isset($flash['message'])) : ?>
+    <?php endif; ?>
+        <?php if (isset($flash['info'])) : ?>
         <script type="text/javascript">
             window.onload = function() {
                 var flashMessage = document.getElementById('flashmsg');

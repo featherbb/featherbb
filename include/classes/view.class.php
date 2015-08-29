@@ -340,9 +340,9 @@ class View
 
     public function addMessage($msg, $type = 'info')
     {
-        if (isset($this->environment['slim.flash'])) {
+        if (isset($this->app->environment['slim.flash'])) {
             if (in_array($type, array('info', 'error'))) {
-                $this->environment['slim.flash']->set($type, (string) $msg);
+                $this->app->environment['slim.flash']->now($type, (string) $msg);
             }
         }
     }
