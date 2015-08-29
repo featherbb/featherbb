@@ -16,6 +16,9 @@ class debug
 
     public static function get_queries()
     {
+        if (empty(DB::get_query_log())) {
+            return null;
+        }
         $data = array();
         $data['raw'] = array_combine(DB::get_query_log()[0], DB::get_query_log()[1]);
         $data['total_time'] = array_sum(array_keys($data['raw']));
@@ -26,9 +29,8 @@ class debug
     {
         self::$app = \Slim\Slim::getInstance();
 
-        $data = array(
-            'nb_queries' => count(DB::get_query_log()[0]),
-            'exec_time' => (get_microtime() - self::$app->start));
+        $data = array('exec_time' => (get_microtime() - self::$app->start));
+        $data['nb_queries'] = (isset(DB::get_query_log()[0])) ? count(DB::get_query_log()[0]) : 'N/A';
         $data['mem_usage'] = (function_exists('memory_get_usage')) ? file_size(memory_get_usage()) : 'N/A';
         $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? file_size(memory_get_peak_usage()) : 'N/A';
         return $data;
