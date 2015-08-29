@@ -29,6 +29,10 @@ class statistics
 
     public function display()
     {
+        if (!$this->user->is_admmod) {
+            message(__('No permission'), '403');
+        }
+
         \FeatherBB\AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->get_total_size();

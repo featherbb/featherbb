@@ -30,30 +30,51 @@ class AdminUtils
         )->addTemplate('admin/menu.php');
     }
 
-    // Will be removed when plugins branch is finished
+    /**
+     * Get all php files in plugin folder.
+     */
+    public static function getPluginFiles($folder = '')
+    {
+        $plugin_files = array();
 
-    // public static function forum_list_plugins($is_admin)
-    // {
-    //     $plugins = array();
-    //
-    //     $d = dir(FEATHER_ROOT.'plugins');
-    //     if (!$d) {
-    //         return $plugins;
-    //     }
-    //
-    //     while (($entry = $d->read()) !== false) {
-    //         if (!is_dir(FEATHER_ROOT.'plugins/'.$entry) && preg_match('%^AM?P_(\w+)\.php$%i', $entry)) {
-    //             $prefix = substr($entry, 0, strpos($entry, '_'));
-    //
-    //             if ($prefix == 'AMP' || ($is_admin && $prefix == 'AP')) {
-    //                 $plugins[$entry] = substr($entry, strlen($prefix) + 1, -4);
-    //             }
-    //         }
-    //     }
-    //     $d->close();
-    //
-    //     natcasesort($plugins);
-    //
-    //     return $plugins;
-    // }
+        $plugins_dir = new \RecursiveDirectoryIterator(FEATHER_ROOT.'Plugins/'.$folder);
+        $iterator = new \RecursiveIteratorIterator($plugins_dir);
+        $iterator->setMaxDepth(1);
+        $php_files = new \RegexIterator($iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
+
+        foreach ($php_files as $file) {
+            $plugin_files[] = $file[0];
+        }
+
+        return $plugin_files;
+    }
+
+    /**
+     * Get all valid plugin files.
+     */
+    public static function getValidPlugins($folder = '')
+    {
+        $valid_plugins = array();
+
+        $plugin_files = self::getPluginFiles($folder);
+
+        $feather = \Slim\Slim::getInstance();
+        $feather_root = $feather->forum_env['FEATHER_ROOT'];
+
+        foreach ($plugin_files as $key => $file_path) {
+            // Remove forum base path
+            $relative_path = "/".preg_replace("/" . preg_quote($feather_root, "/") . "/", '', $file_path);
+            preg_match('/^(.+)\.php$/i', $relative_path, $class_name);
+            $parts = explode(DIRECTORY_SEPARATOR, $class_name[1]);
+            $name_space = join($parts, "\\");
+            // Check if plugin follows PSR-4 conventions and extends base forum plugin
+            if (class_exists($name_space) && property_exists($name_space, 'isValidFBPlugin')) {
+                $class = new $name_space;
+                $valid_plugins[end($parts)] =  $name_space;
+            }
+        }
+
+        ksort($valid_plugins);
+        return $valid_plugins;
+    }
 }

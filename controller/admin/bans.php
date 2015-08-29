@@ -94,7 +94,6 @@ class bans
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
-
         \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
         $this->feather->view2->setPageInfo(array(
