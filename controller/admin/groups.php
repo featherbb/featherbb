@@ -51,12 +51,12 @@ class groups
     public function delete($id)
     {
         if ($id < 5) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 403);
         }
 
         // Make sure we don't remove the default group
         if ($id == $this->config['o_default_user_group']) {
-            message(__('Cannot remove default message'));
+            throw new \FeatherBB\Error(__('Cannot remove default message'), 403);
         }
 
         // Check if this group has any members

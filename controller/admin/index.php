@@ -51,11 +51,11 @@ class index
 
             $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
             if (empty($latest_version)) {
-                message(__('Upgrade check failed message'));
+                throw new \FeatherBB\Error(__('Upgrade check failed message'), 500);
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-                message(__('Running latest version message'));
+                message(__('Running latest version message'), 200);
             } else {
                 message(sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }

@@ -44,7 +44,7 @@ class categories
     public function edit_categories()
     {
         if (empty($this->request->post('cat'))) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), '400');
         }
 
         foreach ($this->request->post('cat') as $cat_id => $properties) {
@@ -68,7 +68,7 @@ class categories
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), '400');
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
