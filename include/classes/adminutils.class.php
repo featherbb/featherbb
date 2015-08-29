@@ -37,10 +37,10 @@ class AdminUtils
     {
         $plugin_files = array();
 
-        $plugins_dir = new \RecursiveDirectoryIterator(FEATHER_ROOT.'Plugins/'.$folder);
+        $plugins_dir = new \RecursiveDirectoryIterator(FEATHER_ROOT.'plugins/'.$folder);
         $iterator = new \RecursiveIteratorIterator($plugins_dir);
         $iterator->setMaxDepth(1);
-        $php_files = new \RegexIterator($iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
+        $php_files = new \RegexIterator($iterator, '/.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
 
         foreach ($php_files as $file) {
             $plugin_files[] = $file[0];
@@ -63,7 +63,7 @@ class AdminUtils
 
         foreach ($plugin_files as $key => $file_path) {
             // Remove forum base path
-            $relative_path = "/".preg_replace("/" . preg_quote($feather_root, "/") . "/", '', $file_path);
+            $relative_path = DIRECTORY_SEPARATOR.preg_replace("/" . preg_quote($feather_root, "/") . "/", '', $file_path);
             preg_match('/^(.+)\.php$/i', $relative_path, $class_name);
             $parts = explode(DIRECTORY_SEPARATOR, $class_name[1]);
             $name_space = join($parts, "\\");
