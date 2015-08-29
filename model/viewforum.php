@@ -60,8 +60,7 @@ class viewforum
         $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
-            //message(__('Bad request'), '404');
-            throw new \Exception(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), '404');
         }
 
         $cur_forum = $this->hook->fire('get_info_forum', $cur_forum);
