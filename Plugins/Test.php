@@ -32,12 +32,12 @@ class Test extends Plugin
     public function run()
     {
         $this->hooks->bind('get_forum_actions', function ($forum_actions) {
-           $forum_actions[] = '<a href="' . get_link('mark-read/') . '">Test1</a>';
+           $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test1</a>';
            return $forum_actions;
         });
 
         $this->hooks->bind('get_forum_actions', function ($forum_actions) {
-            $forum_actions[] = '<a href="' . get_link('mark-read/') . '">Test2</a>';
+            $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test2</a>';
             return $forum_actions;
         });
     }

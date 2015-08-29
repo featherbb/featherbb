@@ -21,8 +21,8 @@ require 'Slim/Slim.php';
 require 'vendor/autoload.php';
 
 // Load FeatherBB
-// require 'include/classes/autoload.class.php';
-// \FeatherBB\Loader::registerAutoloader();
+require 'include/classes/autoload.class.php';
+\FeatherBB\Loader::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();

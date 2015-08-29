@@ -67,10 +67,10 @@ class plugins
         try {
             $plugin->activate($class);
         } catch (\Exception $e) {
-            redirect(get_link('admin/plugins/'), feather_escape($e->getMessage()));
+            redirect($this->feather->url->get('admin/plugins/'), feather_escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        redirect(get_link('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
+        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
     }
 
     public function deactivate()
@@ -85,10 +85,10 @@ class plugins
         try {
             $plugin->deactivate($class);
         } catch (\Exception $e) {
-            redirect(get_link('admin/plugins/'), feather_escape($e->getMessage()));
+            redirect($this->feather->url->get('admin/plugins/'), feather_escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        redirect(get_link('admin/plugins/'), 'Plugin "'.$class::$name.'" deactivated!');
+        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" deactivated!');
     }
 
     public function display()

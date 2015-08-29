@@ -163,6 +163,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     $feather->group('/plugins', function() use ($feather) {
         $feather->map('/(/)', '\controller\admin\plugins:index')->via('GET', 'POST');
         $feather->map('/activate(/)', '\controller\admin\plugins:activate')->via('GET');
+        $feather->map('/deactivate(/)', '\controller\admin\plugins:deactivate')->via('GET');
         // $feather->map('/loader(/)', '\controller\admin\plugins:display')->via('GET', 'POST');
     });
 
