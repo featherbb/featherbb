@@ -193,9 +193,9 @@ class login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    throw new \FeatherBB\Error(__('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', 400);
+                    throw new \FeatherBB\Error(__('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', 400);
                 } else {
-                    $errors[] = __('No email match').' '.htmlspecialchars($email).'.';
+                    $errors[] = __('No email match').' '.$this->feather->utils->escape($email).'.';
                 }
             }
         }
