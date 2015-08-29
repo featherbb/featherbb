@@ -354,7 +354,8 @@ class View
 
     protected function getDefaultPageInfo()
     {
-        if (!$this->app->cache->isCached('quickjump')) {
+        // Check if config file exists to avoid error when installing forum
+        if (!$this->app->cache->isCached('quickjump') && is_file($this->app->forum_env['FORUM_CONFIG_FILE'])) {
             $this->app->cache->store('quickjump', \model\cache::get_quickjump());
         }
 
