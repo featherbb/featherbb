@@ -183,6 +183,16 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
 });
 
 // 404 not found
-$feather->notFound(function () {
-    message(__('Bad request'), '404');
+$feather->notFound(function () use ($feather){
+    throw new \Exception('Page not found', 404);
+});
+
+$feather->error(function (\Exception $e) use ($feather) {
+    $feather->response->setStatus($e->getCode());
+    $feather->view2->setPageInfo(array(
+        'title' => array(feather_escape($feather->config['o_board_title']), __('Error')),
+        'msg'    =>   $e->getMessage(),
+        'no_back_link'    => false,
+        ))->addTemplate('message.php')->display();
+    $feather->stop();
 });

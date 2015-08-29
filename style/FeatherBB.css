@@ -1261,6 +1261,13 @@ footer .footer-link a {
     border: 1px solid #ebccd1;
     color: #a94442
 }
+
+.error {
+    background-color: #f2dede !important;
+    border: 1px solid #ebccd1 !important;
+    color: #a94442 !important
+}
+
 .flashmsg {
     position: fixed;
     min-width: 220px;
