@@ -29,7 +29,7 @@ class categories
 
     public function add_category()
     {
-        $cat_name = feather_trim($this->request->post('cat_name'));
+        $cat_name = $this->feather->utils->trim($this->request->post('cat_name'));
         if ($cat_name == '') {
             redirect($this->feather->url->get('admin/categories/'), __('Must enter name message'));
         }
@@ -49,7 +49,7 @@ class categories
 
         foreach ($this->request->post('cat') as $cat_id => $properties) {
             $category = array('id' => (int) $cat_id,
-                              'name' => feather_escape($properties['name']),
+                              'name' => $this->feather->utils->escape($properties['name']),
                               'order' => (int) $properties['order'], );
             if ($category['name'] == '') {
                 redirect($this->feather->url->get('admin/categories/'), __('Must enter name message'));
@@ -87,7 +87,7 @@ class categories
         \FeatherBB\AdminUtils::generateAdminMenu('categories');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Categories')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Categories')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),

@@ -124,6 +124,6 @@ class cache
                 $stopwords = array_merge($stopwords, file($file->getPathName().'/stopwords.txt'));
             }
         }
-        return array_map('feather_trim', $stopwords);
+        return array_map('trim', $stopwords);
     }
 }

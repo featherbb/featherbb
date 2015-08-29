@@ -199,7 +199,7 @@ class post
         );
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), $action),
+                            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $action),
                             'required_fields' => $required_fields,
                             'focus_element' => $focus_element,
                             'active_page' => 'post',

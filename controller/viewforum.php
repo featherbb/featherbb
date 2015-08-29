@@ -84,7 +84,7 @@ class viewforum
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), feather_escape($cur_forum['forum_name'])),
+            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $this->feather->utils->escape($cur_forum['forum_name'])),
             'active_page' => 'viewforum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

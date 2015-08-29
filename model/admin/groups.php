@@ -71,9 +71,9 @@ class groups
         foreach ($groups as $cur_group) {
             if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != FEATHER_ADMIN && $cur_group['g_id'] != FEATHER_GUEST) {
                 if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
-                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.$this->feather->utils->escape($cur_group['g_title']).'</option>'."\n";
                 } else {
-                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.$this->feather->utils->escape($cur_group['g_title']).'</option>'."\n";
                 }
             }
         }
@@ -99,9 +99,9 @@ class groups
         foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == FEATHER_MEMBER) {
                 // Pre-select the pre-defined Members group
-                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.$this->feather->utils->escape($cur_group['g_title']).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.feather_escape($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.$this->feather->utils->escape($cur_group['g_title']).'</option>'."\n";
             }
         }
 
@@ -123,13 +123,13 @@ class groups
         $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == FEATHER_ADMIN) ? true : false;
 
         // Set group title
-        $title = feather_trim($this->request->post('req_title'));
+        $title = $this->feather->utils->trim($this->request->post('req_title'));
         if ($title == '') {
             message(__('Must enter title message'));
         }
         $title = $this->hook->fire('add_edit_group_set_title', $title);
         // Set user title
-        $user_title = feather_trim($this->request->post('user_title'));
+        $user_title = $this->feather->utils->trim($this->request->post('user_title'));
         $user_title = ($user_title != '') ? $user_title : 'NULL';
         $user_title = $this->hook->fire('add_edit_group_set_user_title', $user_title);
 
@@ -201,7 +201,7 @@ class groups
             // Creating a new group
             $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
             if ($title_exists) {
-                message(sprintf(__('Title already exists message'), feather_escape($title)));
+                message(sprintf(__('Title already exists message'), $this->feather->utils->escape($title)));
             }
 
             DB::for_table('groups')
@@ -236,7 +236,7 @@ class groups
             // We are editing an existing group
             $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
             if ($title_exists) {
-                message(sprintf(__('Title already exists message'), feather_escape($title)));
+                message(sprintf(__('Title already exists message'), $this->feather->utils->escape($title)));
             }
             DB::for_table('groups')
                     ->find_one($this->request->post('group_id'))

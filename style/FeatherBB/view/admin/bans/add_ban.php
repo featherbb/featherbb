@@ -31,7 +31,7 @@ if (!defined('FEATHER')) {
 								<th scope="row"><?php _e('Username label') ?></th>
 								<td>
 									<input type="text" name="ban_user" size="25" maxlength="25" value="<?php if (isset($ban['ban_user'])) {
-										echo feather_escape($ban['ban_user']);
+										echo $feather->utils->escape($ban['ban_user']);
 									} ?>" tabindex="1" />
 									<span><?php _e('Username help') ?></span>
 								</td>
@@ -40,7 +40,7 @@ if (!defined('FEATHER')) {
 								<th scope="row"><?php _e('IP label') ?></th>
 								<td>
 									<input type="text" name="ban_ip" size="45" maxlength="255" value="<?php if (isset($ban['ip'])) {
-										echo feather_escape($ban['ip']);
+										echo $feather->utils->escape($ban['ip']);
 									} ?>" tabindex="2" />
 										<span><?php _e('IP help') ?><?php if ($ban['ban_user'] != '' && isset($ban['user_id'])) {
 												printf(' '.__('IP help link'), '<a href="admin_users.php?ip_stats='.$ban['user_id'].'">'.__('here').'</a>');
@@ -51,7 +51,7 @@ if (!defined('FEATHER')) {
 								<th scope="row"><?php _e('E-mail label') ?></th>
 								<td>
 									<input type="text" name="ban_email" size="40" maxlength="80" value="<?php if (isset($ban['email'])) {
-										echo feather_escape($ban['email']);
+										echo $feather->utils->escape($ban['email']);
 									} ?>" tabindex="3" />
 									<span><?php _e('E-mail help') ?></span>
 								</td>
@@ -70,7 +70,7 @@ if (!defined('FEATHER')) {
 								<th scope="row"><?php _e('Ban message label') ?></th>
 								<td>
 									<input type="text" name="ban_message" size="50" maxlength="255" value="<?php if (isset($ban['message'])) {
-										echo feather_escape($ban['message']);
+										echo $feather->utils->escape($ban['message']);
 									} ?>" tabindex="4" />
 									<span><?php _e('Ban message help') ?></span>
 								</td>

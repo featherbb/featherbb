@@ -51,7 +51,7 @@ class search
                     }
 
                     $this->feather->view2->setPageInfo(array(
-                        'title' => array(feather_escape($this->config['o_board_title']), __('Search results')),
+                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Search results')),
                         'active_page' => 'search',
                     ));
 
@@ -79,7 +79,7 @@ class search
         // Display the form
         else {
             $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Search')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,

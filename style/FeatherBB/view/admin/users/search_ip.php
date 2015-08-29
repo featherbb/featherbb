@@ -45,8 +45,8 @@ if (!defined('FEATHER')) {
         foreach ($ip_data as $ip) {
             ?>
 				<tr>
-					<td class="tcl"><a href="<?php echo $feather->url->get('moderate/get-host/ip/'.feather_escape($ip['poster_ip']).'/') ?>"><?php echo feather_escape($ip['poster_ip']) ?></a></td>
-					<td class="tc2"><?php echo format_time($ip['last_used']) ?></td>
+					<td class="tcl"><a href="<?php echo $feather->url->get('moderate/get-host/ip/'.$feather->utils->escape($ip['poster_ip']).'/') ?>"><?php echo $feather->utils->escape($ip['poster_ip']) ?></a></td>
+					<td class="tc2"><?php echo $feather->utils->format_time($ip['last_used']) ?></td>
 					<td class="tc3"><?php echo $ip['used_times'] ?></td>
 					<td class="tcr"><a href="<?php echo $feather->url->get('admin/users/show-users/ip/'.$ip['poster_ip'].'/') ?>"><?php _e('Results find more link') ?></a></td>
 				</tr>

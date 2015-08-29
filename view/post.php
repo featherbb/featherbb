@@ -119,7 +119,7 @@ if ($fid): ?>
 } ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
                         <script>postEditorToolbar('req_message');</script>
-						<textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? feather_linebreaks(feather_trim(feather_escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
+						<textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? $feather->utils->linebreaks($feather->utils->trim($feather->utils->escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo $feather->url->get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
 							<li><span><a href="<?php echo $feather->url->get('help/#url') ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>

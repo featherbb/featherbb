@@ -31,14 +31,14 @@ class maintenance
             $this->model->rebuild();
 
             $this->feather->view2->setPageInfo(array(
-                    'page_title'    =>    array(feather_escape($this->feather->forum_settings['o_board_title']), __('Rebuilding search index')),
+                    'page_title'    =>    array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Rebuilding search index')),
                     'query_str' => $this->model->get_query_str()
                 )
             )->addTemplate('admin/maintenance/rebuild.php')->display();
         }
 
         if ($action == 'prune') {
-            $prune_from = feather_trim($this->feather->request->post('prune_from'));
+            $prune_from = $this->feather->utils->trim($this->feather->request->post('prune_from'));
             $prune_sticky = intval($this->feather->request->post('prune_sticky'));
 
             \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
@@ -48,7 +48,7 @@ class maintenance
             }
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Prune')),
+                    'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Prune')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'prune_sticky'    =>    $prune_sticky,
@@ -61,7 +61,7 @@ class maintenance
         \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Maintenance')),
+                'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Maintenance')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'first_id' => $this->model->get_first_id(),

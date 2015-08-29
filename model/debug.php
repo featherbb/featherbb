@@ -12,7 +12,7 @@ use DB;
 
 class debug
 {
-    protected static $app;
+    protected static $feather;
 
     public static function get_queries()
     {
@@ -27,9 +27,9 @@ class debug
 
     public static function get_info()
     {
-        self::$app = \Slim\Slim::getInstance();
+        self::$feather = \Slim\Slim::getInstance();
 
-        $data = array('exec_time' => (get_microtime() - self::$app->start));
+        $data = array('exec_time' => (self::$feather->utils->get_microtime() - self::$feather->start));
         $data['nb_queries'] = (isset(DB::get_query_log()[0])) ? count(DB::get_query_log()[0]) : 'N/A';
         $data['mem_usage'] = (function_exists('memory_get_usage')) ? file_size(memory_get_usage()) : 'N/A';
         $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? file_size(memory_get_peak_usage()) : 'N/A';

@@ -42,7 +42,7 @@ class login
         $this->feather->view2->setPageInfo(array(
                             'redirect_url'    =>    $redirect_url,
                             'active_page' => 'login',
-                            'title' => array(feather_escape($this->config['o_board_title']), __('Login')),
+                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Login')),
                             'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
                             'focus_element' => array('login', 'req_username'),
                             )
@@ -80,7 +80,7 @@ class login
         $this->feather->view2->setPageInfo(array(
                 'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array(feather_escape($this->config['o_board_title']), __('Request pass')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Request pass')),
                 'required_fields' => array('req_email' => __('Email')),
                 'focus_element' => array('request_pass', 'req_email'),
             )

@@ -25,7 +25,7 @@ class index
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->feather->forum_settings['o_board_title'])),
+            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title'])),
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),

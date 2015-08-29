@@ -37,7 +37,7 @@ class reports
         \FeatherBB\AdminUtils::generateAdminMenu('reports');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Reports')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Reports')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'report_data'   =>  $this->model->get_reports(),

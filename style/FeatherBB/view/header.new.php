@@ -151,7 +151,7 @@ if ($feather->user->is_guest) {
         <div class="container-title-status">
             <h1 class="title-site">
                 <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
-                    <p><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></p>
+                    <p><?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
             </h1>
@@ -163,8 +163,8 @@ if ($feather->user->is_guest) { ?>
                     <p class="conl"><?= __('Not logged in')?></p>
 <?php } else {
     echo "\t\t\t\t\t".'<ul class="conl">';
-    echo "\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.feather_escape($feather->user->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), format_time($feather->user->last_visit)).'</span></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.$feather->utils->escape($feather->user->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), $feather->utils->format_time($feather->user->last_visit)).'</span></li>'."\n";
 
     if ($feather->user->is_admmod) {
         if ($feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2') {
@@ -220,7 +220,7 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
         </script>
         <div class="flashmsg" id="flashmsg">
             <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-            <p><?= feather_escape($flash['info']) ?></p>
+            <p><?= $feather->utils->escape($flash['info']) ?></p>
         </div>
         <?php endif; ?>
     </div>

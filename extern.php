@@ -87,7 +87,7 @@ function featherbb_write_cache_file($file, $content)
 {
     $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
     if (!$fh) {
-        error('Unable to write cache file '.feather_escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.feather_escape(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
+        error('Unable to write cache file '.$feather->utils->escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.$feather->utils->escape(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
     }
 
     flock($fh, LOCK_EX);
@@ -286,9 +286,9 @@ function output_rss($feed)
     echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
     echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
     echo "\t".'<channel>'."\n";
-    echo "\t\t".'<atom:link href="'.feather_escape(get_current_url()).'" rel="self" type="application/rss+xml" />'."\n";
+    echo "\t\t".'<atom:link href="'.$feather->utils->escape(get_current_url()).'" rel="self" type="application/rss+xml" />'."\n";
     echo "\t\t".'<title><![CDATA['.escape_cdata($feed['title']).']]></title>'."\n";
-    echo "\t\t".'<link>'.feather_escape($feed['link']).'</link>'."\n";
+    echo "\t\t".'<link>'.$feather->utils->escape($feed['link']).'</link>'."\n";
     echo "\t\t".'<description><![CDATA['.escape_cdata($feed['description']).']]></description>'."\n";
     echo "\t\t".'<lastBuildDate>'.gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</lastBuildDate>'."\n";
 
@@ -301,11 +301,11 @@ function output_rss($feed)
     foreach ($feed['items'] as $item) {
         echo "\t\t".'<item>'."\n";
         echo "\t\t\t".'<title><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t\t".'<link>'.feather_escape($item['link']).'</link>'."\n";
+        echo "\t\t\t".'<link>'.$feather->utils->escape($item['link']).'</link>'."\n";
         echo "\t\t\t".'<description><![CDATA['.escape_cdata($item['description']).']]></description>'."\n";
         echo "\t\t\t".'<author><![CDATA['.(isset($item['author']['email']) ? escape_cdata($item['author']['email']) : 'dummy@example.com').' ('.escape_cdata($item['author']['name']).')]]></author>'."\n";
         echo "\t\t\t".'<pubDate>'.gmdate('r', $item['pubdate']).'</pubDate>'."\n";
-        echo "\t\t\t".'<guid>'.feather_escape($item['link']).'</guid>'."\n";
+        echo "\t\t\t".'<guid>'.$feather->utils->escape($item['link']).'</guid>'."\n";
 
         echo "\t\t".'</item>'."\n";
     }
@@ -330,8 +330,8 @@ function output_atom($feed)
     echo '<feed xmlns="http://www.w3.org/2005/Atom">'."\n";
 
     echo "\t".'<title type="html"><![CDATA['.escape_cdata($feed['title']).']]></title>'."\n";
-    echo "\t".'<link rel="self" href="'.feather_escape(get_current_url()).'"/>'."\n";
-    echo "\t".'<link href="'.feather_escape($feed['link']).'"/>'."\n";
+    echo "\t".'<link rel="self" href="'.$feather->utils->escape(get_current_url()).'"/>'."\n";
+    echo "\t".'<link href="'.$feather->utils->escape($feed['link']).'"/>'."\n";
     echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
 
     if ($feather->forum_settings['o_show_version'] == '1') {
@@ -340,14 +340,14 @@ function output_atom($feed)
         echo "\t".'<generator>FluxBB</generator>'."\n";
     }
 
-    echo "\t".'<id>'.feather_escape($feed['link']).'</id>'."\n";
+    echo "\t".'<id>'.$feather->utils->escape($feed['link']).'</id>'."\n";
 
     $content_tag = ($feed['type'] == 'posts') ? 'content' : 'summary';
 
     foreach ($feed['items'] as $item) {
         echo "\t".'<entry>'."\n";
         echo "\t\t".'<title type="html"><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t".'<link rel="alternate" href="'.feather_escape($item['link']).'"/>'."\n";
+        echo "\t\t".'<link rel="alternate" href="'.$feather->utils->escape($item['link']).'"/>'."\n";
         echo "\t\t".'<'.$content_tag.' type="html"><![CDATA['.escape_cdata($item['description']).']]></'.$content_tag.'>'."\n";
         echo "\t\t".'<author>'."\n";
         echo "\t\t\t".'<name><![CDATA['.escape_cdata($item['author']['name']).']]></name>'."\n";
@@ -357,13 +357,13 @@ function output_atom($feed)
         }
 
         if (isset($item['author']['uri'])) {
-            echo "\t\t\t".'<uri>'.feather_escape($item['author']['uri']).'</uri>'."\n";
+            echo "\t\t\t".'<uri>'.$feather->utils->escape($item['author']['uri']).'</uri>'."\n";
         }
 
         echo "\t\t".'</author>'."\n";
         echo "\t\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', $item['pubdate']).'</updated>'."\n";
 
-        echo "\t\t".'<id>'.feather_escape($item['link']).'</id>'."\n";
+        echo "\t\t".'<id>'.$feather->utils->escape($item['link']).'</id>'."\n";
         echo "\t".'</entry>'."\n";
     }
 
@@ -384,7 +384,7 @@ function output_xml($feed)
 
     echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
     echo '<source>'."\n";
-    echo "\t".'<url>'.feather_escape($feed['link']).'</url>'."\n";
+    echo "\t".'<url>'.$feather->utils->escape($feed['link']).'</url>'."\n";
 
     $forum_tag = ($feed['type'] == 'posts') ? 'post' : 'topic';
 
@@ -392,7 +392,7 @@ function output_xml($feed)
         echo "\t".'<'.$forum_tag.' id="'.$item['id'].'">'."\n";
 
         echo "\t\t".'<title><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t".'<link>'.feather_escape($item['link']).'</link>'."\n";
+        echo "\t\t".'<link>'.$feather->utils->escape($item['link']).'</link>'."\n";
         echo "\t\t".'<content><![CDATA['.escape_cdata($item['description']).']]></content>'."\n";
         echo "\t\t".'<author>'."\n";
         echo "\t\t\t".'<name><![CDATA['.escape_cdata($item['author']['name']).']]></name>'."\n";
@@ -402,7 +402,7 @@ function output_xml($feed)
         }
 
         if (isset($item['author']['uri'])) {
-            echo "\t\t\t".'<uri>'.feather_escape($item['author']['uri']).'</uri>'."\n";
+            echo "\t\t\t".'<uri>'.$feather->utils->escape($item['author']['uri']).'</uri>'."\n";
         }
 
         echo "\t\t".'</author>'."\n";
@@ -428,12 +428,12 @@ function output_html($feed)
 
     foreach ($feed['items'] as $item) {
         if (utf8_strlen($item['title']) > FORUM_EXTERN_MAX_SUBJECT_LENGTH) {
-            $subject_truncated = feather_escape(feather_trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
+            $subject_truncated = $feather->utils->escape($feather->utils->trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
         } else {
-            $subject_truncated = feather_escape($item['title']);
+            $subject_truncated = $feather->utils->escape($item['title']);
         }
 
-        echo '<li><a href="'.feather_escape($item['link']).'" title="'.feather_escape($item['title']).'">'.$subject_truncated.'</a></li>'."\n";
+        echo '<li><a href="'.$feather->utils->escape($item['link']).'" title="'.$feather->utils->escape($item['title']).'">'.$subject_truncated.'</a></li>'."\n";
     }
 }
 
@@ -540,7 +540,7 @@ if ($action == 'feed') {
 
         // Were any forum IDs supplied?
         if (isset($_GET['fid']) && is_scalar($_GET['fid']) && $_GET['fid'] != '') {
-            $fids = explode(',', feather_trim($_GET['fid']));
+            $fids = explode(',', $feather->utils->trim($_GET['fid']));
             $fids = array_map('intval', $fids);
 
             if (!empty($fids)) {
@@ -569,7 +569,7 @@ if ($action == 'feed') {
 
         // Any forum IDs to exclude?
         if (isset($_GET['nfid']) && is_scalar($_GET['nfid']) && $_GET['nfid'] != '') {
-            $nfids = explode(',', feather_trim($_GET['nfid']));
+            $nfids = explode(',', $feather->utils->trim($_GET['nfid']));
             $nfids = array_map('intval', $nfids);
 
             if (!empty($nfids)) {
@@ -700,7 +700,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     foreach ($result as $feather_user_online) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$feather_user_online['user_id'].'/').'">'.feather_escape($feather_user_online['ident']).'</a>' : feather_escape($feather_user_online['ident']);
+            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$feather_user_online['user_id'].'/').'">'.$feather->utils->escape($feather_user_online['ident']).'</a>' : $feather->utils->escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -713,12 +713,12 @@ elseif ($action == 'online' || $action == 'online_full') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf(__('Guests online'), forum_number_format($num_guests)).'<br />'."\n";
+    echo sprintf(__('Guests online'), $feather->utils->forum_number_format($num_guests)).'<br />'."\n";
 
     if ($action == 'online_full' && !empty($users)) {
         echo sprintf(__('Users online'), implode(', ', $users)).'<br />'."\n";
     } else {
-        echo sprintf(__('Users online'), forum_number_format($num_users)).'<br />'."\n";
+        echo sprintf(__('Users online'), $feather->utils->forum_number_format($num_users)).'<br />'."\n";
     }
 
     exit;
@@ -747,10 +747,10 @@ elseif ($action == 'stats') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf(__('No of users'), forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
-    echo sprintf(__('No of topics'), forum_number_format($stats['total_topics'])).'<br />'."\n";
-    echo sprintf(__('No of posts'), forum_number_format($stats['total_posts'])).'<br />'."\n";
+    echo sprintf(__('No of users'), $feather->utils->forum_number_format($stats['total_users'])).'<br />'."\n";
+    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$stats['last_user']['id'].'/').'">'.$feather->utils->escape($stats['last_user']['username']).'</a>' : $feather->utils->escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf(__('No of topics'), $feather->utils->forum_number_format($stats['total_topics'])).'<br />'."\n";
+    echo sprintf(__('No of posts'), $feather->utils->forum_number_format($stats['total_posts'])).'<br />'."\n";
 
     exit;
 }

@@ -25,8 +25,8 @@ class censoring
 
     public function add_word()
     {
-        $search_for = feather_trim($this->request->post('new_search_for'));
-        $replace_with = feather_trim($this->request->post('new_replace_with'));
+        $search_for = $this->feather->utils->trim($this->request->post('new_search_for'));
+        $replace_with = $this->feather->utils->trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
             message(__('Must enter word message'));
@@ -53,8 +53,8 @@ class censoring
     {
         $id = intval(key($this->request->post('update')));
 
-        $search_for = feather_trim($this->request->post('search_for')[$id]);
-        $replace_with = feather_trim($this->request->post('replace_with')[$id]);
+        $search_for = $this->feather->utils->trim($this->request->post('search_for')[$id]);
+        $replace_with = $this->feather->utils->trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
             message(__('Must enter word message'));

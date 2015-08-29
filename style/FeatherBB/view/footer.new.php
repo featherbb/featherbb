@@ -70,7 +70,7 @@ if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 					<select name="id" onchange="window.location=('<?php echo $feather->url->get('forum/') ?>'+this.options[this.selectedIndex].value)">
 <?php
 		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
-			echo "\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($cat_data['cat_name']).'">'."\n";
+			echo "\t\t\t\t\t\t\t".'<optgroup label="'.$feather->utils->escape($cat_data['cat_name']).'">'."\n";
 			foreach ($cat_data['cat_forums'] as $forum) {
 				echo "\t\t\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.$feather->url->url_friendly($forum['forum_name']).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
 			}
@@ -134,8 +134,8 @@ if (!empty($queries_info)) { ?>
 					<tbody>
 <?php foreach ($queries_info['raw'] as $time => $sql) {
 	echo "\t\t\t\t\t\t".'<tr>'."\n";
-	echo "\t\t\t\t\t\t\t".'<td class="tcl">'.feather_escape(round($time, 8)).'</td>'."\n";
-	echo "\t\t\t\t\t\t\t".'<td class="tcr">'.feather_escape($sql).'</td>'."\n";
+	echo "\t\t\t\t\t\t\t".'<td class="tcl">'.$feather->utils->escape(round($time, 8)).'</td>'."\n";
+	echo "\t\t\t\t\t\t\t".'<td class="tcr">'.$feather->utils->escape($sql).'</td>'."\n";
 	echo "\t\t\t\t\t\t".'</tr>'."\n";
 } ?>
 						<tr>

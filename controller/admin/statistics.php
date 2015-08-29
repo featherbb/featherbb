@@ -33,7 +33,7 @@ class statistics
         $total = $this->model->get_total_size();
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),

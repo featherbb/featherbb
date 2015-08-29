@@ -63,7 +63,7 @@ class register
         }
 
             $this->feather->view2->setPageInfo(array(
-                        'title' => array(feather_escape($this->config['o_board_title']), __('Register')),
+                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Register')),
                         'focus_element' => array('register', 'req_user'),
                         'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
                         'active_page' => 'register',
@@ -102,7 +102,7 @@ class register
         }
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array(feather_escape($this->config['o_board_title']), __('Register'), __('Forum rules')),
+                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Register'), __('Forum rules')),
                             'active_page' => 'register',
                             )
                     )->addTemplate('register/rules.php')->display();

@@ -64,7 +64,7 @@ class profile
             $this->model->delete_user($id, $this->feather);
 
             $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Confirm delete user')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Confirm delete user')),
                 'active_page' => 'profile',
                 'username' => $this->model->get_username($id),
                 'id' => $id,
@@ -108,7 +108,7 @@ class profile
                 $user_info = $this->model->parse_user_info($user);
 
             $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), sprintf(__('Users profile'), feather_escape($user['username']))),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), sprintf(__('Users profile'), $this->feather->utils->escape($user['username']))),
                 'active_page' => 'profile',
                 'user_info' => $user_info,
                 'id' => $id
@@ -120,7 +120,7 @@ class profile
                 $user_disp = $this->model->edit_essentials($id, $user);
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section essentials')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section essentials')),
                     'required_fields' => array('req_username' => __('Username'), 'req_email' => __('Email')),
                     'active_page' => 'profile',
                     'id' => $id,
@@ -135,11 +135,11 @@ class profile
 
             } elseif ($section == 'personal') {
                 if ($this->user->g_set_title == '1') {
-                    $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.feather_escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
+                    $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.$this->feather->utils->escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section personal')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section personal')),
                     'active_page' => 'profile',
                     'id' => $id,
                     'page' => 'personal',
@@ -152,7 +152,7 @@ class profile
             } elseif ($section == 'messaging') {
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section messaging')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section messaging')),
                     'active_page' => 'profile',
                     'page' => 'messaging',
                     'user' => $user,
@@ -182,7 +182,7 @@ class profile
                 }
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section personality')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section personality')),
                     'active_page' => 'profile',
                     'user_avatar' => $user_avatar,
                     'avatar_field' => $avatar_field,
@@ -197,7 +197,7 @@ class profile
             } elseif ($section == 'display') {
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section display')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section display')),
                     'active_page' => 'profile',
                     'page' => 'display',
                     'user' => $user,
@@ -209,7 +209,7 @@ class profile
             } elseif ($section == 'privacy') {
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section privacy')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section privacy')),
                     'active_page' => 'profile',
                     'page' => 'privacy',
                     'user' => $user,
@@ -225,7 +225,7 @@ class profile
                 }
 
                 $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Section admin')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Section admin')),
                     'active_page' => 'profile',
                     'page' => 'admin',
                     'user' => $user,
@@ -260,7 +260,7 @@ class profile
             $this->model->change_pass($id, $this->feather);
 
             $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Change pass')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Change pass')),
                 'active_page' => 'profile',
                 'id' => $id,
                 'required_fields' => array('req_old_password' => __('Old pass'), 'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')),
@@ -273,7 +273,7 @@ class profile
             $this->model->change_email($id, $this->feather);
 
             $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Change email')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Change email')),
                 'active_page' => 'profile',
                 'required_fields' => array('req_new_email' => __('New email'), 'req_password' => __('Password')),
                 'focus_element' => array('change_email', 'req_new_email'),
@@ -296,7 +296,7 @@ class profile
             }
 
             $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Profile'), __('Upload avatar')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Profile'), __('Upload avatar')),
                 'active_page' => 'profile',
                 'required_fields' =>  array('req_file' => __('File')),
                 'focus_element' => array('upload_avatar', 'req_file'),

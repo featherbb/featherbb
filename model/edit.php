@@ -64,30 +64,30 @@ class edit
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
-            $subject = feather_trim($this->request->post('req_subject'));
+            $subject = $this->feather->utils->trim($this->request->post('req_subject'));
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = feather_trim(censor_words($subject));
+                $censored_subject = $this->feather->utils->trim(censor_words($subject));
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
-            } elseif (feather_strlen($subject) > 70) {
+            } elseif ($this->feather->utils->strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
+            } elseif ($this->config['p_subject_all_caps'] == '0' && $this->feather->utils->is_all_uppercase($subject) && !$this->user->is_admmod) {
                 $errors[] = __('All caps subject');
             }
         }
 
         // Clean up message from POST
-        $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
+        $message = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_message')));
 
-        // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not $this->feather->utils->strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            $errors[] = sprintf(__('Too long message'), forum_number_format(FEATHER_MAX_POSTSIZE));
-        } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user->is_admmod) {
+            $errors[] = sprintf(__('Too long message'), $this->feather->utils->forum_number_format(FEATHER_MAX_POSTSIZE));
+        } elseif ($this->config['p_message_all_caps'] == '0' && $this->feather->utils->is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -102,7 +102,7 @@ class edit
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = feather_trim(censor_words($message));
+                $censored_message = $this->feather->utils->trim(censor_words($message));
 
                 if ($censored_message == '') {
                     $errors[] = __('No message after censoring');
@@ -131,7 +131,7 @@ class edit
         }
 
         // Clean up message from POST
-        $post['message'] = feather_linebreaks(feather_trim($this->request->post('req_message')));
+        $post['message'] = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -140,11 +140,11 @@ class edit
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
-        $post['message'] = strip_bad_multibyte_chars($post['message']);
+        $post['message'] = $this->feather->utils->strip_bad_multibyte_chars($post['message']);
 
         // Get the subject
         if ($can_edit_subject) {
-            $post['subject'] = feather_trim($this->request->post('req_subject'));
+            $post['subject'] = $this->feather->utils->trim($this->request->post('req_subject'));
         }
 
         $post = $this->hook->fire('setup_variables_edit', $post);

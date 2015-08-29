@@ -29,8 +29,8 @@ class login
     {
         $this->hook->fire('login_start');
 
-        $form_username = feather_trim($this->request->post('req_username'));
-        $form_password = feather_trim($this->request->post('req_password'));
+        $form_username = $this->feather->utils->trim($this->request->post('req_username'));
+        $form_password = $this->feather->utils->trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
 
         $user = DB::for_table('users')->where('username', $form_username);
@@ -84,7 +84,7 @@ class login
         $redirect_url = validate_redirect($this->request->post('redirect_url'), $this->feather->url->base());
         $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
 
-        redirect(feather_escape($redirect_url), __('Login redirect'));
+        redirect($this->feather->utils->escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
@@ -130,7 +130,7 @@ class login
 
         if ($this->feather->request()->isPost()) {
             // Validate the email address
-            $email = strtolower(feather_trim($this->request->post('req_email')));
+            $email = strtolower($this->feather->utils->trim($this->request->post('req_email')));
             if (!$this->email->is_valid_email($email)) {
                 $errors[] = __('Invalid email');
             }
@@ -193,7 +193,7 @@ class login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    message(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+                    message(__('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', true);
                 } else {
                     $errors[] = __('No email match').' '.htmlspecialchars($email).'.';
                 }
