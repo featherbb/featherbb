@@ -27,7 +27,7 @@ foreach ($index_data as $forum) {
 	<?php endif;
     ?>
 	<div id="idx<?php echo $forum->cid ?>" class="blocktable">
-	<h2><span><?php echo feather_escape($forum->cat_name) ?></span></h2>
+	<h2><span><?php echo $feather->utils->escape($forum->cat_name) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
@@ -46,15 +46,15 @@ foreach ($index_data as $forum) {
     ?>
 				<tr class="<?php echo $forum->item_status ?>">
 					<td class="tcl">
-						<div class="<?php echo $forum->icon_type ?>"><div class="nosize"><?php echo forum_number_format($forum->forum_count_formatted) ?></div></div>
+						<div class="<?php echo $forum->icon_type ?>"><div class="nosize"><?php echo $feather->utils->forum_number_format($forum->forum_count_formatted) ?></div></div>
 						<div class="tclcon">
 							<div>
 								<?php echo $forum->forum_field."\n".$forum->moderators_formatted ?>
 							</div>
 						</div>
 					</td>
-					<td class="tc2"><?php echo forum_number_format($forum->num_topics_formatted) ?></td>
-					<td class="tc3"><?php echo forum_number_format($forum->num_posts_formatted) ?></td>
+					<td class="tc2"><?php echo $feather->utils->forum_number_format($forum->num_topics_formatted) ?></td>
+					<td class="tc3"><?php echo $feather->utils->forum_number_format($forum->num_posts_formatted) ?></td>
 					<td class="tcr"><?php echo $forum->last_post_formatted ?></td>
 				</tr>
 	<?php
@@ -85,16 +85,16 @@ endif;
 		<div class="inbox">
 			<dl class="conr">
 				<dt><strong><?php _e('Board stats') ?></strong></dt>
-				<dd><span><?php printf(__('No of users'), '<strong>'.forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
-				<dd><span><?php printf(__('No of topics'), '<strong>'.forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
-				<dd><span><?php printf(__('No of posts'), '<strong>'.forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of users'), '<strong>'.$feather->utils->forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of topics'), '<strong>'.$feather->utils->forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('No of posts'), '<strong>'.$feather->utils->forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
 			</dl>
 			<dl class="conl">
 				<dt><strong><?php _e('User info') ?></strong></dt>
 				<dd><span><?php printf(__('Newest user'), $stats['newest_user']) ?></span></dd>
 				<?php if ($feather->forum_settings['o_users_online'] == 1) : ?>
-				<dd><span><?php printf(__('Users online'), '<strong>'.forum_number_format($online['num_users']).'</strong>') ?></span></dd>
-				<dd><span><?php printf(__('Guests online'), '<strong>'.forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('Users online'), '<strong>'.$feather->utils->forum_number_format($online['num_users']).'</strong>') ?></span></dd>
+				<dd><span><?php printf(__('Guests online'), '<strong>'.$feather->utils->forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
 				<?php endif; ?>
 			</dl>
 			<?php

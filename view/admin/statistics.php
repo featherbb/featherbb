@@ -30,7 +30,7 @@ if (!defined('FEATHER')) {
 					</dd>
 					<dt><?php _e('Database label') ?></dt>
 					<dd>
-<?php if (isset($total_records) && isset($total_size)): ?>						<?php printf(__('Database data rows')."\n", forum_number_format($total_records)) ?>
+<?php if (isset($total_records) && isset($total_size)): ?>						<?php printf(__('Database data rows')."\n", $feather->utils->forum_number_format($total_records)) ?>
 						<br /><?php printf(__('Database data size')."\n", $total_size) ?>
 <?php endif; ?>					</dd>
 <?php endif; ?>
