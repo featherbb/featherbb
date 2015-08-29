@@ -220,7 +220,7 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
         </script>
         <div class="flashmsg" id="flashmsg">
             <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-            <p><?= feather_escape($flash['message']) ?></p>
+            <p><?= feather_escape($flash['info']) ?></p>
         </div>
         <?php endif; ?>
     </div>

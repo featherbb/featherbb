@@ -674,7 +674,7 @@ function redirect($destination_url, $message = null)
     $feather = \Slim\Slim::getInstance();
 
     // Add a flash message
-    $feather->flash('message', $message);
+    $feather->flash('info', $message);
 
     $feather->redirect($destination_url);
 }
@@ -832,4 +832,3 @@ function breadcrumbs_admin(array $links)
     }
     return implode(' » ', $tmp);
 }
-

@@ -20,12 +20,10 @@ class View
     $validation = array(
         'page_number' => 'intval',
         'active_page' => 'strval',
-        //'focus_element' => 'strval',
         'is_indexed' => 'boolval',
         'admin_console' => 'boolval',
         'has_reports' => 'boolval',
         'paging_links' => 'strval',
-        //'required_fields' => 'strval',
         'has_reports' => 'boolval',
         'footer_style' => 'strval',
         'fid' => 'intval',
@@ -338,6 +336,15 @@ class View
             }
         }
         return $output;
+    }
+
+    public function addMessage($msg, $type = 'info')
+    {
+        if (isset($this->environment['slim.flash'])) {
+            if (in_array($type, array('info', 'error'))) {
+                $this->environment['slim.flash']->set($type, (string) $msg);
+            }
+        }
     }
 
     public function __call($method, $args)
