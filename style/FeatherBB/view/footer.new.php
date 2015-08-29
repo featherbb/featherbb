@@ -116,15 +116,37 @@ if ($active_page == 'index') {
 <?php
 
 // Display debug info (if enabled/defined)
-if ($feather->forum_env['FEATHER_SHOW_INFO']) {
-    $feather->debug->info();
-}
-// Display executed queries (if enabled)
-if ($feather->forum_env['FEATHER_SHOW_QUERIES']) {
-    $feather->debug->queries();
-}
-?>
-
+if (!empty($exec_info)) { ?>
+	<p id="debugtime">[ <?= sprintf(__('Querytime'), round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.sprintf(__('Memory usage'), $exec_info['mem_usage']).' '.sprintf(__('Peak usage'), $exec_info['mem_peak_usage'])?>]</p>
+<? }
+if (!empty($queries_info)) { ?>
+	<div id="debug" class="blocktable">
+		<h2><span><?php _e('Debug table') ?></span></h2>
+		<div class="box">
+			<div class="inbox">
+				<table>
+					<thead>
+						<tr>
+							<th class="tcl" scope="col"><?php _e('Query times') ?></th>
+							<th class="tcr" scope="col"><?php _e('Query') ?></th>
+						</tr>
+					</thead>
+					<tbody>
+<?php foreach ($queries_info['raw'] as $time => $sql) {
+	echo "\t\t\t\t\t\t".'<tr>'."\n";
+	echo "\t\t\t\t\t\t\t".'<td class="tcl">'.feather_escape(round($time, 8)).'</td>'."\n";
+	echo "\t\t\t\t\t\t\t".'<td class="tcr">'.feather_escape($sql).'</td>'."\n";
+	echo "\t\t\t\t\t\t".'</tr>'."\n";
+} ?>
+						<tr>
+							<td class="tcl" colspan="2"><?= sprintf(__('Total query time'), round($queries_info['total_time'], 7)).' s' ?></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+<? } ?>
 </section>
 </body>
 <!-- JS -->

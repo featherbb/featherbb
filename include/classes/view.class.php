@@ -374,6 +374,13 @@ class View
             $data['has_reports'] = \model\header::get_reports();
         }
 
+        if ($this->app->forum_env['FEATHER_SHOW_INFO']) {
+            $data['exec_info'] = \model\debug::get_info();
+            if ($this->app->forum_env['FEATHER_SHOW_QUERIES']) {
+                $data['queries_info'] = \model\debug::get_queries();
+            }
+        }
+
         return $data;
     }
 

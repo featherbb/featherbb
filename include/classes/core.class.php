@@ -208,10 +208,6 @@ class Core extends \Slim\Middleware
         $this->app->container->singleton('email', function () {
             return new \FeatherBB\Email();
         });
-        // Load FeatherBB debug class
-        $this->app->container->singleton('debug', function () {
-            return new \FeatherBB\Debug();
-        });
 
         // This is the very first hook fired
         $this->app->hooks->fire('core.start');
