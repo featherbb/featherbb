@@ -91,7 +91,7 @@ class options
         $form = $this->hook->fire('options.update_options.form', $form);
 
         if ($form['board_title'] == '') {
-            message(__('Must enter title message'));
+            throw new \FeatherBB\Error(__('Must enter title message'), 400);
         }
 
         // Make sure base_url doesn't end with a slash
@@ -102,7 +102,7 @@ class options
         // Convert IDN to Punycode if needed
         if (preg_match('/[^\x00-\x7F]/', $form['base_url'])) {
             if (!function_exists('idn_to_ascii')) {
-                message(__('Base URL problem'));
+                throw new \FeatherBB\Error(__('Base URL problem'), 400);
             } else {
                 $form['base_url'] = idn_to_ascii($form['base_url']);
             }
@@ -110,12 +110,12 @@ class options
 
         $languages = forum_list_langs();
         if (!in_array($form['default_lang'], $languages)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $styles = forum_list_styles();
         if (!in_array($form['default_style'], $styles)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         if ($form['time_format'] == '') {
@@ -127,11 +127,11 @@ class options
         }
 
         if (!$this->email->is_valid_email($form['admin_email'])) {
-            message(__('Invalid e-mail message'));
+            throw new \FeatherBB\Error(__('Invalid e-mail message'), 400);
         }
 
         if (!$this->email->is_valid_email($form['webmaster_email'])) {
-            message(__('Invalid webmaster e-mail message'));
+            throw new \FeatherBB\Error(__('Invalid webmaster e-mail message'), 400);
         }
 
         if ($form['mailing_list'] != '') {
@@ -155,7 +155,7 @@ class options
             if ($smtp_pass1 == $smtp_pass2) {
                 $form['smtp_pass'] = $smtp_pass1;
             } else {
-                message(__('SMTP passwords did not match'));
+                throw new \FeatherBB\Error(__('SMTP passwords did not match'), 400);
             }
         }
 
@@ -194,23 +194,23 @@ class options
         }
 
         if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         if ($form['feed_ttl'] < 0) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         if ($form['timeout_online'] >= $form['timeout_visit']) {
-            message(__('Timeout error message'));
+            throw new \FeatherBB\Error(__('Timeout error message'), 400);
         }
 
         foreach ($form as $key => $input) {

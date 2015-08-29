@@ -40,7 +40,7 @@ class moderate
         $ip = $ip->find_one_col('poster_ip');
 
         if (!$ip) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $ip = $this->hook->fire('display_ip_address_post', $ip);
@@ -81,7 +81,7 @@ class moderate
         $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         return $cur_topic;
@@ -93,12 +93,12 @@ class moderate
         $posts = $this->hook->fire('delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
-            message(__('No posts selected'));
+            throw new \FeatherBB\Error(__('No posts selected'), 404);
         }
 
         if ($this->request->post('delete_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 400);
             }
 
             // Verify that the post IDs are valid
@@ -116,7 +116,7 @@ class moderate
             $result = $result->find_many();
 
             if (count($result) != substr_count($posts, ',') + 1) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 400);
             }
 
             // Delete the posts
@@ -168,17 +168,17 @@ class moderate
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         $posts = $this->hook->fire('split_posts_start', $posts, $tid, $fid);
         if (empty($posts)) {
-            message(__('No posts selected'));
+            throw new \FeatherBB\Error(__('No posts selected'), 404);
         }
 
         if ($this->request->post('split_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 400);
             }
 
             $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
             if ($move_to_forum < 1) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 400);
             }
 
             // How many posts did we just split off?
@@ -194,7 +194,7 @@ class moderate
             $result = $result->find_many();
 
             if (count($result) != $num_posts_splitted) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 400);
             }
 
             unset($result);
@@ -215,16 +215,16 @@ class moderate
             $result = $result->find_one();
 
             if (!$result) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 404);
             }
 
             // Check subject
             $new_subject = $this->request->post('new_subject') ? feather_trim($this->request->post('new_subject')) : '';
 
             if ($new_subject == '') {
-                message(__('No subject'));
+                throw new \FeatherBB\Error(__('No subject'), 400);
             } elseif (feather_strlen($new_subject) > 70) {
-                message(__('Too long subject'));
+                throw new \FeatherBB\Error(__('Too long subject'), 400);
             }
 
             // Get data from the new first post
@@ -495,13 +495,13 @@ class moderate
         $fid = $this->hook->fire('move_topics_to_start', $fid);
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         $topics = explode(',', $this->request->post('topics'));
         $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
         if (empty($topics) || $move_to_forum < 1) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // Verify that the topic IDs are valid
@@ -512,7 +512,7 @@ class moderate
         $result = $result->find_many();
 
         if (count($result) != count($topics)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
 
@@ -532,7 +532,7 @@ class moderate
         $authorized = $authorized->find_one();
 
         if (!$authorized) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
@@ -612,7 +612,7 @@ class moderate
         $result = $result->find_many();
 
         if (count($result) < 2) {
-            message(__('Nowhere to move'));
+            throw new \FeatherBB\Error(__('Nowhere to move'), 403);
         }
     }
 
@@ -621,12 +621,12 @@ class moderate
         $fid = $this->hook->fire('merge_topics_start', $fid);
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $topics = explode(',', $this->request->post('topics'));
         if (count($topics) < 2) {
-            message(__('Not enough topics selected'));
+            throw new \FeatherBB\Error(__('Not enough topics selected'), 400);
         }
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
@@ -637,7 +637,7 @@ class moderate
         $result = $result->find_many();
 
         if (count($result) != count($topics)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // The topic that we are merging into is the one with the smallest ID
@@ -745,7 +745,7 @@ class moderate
         $this->hook->fire('delete_topics');
 
         if (@preg_match('%[^0-9,]%', $topics)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         $topics_sql = explode(',', $topics);
@@ -758,7 +758,7 @@ class moderate
         $result = $result->find_many();
 
         if (count($result) != substr_count($topics, ',') + 1) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // Verify that the posts are not by admins
@@ -769,7 +769,7 @@ class moderate
             $authorized = $this->hook->fireDB('delete_topics_authorized', $authorized);
             $authorized = $authorized->find_many();
             if ($authorized) {
-                message(__('No permission'), '403');
+                throw new \FeatherBB\Error(__('No permission'), 403);
             }
         }
 
@@ -843,7 +843,7 @@ class moderate
         $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         return $cur_forum;
@@ -1044,7 +1044,7 @@ class moderate
         $subject = $subject->find_one_col('subject');
 
         if (!$subject) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         return $subject;

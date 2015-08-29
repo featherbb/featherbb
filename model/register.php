@@ -42,7 +42,7 @@ class register
         $already_registered = $already_registered->find_one();
 
         if ($already_registered) {
-            message(__('Registration flood'));
+            throw new \FeatherBB\Error(__('Registration flood'), 429);
         }
 
 
@@ -119,7 +119,7 @@ class register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'lang/'.$user['language'].'/common.po')) {
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 500);
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
@@ -263,7 +263,7 @@ class register
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-            message(__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+            redirect($this->feather->url->base(),__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
         }
 
         $this->auth->feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);

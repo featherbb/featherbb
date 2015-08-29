@@ -37,7 +37,7 @@ class viewtopic
         $result = $result->find_one();
 
         if (!$result) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $post['topic_id'] = $result['topic_id'];
@@ -145,7 +145,7 @@ class viewtopic
         $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $cur_topic = $this->hook->fire('get_info_topic', $cur_topic);
@@ -246,7 +246,7 @@ class viewtopic
         }
 
         if (empty($post_ids)) {
-            message('The post table and topic table seem to be out of sync!');
+            throw new \FeatherBB\Error('The post table and topic table seem to be out of sync!', 500);
         }
 
         // Retrieve the posts (and their respective poster/online status)

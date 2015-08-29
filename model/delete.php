@@ -22,7 +22,7 @@ class delete
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
- 
+
     public function get_info_delete($id)
     {
         $id = $this->hook->fire('get_info_delete_start', $id);
@@ -46,9 +46,9 @@ class delete
         $query = $this->hook->fireDB('get_info_delete_query', $query);
 
         $query = $query->find_one();
-        
+
         if (!$query) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         return $query;
