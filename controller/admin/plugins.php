@@ -26,6 +26,71 @@ class plugins
         require FEATHER_ROOT . $class_name . '.php';
     }
 
+    public function index()
+    {
+        // Update permissions
+        // if ($this->feather->request->isPost()) {
+        //     $this->model->update_permissions();
+        // }
+
+        generate_admin_menu('plugins');
+
+        $pluginsList = \FeatherBB\AdminUtils::getValidPlugins();
+        // var_dump($pluginsList);
+        $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
+        // var_dump($activePlugins);
+
+        $this->feather->view2->setPageInfo(array(
+                'admin_console' => true,
+                'active_page' => 'admin',
+                'pluginsList'    =>    $pluginsList,
+                'activePlugins'    =>    $activePlugins,
+                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
+            )
+        )->addTemplate('admin/plugins.php')->display();
+    }
+
+    public function activate()
+    {
+        // The plugin to load should be supplied via GET
+        $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
+        if (!$class) {
+            message(__('Bad request'), '404');
+        }
+
+        // Check if plugin follows PSR-4 conventions and extends base forum plugin
+        if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
+            message(sprintf(__('No plugin message'), feather_escape($class)));
+        }
+
+        $plugin = new $class;
+        try {
+            $plugin->activate($class);
+        } catch (\Exception $e) {
+            redirect($this->feather->url->get('admin/plugins/'), feather_escape($e->getMessage()));
+        }
+        // Plugin has been activated, confirm and redirect
+        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
+    }
+
+    public function deactivate()
+    {
+        // The plugin to load should be supplied via GET
+        $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
+        if (!$class) {
+            message(__('Bad request'), '404');
+        }
+
+        $plugin = new $class;
+        try {
+            $plugin->deactivate($class);
+        } catch (\Exception $e) {
+            redirect($this->feather->url->get('admin/plugins/'), feather_escape($e->getMessage()));
+        }
+        // Plugin has been activated, confirm and redirect
+        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" deactivated!');
+    }
+
     public function display()
     {
         // The plugin to load should be supplied via GET
@@ -42,7 +107,7 @@ class plugins
 
         // Make sure the file actually exists
         if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
-            message(sprintf(__('No plugin message'), $plugin));
+            message(sprintf(__('No plugin message'), feather_escape($plugin)));
         }
 
         // Construct REQUEST_URI if it isn't set TODO?
@@ -55,7 +120,7 @@ class plugins
         // get the "blank page of death"
         include FEATHER_ROOT.'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
-            message(sprintf(__('Plugin failed message'), $plugin));
+            message(sprintf(__('Plugin failed message'), feather_escape($plugin)));
         }
 
         $this->feather->view2->setPageInfo(array(
