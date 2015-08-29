@@ -46,7 +46,7 @@ class index
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
-                message(__('fopen disabled message'));
+                throw new \FeatherBB\Error(__('fopen disabled message'), 500);
             }
 
             $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
@@ -55,9 +55,9 @@ class index
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-                message(__('Running latest version message'), 200);
+                redirect($this->feather->url->get('admin/'), __('Running latest version message'));
             } else {
-                message(sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
+                redirect($this->feather->url->get('admin/'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
         // Remove /install
@@ -67,7 +67,7 @@ class index
             if ($deleted) {
                 redirect($this->feather->url->get('admin/'), __('Deleted install.php redirect'));
             } else {
-                message(__('Delete install.php failed'));
+                throw new \FeatherBB\Error(__('Delete install.php failed'), 500);
             }
         }
 
