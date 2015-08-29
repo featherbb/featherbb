@@ -146,7 +146,7 @@ if (!empty($queries_info)) { ?>
 			</div>
 		</div>
 	</div>
-<? } ?>
+<?php } ?>
 </section>
 </body>
 <!-- JS -->
