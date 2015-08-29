@@ -49,7 +49,7 @@ class login
         $authorized = $this->hook->fire('authorized_login', $authorized);
 
         if (!$authorized) {
-            message(__('Wrong user/pass').' <a href="'.$this->feather->url->get('login/action/forget/').'">'.__('Forgotten pass').'</a>');
+            throw new \FeatherBB\Error(__('Wrong user/pass').' <a href="'.$this->feather->url->get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
         }
 
         // Update the status if this is the first time the user logged in
@@ -164,7 +164,7 @@ class login
                     // Loop through users we found
                     foreach($result as $cur_hit) {
                         if ($cur_hit->last_email_sent != '' && (time() - $cur_hit->last_email_sent) < 3600 && (time() - $cur_hit->last_email_sent) >= 0) {
-                            message(sprintf(__('Email flood'), intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), true);
+                            throw new \FeatherBB\Error(sprintf(__('Email flood'), intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), 429);
                         }
 
                         // Generate a new password and a new password activation code
@@ -193,7 +193,7 @@ class login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    message(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', true);
+                    throw new \FeatherBB\Error(__('Forget mail').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.', 400);
                 } else {
                     $errors[] = __('No email match').' '.htmlspecialchars($email).'.';
                 }

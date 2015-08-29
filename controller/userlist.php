@@ -22,9 +22,9 @@ class userlist
     public function display()
     {
         if ($this->feather->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         } elseif ($this->feather->user->g_view_users == '0') {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Determine if we are allowed to view post counts
