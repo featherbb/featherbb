@@ -29,7 +29,7 @@ class censoring
         $replace_with = feather_trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
-            message(__('Must enter word message'));
+            throw new \FeatherBB\Error(__('Must enter word message'), 400);
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -57,7 +57,7 @@ class censoring
         $replace_with = feather_trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
-            message(__('Must enter word message'));
+            throw new \FeatherBB\Error(__('Must enter word message'), 400);
         }
 
         $set_search_word = array('search_for' => $search_for,
