@@ -23,7 +23,7 @@ class misc
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
     }
- 
+
     public function update_last_visit()
     {
         $this->hook->fire('update_last_visit_start');
@@ -40,17 +40,17 @@ class misc
         $recipient_id = $this->hook->fire('get_info_mail_start', $recipient_id);
 
         $mail['select'] = array('username', 'email', 'email_setting');
-        
+
         $mail = DB::for_table('users')
                 ->select_many($mail['select'])
                 ->where('id', $recipient_id);
         $mail = $this->hook->fireDB('get_info_mail_query', $mail);
         $mail = $mail->find_one();
-        
+
         if (!$mail) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
-        
+
         $mail['recipient'] = $mail['username'];
         $mail['recipient_email'] = $mail['email'];
 
@@ -68,17 +68,17 @@ class misc
         $message = $this->feather->utils->trim($this->request->post('req_message'));
 
         if ($subject == '') {
-            message(__('No email subject'));
+            throw new \FeatherBB\Error(__('No email subject'), 400);
         } elseif ($message == '') {
-            message(__('No email message'));
+            throw new \FeatherBB\Error(__('No email message'), 400);
         }
         // Here we use strlen() not $this->feather->utils->strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         elseif (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            message(__('Too long email message'));
+            throw new \FeatherBB\Error(__('Too long email message'), 400);
         }
 
         if ($this->user->last_email_sent != '' && (time() - $this->user->last_email_sent) < $this->user->g_email_flood && (time() - $this->user->last_email_sent) >= 0) {
-            message(sprintf(__('Email flood'), $this->user->g_email_flood, $this->user->g_email_flood - (time() - $this->user->last_email_sent)));
+            throw new \FeatherBB\Error(sprintf(__('Email flood'), $this->user->g_email_flood, $this->user->g_email_flood - (time() - $this->user->last_email_sent)), 429);
         }
 
         // Load the "form email" template
@@ -140,13 +140,13 @@ class misc
         // Clean up reason from POST
         $reason = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_reason')));
         if ($reason == '') {
-            message(__('No reason'));
+            throw new \FeatherBB\Error(__('No reason'), 400);
         } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes
-            message(__('Reason too long'));
+            throw new \FeatherBB\Error(__('Reason too long'), 400);
         }
 
         if ($this->user->last_report_sent != '' && (time() - $this->user->last_report_sent) < $this->user->g_report_flood && (time() - $this->user->last_report_sent) >= 0) {
-            message(sprintf(__('Report flood'), $this->user->g_report_flood, $this->user->g_report_flood - (time() - $this->user->last_report_sent)));
+            throw new \FeatherBB\Error(sprintf(__('Report flood'), $this->user->g_report_flood, $this->user->g_report_flood - (time() - $this->user->last_report_sent)), 429);
         }
 
         // Get the topic ID
@@ -156,7 +156,7 @@ class misc
         $topic = $topic->find_one();
 
         if (!$topic) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         // Get the subject and forum ID
@@ -167,12 +167,12 @@ class misc
         $report = $report->find_one();
 
         if (!$report) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         // Should we use the internal report handling?
         if ($this->config['o_report_method'] == '0' || $this->config['o_report_method'] == '2') {
-            
+
             // Insert the report
             $query['insert'] = array(
                 'post_id' => $post_id,
@@ -247,7 +247,7 @@ class misc
         $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $cur_post = $this->hook->fire('get_info_report', $cur_post);
@@ -260,7 +260,7 @@ class misc
         $topic_id = $this->hook->fire('subscribe_topic_start', $topic_id);
 
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Make sure the user can view the topic
@@ -280,7 +280,7 @@ class misc
         $authorized = $authorized->find_one();
 
         if (!$authorized) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
@@ -290,7 +290,7 @@ class misc
         $is_subscribed = $is_subscribed->find_one();
 
         if ($is_subscribed) {
-            message(__('Already subscribed topic'));
+            throw new \FeatherBB\Error(__('Already subscribed topic'), 400);
         }
 
         $subscription['insert'] = array(
@@ -313,7 +313,7 @@ class misc
         $topic_id = $this->hook->fire('unsubscribe_topic_start', $topic_id);
 
         if ($this->config['o_topic_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
@@ -323,7 +323,7 @@ class misc
         $is_subscribed = $is_subscribed->find_one();
 
         if (!$is_subscribed) {
-            message(__('Not subscribed topic'));
+            throw new \FeatherBB\Error(__('Not subscribed topic'), 400);
         }
 
         // Delete the subscription
@@ -341,7 +341,7 @@ class misc
         $forum_id = $this->hook->fire('unsubscribe_forum_start', $forum_id);
 
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
@@ -351,7 +351,7 @@ class misc
         $is_subscribed = $is_subscribed->find_one();
 
         if (!$is_subscribed) {
-            message(__('Not subscribed forum'));
+            throw new \FeatherBB\Error(__('Not subscribed forum'), 400);
         }
 
         // Delete the subscription
@@ -369,7 +369,7 @@ class misc
         $forum_id = $this->hook->fire('subscribe_forum_start', $forum_id);
 
         if ($this->config['o_forum_subscriptions'] != '1') {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Make sure the user can view the forum
@@ -388,7 +388,7 @@ class misc
         $authorized = $authorized->find_one();
 
         if (!$authorized) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
@@ -398,7 +398,7 @@ class misc
         $is_subscribed = $is_subscribed->find_one();
 
         if ($is_subscribed) {
-            message(__('Already subscribed forum'));
+            throw new \FeatherBB\Error(__('Already subscribed forum'), 400);
         }
 
         // Insert the subscription

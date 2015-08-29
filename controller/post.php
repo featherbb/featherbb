@@ -35,7 +35,7 @@ class post
 
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->feather->request->post('username')) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // Fetch some info about the topic and/or the forum
@@ -45,7 +45,7 @@ class post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -57,7 +57,7 @@ class post
                 ($fid && (($cur_posting['post_topics'] == '' && $this->feather->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
-            message(__('No permission'), '403');
+            throw new \FeatherBB\Error(__('No permission'), 403);
         }
 
         // Start with a clean slate
@@ -133,7 +133,7 @@ class post
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
-                    $quote = $this->model->get_quote_message($qid, $tid);
+                    $quote = $this->model->get_quote_throw new \FeatherBB\Error($qid, $tid);
                     $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
@@ -142,7 +142,7 @@ class post
             $action = __('Post new topic');
             $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $url_forum = $this->feather->url->url_friendly($cur_posting['forum_name']);

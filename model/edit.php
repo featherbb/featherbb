@@ -50,7 +50,7 @@ class edit
         $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 400);
         }
 
         return $cur_post;
@@ -162,12 +162,12 @@ class edit
                 array('id' => $cur_post['tid']),
                 array('moved_to' => $cur_post['tid'])
             );
-            
+
             $query['update_topic'] = array(
                 'subject' => $post['subject'],
                 'sticky'  => $post['stick_topic']
             );
-            
+
             $query = DB::for_table('topics')->where_any_is($where_topic)
                                             ->find_one()
                                             ->set($query['update_topic']);
@@ -181,14 +181,14 @@ class edit
         } else {
             $this->search->update_search_index('edit', $id, $post['message']);
         }
-        
+
         // Update the post
         unset($query);
         $query['update_post'] = array(
             'message' => $post['message'],
             'hide_smilies'  => $post['hide_smilies']
         );
-        
+
         if (!$this->request->post('silent') || !$is_admmod) {
             $query['update_post']['edited'] = time();
             $query['update_post']['edited_by'] = $this->user->username;

@@ -45,7 +45,7 @@ class register
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
         if ($this->config['o_regs_allow'] == '0' || $this->request->post('username') || $this->request->post('password')) {
-            message(__('No new regs'));
+            throw new \FeatherBB\Error(__('No new regs'), 403);
         }
 
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $this->config['o_default_timezone'];
@@ -94,7 +94,7 @@ class register
 
         // Display an error message if new registrations are disabled
         if ($this->config['o_regs_allow'] == '0') {
-            message(__('No new regs'));
+            throw new \FeatherBB\Error(__('No new regs'), 403);
         }
 
         if ($this->config['o_rules'] != '1') {

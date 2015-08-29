@@ -17,7 +17,7 @@ class Email
         $this->config = $this->feather->config;
         require FEATHER_ROOT . 'include/utf8/utils/ascii.php';
     }
-    
+
     //
     // Validate an email address
     //
@@ -308,12 +308,12 @@ class Email
         $server_response = '';
         while (substr($server_response, 3, 1) != ' ') {
             if (!($server_response = fgets($socket, 256))) {
-                message('Couldn\'t get mail server response codes. Please contact the forum administrator.', __FILE__, __LINE__);
+                throw new \FeatherBB\Error('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
             }
         }
 
         if (!(substr($server_response, 0, 3) == $expected_response)) {
-            message('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', __FILE__, __LINE__);
+            throw new \FeatherBB\Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
         }
     }
 
@@ -345,7 +345,7 @@ class Email
         }
 
         if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-            message('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', __FILE__, __LINE__);
+            throw new \FeatherBB\Error('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
         $this->server_parse($socket, '220');

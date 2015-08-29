@@ -11,7 +11,7 @@ namespace FeatherBB;
 
 class Error extends \Exception
 {
-    public function __construct($message, $code = 0)
+    public function __construct($message, $code = 200)
     {
         parent::__construct($message, $code, null);
     }

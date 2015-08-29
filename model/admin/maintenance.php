@@ -31,7 +31,7 @@ class maintenance
 
         // Check per page is > 0
         if ($per_page < 1) {
-            message(__('Posts must be integer message'));
+            throw new \FeatherBB\Error(__('Posts must be integer message'), 400);
         }
 
         @set_time_limit(0);
@@ -220,7 +220,7 @@ class maintenance
 
         $prune['days'] = $this->feather->utils->trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
-            message(__('Days must be integer message'));
+            throw new \FeatherBB\Error(__('Days must be integer message'), 400);
         }
 
         $prune['date'] = time() - ($prune['days'] * 86400);
@@ -251,7 +251,7 @@ class maintenance
         $prune['num_topics'] = $query->count('id');
 
         if (!$prune['num_topics']) {
-            message(sprintf(__('No old topics message'), $prune['days']));
+            throw new \FeatherBB\Error(sprintf(__('No old topics message'), $prune['days']), 204);
         }
 
         $prune = $this->hook->fire('maintenance.get_info_prune.prune', $prune);
