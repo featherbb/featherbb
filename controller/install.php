@@ -28,6 +28,7 @@ class install
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\install();
         $this->available_langs = forum_list_langs();
+        $this->feather->view2->setStyle('FeatherBB');
     }
 
     public function run()
@@ -113,13 +114,12 @@ class install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
-                $this->feather->view()->display('install.php', array(
+                $this->feather->view2->setPageInfo(array(
                                                         'languages' => $this->available_langs,
                                                         'supported_dbs' => $this->supported_dbs,
                                                         'data' => $data,
                                                         'errors' => $this->errors,
-                                                    ));
+                                                    ))->addTemplate('install.php')->display(false);
             } else {
                 $data['default_style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
@@ -131,15 +131,12 @@ class install
                           'description' => __('Description'),
                           'base_url' => $base_url,
                           'default_lang' => $this->install_lang);
-            if (isset($this->environment['slim.flash'])) {
-                $this->feather->view()->set('flash', $this->environment['slim.flash']);
-            }
-            $this->feather->view()->setTemplatesDirectory($this->feather->forum_env['FEATHER_ROOT'].'style/FeatherBB/view');
-            $this->feather->view()->display('install.php', array(
-                                                'languages' => $this->available_langs,
-                                                'supported_dbs' => $this->supported_dbs,
-                                                'data' => $data,
-                                                'alerts' => array()));
+          $this->feather->view2->setPageInfo(array(
+                                                  'languages' => $this->available_langs,
+                                                  'supported_dbs' => $this->supported_dbs,
+                                                  'data' => $data,
+                                                  'alerts' => array(),
+                                              ))->addTemplate('install.php')->display(false);
         }
     }
 
@@ -157,7 +154,7 @@ class install
                                              'cookie_seed' => random_key(16, false, true)));
 
         // ... And write it on disk
-        if ($this->write_config(json_encode($config, JSON_PRETTY_PRINT))) {
+        if ($this->write_config($config)) {
             $this->create_db($data);
         }
     }
@@ -206,9 +203,9 @@ class install
         redirect($this->feather->url->get('/'));
     }
 
-    public function write_config($json)
+    public function write_config($array)
     {
-        return file_put_contents($this->feather->forum_env['FORUM_CONFIG_FILE'], $json);
+        return file_put_contents($this->feather->forum_env['FORUM_CONFIG_FILE'], '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
     }
 
     public function write_htaccess()
