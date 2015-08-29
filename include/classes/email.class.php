@@ -121,7 +121,7 @@ class Email
         static $base_url;
 
         if (!isset($base_url)) {
-            $base_url = base();
+            $base_url = $this->feather->url->base();
         }
 
         $text = feather_trim($text, "\t\n ");

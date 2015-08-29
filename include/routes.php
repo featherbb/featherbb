@@ -103,7 +103,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
      */
     $isAdmin = function() use ($feather) {
         if($feather->user->g_id != FEATHER_ADMIN) {
-            redirect(base(), __('No permission'));
+            redirect($feather->url->base(), __('No permission'));
         }
     };
 
