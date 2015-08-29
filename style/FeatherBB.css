@@ -1268,6 +1268,7 @@ footer .footer-link a {
     color: #a94442 !important
 }
 
+
 .flashmsg {
     position: fixed;
     min-width: 220px;
@@ -1281,11 +1282,6 @@ footer .footer-link a {
     pointer-events: none;
     box-shadow: 0 3px 6px rgba(0,0,0,0.25);
     border: 1px solid #bbb;
-    color: #147880;
-    background: #d2ecea;
-    background: -webkit-linear-gradient(top, #d2ecea, #b3e1e4);
-    background:    -moz-linear-gradient(top, #d2ecea, #b3e1e4);
-    background:         linear-gradient(top, #d2ecea, #b3e1e4);
     -webkit-transform: translateY(-100%);
        -moz-transform: translateY(-100%);
         -ms-transform: translateY(-100%);
@@ -1297,6 +1293,38 @@ footer .footer-link a {
          -o-transition: all 0.75s ease-out;
             transition: all 0.75s ease-out;
 }
+.flashmsg h2 {
+    margin: 0 0 4px;
+    font-size: 18px
+}
+.flashmsg.error {
+    background: #ebccd1;
+    background: -webkit-linear-gradient(top, #f2dede, #ebccd1);
+    background:    -moz-linear-gradient(top, #f2dede, #ebccd1);
+    background:         linear-gradient(top, #f2dede, #ebccd1);
+    color: #a94442 !important
+}
+.flashmsg.info {
+    background: #b3e1e4;
+    background: -webkit-linear-gradient(top, #d2ecea, #b3e1e4);
+    background:    -moz-linear-gradient(top, #d2ecea, #b3e1e4);
+    background:         linear-gradient(top, #d2ecea, #b3e1e4);
+    color: #147880 !important;
+}
+.flashmsg.warning {
+    background: #edc58c;
+    background: -webkit-linear-gradient(top, #e8d1af, #edc58c);
+    background:    -moz-linear-gradient(top, #f0ad4e, #f0ad4e);
+    background:         linear-gradient(top, #f0ad4e, #f0ad4e);
+    color: #8c5a13 !important;
+}
+.flashmsg.success {
+    background: #a1e9a1;
+    background: -webkit-linear-gradient(top, #cde9cd, #a1e9a1);
+    background:    -moz-linear-gradient(top, #cde9cd, #a1e9a1);
+    background:         linear-gradient(top, #cde9cd, #a1e9a1);
+    color: #2c752c !important;
+}
 .flashmsg.show {
     opacity: 1;
     pointer-events: auto;
@@ -1306,10 +1334,7 @@ footer .footer-link a {
          -o-transform: translateY(0%);
             transform: translateY(0%);
 }
-.flashmsg h2 {
-    margin: 0 0 4px;
-    font-size: 18px
-}
+
 input[type=submit] {
     border-radius: 3px;
     border: 2px solid #00acc1;

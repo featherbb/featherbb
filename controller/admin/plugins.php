@@ -70,7 +70,7 @@ class plugins
             redirect($this->feather->url->get('admin/plugins/'), $this->feather->utils->escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$this->feather->utils->escape($class::$name).'" activated!');
+        $this->feather->url->redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
     }
 
     public function deactivate()
@@ -88,7 +88,7 @@ class plugins
             redirect($this->feather->url->get('admin/plugins/'), $this->feather->utils->escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$this->feather->utils->escape($class::$name).'" deactivated!');
+        $this->feather->url->redirect($this->feather->url->get('admin/plugins/'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
     }
 
     public function display()

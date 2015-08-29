@@ -207,21 +207,23 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
             </div>
         </div>
     <?php endif; ?>
-        <?php if (isset($flash['info'])) : ?>
+        <?php if (!empty($flash->getMessages())) : ?>
         <script type="text/javascript">
             window.onload = function() {
                 var flashMessage = document.getElementById('flashmsg');
-                flashMessage.className = 'flashmsg show';
+                flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
                 setTimeout(function () {
-                    flashMessage.className = 'flashmsg';
+                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
                 }, 10000);
                 return false;
             }
         </script>
-        <div class="flashmsg" id="flashmsg">
+        <?php foreach ($flash->getMessages() as $type => $message) { ?>
+        <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
             <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-            <p><?= $feather->utils->escape($flash['info']) ?></p>
+            <p><?= $feather->utils->escape($message) ?></p>
         </div>
+        <?php } ?>
         <?php endif; ?>
     </div>
 </header>

@@ -111,22 +111,23 @@ endif;
                 </div>
             </div>
         <?php endif; ?>
-        <?php if (isset($flash['message'])) : ?>
-            <script type="text/javascript" src="<?=$feather->url->base();?>/js/common.js"></script>
-            <script type="text/javascript">
-                window.onload = function() {
-                    var flashMessage = document.getElementById('flashmsg');
-                    flashMessage.className = 'flashmsg show';
-                    setTimeout(function () {
-                        flashMessage.className = 'flashmsg';
-                    }, 10000);
-                    return false;
-                }
-            </script>
-            <div class="flashmsg" id="flashmsg">
-                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-                <p><?= $feather->utils->escape($flash['message']) ?></p>
-            </div>
+        <?php if (!empty($flash->getMessages())) : ?>
+        <script type="text/javascript">
+            window.onload = function() {
+                var flashMessage = document.getElementById('flashmsg');
+                flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
+                setTimeout(function () {
+                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
+                }, 10000);
+                return false;
+            }
+        </script>
+        <?php foreach ($flash->getMessages() as $type => $message) { ?>
+        <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
+            <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
+            <p><?= $feather->utils->escape($message) ?></p>
+        </div>
+        <?php } ?>
         <?php endif; ?>
     </div>
 
