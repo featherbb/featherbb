@@ -190,7 +190,7 @@ $feather->notFound(function () use ($feather){
 $feather->error(function (\Exception $e) use ($feather) {
     $feather->response->setStatus($e->getCode());
     $feather->view2->setPageInfo(array(
-        'title' => array(feather_escape($feather->config['o_board_title']), __('Error')),
+        'title' => array($feather->utils->escape($feather->config['o_board_title']), __('Error')),
         'msg_title' => __('Error'),
         'msg'    =>   $e->getMessage(),
         'no_back_link'    => false,

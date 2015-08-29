@@ -46,23 +46,23 @@ class register
         }
 
 
-        $user['username'] = feather_trim($this->request->post('req_user'));
-        $user['email1'] = strtolower(feather_trim($this->request->post('req_email1')));
+        $user['username'] = $this->feather->utils->trim($this->request->post('req_user'));
+        $user['email1'] = strtolower($this->feather->utils->trim($this->request->post('req_email1')));
 
         if ($this->config['o_regs_verify'] == '1') {
-            $email2 = strtolower(feather_trim($this->request->post('req_email2')));
+            $email2 = strtolower($this->feather->utils->trim($this->request->post('req_email2')));
 
             $user['password1'] = random_pass(12);
             $password2 = $user['password1'];
         } else {
-            $user['password1'] = feather_trim($this->request->post('req_password1'));
-            $password2 = feather_trim($this->request->post('req_password2'));
+            $user['password1'] = $this->feather->utils->trim($this->request->post('req_password1'));
+            $password2 = $this->feather->utils->trim($this->request->post('req_password2'));
         }
 
         // Validate username and passwords
         $user['errors'] = check_username($user['username'], $user['errors']);
 
-        if (feather_strlen($user['password1']) < 6) {
+        if ($this->feather->utils->strlen($user['password1']) < 6) {
             $user['errors'][] = __('Pass too short');
         } elseif ($user['password1'] != $password2) {
             $user['errors'][] = __('Pass not match');
@@ -263,7 +263,11 @@ class register
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
+<<<<<<< HEAD
             redirect($this->feather->url->base(),__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
+=======
+            message(__('Reg email').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', true);
+>>>>>>> origin/development
         }
 
         $this->auth->feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);

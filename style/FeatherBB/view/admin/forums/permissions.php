@@ -26,11 +26,11 @@ if (!defined('FEATHER')) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php _e('Forum name label') ?></th>
-									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo feather_escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
+									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo $feather->utils->escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Forum description label') ?></th>
-									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo feather_escape($cur_forum['forum_desc']) ?></textarea></td>
+									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo $feather->utils->escape($cur_forum['forum_desc']) ?></textarea></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Category label') ?></th>
@@ -38,7 +38,7 @@ if (!defined('FEATHER')) {
 										<select name="cat_id" tabindex="3">
 											<?php  foreach ($forum_data as $cat_id => $cat_data) {
 												$selected = ($cat_id == $cur_forum['cat_id']) ? 'selected="selected"' : '';
-												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.feather_escape($cat_data['cat_name']).'</option>'."\n";
+												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.$feather->utils->escape($cat_data['cat_name']).'</option>'."\n";
 											} ?>
 										</select>
 									</td>
@@ -61,7 +61,7 @@ if (!defined('FEATHER')) {
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Redirect label') ?></th>
-									<td><?php echo(!empty($cur_forum['num_topics'])) ? __('Redirect help') : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.feather_escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
+									<td><?php echo(!empty($cur_forum['num_topics'])) ? __('Redirect help') : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.$feather->utils->escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>
@@ -86,7 +86,7 @@ if (!defined('FEATHER')) {
     foreach ($perm_data as $perm) {
         ?>
 								<tr>
-									<th class="atcl"><?php echo feather_escape($perm['g_title']) ?></th>
+									<th class="atcl"><?php echo $feather->utils->escape($perm['g_title']) ?></th>
 									<td<?php if (!$perm['read_forum_def']) {
     echo ' class="nodefault"';
 }

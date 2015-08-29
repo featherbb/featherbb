@@ -218,7 +218,7 @@ class maintenance
     {
         $prune = array();
 
-        $prune['days'] = feather_trim($this->request->post('req_prune_days'));
+        $prune['days'] = $this->feather->utils->trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
             throw new \FeatherBB\Error(__('Days must be integer message'), 400);
         }
@@ -243,7 +243,7 @@ class maintenance
             $forum = $this->hook->fireDB('maintenance.get_info_prune.forum_query', $forum);
             $forum = $forum->find_one_col('forum_name');
 
-            $prune['forum'] = '"'.feather_escape($forum).'"';
+            $prune['forum'] = '"'.$this->feather->utils->escape($forum).'"';
         } else {
             $prune['forum'] = __('All forums');
         }
@@ -283,11 +283,11 @@ class maintenance
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                $output .=  "\t\t\t\t\t\t\t\t\t\t\t".'<optgroup label="'.feather_escape($forum['cat_name']).'">'."\n";
+                $output .=  "\t\t\t\t\t\t\t\t\t\t\t".'<optgroup label="'.$this->feather->utils->escape($forum['cat_name']).'">'."\n";
                 $cur_category = $forum['cid'];
             }
 
-            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.feather_escape($forum['forum_name']).'</option>'."\n";
+            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.$this->feather->utils->escape($forum['forum_name']).'</option>'."\n";
         }
 
         $output = $this->hook->fire('maintenance.get_categories.output', $output);

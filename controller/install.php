@@ -34,7 +34,7 @@ class install
     public function run()
     {
         if (!empty($this->feather->request->post('choose_lang'))) {
-            if (in_array(feather_trim($this->feather->request->post('install_lang')), $this->available_langs)) {
+            if (in_array($this->feather->utils->trim($this->feather->request->post('install_lang')), $this->available_langs)) {
                 $this->install_lang = $this->feather->request->post('install_lang');
             }
         }
@@ -43,7 +43,7 @@ class install
         if ($this->feather->request->isPost() && empty($this->feather->request->post('choose_lang'))) {
             $missing_fields = array();
             $data = array_map(function ($item) {
-                return feather_escape(feather_trim($item));
+                return $this->feather->utils->escape($this->feather->utils->trim($item));
             }, $this->feather->request->post('install'));
 
             foreach ($data as $field => $value) {
@@ -66,9 +66,9 @@ class install
                 }
 
                 // Validate username and passwords
-                if (feather_strlen($data['username']) < 2) {
+                if ($this->feather->utils->strlen($data['username']) < 2) {
                     $this->errors[] = __('Username 1');
-                } elseif (feather_strlen($data['username']) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+                } elseif ($this->feather->utils->strlen($data['username']) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
                     $this->errors[] = __('Username 2');
                 } elseif (!strcasecmp($data['username'], 'Guest')) {
                     $this->errors[] = __('Username 3');
@@ -80,7 +80,7 @@ class install
                     $this->errors[] = __('Username 6');
                 }
 
-                if (feather_strlen($data['password']) < 6) {
+                if ($this->feather->utils->strlen($data['password']) < 6) {
                     $this->errors[] = __('Short password');
                 } elseif ($data['password'] != $data['password_conf']) {
                     $this->errors[] = __('Passwords not match');

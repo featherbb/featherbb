@@ -179,8 +179,12 @@ class Core extends \Slim\Middleware
 
         // Populate Slim object with forum_env vars
         $this->hydrate('forum_env', $this->forum_env);
+        // Load FeatherBB utils class
+        $this->app->container->singleton('utils', function () {
+            return new \FeatherBB\Utils();
+        });
         // Record start time
-        $this->app->start = get_microtime();
+        $this->app->start = $this->app->utils->get_microtime();
         // Define now var
         $this->app->now = function () {
             return time();

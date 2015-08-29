@@ -588,6 +588,11 @@ class Url
 
                                 );
 
+    public function __construct()
+    {
+        $this->feather = \Slim\Slim::getInstance();
+    }
+
     //
     // Generate a string with numbered links (for multipage scripts)
     //
@@ -623,9 +628,9 @@ class Url
                 if ($current < 1 || $current > $num_pages) {
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', $this->get_sublink($link, 'page/$1', $current, $args)).'">'.forum_number_format($current).'</a>';
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', $this->get_sublink($link, 'page/$1', $current, $args)).'">'.$this->feather->utils->forum_number_format($current).'</a>';
                 } else {
-                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.forum_number_format($current).'</strong>';
+                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.$this->feather->utils->forum_number_format($current).'</strong>';
                 }
             }
 
@@ -634,7 +639,7 @@ class Url
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$this->get_sublink($link, 'page/$1', $num_pages, $args).'">'.forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$this->get_sublink($link, 'page/$1', $num_pages, $args).'">'.$this->feather->utils->forum_number_format($num_pages).'</a>';
             }
 
             // Add a next page link
@@ -682,9 +687,9 @@ class Url
                 if ($current < 1 || $current > $num_pages) {
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.forum_number_format($current).'</a>';
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.$this->feather->utils->forum_number_format($current).'</a>';
                 } else {
-                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.forum_number_format($current).'</strong>';
+                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.$this->feather->utils->forum_number_format($current).'</strong>';
                 }
             }
 
@@ -693,7 +698,7 @@ class Url
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.$this->feather->utils->forum_number_format($num_pages).'</a>';
             }
 
             // Add a next page link
@@ -713,7 +718,7 @@ class Url
     {
         $str = strtr($str, $this->url_replace);
         $str = strtolower(utf8_decode($str));
-        $str = feather_trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+        $str = $this->feather->utils->trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
 
         if (empty($str)) {
             $str = 'view';

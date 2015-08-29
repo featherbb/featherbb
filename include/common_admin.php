@@ -19,7 +19,7 @@ $feather = \Slim\Slim::getInstance();
 if (file_exists(FEATHER_ROOT.'lang/'.$feather->user->language.'/admin/common.mo')) {
     load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/admin/common.mo');
 } else {
-    die('There is no valid language pack \''.feather_escape($feather->user->language).'\' installed. Please reinstall a language of that name');
+    die('There is no valid language pack \''.$feather->utils->escape($feather->user->language).'\' installed. Please reinstall a language of that name');
 }
 
 // To be removed

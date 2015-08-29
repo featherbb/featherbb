@@ -92,7 +92,7 @@ endif;
         <div class="container-title-status">
             <h1 class="title-site">
                 <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
-                    <p><?php echo feather_escape($feather->forum_settings['o_board_title']) ?></p>
+                    <p><?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
             </h1>
@@ -125,7 +125,7 @@ endif;
             </script>
             <div class="flashmsg" id="flashmsg">
                 <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-                <p><?= feather_escape($flash['message']) ?></p>
+                <p><?= $feather->utils->escape($flash['message']) ?></p>
             </div>
         <?php endif; ?>
     </div>

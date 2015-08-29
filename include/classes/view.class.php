@@ -24,7 +24,6 @@ class View
         'admin_console' => 'boolval',
         'has_reports' => 'boolval',
         'paging_links' => 'strval',
-        'has_reports' => 'boolval',
         'footer_style' => 'strval',
         'fid' => 'intval',
         'pid' => 'intval',
@@ -300,7 +299,7 @@ class View
 
         $params = array_merge(static::getDefaultParams($type), $params);
         if (isset($params['title'])) {
-            $params['title'] = feather_escape($params['title']);
+            $params['title'] = $this->app->utils->escape($params['title']);
         }
         $this->assets[$type][] = array(
             'file' => (string) $asset,
@@ -367,7 +366,7 @@ class View
         }
 
         $data = array(
-            'title' => feather_escape($this->app->forum_settings['o_board_title']),
+            'title' => $this->app->utils->escape($this->app->forum_settings['o_board_title']),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,

@@ -54,11 +54,11 @@ if (!defined('FEATHER')) {
         foreach ($user_data as $user) {
             ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="'.$feather->url->get('user/'.$user['id'].'/').'">'.feather_escape($user['username']).'</a>' ?></td>
-					<td class="tc2"><a href="mailto:<?php echo feather_escape($user['email']) ?>"><?php echo feather_escape($user['email']) ?></a></td>
+					<td class="tcl"><?php echo '<a href="'.$feather->url->get('user/'.$user['id'].'/').'">'.$feather->utils->escape($user['username']).'</a>' ?></td>
+					<td class="tc2"><a href="mailto:<?php echo $feather->utils->escape($user['email']) ?>"><?php echo $feather->utils->escape($user['email']) ?></a></td>
 					<td class="tc3"><?php echo $user['user_title'] ?></td>
-					<td class="tc4"><?php echo forum_number_format($user['num_posts']) ?></td>
-					<td class="tc5"><?php echo($user['admin_note'] != '') ? feather_escape($user['admin_note']) : '&#160;' ?></td>
+					<td class="tc4"><?php echo $feather->utils->forum_number_format($user['num_posts']) ?></td>
+					<td class="tc5"><?php echo($user['admin_note'] != '') ? $feather->utils->escape($user['admin_note']) : '&#160;' ?></td>
 					<td class="tcr"><?php echo '<a href="'.$feather->url->get('admin/users/ip-stats/id/'.$user['id'].'/').'">'.__('Results view IP link').'</a> | <a href="'.$feather->url->get('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Results show posts link').'</a>' ?></td>
 <?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?php echo $user['id'] ?>]" value="1" /></td>
 <?php endif;

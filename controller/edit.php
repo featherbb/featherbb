@@ -107,7 +107,7 @@ class edit
         );
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array(feather_escape($this->config['o_board_title']), __('Edit post')),
+                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Edit post')),
                             'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                             'focus_element' => array('edit', 'req_message'),
                             'cur_post' => $cur_post,

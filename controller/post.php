@@ -133,7 +133,7 @@ class post
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
-                    $quote = $this->model->get_quote_throw new \FeatherBB\Error($qid, $tid);
+                    $quote = $this->model->get_quote_message($qid, $tid);
                     $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
@@ -199,7 +199,7 @@ class post
         );
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), $action),
+                            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $action),
                             'required_fields' => $required_fields,
                             'focus_element' => $focus_element,
                             'active_page' => 'post',

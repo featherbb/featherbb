@@ -187,7 +187,7 @@ class viewforum
                 $url_subject = $this->feather->url->url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_formatted'] = '<a href="'.$this->feather->url->get('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_formatted'] = '<a href="'.$this->feather->url->get('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['last_poster']).'</span>';
                 } else {
                     $cur_topic['last_post_formatted'] = '- - -';
                 }
@@ -202,13 +202,13 @@ class viewforum
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['moved_to'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['moved_to'].'/'.$url_subject.'/').'">'.$this->feather->utils->escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.$this->feather->utils->escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.feather_escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.feather_escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/'.$url_subject.'/').'">'.$this->feather->utils->escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }

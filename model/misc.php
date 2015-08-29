@@ -64,15 +64,15 @@ class misc
         $mail = $this->hook->fire('send_email_start', $mail);
 
         // Clean up message and subject from POST
-        $subject = feather_trim($this->request->post('req_subject'));
-        $message = feather_trim($this->request->post('req_message'));
+        $subject = $this->feather->utils->trim($this->request->post('req_subject'));
+        $message = $this->feather->utils->trim($this->request->post('req_message'));
 
         if ($subject == '') {
             throw new \FeatherBB\Error(__('No email subject'), 400);
         } elseif ($message == '') {
             throw new \FeatherBB\Error(__('No email message'), 400);
         }
-        // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not $this->feather->utils->strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         elseif (strlen($message) > FEATHER_MAX_POSTSIZE) {
             throw new \FeatherBB\Error(__('Too long email message'), 400);
         }
@@ -87,8 +87,8 @@ class misc
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
-        $mail_subject = feather_trim(substr($mail_tpl, 8, $first_crlf-8));
-        $mail_message = feather_trim(substr($mail_tpl, $first_crlf));
+        $mail_subject = $this->feather->utils->trim(substr($mail_tpl, 8, $first_crlf-8));
+        $mail_message = $this->feather->utils->trim(substr($mail_tpl, $first_crlf));
 
         $mail_subject = str_replace('<mail_subject>', $subject, $mail_subject);
         $mail_message = str_replace('<sender>', $this->user->username, $mail_message);
@@ -138,7 +138,7 @@ class misc
         $post_id = $this->hook->fire('insert_report_start', $post_id);
 
         // Clean up reason from POST
-        $reason = feather_linebreaks(feather_trim($this->request->post('req_reason')));
+        $reason = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_reason')));
         if ($reason == '') {
             throw new \FeatherBB\Error(__('No reason'), 400);
         } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes

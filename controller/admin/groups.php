@@ -39,7 +39,7 @@ class groups
         \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'groups' => $this->model->fetch_groups(),
@@ -70,7 +70,7 @@ class groups
                 \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
                 $this->feather->view2->setPageInfo(array(
-                        'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
+                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                         'active_page' => 'admin',
                         'admin_console' => true,
                         'group_title'      =>  $this->model->get_group_title($id),
@@ -83,7 +83,7 @@ class groups
         \FeatherBB\AdminUtils::generateAdminMenu('groups');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'id'    => $id,
@@ -110,7 +110,7 @@ class groups
             $group = $this->model->info_add_group($groups, $id);
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
+                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'focus_element' => array('groups2', 'req_title'),

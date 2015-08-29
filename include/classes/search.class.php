@@ -56,10 +56,10 @@ class Search
         $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
 
         // Remove any apostrophes or dashes which aren't part of words
-        $text = substr(ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
+        $text = substr($this->feather->utils->ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
 
         // Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
-        $text = ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
+        $text = $this->feather->utils->ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
 
         // Replace multiple whitespace or dashes
         $text = preg_replace('%(\s){2,}%u', '\1', $text);
@@ -86,19 +86,16 @@ class Search
     {
         static $stopwords;
 
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         // If the word is a keyword we don't want to index it, but we do want to be allowed to search it
         if ($this->is_keyword($word)) {
             return !$idx;
         }
 
         if (!isset($stopwords)) {
-            if (!$feather->cache->isCached('stopwords')) {
-                $feather->cache->store('stopwords', \model\cache::get_config(), '+1 week');
+            if (!$this->feather->cache->isCached('stopwords')) {
+                $this->feather->cache->store('stopwords', \model\cache::get_config(), '+1 week');
             }
-            $stopwords = $feather->cache->retrieve('stopwords');
+            $stopwords = $this->feather->cache->retrieve('stopwords');
         }
 
         // If it is a stopword it isn't valid
@@ -115,7 +112,7 @@ class Search
         $word = str_replace(array('%', '*'), '', $word);
 
         // Check the word is within the min/max length
-        $num_chars = feather_strlen($word);
+        $num_chars = $this->feather->utils->strlen($word);
         return $num_chars >= FEATHER_SEARCH_MIN_WORD && $num_chars <= FEATHER_SEARCH_MAX_WORD;
     }
 

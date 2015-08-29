@@ -54,11 +54,11 @@ class forums
             if ($this->request->post('save') && $this->request->post('read_forum_old')) {
 
                 // Forums parameters / TODO : better handling of wrong parameters
-                $forum_data = array('forum_name' => feather_escape($this->request->post('forum_name')),
-                                    'forum_desc' => $this->request->post('forum_desc') ? feather_linebreaks(feather_trim($this->request->post('forum_desc'))) : NULL,
+                $forum_data = array('forum_name' => $this->feather->utils->escape($this->request->post('forum_name')),
+                                    'forum_desc' => $this->request->post('forum_desc') ? $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('forum_desc'))) : NULL,
                                     'cat_id' => (int) $this->request->post('cat_id'),
                                     'sort_by' => (int) $this->request->post('sort_by'),
-                                    'redirect_url' => $this->feather->url->is_valid($this->request->post('redirect_url')) ? feather_escape($this->request->post('redirect_url')) : NULL);
+                                    'redirect_url' => $this->feather->url->is_valid($this->request->post('redirect_url')) ? $this->feather->utils->escape($this->request->post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
                     redirect($this->feather->url->get('admin/forums/edit/'.$forum_id.'/'), __('Must enter name message'));
@@ -115,7 +115,7 @@ class forums
             \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
             $this->feather->view2->setPageInfo(array(
-                    'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+                    'title'    =>    array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'perm_data' => $this->model->get_permissions($forum_id),
@@ -141,7 +141,7 @@ class forums
             \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
             $this->feather->view2->setPageInfo(array(
-                    'title'    =>    array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+                    'title'    =>    array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'cur_forum' => $this->model->get_forum_info($forum_id),
@@ -155,7 +155,7 @@ class forums
     public function edit_positions()
     {
         foreach ($this->request->post('position') as $forum_id => $position) {
-            $position = (int) feather_trim($position);
+            $position = (int) $this->feather->utils->trim($position);
             $this->model->update_positions($forum_id, $position);
         }
 
@@ -175,7 +175,7 @@ class forums
 
         $categories_model = new \model\admin\categories();
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $categories_model->get_cat_list(),

@@ -45,7 +45,7 @@ class plugins
                 'active_page' => 'admin',
                 'pluginsList'    =>    $pluginsList,
                 'activePlugins'    =>    $activePlugins,
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
             )
         )->addTemplate('admin/plugins.php')->display();
     }
@@ -60,17 +60,17 @@ class plugins
 
         // Check if plugin follows PSR-4 conventions and extends base forum plugin
         if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
-            throw new \FeatherBB\Error(sprintf(__('No plugin message'), feather_escape($class)), 400);
+            throw new \FeatherBB\Error(sprintf(__('No plugin message'), $this->feather->utils->escape($class)), 400);
         }
 
         $plugin = new $class;
         try {
             $plugin->activate($class);
         } catch (\Exception $e) {
-            redirect($this->feather->url->get('admin/plugins/'), feather_escape($e->getMessage()));
+            redirect($this->feather->url->get('admin/plugins/'), $this->feather->utils->escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
+        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$this->feather->utils->escape($class::$name).'" activated!');
     }
 
     public function deactivate()
@@ -85,10 +85,10 @@ class plugins
         try {
             $plugin->deactivate($class);
         } catch (\Exception $e) {
-            redirect($this->feather->url->get('admin/plugins/'), feather_escape($e->getMessage()));
+            redirect($this->feather->url->get('admin/plugins/'), $this->feather->utils->escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" deactivated!');
+        redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$this->feather->utils->escape($class::$name).'" deactivated!');
     }
 
     public function display()
@@ -107,7 +107,7 @@ class plugins
 
         // Make sure the file actually exists
         if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
-            throw new \FeatherBB\Error(sprintf(__('No plugin message'), feather_escape($plugin)), 400);
+            throw new \FeatherBB\Error(sprintf(__('No plugin message'), $this->feather->utils->escape($plugin)), 400);
         }
 
         // Construct REQUEST_URI if it isn't set TODO?
@@ -120,11 +120,11 @@ class plugins
         // get the "blank page of death"
         include FEATHER_ROOT.'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
-            throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), feather_escape($plugin)));
+            throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), $this->feather->utils->escape($plugin)));
         }
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4))),
+                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4))),
                 'active_page' => 'admin',
                 'admin_console' => true,
             )

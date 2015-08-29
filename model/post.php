@@ -84,7 +84,7 @@ class post
         if ($this->user->is_guest) {
 
             // It's a guest, so we have to validate the username
-            $errors = check_username(feather_trim($this->request->post('req_username')), $errors);
+            $errors = check_username($this->feather->utils->trim($this->request->post('req_username')), $errors);
 
             $errors = $this->hook->fire('check_errors_before_post_antispam', $errors);
 
@@ -108,11 +108,11 @@ class post
 
         // If it's a new topic
         if ($fid) {
-            $subject = feather_trim($this->request->post('req_subject'));
+            $subject = $this->feather->utils->trim($this->request->post('req_subject'));
             $subject = $this->hook->fire('check_errors_before_new_topic_subject', $subject);
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = feather_trim(censor_words($subject));
+                $censored_subject = $this->feather->utils->trim(censor_words($subject));
                 $censored_subject = $this->hook->fire('check_errors_before_censored', $censored_subject);
             }
 
@@ -120,9 +120,9 @@ class post
                 $errors[] = __('No subject');
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
-            } elseif (feather_strlen($subject) > 70) {
+            } elseif ($this->feather->utils->strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif ($this->config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$this->user->is_admmod) {
+            } elseif ($this->config['p_subject_all_caps'] == '0' && $this->feather->utils->is_all_uppercase($subject) && !$this->user->is_admmod) {
                 $errors[] = __('All caps subject');
             }
 
@@ -130,7 +130,7 @@ class post
         }
 
         if ($this->user->is_guest) {
-            $email = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
+            $email = strtolower($this->feather->utils->trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
                 $errors = $this->hook->fire('check_errors_before_post_email', $errors, $email);
@@ -152,13 +152,13 @@ class post
         }
 
         // Clean up message from POST
-        $message = feather_linebreaks(feather_trim($this->request->post('req_message')));
+        $message = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_message')));
         $message = $this->hook->fire('check_errors_before_post_message', $message);
 
-        // Here we use strlen() not feather_strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not $this->feather->utils->strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            $errors[] = sprintf(__('Too long message'), forum_number_format(FEATHER_MAX_POSTSIZE));
-        } elseif ($this->config['p_message_all_caps'] == '0' && is_all_uppercase($message) && !$this->user->is_admmod) {
+            $errors[] = sprintf(__('Too long message'), $this->feather->utils->forum_number_format(FEATHER_MAX_POSTSIZE));
+        } elseif ($this->config['p_message_all_caps'] == '0' && $this->feather->utils->is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -175,7 +175,7 @@ class post
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = feather_trim(censor_words($message));
+                $censored_message = $this->feather->utils->trim(censor_words($message));
 
                 if ($censored_message == '') {
                     $errors[] = __('No message after censoring');
@@ -201,19 +201,19 @@ class post
         }
         // Otherwise it should be in $feather ($_POST)
         else {
-            $post['username'] = feather_trim($this->request->post('req_username'));
-            $post['email'] = strtolower(feather_trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
+            $post['username'] = $this->feather->utils->trim($this->request->post('req_username'));
+            $post['email'] = strtolower($this->feather->utils->trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
         }
 
         if ($this->request->post('req_subject')) {
-            $post['subject'] = feather_trim($this->request->post('req_subject'));
+            $post['subject'] = $this->feather->utils->trim($this->request->post('req_subject'));
         }
 
         $post['hide_smilies'] = $this->request->post('hide_smilies') ? '1' : '0';
         $post['subscribe'] = $this->request->post('subscribe') ? '1' : '0';
         $post['stick_topic'] = $this->request->post('stick_topic') && $is_admmod ? '1' : '0';
 
-        $post['message']  = feather_linebreaks(feather_trim($this->request->post('req_message')));
+        $post['message']  = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -222,7 +222,7 @@ class post
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
-        $post['message'] = strip_bad_multibyte_chars($post['message']);
+        $post['message'] = $this->feather->utils->strip_bad_multibyte_chars($post['message']);
 
         $post['time'] = time();
 
@@ -374,7 +374,7 @@ class post
         if ($result) {
             $notification_emails = array();
 
-            $censored_message = feather_trim(censor_words($post['message']));
+            $censored_message = $this->feather->utils->trim(censor_words($post['message']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
@@ -582,8 +582,8 @@ class post
         if ($result) {
             $notification_emails = array();
 
-            $censored_message = feather_trim(censor_words($post['message']));
-            $censored_subject = feather_trim(censor_words($post['subject']));
+            $censored_message = $this->feather->utils->trim(censor_words($post['message']));
+            $censored_subject = $this->feather->utils->trim(censor_words($post['subject']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
@@ -796,7 +796,7 @@ class post
             $quote['message'] = censor_words($quote['message']);
         }
 
-        $quote['message'] = feather_escape($quote['message']);
+        $quote['message'] = $this->feather->utils->escape($quote['message']);
 
         if ($this->config['p_message_bbcode'] == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
@@ -805,10 +805,10 @@ class post
                     // Check if we need to quote it.
                     // Post has special chars. Escape escapes and quotes then wrap in quotes.
                     if (strpos($quote['poster'], '"') !== false && strpos($quote['poster'], '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
-                        $quote['poster'] = feather_escape(str_replace('\\', '\\\\', $quote['poster']));
+                        $quote['poster'] = $this->feather->utils->escape(str_replace('\\', '\\\\', $quote['poster']));
                         $quote['poster'] = '\''. $quote['poster'] .'#'. $qid .'\'';
                     } else { // otherwise use double quotes.
-                        $quote['poster'] = feather_escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
+                        $quote['poster'] = $this->feather->utils->escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
                         $quote['poster'] = '"'. $quote['poster'] .'#'. $qid .'"';
                     }
                 } else {

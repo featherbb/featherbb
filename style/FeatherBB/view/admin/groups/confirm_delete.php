@@ -23,7 +23,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php _e('Confirm delete subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Confirm delete info'), feather_escape($group_title)) ?></p>
+							<p><?php printf(__('Confirm delete info'), $feather->utils->escape($group_title)) ?></p>
 							<p class="warntext"><?php _e('Confirm delete warn') ?></p>
 						</div>
 					</fieldset>

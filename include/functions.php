@@ -8,17 +8,6 @@
  */
 
 
-
-//
-// Return current timestamp (with microseconds) as a float
-//
-function get_microtime()
-{
-    list($usec, $sec) = explode(' ', microtime());
-    return ((float)$usec + (float)$sec);
-}
-
-
 //
 // Fetch admin IDs
 //
@@ -51,9 +40,9 @@ function check_username($username, $errors, $exclude_id = null)
     $username = preg_replace('%\s+%s', ' ', $username);
 
     // Validate username
-    if (feather_strlen($username) < 2) {
+    if ($feather->utils->strlen($username) < 2) {
         $errors[] = __('Username too short');
-    } elseif (feather_strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+    } elseif ($feather->utils->strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
         $errors[] = __('Username too long');
     } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
         $errors[] = __('Username guest');
@@ -73,11 +62,11 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => $feather->utils->ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
     if ($result) {
         $busy = $result['username'];
-        $errors[] = __('Username dupe 1').' '.feather_escape($busy).'. '.__('Username dupe 2');
+        $errors[] = __('Username dupe 1').' '.$feather->utils->escape($busy).'. '.__('Username dupe 2');
     }
 
     // Check username for any banned usernames
@@ -106,7 +95,7 @@ function generate_avatar_markup($user_id)
         $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
         if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.feather_escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+            $avatar_markup = '<img src="'.$feather->utils->escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -120,6 +109,8 @@ function generate_avatar_markup($user_id)
 //
 function generate_page_title($page_title, $p = null)
 {
+    $feather = \Slim\Slim::getInstance();
+
     if (!is_array($page_title)) {
         $page_title = array($page_title);
     }
@@ -127,7 +118,7 @@ function generate_page_title($page_title, $p = null)
     $page_title = array_reverse($page_title);
 
     if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf(__('Page'), forum_number_format($p)).')';
+        $page_title[0] .= ' ('.sprintf(__('Page'), $feather->utils->forum_number_format($p)).')';
     }
 
     $crumbs = implode(__('Title separator'), $page_title);
@@ -369,7 +360,7 @@ function censor_words($text)
     }
 
     if (!empty($search_for) && !empty($replace_with)) {
-        return substr(ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+        return substr($feather->utils->ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
     } else {
         return $text;
     }
@@ -385,6 +376,8 @@ function get_title($user)
     global $feather_bans;
     static $ban_list;
 
+    $feather = \Slim\Slim::getInstance();
+
     // If not already built in a previous call, build an array of lowercase banned usernames
     if (empty($ban_list)) {
         $ban_list = array();
@@ -395,7 +388,7 @@ function get_title($user)
 
     // If the user has a custom title
     if ($user['title'] != '') {
-        $user_title = feather_escape($user['title']);
+        $user_title = $feather->utils->escape($user['title']);
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
@@ -403,7 +396,7 @@ function get_title($user)
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
-        $user_title = feather_escape($user['g_user_title']);
+        $user_title = $feather->utils->escape($user['g_user_title']);
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
@@ -441,7 +434,7 @@ function message($msg, $http_status = null, $no_back_link = false)
 
     if (!defined('FEATHER_HEADER')) {
         $feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($feather->config['o_board_title']), __('Info')),
+            'title' => array($feather->utils->escape($feather->config['o_board_title']), __('Info')),
         ));
     }
 
@@ -452,63 +445,6 @@ function message($msg, $http_status = null, $no_back_link = false)
 
     // Don't display anything after a message
     $feather->stop();
-}
-
-
-//
-// Format a time string according to $time_format and time zones
-//
-function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
-{
-    global $forum_date_formats, $forum_time_formats;
-
-    if ($timestamp == '') {
-        return __('Never');
-    }
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $diff = ($feather->user->timezone + $feather->user->dst) * 3600;
-    $timestamp += $diff;
-    $now = time();
-
-    if (is_null($date_format)) {
-        $date_format = $forum_date_formats[$feather->user->date_format];
-    }
-
-    if (is_null($time_format)) {
-        $time_format = $forum_time_formats[$feather->user->time_format];
-    }
-
-    $date = gmdate($date_format, $timestamp);
-    $today = gmdate($date_format, $now+$diff);
-    $yesterday = gmdate($date_format, $now+$diff-86400);
-
-    if (!$no_text) {
-        if ($date == $today) {
-            $date = __('Today');
-        } elseif ($date == $yesterday) {
-            $date = __('Yesterday');
-        }
-    }
-
-    if ($date_only) {
-        return $date;
-    } elseif ($time_only) {
-        return gmdate($time_format, $timestamp);
-    } else {
-        return $date.' '.gmdate($time_format, $timestamp);
-    }
-}
-
-
-//
-// A wrapper for PHP's number_format function
-//
-function forum_number_format($number, $decimals = 0)
-{
-    return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
 }
 
 
@@ -603,70 +539,6 @@ function feather_hash($str)
 
 
 //
-// Calls htmlspecialchars with a few options already set
-//
-function feather_escape($str)
-{
-    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-}
-
-
-//
-// Calls htmlspecialchars_decode with a few options already set
-//
-function feather_htmlspecialchars_decode($str)
-{
-    if (function_exists('htmlspecialchars_decode')) {
-        return htmlspecialchars_decode($str, ENT_QUOTES);
-    }
-
-    static $translations;
-    if (!isset($translations)) {
-        $translations = get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES);
-        $translations['&#039;'] = '\''; // get_html_translation_table doesn't include &#039; which is what htmlspecialchars translates ' to, but apparently that is okay?! http://bugs.php.net/bug.php?id=25927
-        $translations = array_flip($translations);
-    }
-
-    return strtr($str, $translations);
-}
-
-
-//
-// A wrapper for utf8_strlen for compatibility
-//
-function feather_strlen($str)
-{
-    return utf8_strlen($str);
-}
-
-
-//
-// Convert \r\n and \r to \n
-//
-function feather_linebreaks($str)
-{
-    return str_replace(array("\r\n", "\r"), "\n", $str);
-}
-
-
-//
-// A wrapper for utf8_trim for compatibility
-//
-function feather_trim($str, $charlist = false)
-{
-    return is_string($str) ? utf8_trim($str, $charlist) : '';
-}
-
-//
-// Checks if a string is in all uppercase
-//
-function is_all_uppercase($string)
-{
-    return utf8_strtoupper($string) == $string && utf8_strtolower($string) != $string;
-}
-
-
-//
 // Display $message and redirect user to $destination_url
 //
 function redirect($destination_url, $message = null)
@@ -745,61 +617,6 @@ function forum_list_langs()
 }
 
 //
-// Replace string matching regular expression
-//
-// This function takes care of possibly disabled unicode properties in PCRE builds
-//
-function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
-{
-    if ($callback) {
-        $replaced = preg_replace_callback($pattern, create_function('$matches', 'return '.$replace.';'), $subject);
-    } else {
-        $replaced = preg_replace($pattern, $replace, $subject);
-    }
-
-    // If preg_replace() returns false, this probably means unicode support is not built-in, so we need to modify the pattern a little
-    if ($replaced === false) {
-        if (is_array($pattern)) {
-            foreach ($pattern as $cur_key => $cur_pattern) {
-                $pattern[$cur_key] = str_replace('\p{L}\p{N}', '\w', $cur_pattern);
-            }
-
-            $replaced = preg_replace($pattern, $replace, $subject);
-        } else {
-            $replaced = preg_replace(str_replace('\p{L}\p{N}', '\w', $pattern), $replace, $subject);
-        }
-    }
-
-    return $replaced;
-}
-
-//
-// Replace four-byte characters with a question mark
-//
-// As MySQL cannot properly handle four-byte characters with the default utf-8
-// charset up until version 5.5.3 (where a special charset has to be used), they
-// need to be replaced, by question marks in this case.
-//
-function strip_bad_multibyte_chars($str)
-{
-    $result = '';
-    $length = strlen($str);
-
-    for ($i = 0; $i < $length; $i++) {
-        // Replace four-byte characters (11110www 10zzzzzz 10yyyyyy 10xxxxxx)
-        $ord = ord($str[$i]);
-        if ($ord >= 240 && $ord <= 244) {
-            $result .= '?';
-            $i += 3;
-        } else {
-            $result .= $str[$i];
-        }
-    }
-
-    return $result;
-}
-
-//
 // Generate a cache ID based on the last modification time for all stopwords files
 //
 function generate_stopwords_cache_id()
@@ -822,9 +639,11 @@ function generate_stopwords_cache_id()
 // Generate breadcrumbs from an array of name and URLs
 function breadcrumbs_admin(array $links)
 {
+    $feather = \Slim\Slim::getInstance();
+
     foreach ($links as $name => $url) {
         if ($name != '' && $url != '') {
-            $tmp[] = '<span><a href="' . $url . '">'.feather_escape($name).'</a></span>';
+            $tmp[] = '<span><a href="' . $url . '">'.$feather->utils->escape($name).'</a></span>';
         } else {
             $tmp[] = '<span>'.__('Deleted').'</span>';
             return implode(' » ', $tmp);

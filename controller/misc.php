@@ -26,7 +26,7 @@ class misc
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
+            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
             'active_page' => 'rules'
             ))->addTemplate('misc/rules.php')->display();
     }
@@ -116,7 +116,7 @@ class misc
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.feather_escape($mail['recipient'])),
+            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.$this->feather->utils->escape($mail['recipient'])),
             'active_page' => 'email',
             'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
             'focus_element' => array('email', 'req_subject'),
@@ -143,7 +143,7 @@ class misc
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array(feather_escape($this->feather->forum_settings['o_board_title']), __('Report post')),
+            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),
             'focus_element' => array('report', 'req_reason'),
