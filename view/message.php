@@ -13,11 +13,11 @@ if (!defined('FEATHER')) {
 }
 
 ?>
-<div id="msg" class="block">
-	<h2><span><?php _e('Info') ?></span></h2>
+<div id="msg" class="block error">
+	<h2><span><?= __('Error') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
-			<p><?php echo $message ?></p>
+			<p><?php echo $msg ?></p>
 <?php if (!$no_back_link): ?>			<p><a href="javascript: history.go(-1)"><?php _e('Go back') ?></a></p>
 <?php endif;
     ?>		</div>
