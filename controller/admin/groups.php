@@ -67,11 +67,7 @@ class groups
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
                 $this->model->delete_group($id);
             } else {
-<<<<<<< HEAD
-                generate_admin_menu('groups');
-=======
                 \FeatherBB\AdminUtils::generateAdminMenu('groups');
->>>>>>> development
 
                 $this->feather->view2->setPageInfo(array(
                         'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -84,11 +80,7 @@ class groups
             }
         }
 
-<<<<<<< HEAD
-        generate_admin_menu('groups');
-=======
         \FeatherBB\AdminUtils::generateAdminMenu('groups');
->>>>>>> development
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array(feather_escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -113,11 +105,7 @@ class groups
         // Add/edit a group (stage 1)
         elseif ($this->request->post('add_group') || isset($id)) {
 
-<<<<<<< HEAD
-            generate_admin_menu('groups');
-=======
             \FeatherBB\AdminUtils::generateAdminMenu('groups');
->>>>>>> development
 
             $group = $this->model->info_add_group($groups, $id);
 
@@ -132,11 +120,7 @@ class groups
                     'id'    => $id,
                     'group_list'    => $this->model->get_group_list($groups, $group),
                 )
-<<<<<<< HEAD
-            )->addTemplate('admin/groups/delete_group.php')->display();
-=======
             )->addTemplate('admin/groups/add_edit_group.php')->display();
->>>>>>> development
         }
     }
 }

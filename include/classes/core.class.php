@@ -249,7 +249,7 @@ class Core extends \Slim\Middleware
         $this->app->config = $this->forum_settings; // Legacy
         extract($this->forum_settings); // Legacy
 
-        // new \plugin\plugintest();
+        // Run hooks of activated plugins
         \FeatherBB\Plugin::runActivePlugins();
 
         // Define time formats
