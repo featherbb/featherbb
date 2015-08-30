@@ -72,6 +72,19 @@ class auth
         return $user->find_one();
     }
 
+    public static function get_user_from_email($email)
+    {
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
+
+        $result['select'] = array('id', 'username', 'last_email_sent');
+        $result = DB::for_table('users')
+            ->select_many($result['select'])
+            ->where('email', $email);
+        $result = $feather->hooks->fireDB('password_forgotten_query', $result);
+        return $result->find_one();
+    }
+
     public static function update_group($user_id, $group_id)
     {
         $update_usergroup = DB::for_table('users')->where('id', $user_id)
@@ -79,6 +92,37 @@ class auth
             ->set('group_id', $group_id);
         $update_usergroup = $this->feather->hooks->fireDB('update_usergroup_login', $update_usergroup);
         return $update_usergroup->save();
+    }
+
+    public static function set_last_visit($user_id, $last_visit)
+    {
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
+
+        $update_last_visit = DB::for_table('users')->where('id', (int) $user_id)
+            ->find_one()
+            ->set('last_visit', (int) $last_visit);
+        $update_last_visit = $feather->hooks->fireDB('update_online_logout', $update_last_visit);
+        return $update_last_visit->save();
+    }
+
+    public static function set_new_password($pass, $key, $user_id)
+    {
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
+
+        $query['update'] = array(
+            'activate_string' => feather_hash($pass),
+            'activate_key'    => $key,
+            'last_email_sent' => $feather->now
+        );
+
+        $query = DB::for_table('users')
+                    ->where('id', $user_id)
+                    ->find_one()
+                    ->set($query['update']);
+        $query = $feather->hooks->fireDB('password_forgotten_mail_query', $query);
+        return $query->save();
     }
 
     public static function feather_setcookie($user_id, $password, $expires)
