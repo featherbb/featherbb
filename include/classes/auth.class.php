@@ -13,6 +13,7 @@
 
 namespace FeatherBB;
 use DB;
+// use model\auth;
 
 class Auth extends \Slim\Middleware
 {

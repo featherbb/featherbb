@@ -18,6 +18,7 @@ return array(
     'FeatherBB\\Email' => $baseDir . '/include/classes/email.class.php',
     'FeatherBB\\Error' => $baseDir . '/include/classes/error.class.php',
     'FeatherBB\\Hooks' => $baseDir . '/include/classes/hooks.class.php',
+    'FeatherBB\\Lister' => $baseDir . '/include/classes/lister.class.php',
     'FeatherBB\\Loader' => $baseDir . '/include/classes/autoload.class.php',
     'FeatherBB\\Plugin' => $baseDir . '/include/classes/plugin.class.php',
     'FeatherBB\\Search' => $baseDir . '/include/classes/search.class.php',

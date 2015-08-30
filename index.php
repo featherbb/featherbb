@@ -14,15 +14,8 @@ error_reporting(E_ALL); // Let's report everything for development
 ini_set('display_errors', 1);
 
 // Load Slim Framework
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
-
-// Load dependencies
 require 'vendor/autoload.php';
-
-// Load FeatherBB
-require 'include/classes/autoload.class.php';
-\FeatherBB\Loader::registerAutoloader();
+// \Slim\Slim::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();

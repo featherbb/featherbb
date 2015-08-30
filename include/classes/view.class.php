@@ -254,7 +254,6 @@ class View
         }
         $this->data->set('style', (string) $style);
         $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view');
-        // $this->addAsset('css', 'style/themes/'.$style.'/style.css');
         return $this;
     }
 

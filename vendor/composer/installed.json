@@ -1,1 +1,95 @@
-[]
+[
+    {
+        "name": "slim/slim",
+        "version": "2.6.2",
+        "version_normalized": "2.6.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/slimphp/Slim.git",
+            "reference": "20a02782f76830b67ae56a5c08eb1f563c351a37"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/slimphp/Slim/zipball/20a02782f76830b67ae56a5c08eb1f563c351a37",
+            "reference": "20a02782f76830b67ae56a5c08eb1f563c351a37",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "suggest": {
+            "ext-mcrypt": "Required for HTTP cookie encryption"
+        },
+        "time": "2015-03-08 18:41:17",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Slim": "."
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Josh Lockhart",
+                "email": "info@joshlockhart.com",
+                "homepage": "http://www.joshlockhart.com/"
+            }
+        ],
+        "description": "Slim Framework, a PHP micro framework",
+        "homepage": "http://github.com/codeguy/Slim",
+        "keywords": [
+            "microframework",
+            "rest",
+            "router"
+        ]
+    },
+    {
+        "name": "akrabat/rka-slim-controller",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/akrabat/rka-slim-controller.git",
+            "reference": "7115f082a91af83fd22755e8d2d27e9fcffc636b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/akrabat/rka-slim-controller/zipball/7115f082a91af83fd22755e8d2d27e9fcffc636b",
+            "reference": "7115f082a91af83fd22755e8d2d27e9fcffc636b",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4",
+            "slim/slim": "~2.4"
+        },
+        "time": "2015-01-07 09:54:54",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "RKA\\": "RKA"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Rob Allen",
+                "email": "rob@akrabat.com",
+                "homepage": "http://akrabat.com"
+            }
+        ],
+        "description": "Dynamically instantiated controller classes for Slim Framework",
+        "homepage": "http://github.com/akrabat/rka-slim-controller",
+        "keywords": [
+            "controller",
+            "slim"
+        ]
+    }
+]
