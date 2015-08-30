@@ -19,6 +19,8 @@
     echo "\t".'<meta name="robots" content="noindex, follow">'."\n";
 } ?>
     <title><?php echo generate_page_title($title, $page_number) ?></title>
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="<?= $feather->url->base() ?>/style/themes/<?= $style ?>/style.css">
 <?php
 
 foreach($assets as $type => $items) {

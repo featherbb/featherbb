@@ -208,7 +208,7 @@ class View
 
     public function display($nested = true)
     {
-        // $this->setStyle($this->app->user->style);
+        $this->setStyle($this->app->user->style);
         echo $this->fetch($nested);
     }
 
@@ -254,7 +254,7 @@ class View
         }
         $this->data->set('style', (string) $style);
         $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view');
-        $this->addAsset('css', 'style/themes/'.$style.'/style.css');
+        // $this->addAsset('css', 'style/themes/'.$style.'/style.css');
         return $this;
     }
 
