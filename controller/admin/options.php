@@ -39,7 +39,7 @@ class options
                 'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Options')),
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'languages' => forum_list_langs(),
+                'languages' => $this->model->get_langs(),
                 'styles' => $this->model->get_styles(),
                 'times' => $this->model->get_times(),
             )

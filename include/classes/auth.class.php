@@ -223,7 +223,7 @@ class Auth extends \Slim\Middleware
             if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language)) {
                 $this->app->user->language = $this->app->forum_settings['o_default_lang'];
             }
-            if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'style/'.$this->app->user->style.'.css')) {
+            if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$this->app->user->style.'/style.css')) {
                 $this->app->user->style = $this->app->forum_settings['o_default_style'];
             }
             $this->model->feather_setcookie($this->app->user->id, $this->app->user->password, $expires);

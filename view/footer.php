@@ -128,7 +128,7 @@ if ($feather->forum_env['FEATHER_SHOW_QUERIES']) {
 
 </section>
 
-<script src="<?php echo $feather->url->base() ?>/style/FeatherBB/phone.min.js"></script>
+<script src="<?php echo $feather->url->base() ?>/style/themes/FeatherBB/phone.min.js"></script>
 
 </body>
 </html>

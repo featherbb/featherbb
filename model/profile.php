@@ -780,7 +780,7 @@ class profile
 
                 // Make sure we got a valid language string
                 if ($this->request->post('form_language')) {
-                    $languages = forum_list_langs();
+                    $languages = \FeatherBB\Lister::getLangs();
                     $form['language'] = $this->feather->utils->trim($this->request->post('form_language'));
                     if (!in_array($form['language'], $languages)) {
                         message(__('Bad request'), '404');
@@ -952,7 +952,7 @@ class profile
 
                 // Make sure we got a valid style string
                 if ($this->request->post('form_style')) {
-                    $styles = forum_list_styles();
+                    $styles = \FeatherBB\Lister::getStyles();
                     $form['style'] = $this->feather->utils->trim($this->request->post('form_style'));
                     if (!in_array($form['style'], $styles)) {
                         message(__('Bad request'), '404');

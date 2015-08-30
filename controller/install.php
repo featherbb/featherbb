@@ -27,7 +27,7 @@ class install
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\install();
-        $this->available_langs = forum_list_langs();
+        $this->available_langs = \FeatherBB\Lister::getLangs();
         $this->feather->view2->setStyle('FeatherBB');
     }
 
@@ -92,7 +92,7 @@ class install
                 }
 
                 // Validate language
-                if (!in_array($data['default_lang'], forum_list_langs())) {
+                if (!in_array($data['default_lang'], \FeatherBB\Lister::getLangs())) {
                     $this->errors[] = __('Error default language');
                 }
 

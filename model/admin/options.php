@@ -108,12 +108,12 @@ class options
             }
         }
 
-        $languages = forum_list_langs();
+        $languages = \FeatherBB\Lister::getLangs();
         if (!in_array($form['default_lang'], $languages)) {
             throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
-        $styles = forum_list_styles();
+        $styles = \FeatherBB\Lister::getStyles();
         if (!in_array($form['default_style'], $styles)) {
             throw new \FeatherBB\Error(__('Bad request'), 404);
         }
@@ -252,7 +252,7 @@ class options
 
     public function get_styles()
     {
-        $styles = forum_list_styles();
+        $styles = \FeatherBB\Lister::getStyles();
         $styles = $this->hook->fire('options.get_styles.styles', $styles);
 
         $output = '';
@@ -266,6 +266,25 @@ class options
         }
 
         $output = $this->hook->fire('options.get_styles.output', $output);
+        return $output;
+    }
+
+    public function get_langs()
+    {
+        $langs = \FeatherBB\Lister::getLangs();
+        $langs = $this->hook->fire('options.get_langs.langs', $langs);
+
+        $output = '';
+
+        foreach ($langs as $temp) {
+            if ($this->config['o_default_lang'] == $temp) {
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+            } else {
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+            }
+        }
+
+        $output = $this->hook->fire('options.get_langs.output', $output);
         return $output;
     }
 

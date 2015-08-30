@@ -34,7 +34,7 @@ class plugins
 
         \FeatherBB\AdminUtils::generateAdminMenu('plugins');
 
-        $pluginsList = \FeatherBB\AdminUtils::getValidPlugins();
+        $pluginsList = \FeatherBB\Lister::getValidPlugins();
         // var_dump($pluginsList);
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
         // var_dump($activePlugins);

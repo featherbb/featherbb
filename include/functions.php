@@ -513,56 +513,6 @@ function file_size($size)
     return sprintf(__('Size unit '.$units[$i]), round($size, 2));
 }
 
-
-//
-// Fetch a list of available styles
-//
-function forum_list_styles()
-{
-    $styles = array();
-
-    $d = dir(FEATHER_ROOT.'style');
-    while (($entry = $d->read()) !== false) {
-        if ($entry{0} == '.') {
-            continue;
-        }
-
-        if (substr($entry, -4) == '.css') {
-            $styles[] = substr($entry, 0, -4);
-        }
-    }
-    $d->close();
-
-    natcasesort($styles);
-
-    return $styles;
-}
-
-
-//
-// Fetch a list of available language packs
-//
-function forum_list_langs()
-{
-    $languages = array();
-
-    $d = dir(FEATHER_ROOT.'lang');
-    while (($entry = $d->read()) !== false) {
-        if ($entry{0} == '.') {
-            continue;
-        }
-
-        if (is_dir(FEATHER_ROOT.'lang/'.$entry) && file_exists(FEATHER_ROOT.'lang/'.$entry.'/common.po')) {
-            $languages[] = $entry;
-        }
-    }
-    $d->close();
-
-    natcasesort($languages);
-
-    return $languages;
-}
-
 //
 // Generate a cache ID based on the last modification time for all stopwords files
 //

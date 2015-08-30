@@ -105,7 +105,7 @@ class users
             $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
             $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
-            $this->feather->view2->addAsset('js', 'js/common.js', array('type' => 'text/javascript'));
+            $this->feather->view2->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
             $this->feather->view2->setPageInfo(array(
                     'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),

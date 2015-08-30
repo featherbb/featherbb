@@ -68,7 +68,7 @@ class register
                         'is_indexed' => true,
                         'errors' => $user['errors'],
                         'index_questions'    =>    $index_questions,
-                        'languages' => forum_list_langs(),
+                        'languages' => \FeatherBB\Lister::getLangs(),
                         'question' => array_keys($lang_antispam_questions),
                         'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
                             )

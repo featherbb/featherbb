@@ -208,6 +208,7 @@ class View
 
     public function display($nested = true)
     {
+        // $this->setStyle($this->app->user->style);
         echo $this->fetch($nested);
     }
 
@@ -248,12 +249,12 @@ class View
 
     public function setStyle($style)
     {
-        if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/'.$style.'/view/')) {
+        if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
-        $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/'.$style.'/view');
-        $this->addAsset('css', 'style/'.$style.'.css');
+        $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view');
+        $this->addAsset('css', 'style/themes/'.$style.'/style.css');
         return $this;
     }
 
