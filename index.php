@@ -15,7 +15,6 @@ ini_set('display_errors', 1);
 
 // Load Slim Framework
 require 'vendor/autoload.php';
-// \Slim\Slim::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
