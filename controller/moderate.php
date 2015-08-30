@@ -19,10 +19,10 @@ class moderate
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\moderate();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/topic.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/misc.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/topic.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/misc.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/post.mo');
     }
 
     public function __autoload($class_name)

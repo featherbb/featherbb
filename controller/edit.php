@@ -19,10 +19,10 @@ class edit
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\edit();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/post.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/bbeditor.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function __autoload($class_name)

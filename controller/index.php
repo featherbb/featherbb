@@ -15,7 +15,7 @@ class index
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\index();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->feather->user->language.'/index.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->feather->user->language.'/index.mo');
     }
 
     public function display()

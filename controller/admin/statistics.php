@@ -19,7 +19,7 @@ class statistics
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\statistics();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/index.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->user->language.'/admin/index.mo');
     }
 
     public function display()

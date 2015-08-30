@@ -21,7 +21,7 @@ class reports
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\reports();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/reports.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->user->language.'/admin/reports.mo');
     }
 
     public function __autoload($class_name)

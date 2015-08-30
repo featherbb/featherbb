@@ -18,7 +18,7 @@ class help
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/help.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/help.mo');
     }
 
     public function __autoload($class_name)

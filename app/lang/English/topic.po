@@ -1,0 +1,93 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Post reply"
+msgstr "Post reply"
+
+msgid "Topic closed"
+msgstr "Topic closed"
+
+msgid "From"
+msgstr "From:"
+
+msgid "Promote user"
+msgstr "Promote user"
+
+msgid "IP address logged"
+msgstr "IP address logged"
+
+msgid "Note"
+msgstr "Note:"
+
+msgid "Posts topic"
+msgstr "Posts:"
+
+msgid "Registered topic"
+msgstr "Registered:"
+
+msgid "Replies"
+msgstr "Replies:"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Guest"
+msgstr "Guest"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Last edit"
+msgstr "Last edited by"
+
+msgid "Report"
+msgstr "Report"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Quote"
+msgstr "Quote"
+
+msgid "Is subscribed"
+msgstr "You are currently subscribed to this topic"
+
+msgid "Unsubscribe"
+msgstr "Unsubscribe"
+
+msgid "Subscribe"
+msgstr "Subscribe to this topic"
+
+msgid "Quick post"
+msgstr "Quick reply"
+
+msgid "Mod controls"
+msgstr "Moderator controls"
+
+msgid "New icon"
+msgstr "New post"
+
+msgid "Re"
+msgstr "Re:"
+
+msgid "Preview"
+msgstr "Preview"

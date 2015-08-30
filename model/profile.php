@@ -215,7 +215,7 @@ class profile
                     throw new \FeatherBB\Error(__('Banned email'), 403);
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'app/lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = $this->hook->fire('change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -252,7 +252,7 @@ class profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'app/lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
                     $mail_tpl = $this->hook->fire('change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -289,7 +289,7 @@ class profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'app/lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
             $mail_tpl = $this->hook->fire('change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject

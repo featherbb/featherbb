@@ -38,7 +38,7 @@ class install
                 $this->install_lang = $this->feather->request->post('install_lang');
             }
         }
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->install_lang.'/install.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->install_lang.'/install.mo');
 
         if ($this->feather->request->isPost() && empty($this->feather->request->post('choose_lang'))) {
             $missing_fields = array();
@@ -164,7 +164,7 @@ class install
         \FeatherBB\Core::init_db($data);
 
         // Load appropriate language
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$data['default_lang'].'/install.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$data['default_lang'].'/install.mo');
 
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';

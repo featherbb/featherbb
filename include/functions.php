@@ -33,8 +33,8 @@ function check_username($username, $errors, $exclude_id = null)
     // Include UTF-8 function
     require_once FEATHER_ROOT.'include/utf8/strcasecmp.php';
 
-    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/register.mo');
-    load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/prof_reg.mo');
+    load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/register.mo');
+    load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/prof_reg.mo');
 
     // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
     $username = preg_replace('%\s+%s', ' ', $username);
@@ -518,7 +518,7 @@ function file_size($size)
 //
 function generate_stopwords_cache_id()
 {
-    $files = glob(FEATHER_ROOT.'lang/*/stopwords.txt');
+    $files = glob(FEATHER_ROOT.'app/lang/*/stopwords.txt');
     if ($files === false) {
         return 'cache_id_error';
     }

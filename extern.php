@@ -75,8 +75,8 @@ $feather_settings = array('config_file' => 'include/config.php',
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
 
-load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/common.mo');
-load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$feather->user->language.'/index.mo');
+load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/common.mo');
+load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/index.mo');
 
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {

@@ -15,9 +15,9 @@ class viewtopic
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\viewtopic();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/topic.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/post.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/bbeditor.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/topic.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/bbeditor.mo');
     }
 
     public function display($id = null, $name = null, $page = null, $pid = null)
@@ -29,7 +29,7 @@ class viewtopic
         }
 
         // Antispam feature
-        require $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/antispam.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Fetch some informations about the topic

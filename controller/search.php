@@ -19,9 +19,9 @@ class search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\search();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/userlist.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/search.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/userlist.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/search.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)

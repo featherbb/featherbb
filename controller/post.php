@@ -15,11 +15,11 @@ class post
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \model\post();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/post.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/register.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/antispam.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/bbeditor.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/antispam.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/bbeditor.mo');
     }
 
     public function newreply($fid = null, $tid = null, $qid = null)
@@ -30,7 +30,7 @@ class post
     public function newpost($fid = null, $tid = null, $qid = null)
     {
         // Antispam feature
-        require $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->feather->user->language.'/antispam.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot

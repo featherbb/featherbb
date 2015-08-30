@@ -19,9 +19,9 @@ class register
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\register();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/antispam.mo');
     }
 
     public function __autoload($class_name)
@@ -37,7 +37,7 @@ class register
         }
 
         // Antispam feature
-        require FEATHER_ROOT.'lang/'.$this->user->language.'/antispam.php';
+        require FEATHER_ROOT.'app/lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled

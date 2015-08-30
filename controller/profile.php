@@ -19,9 +19,9 @@ class profile
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\profile();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/profile.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/profile.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/prof_reg.mo');
     }
 
     public function __autoload($class_name)

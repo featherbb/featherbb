@@ -19,7 +19,7 @@ class options
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\options();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/options.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->user->language.'/admin/options.mo');
     }
 
     public function __autoload($class_name)

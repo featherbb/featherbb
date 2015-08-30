@@ -82,7 +82,7 @@ class misc
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'app/lang/'.$this->user->language.'/mail_templates/form_email.tpl'));
         $mail_tpl = $this->hook->fire('send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -194,7 +194,7 @@ class misc
             // We send it to the complete mailing-list in one swoop
             if ($this->config['o_mailing_list'] != '') {
                 // Load the "new report" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
+                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'app/lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
                 $mail_tpl = $this->hook->fire('insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject

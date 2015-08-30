@@ -21,7 +21,7 @@ class login
 
 
         $this->model = new \model\login();
-        load_textdomain('featherbb', FEATHER_ROOT.'lang/'.$this->user->language.'/login.mo');
+        load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/login.mo');
     }
 
     public function __autoload($class_name)

@@ -19,7 +19,7 @@ class groups
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \model\admin\groups();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'lang/'.$this->user->language.'/admin/groups.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->user->language.'/admin/groups.mo');
     }
 
     public function __autoload($class_name)

@@ -220,7 +220,7 @@ class Auth extends \Slim\Middleware
             if (!$this->app->user->disp_posts) {
                 $this->app->user->disp_posts = $this->app->forum_settings['o_disp_posts_default'];
             }
-            if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language)) {
+            if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'app/lang/'.$this->app->user->language)) {
                 $this->app->user->language = $this->app->forum_settings['o_default_lang'];
             }
             if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$this->app->user->style.'/style.css')) {
@@ -267,7 +267,7 @@ class Auth extends \Slim\Middleware
             $this->model->feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
-        load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo');
+        load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'app/lang/'.$this->app->user->language.'/common.mo');
 
         // Load bans from cache
         if (!$this->app->cache->isCached('bans')) {
