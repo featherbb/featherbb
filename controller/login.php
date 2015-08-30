@@ -32,8 +32,7 @@ class login
     public function display()
     {
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
-            exit;
+            $this->feather->url->redirect($this->feather->url->get('/'), 'Already logged in');
         }
 
         // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)

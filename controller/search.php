@@ -34,15 +34,15 @@ class search
         global $pd;
 
         if ($this->user->g_read_board == '0') {
-            message(__('No view'), '403');
+            throw new \FeatherBB\Error(__('No view'), 403);
         } elseif ($this->user->g_search == '0') {
-            message(__('No search permission'), false, '403 Forbidden');
+            throw new \FeatherBB\Error(__('No search permission'), 403);
         }
 
         // Figure out what to do :-)
         if ($this->request->get('action') || ($this->request->get('search_id'))) {
-            $search = $this->model->get_search_results();
 
+            $search = $this->model->get_search_results();
                 // We have results to display
                 if (isset($search['is_result'])) {
 
@@ -73,7 +73,7 @@ class search
                     $this->feather->view2->addTemplate('search/footer.php', 10)->display();
 
                 } else {
-                    message(__('No hits'));
+                    redirect($this->feather->url->get('search/'), __('No hits'));
                 }
         }
         // Display the form

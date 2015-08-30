@@ -263,11 +263,8 @@ class register
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-<<<<<<< HEAD
             redirect($this->feather->url->base(),__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
-=======
-            message(__('Reg email').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', true);
->>>>>>> origin/development
+
         }
 
         $this->auth->feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);

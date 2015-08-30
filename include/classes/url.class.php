@@ -729,11 +729,7 @@ class Url
     //
     public function get($link, $args = null)
     {
-        if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) { // If we have Apache's mod_rewrite enabled
-            $base_url = $this->base();
-        } else {
-            $base_url = $this->base().'/index.php';
-        }
+        $base_url = $this->base();
 
         $gen_link = $link;
         if ($args == null) {
@@ -781,46 +777,15 @@ class Url
     //
     public function protocol()
     {
-        $protocol = 'http';
-
-        // Check if the server is claiming to using HTTPS
-        if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') {
-            $protocol = 'https';
-        }
-
-        // If we are behind a reverse proxy try to decide which protocol it is using
-        if (defined('FORUM_BEHIND_REVERSE_PROXY')) {
-            // Check if we are behind a Microsoft based reverse proxy
-            if (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) != 'off') {
-                $protocol = 'https';
-            }
-
-            // Check if we're behind a "proper" reverse proxy, and what protocol it's using
-            if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-                $protocol = strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']);
-            }
-        }
-
-        return $protocol;
+        return $this->feather->request->getScheme();
     }
 
     //
     // Fetch the base_url, optionally support HTTPS and HTTP
     //
-    public function base($support_https = false)
+    public function base()
     {
-        static $base_url;
-
-        if (!$support_https) {
-            return $this->feather->config['o_base_url'];
-        }
-
-        if (!isset($base_url)) {
-            // Make sure we are using the correct protocol
-            $base_url = str_replace(array('http://', 'https://'), $this->protocol().'://', $this->feather->config['o_base_url']);
-        }
-
-        return $base_url;
+        return $this->feather->request->getScriptName();
     }
 
     //

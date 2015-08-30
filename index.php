@@ -30,7 +30,7 @@ $feather->add(new \FeatherBB\Csrf());
 
 $feather_settings = array('config_file' => 'include/config.php',
                           'cache_dir' => 'cache/',
-                          'debug' => false); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+                          'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
 

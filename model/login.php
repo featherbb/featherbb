@@ -81,7 +81,7 @@ class login
         set_tracked_topics(null);
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
-        $redirect_url = validate_redirect($this->request->post('redirect_url'), $this->feather->url->base());
+        $redirect_url = $this->request->post('redirect_url');
         $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
 
         redirect($this->feather->utils->escape($redirect_url), __('Login redirect'));
@@ -210,7 +210,7 @@ class login
         $this->hook->fire('get_redirect_url_start');
 
         if (!empty($this->request->getReferrer())) {
-            $redirect_url = validate_redirect($this->request->getReferrer(), null);
+            $redirect_url = $this->request->getReferrer();
         }
 
         if (!isset($redirect_url)) {
