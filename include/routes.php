@@ -23,13 +23,19 @@ $feather->get('/post/:pid(/)', '\controller\viewtopic:viewpost')->conditions(arr
 // Userlist
 $feather->get('/userlist(/)', '\controller\userlist:display');
 
-// Login routes
-$feather->group('/login', function() use ($feather) {
-    $feather->get('(/)', '\controller\login:display');
-    $feather->post('/action/in(/)', '\controller\login:logmein');
-    $feather->map('/action/forget(/)', '\controller\login:forget')->via('GET', 'POST');
+// Auth routes
+$feather->group('/auth', function() use ($feather) {
+    $feather->get('(/)', function () use ($feather) {
+        if (!$feather->user->is_guest) {
+            $this->feather->url->redirect($this->feather->url->get('/'));
+        } else {
+            $this->feather->url->redirect($this->feather->url->get('/auth/login'));
+        }
+    });
+    $feather->map('/login(/)', '\controller\auth:login')->via('GET', 'POST');
+    $feather->map('/forget(/)', '\controller\auth:forget')->via('GET', 'POST');
+    $feather->get('/logout/token/:token(/)', '\controller\auth:logout');
 });
-$feather->get('/logout/id/:id/token/:token(/)', '\controller\login:logmeout')->conditions(array('id' => '[0-9]+'));
 
 // Register routes
 $feather->group('/register', function() use ($feather) {

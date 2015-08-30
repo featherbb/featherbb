@@ -113,7 +113,7 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
 
 if ($feather->user->is_guest) {
     echo "\t\t\t\t\t\t".'<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('register/').'">'.__('Register').'</a></li>'."\n";
-    echo "\t\t\t\t\t\t".'<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('login/').'">'.__('Login').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('auth/login/').'">'.__('Login').'</a></li>'."\n";
 } else {
     echo "\t\t\t\t\t\t".'<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('user/'.$feather->user->id.'/').'">'.__('Profile').'</a></li>'."\n";
 
@@ -121,7 +121,7 @@ if ($feather->user->is_guest) {
         echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('admin/').'">'.__('Admin').'</a></li>'."\n";
     }
 
-    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.$feather->url->get('logout/id/'.$feather->user->id.'/token/'.feather_hash($feather->user->id.feather_hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.$feather->url->get('auth/logout/token/'.feather_hash($feather->user->id.feather_hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
 }
 
 // // Are there any additional navlinks we should insert into the array before imploding it?

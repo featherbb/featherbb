@@ -35,9 +35,6 @@ class login
             $this->feather->url->redirect($this->feather->url->get('/'), 'Already logged in');
         }
 
-        // TODO?: Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
-        $redirect_url = $this->model->get_redirect_url();
-
         $this->feather->view2->setPageInfo(array(
                             'redirect_url'    =>    $redirect_url,
                             'active_page' => 'login',
