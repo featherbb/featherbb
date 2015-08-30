@@ -57,7 +57,7 @@ if (!defined('FEATHER')) {
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php _e('Images info') ?></p>
-		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo $feather->utils->escape($feather->url->base(true)) ?>/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo $feather->utils->escape($feather->url->base(true)) ?>/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
+		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo $feather->utils->escape($feather->url->base(true)) ?>/style/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo $feather->utils->escape($feather->url->base(true)) ?>/style/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
 	</div>
 </div>
 <h2><span><?php _e('Quotes') ?></span></h2>

@@ -31,7 +31,7 @@ $config = array(
     'smiley_size'   => 100,            // Percent size adjust for display of smilies.
 ); // End $config array.
 
-// Array of smileys. These files are located in the img/smilies folder).
+// Array of smileys. These files are located in the style/img/smilies folder).
 $smilies = array(
     ':)'            => array('file'    => 'smile.png'),
     '=)'            => array('file'    => 'smile.png'),

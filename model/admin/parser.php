@@ -25,11 +25,11 @@ class parser
     }
 
     // Helper public function returns array of smiley image files
-    //   stored in the img/smilies directory.
+    //   stored in the style/img/smilies directory.
     public function get_smiley_files()
     {
         $imgfiles = array();
-        $filelist = scandir(FEATHER_ROOT.'img/smilies');
+        $filelist = scandir(FEATHER_ROOT.'style/img/smilies');
         $filelist = $this->hook->fire('parser.get_smiley_files.filelist', $filelist);
         foreach ($filelist as $file) {
             if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {

@@ -102,8 +102,8 @@ class install
                 }
 
                 // Check if default avatar directory is writable
-                if (!is_writable($this->feather->forum_env['FEATHER_ROOT'].'img/avatars/')) {
-                    $this->errors[] = sprintf(__('Alert avatar'), $this->feather->forum_env['FEATHER_ROOT'].'img/avatars/');
+                if (!is_writable($this->feather->forum_env['FEATHER_ROOT'].'style/img/avatars/')) {
+                    $this->errors[] = sprintf(__('Alert avatar'), $this->feather->forum_env['FEATHER_ROOT'].'style/img/avatars/');
                 }
 
                 // Validate db_prefix if existing
@@ -257,7 +257,7 @@ class install
             'o_default_email_setting'    => 1,
             'o_mailing_list'            => $data['email'],
             'o_avatars'                    => $data['avatars'],
-            'o_avatars_dir'                => 'img/avatars',
+            'o_avatars_dir'                => 'style/img/avatars',
             'o_avatars_width'            => 60,
             'o_avatars_height'            => 60,
             'o_avatars_size'            => 10240,

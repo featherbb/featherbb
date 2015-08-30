@@ -54,7 +54,7 @@ class parser
         if ($this->request->post('form_sent')) {
 
 
-            // Upload new smiley image to img/smilies
+            // Upload new smiley image to style/img/smilies
             if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
                 $f = $_FILES['new_smiley'];
                 switch ($f['error']) {
@@ -64,7 +64,7 @@ class parser
                         if (preg_match('/^[\w\-.]++$/', $name)) {            // If we have a valid filename?
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
-                                    if (move_uploaded_file($f['tmp_name'], FEATHER_ROOT .'img/smilies/'. $name)) {
+                                    if (move_uploaded_file($f['tmp_name'], FEATHER_ROOT .'style/img/smilies/'. $name)) {
                                         redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new \FeatherBB\Error($lang_admin_parser['upload_err_1'], 500);

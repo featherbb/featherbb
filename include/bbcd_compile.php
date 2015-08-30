@@ -181,9 +181,9 @@ if (!ini_get('allow_url_fopen')) {
 $feather = \Slim\Slim::getInstance();
 // Validate and compute replacement texts for smilies array.
 $re_keys = array();                                    // Array of regex-safe smiley texts.
-$file_path = FEATHER_ROOT . 'img/smilies/';                // File system path to smilies.
+$file_path = FEATHER_ROOT . 'style/img/smilies/';                // File system path to smilies.
 $url_path = $feather->url->base(true);                        // Convert abs URL to relative URL.
-$url_path = preg_replace('%^https?://[^/]++(.*)$%i', '$1', $url_path) . '/img/smilies/';
+$url_path = preg_replace('%^https?://[^/]++(.*)$%i', '$1', $url_path) . '/style/img/smilies/';
 foreach ($smilies as $smiley_text => $smiley_img) {    // Loop through all smilieys in array.
     $file = $file_path . $smiley_img['file'];        // Local file system address of smiley.
     if (!file_exists($file)) {
