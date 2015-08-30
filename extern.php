@@ -224,7 +224,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
 
     if (!isset($feather->user->id) ||
         ($password_is_hash && $password != $feather->user->password) ||
-        (!$password_is_hash && feather_hash($password) != $feather->user->password)) {
+        (!$password_is_hash && \FeatherBB\Utils::feather_hash($password) != $feather->user->password)) {
         set_default_user();
     } else {
         $feather->user->is_guest = false;

@@ -77,4 +77,33 @@ class AdminUtils
         ksort($valid_plugins);
         return $valid_plugins;
     }
+
+    /**
+     * Generate breadcrumbs from an array of name and URLs
+     */
+    public static function breadcrumbs_admin(array $links)
+    {
+        foreach ($links as $name => $url) {
+            if ($name != '' && $url != '') {
+                $tmp[] = '<span><a href="' . $url . '">'.Utils::escape($name).'</a></span>';
+            } else {
+                $tmp[] = '<span>'.__('Deleted').'</span>';
+                return implode(' » ', $tmp);
+            }
+        }
+        return implode(' » ', $tmp);
+    }
+
+    
+    /**
+     * Fetch admin IDs
+     */
+    public static function get_admin_ids()
+    {
+        if (!$this->feather->cache->isCached('admin_ids')) {
+            $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
+        }
+
+        return $this->feather->cache->retrieve('admin_ids');
+    }
 }

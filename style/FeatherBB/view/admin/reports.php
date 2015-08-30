@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,8 +16,8 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('New reports head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->url->get('admin/reports/') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->url->get('admin/reports/') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <?php
 if (!empty($report_data)) {
     foreach ($report_data as $report) {
@@ -29,13 +29,13 @@ if (!empty($report_data)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->url->get('users/'.$report['reported_by'].'/').'">'.$feather->utils->escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?php echo breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+									<td class="location"><?= \FeatherBB\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => $feather->url->get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
 																						sprintf(__('Post ID'), $report['pid']) => $feather->url->get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php _e('Reason') ?><div><input type="submit" name="zap_id[<?php echo $report['id'] ?>]" value="<?php _e('Zap') ?>" /></div></th>
-									<td><?php echo str_replace("\n", '<br />', $feather->utils->escape($report['message'])) ?></td>
+									<th scope="row"><?php _e('Reason') ?><div><input type="submit" name="zap_id[<?= $report['id'] ?>]" value="<?php _e('Zap') ?>" /></div></th>
+									<td><?= str_replace("\n", '<br />', $feather->utils->escape($report['message'])) ?></td>
 								</tr>
 							</table>
 						</div>
@@ -79,13 +79,13 @@ if (!empty($report_zapped_data)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->url->get('users/'.$report['reported_by'].'/').'">'.$feather->utils->escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?php echo breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+									<td class="location"><?= \FeatherBB\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => $feather->url->get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
 																						sprintf(__('Post ID'), $report['pid']) => $feather->url->get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Reason') ?></th>
-									<td><?php echo str_replace("\n", '<br />', $feather->utils->escape($report['message'])) ?></td>
+									<td><?= str_replace("\n", '<br />', $feather->utils->escape($report['message'])) ?></td>
 								</tr>
 							</table>
 						</div>

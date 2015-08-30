@@ -42,7 +42,7 @@ class login
         $authorized = false;
 
         if (!empty($user->password)) {
-            $form_password_hash = feather_hash($form_password); // Will result in a SHA-1 hash
+            $form_password_hash = \FeatherBB\Utils::feather_hash($form_password); // Will result in a SHA-1 hash
             $authorized = ($user->password == $form_password_hash);
         }
 
@@ -91,7 +91,7 @@ class login
     {
         $token = $this->hook->fire('logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != feather_hash($this->user->id.feather_hash($this->request->getIp()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != \FeatherBB\Utils::feather_hash($this->user->id.\FeatherBB\Utils::feather_hash($this->request->getIp()))) {
             header('Location: '.$this->feather->url->base());
             exit;
         }
@@ -112,7 +112,7 @@ class login
 
         $this->hook->fire('logout_end');
 
-        $this->auth->feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
+        $this->auth->feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), time() + 31536000);
 
         redirect($this->feather->url->base(), __('Logout redirect'));
     }
@@ -172,7 +172,7 @@ class login
                         $new_password_key = random_pass(8);
 
                         $query['update'] = array(
-                            'activate_string' => feather_hash($new_password),
+                            'activate_string' => \FeatherBB\Utils::feather_hash($new_password),
                             'activate_key'    => $new_password_key,
                             'last_email_sent' => time()
                         );

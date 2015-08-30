@@ -32,7 +32,7 @@ class auth
             $user = \model\auth::get_user_from_name($form_username);
 
             if (!empty($user->password)) {
-                $form_password_hash = feather_hash($form_password); // Will result in a SHA-1 hash
+                $form_password_hash = \FeatherBB\Utils::feather_hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == FEATHER_UNVERIFIED) {
                         \model\auth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
@@ -68,7 +68,7 @@ class auth
     {
         $token = $this->feather->hooks->fire('logout_start', $token);
 
-        if ($this->feather->user->is_guest || !isset($token) || $token != feather_hash($this->feather->user->id.feather_hash($this->feather->request->getIp()))) {
+        if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::feather_hash($this->feather->user->id.\FeatherBB\Utils::feather_hash($this->feather->request->getIp()))) {
             $this->feather->url->redirect($this->feather->url->get('/'), 'Not logged in');
         }
 
@@ -79,7 +79,7 @@ class auth
             \model\auth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
         }
 
-        \model\auth::feather_setcookie(1, feather_hash(uniqid(rand(), true)), time() + 31536000);
+        \model\auth::feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), time() + 31536000);
         $this->feather->hooks->fire('logout_end');
 
         redirect($this->feather->url->base(), __('Logout redirect'));

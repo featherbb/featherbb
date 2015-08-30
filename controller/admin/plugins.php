@@ -18,7 +18,6 @@ class plugins
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        require FEATHER_ROOT . 'include/common_admin.php';
     }
 
     public function __autoload($class_name)
@@ -33,7 +32,7 @@ class plugins
         //     $this->model->update_permissions();
         // }
 
-        generate_admin_menu('plugins');
+        \FeatherBB\AdminUtils::generateAdminMenu('plugins');
 
         $pluginsList = \FeatherBB\AdminUtils::getValidPlugins();
         // var_dump($pluginsList);
@@ -67,7 +66,7 @@ class plugins
         try {
             $plugin->activate($class);
         } catch (\Exception $e) {
-            redirect($this->feather->url->get('admin/plugins/'), $this->feather->utils->escape($e->getMessage()));
+            redirect($this->feather->url->get('admin/plugins/'), $e->getMessage());
         }
         // Plugin has been activated, confirm and redirect
         $this->feather->url->redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');

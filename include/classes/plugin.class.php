@@ -114,8 +114,6 @@ class Plugin
         //     $this->model->addData('groups', $group_data);
         // }
 
-        // TODO: Install assets in public folder if _assets folder exists
-
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
 
         // Check if plugin isn't already activated

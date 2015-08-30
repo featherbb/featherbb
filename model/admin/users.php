@@ -168,7 +168,11 @@ class users
         }
 
         if ($this->request->post('move_users_comply')) {
-            $new_group = $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ? $this->request->post('new_group') : throw new \FeatherBB\Error(__('Invalid group message'), 400);
+            if ( $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ) {
+                $new_group = $this->request->post('new_group');
+            } else {
+                throw new \FeatherBB\Error(__('Invalid group message'), 400);
+            }
             $new_group = $this->hook->fire('model.users.move_users.new_group', $new_group);
 
             // Is the new group a moderator group?
