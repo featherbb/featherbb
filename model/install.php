@@ -393,7 +393,7 @@ class install
         return $user = array(
             'group_id' => 1,
             'username' => $data['username'],
-            'password' => feather_hash($data['password']),
+            'password' => \FeatherBB\Utils::feather_hash($data['password']),
             'email' => $data['email'],
             'language' => $data['default_lang'],
             'style' => $data['default_style'],

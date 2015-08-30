@@ -264,7 +264,7 @@ class Auth extends \Slim\Middleware
                      ->update_many('logged', time());
             }
 
-            $this->model->feather_setcookie(1, feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            $this->model->feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'lang/'.$this->app->user->language.'/common.mo');

@@ -138,7 +138,7 @@ class register
         $now = time();
 
         $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : FEATHER_UNVERIFIED;
-        $password_hash = feather_hash($user['password1']);
+        $password_hash = \FeatherBB\Utils::feather_hash($user['password1']);
 
         // Add the user
         $user['insert'] = array(

@@ -110,7 +110,7 @@ class profile
             $authorized = false;
 
             if (!empty($cur_user['password'])) {
-                $old_password_hash = feather_hash($old_password);
+                $old_password_hash = \FeatherBB\Utils::feather_hash($old_password);
 
                 if ($cur_user['password'] == $old_password_hash || $this->user->is_admmod) {
                     $authorized = true;
@@ -121,7 +121,7 @@ class profile
                 message(__('Wrong pass'));
             }
 
-            $new_password_hash = feather_hash($new_password1);
+            $new_password_hash = \FeatherBB\Utils::feather_hash($new_password1);
 
             $update_password = DB::for_table('users')
                 ->where('id', $id)
@@ -198,7 +198,7 @@ class profile
         } elseif ($this->request->isPost()) {
             $this->hook->fire('change_email_post');
 
-            if (feather_hash($this->request->post('req_password')) !== $this->user->password) {
+            if (\FeatherBB\Utils::feather_hash($this->request->post('req_password')) !== $this->user->password) {
                 message(__('Wrong pass'));
             }
 

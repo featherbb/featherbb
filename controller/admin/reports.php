@@ -9,6 +9,8 @@
 
 namespace controller\admin;
 
+use FeatherBB\AdminUtils;
+
 class reports
 {
     public function __construct()
@@ -34,7 +36,7 @@ class reports
             $this->model->zap_report();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('reports');
+        AdminUtils::generateAdminMenu('reports');
 
         $this->feather->view2->setPageInfo(array(
                 'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Reports')),

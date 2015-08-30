@@ -486,15 +486,6 @@ function random_pass($len)
 
 
 //
-// Compute a hash of $str
-//
-function feather_hash($str)
-{
-    return sha1($str);
-}
-
-
-//
 // Display $message and redirect user to $destination_url
 //
 function redirect($destination_url, $message = null)
@@ -590,20 +581,4 @@ function generate_stopwords_cache_id()
     }
 
     return sha1(implode('|', $hash));
-}
-
-// Generate breadcrumbs from an array of name and URLs
-function breadcrumbs_admin(array $links)
-{
-    $feather = \Slim\Slim::getInstance();
-
-    foreach ($links as $name => $url) {
-        if ($name != '' && $url != '') {
-            $tmp[] = '<span><a href="' . $url . '">'.$feather->utils->escape($name).'</a></span>';
-        } else {
-            $tmp[] = '<span>'.__('Deleted').'</span>';
-            return implode(' » ', $tmp);
-        }
-    }
-    return implode(' » ', $tmp);
 }

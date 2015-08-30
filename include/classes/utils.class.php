@@ -107,7 +107,7 @@ class Utils
     //
     // Calls htmlspecialchars with a few options already set
     //
-    public function escape($str)
+    public static function escape($str)
     {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
@@ -174,5 +174,14 @@ class Utils
         }
 
         return $replaced;
+    }
+
+
+    //
+    // Compute a hash of $str
+    //
+    public static function feather_hash($str)
+    {
+        return sha1($str);
     }
 }
