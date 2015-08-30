@@ -51,9 +51,8 @@ class auth
 
                     $this->feather->url->redirect($this->feather->url->base(), __('Login redirect'));
                 }
-            } else {
-                throw new \FeatherBB\Error(__('Wrong user/pass').' <a href="'.$this->feather->url->get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
             }
+            throw new \FeatherBB\Error(__('Wrong user/pass').' <a href="'.$this->feather->url->get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             $this->feather->view2->setPageInfo(array(
                                 'active_page' => 'login',
@@ -124,7 +123,7 @@ class auth
                 $new_password = random_pass(12);
                 $new_password_key = random_pass(8);
 
-                \model\auth::set_new_password($new_password, $new_password_key, $user->id)
+                \model\auth::set_new_password($new_password, $new_password_key, $user->id);
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
