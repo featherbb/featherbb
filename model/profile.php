@@ -46,7 +46,7 @@ class profile
             $cur_user = $cur_user->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
-                message(__('Pass key bad').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.');
+                throw new \FeatherBB\Error(__('Pass key bad').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', 400);
             } else {
                 $query = DB::for_table('users')
                     ->where('id', $id)
@@ -57,7 +57,7 @@ class profile
                 $query = $this->hook->fireDB('change_pass_activate_query', $query);
                 $query = $query->save();
 
-                message(__('Pass updated'), true);
+                $this->feather->url->redirect($this->feather->url->get('/'), __('Pass updated'));
             }
         }
 
@@ -66,7 +66,7 @@ class profile
             $id = $this->hook->fire('change_pass_key_not_id', $id);
 
             if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
-                message(__('No permission'), '403');
+                throw new \FeatherBB\Error(__('No permission'), 403);
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
@@ -81,11 +81,11 @@ class profile
                 $user = $user->find_one();
 
                 if (!$user) {
-                    message(__('Bad request'), '404');
+                    throw new \FeatherBB\Error(__('Bad request'), 404);
                 }
 
                 if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
-                    message(__('No permission'), '403');
+                    throw new \FeatherBB\Error(__('No permission'), 403);
                 }
             }
         }
@@ -96,10 +96,10 @@ class profile
             $new_password2 = $this->feather->utils->trim($this->request->post('req_new_password2'));
 
             if ($new_password1 != $new_password2) {
-                message(__('Pass not match'));
+                throw new \FeatherBB\Error(__('Pass not match'), 400);
             }
             if ($this->feather->utils->strlen($new_password1) < 6) {
-                message(__('Pass too short'));
+                throw new \FeatherBB\Error(__('Pass too short'), 400);
             }
 
             $cur_user = DB::for_table('users')
@@ -118,7 +118,7 @@ class profile
             }
 
             if (!$authorized) {
-                message(__('Wrong pass'));
+                throw new \FeatherBB\Error(__('Wrong pass'), 403);
             }
 
             $new_password_hash = feather_hash($new_password1);
@@ -149,7 +149,7 @@ class profile
             $id = $this->hook->fire('change_email_not_id', $id);
 
             if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
-                message(__('No permission'), '403');
+                throw new \FeatherBB\Error(__('No permission'), 403);
             } elseif ($this->user->g_moderator == '1') {
                 // A moderator trying to change a user's email?
                 $user['select'] = array('u.group_id', 'g.g_moderator');
@@ -163,11 +163,11 @@ class profile
                 $user = $user->find_one();
 
                 if (!$user) {
-                    message(__('Bad request'), '404');
+                    throw new \FeatherBB\Error(__('Bad request'), 404);
                 }
 
                 if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == FEATHER_ADMIN || $user['g_moderator'] == '1') {
-                    message(__('No permission'), '403');
+                    throw new \FeatherBB\Error(__('No permission'), 403);
                 }
             }
         }
@@ -182,7 +182,7 @@ class profile
             $new_email_key = $new_email_key->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
-                message(__('Email key bad').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.');
+                throw new \FeatherBB\Error(__('Email key bad').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', 400);
             } else {
                 $update_mail = DB::for_table('users')
                     ->where('id', $id)
@@ -193,26 +193,26 @@ class profile
                 $update_mail = $this->hook->fireDB('change_email_query', $update_mail);
                 $update_mail = $update_mail->save();
 
-                message(__('Email updated'), true);
+                $this->feather->url->redirect($this->feather->url->get('/'), __('Email updated'));
             }
         } elseif ($this->request->isPost()) {
             $this->hook->fire('change_email_post');
 
             if (feather_hash($this->request->post('req_password')) !== $this->user->password) {
-                message(__('Wrong pass'));
+                throw new \FeatherBB\Error(__('Wrong pass'), 400);
             }
 
             // Validate the email address
             $new_email = strtolower($this->feather->utils->trim($this->request->post('req_new_email')));
             $new_email = $this->hook->fire('change_email_new_email', $new_email);
             if (!$this->email->is_valid_email($new_email)) {
-                message(__('Invalid email'));
+                throw new \FeatherBB\Error(__('Invalid email'), 400);
             }
 
             // Check if it's a banned email address
             if ($this->email->is_banned_email($new_email)) {
                 if ($this->config['p_allow_banned_email'] == '0') {
-                    message(__('Banned email'));
+                    throw new \FeatherBB\Error(__('Banned email'), 403);
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
                     $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
@@ -245,7 +245,7 @@ class profile
 
             if ($result) {
                 if ($this->config['p_allow_dupe_email'] == '0') {
-                    message(__('Dupe email'));
+                    throw new \FeatherBB\Error(__('Dupe email'), 400);
                 } elseif ($this->config['o_mailing_list'] != '') {
                     foreach($result as $cur_dupe) {
                         $dupe_list[] = $cur_dupe['username'];
