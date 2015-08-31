@@ -47,6 +47,7 @@ class Lister
             $relative_path = DIRECTORY_SEPARATOR.preg_replace("/" . preg_quote($feather_root, "/") . "/", '', $file_path);
             preg_match('/^(.+)\.php$/i', $relative_path, $class_name);
             $parts = explode(DIRECTORY_SEPARATOR, $class_name[1]);
+            $parts[1] = ucfirst($parts[1]); // Replace \plugins to \Plugins for convention
             $name_space = join($parts, "\\");
             // Check if plugin follows PSR-4 conventions and extends base forum plugin
             if (class_exists($name_space) && property_exists($name_space, 'isValidFBPlugin')) {

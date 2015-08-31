@@ -41,7 +41,7 @@ class forums
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
-            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+            $this->feather->cache->store('quickjump', \app\model\cache::get_quickjump());
             redirect($this->feather->url->get('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
         } else {
             redirect($this->feather->url->get('admin/forums/'), __('Unable to add forum'));
@@ -98,7 +98,7 @@ class forums
                 }
 
                 // Regenerate the quick jump cache
-                $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+                $this->feather->cache->store('quickjump', \app\model\cache::get_quickjump());
 
                 redirect($this->feather->url->get('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
 
@@ -106,7 +106,7 @@ class forums
                 $this->model->delete_permissions($forum_id);
 
                 // Regenerate the quick jump cache
-                $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+                $this->feather->cache->store('quickjump', \app\model\cache::get_quickjump());
 
                 redirect($this->feather->url->get('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
             }
@@ -132,7 +132,7 @@ class forums
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
-            $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+            $this->feather->cache->store('quickjump', \app\model\cache::get_quickjump());
 
             redirect($this->feather->url->get('admin/forums/'), __('Forum deleted redirect'));
 
@@ -160,7 +160,7 @@ class forums
         }
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+        $this->feather->cache->store('quickjump', \app\model\cache::get_quickjump());
 
         redirect($this->feather->url->get('admin/forums/'), __('Forums updated redirect'));
     }

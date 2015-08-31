@@ -19,9 +19,7 @@
         "classmap": ["app/Core/Database.php", "app/Core/pomo/MO.php"],
 		"psr-4": {
 			"Plugins\\": "/plugins",
-			"FeatherBB\\": "app/Core"
-		},
-		"psr-0": {
+			"FeatherBB\\": "app/Core",
 			"": ""
 		}
 	},

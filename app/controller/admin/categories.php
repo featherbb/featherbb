@@ -58,7 +58,7 @@ class categories
         }
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+        $this->feather->cache->store('quickjump', \app\model\cache::get_quickjump());
 
         redirect($this->feather->url->get('admin/categories/'), __('Categories updated redirect'));
     }
