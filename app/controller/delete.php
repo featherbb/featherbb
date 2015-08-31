@@ -7,14 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class delete
+class Delete
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \app\model\delete();
+        $this->model = new \App\Model\Delete();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/delete.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/post.mo');
     }

@@ -7,14 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class userlist
+class Userlist
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \app\model\userlist();
+        $this->model = new \App\Model\Userlist();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/userlist.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/search.mo');
     }

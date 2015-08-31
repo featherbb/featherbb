@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class help
+class Help
 {
     public function __construct()
     {

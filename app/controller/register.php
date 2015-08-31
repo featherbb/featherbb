@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class register
+class Register
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class register
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \app\model\register();
+        $this->model = new \App\Model\Register();
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/prof_reg.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/antispam.mo');

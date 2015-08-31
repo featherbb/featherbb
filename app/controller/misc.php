@@ -7,14 +7,14 @@
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
 */
 
-namespace app\controller;
+namespace App\Controller;
 
-class misc
+class Misc
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \app\model\misc();
+        $this->model = new \App\Model\Misc();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/register.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'app/lang/'.$this->feather->user->language.'/misc.mo');
     }

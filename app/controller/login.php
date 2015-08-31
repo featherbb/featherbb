@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class login
+class Login
 {
     public function __construct()
     {
@@ -20,7 +20,7 @@ class login
         $this->request = $this->feather->request;
 
 
-        $this->model = new \app\model\login();
+        $this->model = new \App\Model\Login();
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/login.mo');
     }
 

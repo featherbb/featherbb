@@ -16,7 +16,7 @@ function get_admin_ids()
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
     if (!$feather->cache->isCached('admin_ids')) {
-        $feather->cache->store('admin_ids', \app\model\cache::get_admin_ids());
+        $feather->cache->store('admin_ids', \App\Model\Cache::get_admin_ids());
     }
 
     return $feather->cache->retrieve('admin_ids');
@@ -350,12 +350,12 @@ function censor_words($text)
     $feather = \Slim\Slim::getInstance();
 
     if (!$feather->cache->isCached('search_for')) {
-        $feather->cache->store('search_for', \app\model\cache::get_censoring('search_for'));
+        $feather->cache->store('search_for', \App\Model\Cache::get_censoring('search_for'));
         $search_for = $feather->cache->retrieve('search_for');
     }
 
     if (!$feather->cache->isCached('replace_with')) {
-        $feather->cache->store('replace_with', \app\model\cache::get_censoring('replace_with'));
+        $feather->cache->store('replace_with', \App\Model\Cache::get_censoring('replace_with'));
         $replace_with = $feather->cache->retrieve('replace_with');
     }
 

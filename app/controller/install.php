@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class install
+class Install
 {
     protected $supported_dbs = array('mysql' => 'MySQL',
                                      'pgsql' => 'PostgreSQL',
@@ -26,7 +26,7 @@ class install
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \app\model\install();
+        $this->model = new \App\Model\install();
         $this->available_langs = \FeatherBB\Lister::getLangs();
         $this->feather->view2->setStyle('FeatherBB');
     }

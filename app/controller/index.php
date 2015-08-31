@@ -7,14 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class index
+class Index
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \app\model\index();
+        $this->model = new \App\Model\Index();
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->feather->user->language.'/index.mo');
     }
 

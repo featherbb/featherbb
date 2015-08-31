@@ -21,7 +21,7 @@ class Auth extends \Slim\Middleware
 
     public function __construct()
 	{
-        $this->model = new \app\model\auth();
+        $this->model = new \App\Model\Auth();
     }
 
     public function get_cookie_data($cookie_name, $cookie_seed)
@@ -184,7 +184,7 @@ class Auth extends \Slim\Middleware
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            $this->app->cache->store('bans', \app\model\cache::get_bans());
+            $this->app->cache->store('bans', \App\Model\Cache::get_bans());
         }
     }
 
@@ -272,7 +272,7 @@ class Auth extends \Slim\Middleware
 
         // Load bans from cache
         if (!$this->app->cache->isCached('bans')) {
-            $this->app->cache->store('bans', \app\model\cache::get_bans());
+            $this->app->cache->store('bans', \App\Model\Cache::get_bans());
         }
         $feather_bans = $this->app->cache->retrieve('bans');
 

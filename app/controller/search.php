@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class search
+class Search
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class search
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \app\model\search();
+        $this->model = new \App\Model\search();
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/userlist.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/search.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/forum.mo');

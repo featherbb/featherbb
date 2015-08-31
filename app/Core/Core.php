@@ -235,7 +235,7 @@ class Core extends \Slim\Middleware
                                  'cookies.secret_key' => $this->forum_settings['cookie_seed']));
 
         if (!$this->app->cache->isCached('config')) {
-            $this->app->cache->store('config', \app\model\cache::get_config());
+            $this->app->cache->store('config', \App\Model\Cache::get_config());
         }
 
         // Finalize forum_settings array

@@ -7,9 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace app\controller;
+namespace App\Controller;
 
-class moderate
+class Moderate
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class moderate
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \app\model\moderate();
+        $this->model = new \App\Model\Moderate();
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/topic.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/forum.mo');
         load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$this->user->language.'/misc.mo');

@@ -362,7 +362,7 @@ class View
     {
         // Check if config file exists to avoid error when installing forum
         if (!$this->app->cache->isCached('quickjump') && is_file($this->app->forum_env['FORUM_CONFIG_FILE'])) {
-            $this->app->cache->store('quickjump', \app\model\cache::get_quickjump());
+            $this->app->cache->store('quickjump', \App\Model\Cache::get_quickjump());
         }
 
         $data = array(
@@ -383,13 +383,13 @@ class View
         );
 
         if (is_object($this->app->user) && $this->app->user->is_admmod) {
-            $data['has_reports'] = \app\model\header::get_reports();
+            $data['has_reports'] = \App\Model\Header::get_reports();
         }
 
         if ($this->app->forum_env['FEATHER_SHOW_INFO']) {
-            $data['exec_info'] = \app\model\debug::get_info();
+            $data['exec_info'] = \App\Model\Debug::get_info();
             if ($this->app->forum_env['FEATHER_SHOW_QUERIES']) {
-                $data['queries_info'] = \app\model\debug::get_queries();
+                $data['queries_info'] = \App\Model\Debug::get_queries();
             }
         }
 
