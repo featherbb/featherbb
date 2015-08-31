@@ -93,7 +93,7 @@ class Search
 
         if (!isset($stopwords)) {
             if (!$this->feather->cache->isCached('stopwords')) {
-                $this->feather->cache->store('stopwords', \model\cache::get_config(), '+1 week');
+                $this->feather->cache->store('stopwords', \app\model\cache::get_config(), '+1 week');
             }
             $stopwords = $this->feather->cache->retrieve('stopwords');
         }

@@ -46,50 +46,5 @@
             "rest",
             "router"
         ]
-    },
-    {
-        "name": "akrabat/rka-slim-controller",
-        "version": "2.0.1",
-        "version_normalized": "2.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/akrabat/rka-slim-controller.git",
-            "reference": "7115f082a91af83fd22755e8d2d27e9fcffc636b"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/akrabat/rka-slim-controller/zipball/7115f082a91af83fd22755e8d2d27e9fcffc636b",
-            "reference": "7115f082a91af83fd22755e8d2d27e9fcffc636b",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4",
-            "slim/slim": "~2.4"
-        },
-        "time": "2015-01-07 09:54:54",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "RKA\\": "RKA"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Rob Allen",
-                "email": "rob@akrabat.com",
-                "homepage": "http://akrabat.com"
-            }
-        ],
-        "description": "Dynamically instantiated controller classes for Slim Framework",
-        "homepage": "http://github.com/akrabat/rka-slim-controller",
-        "keywords": [
-            "controller",
-            "slim"
-        ]
     }
 ]

@@ -222,15 +222,9 @@ class moderate
             $new_subject = $this->request->post('new_subject') ? $this->feather->utils->trim($this->request->post('new_subject')) : '';
 
             if ($new_subject == '') {
-<<<<<<< HEAD
                 throw new \FeatherBB\Error(__('No subject'), 400);
             } elseif (feather_strlen($new_subject) > 70) {
                 throw new \FeatherBB\Error(__('Too long subject'), 400);
-=======
-                message(__('No subject'));
-            } elseif ($this->feather->utils->strlen($new_subject) > 70) {
-                message(__('Too long subject'));
->>>>>>> origin/development
             }
 
             // Get data from the new first post

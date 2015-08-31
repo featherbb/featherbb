@@ -6,6 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'RKA\\' => array($vendorDir . '/akrabat/rka-slim-controller/RKA'),
     'Plugins\\' => array('/plugins'),
+    'FeatherBB\\' => array($baseDir . '/app/Core'),
 );

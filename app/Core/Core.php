@@ -43,10 +43,7 @@ class Core extends \Slim\Middleware
         // Load files
         require $this->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
         require $this->forum_env['FEATHER_ROOT'].'include/functions.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/classes/pomo/MO.php';
         require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/classes/database.class.php';
-        // require $this->forum_env['FEATHER_ROOT'].'plugins/test/plugintest.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -238,7 +235,7 @@ class Core extends \Slim\Middleware
                                  'cookies.secret_key' => $this->forum_settings['cookie_seed']));
 
         if (!$this->app->cache->isCached('config')) {
-            $this->app->cache->store('config', \model\cache::get_config());
+            $this->app->cache->store('config', \app\model\cache::get_config());
         }
 
         // Finalize forum_settings array

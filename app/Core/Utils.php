@@ -19,7 +19,7 @@ class Utils
     //
     // Return current timestamp (with microseconds) as a float
     //
-    function get_microtime()
+    public static function get_microtime()
     {
         list($usec, $sec) = explode(' ', microtime());
         return ((float)$usec + (float)$sec);

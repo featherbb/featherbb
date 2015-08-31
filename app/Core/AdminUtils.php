@@ -53,7 +53,7 @@ class AdminUtils
     public static function get_admin_ids()
     {
         if (!$this->feather->cache->isCached('admin_ids')) {
-            $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
+            $this->feather->cache->store('admin_ids', \app\model\cache::get_admin_ids());
         }
 
         return $this->feather->cache->retrieve('admin_ids');

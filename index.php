@@ -26,6 +26,8 @@ $feather_settings = array('config_file' => 'include/config.php',
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
 
+
+
 // Load the routes
 require 'include/routes.php';
 
