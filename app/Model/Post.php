@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class post
+class Post
 {
     public function __construct()
     {
@@ -24,7 +24,7 @@ class post
         $this->email = $this->feather->email;
         $this->search = new \FeatherBB\Search();
     }
- 
+
     //  Get some info about the post
     public function get_info_post($tid, $fid)
     {

@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class viewtopic
+class Viewtopic
 {
     public function __construct()
     {

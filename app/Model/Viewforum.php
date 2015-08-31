@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class viewforum
+class Viewforum
 {
     public function __construct()
     {

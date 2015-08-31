@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class misc
+class Misc
 {
     public function __construct()
     {

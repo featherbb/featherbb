@@ -8,9 +8,10 @@
 */
 
 namespace App\Model;
+
 use DB;
 
-class debug
+class Debug
 {
     protected static $feather;
 

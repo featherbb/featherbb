@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class categories
+class Categories
 {
     public function __construct()
     {

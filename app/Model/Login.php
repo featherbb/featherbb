@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class login
+class Login
 {
     public function __construct()
     {

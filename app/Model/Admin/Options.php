@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class options
+class Options
 {
     public function __construct()
     {

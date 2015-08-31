@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class index
+class Index
 {
 
     public function __construct()

@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class edit
+class Edit
 {
     public function __construct()
     {

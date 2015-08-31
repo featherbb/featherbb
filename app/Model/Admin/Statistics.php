@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class statistics
+class Statistics
 {
     public function __construct()
     {

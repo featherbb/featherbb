@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class maintenance
+class Maintenance
 {
     public function __construct()
     {

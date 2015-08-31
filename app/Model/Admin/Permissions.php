@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class permissions
+class Permissions
 {
     public function __construct()
     {

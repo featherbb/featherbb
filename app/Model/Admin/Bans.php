@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class bans
+class Bans
 {
     public function __construct()
     {

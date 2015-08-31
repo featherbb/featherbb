@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class search
+class Search
 {
     public function __construct()
     {

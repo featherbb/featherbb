@@ -12,7 +12,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class parser
+class Parser
 {
     public function __construct()
     {

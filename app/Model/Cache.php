@@ -8,9 +8,10 @@
  */
 
 namespace App\Model;
+
 use DB;
 
-class cache
+class Cache
 {
     public function __construct()
     {

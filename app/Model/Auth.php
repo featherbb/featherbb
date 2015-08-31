@@ -8,9 +8,10 @@
  */
 
 namespace App\Model;
+
 use DB;
 
-class auth
+class Auth
 {
     public function __construct()
     {

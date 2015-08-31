@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class profile
+class Profile
 {
     public function __construct()
     {

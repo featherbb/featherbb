@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class header
+class Header
 {
     protected static $app;
 

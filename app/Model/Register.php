@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class register
+class Register
 {
     public function __construct()
     {

@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class moderate
+class Moderate
 {
     public function __construct()
     {

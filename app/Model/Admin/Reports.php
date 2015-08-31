@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class reports
+class Reports
 {
     public function __construct()
     {

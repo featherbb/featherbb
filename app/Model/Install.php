@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class install
+class Install
 {
     protected $database_scheme = array(
         'bans' => "CREATE TABLE IF NOT EXISTS %t% (

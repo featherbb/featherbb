@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class delete
+class Delete
 {
     public function __construct()
     {

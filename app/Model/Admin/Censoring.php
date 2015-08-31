@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class censoring
+class Censoring
 {
     public function __construct()
     {

@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class forums
+class Forums
 {
     public function __construct()
     {

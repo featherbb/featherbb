@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class users
+class Users
 {
     public function __construct()
     {

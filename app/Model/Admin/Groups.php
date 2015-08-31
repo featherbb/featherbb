@@ -11,7 +11,7 @@ namespace App\Model\Admin;
 
 use DB;
 
-class groups
+class Groups
 {
     public function __construct()
     {

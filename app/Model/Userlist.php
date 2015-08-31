@@ -11,7 +11,7 @@ namespace App\Model;
 
 use DB;
 
-class userlist
+class Userlist
 {
 
     public function __construct()
@@ -23,7 +23,7 @@ class userlist
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
- 
+
     // Counts the numeber of user for a specific query
     public function fetch_user_count($username, $show_group)
     {
@@ -71,7 +71,7 @@ class userlist
         }
 
         $dropdown_menu = $this->hook->fire('generate_dropdown_menu', $dropdown_menu);
-        
+
         return $dropdown_menu;
     }
 
