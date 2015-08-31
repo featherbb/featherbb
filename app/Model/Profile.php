@@ -905,7 +905,7 @@ class profile
 
                     // Validate BBCode syntax
                     if ($this->config['p_sig_bbcode'] == '1') {
-                        require FEATHER_ROOT.'include/parser.php';
+                        require FEATHER_ROOT.'app/Helpers/parser.php';
 
                         $errors = array();
 

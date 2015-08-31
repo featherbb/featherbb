@@ -81,7 +81,7 @@ class Edit
         }
 
         if ($this->request->post('preview')) {
-            require_once FEATHER_ROOT.'include/parser.php';
+            require_once FEATHER_ROOT.'app/Helpers/parser.php';
             $preview_message = parse_message($post['message'], $post['hide_smilies']);
         } else {
             $preview_message = '';

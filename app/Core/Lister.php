@@ -68,7 +68,7 @@ class Lister
         $feather = \Slim\Slim::getInstance();
         $styles = array();
 
-        $iterator = new \DirectoryIterator($feather->forum_env['FEATHER_ROOT'].'style/themes');
+        $iterator = new \DirectoryIterator($feather->forum_env['FEATHER_ROOT'].'style/themes/');
         foreach ($iterator as $child) {
             if(!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {
                 // If the theme is well formed, add it to the list
@@ -88,7 +88,7 @@ class Lister
         $feather = \Slim\Slim::getInstance();
         $langs = array();
 
-        $iterator = new \DirectoryIterator($feather->forum_env['FEATHER_ROOT'].'lang');
+        $iterator = new \DirectoryIterator($feather->forum_env['FEATHER_ROOT'].'app/lang/');
         foreach ($iterator as $child) {
             if(!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
                 // If the lang pack is well formed, add it to the list

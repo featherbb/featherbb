@@ -424,7 +424,7 @@ class moderate
 
         $post_data = array();
 
-        require FEATHER_ROOT.'include/parser.php';
+        require FEATHER_ROOT.'app/Helpers/parser.php';
 
         $post_count = 0; // Keep track of post numbers
 

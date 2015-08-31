@@ -62,15 +62,15 @@ require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
 // Load FeatherBB
-require 'include/classes/autoload.class.php';
+require 'app/Helpers/classes/autoload.class.php';
 \FeatherBB\Loader::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
 $feather->add(new \FeatherBB\Csrf());
 
-$feather_settings = array('config_file' => 'include/config.php',
-    'cache_dir' => 'cache/',
+$feather_settings = array('config_file' => 'app/config.php',
+    'cache_dir' => 'app/cache/',
     'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
@@ -439,7 +439,7 @@ function output_html($feed)
 
 // Show recent discussions
 if ($action == 'feed') {
-    require FEATHER_ROOT.'include/parser.php';
+    require FEATHER_ROOT.'app/Helpers/parser.php';
 
     // Determine what type of feed to output
     $type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
@@ -650,7 +650,7 @@ if ($action == 'feed') {
             // Output feed as PHP code
             if (isset($cache_id)) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'include/cache.php';
+                    require FEATHER_ROOT.'app/Helpers/cache.php';
                 }
 
                 $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather->forum_settings['o_feed_ttl'] * 60)).';'."\n\n".'?>';

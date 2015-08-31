@@ -35,16 +35,16 @@ class Parser
         require FEATHER_ROOT . 'app/lang/' . $this->user->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
-        $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
+        $cache_file = FEATHER_ROOT.'app/cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
         if ($this->request->post('reset') || !file_exists($cache_file)) {
-            require_once(FEATHER_ROOT.'include/bbcd_source.php');
-            require_once(FEATHER_ROOT.'include/bbcd_compile.php');
+            require_once(FEATHER_ROOT.'app/Helpers/bbcd_source.php');
+            require_once(FEATHER_ROOT.'app/Helpers/bbcd_compile.php');
             redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['reset_success']);
         }
 
-        // Load the current BBCode $pd array from include/parser_data.inc.php.
+        // Load the current BBCode $pd array from app/Helpers/parser_data.inc.php.
         require_once($cache_file);            // Fetch $pd compiled global regex data.
         $bbcd = $pd['bbcd'];                // Local scratch copy of $bbcd.
         $smilies = $pd['smilies'];            // Local scratch copy of $smilies.
@@ -198,7 +198,7 @@ class Parser
                 }
             }
 
-            require_once('include/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
+            require_once('app/Helpers/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
             redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['save_success']);
         }
 

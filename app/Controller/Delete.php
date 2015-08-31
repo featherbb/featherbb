@@ -57,7 +57,7 @@ class Delete
             $this->model->handle_deletion($is_topic_post, $id, $cur_post['tid'], $cur_post['fid']);
         }
 
-        require $this->feather->forum_env['FEATHER_ROOT'].'include/parser.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'app/Helpers/parser.php';
         $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         $this->feather->view2->setPageInfo(array(

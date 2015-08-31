@@ -43,7 +43,7 @@ class permissions
 
         // Regenerate the config cache
         if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
+            require FEATHER_ROOT.'app/Helpers/cache.php';
         }
 
         generate_config_cache();

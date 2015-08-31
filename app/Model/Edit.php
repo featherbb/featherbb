@@ -93,7 +93,7 @@ class edit
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require FEATHER_ROOT.'include/parser.php';
+            require FEATHER_ROOT.'app/Helpers/parser.php';
             $message = preparse_bbcode($message, $errors);
         }
 
@@ -135,7 +135,7 @@ class edit
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require_once FEATHER_ROOT.'include/parser.php';
+            require_once FEATHER_ROOT.'app/Helpers/parser.php';
             $post['message'] = preparse_bbcode($post['message'], $errors);
         }
 

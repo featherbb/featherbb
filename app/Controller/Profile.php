@@ -34,9 +34,9 @@ class Profile
         global $pd, $forum_time_formats, $forum_date_formats;
 
         // Include UTF-8 function
-        require FEATHER_ROOT.'include/utf8/substr_replace.php';
-        require FEATHER_ROOT.'include/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require FEATHER_ROOT.'include/utf8/strcasecmp.php';
+        require FEATHER_ROOT.'app/Helpers/utf8/substr_replace.php';
+        require FEATHER_ROOT.'app/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require FEATHER_ROOT.'app/Helpers/utf8/strcasecmp.php';
 
         if ($this->request->post('update_group_membership')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
@@ -93,7 +93,7 @@ class Profile
         $user = $this->model->get_user_info($id);
 
         if ($user['signature'] != '') {
-            require FEATHER_ROOT.'include/parser.php';
+            require FEATHER_ROOT.'app/Helpers/parser.php';
             $parsed_signature = parse_signature($user['signature']);
         }
 
@@ -244,9 +244,9 @@ class Profile
     public function action($id, $action)
     {
         // Include UTF-8 function
-        require FEATHER_ROOT.'include/utf8/substr_replace.php';
-        require FEATHER_ROOT.'include/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require FEATHER_ROOT.'include/utf8/strcasecmp.php';
+        require FEATHER_ROOT.'app/Helpers/utf8/substr_replace.php';
+        require FEATHER_ROOT.'app/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require FEATHER_ROOT.'app/Helpers/utf8/strcasecmp.php';
 
         if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user->g_read_board == '0') {

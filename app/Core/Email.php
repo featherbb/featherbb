@@ -15,7 +15,7 @@ class Email
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->config = $this->feather->config;
-        require FEATHER_ROOT . 'include/utf8/utils/ascii.php';
+        require FEATHER_ROOT . 'app/Helpers/utf8/utils/ascii.php';
     }
 
     //

@@ -16,11 +16,11 @@ if (!defined('FEATHER')) {
 define('FEATHER_PARSER', '11-Feb-2011 13:33');
 
 // globals. we share one array: $pd
-if (file_exists(FEATHER_ROOT.'cache/cache_parser_data.php')) { // If file already exists
-    require_once(FEATHER_ROOT.'cache/cache_parser_data.php');
+if (file_exists(FEATHER_ROOT.'app/cache/cache_parser_data.php')) { // If file already exists
+    require_once(FEATHER_ROOT.'app/cache/cache_parser_data.php');
 } else { // It needs to be re-generated.
-    require_once(FEATHER_ROOT.'include/bbcd_source.php');
-    require_once(FEATHER_ROOT.'include/bbcd_compile.php');
+    require_once(FEATHER_ROOT.'app/Helpers/bbcd_source.php');
+    require_once(FEATHER_ROOT.'app/Helpers/bbcd_compile.php');
 }
 // !!!! AVOIDING PCRE STACK OVERFLOWS WHICH SEG-FAULT CRASH APACHE/PHP !!!!
 // By default, PHP sets up pcre.recursion_limit way too high (100000). According

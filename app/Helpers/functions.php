@@ -31,7 +31,7 @@ function check_username($username, $errors, $exclude_id = null)
     global $feather, $errors, $feather_bans;
 
     // Include UTF-8 function
-    require_once FEATHER_ROOT.'include/utf8/strcasecmp.php';
+    require_once FEATHER_ROOT.'app/Helpers/utf8/strcasecmp.php';
 
     load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/register.mo');
     load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/prof_reg.mo');
@@ -454,7 +454,7 @@ function message($msg, $http_status = null, $no_back_link = false)
 function random_key($len, $readable = false, $hash = false)
 {
     if (!function_exists('secure_random_bytes')) {
-        include FEATHER_ROOT.'include/srand.php';
+        include FEATHER_ROOT.'app/Helpers/srand.php';
     }
 
     $key = secure_random_bytes($len);

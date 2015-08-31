@@ -27,8 +27,8 @@ class Core extends \Slim\Middleware
 	public function __construct(array $data)
 	{
         // Handle empty values in data
-        $data = array_merge(array('config_file' => 'include/config.php',
-                                  'cache_dir' => 'cache/',
+        $data = array_merge(array('config_file' => 'app/config.php',
+                                  'cache_dir' => 'app/cache/',
                                   'debug'   => false), $data);
         // Define some core variables
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
@@ -41,9 +41,9 @@ class Core extends \Slim\Middleware
         $this->env_to_globals($this->forum_env); // Legacy
 
         // Load files
-        require $this->forum_env['FEATHER_ROOT'].'include/utf8/utf8.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/functions.php';
-        require $this->forum_env['FEATHER_ROOT'].'include/l10n.php';
+        require $this->forum_env['FEATHER_ROOT'].'app/Helpers/utf8/utf8.php';
+        require $this->forum_env['FEATHER_ROOT'].'app/Helpers/functions.php';
+        require $this->forum_env['FEATHER_ROOT'].'app/Helpers/l10n.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -54,8 +54,8 @@ class Core extends \Slim\Middleware
         return array(
                 'FEATHER' => true, // Legacy
                 'FEATHER_ROOT' => '',
-                'FORUM_CONFIG_FILE' => 'include/config.php',
-                'FORUM_CACHE_DIR' => 'cache/',
+                'FORUM_CONFIG_FILE' => 'app/config.php',
+                'FORUM_CACHE_DIR' => 'app/cache/',
                 'FORUM_VERSION' => '1.0.0',
                 'FORUM_NAME' => 'FeatherBB',
                 'FORUM_DB_REVISION' => 21,

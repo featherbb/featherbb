@@ -164,7 +164,7 @@ class post
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require FEATHER_ROOT.'include/parser.php';
+            require FEATHER_ROOT.'app/Helpers/parser.php';
             $message = preparse_bbcode($message, $errors);
             $message = $this->hook->fire('check_errors_before_post_bbcode', $message);
         }
@@ -217,7 +217,7 @@ class post
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require_once FEATHER_ROOT.'include/parser.php';
+            require_once FEATHER_ROOT.'app/Helpers/parser.php';
             $post['message']  = preparse_bbcode($post['message'], $errors);
         }
 
@@ -877,7 +877,7 @@ class post
 
         $post_data = $this->hook->fire('topic_review_start', $post_data, $tid);
 
-        require_once FEATHER_ROOT.'include/parser.php';
+        require_once FEATHER_ROOT.'app/Helpers/parser.php';
 
         $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 

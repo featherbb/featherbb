@@ -47,7 +47,7 @@ class Search
                 if (isset($search['is_result'])) {
 
                     if ($search['show_as'] == 'posts') {
-                        require FEATHER_ROOT.'include/parser.php';
+                        require FEATHER_ROOT.'app/Helpers/parser.php';
                     }
 
                     $this->feather->view2->setPageInfo(array(
