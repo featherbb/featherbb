@@ -42,11 +42,8 @@ class Permissions
         }
 
         // Regenerate the config cache
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'app/Helpers/cache.php';
-        }
-
-        generate_config_cache();
+        $this->feather->cache->store('config', \App\Model\Cache::get_config());
+        // $this->clear_feed_cache();
 
         redirect($this->feather->url->get('admin/permissions/'), __('Perms updated redirect'));
     }

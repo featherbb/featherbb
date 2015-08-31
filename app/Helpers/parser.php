@@ -120,7 +120,7 @@ Parameters: (See the BBcode regex to see how each of these parameters are captur
 function _preparse_bbcode_callback($matches)
 {
     global $errors, $pd;
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -971,7 +971,7 @@ function _parse_bbcode_callback($matches)
 function parse_bbcode(&$text, $hide_smilies = 0)
 {
     global $feather_config, $pd;
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
@@ -1031,10 +1031,10 @@ function _do_smilies_callback($matches)
 function parse_message($text, $hide_smilies)
 {
     global $pd, $feather_config;
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
-    
+
     $pd['in_signature'] = false;
     // Disable images via the $bbcd['in_post'] flag if globally disabled.
     if ($feather_config['p_message_img_tag'] !== '1' || $feather->user->show_img !== '1') {
@@ -1050,10 +1050,10 @@ function parse_message($text, $hide_smilies)
 function parse_signature($text)
 {
     global $pd, $feather_config;
-    
+
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
-    
+
     $pd['in_signature'] = true;
     // Disable images via the $bbcd['in_sig'] flag if globally disabled.
     if ($feather_config['p_sig_img_tag'] !== '1' || $feather->user->show_img_sig !== '1') {

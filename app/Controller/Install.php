@@ -196,7 +196,7 @@ class Install
 
         // Install success flash message
         $flash = new \Slim\Middleware\Flash();
-        $flash->set('message', __('Message'));
+        $flash->set('success', __('Message'));
         $flash->save();
 
         // Redirect to homepage
