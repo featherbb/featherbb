@@ -18,7 +18,7 @@ if (!defined('FEATHER')) {
 <head>
     <meta charset="utf-8">
     <title><?php _e('FeatherBB Installation') ?></title>
-    <link rel="stylesheet" type="text/css" href="style/<?php echo $feather->forum_env['FORUM_NAME'] ?>.css" />
+    <link rel="stylesheet" type="text/css" href="style/themes/<?php echo $feather->forum_env['FORUM_NAME'] ?>.css" />
 </head>
 
 <body>

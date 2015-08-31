@@ -1,5 +1,5 @@
-cache/
-include/config.php
+app/cache/
+app/config.php
 .idea/
 nbproject/
 lang/French

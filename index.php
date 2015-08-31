@@ -14,28 +14,20 @@ error_reporting(E_ALL); // Let's report everything for development
 ini_set('display_errors', 1);
 
 // Load Slim Framework
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
-
-// Load dependencies
 require 'vendor/autoload.php';
-
-// Load FeatherBB
-require 'include/classes/autoload.class.php';
-\FeatherBB\Loader::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
 $feather->add(new \FeatherBB\Csrf());
 
-$feather_settings = array('config_file' => 'include/config.php',
-                          'cache_dir' => 'cache/',
+$feather_settings = array('config_file' => 'app/config.php',
+                          'cache_dir' => 'app/cache/',
                           'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
 
 // Load the routes
-require 'include/routes.php';
+require 'app/routes.php';
 
 // Run it, baby!
 $feather->run();

@@ -7,4 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Plugins\\' => array('/plugins'),
+    'FeatherBB\\' => array($baseDir . '/app/Core'),
+    '' => array($baseDir . '/'),
 );
