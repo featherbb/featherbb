@@ -43,8 +43,8 @@ class censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
+        $this->feather->cache->store('search_for', \App\Model\Cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', \App\Model\Cache::get_censoring('replace_with'));
 
         redirect($this->feather->url->get('admin/censoring/'), __('Word added redirect'));
     }
@@ -71,8 +71,8 @@ class censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
+        $this->feather->cache->store('search_for', \App\Model\Cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', \App\Model\Cache::get_censoring('replace_with'));
 
         redirect($this->feather->url->get('admin/censoring/'), __('Word updated redirect'));
     }
@@ -87,8 +87,8 @@ class censoring
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', \model\cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', \model\cache::get_censoring('replace_with'));
+        $this->feather->cache->store('search_for', \App\Model\Cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', \App\Model\Cache::get_censoring('replace_with'));
 
         redirect($this->feather->url->get('admin/censoring/'),  __('Word removed redirect'));
     }

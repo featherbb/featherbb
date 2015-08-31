@@ -255,7 +255,7 @@ class groups
         $group_id = $this->hook->fire('add_edit_group.group_id', $group_id);
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \model\cache::get_quickjump());
+        $this->feather->cache->store('quickjump', \App\Model\Cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
             redirect($this->feather->url->get('admin/groups/'), __('Group edited redirect'));
@@ -283,7 +283,7 @@ class groups
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', \model\cache::get_config());
+        $this->feather->cache->store('config', \App\Model\Cache::get_config());
 
         redirect($this->feather->url->get('admin/groups/'), __('Default group redirect'));
     }

@@ -214,7 +214,7 @@ class Core extends \Slim\Middleware
         $this->app->hooks->fire('core.start');
 
         if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
-            $installer = new \controller\install;
+            $installer = new \App\Controller\Install;
             $installer->run();
             return;
         }

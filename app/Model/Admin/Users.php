@@ -401,7 +401,7 @@ class users
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \model\cache::get_users_info());
+                $this->feather->cache->store('users_info', \App\Model\Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
@@ -523,7 +523,7 @@ class users
                 }
 
                 // Regenerate the bans cache
-                $this->feather->cache->store('bans', \model\cache::get_bans());
+                $this->feather->cache->store('bans', \App\Model\Cache::get_bans());
 
                 redirect($this->feather->url->get('admin/users/'), __('Users banned redirect'));
             }

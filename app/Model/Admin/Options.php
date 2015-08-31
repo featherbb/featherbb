@@ -227,7 +227,7 @@ class options
         }
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', \model\cache::get_config());
+        $this->feather->cache->store('config', \App\Model\Cache::get_config());
         $this->clear_feed_cache();
 
         redirect($this->feather->url->get('admin/options/'), __('Options updated redirect'));

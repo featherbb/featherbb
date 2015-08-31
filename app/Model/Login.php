@@ -62,7 +62,7 @@ class login
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \model\cache::get_users_info());
+                $this->feather->cache->store('users_info', \App\Model\Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');

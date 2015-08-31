@@ -15,7 +15,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="<?php echo $feather->url->base() ?>/style/<?php echo $feather->user->style.'.css' ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $feather->url->base() ?>/style/themes/<?php echo $feather->user->style.'/style.css' ?>" />
 <?php
 
 echo $allow_index;

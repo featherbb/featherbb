@@ -274,7 +274,7 @@ class bans
         }
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', \model\cache::get_bans());
+        $this->feather->cache->store('bans', \App\Model\Cache::get_bans());
 
         redirect($this->feather->url->get('admin/bans/'), __('Ban edited redirect'));
     }
@@ -289,7 +289,7 @@ class bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', \model\cache::get_bans());
+        $this->feather->cache->store('bans', \App\Model\Cache::get_bans());
 
         redirect($this->feather->url->get('admin/bans/'), __('Ban removed redirect'));
     }

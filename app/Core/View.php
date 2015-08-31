@@ -208,7 +208,9 @@ class View
 
     public function display($nested = true)
     {
-        $this->setStyle($this->app->user->style);
+        if ($this->app->user) {
+            $this->setStyle($this->app->user->style);
+        }
         echo $this->fetch($nested);
     }
 

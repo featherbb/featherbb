@@ -728,7 +728,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 elseif ($action == 'stats') {
 
     if (!$feather->cache->isCached('users_info')) {
-        $feather->cache->store('users_info', \model\cache::get_users_info());
+        $feather->cache->store('users_info', \App\Model\Cache::get_users_info());
     }
 
     $stats = $feather->cache->retrieve('users_info');

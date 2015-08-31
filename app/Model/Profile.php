@@ -425,13 +425,13 @@ class profile
 
         // Regenerate the users info cache
         if (!$this->feather->cache->isCached('users_info')) {
-            $this->feather->cache->store('users_info', \model\cache::get_users_info());
+            $this->feather->cache->store('users_info', \App\Model\Cache::get_users_info());
         }
 
         $stats = $this->feather->cache->retrieve('users_info');
 
         if ($old_group_id == FEATHER_ADMIN || $new_group_id == FEATHER_ADMIN) {
-            $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
+            $this->feather->cache->store('admin_ids', \App\Model\Cache::get_admin_ids());
         }
 
         $new_group_mod = DB::for_table('groups')
@@ -721,13 +721,13 @@ class profile
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \model\cache::get_users_info());
+                $this->feather->cache->store('users_info', \App\Model\Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
 
             if ($group_id == FEATHER_ADMIN) {
-                $this->feather->cache->store('admin_ids', \model\cache::get_admin_ids());
+                $this->feather->cache->store('admin_ids', \App\Model\Cache::get_admin_ids());
             }
 
             $this->hook->fire('delete_user');
@@ -1073,14 +1073,14 @@ class profile
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \model\cache::get_users_info());
+                $this->feather->cache->store('users_info', \App\Model\Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bans_updated) {
-                $this->feather->cache->store('bans', \model\cache::get_bans());
+                $this->feather->cache->store('bans', \App\Model\Cache::get_bans());
             }
         }
 
