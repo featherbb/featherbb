@@ -124,7 +124,7 @@ if (!defined('FEATHER')) {
 <?php
 
 // Display the smiley set
-require FEATHER_ROOT.'app/Helpers/parser.php';
+require FEATHER_ROOT.'featherbb/Helpers/parser.php';
 
 $smiley_groups = array();
 

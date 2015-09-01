@@ -62,21 +62,21 @@ require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
 // Load FeatherBB
-require 'app/Helpers/classes/autoload.class.php';
+require 'featherbb/Helpers/classes/autoload.class.php';
 \FeatherBB\Loader::registerAutoloader();
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
 $feather->add(new \FeatherBB\Csrf());
 
-$feather_settings = array('config_file' => 'app/config.php',
-    'cache_dir' => 'app/cache/',
+$feather_settings = array('config_file' => 'featherbb/config.php',
+    'cache_dir' => 'featherbb/cache/',
     'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
 
-load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/common.mo');
-load_textdomain('featherbb', FEATHER_ROOT.'app/lang/'.$feather->user->language.'/index.mo');
+load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/common.mo');
+load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/index.mo');
 
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
@@ -439,7 +439,7 @@ function output_html($feed)
 
 // Show recent discussions
 if ($action == 'feed') {
-    require FEATHER_ROOT.'app/Helpers/parser.php';
+    require FEATHER_ROOT.'featherbb/Helpers/parser.php';
 
     // Determine what type of feed to output
     $type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
@@ -650,7 +650,7 @@ if ($action == 'feed') {
             // Output feed as PHP code
             if (isset($cache_id)) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'app/Helpers/cache.php';
+                    require FEATHER_ROOT.'featherbb/Helpers/cache.php';
                 }
 
                 $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather->forum_settings['o_feed_ttl'] * 60)).';'."\n\n".'?>';
@@ -728,7 +728,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 elseif ($action == 'stats') {
 
     if (!$feather->cache->isCached('users_info')) {
-        $feather->cache->store('users_info', \App\Model\Cache::get_users_info());
+        $feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
     }
 
     $stats = $feather->cache->retrieve('users_info');

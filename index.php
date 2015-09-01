@@ -20,14 +20,14 @@ require 'vendor/autoload.php';
 $feather = new \Slim\Slim();
 $feather->add(new \FeatherBB\Csrf());
 
-$feather_settings = array('config_file' => 'app/config.php',
-                          'cache_dir' => 'app/cache/',
+$feather_settings = array('config_file' => 'featherbb/config.php',
+                          'cache_dir' => 'featherbb/cache/',
                           'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 $feather->add(new \FeatherBB\Auth());
 $feather->add(new \FeatherBB\Core($feather_settings));
 
 // Load the routes
-require 'app/routes.php';
+require 'featherbb/routes.php';
 
 // Run it, baby!
 $feather->run();

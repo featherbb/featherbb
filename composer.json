@@ -16,10 +16,10 @@
 		"role": "Contributor"
 	}],
 	"autoload": {
-        "classmap": ["app/Core/Database.php", "app/Core/pomo/MO.php"],
+        "classmap": ["featherbb/Core/Database.php", "featherbb/Core/pomo/MO.php"],
 		"psr-4": {
 			"Plugins\\": "/plugins",
-			"FeatherBB\\": "app/Core",
+			"FeatherBB\\": "featherbb/Core",
 			"": ""
 		}
 	},

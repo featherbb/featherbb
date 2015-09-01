@@ -1,5 +1,5 @@
-app/cache/
-app/config.php
+featherbb/cache/
+featherbb/config.php
 .idea/
 nbproject/
 lang/French
