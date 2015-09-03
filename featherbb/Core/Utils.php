@@ -184,4 +184,18 @@ class Utils
     {
         return sha1($str);
     }
+
+    //
+    // Converts the file size in bytes to a human readable file size
+    //
+    public function file_size($size)
+    {
+        $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
+
+        for ($i = 0; $size > 1024; $i++) {
+            $size /= 1024;
+        }
+
+        return sprintf(__('Size unit '.$units[$i]), round($size, 2));
+    }
 }

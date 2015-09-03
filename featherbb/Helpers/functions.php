@@ -500,20 +500,6 @@ function redirect($destination_url, $message = null)
 
 
 //
-// Converts the file size in bytes to a human readable file size
-//
-function file_size($size)
-{
-    $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
-
-    for ($i = 0; $size > 1024; $i++) {
-        $size /= 1024;
-    }
-
-    return sprintf(__('Size unit '.$units[$i]), round($size, 2));
-}
-
-//
 // Generate a cache ID based on the last modification time for all stopwords files
 //
 function generate_stopwords_cache_id()
