@@ -8,6 +8,7 @@
  */
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -18,8 +19,8 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php $feather->url->get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+			<li><a href="<?php echo Url::base() ?>/"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php Url::get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -93,8 +94,8 @@ if (!defined('FEATHER')) {
 <?php echo $post_link ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php $feather->url->get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+			<li><a href="<?php echo Url::base() ?>/"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php Url::get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
 		<div class="clearer"></div>

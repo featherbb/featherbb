@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Plugins
 {
@@ -68,10 +69,10 @@ class Plugins
         try {
             $plugin->activate($class);
         } catch (\Exception $e) {
-            redirect($this->feather->url->get('admin/plugins/'), $e->getMessage());
+            redirect(Url::get('admin/plugins/'), $e->getMessage());
         }
         // Plugin has been activated, confirm and redirect
-        $this->feather->url->redirect($this->feather->url->get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
+        $this->feather->url->redirect(Url::get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
     }
 
     public function deactivate()
@@ -86,10 +87,10 @@ class Plugins
         try {
             $plugin->deactivate($class);
         } catch (\Exception $e) {
-            redirect($this->feather->url->get('admin/plugins/'), Utils::escape($e->getMessage()));
+            redirect(Url::get('admin/plugins/'), Utils::escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        $this->feather->url->redirect($this->feather->url->get('admin/plugins/'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
+        $this->feather->url->redirect(Url::get('admin/plugins/'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
     }
 
     public function display()

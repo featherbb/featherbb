@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Bans
 {
@@ -51,7 +52,7 @@ class Bans
                     'admin_console' => true,
                     'page' => $p,
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
-                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . $this->feather->url->paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
                     'ban_data' => $ban_data['data'],
                 )
             )->addTemplate('admin/bans/search_ban.php')->display();

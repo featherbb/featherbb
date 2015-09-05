@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Groups
@@ -259,9 +260,9 @@ class Groups
         $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
-            redirect($this->feather->url->get('admin/groups/'), __('Group edited redirect'));
+            redirect(Url::get('admin/groups/'), __('Group edited redirect'));
         } else {
-            redirect($this->feather->url->get('admin/groups/'), __('Group added redirect'));
+            redirect(Url::get('admin/groups/'), __('Group added redirect'));
         }
     }
 
@@ -286,7 +287,7 @@ class Groups
         // Regenerate the config cache
         $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
 
-        redirect($this->feather->url->get('admin/groups/'), __('Default group redirect'));
+        redirect(Url::get('admin/groups/'), __('Default group redirect'));
     }
 
     public function check_members($group_id)
@@ -329,7 +330,7 @@ class Groups
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
-        redirect($this->feather->url->get('admin/groups/'), __('Group removed redirect'));
+        redirect(Url::get('admin/groups/'), __('Group removed redirect'));
     }
 
     public function get_group_title($group_id)

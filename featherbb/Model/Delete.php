@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Delete
@@ -66,7 +67,7 @@ class Delete
             delete_topic($tid);
             update_forum($fid);
 
-            redirect($this->feather->url->get('forum/'.$fid.'/'), __('Topic del redirect'));
+            redirect(Url::get('forum/'.$fid.'/'), __('Topic del redirect'));
         } else {
             $this->hook->fire('handle_deletion', $tid, $fid, $id);
 
@@ -85,7 +86,7 @@ class Delete
 
             $post = $post->find_one();
 
-            redirect($this->feather->url->get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
+            redirect(Url::get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
         }
     }
 }

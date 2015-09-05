@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Profile
 {
@@ -168,13 +169,13 @@ class Profile
                     throw new \FeatherBB\Error(__('Bad request'), 404);
                 }
 
-                $avatar_field = '<span><a href="'.$this->feather->url->get('user/'.$id.'/action/upload_avatar/').'">'.__('Change avatar').'</a></span>';
+                $avatar_field = '<span><a href="'.Url::get('user/'.$id.'/action/upload_avatar/').'">'.__('Change avatar').'</a></span>';
 
                 $user_avatar = generate_avatar_markup($id);
                 if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.$this->feather->url->get('user/'.$id.'/action/delete_avatar/').'">'.__('Delete avatar').'</a></span>';
+                    $avatar_field .= ' <span><a href="'.Url::get('user/'.$id.'/action/delete_avatar/').'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.$this->feather->url->get('user/'.$id.'/action/upload_avatar/').'">'.__('Upload avatar').'</a></span>';
+                    $avatar_field = '<span><a href="'.Url::get('user/'.$id.'/action/upload_avatar/').'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user['signature'] != '') {
@@ -314,7 +315,7 @@ class Profile
 
             $this->model->delete_avatar($id);
 
-            redirect($this->feather->url->get('user/'.$id.'/section/personality/'), __('Avatar deleted redirect'));
+            redirect(Url::get('user/'.$id.'/section/personality/'), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
                 throw new \FeatherBB\Error(__('No permission'), 403);

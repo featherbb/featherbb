@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Index
@@ -50,7 +51,7 @@ class Index
 
         // Display a "mark all as read" link
         if (!$this->user->is_guest) {
-            $forum_actions[] = '<a href="'.$this->feather->url->get('mark-read/').'">'.__('Mark all as read').'</a>';
+            $forum_actions[] = '<a href="'.Url::get('mark-read/').'">'.__('Mark all as read').'</a>';
         }
 
         $forum_actions = $this->hook->fire('get_forum_actions', $forum_actions);
@@ -178,7 +179,7 @@ class Index
             // Are there new posts since our last visit?
             if (isset($new_topics[$cur_forum->fid])) {
                 $cur_forum->item_status .= ' inew';
-                $forum_field_new = '<span class="newtext">[ <a href="'.$this->feather->url->get('search/?action=show_new&amp;fid='.$cur_forum->fid).'">'.__('New posts').'</a> ]</span>';
+                $forum_field_new = '<span class="newtext">[ <a href="'.Url::get('search/?action=show_new&amp;fid='.$cur_forum->fid).'">'.__('New posts').'</a> ]</span>';
                 $cur_forum->icon_type = 'icon icon-new';
             }
 
@@ -189,7 +190,7 @@ class Index
                 $cur_forum->item_status .= ' iredirect';
                 $cur_forum->icon_type = 'icon';
             } else {
-                $cur_forum->forum_field = '<h3><a href="'.$this->feather->url->get('forum/'.$cur_forum->fid.'/'.$this->feather->url->url_friendly($cur_forum->forum_name)).'/'.'">'.Utils::escape($cur_forum->forum_name).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
+                $cur_forum->forum_field = '<h3><a href="'.Url::get('forum/'.$cur_forum->fid.'/'.Url::url_friendly($cur_forum->forum_name)).'/'.'">'.Utils::escape($cur_forum->forum_name).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
                 $cur_forum->num_topics_formatted = $cur_forum->num_topics;
                 $cur_forum->num_posts_formatted = $cur_forum->num_posts;
             }
@@ -200,7 +201,7 @@ class Index
 
             // If there is a last_post/last_poster
             if ($cur_forum->last_post != '') {
-                $cur_forum->last_post_formatted = '<a href="'.$this->feather->url->get('post/'.$cur_forum->last_post_id.'/#p'.$cur_forum->last_post_id).'">'.$this->feather->utils->format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
+                $cur_forum->last_post_formatted = '<a href="'.Url::get('post/'.$cur_forum->last_post_id.'/#p'.$cur_forum->last_post_id).'">'.$this->feather->utils->format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
             } elseif ($cur_forum->redirect_url != '') {
                 $cur_forum->last_post_formatted = '- - -';
             } else {
@@ -213,7 +214,7 @@ class Index
 
                 foreach ($mods_array as $mod_username => $mod_id) {
                     if ($this->user->g_view_users == '1') {
-                        $moderators[] = '<a href="'.$this->feather->url->get('user/'.$mod_id.'/').'">'.Utils::escape($mod_username).'</a>';
+                        $moderators[] = '<a href="'.Url::get('user/'.$mod_id.'/').'">'.Utils::escape($mod_username).'</a>';
                     } else {
                         $moderators[] = Utils::escape($mod_username);
                     }
@@ -257,7 +258,7 @@ class Index
         $stats['total_posts'] = intval($query['total_posts']);
 
         if ($this->user->g_view_users == '1') {
-            $stats['newest_user'] = '<a href="'.$this->feather->url->get('user/'.$stats['last_user']['id']).'/">'.Utils::escape($stats['last_user']['username']).'</a>';
+            $stats['newest_user'] = '<a href="'.Url::get('user/'.$stats['last_user']['id']).'/">'.Utils::escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
         }
@@ -292,7 +293,7 @@ class Index
         foreach($query as $user_online) {
             if ($user_online->user_id > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.$this->feather->url->get('user/'.$user_online->user_id).'/">'.Utils::escape($user_online->ident).'</a>';
+                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Url::get('user/'.$user_online->user_id).'/">'.Utils::escape($user_online->ident).'</a>';
                 } else {
                     $online['users'][] = "\n\t\t\t\t".'<dd>'.Utils::escape($user_online->ident);
                 }

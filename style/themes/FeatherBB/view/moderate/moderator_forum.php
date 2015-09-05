@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -19,8 +20,8 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></li>
+			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo Url::get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -30,7 +31,7 @@ if (!defined('FEATHER')) {
 	</div>
 </div>
 
-<form method="post" action="<?php echo $feather->url->get('moderate/forum/'.$id.'/') ?>">
+<form method="post" action="<?php echo Url::get('moderate/forum/'.$id.'/') ?>">
 <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <input type="hidden" name="page" value="<?php echo Utils::escape($p) ?>" />
 <div id="vf" class="blocktable">
@@ -93,8 +94,8 @@ if (!defined('FEATHER')) {
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></li>
+			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo Url::get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

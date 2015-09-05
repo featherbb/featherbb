@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Register
 {
@@ -34,7 +35,7 @@ class Register
     public function display()
     {
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
+            header('Location: '.Url::base());
             exit;
         }
 
@@ -79,7 +80,7 @@ class Register
 
     public function cancel()
     {
-        redirect($this->feather->url->base());
+        redirect(Url::base());
     }
 
     public function rules()
@@ -88,7 +89,7 @@ class Register
 
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
+            header('Location: '.Url::base());
             exit;
         }
 
@@ -98,7 +99,7 @@ class Register
         }
 
         if ($this->config['o_rules'] != '1') {
-            redirect($this->feather->url->get('register/agree/'));
+            redirect(Url::get('register/agree/'));
         }
 
         $this->feather->template->setPageInfo(array(

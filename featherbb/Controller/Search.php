@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Search
 {
@@ -73,7 +74,7 @@ class Search
                     $this->feather->template->addTemplate('search/footer.php', 10)->display();
 
                 } else {
-                    redirect($this->feather->url->get('search/'), __('No hits'));
+                    redirect(Url::get('search/'), __('No hits'));
                 }
         }
         // Display the form
@@ -90,6 +91,6 @@ class Search
 
     public function quicksearches($show)
     {
-        redirect($this->feather->url->get('search/?action=show_'.$show));
+        redirect(Url::get('search/?action=show_'.$show));
     }
 }

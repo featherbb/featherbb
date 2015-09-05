@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -18,7 +19,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php _e('Change pass') ?></span></h2>
 	<div class="box">
-		<form id="change_pass" method="post" action="<?php echo $feather->url->get('user/'.$id.'/action/change_pass/') ?>" onsubmit="return process_form(this)">
+		<form id="change_pass" method="post" action="<?php echo Url::get('user/'.$id.'/action/change_pass/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />

@@ -368,7 +368,7 @@ class Parser
                 if ($this->feather->user->g_post_links != '1') {
                     $new_errors[] = __('BBerr cannot post URLs');
                 }
-                else if (($m = $this->feather->url->is_valid($contents)))
+                else if (($m = Url::is_valid($contents)))
                 {
                     $contents = $m['url']; // Fetch possibly more complete url address.
                 }
@@ -418,7 +418,7 @@ class Parser
                 if ($this->feather->user->g_post_links != '1') {
                     $new_errors[] = __('BBerr cannot post URLs');
                 }
-                else if (($m = $this->feather->url->is_valid($attribute)))
+                else if (($m = Url::is_valid($attribute)))
                 {
                     $attribute = $m['url']; // Fetch possibly more complete url address.
                 }
@@ -455,7 +455,7 @@ class Parser
             case 'img': // Handle bad image url, file too big, then scale-to-fit within forum defaults if too large.
                 if ($tag['depth'] === 1)
                 { // Check if not overly nested?
-                    if (($this->pd['ipass'] === 2) && $this->pd['config']['valid_imgs'] && $this->feather->url->is_valid($contents))
+                    if (($this->pd['ipass'] === 2) && $this->pd['config']['valid_imgs'] && Url::is_valid($contents))
                     { // Valid URI?
                         // Yes. Fetch file headers containing file type and size ("Content-Type" and "Content-Length").
                         // ??? Should this call to get_headers have an @ in case of weird errors?
@@ -1243,7 +1243,7 @@ class Parser
     private function _linkify_callback($m)
     { // Only linkify valid urls.
         $url = $m[2] . $m[5] . $m[8] . $m[11] . $m[14];
-        if (is_array($u = $this->feather->url->is_valid($url))) {
+        if (is_array($u = Url::is_valid($url))) {
             if (preg_match('%\.(?:jpe?g|gif|png)$%Si', $u['path_abempty'])) {
                 return    $m[1].$m[4].$m[7].$m[10].$m[13] .'[img]'. $u['url'] .'[/img]'. $m[3].$m[6].$m[9].$m[12];
             } else {

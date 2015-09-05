@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -18,8 +19,8 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?php echo Url::get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo Url::get('admin/users/') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -47,10 +48,10 @@ if (!defined('FEATHER')) {
         foreach ($ip_data as $ip) {
             ?>
 				<tr>
-					<td class="tcl"><a href="<?php echo $feather->url->get('moderate/get-host/ip/'.Utils::escape($ip['poster_ip']).'/') ?>"><?php echo Utils::escape($ip['poster_ip']) ?></a></td>
+					<td class="tcl"><a href="<?php echo Url::get('moderate/get-host/ip/'.Utils::escape($ip['poster_ip']).'/') ?>"><?php echo Utils::escape($ip['poster_ip']) ?></a></td>
 					<td class="tc2"><?php echo $feather->utils->format_time($ip['last_used']) ?></td>
 					<td class="tc3"><?php echo $ip['used_times'] ?></td>
-					<td class="tcr"><a href="<?php echo $feather->url->get('admin/users/show-users/ip/'.$ip['poster_ip'].'/') ?>"><?php _e('Results find more link') ?></a></td>
+					<td class="tcr"><a href="<?php echo Url::get('admin/users/show-users/ip/'.$ip['poster_ip'].'/') ?>"><?php _e('Results find more link') ?></a></td>
 				</tr>
 <?php
 
@@ -72,8 +73,8 @@ if (!defined('FEATHER')) {
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?php echo Url::get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo Url::get('admin/users/') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

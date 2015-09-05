@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Post
@@ -407,8 +408,8 @@ class Post
                         $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
                         $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<post_url>', $this->feather->url->get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$tid.'/'), $mail_message);
+                        $mail_message = str_replace('<post_url>', Url::get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$tid.'/'), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                         $mail_message = $this->hook->fire('send_notifications_reply_mail_message', $mail_message);
 
@@ -416,8 +417,8 @@ class Post
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<post_url>', $this->feather->url->get('post/'.$new_pid.'/#p'.$new_pid), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$tid.'/'), $mail_message_full);
+                        $mail_message_full = str_replace('<post_url>', Url::get('post/'.$new_pid.'/#p'.$new_pid), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$tid.'/'), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
                         $mail_message_full = $this->hook->fire('send_notifications_reply_mail_message_full', $mail_message_full);
 
@@ -615,8 +616,8 @@ class Post
                         $mail_message = str_replace('<topic_subject>', $this->config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message);
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<topic_url>', $this->feather->url->get('topic/'.$new_tid.'/'), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message);
+                        $mail_message = str_replace('<topic_url>', Url::get('topic/'.$new_tid.'/'), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                         $mail_message = $this->hook->fire('send_notifications_new_topic_mail_message', $mail_message);
 
@@ -625,8 +626,8 @@ class Post
                         $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<topic_url>', $this->feather->url->get('topic/'.$new_tid.'/'), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message_full);
+                        $mail_message_full = str_replace('<topic_url>', Url::get('topic/'.$new_tid.'/'), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
                         $mail_message_full = $this->hook->fire('send_notifications_new_topic_mail_message_full', $mail_message_full);
 
@@ -669,7 +670,7 @@ class Post
 
         $mail_message = str_replace('<username>', $post['username'], $mail_message);
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
-        $mail_message = str_replace('<post_url>', $this->feather->url->get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
+        $mail_message = str_replace('<post_url>', Url::get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
         $mail_message = $this->hook->fire('warn_banned_user_mail_message', $mail_message);
 

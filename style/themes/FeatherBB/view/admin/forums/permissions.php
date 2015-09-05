@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -18,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Edit forum head') ?></span></h2>
 		<div class="box">
-			<form id="edit_forum" method="post" action="<?php echo $feather->url->get('admin/forums/edit/'.$cur_forum['id'].'/') ?>">
+			<form id="edit_forum" method="post" action="<?php echo Url::get('admin/forums/edit/'.$cur_forum['id'].'/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="6" /></p>
 				<div class="inform">

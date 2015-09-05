@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Index
 {
@@ -57,9 +58,9 @@ class Index
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-                redirect($this->feather->url->get('admin/'), __('Running latest version message'));
+                redirect(Url::get('admin/'), __('Running latest version message'));
             } else {
-                redirect($this->feather->url->get('admin/'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
+                redirect(Url::get('admin/'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
         // Remove /install
@@ -67,7 +68,7 @@ class Index
             $deleted = $this->remove_install_folder($this->feather->forum_env['FEATHER_ROOT'].'install');
 
             if ($deleted) {
-                redirect($this->feather->url->get('admin/'), __('Deleted install.php redirect'));
+                redirect(Url::get('admin/'), __('Deleted install.php redirect'));
             } else {
                 throw new \FeatherBB\Error(__('Delete install.php failed'), 500);
             }

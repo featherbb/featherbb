@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -27,5 +28,5 @@ if (!defined('FEATHER')) {
 	</td>
 	<td class="tc2"><?php echo $forum ?></td>
 	<td class="tc3"><?php echo Utils::forum_number_format($cur_search['num_replies']) ?></td>
-	<td class="tcr"><?php echo '<a href="'.$feather->url->get('post/'.$cur_search['last_post_id'].'/#p'.$cur_search['last_post_id']).'">'.$feather->utils->format_time($cur_search['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['last_poster']) ?></span></td>
+	<td class="tcr"><?php echo '<a href="'.Url::get('post/'.$cur_search['last_post_id'].'/#p'.$cur_search['last_post_id']).'">'.$feather->utils->format_time($cur_search['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['last_poster']) ?></span></td>
 </tr>

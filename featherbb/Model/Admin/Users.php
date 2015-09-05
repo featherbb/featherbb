@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Users
@@ -242,7 +243,7 @@ class Users
             DB::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
-            redirect($this->feather->url->get('admin/users/'), __('Users move redirect'));
+            redirect(Url::get('admin/users/'), __('Users move redirect'));
         }
 
         $move = $this->hook->fire('model.users.move_users.move', $move);
@@ -407,7 +408,7 @@ class Users
 
             $stats = $this->feather->cache->retrieve('users_info');
 
-            redirect($this->feather->url->get('admin/users/'), __('Users delete redirect'));
+            redirect(Url::get('admin/users/'), __('Users delete redirect'));
         }
 
         return $user_ids;
@@ -526,7 +527,7 @@ class Users
                 // Regenerate the bans cache
                 $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
-                redirect($this->feather->url->get('admin/users/'), __('Users banned redirect'));
+                redirect(Url::get('admin/users/'), __('Users banned redirect'));
             }
         }
         return $user_ids;

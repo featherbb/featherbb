@@ -10,6 +10,7 @@
 namespace FeatherBB;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Email
 {
@@ -123,7 +124,7 @@ class Email
         static $base_url;
 
         if (!isset($base_url)) {
-            $base_url = $this->feather->url->base();
+            $base_url = Url::base();
         }
 
         $text = Utils::trim($text, "\t\n ");

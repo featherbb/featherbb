@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Maintenance
@@ -212,7 +213,7 @@ class Maintenance
                     ->delete_many();
         }
 
-        redirect($this->feather->url->get('admin/maintenance/'), __('Posts pruned redirect'));
+        redirect(Url::get('admin/maintenance/'), __('Posts pruned redirect'));
     }
 
     public function get_info_prune($prune_sticky, $prune_from)

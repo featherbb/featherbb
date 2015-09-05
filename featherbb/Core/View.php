@@ -10,6 +10,7 @@
 namespace FeatherBB;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class View
 {

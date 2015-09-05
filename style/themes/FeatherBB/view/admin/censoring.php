@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -18,13 +19,13 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Censoring head') ?></span></h2>
 		<div class="box">
-			<form id="censoring" method="post" action="<?php echo $feather->url->get('admin/censoring/') ?>">
+			<form id="censoring" method="post" action="<?php echo Url::get('admin/censoring/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Add word subhead') ?></legend>
 						<div class="infldset">
-							<p><?php _e('Add word info').' '.($feather->forum_settings['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.$feather->url->get('admin/options#censoring').'">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.$feather->url->get('admin/options#censoring').'">'.__('Options').'</a>')) ?></p>
+							<p><?php _e('Add word info').' '.($feather->forum_settings['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Url::get('admin/options#censoring').'">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Url::get('admin/options#censoring').'">'.__('Options').'</a>')) ?></p>
 							<table>
 							<thead>
 								<tr>

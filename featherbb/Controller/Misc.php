@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Misc
 {
@@ -44,7 +45,7 @@ class Misc
         // Reset tracked topics
         set_tracked_topics(null);
 
-        redirect($this->feather->url->base(), __('Mark read redirect'));
+        redirect(Url::base(), __('Mark read redirect'));
     }
 
     public function markforumread($id)
@@ -57,7 +58,7 @@ class Misc
         $tracked_topics['forums'][$id] = time();
         set_tracked_topics($tracked_topics);
 
-        redirect($this->feather->url->get('forum/'.$id.'/'), __('Mark forum read redirect'));
+        redirect(Url::get('forum/'.$id.'/'), __('Mark forum read redirect'));
     }
 
     public function subscribeforum($id)

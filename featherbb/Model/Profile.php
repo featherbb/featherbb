@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Profile
@@ -37,7 +38,7 @@ class Profile
 
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
-                header('Location: '.$this->feather->url->base());
+                header('Location: '.Url::base());
                 exit;
             }
 
@@ -58,7 +59,7 @@ class Profile
                 $query = $this->hook->fireDB('change_pass_activate_query', $query);
                 $query = $query->save();
 
-                $this->feather->url->redirect($this->feather->url->get('/'), __('Pass updated'));
+                $this->feather->url->redirect(Url::get('/'), __('Pass updated'));
             }
         }
 
@@ -137,7 +138,7 @@ class Profile
 
             $this->hook->fire('change_pass');
 
-            redirect($this->feather->url->get('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
+            redirect(Url::get('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
         }
     }
 
@@ -194,7 +195,7 @@ class Profile
                 $update_mail = $this->hook->fireDB('change_email_query', $update_mail);
                 $update_mail = $update_mail->save();
 
-                $this->feather->url->redirect($this->feather->url->get('/'), __('Email updated'));
+                $this->feather->url->redirect(Url::get('/'), __('Email updated'));
             }
         } elseif ($this->request->isPost()) {
             $this->hook->fire('change_email_post');
@@ -227,7 +228,7 @@ class Profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
-                    $mail_message = str_replace('<profile_url>', $this->feather->url->get('user/'.$id.'/'), $mail_message);
+                    $mail_message = str_replace('<profile_url>', Url::get('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_message', $mail_message);
 
@@ -264,7 +265,7 @@ class Profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                    $mail_message = str_replace('<profile_url>', $this->feather->url->get('user/'.$id.'/'), $mail_message);
+                    $mail_message = str_replace('<profile_url>', Url::get('user/'.$id.'/'), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_dupe_message', $mail_message);
 
@@ -300,8 +301,8 @@ class Profile
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
-            $mail_message = str_replace('<base_url>', $this->feather->url->base(), $mail_message);
-            $mail_message = str_replace('<activation_url>', $this->feather->url->get('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
+            $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
+            $mail_message = str_replace('<activation_url>', Url::get('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
 
@@ -403,7 +404,7 @@ class Profile
 
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
+        redirect(Url::get('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
     }
 
     public function update_group_membership($id)
@@ -470,7 +471,7 @@ class Profile
 
         $id = $this->hook->fire('update_group_membership', $id);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/admin/'), __('Group membership redirect'));
+        redirect(Url::get('user/'.$id.'/section/admin/'), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -540,7 +541,7 @@ class Profile
 
         $id = $this->hook->fire('update_mod_forums', $id);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/admin/'), __('Update forums redirect'));
+        redirect(Url::get('user/'.$id.'/section/admin/'), __('Update forums redirect'));
     }
 
     public function ban_user($id)
@@ -559,9 +560,9 @@ class Profile
         $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
-            redirect($this->feather->url->get('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
+            redirect(Url::get('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
         } else {
-            redirect($this->feather->url->get('admin/bans/add/'.$id.'/'), __('Ban redirect'));
+            redirect(Url::get('admin/bans/add/'.$id.'/'), __('Ban redirect'));
         }
     }
 
@@ -593,7 +594,7 @@ class Profile
 
         $pid = $this->hook->fire('promote_user', $pid);
 
-        redirect($this->feather->url->get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
+        redirect(Url::get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -733,7 +734,7 @@ class Profile
 
             $this->hook->fire('delete_user');
 
-            redirect($this->feather->url->base(), __('User delete redirect'));
+            redirect(Url::base(), __('User delete redirect'));
         }
     }
 
@@ -832,7 +833,7 @@ class Profile
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
                 if ($this->user->g_post_links == '1') {
                     if ($form['url'] != '') {
-                        $url = $this->feather->url->is_valid($form['url']);
+                        $url = Url::is_valid($form['url']);
 
                         if ($url === false) {
                             throw new \FeatherBB\Error(__('Invalid website URL'));
@@ -1083,7 +1084,7 @@ class Profile
 
         $section = $this->hook->fireDB('update_profile', $section, $id);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
+        redirect(Url::get('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
     }
 
     public function get_user_info($id)
@@ -1137,7 +1138,7 @@ class Profile
         if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-            $user['email_field'] = '<a href="'.$this->feather->url->get('email/'.$user['id'].'/').'">'.__('Send email').'</a>';
+            $user['email_field'] = '<a href="'.Url::get('email/'.$user['id'].'/').'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
         }
@@ -1193,11 +1194,11 @@ class Profile
         if ($this->user->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
-                $quick_searches[] = '<a href="'.$this->feather->url->get('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.__('Show topics').'</a>';
-                $quick_searches[] = '<a href="'.$this->feather->url->get('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Show posts').'</a>';
+                $quick_searches[] = '<a href="'.Url::get('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.__('Show topics').'</a>';
+                $quick_searches[] = '<a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Show posts').'</a>';
             }
             if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
-                $quick_searches[] = '<a href="'.$this->feather->url->get('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.__('Show subscriptions').'</a>';
+                $quick_searches[] = '<a href="'.Url::get('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.__('Show subscriptions').'</a>';
             }
 
             if (!empty($quick_searches)) {
@@ -1235,12 +1236,12 @@ class Profile
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.$this->feather->url->get('email/'.$id.'/').'">'.__('Send email').'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.Url::get('email/'.$id.'/').'">'.__('Send email').'</a></span></p>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.$this->feather->url->get('user/'.$id.'/action/change_email/').'">'.__('Change email').'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Url::get('user/'.$id.'/action/change_email/').'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
@@ -1256,11 +1257,11 @@ class Profile
         }
 
         if ($this->user->g_search == '1' || $this->user->g_id == FEATHER_ADMIN) {
-            $posts_actions[] = '<a href="'.$this->feather->url->get('search/?action=show_user_topics&amp;user_id='.$id).'">'.__('Show topics').'</a>';
-            $posts_actions[] = '<a href="'.$this->feather->url->get('search/?action=show_user_posts&amp;user_id='.$id).'">'.__('Show posts').'</a>';
+            $posts_actions[] = '<a href="'.Url::get('search/?action=show_user_topics&amp;user_id='.$id).'">'.__('Show topics').'</a>';
+            $posts_actions[] = '<a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$id).'">'.__('Show posts').'</a>';
 
             if ($this->config['o_topic_subscriptions'] == '1') {
-                $posts_actions[] = '<a href="'.$this->feather->url->get('search/?action=show_subscriptions&amp;user_id='.$id).'">'.__('Show subscriptions').'</a>';
+                $posts_actions[] = '<a href="'.Url::get('search/?action=show_subscriptions&amp;user_id='.$id).'">'.__('Show subscriptions').'</a>';
             }
         }
 

@@ -14,6 +14,7 @@
 namespace FeatherBB;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Auth extends \Slim\Middleware

@@ -15,7 +15,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
 <title><?php echo generate_page_title($page_title, $p) ?></title>
-<link rel="stylesheet" type="text/css" href="<?php echo $feather->url->base() ?>/style/themes/<?php echo $feather->user->style.'/style.css' ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo Url::base() ?>/style/themes/<?php echo $feather->user->style.'/style.css' ?>" />
 <?php
 
 echo $allow_index;
@@ -91,7 +91,7 @@ endif;
     <div class="container">
         <div class="container-title-status">
             <h1 class="title-site">
-                <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
+                <a href="<?php echo Url::base() ?>" title="" class="site-name">
                     <p><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>

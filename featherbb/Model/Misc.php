@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Misc
@@ -110,7 +111,7 @@ class Misc
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
         //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
-        redirect($this->feather->url->base(), __('Email sent redirect'));
+        redirect(Url::base(), __('Email sent redirect'));
     }
 
     public function get_redirect_url($recipient_id)
@@ -124,7 +125,7 @@ class Misc
         }
 
         if (!isset($redirect_url)) {
-            $redirect_url = $this->feather->url->get('user/'.$recipient_id.'/');
+            $redirect_url = Url::get('user/'.$recipient_id.'/');
         } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
             $redirect_url .= '#p'.$matches[1];
         }
@@ -206,7 +207,7 @@ class Misc
                 $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
                 $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
                 $mail_message = str_replace('<username>', $this->user->username, $mail_message);
-                $mail_message = str_replace('<post_url>', $this->feather->url->get('post/'.$post_id.'/#p'.$post_id), $mail_message);
+                $mail_message = str_replace('<post_url>', Url::get('post/'.$post_id.'/#p'.$post_id), $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
@@ -222,7 +223,7 @@ class Misc
         $last_report_sent = $this->hook->fireDB('insert_last_report_sent', $last_report_sent);
         $last_report_sent = $last_report_sent->save();
 
-        redirect($this->feather->url->get('forum/'.$report['forum_id'].'/'.$this->feather->url->url_friendly($report['subject']).'/'), __('Report redirect'));
+        redirect(Url::get('forum/'.$report['forum_id'].'/'.Url::url_friendly($report['subject']).'/'), __('Report redirect'));
     }
 
     public function get_info_report($post_id)
@@ -306,7 +307,7 @@ class Misc
         $subscription = $this->hook->fireDB('subscribe_topic_query', $subscription);
         $subscription = $subscription->save();
 
-        redirect($this->feather->url->get('topic/'.$topic_id.'/'), __('Subscribe redirect'));
+        redirect(Url::get('topic/'.$topic_id.'/'), __('Subscribe redirect'));
     }
 
     public function unsubscribe_topic($topic_id)
@@ -334,7 +335,7 @@ class Misc
         $delete = $this->hook->fireDB('unsubscribe_topic_query', $delete);
         $delete = $delete->delete_many();
 
-        redirect($this->feather->url->get('topic/'.$topic_id.'/'), __('Unsubscribe redirect'));
+        redirect(Url::get('topic/'.$topic_id.'/'), __('Unsubscribe redirect'));
     }
 
     public function unsubscribe_forum($forum_id)
@@ -362,7 +363,7 @@ class Misc
         $delete = $this->hook->fireDB('unsubscribe_forum_query', $delete);
         $delete = $delete->delete_many();
 
-        redirect($this->feather->url->get('forum/'.$forum_id.'/'), __('Unsubscribe redirect'));
+        redirect(Url::get('forum/'.$forum_id.'/'), __('Unsubscribe redirect'));
     }
 
     public function subscribe_forum($forum_id)
@@ -413,6 +414,6 @@ class Misc
         $subscription = $this->hook->fireDB('subscribe_forum_query', $subscription);
         $subscription = $subscription->save();
 
-        redirect($this->feather->url->get('forum/'.$forum_id.'/'), __('Subscribe redirect'));
+        redirect(Url::get('forum/'.$forum_id.'/'), __('Subscribe redirect'));
     }
 }

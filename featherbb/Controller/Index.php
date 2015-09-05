@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Index
 {

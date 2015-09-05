@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Options
 {

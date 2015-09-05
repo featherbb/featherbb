@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Auth
@@ -23,7 +24,7 @@ class Auth
     public function login()
     {
         if (!$this->feather->user->is_guest) {
-            $this->feather->url->redirect($this->feather->url->get('/'), 'Already logged in');
+            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
         }
 
         if ($this->feather->request->isPost()) {
@@ -52,10 +53,10 @@ class Auth
                     $expire = $this->feather->hooks->fire('expire_login', $expire);
                     \FeatherBB\Model\Auth::feather_setcookie($user->id, $form_password_hash, $expire);
 
-                    $this->feather->url->redirect($this->feather->url->base(), __('Login redirect'));
+                    $this->feather->url->redirect(Url::base(), __('Login redirect'));
                 }
             }
-            throw new \FeatherBB\Error(__('Wrong user/pass').' <a href="'.$this->feather->url->get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
+            throw new \FeatherBB\Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             $this->feather->template->setPageInfo(array(
                                 'active_page' => 'login',
@@ -72,7 +73,7 @@ class Auth
         $token = $this->feather->hooks->fire('logout_start', $token);
 
         if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::hash($this->feather->user->id.\FeatherBB\Utils::hash($this->feather->request->getIp()))) {
-            $this->feather->url->redirect($this->feather->url->get('/'), 'Not logged in');
+            $this->feather->url->redirect(Url::get('/'), 'Not logged in');
         }
 
         \FeatherBB\Model\Auth::delete_online_by_id($this->feather->user->id);
@@ -85,13 +86,13 @@ class Auth
         \FeatherBB\Model\Auth::feather_setcookie(1, \FeatherBB\Utils::hash(uniqid(rand(), true)), time() + 31536000);
         $this->feather->hooks->fire('logout_end');
 
-        redirect($this->feather->url->base(), __('Logout redirect'));
+        redirect(Url::base(), __('Logout redirect'));
     }
 
     public function forget()
     {
         if (!$this->feather->user->is_guest) {
-            $this->feather->url->redirect($this->feather->url->get('/'), 'Already logged in');
+            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
         }
 
         if ($this->feather->request->isPost()) {
@@ -113,7 +114,7 @@ class Auth
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
 
                 // Do the generic replacements first (they apply to all emails sent out here)
-                $mail_message = str_replace('<base_url>', $this->feather->url->base().'/', $mail_message);
+                $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->feather->forum_settings['o_board_title'], $mail_message);
 
                 $mail_message = $this->feather->hooks->fire('mail_message_password_forgotten', $mail_message);
@@ -130,13 +131,13 @@ class Auth
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
-                $cur_mail_message = str_replace('<activation_url>', $this->feather->url->get('user/'.$user->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
+                $cur_mail_message = str_replace('<activation_url>', Url::get('user/'.$user->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = $this->feather->hooks->fire('cur_mail_message_password_forgotten', $cur_mail_message);
 
                 $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                $this->feather->url->redirect($this->feather->url->get('/'), __('Forget mail').' <a href="mailto:'.Utils::escape($this->feather->forum_settings['o_admin_email']).'">'.Utils::escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
+                $this->feather->url->redirect(Url::get('/'), __('Forget mail').' <a href="mailto:'.Utils::escape($this->feather->forum_settings['o_admin_email']).'">'.Utils::escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
             } else {
                 throw new \FeatherBB\Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }

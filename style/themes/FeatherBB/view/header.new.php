@@ -8,6 +8,7 @@
  */
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -27,7 +28,7 @@ if (!defined('FEATHER')) {
 } ?>
     <title><?php echo generate_page_title($title, $page_number) ?></title>
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="<?= $feather->url->base() ?>/style/themes/<?= $style ?>/style.css">
+    <link rel="stylesheet" type="text/css" href="<?= Url::base() ?>/style/themes/<?= $style ?>/style.css">
 <?php
 
 foreach($assets as $type => $items) {
@@ -40,14 +41,14 @@ foreach($assets as $type => $items) {
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'href="'.$feather->url->base().'/'.$item['file'].'">'."\n";
+        echo 'href="'.Url::base().'/'.$item['file'].'">'."\n";
     }
 }
 if ($admin_console) {
     if (file_exists($feather->forum_env['FEATHER_ROOT'].'style/themes/'.$feather->user->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.$feather->url->base().'/style/themes/'.$feather->user->style.'/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/themes/'.$feather->user->style.'/base_admin.css" />'."\n";
     } else {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.$feather->url->base().'/style/imports/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/imports/base_admin.css" />'."\n";
     }
 }
 if (isset($required_fields)) :
@@ -107,31 +108,31 @@ endif;
                 <div id="brdmenu" class="inbox">
                     <ul>
 <?php
-echo "\t\t\t\t\t\t".'<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.$feather->url->base().'/">'.__('Index').'</a></li>'."\n";
+echo "\t\t\t\t\t\t".'<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>'."\n";
 
 if ($feather->user->g_read_board == '1' && $feather->user->g_view_users == '1') {
-    echo "\t\t\t\t\t\t".'<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('userlist/').'">'.__('User list').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Url::get('userlist/').'">'.__('User list').'</a></li>'."\n";
 }
 
 if ($feather->forum_settings['o_rules'] == '1' && (!$feather->user->is_guest || $feather->user->g_read_board == '1' || $feather->forum_settings['o_regs_allow'] == '1')) {
-    echo "\t\t\t\t\t\t".'<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('rules/').'">'.__('Rules').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.Url::get('rules/').'">'.__('Rules').'</a></li>'."\n";
 }
 
 if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
-    echo "\t\t\t\t\t\t".'<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('search/').'">'.__('Search').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.Url::get('search/').'">'.__('Search').'</a></li>'."\n";
 }
 
 if ($feather->user->is_guest) {
-    echo "\t\t\t\t\t\t".'<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('register/').'">'.__('Register').'</a></li>'."\n";
-    echo "\t\t\t\t\t\t".'<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('auth/login/').'">'.__('Login').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.Url::get('register/').'">'.__('Register').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.Url::get('auth/login/').'">'.__('Login').'</a></li>'."\n";
 } else {
-    echo "\t\t\t\t\t\t".'<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('user/'.$feather->user->id.'/').'">'.__('Profile').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Url::get('user/'.$feather->user->id.'/').'">'.__('Profile').'</a></li>'."\n";
 
     if ($feather->user->is_admmod) {
-        echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('admin/').'">'.__('Admin').'</a></li>'."\n";
+        echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Url::get('admin/').'">'.__('Admin').'</a></li>'."\n";
     }
 
-    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.$feather->url->get('auth/logout/token/'.\FeatherBB\Utils::hash($feather->user->id.\FeatherBB\Utils::hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.Url::get('auth/logout/token/'.\FeatherBB\Utils::hash($feather->user->id.\FeatherBB\Utils::hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
 }
 
 // // Are there any additional navlinks we should insert into the array before imploding it?
@@ -160,7 +161,7 @@ if ($feather->user->is_guest) {
     <div class="container">
         <div class="container-title-status">
             <h1 class="title-site">
-                <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
+                <a href="<?php echo Url::base() ?>" title="" class="site-name">
                     <p><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
@@ -179,12 +180,12 @@ if ($feather->user->is_guest) { ?>
     if ($feather->user->is_admmod) {
         if ($feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2') {
             if ($has_reports) {
-                echo "\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.$feather->url->get('admin/reports/').'">'.__('New reports').'</a></strong></span></li>'."\n";
+                echo "\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Url::get('admin/reports/').'">'.__('New reports').'</a></strong></span></li>'."\n";
             }
         }
 
         if ($feather->forum_settings['o_maintenance'] == '1') {
-            echo "\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.$feather->url->get('admin/maintenance/').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+            echo "\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Url::get('admin/maintenance/').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
     echo "\t\t\t\t\t".'</ul>'."\n";
@@ -194,11 +195,11 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
     echo "\t\t\t\t\t".'<ul class="conr">'."\n";
     echo "\t\t\t\t\t\t".'<li><span>'.__('Topic searches').' ';
     if (!$feather->user->is_guest) {
-        echo '<a href="'.$feather->url->get('search/show/replies/').'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
-        echo '<a href="'.$feather->url->get('search/show/new/').'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
+        echo '<a href="'.Url::get('search/show/replies/').'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
+        echo '<a href="'.Url::get('search/show/new/').'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
     }
-    echo '<a href="'.$feather->url->get('search/show/recent/').'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
-    echo '<a href="'.$feather->url->get('search/show/unanswered/').'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
+    echo '<a href="'.Url::get('search/show/recent/').'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
+    echo '<a href="'.Url::get('search/show/unanswered/').'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
     echo '</li>'."\n";
     echo "\t\t\t\t".'</ul>'."\n";
 } ?>

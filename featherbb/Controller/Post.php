@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Post
 {
@@ -122,7 +123,7 @@ class Post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    redirect($this->feather->url->get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
+                    redirect(Url::get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
                 }
         }
 
@@ -131,28 +132,28 @@ class Post
         // If a topic ID was specified in the url (it's a reply)
         if ($tid) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.Url::get('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
                     $quote = $this->model->get_quote_message($qid, $tid);
-                    $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.Url::get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($fid) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.Url::get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
             throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
-        $url_forum = $this->feather->url->url_friendly($cur_posting['forum_name']);
+        $url_forum = Url::url_friendly($cur_posting['forum_name']);
 
         $is_subscribed = $tid && $cur_posting['is_subscribed'];
 
         if (isset($cur_posting['subject'])) {
-            $url_topic = $this->feather->url->url_friendly($cur_posting['subject']);
+            $url_topic = Url::url_friendly($cur_posting['subject']);
         } else {
             $url_topic = '';
         }

@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Viewtopic
@@ -79,7 +80,7 @@ class Viewtopic
                 $first_new_post_id = $this->hook->fire('handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
-                    header('Location: '.$this->feather->url->base().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
+                    header('Location: '.Url::base().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
                     exit;
                 }
             }
@@ -97,7 +98,7 @@ class Viewtopic
             $last_post_id = $this->hook->fire('handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
-                header('Location: '.$this->feather->url->base().'/post/'.$last_post_id.'/#p'.$last_post_id);
+                header('Location: '.Url::base().'/post/'.$last_post_id.'/#p'.$last_post_id);
                 exit;
             }
         }
@@ -161,7 +162,7 @@ class Viewtopic
 
         if ($closed == '0') {
             if (($post_replies == '' && $this->user->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
-                $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.$this->feather->url->get('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a></p>'."\n";
+                $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Url::get('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a></p>'."\n";
             } else {
                 $post_link = '';
             }
@@ -169,7 +170,7 @@ class Viewtopic
             $post_link = __('Topic closed');
 
             if ($is_admmod) {
-                $post_link .= ' / <a href="'.$this->feather->url->get('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a>';
+                $post_link .= ' / <a href="'.Url::get('post/reply/'.$topic_id.'/').'">'.__('Post reply').'</a>';
             }
 
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
@@ -207,9 +208,9 @@ class Viewtopic
         if (!$this->user->is_guest && $this->config['o_topic_subscriptions'] == '1') {
             if ($is_subscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.$this->feather->url->get('unsubscribe/topic/'.$topic_id.'/').'">'.__('Unsubscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.Url::get('unsubscribe/topic/'.$topic_id.'/').'">'.__('Unsubscribe').'</a></p>'."\n";
             } else {
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.$this->feather->url->get('subscribe/topic/'.$topic_id.'/').'">'.__('Subscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.Url::get('subscribe/topic/'.$topic_id.'/').'">'.__('Subscribe').'</a></p>'."\n";
             }
         } else {
             $subscraction = '';
@@ -274,7 +275,7 @@ class Viewtopic
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post['username_formatted'] = '<a href="'.$this->feather->url->base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
+                    $cur_post['username_formatted'] = '<a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 }
@@ -316,7 +317,7 @@ class Viewtopic
                     if ((($cur_post['email_setting'] == '0' && !$this->user->is_guest) || $this->user->is_admmod) && $this->user->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.$this->feather->url->get('email/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="'.Url::get('email/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
                     }
 
                     if ($cur_post['url'] != '') {
@@ -330,12 +331,12 @@ class Viewtopic
 
                 if ($this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
-                        $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->base().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
+                        $cur_post['user_info'][] = '<dd><span><a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
                     }
                 }
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.Url::get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
                         $cur_post['user_info'][] = '<dd><span>'.__('Note').' <strong>'.Utils::escape($cur_post['admin_note']).'</strong></span></dd>';
@@ -348,7 +349,7 @@ class Viewtopic
                 $cur_post['user_title_formatted'] = get_title($cur_post);
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.Url::get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
@@ -359,30 +360,30 @@ class Viewtopic
             // Generation post action array (quote, edit, delete etc.)
             if (!$is_admmod) {
                 if (!$this->user->is_guest) {
-                    $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.$this->feather->url->get('report/'.$cur_post['id'].'/').'">'.__('Report').'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Url::get('report/'.$cur_post['id'].'/').'">'.__('Report').'</a></span></li>';
                 }
 
                 if ($cur_topic['closed'] == '0') {
                     if ($cur_post['poster_id'] == $this->user->id) {
                         if ((($start_from + $post_count) == 1 && $this->user->g_delete_topics == '1') || (($start_from + $post_count) > 1 && $this->user->g_delete_posts == '1')) {
-                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.$this->feather->url->get('delete/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Url::get('delete/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
                         }
                         if ($this->user->g_edit_posts == '1') {
-                            $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.$this->feather->url->get('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Url::get('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';
                         }
                     }
 
                     if (($cur_topic['post_replies'] == '' && $this->user->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
-                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.$this->feather->url->get('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.__('Quote').'</a></span></li>';
+                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.Url::get('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.__('Quote').'</a></span></li>';
                     }
                 }
             } else {
-                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.$this->feather->url->get('report/'.$cur_post['id'].'/').'">'.__('Report').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Url::get('report/'.$cur_post['id'].'/').'">'.__('Report').'</a></span></li>';
                 if ($this->user->g_id == FEATHER_ADMIN || !in_array($cur_post['poster_id'], $admin_ids)) {
-                    $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.$this->feather->url->get('delete/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
-                    $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.$this->feather->url->get('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Url::get('delete/'.$cur_post['id'].'/').'">'.__('Delete').'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Url::get('edit/'.$cur_post['id'].'/').'">'.__('Edit').'</a></span></li>';
                 }
-                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.$this->feather->url->get('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.__('Quote').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.Url::get('post/reply/'.$topic_id.'/quote/'.$cur_post['id'].'/').'">'.__('Quote').'</a></span></li>';
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)

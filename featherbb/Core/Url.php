@@ -13,7 +13,7 @@ use FeatherBB\Utils;
 
 class Url
 {
-    protected $url_replace = array(
+    protected static $url_replace = array(
                                         'À' => 'A',
                                         'Á' => 'A',
                                         'Â' => 'A',
@@ -589,15 +589,12 @@ class Url
                                         "'"    =>    '-',
                             );
 
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-    }
+    protected static $feather;
 
     //
     // Generate a string with numbered links (for multipage scripts)
     //
-    public function paginate($num_pages, $cur_page, $link, $args = null)
+    public static function paginate($num_pages, $cur_page, $link, $args = null)
     {
         $pages = array();
         $link_to_all = false;
@@ -613,7 +610,7 @@ class Url
         } else {
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
-                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$this->get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
+                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
             }
 
             if ($cur_page > 3) {
@@ -629,7 +626,7 @@ class Url
                 if ($current < 1 || $current > $num_pages) {
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', $this->get_sublink($link, 'page/$1', $current, $args)).'">'.Utils::forum_number_format($current).'</a>';
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', self::get_sublink($link, 'page/$1', $current, $args)).'">'.Utils::forum_number_format($current).'</a>';
                 } else {
                     $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forum_number_format($current).'</strong>';
                 }
@@ -640,12 +637,12 @@ class Url
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$this->get_sublink($link, 'page/$1', $num_pages, $args).'">'.Utils::forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', $num_pages, $args).'">'.Utils::forum_number_format($num_pages).'</a>';
             }
 
             // Add a next page link
             if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$this->get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
+                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
             }
         }
 
@@ -656,7 +653,7 @@ class Url
     // Generate a string with numbered links (for multipage scripts)
     // Old FluxBB-style function for search page
     //
-    public function paginate_old($num_pages, $cur_page, $link)
+    public static function paginate_old($num_pages, $cur_page, $link)
     {
         $pages = array();
         $link_to_all = false;
@@ -715,9 +712,9 @@ class Url
     // Make a string safe to use in a URL
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    public function url_friendly($str)
+    public static function url_friendly($str)
     {
-        $str = strtr($str, $this->url_replace);
+        $str = strtr($str, self::$url_replace);
         $str = strtolower(utf8_decode($str));
         $str = Utils::trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
 
@@ -732,9 +729,9 @@ class Url
     // Generate link to another page on the forum
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    public function get($link, $args = null)
+    public static function get($link, $args = null)
     {
-        $base_url = $this->base();
+        $base_url = self::base();
 
         $gen_link = $link;
         if ($args == null) {
@@ -755,12 +752,12 @@ class Url
     // Generate a hyperlink with parameters and anchor and a subsection such as a subpage
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    private function get_sublink($link, $sublink, $subarg, $args = null)
+    private static function get_sublink($link, $sublink, $subarg, $args = null)
     {
-        $base_url = $this->base();
+        $base_url = self::base();
 
         if ($sublink == 'p$1' && $subarg == 1) {
-            return $this->get($link, $args);
+            return self::get($link, $args);
         }
 
         $gen_link = $link;
@@ -778,19 +775,12 @@ class Url
     }
 
     //
-    // Fetch the current protocol in use - http or https
-    //
-    public function protocol()
-    {
-        return $this->feather->request->getScheme();
-    }
-
-    //
     // Fetch the base_url, optionally support HTTPS and HTTP
     //
-    public function base()
+    public static function base()
     {
-        return $this->feather->request->getScriptName();
+        self::$feather = \Slim\Slim::getInstance();
+        return self::$feather->request->getScriptName();
     }
 
     //
@@ -821,7 +811,7 @@ class Url
     //	  [fragment] => fragone
     //	  [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
     // )
-    public function is_valid($url)
+    public static function is_valid($url)
     {
         if (strpos($url, 'www.') === 0) {
             $url = 'http://'. $url;
@@ -920,12 +910,14 @@ class Url
     //
     public function redirect($destination_url, $message = null, $status = 302)
     {
+        self::$feather = \Slim\Slim::getInstance();
+
         // Set default type to info if not provided
         if (!is_array($message))
             $message = array('info', $message);
         // Add a flash message
-        $this->feather->flash($message[0], $message[1]);
+        self::$feather->flash($message[0], $message[1]);
 
-        $this->feather->redirect($destination_url);
+        self::$feather->redirect($destination_url);
     }
 }

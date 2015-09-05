@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Install
 {
@@ -202,7 +203,7 @@ class Install
         $flash->save();
 
         // Redirect to homepage
-        redirect($this->feather->url->get('/'));
+        redirect(Url::get('/'));
     }
 
     public function write_config($array)

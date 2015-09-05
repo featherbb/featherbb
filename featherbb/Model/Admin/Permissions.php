@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Permissions
@@ -46,6 +47,6 @@ class Permissions
         $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
         // $this->clear_feed_cache();
 
-        redirect($this->feather->url->get('admin/permissions/'), __('Perms updated redirect'));
+        redirect(Url::get('admin/permissions/'), __('Perms updated redirect'));
     }
 }

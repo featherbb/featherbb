@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -18,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Permissions head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->url->get('admin/permissions/') ?>">
+			<form method="post" action="<?php echo Url::get('admin/permissions/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
 				<div class="inform">

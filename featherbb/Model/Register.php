@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 use DB;
 
 class Register
@@ -191,7 +192,7 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<email>', $user['email1'], $mail_message);
-                $mail_message = str_replace('<profile_url>', $this->feather->url->get('user/'.$new_uid.'/'), $mail_message);
+                $mail_message = str_replace('<profile_url>', Url::get('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = $this->hook->fire('insert_user_banned_mail_message', $mail_message);
 
@@ -212,7 +213,7 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                $mail_message = str_replace('<profile_url>', $this->feather->url->get('user/'.$new_uid.'/'), $mail_message);
+                $mail_message = str_replace('<profile_url>', Url::get('user/'.$new_uid.'/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = $this->hook->fire('insert_user_dupe_mail_message', $mail_message);
 
@@ -232,9 +233,9 @@ class Register
 
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<base_url>', $this->feather->url->base().'/', $mail_message);
-                $mail_message = str_replace('<profile_url>', $this->feather->url->get('user/'.$new_uid.'/'), $mail_message);
-                $mail_message = str_replace('<admin_url>', $this->feather->url->get('user/'.$new_uid.'/section/admin/'), $mail_message);
+                $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
+                $mail_message = str_replace('<profile_url>', Url::get('user/'.$new_uid.'/'), $mail_message);
+                $mail_message = str_replace('<admin_url>', Url::get('user/'.$new_uid.'/section/admin/'), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = $this->hook->fire('insert_user_new_mail_message', $mail_message);
 
@@ -255,16 +256,16 @@ class Register
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_subject = str_replace('<board_title>', $this->config['o_board_title'], $mail_subject);
-            $mail_message = str_replace('<base_url>', $this->feather->url->base().'/', $mail_message);
+            $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<password>', $user['password1'], $mail_message);
-            $mail_message = str_replace('<login_url>', $this->feather->url->get('login/'), $mail_message);
+            $mail_message = str_replace('<login_url>', Url::get('login/'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('insert_user_welcome_mail_message', $mail_message);
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-            redirect($this->feather->url->base(),__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
+            redirect(Url::base(),__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
 
         }
 
@@ -272,6 +273,6 @@ class Register
 
         $this->hook->fire('insert_user');
 
-        redirect($this->feather->url->base(), __('Reg complete'));
+        redirect(Url::base(), __('Reg complete'));
     }
 }

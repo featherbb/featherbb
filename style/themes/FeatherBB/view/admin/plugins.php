@@ -8,6 +8,7 @@
  */
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -33,9 +34,9 @@ if (!defined('FEATHER')) {
                                 <strong><?= $class::$name; ?></strong>
                                 <div class="plugin-actions">
                                     <?php if (array_key_exists($class, $activePlugins)) { ?>
-                                        <a href="<?= $feather->url->get('/admin/plugins/deactivate?plugin='.$class) ?>">Deactivate</a>
+                                        <a href="<?= Url::get('/admin/plugins/deactivate?plugin='.$class) ?>">Deactivate</a>
                                     <?php } else { ?>
-                                        <a href="<?= $feather->url->get('/admin/plugins/activate?plugin='.$class) ?>">Activate</a>
+                                        <a href="<?= Url::get('/admin/plugins/activate?plugin='.$class) ?>">Activate</a>
                                     <?php } ?>
                                 </div>
                             </td>

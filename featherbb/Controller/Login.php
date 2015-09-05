@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 class Login
 {
@@ -34,7 +35,7 @@ class Login
     public function display()
     {
         if (!$this->user->is_guest) {
-            $this->feather->url->redirect($this->feather->url->get('/'), 'Already logged in');
+            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
         }
 
         $this->feather->template->setPageInfo(array(
@@ -52,7 +53,7 @@ class Login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
+            header('Location: '.Url::base());
             exit;
         }
 
@@ -71,7 +72,7 @@ class Login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
+            header('Location: '.Url::base());
             exit;
         }
 

@@ -8,6 +8,7 @@
  */
  
 use FeatherBB\Utils;
+use FeatherBB\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -20,7 +21,7 @@ if (!defined('FEATHER')) {
 		<div class="box">
 				<div class="inform">
 					<fieldset>
-                        <form id="groups" method="post" action="<?php echo $feather->url->get('admin/groups/add/') ?>">
+                        <form id="groups" method="post" action="<?php echo Url::get('admin/groups/add/') ?>">
                         <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 						<legend><?php _e('Add group subhead') ?></legend>
 						<div class="infldset">
@@ -53,7 +54,7 @@ foreach ($groups as $cur_group) {
 				</div>
 				<div class="inform">
 					<fieldset>
-                        <form id="groups" method="post" action="<?php echo $feather->url->get('admin/groups/') ?>">
+                        <form id="groups" method="post" action="<?php echo Url::get('admin/groups/') ?>">
                         	<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 						<legend><?php _e('Default group subhead') ?></legend>
 						<div class="infldset">
@@ -97,7 +98,7 @@ foreach ($groups as $cur_group) {
 							<table>
 <?php
 foreach ($groups as $cur_group) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.$feather->url->get('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.$feather->url->get('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
+    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.Url::get('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.Url::get('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>
