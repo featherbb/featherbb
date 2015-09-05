@@ -9,6 +9,8 @@
 
 namespace FeatherBB;
 
+use FeatherBB\Utils;
+
 class Url
 {
     protected $url_replace = array(
@@ -717,7 +719,7 @@ class Url
     {
         $str = strtr($str, $this->url_replace);
         $str = strtolower(utf8_decode($str));
-        $str = $this->feather->utils->trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+        $str = Utils::trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
 
         if (empty($str)) {
             $str = 'view';
