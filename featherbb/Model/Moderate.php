@@ -155,7 +155,7 @@ class Moderate
 
             update_forum($fid);
 
-            redirect($this->feather->url->get('topic/'.$tid.'/'), __('Delete posts redirect'));
+            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $tid)), __('Delete posts redirect'));
         }
 
         $posts = $this->hook->fire('delete_posts', $posts);
@@ -316,7 +316,7 @@ class Moderate
             update_forum($fid);
             update_forum($move_to_forum);
 
-            redirect($this->feather->url->get('topic/'.$new_tid.'/'), __('Split posts redirect'));
+            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $new_tid)), __('Split posts redirect'));
         }
 
         $posts = $this->hook->fire('split_posts', $posts);
@@ -585,7 +585,7 @@ class Moderate
 
         $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
         $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
-        redirect($this->feather->url->get('forum/'.$move_to_forum.'/'), $redirect_msg);
+        $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $move_to_forum)), $redirect_msg);
     }
 
     public function check_move_possible()
@@ -737,7 +737,7 @@ class Moderate
 
         // Update the forum FROM which the topic was moved and redirect
         update_forum($fid);
-        redirect($this->feather->url->get('forum/'.$fid.'/'), __('Merge topics redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Merge topics redirect'));
     }
 
     public function delete_topics($topics, $fid)
@@ -821,7 +821,7 @@ class Moderate
 
         $this->hook->fire('delete_topics');
 
-        redirect($this->feather->url->get('forum/'.$fid.'/'), __('Delete topics redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Delete topics redirect'));
     }
 
     public function get_forum_info($fid)

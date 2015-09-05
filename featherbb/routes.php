@@ -78,7 +78,7 @@ $feather->get('/unsubscribe/topic/:id(/)', '\FeatherBB\Controller\misc:unsubscri
 
 // Profile routes
 $feather->group('/user', function() use ($feather) {
-    $feather->map('/:id(/section/:section)(/)', '\FeatherBB\Controller\profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profile');
+    $feather->map('/:id(/section/:section)(/)', '\FeatherBB\Controller\profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileSection');
     $feather->map('/:id(/action/:action)(/)', '\FeatherBB\Controller\profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileAction');
 });
 
@@ -87,7 +87,7 @@ $feather->group('/user', function() use ($feather) {
  */
 $isAdmmod = function() use ($feather) {
     if(!$feather->user->is_admmod) {
-        $feather->redirect($feather->urlFor('home'), __('No permission'));
+        $feather->url->redirect($feather->urlFor('home'), __('No permission'));
     }
 };
 
@@ -109,7 +109,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
      */
     $isAdmin = function() use ($feather) {
         if($feather->user->g_id != FEATHER_ADMIN) {
-            $feather->redirect($feather->urlFor('home'), __('No permission'));
+            $feather->url->redirect($feather->urlFor('home'), __('No permission'));
         }
     };
 
@@ -140,7 +140,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     $feather->map('/censoring(/)', $isAdmin, '\FeatherBB\Controller\Admin\censoring:display')->via('GET', 'POST')->name('adminCensoring');
 
     // Admin reports
-    $feather->map('/reports(/)', '\FeatherBB\Controller\Admin\reports:display')->via('GET', 'POST')->name('reports');
+    $feather->map('/reports(/)', '\FeatherBB\Controller\Admin\reports:display')->via('GET', 'POST')->name('adminReports');
 
     // Admin permissions
     $feather->map('/permissions(/)', $isAdmin, '\FeatherBB\Controller\Admin\permissions:display')->via('GET', 'POST')->name('adminPermissions');

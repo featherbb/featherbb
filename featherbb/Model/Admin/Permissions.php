@@ -45,6 +45,6 @@ class Permissions
         $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
         // $this->clear_feed_cache();
 
-        redirect($this->feather->url->get('admin/permissions/'), __('Perms updated redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('adminPermissions'), __('Perms updated redirect'));
     }
 }

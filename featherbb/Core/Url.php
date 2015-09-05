@@ -921,6 +921,6 @@ class Url
         // Add a flash message
         $this->feather->flash($message[0], $message[1]);
 
-        $this->feather->redirect($destination_url);
+        $this->feather->redirect($destination_url.'/');
     }
 }

@@ -135,8 +135,7 @@ class Profile
             }
 
             $this->hook->fire('change_pass');
-
-            redirect($this->feather->url->get('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
+            $this->feather->url->redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
         }
     }
 
@@ -402,7 +401,7 @@ class Profile
 
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
     }
 
     public function update_group_membership($id)
@@ -469,7 +468,7 @@ class Profile
 
         $id = $this->hook->fire('update_group_membership', $id);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/admin/'), __('Group membership redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -539,7 +538,7 @@ class Profile
 
         $id = $this->hook->fire('update_mod_forums', $id);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/admin/'), __('Update forums redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
     }
 
     public function ban_user($id)
@@ -558,9 +557,9 @@ class Profile
         $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
-            redirect($this->feather->url->get('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
+            $this->feather->url->redirect($this->feather->urlFor('editBan', array('id' => $ban_id)), __('Ban redirect'));
         } else {
-            redirect($this->feather->url->get('admin/bans/add/'.$id.'/'), __('Ban redirect'));
+            $this->feather->url->redirect($this->feather->urlFor('addBan', array('id' => $id)), __('Ban redirect'));
         }
     }
 
@@ -592,7 +591,7 @@ class Profile
 
         $pid = $this->hook->fire('promote_user', $pid);
 
-        redirect($this->feather->url->get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
+        $this->feather->url->redirect($this->feather->url->get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -732,7 +731,7 @@ class Profile
 
             $this->hook->fire('delete_user');
 
-            redirect($this->feather->url->base(), __('User delete redirect'));
+            $this->feather->url->redirect($this->feather->urlFor('home'), __('User delete redirect'));
         }
     }
 
@@ -1040,7 +1039,8 @@ class Profile
             // If the user is a moderator or an administrator we have to update the moderator lists
             $group_id = DB::for_table('users')
                 ->where('id', $id);
-            $group_id = $this->hook->fireDB('update_profile_group_id', $update_online);
+            // TODO: restore hook
+            // $group_id = $this->hook->fireDB('update_profile_group_id', $update_online);
             $group_id = $group_id->find_one_col('group_id');
 
             $group_mod = DB::for_table('groups')
@@ -1086,7 +1086,7 @@ class Profile
 
         $section = $this->hook->fireDB('update_profile', $section, $id);
 
-        redirect($this->feather->url->get('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => $section)), __('Profile redirect'));
     }
 
     public function get_user_info($id)
