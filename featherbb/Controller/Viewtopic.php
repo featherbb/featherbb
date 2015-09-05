@@ -22,8 +22,6 @@ class Viewtopic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        global $pd;
-
         if ($this->feather->user->g_read_board == '0') {
             throw new \FeatherBB\Error(__('No view'), 403);
         }
@@ -71,7 +69,6 @@ class Viewtopic
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
         $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $id);
 
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
         $lang_bbeditor = array(
             'btnBold' => __('btnBold'),
             'btnItalic' => __('btnItalic'),

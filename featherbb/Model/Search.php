@@ -690,8 +690,6 @@ class Search
 
     public function display_search_results($search)
     {
-        global $pd;
-
         $search = $this->hook->fire('display_search_results_start', $search);
 
         // Get topic/forum tracking data
@@ -726,7 +724,7 @@ class Search
                     $cur_search['message'] = censor_words($cur_search['message']);
                 }
 
-                $cur_search['message'] = parse_message($cur_search['message'], $cur_search['hide_smilies']);
+                $cur_search['message'] = $this->feather->parser->parse_message($cur_search['message'], $cur_search['hide_smilies']);
                 $pposter = $this->feather->utils->escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && $this->user->g_view_users == '1') {
