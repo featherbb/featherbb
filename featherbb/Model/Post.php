@@ -66,7 +66,7 @@ class Post
         $cur_posting = $cur_posting->find_one();
 
         if (!$cur_posting) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $cur_posting = $this->hook->fire('get_info_post', $cur_posting);
@@ -762,7 +762,7 @@ class Post
         $quote = $quote->find_one();
 
         if (!$quote) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)

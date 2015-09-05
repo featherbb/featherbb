@@ -410,43 +410,6 @@ function get_title($user)
 
 
 //
-// Display a message
-//
-function message($msg, $http_status = null, $no_back_link = false)
-{
-    // Did we receive a custom header?
-    if (!is_null($http_status)) {
-        header('HTTP/1.1 ' . $http_status);
-    }
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $http_status = (int) $http_status;
-    if ($http_status > 0) {
-        $feather->response->setStatus($http_status);
-    }
-
-    // Overwrite existing body
-    $feather->response->setBody('');
-
-    if (!defined('FEATHER_HEADER')) {
-        $feather->view2->setPageInfo(array(
-            'title' => array(\FeatherBB\Utils::escape($feather->config['o_board_title']), __('Info')),
-        ));
-    }
-
-    $feather->view2->setPageInfo(array(
-        'message'    =>    $msg,
-        'no_back_link'    => $no_back_link,
-        ))->addTemplate('message.php')->display();
-
-    // Don't display anything after a message
-    $feather->stop();
-}
-
-
-//
 // Generate a random key of length $len
 //
 function random_key($len, $readable = false, $hash = false)

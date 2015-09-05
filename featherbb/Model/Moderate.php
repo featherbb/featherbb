@@ -28,7 +28,7 @@ class Moderate
     public function display_ip_info($ip)
     {
         $ip = $this->hook->fire('display_ip_info', $ip);
-        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        throw new \FeatherBB\Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function display_ip_address_post($pid)
@@ -46,7 +46,7 @@ class Moderate
 
         $ip = $this->hook->fire('display_ip_address_post', $ip);
 
-        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        throw new \FeatherBB\Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function get_moderators($fid)

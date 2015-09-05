@@ -132,7 +132,7 @@ class Bans
             $ban['message'] = $result['message'];
             $ban['expire'] = $result['expire'];
         } else {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $diff = ($this->user->timezone + $this->user->dst) * 3600;

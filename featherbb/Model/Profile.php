@@ -200,7 +200,7 @@ class Profile
             $this->hook->fire('change_email_post');
 
             if (\FeatherBB\Utils::hash($this->request->post('req_password')) !== $this->user->password) {
-                message(__('Wrong pass'));
+                throw new \FeatherBB\Error(__('Wrong pass'));
             }
 
             // Validate the email address
@@ -309,7 +309,7 @@ class Profile
 
             $this->hook->fire('change_email_sent');
 
-            message(__('Activate email sent').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', true);
+            throw new \FeatherBB\Error(__('Activate email sent').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', true);
         }
         $this->hook->fire('change_email');
     }
@@ -319,7 +319,7 @@ class Profile
         $files_data = $this->hook->fire('upload_avatar_start', $files_data, $id);
 
         if (!isset($files_data['req_file'])) {
-            message(__('No file'));
+            throw new \FeatherBB\Error(__('No file'));
         }
 
         $uploaded_file = $files_data['req_file'];
@@ -329,25 +329,25 @@ class Profile
             switch ($uploaded_file['error']) {
                 case 1: // UPLOAD_ERR_INI_SIZE
                 case 2: // UPLOAD_ERR_FORM_SIZE
-                    message(__('Too large ini'));
+                    throw new \FeatherBB\Error(__('Too large ini'));
                     break;
 
                 case 3: // UPLOAD_ERR_PARTIAL
-                    message(__('Partial upload'));
+                    throw new \FeatherBB\Error(__('Partial upload'));
                     break;
 
                 case 4: // UPLOAD_ERR_NO_FILE
-                    message(__('No file'));
+                    throw new \FeatherBB\Error(__('No file'));
                     break;
 
                 case 6: // UPLOAD_ERR_NO_TMP_DIR
-                    message(__('No tmp directory'));
+                    throw new \FeatherBB\Error(__('No tmp directory'));
                     break;
 
                 default:
                     // No error occured, but was something actually uploaded?
                     if ($uploaded_file['size'] == 0) {
-                        message(__('No file'));
+                        throw new \FeatherBB\Error(__('No file'));
                     }
                     break;
             }
@@ -359,17 +359,17 @@ class Profile
             // Preliminary file check, adequate in most cases
             $allowed_types = array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
             if (!in_array($uploaded_file['type'], $allowed_types)) {
-                message(__('Bad type'));
+                throw new \FeatherBB\Error(__('Bad type'));
             }
 
             // Make sure the file isn't too big
             if ($uploaded_file['size'] > $this->config['o_avatars_size']) {
-                message(__('Too large').' '.Utils::forum_number_format($this->config['o_avatars_size']).' '.__('bytes').'.');
+                throw new \FeatherBB\Error(__('Too large').' '.Utils::forum_number_format($this->config['o_avatars_size']).' '.__('bytes').'.');
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
             if (!@move_uploaded_file($uploaded_file['tmp_name'], FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
-                message(__('Move failed').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
+                throw new \FeatherBB\Error(__('Move failed').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
             }
 
             list($width, $height, $type, ) = @getimagesize(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
@@ -384,13 +384,13 @@ class Profile
             } else {
                 // Invalid type
                 @unlink(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
-                message(__('Bad type'));
+                throw new \FeatherBB\Error(__('Bad type'));
             }
 
             // Now check the width/height
             if (empty($width) || empty($height) || $width > $this->config['o_avatars_width'] || $height > $this->config['o_avatars_height']) {
                 @unlink(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
-                message(__('Too wide or high').' '.$this->config['o_avatars_width'].'x'.$this->config['o_avatars_height'].' '.__('pixels').'.');
+                throw new \FeatherBB\Error(__('Too wide or high').' '.$this->config['o_avatars_width'].'x'.$this->config['o_avatars_height'].' '.__('pixels').'.');
             }
 
             // Delete any old avatars and put the new one in place
@@ -398,7 +398,7 @@ class Profile
             @rename(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp', FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.$extension);
             @chmod(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
-            message(__('Unknown failure'));
+            throw new \FeatherBB\Error(__('Unknown failure'));
         }
 
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
@@ -580,7 +580,7 @@ class Profile
         $next_group_id = $next_group_id->find_one_col('g.g_promote_next_group');
 
         if (!$next_group_id) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         // Update the user
@@ -613,7 +613,7 @@ class Profile
         $username = $result['username'];
 
         if ($group_id == FEATHER_ADMIN) {
-            message(__('No delete admin message'));
+            throw new \FeatherBB\Error(__('No delete admin message'));
         }
 
         if ($this->request->post('delete_user_comply')) {
@@ -752,7 +752,7 @@ class Profile
         $info = $info->find_one();
 
         if (!$info) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         return $info;
@@ -782,7 +782,7 @@ class Profile
                     $languages = \FeatherBB\Lister::getLangs();
                     $form['language'] = Utils::trim($this->request->post('form_language'));
                     if (!in_array($form['language'], $languages)) {
-                        message(__('Bad request'), '404');
+                        throw new \FeatherBB\Error(__('Bad request'), 404);
                     }
                 }
 
@@ -797,7 +797,7 @@ class Profile
                             $errors = '';
                             $errors = check_username($form['username'], $errors, $id);
                             if (!empty($errors)) {
-                                message($errors[0]);
+                                throw new \FeatherBB\Error($errors[0]);
                             }
 
                             $username_updated = true;
@@ -814,7 +814,7 @@ class Profile
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim($this->request->post('req_email')));
                     if (!$this->email->is_valid_email($form['email'])) {
-                        message(__('Invalid email'));
+                        throw new \FeatherBB\Error(__('Invalid email'));
                     }
                 }
 
@@ -835,14 +835,14 @@ class Profile
                         $url = $this->feather->url->is_valid($form['url']);
 
                         if ($url === false) {
-                            message(__('Invalid website URL'));
+                            throw new \FeatherBB\Error(__('Invalid website URL'));
                         }
 
                         $form['url'] = $url['url'];
                     }
                 } else {
                     if (!empty($form['url'])) {
-                        message(__('Website not allowed'));
+                        throw new \FeatherBB\Error(__('Website not allowed'));
                     }
 
                     $form['url'] = '';
@@ -859,7 +859,7 @@ class Profile
                         $forbidden = array('member', 'moderator', 'administrator', 'banned', 'guest', utf8_strtolower(__('Member')), utf8_strtolower(__('Moderator')), utf8_strtolower(__('Administrator')), utf8_strtolower(__('Banned')), utf8_strtolower(__('Guest')));
 
                         if (in_array(utf8_strtolower($form['title']), $forbidden)) {
-                            message(__('Forbidden title'));
+                            throw new \FeatherBB\Error(__('Forbidden title'));
                         }
                     }
                 }
@@ -879,7 +879,7 @@ class Profile
 
                 // If the ICQ UIN contains anything other than digits it's invalid
                 if (preg_match('%[^0-9]%', $form['icq'])) {
-                    message(__('Bad ICQ'));
+                    throw new \FeatherBB\Error(__('Bad ICQ'));
                 }
 
                 break;
@@ -895,9 +895,9 @@ class Profile
 
                     // Validate signature
                     if (Utils::strlen($form['signature']) > $this->config['p_sig_length']) {
-                        message(sprintf(__('Sig too long'), $this->config['p_sig_length'], Utils::strlen($form['signature']) - $this->config['p_sig_length']));
+                        throw new \FeatherBB\Error(sprintf(__('Sig too long'), $this->config['p_sig_length'], Utils::strlen($form['signature']) - $this->config['p_sig_length']));
                     } elseif (substr_count($form['signature'], "\n") > ($this->config['p_sig_lines']-1)) {
-                        message(sprintf(__('Sig too many lines'), $this->config['p_sig_lines']));
+                        throw new \FeatherBB\Error(sprintf(__('Sig too many lines'), $this->config['p_sig_lines']));
                     } elseif ($form['signature'] && $this->config['p_sig_all_caps'] == '0' && Utils::is_all_uppercase($form['signature']) && !$this->user->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
@@ -909,7 +909,7 @@ class Profile
                         $form['signature'] = $this->feather->parser->preparse_bbcode($form['signature'], $errors, true);
 
                         if (count($errors) > 0) {
-                            message('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');
+                            throw new \FeatherBB\Error('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');
                         }
                     }
                 }
@@ -952,7 +952,7 @@ class Profile
                     $styles = \FeatherBB\Lister::getStyles();
                     $form['style'] = Utils::trim($this->request->post('form_style'));
                     if (!in_array($form['style'], $styles)) {
-                        message(__('Bad request'), '404');
+                        throw new \FeatherBB\Error(__('Bad request'), 404);
                     }
                 }
 
@@ -975,7 +975,7 @@ class Profile
             }
 
             default:
-                message(__('Bad request'), '404');
+                throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $form = $this->hook->fire('update_profile_form', $form, $section, $id, $info);
@@ -987,7 +987,7 @@ class Profile
         }
 
         if (empty($temp)) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         $update_user = DB::for_table('users')
@@ -1099,7 +1099,7 @@ class Profile
         $user = $user->find_one();
 
         if (!$user) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
         return $user;
