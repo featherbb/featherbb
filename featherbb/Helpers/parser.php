@@ -415,7 +415,10 @@ class Parser
                 break;
 
             case 'url':
-                if (($m = $this->feather->url->is_valid($attribute)))
+                if ($this->feather->user->g_post_links != '1') {
+                    $new_errors[] = __('BBerr cannot post URLs');
+                }
+                else if (($m = $this->feather->url->is_valid($attribute)))
                 {
                     $attribute = $m['url']; // Fetch possibly more complete url address.
                 }
