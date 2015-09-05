@@ -14,6 +14,10 @@
 namespace FeatherBB;
 use DB;
 
+// Make sure no one attempts to run this script "directly"
+if (!defined('FEATHER'))
+    exit;
+
 class Core extends \Slim\Middleware
 {
     protected $forum_env,
