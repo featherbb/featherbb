@@ -1051,7 +1051,7 @@ class Parser
                             $format = '{<a href="%c_str%" title="%a_str%">'.__('Image link').'</a>}';
                         else
                             $format = '{<a href="%c_str%" title="'.__('BBmsg images disabled').'">'.__('Image link').'</a>}';
-                        $enabled = true; // Re-enable to override defauslt disabled handling (i.e. dont delete.)
+                        $enabled = true; // Re-enable to override default disabled handling (i.e. dont delete.)
                     }
                 }
                 else
