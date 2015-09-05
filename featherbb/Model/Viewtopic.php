@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Utils;
 use DB;
 
 class Viewtopic
@@ -273,9 +274,9 @@ class Viewtopic
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post['username_formatted'] = '<a href="'.$this->feather->url->base().'/user/'.$cur_post['poster_id'].'/">'.$this->feather->utils->escape($cur_post['username']).'</a>';
+                    $cur_post['username_formatted'] = '<a href="'.$this->feather->url->base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
                 } else {
-                    $cur_post['username_formatted'] = $this->feather->utils->escape($cur_post['username']);
+                    $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 }
 
                 $cur_post['user_title_formatted'] = get_title($cur_post);
@@ -302,18 +303,18 @@ class Viewtopic
                             $cur_post['location'] = censor_words($cur_post['location']);
                         }
 
-                        $cur_post['user_info'][] = '<dd><span>'.__('From').' '.$this->feather->utils->escape($cur_post['location']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.__('From').' '.Utils::escape($cur_post['location']).'</span></dd>';
                     }
 
                     $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.$this->feather->utils->format_time($cur_post['registered'], true).'</span></dd>';
 
                     if ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
-                        $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.$this->feather->utils->forum_number_format($cur_post['num_posts']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
                     if ((($cur_post['email_setting'] == '0' && !$this->user->is_guest) || $this->user->is_admmod) && $this->user->g_send_email == '1') {
-                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.$this->feather->utils->escape($cur_post['email']).'">'.__('Email').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.$this->feather->url->get('email/'.$cur_post['poster_id'].'/').'">'.__('Email').'</a></span>';
                     }
@@ -323,7 +324,7 @@ class Viewtopic
                             $cur_post['url'] = censor_words($cur_post['url']);
                         }
 
-                        $cur_post['user_contacts'][] = '<span class="website"><a href="'.$this->feather->utils->escape($cur_post['url']).'" rel="nofollow">'.__('Website').'</a></span>';
+                        $cur_post['user_contacts'][] = '<span class="website"><a href="'.Utils::escape($cur_post['url']).'" rel="nofollow">'.__('Website').'</a></span>';
                     }
                 }
 
@@ -334,24 +335,24 @@ class Viewtopic
                 }
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.$this->feather->utils->escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
-                        $cur_post['user_info'][] = '<dd><span>'.__('Note').' <strong>'.$this->feather->utils->escape($cur_post['admin_note']).'</strong></span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.__('Note').' <strong>'.Utils::escape($cur_post['admin_note']).'</strong></span></dd>';
                     }
                 }
             }
             // If the poster is a guest (or a user that has been deleted)
             else {
-                $cur_post['username_formatted'] = $this->feather->utils->escape($cur_post['username']);
+                $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 $cur_post['user_title_formatted'] = get_title($cur_post);
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.$this->feather->utils->escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->url->get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.$this->feather->utils->escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
+                    $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
                 }
             }
 

@@ -9,6 +9,8 @@
 
 namespace FeatherBB;
 
+use FeatherBB\Utils;
+
 class View
 {
     protected $templatesDirectory,
@@ -301,7 +303,7 @@ class View
 
         $params = array_merge(static::getDefaultParams($type), $params);
         if (isset($params['title'])) {
-            $params['title'] = $this->app->utils->escape($params['title']);
+            $params['title'] = Utils::escape($params['title']);
         }
         $this->assets[$type][] = array(
             'file' => (string) $asset,
@@ -368,7 +370,7 @@ class View
         }
 
         $data = array(
-            'title' => $this->app->utils->escape($this->app->forum_settings['o_board_title']),
+            'title' => Utils::escape($this->app->forum_settings['o_board_title']),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,

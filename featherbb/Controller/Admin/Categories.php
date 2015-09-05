@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Categories
 {
     public function __construct()
@@ -29,7 +31,7 @@ class Categories
 
     public function add_category()
     {
-        $cat_name = $this->feather->utils->trim($this->request->post('cat_name'));
+        $cat_name = Utils::trim($this->request->post('cat_name'));
         if ($cat_name == '') {
             redirect($this->feather->url->get('admin/categories/'), __('Must enter name message'));
         }
@@ -49,7 +51,7 @@ class Categories
 
         foreach ($this->request->post('cat') as $cat_id => $properties) {
             $category = array('id' => (int) $cat_id,
-                              'name' => $this->feather->utils->escape($properties['name']),
+                              'name' => Utils::escape($properties['name']),
                               'order' => (int) $properties['order'], );
             if ($category['name'] == '') {
                 redirect($this->feather->url->get('admin/categories/'), __('Must enter name message'));
@@ -87,7 +89,7 @@ class Categories
         \FeatherBB\AdminUtils::generateAdminMenu('categories');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Categories')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Categories')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),

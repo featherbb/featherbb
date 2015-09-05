@@ -52,10 +52,12 @@ class AdminUtils
      */
     public static function get_admin_ids()
     {
-        if (!$this->feather->cache->isCached('admin_ids')) {
-            $this->feather->cache->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
+        self::$feather = \Slim\Slim::getInstance();
+
+        if (!self::$feather->cache->isCached('admin_ids')) {
+            self::$feather->cache->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
         }
 
-        return $this->feather->cache->retrieve('admin_ids');
+        return self::$feather->cache->retrieve('admin_ids');
     }
 }

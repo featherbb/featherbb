@@ -35,7 +35,7 @@ class Utils
     public function strip_bad_multibyte_chars($str)
     {
         $result = '';
-        $length = strlen($str);
+        $length = self::strlen($str);
 
         for ($i = 0; $i < $length; $i++) {
             // Replace four-byte characters (11110www 10zzzzzz 10yyyyyy 10xxxxxx)
@@ -54,7 +54,7 @@ class Utils
     //
     // A wrapper for PHP's number_format function
     //
-    public function forum_number_format($number, $decimals = 0)
+    public static function forum_number_format($number, $decimals = 0)
     {
         return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
     }
@@ -116,7 +116,7 @@ class Utils
     //
     // A wrapper for utf8_strlen for compatibility
     //
-    public function strlen($str)
+    public static function strlen($str)
     {
         return utf8_strlen($str);
     }
@@ -125,7 +125,7 @@ class Utils
     //
     // Convert \r\n and \r to \n
     //
-    public function linebreaks($str)
+    public static function linebreaks($str)
     {
         return str_replace(array("\r\n", "\r"), "\n", $str);
     }
@@ -134,7 +134,7 @@ class Utils
     //
     // A wrapper for utf8_trim for compatibility
     //
-    public function trim($str, $charlist = false)
+    public static function trim($str, $charlist = false)
     {
         return is_string($str) ? utf8_trim($str, $charlist) : '';
     }
@@ -142,7 +142,7 @@ class Utils
     //
     // Checks if a string is in all uppercase
     //
-    public function is_all_uppercase($string)
+    public static function is_all_uppercase($string)
     {
         return utf8_strtoupper($string) == $string && utf8_strtolower($string) != $string;
     }
@@ -152,7 +152,7 @@ class Utils
     //
     // This function takes care of possibly disabled unicode properties in PCRE builds
     //
-    public function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
+    public static function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
     {
         if ($callback) {
             $replaced = preg_replace_callback($pattern, create_function('$matches', 'return '.$replace.';'), $subject);
@@ -180,7 +180,7 @@ class Utils
     //
     // Compute a hash of $str
     //
-    public static function feather_hash($str)
+    public static function hash($str)
     {
         return sha1($str);
     }
@@ -188,7 +188,7 @@ class Utils
     //
     // Converts the file size in bytes to a human readable file size
     //
-    public function file_size($size)
+    public static function file_size($size)
     {
         $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
 

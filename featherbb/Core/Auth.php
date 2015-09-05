@@ -13,6 +13,7 @@
 
 namespace FeatherBB;
 
+use FeatherBB\Utils;
 use DB;
 
 class Auth extends \Slim\Middleware
@@ -178,7 +179,7 @@ class Auth extends \Slim\Middleware
                 \DB::for_table('online')
                     ->where('ident', $this->app->user->username)
                     ->delete_many();
-                throw new \FeatherBB\Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.$this->app->utils->escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.$this->app->utils->escape($this->app->forum_settings['o_admin_email']).'">'.$this->app->utils->escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
+                throw new \FeatherBB\Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
             }
         }
 
@@ -196,7 +197,7 @@ class Auth extends \Slim\Middleware
         $message = str_replace($pattern, $replace, $this->app->forum_settings['o_maintenance_message']);
 
         $this->app->view2->setPageInfo(array(
-            'title' => array($this->app->utils->escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
+            'title' => array(Utils::escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
             'active_page' => 'index',
             'message'    =>    $message,
             'no_back_link'    =>    '',
@@ -265,7 +266,7 @@ class Auth extends \Slim\Middleware
                      ->update_many('logged', time());
             }
 
-            $this->model->feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            $this->model->feather_setcookie(1, \FeatherBB\Utils::hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language.'/common.mo');

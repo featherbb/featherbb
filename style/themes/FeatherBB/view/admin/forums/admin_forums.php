@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -31,7 +33,7 @@ if (!empty($cat_list)) {
 									<td>
 										<select name="cat" tabindex="1">
 											<?php  foreach ($cat_list as $cat) {
-												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat['id'].'">'.$feather->utils->escape($cat['cat_name']).'</option>'."\n";
+												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat['id'].'">'.Utils::escape($cat['cat_name']).'</option>'."\n";
 											} ?>
 										</select>
 										<span><?php _e('Add forum help') ?></span>
@@ -73,7 +75,7 @@ if (!empty($forum_data)) {
             ?>
 				<div class="inform">
 					<fieldset>
-						<legend><?php _e('Category subhead') ?> <?php echo $feather->utils->escape($cat_data['cat_name']) ?></legend>
+						<legend><?php _e('Category subhead') ?> <?php echo Utils::escape($cat_data['cat_name']) ?></legend>
 						<div class="infldset">
 							<table>
 							<thead>
@@ -90,7 +92,7 @@ if (!empty($forum_data)) {
 								<tr>
 									<td class="tcl"><a href="<?php echo $feather->url->get('admin/forums/edit/'.$forum['forum_id'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Edit link') ?></a> | <a href="<?php echo $feather->url->get('admin/forums/delete/'.$forum['forum_id'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Delete link') ?></a></td>
 									<td class="tc2"><input type="text" name="position[<?php echo $forum['forum_id'] ?>]" size="3" maxlength="3" value="<?php echo $forum['position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
-									<td class="tcr"><strong><?php echo $feather->utils->escape($forum['forum_name']) ?></strong></td>
+									<td class="tcr"><strong><?php echo Utils::escape($forum['forum_name']) ?></strong></td>
 								</tr>
 <?php
     }

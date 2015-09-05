@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Utils;
 use DB;
 
 class Permissions

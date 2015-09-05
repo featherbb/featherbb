@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
 	exit;
@@ -25,7 +27,7 @@ if (!defined('FEATHER')) {
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather->forum_settings['o_avatars_size'] ?>" />
 						<label class="required"><strong><?php _e('File') ?> <span><?php _e('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-						<p><?php _e('Avatar desc'); echo ' '.$feather->forum_settings['o_avatars_width'].' x '.$feather->forum_settings['o_avatars_height'].' '.__('pixels').' '.__('and').' '.$feather->utils->forum_number_format($feather->forum_settings['o_avatars_size']).' '.__('bytes').' ('.$feather->utils->file_size($feather->forum_settings['o_avatars_size']).').' ?></p>
+						<p><?php _e('Avatar desc'); echo ' '.$feather->forum_settings['o_avatars_width'].' x '.$feather->forum_settings['o_avatars_height'].' '.__('pixels').' '.__('and').' '.Utils::forum_number_format($feather->forum_settings['o_avatars_size']).' '.__('bytes').' ('.$feather->utils->file_size($feather->forum_settings['o_avatars_size']).').' ?></p>
 					</div>
 				</fieldset>
 			</div>

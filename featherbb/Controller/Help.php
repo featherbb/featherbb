@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Help
 {
     public function __construct()
@@ -33,7 +35,7 @@ class Help
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Help')),
+            'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
             'active_page' => 'help',
         ))->addTemplate('help.php')->display();
     }

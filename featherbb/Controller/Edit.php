@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Edit
 {
     public function __construct()
@@ -106,7 +108,7 @@ class Edit
         );
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Edit post')),
+                            'title' => array(Utils::escape($this->config['o_board_title']), __('Edit post')),
                             'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                             'focus_element' => array('edit', 'req_message'),
                             'cur_post' => $cur_post,

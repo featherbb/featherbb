@@ -9,6 +9,8 @@
 
 namespace FeatherBB;
 
+use FeatherBB\Utils;
+
 class Email
 {
     public function __construct()
@@ -124,7 +126,7 @@ class Email
             $base_url = $this->feather->url->base();
         }
 
-        $text = $this->feather->utils->trim($text, "\t\n ");
+        $text = Utils::trim($text, "\t\n ");
 
         $shortcut_urls = array(
             'topic' => '/topic/$1/',
@@ -266,12 +268,12 @@ class Email
         $from_email = $this->config['o_webmaster_email'];
 
         // Do a little spring cleaning
-        $to = $this->feather->utils->trim(preg_replace('%[\n\r]+%s', '', $to));
-        $subject = $this->feather->utils->trim(preg_replace('%[\n\r]+%s', '', $subject));
-        $from_email = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', $from_email));
-        $from_name = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
-        $reply_to_email = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
-        $reply_to_name = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
+        $to = Utils::trim(preg_replace('%[\n\r]+%s', '', $to));
+        $subject = Utils::trim(preg_replace('%[\n\r]+%s', '', $subject));
+        $from_email = Utils::trim(preg_replace('%[\n\r:]+%s', '', $from_email));
+        $from_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
+        $reply_to_email = Utils::trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
+        $reply_to_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
 
         // Set up some headers to take advantage of UTF-8
         $from = '"' . $this->encode_mail_text($from_name) . '" <' . $from_email . '>';
@@ -287,7 +289,7 @@ class Email
         }
 
         // Make sure all linebreaks are LF in message (and strip out any NULL bytes)
-        $message = str_replace("\0", '', $this->feather->utils->linebreaks($message));
+        $message = str_replace("\0", '', Utils::linebreaks($message));
         $message = str_replace("\n", $EOL, $message);
 
         if ($smtp) {

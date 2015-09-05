@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -14,7 +16,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo $feather->utils->escape($user['username']).' - '.__('Section privacy') ?></span></h2>
+	<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section privacy') ?></span></h2>
 	<div class="box">
 		<form id="profile6" method="post" action="<?php echo $feather->url->get('user/'.$id.'/section/privacy/') ?>">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">

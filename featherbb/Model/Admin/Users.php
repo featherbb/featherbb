@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Utils;
 use DB;
 
 class Users
@@ -449,8 +450,8 @@ class Users
         }
 
         if ($this->request->post('ban_users_comply')) {
-            $ban_message = $this->feather->utils->trim($this->request->post('ban_message'));
-            $ban_expire = $this->feather->utils->trim($this->request->post('ban_expire'));
+            $ban_message = Utils::trim($this->request->post('ban_message'));
+            $ban_expire = Utils::trim($this->request->post('ban_expire'));
             $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
 
             $this->hook->fire('model.users.ban_users.comply', $ban_message, $ban_expire, $ban_the_ip);
@@ -541,14 +542,14 @@ class Users
         // trim() all elements in $form
         $form = array_map('trim', $form);
 
-        $posts_greater = $this->request->get('posts_greater') ? $this->feather->utils->trim($this->request->get('posts_greater')) : '';
-        $posts_less = $this->request->get('posts_less') ? $this->feather->utils->trim($this->request->get('posts_less')) : '';
-        $last_post_after = $this->request->get('last_post_after') ? $this->feather->utils->trim($this->request->get('last_post_after')) : '';
-        $last_post_before = $this->request->get('last_post_before') ? $this->feather->utils->trim($this->request->get('last_post_before')) : '';
-        $last_visit_after = $this->request->get('last_visit_after') ? $this->feather->utils->trim($this->request->get('last_visit_after')) : '';
-        $last_visit_before = $this->request->get('last_visit_before') ? $this->feather->utils->trim($this->request->get('last_visit_before')) : '';
-        $registered_after = $this->request->get('registered_after') ? $this->feather->utils->trim($this->request->get('registered_after')) : '';
-        $registered_before = $this->request->get('registered_before') ? $this->feather->utils->trim($this->request->get('registered_before')) : '';
+        $posts_greater = $this->request->get('posts_greater') ? Utils::trim($this->request->get('posts_greater')) : '';
+        $posts_less = $this->request->get('posts_less') ? Utils::trim($this->request->get('posts_less')) : '';
+        $last_post_after = $this->request->get('last_post_after') ? Utils::trim($this->request->get('last_post_after')) : '';
+        $last_post_before = $this->request->get('last_post_before') ? Utils::trim($this->request->get('last_post_before')) : '';
+        $last_visit_after = $this->request->get('last_visit_after') ? Utils::trim($this->request->get('last_visit_after')) : '';
+        $last_visit_before = $this->request->get('last_visit_before') ? Utils::trim($this->request->get('last_visit_before')) : '';
+        $registered_after = $this->request->get('registered_after') ? Utils::trim($this->request->get('registered_after')) : '';
+        $registered_before = $this->request->get('registered_before') ? Utils::trim($this->request->get('registered_before')) : '';
         $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
         $direction = $search['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
         $user_group = $this->request->get('user_group') ? intval($this->request->get('user_group')) : -1;
@@ -692,7 +693,7 @@ class Users
                         ->order_by('g_title');
 
         foreach ($result as $cur_group) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.$this->feather->utils->escape($cur_group['g_title']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         }
 
         $output = $this->hook->fire('model.users.get_group_list.output', $output);

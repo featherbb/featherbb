@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Index
 {
     public function __construct()
@@ -25,7 +27,7 @@ class Index
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title'])),
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title'])),
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),

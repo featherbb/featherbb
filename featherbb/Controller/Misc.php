@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Misc
 {
     public function __construct()
@@ -26,7 +28,7 @@ class Misc
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
             'active_page' => 'rules'
             ))->addTemplate('misc/rules.php')->display();
     }
@@ -116,7 +118,7 @@ class Misc
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.$this->feather->utils->escape($mail['recipient'])),
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
             'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
             'focus_element' => array('email', 'req_subject'),
@@ -143,7 +145,7 @@ class Misc
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Report post')),
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),
             'focus_element' => array('report', 'req_reason'),

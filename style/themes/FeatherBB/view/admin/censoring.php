@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -61,7 +63,7 @@ if (!empty($word_data)) {
 <?php
 
     foreach ($word_data as $word) {
-        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.$feather->utils->escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.$feather->utils->escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
+        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.Utils::escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.Utils::escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
     }
 
     ?>

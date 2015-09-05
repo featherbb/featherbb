@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -22,7 +24,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php _e('Move users subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Move users info'), $feather->utils->escape($group_info['title']), $feather->utils->forum_number_format($group_info['members'])) ?></p>
+							<p><?php printf(__('Move users info'), Utils::escape($group_info['title']), Utils::forum_number_format($group_info['members'])) ?></p>
 							<label><?php _e('Move users label') ?>
 							<select name="move_to_group">
 								<?= $group_list_delete; ?>

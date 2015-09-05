@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Statistics
 {
     public function __construct()
@@ -33,7 +35,7 @@ class Statistics
         $total = $this->model->get_total_size();
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),

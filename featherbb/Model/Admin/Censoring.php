@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Utils;
 use DB;
 
 class Censoring
@@ -25,8 +26,8 @@ class Censoring
 
     public function add_word()
     {
-        $search_for = $this->feather->utils->trim($this->request->post('new_search_for'));
-        $replace_with = $this->feather->utils->trim($this->request->post('new_replace_with'));
+        $search_for = Utils::trim($this->request->post('new_search_for'));
+        $replace_with = Utils::trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
             throw new \FeatherBB\Error(__('Must enter word message'), 400);
@@ -53,8 +54,8 @@ class Censoring
     {
         $id = intval(key($this->request->post('update')));
 
-        $search_for = $this->feather->utils->trim($this->request->post('search_for')[$id]);
-        $replace_with = $this->feather->utils->trim($this->request->post('replace_with')[$id]);
+        $search_for = Utils::trim($this->request->post('search_for')[$id]);
+        $replace_with = Utils::trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
             throw new \FeatherBB\Error(__('Must enter word message'), 400);

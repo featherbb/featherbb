@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Post
 {
     public function __construct()
@@ -199,7 +201,7 @@ class Post
         );
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $action),
+                            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
                             'required_fields' => $required_fields,
                             'focus_element' => $focus_element,
                             'active_page' => 'post',

@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -32,14 +34,14 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php _e('Group title label') ?></th>
 									<td>
 										<input type="text" name="req_title" size="25" maxlength="50" value="<?php if ($group['mode'] == 'edit') {
-    echo $feather->utils->escape($group['info']['g_title']);
+    echo Utils::escape($group['info']['g_title']);
 } ?>" tabindex="1" />
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('User title label') ?></th>
 									<td>
-										<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo $feather->utils->escape($group['info']['g_user_title']) ?>" tabindex="2" />
+										<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo Utils::escape($group['info']['g_user_title']) ?>" tabindex="2" />
 										<span><?php printf(__('User title help'), ($group['info']['g_id'] != FEATHER_GUEST ? __('Member') : __('Guest'))) ?></span>
 									</td>
 								</tr>
@@ -50,7 +52,7 @@ if (!defined('FEATHER')) {
 											<option value="0"><?php _e('Disable promotion') ?></option>
 											<?php echo $group_list ?>
 										</select>
-										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo $feather->utils->escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
+										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo Utils::escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
 										<span><?php printf(__('Promote users help'), __('Disable promotion')) ?></span>
 									</td>
 								</tr>

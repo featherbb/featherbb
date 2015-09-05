@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Plugins
 {
     public function __construct()
@@ -44,7 +46,7 @@ class Plugins
                 'active_page' => 'admin',
                 'pluginsList'    =>    $pluginsList,
                 'activePlugins'    =>    $activePlugins,
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
             )
         )->addTemplate('admin/plugins.php')->display();
     }
@@ -59,7 +61,7 @@ class Plugins
 
         // Check if plugin follows PSR-4 conventions and extends base forum plugin
         if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
-            throw new \FeatherBB\Error(sprintf(__('No plugin message'), $this->feather->utils->escape($class)), 400);
+            throw new \FeatherBB\Error(sprintf(__('No plugin message'), Utils::escape($class)), 400);
         }
 
         $plugin = new $class;
@@ -84,7 +86,7 @@ class Plugins
         try {
             $plugin->deactivate($class);
         } catch (\Exception $e) {
-            redirect($this->feather->url->get('admin/plugins/'), $this->feather->utils->escape($e->getMessage()));
+            redirect($this->feather->url->get('admin/plugins/'), Utils::escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
         $this->feather->url->redirect($this->feather->url->get('admin/plugins/'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
@@ -106,7 +108,7 @@ class Plugins
 
         // Make sure the file actually exists
         if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
-            throw new \FeatherBB\Error(sprintf(__('No plugin message'), $this->feather->utils->escape($plugin)), 400);
+            throw new \FeatherBB\Error(sprintf(__('No plugin message'), Utils::escape($plugin)), 400);
         }
 
         // Construct REQUEST_URI if it isn't set TODO?
@@ -119,11 +121,11 @@ class Plugins
         // get the "blank page of death"
         include FEATHER_ROOT.'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
-            throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), $this->feather->utils->escape($plugin)));
+            throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), Utils::escape($plugin)));
         }
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4))),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4))),
                 'active_page' => 'admin',
                 'admin_console' => true,
             )

@@ -66,7 +66,7 @@ function check_username($username, $errors, $exclude_id = null)
 
     if ($result) {
         $busy = $result['username'];
-        $errors[] = __('Username dupe 1').' '.$feather->utils->escape($busy).'. '.__('Username dupe 2');
+        $errors[] = __('Username dupe 1').' '.Utils::escape($busy).'. '.__('Username dupe 2');
     }
 
     // Check username for any banned usernames
@@ -95,7 +95,7 @@ function generate_avatar_markup($user_id)
         $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
         if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.$feather->utils->escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+            $avatar_markup = '<img src="'.Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -118,7 +118,7 @@ function generate_page_title($page_title, $p = null)
     $page_title = array_reverse($page_title);
 
     if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf(__('Page'), $feather->utils->forum_number_format($p)).')';
+        $page_title[0] .= ' ('.sprintf(__('Page'), Utils::forum_number_format($p)).')';
     }
 
     $crumbs = implode(__('Title separator'), $page_title);
@@ -388,7 +388,7 @@ function get_title($user)
 
     // If the user has a custom title
     if ($user['title'] != '') {
-        $user_title = $feather->utils->escape($user['title']);
+        $user_title = Utils::escape($user['title']);
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
@@ -396,7 +396,7 @@ function get_title($user)
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
-        $user_title = $feather->utils->escape($user['g_user_title']);
+        $user_title = Utils::escape($user['g_user_title']);
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
@@ -434,7 +434,7 @@ function message($msg, $http_status = null, $no_back_link = false)
 
     if (!defined('FEATHER_HEADER')) {
         $feather->view2->setPageInfo(array(
-            'title' => array($feather->utils->escape($feather->config['o_board_title']), __('Info')),
+            'title' => array(Utils::escape($feather->config['o_board_title']), __('Info')),
         ));
     }
 

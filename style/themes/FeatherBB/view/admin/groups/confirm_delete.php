@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -23,7 +25,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php _e('Confirm delete subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Confirm delete info'), $feather->utils->escape($group_title)) ?></p>
+							<p><?php printf(__('Confirm delete info'), Utils::escape($group_title)) ?></p>
 							<p class="warntext"><?php _e('Confirm delete warn') ?></p>
 						</div>
 					</fieldset>

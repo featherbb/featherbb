@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Utils;
 use DB;
 
 class Register
@@ -46,23 +47,23 @@ class Register
         }
 
 
-        $user['username'] = $this->feather->utils->trim($this->request->post('req_user'));
-        $user['email1'] = strtolower($this->feather->utils->trim($this->request->post('req_email1')));
+        $user['username'] = Utils::trim($this->request->post('req_user'));
+        $user['email1'] = strtolower(Utils::trim($this->request->post('req_email1')));
 
         if ($this->config['o_regs_verify'] == '1') {
-            $email2 = strtolower($this->feather->utils->trim($this->request->post('req_email2')));
+            $email2 = strtolower(Utils::trim($this->request->post('req_email2')));
 
             $user['password1'] = random_pass(12);
             $password2 = $user['password1'];
         } else {
-            $user['password1'] = $this->feather->utils->trim($this->request->post('req_password1'));
-            $password2 = $this->feather->utils->trim($this->request->post('req_password2'));
+            $user['password1'] = Utils::trim($this->request->post('req_password1'));
+            $password2 = Utils::trim($this->request->post('req_password2'));
         }
 
         // Validate username and passwords
         $user['errors'] = check_username($user['username'], $user['errors']);
 
-        if ($this->feather->utils->strlen($user['password1']) < 6) {
+        if (Utils::strlen($user['password1']) < 6) {
             $user['errors'][] = __('Pass too short');
         } elseif ($user['password1'] != $password2) {
             $user['errors'][] = __('Pass not match');
@@ -138,7 +139,7 @@ class Register
         $now = time();
 
         $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : FEATHER_UNVERIFIED;
-        $password_hash = \FeatherBB\Utils::feather_hash($user['password1']);
+        $password_hash = \FeatherBB\Utils::hash($user['password1']);
 
         // Add the user
         $user['insert'] = array(

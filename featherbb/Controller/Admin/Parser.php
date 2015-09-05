@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Parser
 {
     public function __construct()
@@ -205,7 +207,7 @@ class Parser
         \FeatherBB\AdminUtils::generateAdminMenu('parser');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Parser')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Parser')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,

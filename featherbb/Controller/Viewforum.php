@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Viewforum
 {
     public function __construct()
@@ -84,7 +86,7 @@ class Viewforum
         }
 
         $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $this->feather->utils->escape($cur_forum['forum_name'])),
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'viewforum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

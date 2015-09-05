@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Moderate
 {
     public function __construct()
@@ -83,7 +85,7 @@ class Moderate
             $this->model->check_move_possible();
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'action'    =>    'multi',
                     'id'    =>    $fid,
@@ -137,7 +139,7 @@ class Moderate
             $this->model->check_move_possible();
 
             $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'page' => $p,
                         'action'    =>    'single',
@@ -156,7 +158,7 @@ class Moderate
                     $posts = $this->model->delete_posts($id, $fid, $p);
 
                     $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                            'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                             'active_page' => 'moderate',
                             'page' => $p,
                             'id' => $id,
@@ -167,7 +169,7 @@ class Moderate
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
 
                 $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'focus_element' => array('subject','new_subject'),
                         'page' => $p,
                         'active_page' => 'moderate',
@@ -193,7 +195,7 @@ class Moderate
             }
 
             $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), $this->feather->utils->escape($cur_topic['forum_name']), $this->feather->utils->escape($cur_topic['subject'])),
+                        'title' => array(Utils::escape($this->config['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
                         'page' => $p,
                         'active_page' => 'moderate',
                         'cur_topic' => $cur_topic,
@@ -242,7 +244,7 @@ class Moderate
         $url_forum = $this->feather->url->url_friendly($cur_forum['forum_name']);
 
         $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), $this->feather->utils->escape($cur_forum['forum_name'])),
+                            'title' => array(Utils::escape($this->config['o_board_title']), Utils::escape($cur_forum['forum_name'])),
                             'active_page' => 'moderate',
                             'page' => $p,
                             'id' => $id,
@@ -286,7 +288,7 @@ class Moderate
 
             $this->feather->view2->setPageInfo(array(
                         'action'    =>    'multi',
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
@@ -307,7 +309,7 @@ class Moderate
             }
 
             $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
@@ -327,7 +329,7 @@ class Moderate
             }
 
             $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,

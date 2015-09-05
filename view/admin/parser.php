@@ -87,12 +87,12 @@ if (!defined('FEATHER')) {
 										<input type="radio" name="config[valid_imgs]" value="1"<?php if ($config['valid_imgs']) {
     echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
-    echo(' disabled="disabled" title="'. $feather->utils->escape($lang_admin_parser['unavailable']) .'"');
+    echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> /> <strong><?php _e('Yes') ?></strong>
 										<input type="radio" name="config[valid_imgs]" value="0"<?php if (!$config['valid_imgs']) {
     echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
-    echo(' disabled="disabled" title="'. $feather->utils->escape($lang_admin_parser['unavailable']) .'"');
+    echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td><?php echo $lang_admin_parser['valid_imgs help'] ?></td>
@@ -101,7 +101,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php echo $lang_admin_parser['max_size'] ?></th>
 									<td colspan="2">
 										<input type="text" name="config[max_size]" size="10" maxlength="8" value="<?php echo($config['max_size'])?>"<?php if (!ini_get('allow_url_fopen')) {
-    echo(' disabled="disabled" title="'. $feather->utils->escape($lang_admin_parser['unavailable']) .'"');
+    echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> />
 									</td>
 									<td><span><?php echo $lang_admin_parser['max_size help'] ?></span></td>
@@ -165,7 +165,7 @@ if (!defined('FEATHER')) {
         ?>
 								<tr>
 									<td><input type="text" name="smiley_text[<?php echo($i);
-        ?>]" value="<?php echo($feather->utils->escape($key));
+        ?>]" value="<?php echo(Utils::escape($key));
         ?>" size="20" maxlength="80" /></td>
 									<td>
 										<select name="smiley_file[<?php echo($i);

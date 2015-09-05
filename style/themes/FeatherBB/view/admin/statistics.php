@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -30,7 +32,7 @@ if (!defined('FEATHER')) {
 					</dd>
 					<dt><?php _e('Database label') ?></dt>
 					<dd>
-<?php if (isset($total_records) && isset($total_size)): ?>						<?php printf(__('Database data rows')."\n", $feather->utils->forum_number_format($total_records)) ?>
+<?php if (isset($total_records) && isset($total_size)): ?>						<?php printf(__('Database data rows')."\n", Utils::forum_number_format($total_records)) ?>
 						<br /><?php printf(__('Database data size')."\n", $total_size) ?>
 <?php endif; ?>					</dd>
 <?php endif; ?>

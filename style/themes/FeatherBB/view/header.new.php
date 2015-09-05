@@ -7,6 +7,13 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Utils;
+
+// Make sure no one attempts to run this script "directly"
+if (!defined('FEATHER')) {
+    exit;
+}
+
 ?>
 <!doctype html>
 <html lang="<?php _e('lang_identifier') ?>">
@@ -124,7 +131,7 @@ if ($feather->user->is_guest) {
         echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->url->get('admin/').'">'.__('Admin').'</a></li>'."\n";
     }
 
-    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.$feather->url->get('auth/logout/token/'.\FeatherBB\Utils::feather_hash($feather->user->id.\FeatherBB\Utils::feather_hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.$feather->url->get('auth/logout/token/'.\FeatherBB\Utils::hash($feather->user->id.\FeatherBB\Utils::hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
 }
 
 // // Are there any additional navlinks we should insert into the array before imploding it?
@@ -154,7 +161,7 @@ if ($feather->user->is_guest) {
         <div class="container-title-status">
             <h1 class="title-site">
                 <a href="<?php echo $feather->url->base() ?>" title="" class="site-name">
-                    <p><?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?></p>
+                    <p><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
                 <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
             </h1>
@@ -166,7 +173,7 @@ if ($feather->user->is_guest) { ?>
                     <p class="conl"><?= __('Not logged in')?></p>
 <?php } else {
     echo "\t\t\t\t\t".'<ul class="conl">';
-    echo "\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.$feather->utils->escape($feather->user->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape($feather->user->username).'</strong></span></li>'."\n";
     echo "\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), $feather->utils->format_time($feather->user->last_visit)).'</span></li>'."\n";
 
     if ($feather->user->is_admmod) {
@@ -224,7 +231,7 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
         <?php foreach ($flash->getMessages() as $type => $message) { ?>
         <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
             <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-            <p><?= $feather->utils->escape($message) ?></p>
+            <p><?= Utils::escape($message) ?></p>
         </div>
         <?php } ?>
         <?php endif; ?>

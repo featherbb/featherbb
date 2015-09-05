@@ -181,7 +181,7 @@ class Core extends \Slim\Middleware
             return new \FeatherBB\Utils();
         });
         // Record start time
-        $this->app->start = $this->app->utils->get_microtime();
+        $this->app->start = Utils::get_microtime();
         // Define now var
         $this->app->now = function () {
             return time();

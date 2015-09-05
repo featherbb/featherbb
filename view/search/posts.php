@@ -22,14 +22,14 @@ if (!defined('FEATHER')) {
 } ?>">
 <h2><span><span class="conr">#<?php echo($search['start_from'] + $post_count) ?></span> <span><?php if ($cur_search['pid'] != $cur_search['first_post_id']) {
     _e('Re').' ';
-} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo $feather->url->get('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo $feather->utils->escape($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo $feather->url->get('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo $feather->utils->format_time($cur_search['pposted']) ?></a></span></span></h2>
+} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo $feather->url->get('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo Utils::escape($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo $feather->url->get('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo $feather->utils->format_time($cur_search['pposted']) ?></a></span></span></h2>
 <div class="box">
 	<div class="inbox">
 		<div class="postbody">
 			<div class="postleft">
 				<dl>
 					<dt><?php echo $cur_search['pposter_disp'] ?></dt>
-<?php if ($cur_search['pid'] == $cur_search['first_post_id']) : ?>						<dd><span><?php _e('Replies').' '.$feather->utils->forum_number_format($cur_search['num_replies']) ?></span></dd>
+<?php if ($cur_search['pid'] == $cur_search['first_post_id']) : ?>						<dd><span><?php _e('Replies').' '.Utils::forum_number_format($cur_search['num_replies']) ?></span></dd>
 <?php endif; ?>
 					<dd><div class="<?php echo $cur_search['icon_type'] ?>"><div class="nosize"><?php echo $cur_search['icon_text'] ?></div></div></dd>
 				</dl>

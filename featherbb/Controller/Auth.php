@@ -8,6 +8,8 @@
  */
 
 namespace FeatherBB\Controller;
+
+use FeatherBB\Utils;
 use DB;
 
 class Auth
@@ -26,14 +28,14 @@ class Auth
 
         if ($this->feather->request->isPost()) {
             $this->feather->hooks->fire('login_start');
-            $form_username = $this->feather->utils->trim($this->feather->request->post('req_username'));
-            $form_password = $this->feather->utils->trim($this->feather->request->post('req_password'));
+            $form_username = Utils::trim($this->feather->request->post('req_username'));
+            $form_password = Utils::trim($this->feather->request->post('req_password'));
             $save_pass = (bool) $this->feather->request->post('save_pass');
 
             $user = \FeatherBB\Model\Auth::get_user_from_name($form_username);
 
             if (!empty($user->password)) {
-                $form_password_hash = \FeatherBB\Utils::feather_hash($form_password); // Will result in a SHA-1 hash
+                $form_password_hash = \FeatherBB\Utils::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == FEATHER_UNVERIFIED) {
                         \FeatherBB\Model\Auth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
@@ -57,7 +59,7 @@ class Auth
         } else {
             $this->feather->view2->setPageInfo(array(
                                 'active_page' => 'login',
-                                'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Login')),
+                                'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Login')),
                                 'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
                                 'focus_element' => array('login', 'req_username'),
                                 )
@@ -69,7 +71,7 @@ class Auth
     {
         $token = $this->feather->hooks->fire('logout_start', $token);
 
-        if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::feather_hash($this->feather->user->id.\FeatherBB\Utils::feather_hash($this->feather->request->getIp()))) {
+        if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::hash($this->feather->user->id.\FeatherBB\Utils::hash($this->feather->request->getIp()))) {
             $this->feather->url->redirect($this->feather->url->get('/'), 'Not logged in');
         }
 
@@ -80,7 +82,7 @@ class Auth
             \FeatherBB\Model\Auth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
         }
 
-        \FeatherBB\Model\Auth::feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), time() + 31536000);
+        \FeatherBB\Model\Auth::feather_setcookie(1, \FeatherBB\Utils::hash(uniqid(rand(), true)), time() + 31536000);
         $this->feather->hooks->fire('logout_end');
 
         redirect($this->feather->url->base(), __('Logout redirect'));
@@ -94,7 +96,7 @@ class Auth
 
         if ($this->feather->request->isPost()) {
             // Validate the email address
-            $email = strtolower($this->feather->utils->trim($this->feather->request->post('req_email')));
+            $email = strtolower(Utils::trim($this->feather->request->post('req_email')));
             if (!$this->feather->email->is_valid_email($email)) {
                 throw new \FeatherBB\Error(__('Invalid email'), 400);
             }
@@ -134,16 +136,16 @@ class Auth
 
                 $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                $this->feather->url->redirect($this->feather->url->get('/'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
+                $this->feather->url->redirect($this->feather->url->get('/'), __('Forget mail').' <a href="mailto:'.Utils::escape($this->feather->forum_settings['o_admin_email']).'">'.Utils::escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
             } else {
-                throw new \FeatherBB\Error(__('No email match').' '.$this->feather->utils->escape($email).'.', 400);
+                throw new \FeatherBB\Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }
         }
 
         $this->feather->view2->setPageInfo(array(
 //                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Request pass')),
+                'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Request pass')),
                 'required_fields' => array('req_email' => __('Email')),
                 'focus_element' => array('request_pass', 'req_email'),
             )

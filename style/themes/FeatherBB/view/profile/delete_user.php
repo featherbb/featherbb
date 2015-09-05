@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -22,7 +24,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php _e('Confirm delete legend') ?></legend>
 					<div class="infldset">
-						<p><?php _e('Confirmation info').' <strong>'.$feather->utils->escape($username).'</strong>.' ?></p>
+						<p><?php _e('Confirmation info').' <strong>'.Utils::escape($username).'</strong>.' ?></p>
 						<div class="rbox">
 							<label><input type="checkbox" name="delete_posts" value="1" checked="checked" /><?php _e('Delete posts') ?><br /></label>
 						</div>

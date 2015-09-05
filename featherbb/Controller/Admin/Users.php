@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Users
 {
     public function __construct()
@@ -38,7 +40,7 @@ class Users
             \FeatherBB\AdminUtils::generateAdminMenu('users');
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'move'              =>  $this->model->move_users(),
@@ -56,7 +58,7 @@ class Users
             \FeatherBB\AdminUtils::generateAdminMenu('users');
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'user_ids'          => $this->model->delete_users(),
@@ -74,7 +76,7 @@ class Users
             \FeatherBB\AdminUtils::generateAdminMenu('users');
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
                     'active_page' => 'moderate',
                     'focus_element' => array('bans2', 'ban_message'),
                     'admin_console' => true,
@@ -108,7 +110,7 @@ class Users
             $this->feather->view2->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'paging_links' => $paging_links,
@@ -126,7 +128,7 @@ class Users
             \FeatherBB\AdminUtils::generateAdminMenu('users');
 
             $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'focus_element' => array('find_user', 'form[username]'),
@@ -149,7 +151,7 @@ class Users
         $start_from = 50 * ($p - 1);
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'page' => $p,
@@ -177,7 +179,7 @@ class Users
         $start_from = 50 * ($p - 1);
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?ip_stats='.$ip),

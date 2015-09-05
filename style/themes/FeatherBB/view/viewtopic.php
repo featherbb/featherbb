@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -18,8 +20,8 @@ if (!defined('FEATHER')) {
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
 			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo $feather->utils->escape($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo $feather->utils->escape($cur_topic['subject']) ?></a></strong></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_topic['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo Utils::escape($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -66,11 +68,11 @@ foreach ($post_data as $post) {
 					<h3><?php if ($post['id'] != $cur_topic['first_post_id']) {
     _e('Re').' ';
 }
-    ?><?php echo $feather->utils->escape($cur_topic['subject']) ?></h3>
+    ?><?php echo Utils::escape($cur_topic['subject']) ?></h3>
 					<div class="postmsg">
 						<?php echo $post['message']."\n" ?>
 <?php if ($post['edited'] != '') {
-    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.$feather->utils->escape($post['edited_by']).' ('.$feather->utils->format_time($post['edited']).')</em></p>'."\n";
+    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.$feather->utils->format_time($post['edited']).')</em></p>'."\n";
 }
     ?>
 					</div>
@@ -108,8 +110,8 @@ foreach ($post_data as $post) {
 		</div>
 		<ul class="crumbs">
 			<li><a href="<?php echo $feather->url->base() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo $feather->utils->escape($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo $feather->utils->escape($cur_topic['subject']) ?></a></strong></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_topic['forum_id'].'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_topic['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><strong><a href="<?php echo $feather->url->get('topic/'.$id.'/'.$url_topic.'/') ?>"><?php echo Utils::escape($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 <?php echo $subscraction ?>
 		<div class="clearer"></div>
@@ -133,8 +135,8 @@ if ($quickpost) {
 					<legend><?php _e('Write message legend') ?></legend>
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="pid" value="<?php echo $feather->utils->escape($pid) ?>" />
-						<input type="hidden" name="page" value="<?php echo $feather->utils->escape($page_number) ?>" />
+						<input type="hidden" name="pid" value="<?php echo Utils::escape($pid) ?>" />
+						<input type="hidden" name="page" value="<?php echo Utils::escape($page_number) ?>" />
 <?php if ($feather->forum_settings['o_topic_subscriptions'] == '1' && ($feather->user->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
@@ -155,7 +157,7 @@ if ($quickpost) {
     ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo $feather->utils->escape($feather->url->base(true)); ?>',
+    var baseUrl = '<?php echo Utils::escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
 <script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>

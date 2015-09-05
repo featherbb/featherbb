@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Options
 {
     public function __construct()
@@ -36,7 +38,7 @@ class Options
         \FeatherBB\AdminUtils::generateAdminMenu('options');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Options')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Options')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'languages' => $this->model->get_langs(),

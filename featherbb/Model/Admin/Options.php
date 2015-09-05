@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Utils;
 use DB;
 
 class Options
@@ -27,15 +28,15 @@ class Options
     public function update_options()
     {
         $form = array(
-            'board_title'            => $this->feather->utils->trim($this->request->post('form_board_title')),
-            'board_desc'            => $this->feather->utils->trim($this->request->post('form_board_desc')),
-            'base_url'                => $this->feather->utils->trim($this->request->post('form_base_url')),
+            'board_title'            => Utils::trim($this->request->post('form_board_title')),
+            'board_desc'            => Utils::trim($this->request->post('form_board_desc')),
+            'base_url'                => Utils::trim($this->request->post('form_base_url')),
             'default_timezone'        => floatval($this->request->post('form_default_timezone')),
             'default_dst'            => $this->request->post('form_default_dst') != '1' ? '0' : '1',
-            'default_lang'            => $this->feather->utils->trim($this->request->post('form_default_lang')),
-            'default_style'            => $this->feather->utils->trim($this->request->post('form_default_style')),
-            'time_format'            => $this->feather->utils->trim($this->request->post('form_time_format')),
-            'date_format'            => $this->feather->utils->trim($this->request->post('form_date_format')),
+            'default_lang'            => Utils::trim($this->request->post('form_default_lang')),
+            'default_style'            => Utils::trim($this->request->post('form_default_style')),
+            'time_format'            => Utils::trim($this->request->post('form_time_format')),
+            'date_format'            => Utils::trim($this->request->post('form_date_format')),
             'timeout_visit'            => (intval($this->request->post('form_timeout_visit')) > 0) ? intval($this->request->post('form_timeout_visit')) : 1,
             'timeout_online'        => (intval($this->request->post('form_timeout_online')) > 0) ? intval($this->request->post('form_timeout_online')) : 1,
             'redirect_delay'        => (intval($this->request->post('form_redirect_delay')) >= 0) ? intval($this->request->post('form_redirect_delay')) : 0,
@@ -59,33 +60,33 @@ class Options
             'quickjump'                => $this->request->post('form_quickjump') != '1' ? '0' : '1',
             'gzip'                    => $this->request->post('form_gzip') != '1' ? '0' : '1',
             'search_all_forums'        => $this->request->post('form_search_all_forums') != '1' ? '0' : '1',
-            'additional_navlinks'    => $this->feather->utils->trim($this->request->post('form_additional_navlinks')),
+            'additional_navlinks'    => Utils::trim($this->request->post('form_additional_navlinks')),
             'feed_type'                => intval($this->request->post('form_feed_type')),
             'feed_ttl'                => intval($this->request->post('form_feed_ttl')),
             'report_method'            => intval($this->request->post('form_report_method')),
-            'mailing_list'            => $this->feather->utils->trim($this->request->post('form_mailing_list')),
+            'mailing_list'            => Utils::trim($this->request->post('form_mailing_list')),
             'avatars'                => $this->request->post('form_avatars') != '1' ? '0' : '1',
-            'avatars_dir'            => $this->feather->utils->trim($this->request->post('form_avatars_dir')),
+            'avatars_dir'            => Utils::trim($this->request->post('form_avatars_dir')),
             'avatars_width'            => (intval($this->request->post('form_avatars_width')) > 0) ? intval($this->request->post('form_avatars_width')) : 1,
             'avatars_height'        => (intval($this->request->post('form_avatars_height')) > 0) ? intval($this->request->post('form_avatars_height')) : 1,
             'avatars_size'            => (intval($this->request->post('form_avatars_size')) > 0) ? intval($this->request->post('form_avatars_size')) : 1,
-            'admin_email'            => strtolower($this->feather->utils->trim($this->request->post('form_admin_email'))),
-            'webmaster_email'        => strtolower($this->feather->utils->trim($this->request->post('form_webmaster_email'))),
+            'admin_email'            => strtolower(Utils::trim($this->request->post('form_admin_email'))),
+            'webmaster_email'        => strtolower(Utils::trim($this->request->post('form_webmaster_email'))),
             'forum_subscriptions'    => $this->request->post('form_forum_subscriptions') != '1' ? '0' : '1',
             'topic_subscriptions'    => $this->request->post('form_topic_subscriptions') != '1' ? '0' : '1',
-            'smtp_host'                => $this->feather->utils->trim($this->request->post('form_smtp_host')),
-            'smtp_user'                => $this->feather->utils->trim($this->request->post('form_smtp_user')),
+            'smtp_host'                => Utils::trim($this->request->post('form_smtp_host')),
+            'smtp_user'                => Utils::trim($this->request->post('form_smtp_user')),
             'smtp_ssl'                => $this->request->post('form_smtp_ssl') != '1' ? '0' : '1',
             'regs_allow'            => $this->request->post('form_regs_allow') != '1' ? '0' : '1',
             'regs_verify'            => $this->request->post('form_regs_verify') != '1' ? '0' : '1',
             'regs_report'            => $this->request->post('form_regs_report') != '1' ? '0' : '1',
             'rules'                    => $this->request->post('form_rules') != '1' ? '0' : '1',
-            'rules_message'            => $this->feather->utils->trim($this->request->post('form_rules_message')),
+            'rules_message'            => Utils::trim($this->request->post('form_rules_message')),
             'default_email_setting'    => intval($this->request->post('form_default_email_setting')),
             'announcement'            => $this->request->post('form_announcement') != '1' ? '0' : '1',
-            'announcement_message'    => $this->feather->utils->trim($this->request->post('form_announcement_message')),
+            'announcement_message'    => Utils::trim($this->request->post('form_announcement_message')),
             'maintenance'            => $this->request->post('form_maintenance') != '1' ? '0' : '1',
-            'maintenance_message'    => $this->feather->utils->trim($this->request->post('form_maintenance_message')),
+            'maintenance_message'    => Utils::trim($this->request->post('form_maintenance_message')),
         );
 
         $form = $this->hook->fire('options.update_options.form', $form);
@@ -144,13 +145,13 @@ class Options
         }
 
         if ($form['additional_navlinks'] != '') {
-            $form['additional_navlinks'] = $this->feather->utils->trim($this->feather->utils->linebreaks($form['additional_navlinks']));
+            $form['additional_navlinks'] = Utils::trim(Utils::linebreaks($form['additional_navlinks']));
         }
 
         // Change or enter a SMTP password
         if ($this->request->post('form_smtp_change_pass')) {
-            $smtp_pass1 = $this->request->post('form_smtp_pass1') ? $this->feather->utils->trim($this->request->post('form_smtp_pass1')) : '';
-            $smtp_pass2 = $this->request->post('form_smtp_pass2') ? $this->feather->utils->trim($this->request->post('form_smtp_pass2')) : '';
+            $smtp_pass1 = $this->request->post('form_smtp_pass1') ? Utils::trim($this->request->post('form_smtp_pass1')) : '';
+            $smtp_pass2 = $this->request->post('form_smtp_pass2') ? Utils::trim($this->request->post('form_smtp_pass2')) : '';
 
             if ($smtp_pass1 == $smtp_pass2) {
                 $form['smtp_pass'] = $smtp_pass1;
@@ -160,21 +161,21 @@ class Options
         }
 
         if ($form['announcement_message'] != '') {
-            $form['announcement_message'] = $this->feather->utils->linebreaks($form['announcement_message']);
+            $form['announcement_message'] = Utils::linebreaks($form['announcement_message']);
         } else {
             $form['announcement_message'] = __('Enter announcement here');
             $form['announcement'] = '0';
         }
 
         if ($form['rules_message'] != '') {
-            $form['rules_message'] = $this->feather->utils->linebreaks($form['rules_message']);
+            $form['rules_message'] = Utils::linebreaks($form['rules_message']);
         } else {
             $form['rules_message'] = __('Enter rules here');
             $form['rules'] = '0';
         }
 
         if ($form['maintenance_message'] != '') {
-            $form['maintenance_message'] = $this->feather->utils->linebreaks($form['maintenance_message']);
+            $form['maintenance_message'] = Utils::linebreaks($form['maintenance_message']);
         } else {
             $form['maintenance_message'] = __('Default maintenance message');
             $form['maintenance'] = '0';

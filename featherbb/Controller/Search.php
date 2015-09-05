@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Search
 {
     public function __construct()
@@ -49,7 +51,7 @@ class Search
                     }
 
                     $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Search results')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
                         'active_page' => 'search',
                     ));
 
@@ -77,7 +79,7 @@ class Search
         // Display the form
         else {
             $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Search')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,

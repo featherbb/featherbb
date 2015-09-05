@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Utils;
+
 class Permissions
 {
     public function __construct()
@@ -37,7 +39,7 @@ class Permissions
         \FeatherBB\AdminUtils::generateAdminMenu('permissions');
 
         $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Permissions')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Permissions')),
                 'active_page' => 'admin',
                 'admin_console' => true,
             )

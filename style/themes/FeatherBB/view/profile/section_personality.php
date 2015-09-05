@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -14,7 +16,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo $feather->utils->escape($user['username']).' - '.__('Section personality') ?></span></h2>
+	<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section personality') ?></span></h2>
 	<div class="box">
 		<form id="profile4" method="post" action="<?php echo $feather->url->get('user/'.$id.'/section/personality/') ?>">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
@@ -35,8 +37,8 @@ if (!defined('FEATHER')) {
 					<div class="infldset">
 						<p><?php _e('Signature info') ?></p>
 						<div class="txtarea">
-							<label><?php printf(__('Sig max size'), $feather->utils->forum_number_format($feather->forum_settings['p_sig_length']), $feather->forum_settings['p_sig_lines']) ?><br />
-							<textarea name="signature" rows="4" cols="65"><?php echo $feather->utils->escape($user['signature']) ?></textarea><br /></label>
+							<label><?php printf(__('Sig max size'), Utils::forum_number_format($feather->forum_settings['p_sig_length']), $feather->forum_settings['p_sig_lines']) ?><br />
+							<textarea name="signature" rows="4" cols="65"><?php echo Utils::escape($user['signature']) ?></textarea><br /></label>
 						</div>
 						<ul class="bblinks">
 							<li><span><a href="<?php echo $feather->url->get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>

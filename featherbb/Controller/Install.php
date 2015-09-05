@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Utils;
+
 class Install
 {
     protected $supported_dbs = array('mysql' => 'MySQL',
@@ -34,7 +36,7 @@ class Install
     public function run()
     {
         if (!empty($this->feather->request->post('choose_lang'))) {
-            if (in_array($this->feather->utils->trim($this->feather->request->post('install_lang')), $this->available_langs)) {
+            if (in_array(Utils::trim($this->feather->request->post('install_lang')), $this->available_langs)) {
                 $this->install_lang = $this->feather->request->post('install_lang');
             }
         }
@@ -43,7 +45,7 @@ class Install
         if ($this->feather->request->isPost() && empty($this->feather->request->post('choose_lang'))) {
             $missing_fields = array();
             $data = array_map(function ($item) {
-                return $this->feather->utils->escape($this->feather->utils->trim($item));
+                return Utils::escape(Utils::trim($item));
             }, $this->feather->request->post('install'));
 
             foreach ($data as $field => $value) {
@@ -66,9 +68,9 @@ class Install
                 }
 
                 // Validate username and passwords
-                if ($this->feather->utils->strlen($data['username']) < 2) {
+                if (Utils::strlen($data['username']) < 2) {
                     $this->errors[] = __('Username 1');
-                } elseif ($this->feather->utils->strlen($data['username']) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+                } elseif (Utils::strlen($data['username']) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
                     $this->errors[] = __('Username 2');
                 } elseif (!strcasecmp($data['username'], 'Guest')) {
                     $this->errors[] = __('Username 3');
@@ -80,7 +82,7 @@ class Install
                     $this->errors[] = __('Username 6');
                 }
 
-                if ($this->feather->utils->strlen($data['password']) < 6) {
+                if (Utils::strlen($data['password']) < 6) {
                     $this->errors[] = __('Short password');
                 } elseif ($data['password'] != $data['password_conf']) {
                     $this->errors[] = __('Passwords not match');

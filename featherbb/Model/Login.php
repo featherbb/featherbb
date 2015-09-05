@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Utils;
 use DB;
 
 class Login
@@ -29,8 +30,8 @@ class Login
     {
         $this->hook->fire('login_start');
 
-        $form_username = $this->feather->utils->trim($this->request->post('req_username'));
-        $form_password = $this->feather->utils->trim($this->request->post('req_password'));
+        $form_username = Utils::trim($this->request->post('req_username'));
+        $form_password = Utils::trim($this->request->post('req_password'));
         $save_pass = $this->request->post('save_pass');
 
         $user = DB::for_table('users')->where('username', $form_username);
@@ -42,7 +43,7 @@ class Login
         $authorized = false;
 
         if (!empty($user->password)) {
-            $form_password_hash = \FeatherBB\Utils::feather_hash($form_password); // Will result in a SHA-1 hash
+            $form_password_hash = \FeatherBB\Utils::hash($form_password); // Will result in a SHA-1 hash
             $authorized = ($user->password == $form_password_hash);
         }
 
@@ -84,14 +85,14 @@ class Login
         $redirect_url = $this->request->post('redirect_url');
         $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
 
-        redirect($this->feather->utils->escape($redirect_url), __('Login redirect'));
+        redirect(Utils::escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
     {
         $token = $this->hook->fire('logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != \FeatherBB\Utils::feather_hash($this->user->id.\FeatherBB\Utils::feather_hash($this->request->getIp()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != \FeatherBB\Utils::hash($this->user->id.\FeatherBB\Utils::hash($this->request->getIp()))) {
             header('Location: '.$this->feather->url->base());
             exit;
         }
@@ -112,7 +113,7 @@ class Login
 
         $this->hook->fire('logout_end');
 
-        $this->auth->feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), time() + 31536000);
+        $this->auth->feather_setcookie(1, \FeatherBB\Utils::hash(uniqid(rand(), true)), time() + 31536000);
 
         redirect($this->feather->url->base(), __('Logout redirect'));
     }
@@ -130,7 +131,7 @@ class Login
 
         if ($this->feather->request()->isPost()) {
             // Validate the email address
-            $email = strtolower($this->feather->utils->trim($this->request->post('req_email')));
+            $email = strtolower(Utils::trim($this->request->post('req_email')));
             if (!$this->email->is_valid_email($email)) {
                 $errors[] = __('Invalid email');
             }
@@ -172,7 +173,7 @@ class Login
                         $new_password_key = random_pass(8);
 
                         $query['update'] = array(
-                            'activate_string' => \FeatherBB\Utils::feather_hash($new_password),
+                            'activate_string' => \FeatherBB\Utils::hash($new_password),
                             'activate_key'    => $new_password_key,
                             'last_email_sent' => time()
                         );
@@ -193,9 +194,9 @@ class Login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    throw new \FeatherBB\Error(__('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->config['o_admin_email']).'">'.$this->feather->utils->escape($this->config['o_admin_email']).'</a>.', 400);
+                    throw new \FeatherBB\Error(__('Forget mail').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', 400);
                 } else {
-                    $errors[] = __('No email match').' '.$this->feather->utils->escape($email).'.';
+                    $errors[] = __('No email match').' '.Utils::escape($email).'.';
                 }
             }
         }

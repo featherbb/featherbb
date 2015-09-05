@@ -7,6 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Utils;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -21,7 +23,7 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php _e('User find legend') ?></legend>
 					<div class="infldset">
-<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?php echo $feather->utils->escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?php echo Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php _e('User group')."\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == -1) {
@@ -87,9 +89,9 @@ if (!defined('FEATHER')) {
             foreach ($userlist_data as $user) {
                 ?>
 					<tr>
-						<td class="tcl"><?php echo '<a href="'.$feather->url->get('user/'.$user['id'].'/').'">'.$feather->utils->escape($user['username']).'</a>' ?></td>
+						<td class="tcl"><?php echo '<a href="'.$feather->url->get('user/'.$user['id'].'/').'">'.Utils::escape($user['username']).'</a>' ?></td>
 						<td class="tc2"><?php echo get_title($user) ?></td>
-	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo $feather->utils->forum_number_format($user['num_posts']) ?></td>
+	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo Utils::forum_number_format($user['num_posts']) ?></td>
 	<?php endif;
                 ?>
 						<td class="tcr"><?php echo $feather->utils->format_time($user['registered'], true) ?></td>
