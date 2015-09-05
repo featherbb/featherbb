@@ -58,7 +58,7 @@ class Index
     }
 
     // Detects if a "new" icon has to be displayed
-    public function get_new_posts()
+    protected function get_new_posts()
     {
         $this->hook->fire('get_new_posts_start');
 
