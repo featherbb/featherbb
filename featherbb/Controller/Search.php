@@ -31,8 +31,6 @@ class Search
 
     public function display()
     {
-        global $pd;
-
         if ($this->user->g_read_board == '0') {
             throw new \FeatherBB\Error(__('No view'), 403);
         } elseif ($this->user->g_search == '0') {

@@ -164,8 +164,7 @@ class Post
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require FEATHER_ROOT.'featherbb/Helpers/parser.php';
-            $message = preparse_bbcode($message, $errors);
+            $message = $this->feather->parser->preparse_bbcode($message, $errors);
             $message = $this->hook->fire('check_errors_before_post_bbcode', $message);
         }
 
@@ -217,8 +216,7 @@ class Post
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require_once FEATHER_ROOT.'featherbb/Helpers/parser.php';
-            $post['message']  = preparse_bbcode($post['message'], $errors);
+            $post['message']  = $this->feather->parser->preparse_bbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
@@ -871,13 +869,9 @@ class Post
     // Display the topic review if needed
     public function topic_review($tid)
     {
-        global $pd;
-
         $post_data = array();
 
         $post_data = $this->hook->fire('topic_review_start', $post_data, $tid);
-
-        require_once FEATHER_ROOT.'featherbb/Helpers/parser.php';
 
         $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 
@@ -888,7 +882,7 @@ class Post
         $result = $result->find_many();
 
         foreach($result as $cur_post) {
-            $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+            $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
             $post_data[] = $cur_post;
         }
 

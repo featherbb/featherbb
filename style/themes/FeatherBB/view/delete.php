@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->base() ?>>"><?php _e('Index') ?></a></li>
+			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_post['fid'].'/'.$cur_post['forum_name'].'/') ?>"><?php echo $feather->utils->escape($cur_post['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('post/'.$id.'/#p'.$id) ?>"><?php echo $feather->utils->escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Delete post') ?></strong></li>

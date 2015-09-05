@@ -758,8 +758,6 @@ class Profile
 
     public function update_profile($id, $info, $section)
     {
-        global $pd;
-
         $info = $this->hook->fire('update_profile_start', $info, $id, $section);
 
         $username_updated = false;
@@ -904,11 +902,9 @@ class Profile
 
                     // Validate BBCode syntax
                     if ($this->config['p_sig_bbcode'] == '1') {
-                        require FEATHER_ROOT.'featherbb/Helpers/parser.php';
-
                         $errors = array();
 
-                        $form['signature'] = preparse_bbcode($form['signature'], $errors, true);
+                        $form['signature'] = $this->feather->parser->preparse_bbcode($form['signature'], $errors, true);
 
                         if (count($errors) > 0) {
                             message('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');

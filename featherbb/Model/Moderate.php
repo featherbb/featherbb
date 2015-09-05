@@ -418,13 +418,9 @@ class Moderate
 
     public function display_posts_view($tid, $start_from)
     {
-        global $pd;
-
         $this->hook->fire('display_posts_view_start', $tid, $start_from);
 
         $post_data = array();
-
-        require FEATHER_ROOT.'featherbb/Helpers/parser.php';
 
         $post_count = 0; // Keep track of post numbers
 
@@ -480,7 +476,7 @@ class Moderate
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post->message = parse_message($cur_post->message, $cur_post->hide_smilies);
+            $cur_post->message = $this->feather->parser->parse_message($cur_post->message, $cur_post->hide_smilies);
 
             $post_data[] = $cur_post;
         }

@@ -76,7 +76,7 @@ class Statistics
                 $total['size'] += $status['Data_length'] + $status['Index_length'];
             }
 
-            $total['size'] = file_size($total['size']);
+            $total['size'] = $this->feather->utils->file_size($total['size']);
         }
 
         $total = $this->hook->fire('model.statistics.get_total_size.total', $total);
