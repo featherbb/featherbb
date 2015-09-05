@@ -9,10 +9,6 @@
 
 namespace FeatherBB;
 
-// Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER'))
-    exit;
-
 class Email
 {
     public function __construct()
