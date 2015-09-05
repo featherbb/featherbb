@@ -27,7 +27,7 @@ class Misc
             throw new \FeatherBB\Error(__('Bad request'), 404);
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
             'active_page' => 'rules'
             ))->addTemplate('misc/rules.php')->display();
@@ -117,7 +117,7 @@ class Misc
             $this->model->send_email($mail);
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
             'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
@@ -144,7 +144,7 @@ class Misc
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),

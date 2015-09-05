@@ -34,7 +34,7 @@ class Help
             throw new \FeatherBB\Error(__('No view'), 403);
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
             'active_page' => 'help',
         ))->addTemplate('help.php')->display();

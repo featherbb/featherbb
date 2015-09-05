@@ -41,7 +41,7 @@ class Plugins
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
         // var_dump($activePlugins);
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
                 'active_page' => 'admin',
                 'pluginsList'    =>    $pluginsList,
@@ -124,7 +124,7 @@ class Plugins
             throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), Utils::escape($plugin)));
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), str_replace('_', ' ', substr($plugin, strpos($plugin, '_') + 1, -4))),
                 'active_page' => 'admin',
                 'admin_console' => true,

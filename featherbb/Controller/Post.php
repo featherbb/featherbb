@@ -200,7 +200,7 @@ class Post
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
                             'required_fields' => $required_fields,
                             'focus_element' => $focus_element,

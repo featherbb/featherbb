@@ -37,7 +37,7 @@ class Options
 
         \FeatherBB\AdminUtils::generateAdminMenu('options');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Options')),
                 'active_page' => 'admin',
                 'admin_console' => true,

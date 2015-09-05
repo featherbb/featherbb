@@ -196,7 +196,7 @@ class Auth extends \Slim\Middleware
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, $this->app->forum_settings['o_maintenance_message']);
 
-        $this->app->view2->setPageInfo(array(
+        $this->app->template->setPageInfo(array(
             'title' => array(Utils::escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
             'active_page' => 'index',
             'message'    =>    $message,

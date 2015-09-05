@@ -194,7 +194,7 @@ class Core extends \Slim\Middleware
                                                'extension' => '.cache'));
         });
         // Load FeatherBB view
-        $this->app->container->singleton('view2', function() {
+        $this->app->container->singleton('template', function() {
             return new \FeatherBB\View();
         });
         // Load FeatherBB url class
@@ -248,8 +248,8 @@ class Core extends \Slim\Middleware
         $this->forum_settings = array_merge($this->app->cache->retrieve('config'), $this->forum_settings);
 
         // Set default style and assets
-        $this->app->view2->setStyle($this->forum_settings['o_default_style']);
-        $this->app->view2->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
+        $this->app->template->setStyle($this->forum_settings['o_default_style']);
+        $this->app->template->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
 
         // Populate FeatherBB Slim object with forum_settings vars
         $this->hydrate('forum_settings', $this->forum_settings);

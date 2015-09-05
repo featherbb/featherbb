@@ -90,23 +90,23 @@ class Viewtopic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->addAsset('canonical', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->template->addAsset('canonical', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/'));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->view2->addAsset('prev', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->template->addAsset('prev', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
             }
             if ($p < $num_pages) {
-                $this->feather->view2->addAsset('next', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->template->addAsset('next', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
             }
         }
 
         if ($this->feather->forum_settings['o_feed_type'] == '1') {
-            $this->feather->view2->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
+            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
         } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
-            $this->feather->view2->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
+            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
             'active_page' => 'viewtopic',
             'page_number'  =>  $p,

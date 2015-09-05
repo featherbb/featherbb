@@ -26,7 +26,7 @@ class Index
             throw new \FeatherBB\Error(__('No view'), 403);
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title'])),
             'active_page' => 'index',
             'is_indexed' => true,

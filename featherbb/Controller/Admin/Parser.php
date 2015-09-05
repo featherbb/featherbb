@@ -206,7 +206,7 @@ class Parser
 
         \FeatherBB\AdminUtils::generateAdminMenu('parser');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Parser')),
                 'active_page' => 'admin',
                 'admin_console' => true,

@@ -37,7 +37,7 @@ class Login
             $this->feather->url->redirect($this->feather->url->get('/'), 'Already logged in');
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                             'redirect_url'    =>    $redirect_url,
                             'active_page' => 'login',
                             'title' => array(Utils::escape($this->config['o_board_title']), __('Login')),
@@ -75,7 +75,7 @@ class Login
             exit;
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Request pass')),

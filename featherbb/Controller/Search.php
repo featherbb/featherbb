@@ -50,27 +50,27 @@ class Search
                         require FEATHER_ROOT.'featherbb/Helpers/parser.php';
                     }
 
-                    $this->feather->view2->setPageInfo(array(
+                    $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
                         'active_page' => 'search',
                     ));
 
                     $this->model->display_search_results($search, $this->feather);
 
-                    $this->feather->view2->setPageInfo(array(
+                    $this->feather->template->setPageInfo(array(
                         'search' => $search,
                     ));
 
-                    $this->feather->view2->addTemplate('search/header.php', 1);
+                    $this->feather->template->addTemplate('search/header.php', 1);
 
                     if ($search['show_as'] == 'posts') {
-                        $this->feather->view2->addTemplate('search/posts.php', 5);
+                        $this->feather->template->addTemplate('search/posts.php', 5);
                     }
                     else {
-                        $this->feather->view2->addTemplate('search/topics.php', 5);
+                        $this->feather->template->addTemplate('search/topics.php', 5);
                     }
 
-                    $this->feather->view2->addTemplate('search/footer.php', 10)->display();
+                    $this->feather->template->addTemplate('search/footer.php', 10)->display();
 
                 } else {
                     redirect($this->feather->url->get('search/'), __('No hits'));
@@ -78,7 +78,7 @@ class Search
         }
         // Display the form
         else {
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),

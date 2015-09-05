@@ -59,7 +59,7 @@ class Delete
 
         $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,

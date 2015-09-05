@@ -195,7 +195,7 @@ $feather->notFound(function () use ($feather){
 
 $feather->error(function (\Exception $e) use ($feather) {
     $feather->response->setStatus($e->getCode());
-    $feather->view2->setPageInfo(array(
+    $feather->template->setPageInfo(array(
         'title' => array(Utils::escape($feather->config['o_board_title']), __('Error')),
         'msg_title' => __('Error'),
         'msg'    =>   $e->getMessage(),

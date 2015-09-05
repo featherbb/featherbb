@@ -55,7 +55,7 @@ class Userlist
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('User list')),
             'active_page' => 'userlist',
             'page_number'  =>  $p,

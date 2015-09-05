@@ -33,12 +33,12 @@ class Error extends \Exception
         $this->feather->response->setBody('');
 
         if (!defined('FEATHER_HEADER')) {
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                 'title' => array(\FeatherBB\Utils::escape($this->feather->config['o_board_title']), __('Info')),
             ));
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
             'msg'    =>    $msg,
             'no_back_link'    => $no_back_link,
         ))->addTemplate('message.php')->display();

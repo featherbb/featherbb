@@ -32,7 +32,7 @@ class Maintenance
         if ($action == 'rebuild') {
             $this->model->rebuild();
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'page_title'    =>    array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Rebuilding search index')),
                     'query_str' => $this->model->get_query_str()
                 )
@@ -49,7 +49,7 @@ class Maintenance
                 $this->model->prune_comply($prune_from, $prune_sticky);
             }
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Prune')),
                     'active_page' => 'admin',
                     'admin_console' => true,
@@ -62,7 +62,7 @@ class Maintenance
 
         \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Maintenance')),
                 'active_page' => 'admin',
                 'admin_console' => true,

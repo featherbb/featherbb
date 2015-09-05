@@ -107,7 +107,7 @@ class Edit
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                             'title' => array(Utils::escape($this->config['o_board_title']), __('Edit post')),
                             'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                             'focus_element' => array('edit', 'req_message'),

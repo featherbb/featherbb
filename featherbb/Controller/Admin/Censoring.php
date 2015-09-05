@@ -48,7 +48,7 @@ class Censoring
 
         \FeatherBB\AdminUtils::generateAdminMenu('censoring');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Censoring')),
                 'focus_element'    =>    array('censoring', 'new_search_for'),
                 'active_page'    =>    'admin',

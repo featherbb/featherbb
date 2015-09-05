@@ -734,7 +734,7 @@ class Search
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
 
-                $this->feather->view2->setPageInfo(array(
+                $this->feather->template->setPageInfo(array(
                     'post_count' => $post_count,
                     'url_topic' => $url_topic,
                     'cur_search' => $cur_search,
@@ -791,7 +791,7 @@ class Search
                     $start_from = $cur_search['start_from'];
                 }
 
-                $this->feather->view2->setPageInfo(array(
+                $this->feather->template->setPageInfo(array(
                     'cur_search' => $cur_search,
                     'start_from' => $start_from,
                     'topic_count' => $topic_count,

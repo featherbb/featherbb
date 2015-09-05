@@ -116,7 +116,7 @@ class Forums
         } else {
             \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
@@ -142,7 +142,7 @@ class Forums
 
             \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
@@ -176,7 +176,7 @@ class Forums
         \FeatherBB\AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \FeatherBB\Model\Admin\Categories();
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                 'active_page' => 'admin',
                 'admin_console' => true,

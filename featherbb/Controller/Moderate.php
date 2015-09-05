@@ -84,7 +84,7 @@ class Moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'action'    =>    'multi',
@@ -138,7 +138,7 @@ class Moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'page' => $p,
@@ -157,7 +157,7 @@ class Moderate
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
                     $posts = $this->model->delete_posts($id, $fid, $p);
 
-                    $this->feather->view2->setPageInfo(array(
+                    $this->feather->template->setPageInfo(array(
                             'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                             'active_page' => 'moderate',
                             'page' => $p,
@@ -168,7 +168,7 @@ class Moderate
                 }
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
 
-                $this->feather->view2->setPageInfo(array(
+                $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'focus_element' => array('subject','new_subject'),
                         'page' => $p,
@@ -194,7 +194,7 @@ class Moderate
                 $cur_topic['subject'] = censor_words($cur_topic['subject']);
             }
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
                         'page' => $p,
                         'active_page' => 'moderate',
@@ -243,7 +243,7 @@ class Moderate
         $start_from = $this->user->disp_topics * ($p - 1);
         $url_forum = $this->feather->url->url_friendly($cur_forum['forum_name']);
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                             'title' => array(Utils::escape($this->config['o_board_title']), Utils::escape($cur_forum['forum_name'])),
                             'active_page' => 'moderate',
                             'page' => $p,
@@ -286,7 +286,7 @@ class Moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                         'action'    =>    'multi',
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
@@ -308,7 +308,7 @@ class Moderate
                 throw new \FeatherBB\Error(__('Not enough topics selected'), 400);
             }
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
@@ -328,7 +328,7 @@ class Moderate
                 $this->model->delete_topics($topics, $fid);
             }
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,

@@ -47,7 +47,7 @@ class Bans
 
             $ban_data = $this->model->find_ban($start_from);
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'admin_console' => true,
                     'page' => $p,
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
@@ -59,7 +59,7 @@ class Bans
         else {
             \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'admin_console' => true,
                     'focus_element' => array('bans', 'new_ban_user'),
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
@@ -76,7 +76,7 @@ class Bans
 
         \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
@@ -98,7 +98,7 @@ class Bans
         }
         \FeatherBB\AdminUtils::generateAdminMenu('bans');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),

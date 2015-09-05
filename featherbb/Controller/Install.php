@@ -30,7 +30,7 @@ class Install
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\install();
         $this->available_langs = \FeatherBB\Lister::getLangs();
-        $this->feather->view2->setStyle('FeatherBB');
+        $this->feather->template->setStyle('FeatherBB');
     }
 
     public function run()
@@ -116,7 +116,7 @@ class Install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                $this->feather->view2->setPageInfo(array(
+                $this->feather->template->setPageInfo(array(
                                                         'languages' => $this->available_langs,
                                                         'supported_dbs' => $this->supported_dbs,
                                                         'data' => $data,
@@ -133,7 +133,7 @@ class Install
                           'description' => __('Description'),
                           'base_url' => $base_url,
                           'default_lang' => $this->install_lang);
-          $this->feather->view2->setPageInfo(array(
+          $this->feather->template->setPageInfo(array(
                                                   'languages' => $this->available_langs,
                                                   'supported_dbs' => $this->supported_dbs,
                                                   'data' => $data,

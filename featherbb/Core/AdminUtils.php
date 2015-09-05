@@ -22,7 +22,7 @@ class AdminUtils
         // $plugins = forum_list_plugins($is_admin);
         $plugins = array();
 
-        $feather->view2->setPageInfo(array(
+        $feather->template->setPageInfo(array(
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
             'plugins'    =>    $plugins,
