@@ -222,8 +222,6 @@ class Viewtopic
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
-        global $pd;
-
         $post_data = array();
 
         $post_data = $this->hook->fire('print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
@@ -387,14 +385,14 @@ class Viewtopic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+            $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
             if ($this->config['o_signatures'] == '1' && $cur_post['signature'] != '' && $this->user->show_sig != '0') {
                 if (isset($avatar_cache[$cur_post['poster_id']])) {
                     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 } else {
-                    $cur_post['signature_formatted'] = parse_signature($cur_post['signature']);
+                    $cur_post['signature_formatted'] = $this->feather->parser->parse_signature($cur_post['signature']);
                     $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
                 }
             }

@@ -31,7 +31,7 @@ class Profile
 
     public function display($id, $section = null)
     {
-        global $pd, $forum_time_formats, $forum_date_formats;
+        global $forum_time_formats, $forum_date_formats;
 
         // Include UTF-8 function
         require FEATHER_ROOT.'featherbb/Helpers/utf8/substr_replace.php';

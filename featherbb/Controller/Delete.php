@@ -21,8 +21,6 @@ class Delete
 
     public function deletepost($id)
     {
-        global $pd;
-
         if ($this->feather->user->g_read_board == '0') {
             throw new \FeatherBB\Error(__('No view'), 403);
         }
@@ -57,8 +55,7 @@ class Delete
             $this->model->handle_deletion($is_topic_post, $id, $cur_post['tid'], $cur_post['fid']);
         }
 
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
-        $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+        $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         $this->feather->view2->setPageInfo(array(
             'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Delete post')),

@@ -58,8 +58,6 @@ class Edit
 
     public function check_errors_before_edit($can_edit_subject, $errors)
     {
-        global $pd;
-
         $errors = $this->hook->fire('check_errors_before_edit_start', $errors);
 
         // If it's a topic it must contain a subject
@@ -93,8 +91,7 @@ class Edit
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require FEATHER_ROOT.'featherbb/Helpers/parser.php';
-            $message = preparse_bbcode($message, $errors);
+            $message = $this->feather->parser->preparse_bbcode($message, $errors);
         }
 
         if (empty($errors)) {
@@ -118,8 +115,6 @@ class Edit
     // If the previous check went OK, setup some variables used later
     public function setup_variables($cur_post, $is_admmod, $can_edit_subject, $errors)
     {
-        global $pd;
-
         $this->hook->fire('setup_variables_start');
 
         $post = array();
@@ -135,8 +130,7 @@ class Edit
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
-            require_once FEATHER_ROOT.'featherbb/Helpers/parser.php';
-            $post['message'] = preparse_bbcode($post['message'], $errors);
+            $post['message'] = $this->feather->parser->preparse_bbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
