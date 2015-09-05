@@ -55,9 +55,9 @@ class Index
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-                redirect($this->feather->url->get('admin/'), __('Running latest version message'));
+                $this->feather->url->redirect($this->feather->urlFor('adminIndex'), __('Running latest version message'));
             } else {
-                redirect($this->feather->url->get('admin/'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
+                $this->feather->url->redirect($this->feather->urlFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
         // Remove /install
@@ -65,7 +65,7 @@ class Index
             $deleted = $this->remove_install_folder($this->feather->forum_env['FEATHER_ROOT'].'install');
 
             if ($deleted) {
-                redirect($this->feather->url->get('admin/'), __('Deleted install.php redirect'));
+                $this->feather->url->redirect($this->feather->urlFor('adminIndex'), __('Deleted install.php redirect'));
             } else {
                 throw new \FeatherBB\Error(__('Delete install.php failed'), 500);
             }

@@ -77,17 +77,14 @@ class Register
 
     public function cancel()
     {
-        redirect($this->feather->url->base());
+        $this->feather->redirect($this->feather->urlFor('home'));
     }
 
     public function rules()
     {
-        // TODO: fix $_GET w/ URL rewriting
-
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
-            exit;
+            $this->feather->redirect($this->feather->urlFor('home'));
         }
 
         // Display an error message if new registrations are disabled
@@ -96,7 +93,7 @@ class Register
         }
 
         if ($this->config['o_rules'] != '1') {
-            redirect($this->feather->url->get('register/agree/'));
+            $this->feather->redirect($this->feather->urlFor('register'));
         }
 
         $this->feather->view2->setPageInfo(array(

@@ -211,7 +211,7 @@ class Maintenance
                     ->delete_many();
         }
 
-        redirect($this->feather->url->get('admin/maintenance/'), __('Posts pruned redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('adminMaintenance'), __('Posts pruned redirect'));
     }
 
     public function get_info_prune($prune_sticky, $prune_from)

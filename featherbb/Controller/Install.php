@@ -200,7 +200,7 @@ class Install
         $flash->save();
 
         // Redirect to homepage
-        redirect($this->feather->url->get('/'));
+        $this->feather->url->redirect($this->feather->urlFor('home'));
     }
 
     public function write_config($array)

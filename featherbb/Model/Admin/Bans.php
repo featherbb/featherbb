@@ -276,7 +276,7 @@ class Bans
         // Regenerate the bans cache
         $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
-        redirect($this->feather->url->get('admin/bans/'), __('Ban edited redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('adminBans'), __('Ban edited redirect'));
     }
 
     public function remove_ban($ban_id)
@@ -291,7 +291,7 @@ class Bans
         // Regenerate the bans cache
         $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
-        redirect($this->feather->url->get('admin/bans/'), __('Ban removed redirect'));
+        $this->feather->url->redirect($this->feather->urlFor('adminBans'), __('Ban removed redirect'));
     }
 
     public function find_ban($start_from = false)

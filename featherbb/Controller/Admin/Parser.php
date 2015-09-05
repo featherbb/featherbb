@@ -35,13 +35,13 @@ class Parser
         require FEATHER_ROOT . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
-        $cache_file = FEATHER_ROOT.'featherbb/cache/cache_parser_data.php';
+        $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
         if ($this->request->post('reset') || !file_exists($cache_file)) {
             require_once(FEATHER_ROOT.'featherbb/Helpers/bbcd_source.php');
             require_once(FEATHER_ROOT.'featherbb/Helpers/bbcd_compile.php');
-            redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['reset_success']);
+            $this->feather->url->redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['reset_success']);
         }
 
         // Load the current BBCode $pd array from featherbb/Helpers/parser_data.inc.php.
@@ -65,7 +65,7 @@ class Parser
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
                                     if (move_uploaded_file($f['tmp_name'], FEATHER_ROOT .'style/img/smilies/'. $name)) {
-                                        redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['upload success']);
+                                        $this->feather->url->redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new \FeatherBB\Error($lang_admin_parser['upload_err_1'], 500);
                                     }
@@ -199,7 +199,7 @@ class Parser
             }
 
             require_once('featherbb/Helpers/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
-            redirect($this->feather->url->get('admin/parser/'), $lang_admin_parser['save_success']);
+            $this->feather->url->redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['save_success']);
         }
 
         \FeatherBB\AdminUtils::generateAdminMenu('parser');

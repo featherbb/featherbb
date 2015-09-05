@@ -57,7 +57,7 @@ class Profile
                 $query = $this->hook->fireDB('change_pass_activate_query', $query);
                 $query = $query->save();
 
-                $this->feather->url->redirect($this->feather->url->get('/'), __('Pass updated'));
+                $this->feather->url->redirect($this->feather->urlFor('home'), __('Pass updated'));
             }
         }
 
@@ -193,7 +193,7 @@ class Profile
                 $update_mail = $this->hook->fireDB('change_email_query', $update_mail);
                 $update_mail = $update_mail->save();
 
-                $this->feather->url->redirect($this->feather->url->get('/'), __('Email updated'));
+                $this->feather->url->redirect($this->feather->urlFor('home'), __('Email updated'));
             }
         } elseif ($this->request->isPost()) {
             $this->hook->fire('change_email_post');

@@ -28,7 +28,7 @@ class Core extends \Slim\Middleware
 	{
         // Handle empty values in data
         $data = array_merge(array('config_file' => 'featherbb/config.php',
-                                  'cache_dir' => 'featherbb/cache/',
+                                  'cache_dir' => 'cache/',
                                   'debug'   => false), $data);
         // Define some core variables
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
@@ -55,7 +55,7 @@ class Core extends \Slim\Middleware
                 'FEATHER' => true, // Legacy
                 'FEATHER_ROOT' => '',
                 'FORUM_CONFIG_FILE' => 'featherbb/config.php',
-                'FORUM_CACHE_DIR' => 'featherbb/cache/',
+                'FORUM_CACHE_DIR' => 'cache/',
                 'FORUM_VERSION' => '1.0.0',
                 'FORUM_NAME' => 'FeatherBB',
                 'FORUM_DB_REVISION' => 21,

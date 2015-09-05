@@ -9,7 +9,7 @@
  */
 
 // This script compiles the $options, $smilies and $bbcd arrays (from bbcd_source.php script
-// or from an admin page web form) into the featherbb/cache/cache_parser_data.php.
+// or from an admin page web form) into the cache/cache_parser_data.php.
 
 // Initialize a new global parser data array $pd:
 $pd = array(
@@ -419,7 +419,7 @@ $s .= var_export($pd, true);
 $s .= ";\n";
 
 $s .= "?>";
-file_put_contents(FEATHER_ROOT.'featherbb/cache/cache_parser_data.php', $s);
+file_put_contents(FEATHER_ROOT.'cache/cache_parser_data.php', $s);
 
 // Clean up our global variables.
 unset($all_tags); unset($all_block_tags);

@@ -120,7 +120,7 @@ class Post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    redirect($this->feather->url->get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
+                    $this->feather->url->redirect($this->feather->url->get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
                 }
         }
 

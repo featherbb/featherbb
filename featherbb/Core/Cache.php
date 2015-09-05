@@ -54,7 +54,7 @@ class Cache
     protected static function getDefaultSettings()
     {
         return array('name' => 'default',
-        'path' => 'featherbb/cache/',
+        'path' => 'cache/',
         'extension' => '.cache');
     }
 
