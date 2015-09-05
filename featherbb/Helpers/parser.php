@@ -208,7 +208,7 @@ class Parser
             if ($contents === null) // On error, preg_replace_callback returns NULL.
 
             { // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-                $new_errors[] = sprintf(__('BBerr pcre', preg_error()));
+                $new_errors[] = sprintf(__('BBerr pcre'), preg_error());
                 $contents = ''; // Zero out the contents.
             }
         }
@@ -252,12 +252,12 @@ class Parser
             { // Otherwise we have an erroneous attribute which is either unexpected or unrecognized.
                 // Error #2: 'Unexpected attribute: "%1$s". (No attribute allowed for [%2$s].'.
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-                $new_errors[] = sprintf(__('BBerr unexpected attribute', $attribute, $tagname));
+                $new_errors[] = sprintf(__('BBerr unexpected attribute'), $attribute, $tagname);
             }
             else
             { // Error #3: 'Unrecognized attribute: "%1$s", is not valid for [%2$s].'
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-                $new_errors[] = sprintf(__('BBerr unrecognized attribute', $attribute, $tagname));
+                $new_errors[] = sprintf(__('BBerr unrecognized attribute'), $attribute, $tagname);
             }
 
             // Make sure attribute does nor contain a valid BBcode tag.
@@ -276,7 +276,7 @@ class Parser
                 }
                 else
                 { // Error #4b: 'Invalid attribute, [%s] requires specific attribute.'
-                    $new_errors[] = sprintf(__('BBerr invalid attrib', $tagname));
+                    $new_errors[] = sprintf(__('BBerr invalid attrib'), $tagname);
                 }
             }
         }
@@ -291,7 +291,7 @@ class Parser
             else
             { // Error #5: '[%1$s] is missing a required attribute.'.
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
-                $new_errors[] = sprintf(__('BBerr missing attribute', $tagname));
+                $new_errors[] = sprintf(__('BBerr missing attribute'), $tagname);
             }
         }
 
@@ -310,7 +310,7 @@ class Parser
                     $fmt_open = $fmt_close = '';
                     break;
                 case 'err': // Error #6: '[%1$s] tag nesting depth: %2$d exceeds allowable limit: %3$d.'.
-                    $new_errors[] = sprintf(__('BBerr nesting overflow', $tagname, $tag['depth'], $tag['depth_max']));
+                    $new_errors[] = sprintf(__('BBerr nesting overflow'), $tagname, $tag['depth'], $tag['depth_max']);
                     break;
                 default:
             }
@@ -322,18 +322,18 @@ class Parser
             // Yes. Pick between error #6 and #7.
             if ($parent === $tagname)
             { // Error #7: '[%s] was opened within itself, this is not allowed.'
-                $new_errors[] = sprintf(__('BBerr self-nesting', $tagname));
+                $new_errors[] = sprintf(__('BBerr self-nesting'), $tagname);
             }
             else
             { // Error #8: '[%1$s] was opened within [%2$s], this is not allowed.'
-                $new_errors[] = sprintf(__('BBerr invalid nesting', $tagname, $parent));
+                $new_errors[] = sprintf(__('BBerr invalid nesting'), $tagname, $parent);
             }
         }
 
         // Verify our parent tag is in our 'parents' allowable array if it exists.
         if (isset($tag['parents']) && !isset($tag['parents'][$parent]))
         { // Error #9: '[%1$s] cannot be within: [%2$s]. Allowable parent tags: %3$s.'.
-            $new_errors[] = sprintf(__('BBerr invalid parent', $tagname, $parent, '('.implode('), (', array_keys($tag['parents'])).')'));
+            $new_errors[] = sprintf(__('BBerr invalid parent'), $tagname, $parent, '('.implode('), (', array_keys($tag['parents'])).')');
         }
 
         // -----------------------------------------
@@ -371,7 +371,7 @@ class Parser
                 }
                 else
                 { // Error #10a: 'Invalid URL name: %s'.
-                    $new_errors[] = sprintf(__('BBerr Invalid URL name', $contents));
+                    $new_errors[] = sprintf(__('BBerr Invalid URL name'), $contents);
                 }
                 break;
 
@@ -379,7 +379,7 @@ class Parser
                 // TODO: improve this quick-n-dirty email check.
                 if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $contents))
                 { // Error #10c: 'Invalid email address: %s'.
-                    $new_errors[] = sprintf(__('BBerr Invalid email address', $contents));
+                    $new_errors[] = sprintf(__('BBerr Invalid email address'), $contents);
                 }
                 break;
 
@@ -418,14 +418,14 @@ class Parser
                 }
                 else
                 { // Error #10b: 'Invalid URL name: %s'.
-                    $new_errors[] = sprintf(__('BBerr Invalid URL name', $attribute));
+                    $new_errors[] = sprintf(__('BBerr Invalid URL name'), $attribute);
                 }
                 break;
 
             case 'color':
                 if (!preg_match($this->pd['re_color'], $attribute))
                 { // Error #11: 'Invalid color attribute: %s'.
-                    $new_errors[] = sprintf(__('BBerr Invalid color', $attribute));
+                    $new_errors[] = sprintf(__('BBerr Invalid color'), $attribute);
                 }
                 break;
 
@@ -433,7 +433,7 @@ class Parser
                 // TODO: improve this quick-n-dirty email check.
                 if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $attribute))
                 { // Error #10c: 'Invalid email address: %s'.
-                    $new_errors[] = sprintf(__('BBerr Invalid email address', $attribute));
+                    $new_errors[] = sprintf(__('BBerr Invalid email address'), $attribute);
                 }
                 break;
 
@@ -499,7 +499,7 @@ class Parser
                                             }
                                             else
                                             { // Error #13: 'Unable to retrieve image data from remote url: %s'.
-                                                $new_errors[] = sprintf(__('BBerr bad meta data', $contents));
+                                                $new_errors[] = sprintf(__('BBerr bad meta data'), $contents);
                                             } // NOTE: cannot generate this error.
                                         }
                                         else
@@ -531,7 +531,7 @@ class Parser
                             }
                             else
                             { // Error #16: 'Bad HTTP response header: "%s"'.
-                                $new_errors[] = sprintf(__('BBerr bad http response', $http[0]));
+                                $new_errors[] = sprintf(__('BBerr bad http response'), $http[0]);
                             }
                         }
                         else
@@ -663,7 +663,7 @@ class Parser
                 $contents = $m[1];
             else
             { // Error #12: 'Invalid content, [%s] requires specific content.'
-                $new_errors[] = sprintf(__('BBerr invalid content', $tagname));
+                $new_errors[] = sprintf(__('BBerr invalid content'), $tagname);
             }
         }
         // Silently strip empty or all-white tags:
@@ -741,7 +741,7 @@ class Parser
         if ($newtext === null)
         { // On error, preg_replace_callback returns NULL.
             // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-            $errors[] = sprintf(__('BBerr pcre', preg_error()));
+            $errors[] = sprintf(__('BBerr pcre'), preg_error());
             return $text;
         }
         $newtext = str_replace("\3", '[', $newtext); // Fixup CODE sections.
@@ -796,11 +796,11 @@ class Parser
     {
         if ($matches[0][1] === '/')
         { // Error #18: 'Orphan close tag: [/%s] is missing its open tag.'
-            $errmsg = sprintf(__('BBerr orphan close', $matches[1]));
+            $errmsg = sprintf(__('BBerr orphan close'), $matches[1]);
         }
         else
         { // Error #19: 'Orphan open tag: [%s] is missing its close tag.'
-            $errmsg = sprintf(__('BBerr orphan open', $matches[1]));
+            $errmsg = sprintf(__('BBerr orphan open'), $matches[1]);
         }
         $this->pd['new_errors'][] = $errmsg; // Append to array of errors so far.
         return '[err='.$errmsg.']'.$matches[0].'[/err]';
