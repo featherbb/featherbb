@@ -1,14 +1,12 @@
 <?php
 
-// parser.php Rev:20110413_1700
-/*---
-
-Copyright (C) 2008-2011 FluxBB.org
-New 2011 parser code copyright (C) 2011 Jeff Roberson (jmrware.com).
-based on code copyright (C) 2002-2005 Rickard Andersson
-License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
-
----*/
+/**
+ * Copyright (C) 2015 FeatherBB
+ * Parser (C) 2011 Jeff Roberson (jmrware.com)
+ * based on code by (C) 2008-2012 FluxBB
+ * and Rickard Andersson (C) 2002-2008 PunBB
+ * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ */
 
 namespace FeatherBB;
 
@@ -16,7 +14,7 @@ namespace FeatherBB;
 if (!defined('FEATHER'))
     exit;
 
-define('FEATHER_PARSER', '11-Feb-2011 13:33');
+define('FEATHER_PARSER', 1);
 
 // !!!! AVOIDING PCRE STACK OVERFLOWS WHICH SEG-FAULT CRASH APACHE/PHP !!!!
 // By default, PHP sets up pcre.recursion_limit way too high (100000). According
@@ -45,8 +43,8 @@ class Parser
 {
     public static function compile()
     {
-        require_once (PARSER_ROOT.'bbcd_source.php');
-        require_once (PARSER_ROOT.'bbcd_compile.php');
+        require(PARSER_ROOT.'bbcd_source.php');
+        require(PARSER_ROOT.'bbcd_compile.php');
         return $pd;
     }
 
@@ -54,10 +52,10 @@ class Parser
 
     public function __construct($pd = null)
     {
-        if (!isset($pd))
-            $pd = Parser::compile();
+        if (!isset($pd)) {
+            $this->pd = Parser::compile();
+        }
 
-        $this->pd = $pd;
         $this->feather = \Slim\Slim::getInstance();
     }
 
