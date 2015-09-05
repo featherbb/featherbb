@@ -365,7 +365,10 @@ class Parser
                 // Sanitize contents which is (hopefully) a url link. Trim spaces.
                 $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
                 // Handle special case link to a
-                if (($m = $this->feather->url->is_valid($contents)))
+                if ($this->feather->user->g_post_links != '1') {
+                    $new_errors[] = __('BBerr cannot post URLs');
+                }
+                else if (($m = $this->feather->url->is_valid($contents)))
                 {
                     $contents = $m['url']; // Fetch possibly more complete url address.
                 }
@@ -453,7 +456,7 @@ class Parser
                     { // Valid URI?
                         // Yes. Fetch file headers containing file type and size ("Content-Type" and "Content-Length").
                         // ??? Should this call to get_headers have an @ in case of weird errors?
-                        if (($http = get_headers($contents)) !== false && is_array($http))
+                        if (($http = @get_headers($contents)) !== false && is_array($http))
                         {
                             if (preg_match('/\b200\s++OK\s*+$/i', $http[0]))
                             { // Good response header?
