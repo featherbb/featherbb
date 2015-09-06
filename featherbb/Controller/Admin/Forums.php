@@ -9,10 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Core\Error;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
 
 class Forums

@@ -11,7 +11,6 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 
 class Delete
 {

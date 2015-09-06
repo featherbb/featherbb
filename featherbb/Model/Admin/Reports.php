@@ -9,10 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Core\Error;
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Url;
 
 class Reports
 {

@@ -57,10 +57,9 @@
 
 namespace FeatherBB;
 use DB;
-use FeatherBB\Core\Error;
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Cache;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 define('FEATHER_QUIET_VISIT', 1);
 

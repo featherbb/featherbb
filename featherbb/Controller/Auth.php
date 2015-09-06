@@ -10,13 +10,12 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
-use FeatherBB\Model\Cache;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 use FeatherBB\Model\Auth as ModelAuth;
-use DB;
+use FeatherBB\Model\Cache;
 
 class Auth
 {

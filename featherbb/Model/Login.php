@@ -9,12 +9,12 @@
 
 namespace FeatherBB\Model;
 
+use DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
-use DB;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Login
 {

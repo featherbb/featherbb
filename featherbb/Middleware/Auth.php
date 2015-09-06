@@ -13,12 +13,12 @@
 
 namespace FeatherBB\Middleware;
 
+use DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
+use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
-use DB;
 
 class Auth extends \Slim\Middleware
 {
