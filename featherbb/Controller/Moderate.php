@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Moderate
 {
     public function __construct()
@@ -19,21 +22,16 @@ class Moderate
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Moderate();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/topic.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/forum.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/misc.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/post.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/topic.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/misc.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/post.mo');
     }
 
     public function gethostpost($pid)
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         $this->model->display_ip_address_post($pid);
@@ -42,7 +40,7 @@ class Moderate
     public function gethostip($ip)
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         $this->model->display_ip_info($ip);
@@ -51,7 +49,7 @@ class Moderate
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         if ($action == 'get_host') {
@@ -63,7 +61,7 @@ class Moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Move one topic
@@ -74,7 +72,7 @@ class Moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                throw new \FeatherBB\Error(__('No topics selected'), 400);
+                throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
             }
 
             $topics = implode(',', array_map('intval', array_keys($topics)));
@@ -82,8 +80,8 @@ class Moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'action'    =>    'multi',
                     'id'    =>    $fid,
@@ -97,7 +95,11 @@ class Moderate
         if ($action == 'stick') {
             $this->model->stick_topic($id, $fid);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Stick topic redirect'));
+=======
+            redirect(Url::get('topic/'.$id.'/'), __('Stick topic redirect'));
+>>>>>>> development
         }
 
 
@@ -105,21 +107,33 @@ class Moderate
         if ($action == 'unstick') {
             $this->model->unstick_topic($id, $fid);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Unstick topic redirect'));
+=======
+            redirect(Url::get('topic/'.$id.'/'), __('Unstick topic redirect'));
+>>>>>>> development
         }
 
         // Open a topic
         if ($action == 'open') {
             $this->model->open_topic($id, $fid);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Open topic redirect'));
+=======
+            redirect(Url::get('topic/'.$id.'/'), __('Open topic redirect'));
+>>>>>>> development
         }
 
         // Close a topic
         if ($action == 'close') {
             $this->model->close_topic($id, $fid);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Close topic redirect'));
+=======
+            redirect(Url::get('topic/'.$id.'/'), __('Close topic redirect'));
+>>>>>>> development
         }
 
         $cur_topic = $this->model->get_topic_info($fid, $id);
@@ -136,8 +150,8 @@ class Moderate
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+            $this->feather->template->setPageInfo(array(
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'page' => $p,
                         'action'    =>    'single',
@@ -155,8 +169,8 @@ class Moderate
                 if ($this->request->post('delete_posts') || $this->request->post('delete_posts_comply')) {
                     $posts = $this->model->delete_posts($id, $fid, $p);
 
-                    $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                    $this->feather->template->setPageInfo(array(
+                            'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                             'active_page' => 'moderate',
                             'page' => $p,
                             'id' => $id,
@@ -166,8 +180,8 @@ class Moderate
                 }
             if ($this->request->post('split_posts') || $this->request->post('split_posts_comply')) {
 
-                $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                $this->feather->template->setPageInfo(array(
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'focus_element' => array('subject','new_subject'),
                         'page' => $p,
                         'active_page' => 'moderate',
@@ -192,16 +206,16 @@ class Moderate
                 $cur_topic['subject'] = censor_words($cur_topic['subject']);
             }
 
-            $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), $this->feather->utils->escape($cur_topic['forum_name']), $this->feather->utils->escape($cur_topic['subject'])),
+            $this->feather->template->setPageInfo(array(
+                        'title' => array(Utils::escape($this->config['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
                         'page' => $p,
                         'active_page' => 'moderate',
                         'cur_topic' => $cur_topic,
-                        'url_topic' => $this->feather->url->url_friendly($cur_topic['subject']),
-                        'url_forum' => $this->feather->url->url_friendly($cur_topic['forum_name']),
+                        'url_topic' => Url::url_friendly($cur_topic['subject']),
+                        'url_forum' => Url::url_friendly($cur_topic['forum_name']),
                         'fid' => $fid,
                         'id' => $id,
-                        'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#'),
+                        'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#'),
                         'post_data' => $this->model->display_posts_view($id, $start_from),
                         'button_status' => $button_status,
                         'start_from' => $start_from,
@@ -213,7 +227,7 @@ class Moderate
     public function display($id, $name = null, $page = null)
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Make sure that only admmods allowed access this page
@@ -221,7 +235,7 @@ class Moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Fetch some info about the forum
@@ -229,7 +243,7 @@ class Moderate
 
         // Is this a redirect forum? In that case, abort!
         if ($cur_forum['redirect_url'] != '') {
-            throw new \FeatherBB\Error(__('Bad request'), '404');
+            throw new \FeatherBB\Core\Error(__('Bad request'), '404');
         }
 
         $sort_by = $this->model->forum_sort_by($cur_forum['sort_by']);
@@ -239,17 +253,17 @@ class Moderate
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->user->disp_topics * ($p - 1);
-        $url_forum = $this->feather->url->url_friendly($cur_forum['forum_name']);
+        $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
-        $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), $this->feather->utils->escape($cur_forum['forum_name'])),
+        $this->feather->template->setPageInfo(array(
+                            'title' => array(Utils::escape($this->config['o_board_title']), Utils::escape($cur_forum['forum_name'])),
                             'active_page' => 'moderate',
                             'page' => $p,
                             'id' => $id,
                             'p' => $p,
                             'url_forum' => $url_forum,
                             'cur_forum' => $cur_forum,
-                            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'moderate/forum/'.$id.'/#'),
+                            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/forum/'.$id.'/#'),
                             'topic_data' => $this->model->display_topics($id, $sort_by, $start_from),
                             'start_from' => $start_from,
                             )
@@ -259,7 +273,7 @@ class Moderate
     public function dealposts($fid)
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Make sure that only admmods allowed access this page
@@ -267,7 +281,7 @@ class Moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Move one or more topics
@@ -278,15 +292,15 @@ class Moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                throw new \FeatherBB\Error(__('No topics selected'), 400);
+                throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
             }
 
             // Check if there are enough forums to move the topic
             $this->model->check_move_possible();
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                         'action'    =>    'multi',
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
@@ -303,11 +317,11 @@ class Moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (count($topics) < 2) {
-                throw new \FeatherBB\Error(__('Not enough topics selected'), 400);
+                throw new \FeatherBB\Core\Error(__('Not enough topics selected'), 400);
             }
 
-            $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+            $this->feather->template->setPageInfo(array(
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
@@ -319,15 +333,15 @@ class Moderate
         elseif ($this->request->post('delete_topics') || $this->request->post('delete_topics_comply')) {
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                throw new \FeatherBB\Error(__('No topics selected'), 400);
+                throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
             }
 
             if ($this->request->post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $fid);
             }
 
-            $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Moderate')),
+            $this->feather->template->setPageInfo(array(
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
                         'active_page' => 'moderate',
                         'id'    =>    $fid,
                         'topics'    =>    $topics,
@@ -344,13 +358,17 @@ class Moderate
             if ($this->request->post('open') || $this->request->post('close')) {
                 $topics = $this->request->post('topics') ? @array_map('intval', @array_keys($this->request->post('topics'))) : array();
                 if (empty($topics)) {
-                    throw new \FeatherBB\Error(__('No topics selected'), 400);
+                    throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
                 }
 
                 $this->model->close_multiple_topics($action, $topics, $fid);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
+<<<<<<< HEAD
                 $this->feather->url->redirect($this->feather->urlFor('moderateForum', array('id' => $fid)), $redirect_msg);
+=======
+                redirect(Url::get('moderate/forum/'.$fid.'/'), $redirect_msg);
+>>>>>>> development
             }
         }
     }

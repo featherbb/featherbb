@@ -7,6 +7,12 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+<<<<<<< HEAD
+=======
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
+>>>>>>> development
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -19,10 +25,16 @@ $cur_index = 1;
 <div class="linkst">
 	<div class="inbox">
 		<ul class="crumbs">
+<<<<<<< HEAD
 			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?= $feather->urlFor('viewForum', array('id'=>$cur_post['fid'], 'name'=>$feather->url->url_friendly($cur_post['forum_name']),'page'=>'1')) ?>"><?= $feather->utils->escape($cur_post['forum_name']) ?></a></li>
             <!-- <li><span>»&#160;</span><a href="<?= $feather->urlFor('viewTopic', array('id'=>$cur_post['tid'], 'name'=>$feather->url->url_friendly($cur_post['subject']))) ?>"><?= $feather->utils->escape($cur_post['subject']) ?></a></li> -->
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('topic/'.$cur_post['tid'].'/'.$feather->url->url_friendly($cur_post['subject']).'/') ?>"><?php echo $feather->utils->escape($cur_post['subject']) ?></a></li>
+=======
+			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo Url::get('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo Utils::escape($cur_post['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo Url::get('topic/'.$cur_post['tid'].'/'.$feather->url->url_friendly($cur_post['subject']).'/') ?>"><?php echo Utils::escape($cur_post['subject']) ?></a></li>
+>>>>>>> development
 			<li><span>»&#160;</span><strong><?php _e('Edit post') ?></strong></li>
 		</ul>
 	</div>
@@ -70,14 +82,14 @@ endif;
 ?>
 <!-- Init BBcode editor toolbar -->
 <script>
-    var baseUrl = '<?php echo $feather->utils->escape($feather->url->base(true)); ?>',
+    var baseUrl = '<?php echo Utils::escape(Url::base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
+<script src="<?php echo Url::base() ?>/style/imports/bbeditor.js"></script>
 <div id="editform" class="blockform">
 	<h2><span><?php _e('Edit post') ?></span></h2>
 	<div class="box">
-		<form id="edit" method="post" action="<?php echo $feather->url->get('edit/'.$id.'/') ?>" onsubmit="return process_form(this)">
+		<form id="edit" method="post" action="<?php echo Url::get('edit/'.$id.'/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
@@ -85,15 +97,15 @@ endif;
 					<input type="hidden" name="form_sent" value="1" />
 					<div class="infldset txtarea">
 <?php if ($can_edit_subject): ?>						<label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br />
-						<input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" value="<?php echo $feather->utils->escape($feather->request->post('req_subject') ? $feather->request->post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
+						<input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" value="<?php echo Utils::escape($feather->request->post('req_subject') ? $feather->request->post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
 						<script>postEditorToolbar('req_message');</script>
-                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo $feather->utils->escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
+                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo Utils::escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo $feather->url->get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
 						</ul>
 					</div>
 				</fieldset>

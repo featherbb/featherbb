@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Debug
@@ -30,10 +32,10 @@ class Debug
     {
         self::$feather = \Slim\Slim::getInstance();
 
-        $data = array('exec_time' => (self::$feather->utils->get_microtime() - self::$feather->start));
+        $data = array('exec_time' => (Utils::get_microtime() - self::$feather->start));
         $data['nb_queries'] = (isset(DB::get_query_log()[0])) ? count(DB::get_query_log()[0]) : 'N/A';
-        $data['mem_usage'] = (function_exists('memory_get_usage')) ? self::$feather->utils->file_size(memory_get_usage()) : 'N/A';
-        $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? self::$feather->utils->file_size(memory_get_peak_usage()) : 'N/A';
+        $data['mem_usage'] = (function_exists('memory_get_usage')) ? Utils::file_size(memory_get_usage()) : 'N/A';
+        $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? Utils::file_size(memory_get_peak_usage()) : 'N/A';
         return $data;
     }
 }

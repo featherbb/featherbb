@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -54,7 +57,7 @@ if (!empty($errors)) {
 						<input type="hidden" name="username" value="" />
 						<input type="hidden" name="password" value="" />
 						<label class="required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?php if ($feather->request->post('req_user')) {
-    echo $feather->utils->escape($feather->request->post('req_user'));
+    echo Utils::escape($feather->request->post('req_user'));
 } ?>" size="25" maxlength="25" /><br /></label>
 					</div>
 				</fieldset>
@@ -64,10 +67,10 @@ if (!empty($errors)) {
 					<legend><?php _e('Pass legend') ?></legend>
 					<div class="infldset">
 						<label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password1" value="<?php if ($feather->request->post('req_password1')) {
-    echo $feather->utils->escape($feather->request->post('req_password1'));
+    echo Utils::escape($feather->request->post('req_password1'));
 } ?>" size="16" /><br /></label>
 						<label class="conl required"><strong><?php _e('Confirm pass') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password2" value="<?php if ($feather->request->post('req_password2')) {
-    echo $feather->utils->escape($feather->request->post('req_password2'));
+    echo Utils::escape($feather->request->post('req_password2'));
 } ?>" size="16" /><br /></label>
 						<p class="clearb"><?php _e('Pass info') ?></p>
 					</div>
@@ -80,11 +83,11 @@ if (!empty($errors)) {
 <?php if ($feather->forum_settings['o_regs_verify'] == '1'): ?>						<p><?php _e('Email info') ?></p>
 <?php endif; ?>						<label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br />
 						<input type="text" name="req_email1" value="<?php if ($feather->request->post('req_email1')) {
-    echo $feather->utils->escape($feather->request->post('req_email1'));
+    echo Utils::escape($feather->request->post('req_email1'));
 } ?>" size="50" maxlength="80" /><br /></label>
 <?php if ($feather->forum_settings['o_regs_verify'] == '1'): ?>						<label class="required"><strong><?php _e('Confirm email') ?> <span><?php _e('Required') ?></span></strong><br />
 						<input type="text" name="req_email2" value="<?php if ($feather->request->post('req_email2')) {
-    echo $feather->utils->escape($feather->request->post('req_email2'));
+    echo Utils::escape($feather->request->post('req_email2'));
 } ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>					</div>
 				</fieldset>

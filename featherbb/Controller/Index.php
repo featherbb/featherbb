@@ -9,23 +9,26 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Index
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Index();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->feather->user->language.'/index.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/index.mo');
     }
 
     public function display()
     {
         if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title'])),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title'])),
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),

@@ -9,7 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\AdminUtils;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Reports
 {
@@ -38,8 +40,8 @@ class Reports
 
         AdminUtils::generateAdminMenu('reports');
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Reports')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Reports')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'report_data'   =>  $this->model->get_reports(),

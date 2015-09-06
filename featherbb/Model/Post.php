@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Post
@@ -22,7 +24,7 @@ class Post
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     //  Get some info about the post
@@ -65,7 +67,7 @@ class Post
         $cur_posting = $cur_posting->find_one();
 
         if (!$cur_posting) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $cur_posting = $this->hook->fire('get_info_post', $cur_posting);
@@ -76,7 +78,7 @@ class Post
     // Checks the post for errors before posting
     public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
     {
-        global $lang_antispam, $lang_antispam_questions, $pd;
+        global $lang_antispam, $lang_antispam_questions;
 
         $fid = $this->hook->fire('check_errors_before_post_start', $fid);
 
@@ -84,7 +86,7 @@ class Post
         if ($this->user->is_guest) {
 
             // It's a guest, so we have to validate the username
-            $errors = check_username($this->feather->utils->trim($this->request->post('req_username')), $errors);
+            $errors = check_username(Utils::trim($this->request->post('req_username')), $errors);
 
             $errors = $this->hook->fire('check_errors_before_post_antispam', $errors);
 
@@ -108,11 +110,11 @@ class Post
 
         // If it's a new topic
         if ($fid) {
-            $subject = $this->feather->utils->trim($this->request->post('req_subject'));
+            $subject = Utils::trim($this->request->post('req_subject'));
             $subject = $this->hook->fire('check_errors_before_new_topic_subject', $subject);
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = $this->feather->utils->trim(censor_words($subject));
+                $censored_subject = Utils::trim(censor_words($subject));
                 $censored_subject = $this->hook->fire('check_errors_before_censored', $censored_subject);
             }
 
@@ -120,9 +122,9 @@ class Post
                 $errors[] = __('No subject');
             } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
-            } elseif ($this->feather->utils->strlen($subject) > 70) {
+            } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif ($this->config['p_subject_all_caps'] == '0' && $this->feather->utils->is_all_uppercase($subject) && !$this->user->is_admmod) {
+            } elseif ($this->config['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($subject) && !$this->user->is_admmod) {
                 $errors[] = __('All caps subject');
             }
 
@@ -130,7 +132,7 @@ class Post
         }
 
         if ($this->user->is_guest) {
-            $email = strtolower($this->feather->utils->trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
+            $email = strtolower(Utils::trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
                 $errors = $this->hook->fire('check_errors_before_post_email', $errors, $email);
@@ -152,13 +154,13 @@ class Post
         }
 
         // Clean up message from POST
-        $message = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_message')));
+        $message = Utils::linebreaks(Utils::trim($this->request->post('req_message')));
         $message = $this->hook->fire('check_errors_before_post_message', $message);
 
-        // Here we use strlen() not $this->feather->utils->strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            $errors[] = sprintf(__('Too long message'), $this->feather->utils->forum_number_format(FEATHER_MAX_POSTSIZE));
-        } elseif ($this->config['p_message_all_caps'] == '0' && $this->feather->utils->is_all_uppercase($message) && !$this->user->is_admmod) {
+            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(FEATHER_MAX_POSTSIZE));
+        } elseif ($this->config['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -174,7 +176,7 @@ class Post
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = $this->feather->utils->trim(censor_words($message));
+                $censored_message = Utils::trim(censor_words($message));
 
                 if ($censored_message == '') {
                     $errors[] = __('No message after censoring');
@@ -200,19 +202,19 @@ class Post
         }
         // Otherwise it should be in $feather ($_POST)
         else {
-            $post['username'] = $this->feather->utils->trim($this->request->post('req_username'));
-            $post['email'] = strtolower($this->feather->utils->trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
+            $post['username'] = Utils::trim($this->request->post('req_username'));
+            $post['email'] = strtolower(Utils::trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
         }
 
         if ($this->request->post('req_subject')) {
-            $post['subject'] = $this->feather->utils->trim($this->request->post('req_subject'));
+            $post['subject'] = Utils::trim($this->request->post('req_subject'));
         }
 
         $post['hide_smilies'] = $this->request->post('hide_smilies') ? '1' : '0';
         $post['subscribe'] = $this->request->post('subscribe') ? '1' : '0';
         $post['stick_topic'] = $this->request->post('stick_topic') && $is_admmod ? '1' : '0';
 
-        $post['message']  = $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('req_message')));
+        $post['message']  = Utils::linebreaks(Utils::trim($this->request->post('req_message')));
 
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
@@ -220,7 +222,7 @@ class Post
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
-        $post['message'] = $this->feather->utils->strip_bad_multibyte_chars($post['message']);
+        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
 
         $post['time'] = time();
 
@@ -372,7 +374,7 @@ class Post
         if ($result) {
             $notification_emails = array();
 
-            $censored_message = $this->feather->utils->trim(censor_words($post['message']));
+            $censored_message = Utils::trim(censor_words($post['message']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
@@ -384,13 +386,13 @@ class Post
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
+                    if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+                        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
                         $mail_tpl = $this->hook->fire('send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
                         $mail_tpl_full = $this->hook->fire('send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
@@ -406,8 +408,8 @@ class Post
                         $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
                         $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<post_url>', $this->feather->url->get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$tid.'/'), $mail_message);
+                        $mail_message = str_replace('<post_url>', Url::get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$tid.'/'), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                         $mail_message = $this->hook->fire('send_notifications_reply_mail_message', $mail_message);
 
@@ -415,8 +417,8 @@ class Post
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<post_url>', $this->feather->url->get('post/'.$new_pid.'/#p'.$new_pid), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$tid.'/'), $mail_message_full);
+                        $mail_message_full = str_replace('<post_url>', Url::get('post/'.$new_pid.'/#p'.$new_pid), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$tid.'/'), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
                         $mail_message_full = $this->hook->fire('send_notifications_reply_mail_message_full', $mail_message_full);
 
@@ -580,8 +582,8 @@ class Post
         if ($result) {
             $notification_emails = array();
 
-            $censored_message = $this->feather->utils->trim(censor_words($post['message']));
-            $censored_subject = $this->feather->utils->trim(censor_words($post['subject']));
+            $censored_message = Utils::trim(censor_words($post['message']));
+            $censored_subject = Utils::trim(censor_words($post['subject']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
@@ -593,13 +595,13 @@ class Post
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
+                    if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+                        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
                         $mail_tpl = $this->hook->fire('send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
@@ -614,8 +616,8 @@ class Post
                         $mail_message = str_replace('<topic_subject>', $this->config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message);
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<topic_url>', $this->feather->url->get('topic/'.$new_tid.'/'), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message);
+                        $mail_message = str_replace('<topic_url>', Url::get('topic/'.$new_tid.'/'), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                         $mail_message = $this->hook->fire('send_notifications_new_topic_mail_message', $mail_message);
 
@@ -624,8 +626,8 @@ class Post
                         $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<topic_url>', $this->feather->url->get('topic/'.$new_tid.'/'), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->url->get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message_full);
+                        $mail_message_full = str_replace('<topic_url>', Url::get('topic/'.$new_tid.'/'), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Url::get('unsubscribe/topic/'.$cur_posting['id'].'/'), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
                         $mail_message_full = $this->hook->fire('send_notifications_new_topic_mail_message_full', $mail_message_full);
 
@@ -658,7 +660,7 @@ class Post
         $this->hook->fire('warn_banned_user_start', $post, $new_pid);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
         $mail_tpl = $this->hook->fire('warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -668,7 +670,7 @@ class Post
 
         $mail_message = str_replace('<username>', $post['username'], $mail_message);
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
-        $mail_message = str_replace('<post_url>', $this->feather->url->get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
+        $mail_message = str_replace('<post_url>', Url::get('post/'.$new_pid.'/#p'.$new_pid), $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
         $mail_message = $this->hook->fire('warn_banned_user_mail_message', $mail_message);
 
@@ -761,7 +763,7 @@ class Post
         $quote = $quote->find_one();
 
         if (!$quote) {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
@@ -794,7 +796,7 @@ class Post
             $quote['message'] = censor_words($quote['message']);
         }
 
-        $quote['message'] = $this->feather->utils->escape($quote['message']);
+        $quote['message'] = Utils::escape($quote['message']);
 
         if ($this->config['p_message_bbcode'] == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
@@ -803,10 +805,10 @@ class Post
                     // Check if we need to quote it.
                     // Post has special chars. Escape escapes and quotes then wrap in quotes.
                     if (strpos($quote['poster'], '"') !== false && strpos($quote['poster'], '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
-                        $quote['poster'] = $this->feather->utils->escape(str_replace('\\', '\\\\', $quote['poster']));
+                        $quote['poster'] = Utils::escape(str_replace('\\', '\\\\', $quote['poster']));
                         $quote['poster'] = '\''. $quote['poster'] .'#'. $qid .'\'';
                     } else { // otherwise use double quotes.
-                        $quote['poster'] = $this->feather->utils->escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
+                        $quote['poster'] = Utils::escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
                         $quote['poster'] = '"'. $quote['poster'] .'#'. $qid .'"';
                     }
                 } else {

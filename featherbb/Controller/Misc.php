@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Misc
 {
     public function __construct()
@@ -22,11 +25,11 @@ class Misc
     public function rules()
     {
         if ($this->feather->forum_settings['o_rules'] == '0' || ($this->feather->user->is_guest && $this->feather->user->g_read_board == '0' && $this->feather->forum_settings['o_regs_allow'] == '0')) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
             'active_page' => 'rules'
             ))->addTemplate('misc/rules.php')->display();
     }
@@ -34,7 +37,7 @@ class Misc
     public function markread()
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         $this->model->update_last_visit();
@@ -42,26 +45,34 @@ class Misc
         // Reset tracked topics
         set_tracked_topics(null);
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('home'), __('Mark read redirect'));
+=======
+        redirect(Url::base(), __('Mark read redirect'));
+>>>>>>> development
     }
 
     public function markforumread($id)
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         $tracked_topics = get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
         set_tracked_topics($tracked_topics);
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $id)), __('Mark forum read redirect'));
+=======
+        redirect(Url::get('forum/'.$id.'/'), __('Mark forum read redirect'));
+>>>>>>> development
     }
 
     public function subscribeforum($id)
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         $this->model->subscribe_forum($id);
@@ -70,7 +81,7 @@ class Misc
     public function subscribetopic($id)
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         $this->model->subscribe_topic($id);
@@ -79,7 +90,7 @@ class Misc
     public function unsubscribeforum($id)
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         $this->model->unsubscribe_forum($id);
@@ -88,7 +99,7 @@ class Misc
     public function unsubscribetopic($id)
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         $this->model->unsubscribe_topic($id);
@@ -97,17 +108,17 @@ class Misc
     public function email($id)
     {
         if ($this->feather->user->is_guest || $this->feather->user->g_send_email == '0') {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($id < 2) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         $mail = $this->model->get_info_mail($id);
 
         if ($mail['email_setting'] == 2 && !$this->feather->user->is_admmod) {
-            throw new \FeatherBB\Error(__('Form email disabled'), 403);
+            throw new \FeatherBB\Core\Error(__('Form email disabled'), 403);
         }
 
 
@@ -115,8 +126,8 @@ class Misc
             $this->model->send_email($mail);
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.$this->feather->utils->escape($mail['recipient'])),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
             'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
             'focus_element' => array('email', 'req_subject'),
@@ -128,7 +139,7 @@ class Misc
     public function report($id)
     {
         if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($this->feather->request()->isPost()) {
@@ -142,8 +153,8 @@ class Misc
             $cur_post['subject'] = censor_words($cur_post['subject']);
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Report post')),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),
             'focus_element' => array('report', 'req_reason'),

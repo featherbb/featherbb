@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Move users') ?></span></h2>
 		<div class="box">
-			<form name="confirm_move_users" method="post" action="<?php echo $feather->url->get('admin/users/') ?>">
+			<form name="confirm_move_users" method="post" action="<?php echo Url::get('admin/users/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<input type="hidden" name="users" value="<?php echo implode(',', $move['user_ids']) ?>" />
 				<div class="inform">
@@ -28,7 +31,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php _e('New group label') ?></th>
 									<td>
 										<select name="new_group" tabindex="1">
-<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo $feather->utils->escape($group) ?></option>
+<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo Utils::escape($group) ?></option>
 <?php endforeach;
     ?>
 										</select>

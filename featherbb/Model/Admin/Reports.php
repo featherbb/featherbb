@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Reports
@@ -58,7 +60,11 @@ class Reports
                 ->delete_many();
         }
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminReports'), __('Report zapped redirect'));
+=======
+        redirect(Url::get('admin/reports/'), __('Report zapped redirect'));
+>>>>>>> development
     }
 
     public function get_reports()

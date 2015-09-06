@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -18,7 +21,7 @@ if (!defined('FEATHER')) {
 		<div class="box">
 				<div class="inform">
 					<fieldset>
-                        <form id="groups" method="post" action="<?php echo $feather->url->get('admin/groups/add/') ?>">
+                        <form id="groups" method="post" action="<?php echo Url::get('admin/groups/add/') ?>">
                         <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 						<legend><?php _e('Add group subhead') ?></legend>
 						<div class="infldset">
@@ -32,9 +35,9 @@ if (!defined('FEATHER')) {
 foreach ($groups as $cur_group) {
     if ($cur_group['g_id'] != FEATHER_ADMIN && $cur_group['g_id'] != FEATHER_GUEST) {
         if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
-            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.$feather->utils->escape($cur_group['g_title']).'</option>'."\n";
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
-            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.$feather->utils->escape($cur_group['g_title']).'</option>'."\n";
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         }
     }
 }
@@ -51,7 +54,7 @@ foreach ($groups as $cur_group) {
 				</div>
 				<div class="inform">
 					<fieldset>
-                        <form id="groups" method="post" action="<?php echo $feather->url->get('admin/groups/') ?>">
+                        <form id="groups" method="post" action="<?php echo Url::get('admin/groups/') ?>">
                         	<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 						<legend><?php _e('Default group subhead') ?></legend>
 						<div class="infldset">
@@ -65,9 +68,9 @@ foreach ($groups as $cur_group) {
 foreach ($groups as $cur_group) {
     if ($cur_group['g_id'] > FEATHER_GUEST && $cur_group['g_moderator'] == 0) {
         if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
-            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.$feather->utils->escape($cur_group['g_title']).'</option>'."\n";
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
-            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.$feather->utils->escape($cur_group['g_title']).'</option>'."\n";
+            echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         }
     }
 }
@@ -95,7 +98,7 @@ foreach ($groups as $cur_group) {
 							<table>
 <?php
 foreach ($groups as $cur_group) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.$feather->url->get('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.$feather->url->get('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.$feather->utils->escape($cur_group['g_title']).'</td></tr>'."\n";
+    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.Url::get('admin/groups/edit/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.Url::get('admin/groups/delete/'.$cur_group['g_id'].'/').'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>

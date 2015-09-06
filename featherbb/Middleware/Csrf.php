@@ -7,7 +7,7 @@
 *
 */
 
-namespace FeatherBB;
+namespace FeatherBB\Middleware;
 
 class Csrf extends \Slim\Middleware
 {
@@ -61,7 +61,7 @@ class Csrf extends \Slim\Middleware
             'csrf_key'      => $this->key,
             'csrf_token'    => $this->token,
         ));
-        $this->app->view2->replace(array(
+        $this->app->template->replace(array(
             'csrf_key'      => $this->key,
             'csrf_token'    => $this->token,
         ));

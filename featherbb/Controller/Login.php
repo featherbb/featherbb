@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Login
 {
     public function __construct()
@@ -21,24 +24,23 @@ class Login
 
 
         $this->model = new \FeatherBB\Model\Login();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/login.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/login.mo');
     }
 
     public function display()
     {
         if (!$this->user->is_guest) {
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('home'), 'Already logged in');
+=======
+            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
+>>>>>>> development
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                             'redirect_url'    =>    $redirect_url,
                             'active_page' => 'login',
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Login')),
+                            'title' => array(Utils::escape($this->config['o_board_title']), __('Login')),
                             'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
                             'focus_element' => array('login', 'req_username'),
                             )
@@ -50,7 +52,7 @@ class Login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
+            header('Location: '.Url::base());
             exit;
         }
 
@@ -69,14 +71,14 @@ class Login
         define('FEATHER_QUIET_VISIT', 1);
 
         if (!$this->user->is_guest) {
-            header('Location: '.$this->feather->url->base());
+            header('Location: '.Url::base());
             exit;
         }
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Request pass')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Request pass')),
                 'required_fields' => array('req_email' => __('Email')),
                 'focus_element' => array('request_pass', 'req_email'),
             )

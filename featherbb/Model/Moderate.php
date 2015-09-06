@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Moderate
@@ -21,13 +23,13 @@ class Moderate
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     public function display_ip_info($ip)
     {
         $ip = $this->hook->fire('display_ip_info', $ip);
-        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        throw new \FeatherBB\Core\Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Url::get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function display_ip_address_post($pid)
@@ -40,12 +42,12 @@ class Moderate
         $ip = $ip->find_one_col('poster_ip');
 
         if (!$ip) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $ip = $this->hook->fire('display_ip_address_post', $ip);
 
-        message(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->url->get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        throw new \FeatherBB\Core\Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Url::get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
     }
 
     public function get_moderators($fid)
@@ -81,7 +83,7 @@ class Moderate
         $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         return $cur_topic;
@@ -93,12 +95,12 @@ class Moderate
         $posts = $this->hook->fire('delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
-            throw new \FeatherBB\Error(__('No posts selected'), 404);
+            throw new \FeatherBB\Core\Error(__('No posts selected'), 404);
         }
 
         if ($this->request->post('delete_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
 
             // Verify that the post IDs are valid
@@ -116,7 +118,7 @@ class Moderate
             $result = $result->find_many();
 
             if (count($result) != substr_count($posts, ',') + 1) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
 
             // Delete the posts
@@ -155,7 +157,11 @@ class Moderate
 
             update_forum($fid);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $tid)), __('Delete posts redirect'));
+=======
+            redirect(Url::get('topic/'.$tid.'/'), __('Delete posts redirect'));
+>>>>>>> development
         }
 
         $posts = $this->hook->fire('delete_posts', $posts);
@@ -168,17 +174,17 @@ class Moderate
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
         $posts = $this->hook->fire('split_posts_start', $posts, $tid, $fid);
         if (empty($posts)) {
-            throw new \FeatherBB\Error(__('No posts selected'), 404);
+            throw new \FeatherBB\Core\Error(__('No posts selected'), 404);
         }
 
         if ($this->request->post('split_posts_comply')) {
             if (@preg_match('%[^0-9,]%', $posts)) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
 
             $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
             if ($move_to_forum < 1) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
 
             // How many posts did we just split off?
@@ -194,7 +200,7 @@ class Moderate
             $result = $result->find_many();
 
             if (count($result) != $num_posts_splitted) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
 
             unset($result);
@@ -215,16 +221,16 @@ class Moderate
             $result = $result->find_one();
 
             if (!$result) {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
 
             // Check subject
-            $new_subject = $this->request->post('new_subject') ? $this->feather->utils->trim($this->request->post('new_subject')) : '';
+            $new_subject = $this->request->post('new_subject') ? Utils::trim($this->request->post('new_subject')) : '';
 
             if ($new_subject == '') {
-                throw new \FeatherBB\Error(__('No subject'), 400);
-            } elseif (feather_strlen($new_subject) > 70) {
-                throw new \FeatherBB\Error(__('Too long subject'), 400);
+                throw new \FeatherBB\Core\Error(__('No subject'), 400);
+            } elseif (Utils::strlen($new_subject) > 70) {
+                throw new \FeatherBB\Core\Error(__('Too long subject'), 400);
             }
 
             // Get data from the new first post
@@ -316,7 +322,11 @@ class Moderate
             update_forum($fid);
             update_forum($move_to_forum);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $new_tid)), __('Split posts redirect'));
+=======
+            redirect(Url::get('topic/'.$new_tid.'/'), __('Split posts redirect'));
+>>>>>>> development
         }
 
         $posts = $this->hook->fire('split_posts', $posts);
@@ -357,11 +367,11 @@ class Moderate
                     $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.$this->feather->utils->escape($cur_forum->cat_name).'">'."\n";
+                $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cur_forum->cat_name).'">'."\n";
                 $cur_category = $cur_forum->cid;
             }
 
-            $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'"'.($id == $cur_forum->fid ? ' selected="selected"' : '').'>'.$this->feather->utils->escape($cur_forum->forum_name).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'"'.($id == $cur_forum->fid ? ' selected="selected"' : '').'>'.Utils::escape($cur_forum->forum_name).'</option>'."\n";
         }
 
         $output = $this->hook->fire('get_forum_list_split', $output);
@@ -402,12 +412,12 @@ class Moderate
                     $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.$this->feather->utils->escape($cur_forum->cat_name).'">'."\n";
+                $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cur_forum->cat_name).'">'."\n";
                 $cur_category = $cur_forum->cid;
             }
 
             if ($cur_forum->fid != $id) {
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'">'.$this->feather->utils->escape($cur_forum->forum_name).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'">'.Utils::escape($cur_forum->forum_name).'</option>'."\n";
             }
         }
 
@@ -456,9 +466,9 @@ class Moderate
             // If the poster is a registered user
             if ($cur_post->poster_id > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post->poster_disp = '<a href="'.$this->feather->url->get('user/'.$cur_post->poster_id.'/').'">'.$this->feather->utils->escape($cur_post->poster).'</a>';
+                    $cur_post->poster_disp = '<a href="'.Url::get('user/'.$cur_post->poster_id.'/').'">'.Utils::escape($cur_post->poster).'</a>';
                 } else {
-                    $cur_post->poster_disp = $this->feather->utils->escape($cur_post->poster);
+                    $cur_post->poster_disp = Utils::escape($cur_post->poster);
                 }
 
                 // get_title() requires that an element 'username' be present in the array
@@ -471,7 +481,7 @@ class Moderate
             }
             // If the poster is a guest (or a user that has been deleted)
             else {
-                $cur_post->poster_disp = $this->feather->utils->escape($cur_post->poster);
+                $cur_post->poster_disp = Utils::escape($cur_post->poster);
                 $cur_post->user_title = __('Guest');
             }
 
@@ -491,13 +501,13 @@ class Moderate
         $fid = $this->hook->fire('move_topics_to_start', $fid);
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         $topics = explode(',', $this->request->post('topics'));
         $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
         if (empty($topics) || $move_to_forum < 1) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Verify that the topic IDs are valid
@@ -508,7 +518,7 @@ class Moderate
         $result = $result->find_many();
 
         if (count($result) != count($topics)) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
 
@@ -528,7 +538,7 @@ class Moderate
         $authorized = $authorized->find_one();
 
         if (!$authorized) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
@@ -581,7 +591,11 @@ class Moderate
 
         $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
         $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $move_to_forum)), $redirect_msg);
+=======
+        redirect(Url::get('forum/'.$move_to_forum.'/'), $redirect_msg);
+>>>>>>> development
     }
 
     public function check_move_possible()
@@ -608,7 +622,7 @@ class Moderate
         $result = $result->find_many();
 
         if (count($result) < 2) {
-            throw new \FeatherBB\Error(__('Nowhere to move'), 403);
+            throw new \FeatherBB\Core\Error(__('Nowhere to move'), 403);
         }
     }
 
@@ -617,12 +631,12 @@ class Moderate
         $fid = $this->hook->fire('merge_topics_start', $fid);
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $topics = explode(',', $this->request->post('topics'));
         if (count($topics) < 2) {
-            throw new \FeatherBB\Error(__('Not enough topics selected'), 400);
+            throw new \FeatherBB\Core\Error(__('Not enough topics selected'), 400);
         }
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
@@ -633,7 +647,7 @@ class Moderate
         $result = $result->find_many();
 
         if (count($result) != count($topics)) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // The topic that we are merging into is the one with the smallest ID
@@ -733,7 +747,11 @@ class Moderate
 
         // Update the forum FROM which the topic was moved and redirect
         update_forum($fid);
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Merge topics redirect'));
+=======
+        redirect(Url::get('forum/'.$fid.'/'), __('Merge topics redirect'));
+>>>>>>> development
     }
 
     public function delete_topics($topics, $fid)
@@ -741,7 +759,7 @@ class Moderate
         $this->hook->fire('delete_topics');
 
         if (@preg_match('%[^0-9,]%', $topics)) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         $topics_sql = explode(',', $topics);
@@ -754,7 +772,7 @@ class Moderate
         $result = $result->find_many();
 
         if (count($result) != substr_count($topics, ',') + 1) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Verify that the posts are not by admins
@@ -765,7 +783,7 @@ class Moderate
             $authorized = $this->hook->fireDB('delete_topics_authorized', $authorized);
             $authorized = $authorized->find_many();
             if ($authorized) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
         }
 
@@ -817,7 +835,11 @@ class Moderate
 
         $this->hook->fire('delete_topics');
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Delete topics redirect'));
+=======
+        redirect(Url::get('forum/'.$fid.'/'), __('Delete topics redirect'));
+>>>>>>> development
     }
 
     public function get_forum_info($fid)
@@ -839,7 +861,7 @@ class Moderate
         $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         return $cur_forum;
@@ -914,10 +936,10 @@ class Moderate
                 $status_text = array();
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
-                $url_topic = $this->feather->url->url_friendly($cur_topic['subject']);
+                $url_topic = Url::url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.$this->feather->url->get('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.Url::get('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -934,13 +956,13 @@ class Moderate
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.$this->feather->utils->escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.Url::get('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.$this->feather->utils->escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.Url::get('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.$this->feather->utils->escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.Url::get('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
@@ -949,7 +971,7 @@ class Moderate
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->url->get('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.Url::get('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -960,7 +982,7 @@ class Moderate
                 $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / $this->user->disp_posts);
 
                 if ($num_pages_topic > 1) {
-                    $subject_multipage = '<span class="pagestext">[ '.$this->feather->url->paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }
@@ -1040,7 +1062,7 @@ class Moderate
         $subject = $subject->find_one_col('subject');
 
         if (!$subject) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         return $subject;

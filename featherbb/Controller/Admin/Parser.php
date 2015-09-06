@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Parser
 {
     public function __construct()
@@ -22,19 +26,15 @@ class Parser
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/parser.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
-    }
-
     public function display()
     {
         global $lang_admin_parser;
 
         // Legacy
-        require FEATHER_ROOT . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
+<<<<<<< HEAD
         $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
@@ -42,6 +42,15 @@ class Parser
             require_once(FEATHER_ROOT.'featherbb/Helpers/bbcd_source.php');
             require_once(FEATHER_ROOT.'featherbb/Helpers/bbcd_compile.php');
             $this->feather->url->redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['reset_success']);
+=======
+        $cache_file = $this->feather->forum_env['FEATHER_ROOT'].'cache/cache_parser_data.php';
+
+        // If RESET button pushed, or no cache file, re-compile master bbcode source file.
+        if ($this->request->post('reset') || !file_exists($cache_file)) {
+            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/Parser/bbcd_source.php');
+            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/Parser/bbcd_compile.php');
+            redirect(Url::get('admin/parser/'), $lang_admin_parser['reset_success']);
+>>>>>>> development
         }
 
         // Load the current BBCode $pd array from featherbb/Helpers/parser_data.inc.php.
@@ -64,29 +73,34 @@ class Parser
                         if (preg_match('/^[\w\-.]++$/', $name)) {            // If we have a valid filename?
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
+<<<<<<< HEAD
                                     if (move_uploaded_file($f['tmp_name'], FEATHER_ROOT .'style/img/smilies/'. $name)) {
                                         $this->feather->url->redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['upload success']);
+=======
+                                    if (move_uploaded_file($f['tmp_name'], $this->feather->forum_env['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
+                                        redirect(Url::get('admin/parser/'), $lang_admin_parser['upload success']);
+>>>>>>> development
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
-                                        throw new \FeatherBB\Error($lang_admin_parser['upload_err_1'], 500);
+                                        throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_1'], 500);
                                     }
                                 } else { // Error #2: 'Smiley upload failed. File is too big.'
-                                    throw new \FeatherBB\Error($lang_admin_parser['upload_err_2'], 400);
+                                    throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_2'], 400);
                                 }
                             } else { // Error #3: 'Smiley upload failed. File type is not an image.'.
-                                throw new \FeatherBB\Error($lang_admin_parser['upload_err_3'], 400);
+                                throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_3'], 400);
                             }
                         } else { // Error #4: 'Smiley upload failed. Bad filename.'
-                            throw new \FeatherBB\Error($lang_admin_parser['upload_err_4'], 400);
+                            throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_4'], 400);
                         }
                         break;
                     case 1: // case 1 similar to case 2 so fall through...
-                    case 2: throw new \FeatherBB\Error($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
-                    case 3: throw new \FeatherBB\Error($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
+                    case 2: throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
+                    case 3: throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
                     //		case 4: break; // No error. Normal response when this form element left empty
-                    case 4: throw new \FeatherBB\Error($lang_admin_parser['upload_err_6'], 400);    // No filename.
-                    case 6: throw new \FeatherBB\Error($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
-                    case 7: throw new \FeatherBB\Error($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.
-                    default: throw new \FeatherBB\Error($lang_admin_parser['upload_err_9'], 500);        // Generic/unknown error
+                    case 4: throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_6'], 400);    // No filename.
+                    case 6: throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
+                    case 7: throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.
+                    default: throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_9'], 500);        // Generic/unknown error
                 }
             }
 
@@ -198,14 +212,19 @@ class Parser
                 }
             }
 
+<<<<<<< HEAD
             require_once('featherbb/Helpers/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
             $this->feather->url->redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['save_success']);
+=======
+            require_once('featherbb/Core/parser/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
+            redirect(Url::get('admin/parser/'), $lang_admin_parser['save_success']);
+>>>>>>> development
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('parser');
+        AdminUtils::generateAdminMenu('parser');
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Parser')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Parser')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,

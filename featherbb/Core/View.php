@@ -7,7 +7,7 @@
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
 */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
 class View
 {
@@ -234,13 +234,13 @@ class View
         ob_start();
 
         if ($nested) {
-            require $this->getTemplatePathname('header.new.php');
+            require $this->getTemplatePathname('header.php');
         }
         foreach ($this->getTemplates() as $tpl) {
             require $tpl;
         }
         if ($nested) {
-            require $this->getTemplatePathname('footer.new.php');
+            require $this->getTemplatePathname('footer.php');
         }
         return ob_get_clean();
     }
@@ -301,7 +301,7 @@ class View
 
         $params = array_merge(static::getDefaultParams($type), $params);
         if (isset($params['title'])) {
-            $params['title'] = $this->app->utils->escape($params['title']);
+            $params['title'] = Utils::escape($params['title']);
         }
         $this->assets[$type][] = array(
             'file' => (string) $asset,
@@ -368,7 +368,7 @@ class View
         }
 
         $data = array(
-            'title' => $this->app->utils->escape($this->app->forum_settings['o_board_title']),
+            'title' => Utils::escape($this->app->forum_settings['o_board_title']),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,

@@ -18,13 +18,13 @@ require 'vendor/autoload.php';
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
-$feather->add(new \FeatherBB\Csrf());
+$feather->add(new \FeatherBB\Middleware\Csrf());
 
 $feather_settings = array('config_file' => 'featherbb/config.php',
                           'cache_dir' => 'cache/',
                           'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
-$feather->add(new \FeatherBB\Auth());
-$feather->add(new \FeatherBB\Core($feather_settings));
+$feather->add(new \FeatherBB\Middleware\Auth());
+$feather->add(new \FeatherBB\Middleware\Core($feather_settings));
 
 // Load the routes
 require 'featherbb/routes.php';

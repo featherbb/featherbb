@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Censoring
 {
     public function __construct()
@@ -44,10 +48,10 @@ class Censoring
             $this->model->remove_word();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('censoring');
+        AdminUtils::generateAdminMenu('censoring');
 
-        $this->feather->view2->setPageInfo(array(
-                'title'    =>    array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Censoring')),
+        $this->feather->template->setPageInfo(array(
+                'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Censoring')),
                 'focus_element'    =>    array('censoring', 'new_search_for'),
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,

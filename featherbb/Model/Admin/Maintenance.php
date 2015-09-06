@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Maintenance
@@ -21,7 +23,7 @@ class Maintenance
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     public function rebuild()
@@ -31,7 +33,7 @@ class Maintenance
 
         // Check per page is > 0
         if ($per_page < 1) {
-            throw new \FeatherBB\Error(__('Posts must be integer message'), 400);
+            throw new \FeatherBB\Core\Error(__('Posts must be integer message'), 400);
         }
 
         @set_time_limit(0);
@@ -211,16 +213,20 @@ class Maintenance
                     ->delete_many();
         }
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminMaintenance'), __('Posts pruned redirect'));
+=======
+        redirect(Url::get('admin/maintenance/'), __('Posts pruned redirect'));
+>>>>>>> development
     }
 
     public function get_info_prune($prune_sticky, $prune_from)
     {
         $prune = array();
 
-        $prune['days'] = $this->feather->utils->trim($this->request->post('req_prune_days'));
+        $prune['days'] = Utils::trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
-            throw new \FeatherBB\Error(__('Days must be integer message'), 400);
+            throw new \FeatherBB\Core\Error(__('Days must be integer message'), 400);
         }
 
         $prune['date'] = time() - ($prune['days'] * 86400);
@@ -243,7 +249,7 @@ class Maintenance
             $forum = $this->hook->fireDB('maintenance.get_info_prune.forum_query', $forum);
             $forum = $forum->find_one_col('forum_name');
 
-            $prune['forum'] = '"'.$this->feather->utils->escape($forum).'"';
+            $prune['forum'] = '"'.Utils::escape($forum).'"';
         } else {
             $prune['forum'] = __('All forums');
         }
@@ -251,7 +257,7 @@ class Maintenance
         $prune['num_topics'] = $query->count('id');
 
         if (!$prune['num_topics']) {
-            throw new \FeatherBB\Error(sprintf(__('No old topics message'), $prune['days']), 204);
+            throw new \FeatherBB\Core\Error(sprintf(__('No old topics message'), $prune['days']), 204);
         }
 
         $prune = $this->hook->fire('maintenance.get_info_prune.prune', $prune);
@@ -283,11 +289,11 @@ class Maintenance
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
 
-                $output .=  "\t\t\t\t\t\t\t\t\t\t\t".'<optgroup label="'.$this->feather->utils->escape($forum['cat_name']).'">'."\n";
+                $output .=  "\t\t\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($forum['cat_name']).'">'."\n";
                 $cur_category = $forum['cid'];
             }
 
-            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.$this->feather->utils->escape($forum['forum_name']).'</option>'."\n";
+            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.Utils::escape($forum['forum_name']).'</option>'."\n";
         }
 
         $output = $this->hook->fire('maintenance.get_categories.output', $output);

@@ -7,11 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
 }
 ?>
 <h1><?php _e('Rebuilding index info') ?></h1>
-<script type="text/javascript">window.location="<?= $feather->url->get('admin/maintenance/').$query_str ?>"</script>
-<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.$feather->url->get('admin/maintenance/').$query_str.'">'.__('Click here').'</a>')?></p>
+<script type="text/javascript">window.location="<?= Url::get('admin/maintenance/').$query_str ?>"</script>
+<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.Url::get('admin/maintenance/').$query_str.'">'.__('Click here').'</a>')?></p>

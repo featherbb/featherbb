@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
 	exit;
@@ -16,7 +19,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php _e('Upload avatar') ?></span></h2>
 	<div class="box">
-		<form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?php echo $feather->url->get('user/'.$id.'/action/upload_avatar2/') ?>" onsubmit="return process_form(this)">
+		<form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?php echo Url::get('user/'.$id.'/action/upload_avatar2/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
@@ -25,7 +28,7 @@ if (!defined('FEATHER')) {
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather->forum_settings['o_avatars_size'] ?>" />
 						<label class="required"><strong><?php _e('File') ?> <span><?php _e('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-						<p><?php _e('Avatar desc'); echo ' '.$feather->forum_settings['o_avatars_width'].' x '.$feather->forum_settings['o_avatars_height'].' '.__('pixels').' '.__('and').' '.$feather->utils->forum_number_format($feather->forum_settings['o_avatars_size']).' '.__('bytes').' ('.$feather->utils->file_size($feather->forum_settings['o_avatars_size']).').' ?></p>
+						<p><?php _e('Avatar desc'); echo ' '.$feather->forum_settings['o_avatars_width'].' x '.$feather->forum_settings['o_avatars_height'].' '.__('pixels').' '.__('and').' '.Utils::forum_number_format($feather->forum_settings['o_avatars_size']).' '.__('bytes').' ('.$feather->utils->file_size($feather->forum_settings['o_avatars_size']).').' ?></p>
 					</div>
 				</fieldset>
 			</div>

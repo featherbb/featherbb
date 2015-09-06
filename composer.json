@@ -18,8 +18,8 @@
 	"autoload": {
         "classmap": ["featherbb/Core/Database.php", "featherbb/Core/pomo/MO.php"],
 		"psr-4": {
-			"Plugins\\": "/plugins",
-			"FeatherBB\\": "featherbb/Core",
+			"Plugins\\": "plugins/",
+			"FeatherBB\\": "featherbb/",
 			"": ""
 		}
 	},

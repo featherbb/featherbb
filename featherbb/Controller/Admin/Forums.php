@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Forums
 {
     public function __construct()
@@ -36,15 +40,25 @@ class Forums
         $cat_id = (int) $this->request->post('cat');
 
         if ($cat_id < 1) {
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('adminForums'), __('Must be valid category'));
+=======
+            redirect(Url::get('admin/forums/'), __('Must be valid category'));
+>>>>>>> development
         }
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
             $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('editForum', array('id' => $fid)), __('Forum added redirect'));
         } else {
             $this->feather->url->redirect($this->feather->urlFor('adminForums'), __('Unable to add forum'));
+=======
+            redirect(Url::get('admin/forums/edit/'.$fid.'/'), __('Forum added redirect'));
+        } else {
+            redirect(Url::get('admin/forums/'), __('Unable to add forum'));
+>>>>>>> development
         }
     }
 
@@ -54,17 +68,24 @@ class Forums
             if ($this->request->post('save') && $this->request->post('read_forum_old')) {
 
                 // Forums parameters / TODO : better handling of wrong parameters
-                $forum_data = array('forum_name' => $this->feather->utils->escape($this->request->post('forum_name')),
-                                    'forum_desc' => $this->request->post('forum_desc') ? $this->feather->utils->linebreaks($this->feather->utils->trim($this->request->post('forum_desc'))) : NULL,
+                $forum_data = array('forum_name' => Utils::escape($this->request->post('forum_name')),
+                                    'forum_desc' => $this->request->post('forum_desc') ? Utils::linebreaks(Utils::trim($this->request->post('forum_desc'))) : NULL,
                                     'cat_id' => (int) $this->request->post('cat_id'),
                                     'sort_by' => (int) $this->request->post('sort_by'),
-                                    'redirect_url' => $this->feather->url->is_valid($this->request->post('redirect_url')) ? $this->feather->utils->escape($this->request->post('redirect_url')) : NULL);
+                                    'redirect_url' => Url::is_valid($this->request->post('redirect_url')) ? Utils::escape($this->request->post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
+<<<<<<< HEAD
                     $this->feather->url->redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Must enter name message'));
                 }
                 if ($forum_data['cat_id'] < 1) {
                     $this->feather->url->redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Must be valid category'));
+=======
+                    redirect(Url::get('admin/forums/edit/'.$forum_id.'/'), __('Must enter name message'));
+                }
+                if ($forum_data['cat_id'] < 1) {
+                    redirect(Url::get('admin/forums/edit/'.$forum_id.'/'), __('Must be valid category'));
+>>>>>>> development
                 }
 
                 $this->model->update_forum($forum_id, $forum_data);
@@ -100,7 +121,11 @@ class Forums
                 // Regenerate the quick jump cache
                 $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
+<<<<<<< HEAD
                 $this->feather->url->redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Forum updated redirect'));
+=======
+                redirect(Url::get('admin/forums/edit/'.$forum_id.'/'), __('Forum updated redirect'));
+>>>>>>> development
 
             } elseif ($this->request->post('revert_perms')) {
                 $this->model->delete_permissions($forum_id);
@@ -108,14 +133,18 @@ class Forums
                 // Regenerate the quick jump cache
                 $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
+<<<<<<< HEAD
                 $this->feather->url->redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Perms reverted redirect'));
+=======
+                redirect(Url::get('admin/forums/edit/'.$forum_id.'/'), __('Perms reverted redirect'));
+>>>>>>> development
             }
 
         } else {
-            \FeatherBB\AdminUtils::generateAdminMenu('forums');
+            AdminUtils::generateAdminMenu('forums');
 
-            $this->feather->view2->setPageInfo(array(
-                    'title'    =>    array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+            $this->feather->template->setPageInfo(array(
+                    'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'perm_data' => $this->model->get_permissions($forum_id),
@@ -134,14 +163,18 @@ class Forums
             // Regenerate the quick jump cache
             $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('adminForums'), __('Forum deleted redirect'));
+=======
+            redirect(Url::get('admin/forums/'), __('Forum deleted redirect'));
+>>>>>>> development
 
         } else { // If the user hasn't confirmed
 
-            \FeatherBB\AdminUtils::generateAdminMenu('forums');
+            AdminUtils::generateAdminMenu('forums');
 
-            $this->feather->view2->setPageInfo(array(
-                    'title'    =>    array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+            $this->feather->template->setPageInfo(array(
+                    'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'cur_forum' => $this->model->get_forum_info($forum_id),
@@ -155,14 +188,18 @@ class Forums
     public function edit_positions()
     {
         foreach ($this->request->post('position') as $forum_id => $position) {
-            $position = (int) $this->feather->utils->trim($position);
+            $position = (int) Utils::trim($position);
             $this->model->update_positions($forum_id, $position);
         }
 
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminForums'), __('Forums updated redirect'));
+=======
+        redirect(Url::get('admin/forums/'), __('Forums updated redirect'));
+>>>>>>> development
     }
 
     public function display()
@@ -171,11 +208,11 @@ class Forums
             $this->edit_positions();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('forums');
+        AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \FeatherBB\Model\Admin\Categories();
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Forums')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $categories_model->get_cat_list(),

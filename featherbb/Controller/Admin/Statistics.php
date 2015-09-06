@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Statistics
 {
     public function __construct()
@@ -25,15 +29,15 @@ class Statistics
     public function display()
     {
         if (!$this->user->is_admmod) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('index');
+        AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->get_total_size();
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),
@@ -51,7 +55,7 @@ class Statistics
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {
-            throw new \FeatherBB\Error(__('PHPinfo disabled message'), 404);
+            throw new \FeatherBB\Core\Error(__('PHPinfo disabled message'), 404);
         }
 
         phpinfo();

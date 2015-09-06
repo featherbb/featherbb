@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -39,7 +42,7 @@ if (!empty($errors)) {
 <div class="blockform">
 	<h2><span><?php _e('Request pass') ?></span></h2>
 	<div class="box">
-		<form id="request_pass" method="post" action="<?php echo $feather->url->get('auth/forget/') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
+		<form id="request_pass" method="post" action="<?php echo Url::get('auth/forget/') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>

@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Bans
@@ -34,7 +36,7 @@ class Bans
         if (is_numeric($id)) {
             $ban['user_id'] = $id;
             if ($ban['user_id'] < 2) {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
 
             $select_add_ban_info = array('group_id', 'username', 'email');
@@ -49,12 +51,12 @@ class Bans
                 $ban['ban_user'] = $result['username'];
                 $ban['email'] = $result['email'];
             } else {
-                throw new \FeatherBB\Error(__('No user ID message'), 404);
+                throw new \FeatherBB\Core\Error(__('No user ID message'), 404);
             }
         } else {
             // Otherwise the username is in POST
 
-            $ban['ban_user'] = $this->feather->utils->trim($this->request->post('new_ban_user'));
+            $ban['ban_user'] = Utils::trim($this->request->post('new_ban_user'));
 
             if ($ban['ban_user'] != '') {
                 $select_add_ban_info = array('id', 'group_id', 'username', 'email');
@@ -71,7 +73,7 @@ class Bans
                     $ban['ban_user'] = $result['username'];
                     $ban['email'] = $result['email'];
                 } else {
-                    throw new \FeatherBB\Error(__('No user message'), 404);
+                    throw new \FeatherBB\Core\Error(__('No user message'), 404);
                 }
             }
         }
@@ -79,14 +81,14 @@ class Bans
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
             if ($group_id == FEATHER_ADMIN) {
-                throw new \FeatherBB\Error(sprintf(__('User is admin message'), $this->feather->utils->escape($ban['ban_user'])), 403);
+                throw new \FeatherBB\Core\Error(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
             $is_moderator_group = DB::for_table('groups')->where('g_id', $group_id)
                                         ->find_one_col('g_moderator');
 
             if ($is_moderator_group) {
-                throw new \FeatherBB\Error(sprintf(__('User is mod message'), $this->feather->utils->escape($ban['ban_user'])), 403);
+                throw new \FeatherBB\Core\Error(sprintf(__('User is mod message'), Utils::escape($ban['ban_user'])), 403);
             }
         }
 
@@ -131,7 +133,7 @@ class Bans
             $ban['message'] = $result['message'];
             $ban['expire'] = $result['expire'];
         } else {
-            message(__('Bad request'), '404');
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $diff = ($this->user->timezone + $this->user->dst) * 3600;
@@ -146,18 +148,18 @@ class Bans
 
     public function insert_ban()
     {
-        $ban_user = $this->feather->utils->trim($this->request->post('ban_user'));
-        $ban_ip = $this->feather->utils->trim($this->request->post('ban_ip'));
-        $ban_email = strtolower($this->feather->utils->trim($this->request->post('ban_email')));
-        $ban_message = $this->feather->utils->trim($this->request->post('ban_message'));
-        $ban_expire = $this->feather->utils->trim($this->request->post('ban_expire'));
+        $ban_user = Utils::trim($this->request->post('ban_user'));
+        $ban_ip = Utils::trim($this->request->post('ban_ip'));
+        $ban_email = strtolower(Utils::trim($this->request->post('ban_email')));
+        $ban_message = Utils::trim($this->request->post('ban_message'));
+        $ban_expire = Utils::trim($this->request->post('ban_expire'));
 
         $this->hook->fire('insert_ban_start', $ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire);
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
-            throw new \FeatherBB\Error(__('Must enter message'), 400);
+            throw new \FeatherBB\Core\Error(__('Must enter message'), 400);
         } elseif (strtolower($ban_user) == 'guest') {
-            throw new \FeatherBB\Error(__('Cannot ban guest message'), 400);
+            throw new \FeatherBB\Core\Error(__('Cannot ban guest message'), 400);
         }
 
         // Make sure we're not banning an admin or moderator
@@ -168,14 +170,14 @@ class Bans
 
             if ($group_id) {
                 if ($group_id == FEATHER_ADMIN) {
-                    throw new \FeatherBB\Error(sprintf(__('User is admin message'), $this->feather->utils->escape($ban_user)), 403);
+                    throw new \FeatherBB\Core\Error(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
                 $is_moderator_group = DB::for_table('groups')->where('g_id', $group_id)
                                             ->find_one_col('g_moderator');
 
                 if ($is_moderator_group) {
-                    throw new \FeatherBB\Error(sprintf(__('User is mod message'), $this->feather->utils->escape($ban_user)), 403);
+                    throw new \FeatherBB\Core\Error(sprintf(__('User is mod message'), Utils::escape($ban_user)), 403);
                 }
             }
         }
@@ -194,7 +196,7 @@ class Bans
                         $octets[$c] = ltrim($octets[$c], "0");
 
                         if ($c > 7 || (!empty($octets[$c]) && !ctype_xdigit($octets[$c])) || intval($octets[$c], 16) > 65535) {
-                            throw new \FeatherBB\Error(__('Invalid IP message'), 400);
+                            throw new \FeatherBB\Core\Error(__('Invalid IP message'), 400);
                         }
                     }
 
@@ -207,7 +209,7 @@ class Bans
                         $octets[$c] = (strlen($octets[$c]) > 1) ? ltrim($octets[$c], "0") : $octets[$c];
 
                         if ($c > 3 || preg_match('%[^0-9]%', $octets[$c]) || intval($octets[$c]) > 255) {
-                            throw new \FeatherBB\Error(__('Invalid IP message'), 400);
+                            throw new \FeatherBB\Core\Error(__('Invalid IP message'), 400);
                         }
                     }
 
@@ -221,7 +223,7 @@ class Bans
 
         if ($ban_email != '' && !$this->email->is_valid_email($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
-                throw new \FeatherBB\Error(__('Invalid e-mail message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid e-mail message'), 400);
             }
         }
 
@@ -229,14 +231,14 @@ class Bans
             $ban_expire = strtotime($ban_expire.' GMT');
 
             if ($ban_expire == -1 || !$ban_expire) {
-                throw new \FeatherBB\Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
             }
 
             $diff = ($this->user->timezone + $this->user->dst) * 3600;
             $ban_expire -= $diff;
 
             if ($ban_expire <= time()) {
-                throw new \FeatherBB\Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
             }
         } else {
             $ban_expire = 'NULL';
@@ -276,7 +278,11 @@ class Bans
         // Regenerate the bans cache
         $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminBans'), __('Ban edited redirect'));
+=======
+        redirect(Url::get('admin/bans/'), __('Ban edited redirect'));
+>>>>>>> development
     }
 
     public function remove_ban($ban_id)
@@ -291,7 +297,11 @@ class Bans
         // Regenerate the bans cache
         $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminBans'), __('Ban removed redirect'));
+=======
+        redirect(Url::get('admin/bans/'), __('Ban removed redirect'));
+>>>>>>> development
     }
 
     public function find_ban($start_from = false)
@@ -303,8 +313,8 @@ class Bans
         // trim() all elements in $form
         $ban_info['conditions'] = $ban_info['query_str'] = array();
 
-        $expire_after = $this->request->get('expire_after') ? $this->feather->utils->trim($this->request->get('expire_after')) : '';
-        $expire_before = $this->request->get('expire_before') ? $this->feather->utils->trim($this->request->get('expire_before')) : '';
+        $expire_after = $this->request->get('expire_after') ? Utils::trim($this->request->get('expire_after')) : '';
+        $expire_before = $this->request->get('expire_before') ? Utils::trim($this->request->get('expire_before')) : '';
         $ban_info['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$this->request->get('order_by') : 'b.username';
         $ban_info['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
 
@@ -321,7 +331,7 @@ class Bans
 
             $expire_after = strtotime($expire_after);
             if ($expire_after === false || $expire_after == -1) {
-                throw new \FeatherBB\Error(__('Invalid date message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date message'), 400);
             }
 
             $result = $result->where_gt('b.expire', $expire_after);
@@ -331,7 +341,7 @@ class Bans
 
             $expire_before = strtotime($expire_before);
             if ($expire_before === false || $expire_before == -1) {
-                throw new \FeatherBB\Error(__('Invalid date message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date message'), 400);
             }
 
             $result = $result->where_lt('b.expire', $expire_before);

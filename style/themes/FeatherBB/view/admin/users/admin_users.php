@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('User search head') ?></span></h2>
 		<div class="box">
-			<form id="find_user" method="get" action="<?php echo $feather->url->get('admin/users/') ?>">
+			<form id="find_user" method="get" action="<?php echo Url::get('admin/users/') ?>">
 				<p class="submittop"><input type="submit" name="find_user" value="<?php _e('Submit search') ?>" tabindex="1" /></p>
 				<div class="inform">
 					<fieldset>
@@ -150,7 +153,7 @@ if (!defined('FEATHER')) {
 
 		<h2 class="block2"><span><?php _e('IP search head') ?></span></h2>
 		<div class="box">
-			<form method="get" action="<?php echo $feather->url->get('admin/users/') ?>">
+			<form method="get" action="<?php echo Url::get('admin/users/') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('IP search subhead') ?></legend>

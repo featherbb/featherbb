@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Edit forum head') ?></span></h2>
 		<div class="box">
-			<form id="edit_forum" method="post" action="<?php echo $feather->url->get('admin/forums/edit/'.$cur_forum['id'].'/') ?>">
+			<form id="edit_forum" method="post" action="<?php echo Url::get('admin/forums/edit/'.$cur_forum['id'].'/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="6" /></p>
 				<div class="inform">
@@ -26,11 +29,11 @@ if (!defined('FEATHER')) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php _e('Forum name label') ?></th>
-									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo $feather->utils->escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
+									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo Utils::escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Forum description label') ?></th>
-									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo $feather->utils->escape($cur_forum['forum_desc']) ?></textarea></td>
+									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo Utils::escape($cur_forum['forum_desc']) ?></textarea></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Category label') ?></th>
@@ -38,7 +41,7 @@ if (!defined('FEATHER')) {
 										<select name="cat_id" tabindex="3">
 											<?php  foreach ($forum_data as $cat_id => $cat_data) {
 												$selected = ($cat_id == $cur_forum['cat_id']) ? 'selected="selected"' : '';
-												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.$feather->utils->escape($cat_data['cat_name']).'</option>'."\n";
+												echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.Utils::escape($cat_data['cat_name']).'</option>'."\n";
 											} ?>
 										</select>
 									</td>
@@ -61,7 +64,7 @@ if (!defined('FEATHER')) {
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Redirect label') ?></th>
-									<td><?php echo(!empty($cur_forum['num_topics'])) ? __('Redirect help') : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.$feather->utils->escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
+									<td><?php echo(!empty($cur_forum['num_topics'])) ? __('Redirect help') : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.Utils::escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
 								</tr>
 							</table>
 						</div>
@@ -86,7 +89,7 @@ if (!defined('FEATHER')) {
     foreach ($perm_data as $perm) {
         ?>
 								<tr>
-									<th class="atcl"><?php echo $feather->utils->escape($perm['g_title']) ?></th>
+									<th class="atcl"><?php echo Utils::escape($perm['g_title']) ?></th>
 									<td<?php if (!$perm['read_forum_def']) {
     echo ' class="nodefault"';
 }

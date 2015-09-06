@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Help
 {
     public function __construct()
@@ -18,22 +21,22 @@ class Help
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/help.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/help.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Help')),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
             'active_page' => 'help',
         ))->addTemplate('help.php')->display();
     }

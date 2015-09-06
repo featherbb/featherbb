@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Search
 {
     public function __construct()
@@ -19,22 +22,22 @@ class Search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\search();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/userlist.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/search.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/userlist.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/search.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         } elseif ($this->user->g_search == '0') {
-            throw new \FeatherBB\Error(__('No search permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No search permission'), 403);
         }
 
         // Figure out what to do :-)
@@ -45,39 +48,43 @@ class Search
                 if (isset($search['is_result'])) {
 
                     if ($search['show_as'] == 'posts') {
-                        require FEATHER_ROOT.'featherbb/Helpers/parser.php';
+                        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
                     }
 
-                    $this->feather->view2->setPageInfo(array(
-                        'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Search results')),
+                    $this->feather->template->setPageInfo(array(
+                        'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
                         'active_page' => 'search',
                     ));
 
                     $this->model->display_search_results($search, $this->feather);
 
-                    $this->feather->view2->setPageInfo(array(
+                    $this->feather->template->setPageInfo(array(
                         'search' => $search,
                     ));
 
-                    $this->feather->view2->addTemplate('search/header.php', 1);
+                    $this->feather->template->addTemplate('search/header.php', 1);
 
                     if ($search['show_as'] == 'posts') {
-                        $this->feather->view2->addTemplate('search/posts.php', 5);
+                        $this->feather->template->addTemplate('search/posts.php', 5);
                     }
                     else {
-                        $this->feather->view2->addTemplate('search/topics.php', 5);
+                        $this->feather->template->addTemplate('search/topics.php', 5);
                     }
 
-                    $this->feather->view2->addTemplate('search/footer.php', 10)->display();
+                    $this->feather->template->addTemplate('search/footer.php', 10)->display();
 
                 } else {
+<<<<<<< HEAD
                     $this->feather->url->redirect($this->feather->urlFor('search'), __('No hits'));
+=======
+                    redirect(Url::get('search/'), __('No hits'));
+>>>>>>> development
                 }
         }
         // Display the form
         else {
-            $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Search')),
+            $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,
@@ -88,6 +95,10 @@ class Search
 
     public function quicksearches($show)
     {
+<<<<<<< HEAD
         $this->feather->redirect($this->feather->urlFor('quickSearch', array('show' => '?action=show_'.$show)));
+=======
+        redirect(Url::get('search/?action=show_'.$show));
+>>>>>>> development
     }
 }

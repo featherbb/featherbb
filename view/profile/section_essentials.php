@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo $feather->utils->escape($user['username']).' - '.__('Section essentials') ?></span></h2>
+	<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section essentials') ?></span></h2>
 	<div class="box">
 		<form id="profile1" method="post" action="<?php echo $feather->url->get('user/'.$id.'/section/essentials/') ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
@@ -209,7 +209,7 @@ if (!defined('FEATHER')) {
 
 <?php
 
-    $languages = \FeatherBB\Lister::getLangs();
+    $languages = \FeatherBB\Core\Lister::getLangs();
 
     // Only display the language selection box if there's more than one language available
     if (count($languages) > 1) {
@@ -241,12 +241,12 @@ if (!defined('FEATHER')) {
 				<fieldset>
 					<legend><?php _e('User activity') ?></legend>
 					<div class="infldset">
-						<p><?php printf(__('Registered info'), $feather->utils->format_time($user['registered'], true).(($feather->user->is_admmod) ? ' (<a href="'.$feather->url->get('admin/users/show-users/ip/'.$user['registration_ip'].'/').'">'.$feather->utils->escape($user['registration_ip']).'</a>)' : '')) ?></p>
+						<p><?php printf(__('Registered info'), $feather->utils->format_time($user['registered'], true).(($feather->user->is_admmod) ? ' (<a href="'.$feather->url->get('admin/users/show-users/ip/'.$user['registration_ip'].'/').'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
 						<p><?php printf(__('Last post info'), $feather->utils->format_time($user['last_post'])) ?></p>
 						<p><?php printf(__('Last visit info'), $feather->utils->format_time($user['last_visit'])) ?></p>
 						<?php echo $user_disp['posts_field'] ?>
 <?php if ($feather->user->is_admmod): ?>							<label><?php _e('Admin note') ?><br />
-						<input id="admin_note" type="text" name="admin_note" value="<?php echo $feather->utils->escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
+						<input id="admin_note" type="text" name="admin_note" value="<?php echo Utils::escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
 <?php endif; ?>						</div>
 				</fieldset>
 			</div>

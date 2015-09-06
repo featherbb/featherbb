@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
 class Email
 {
@@ -15,7 +15,7 @@ class Email
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->config = $this->feather->config;
-        require FEATHER_ROOT . 'featherbb/Helpers/utf8/utils/ascii.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . 'featherbb/Helpers/utf8/utils/ascii.php';
     }
 
     //
@@ -121,10 +121,10 @@ class Email
         static $base_url;
 
         if (!isset($base_url)) {
-            $base_url = $this->feather->url->base();
+            $base_url = Url::base();
         }
 
-        $text = $this->feather->utils->trim($text, "\t\n ");
+        $text = Utils::trim($text, "\t\n ");
 
         $shortcut_urls = array(
             'topic' => '/topic/$1/',
@@ -266,12 +266,12 @@ class Email
         $from_email = $this->config['o_webmaster_email'];
 
         // Do a little spring cleaning
-        $to = $this->feather->utils->trim(preg_replace('%[\n\r]+%s', '', $to));
-        $subject = $this->feather->utils->trim(preg_replace('%[\n\r]+%s', '', $subject));
-        $from_email = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', $from_email));
-        $from_name = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
-        $reply_to_email = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
-        $reply_to_name = $this->feather->utils->trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
+        $to = Utils::trim(preg_replace('%[\n\r]+%s', '', $to));
+        $subject = Utils::trim(preg_replace('%[\n\r]+%s', '', $subject));
+        $from_email = Utils::trim(preg_replace('%[\n\r:]+%s', '', $from_email));
+        $from_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
+        $reply_to_email = Utils::trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
+        $reply_to_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
 
         // Set up some headers to take advantage of UTF-8
         $from = '"' . $this->encode_mail_text($from_name) . '" <' . $from_email . '>';
@@ -287,7 +287,7 @@ class Email
         }
 
         // Make sure all linebreaks are LF in message (and strip out any NULL bytes)
-        $message = str_replace("\0", '', $this->feather->utils->linebreaks($message));
+        $message = str_replace("\0", '', Utils::linebreaks($message));
         $message = str_replace("\n", $EOL, $message);
 
         if ($smtp) {
@@ -308,12 +308,12 @@ class Email
         $server_response = '';
         while (substr($server_response, 3, 1) != ' ') {
             if (!($server_response = fgets($socket, 256))) {
-                throw new \FeatherBB\Error('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
+                throw new \FeatherBB\Core\Error('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
             }
         }
 
         if (!(substr($server_response, 0, 3) == $expected_response)) {
-            throw new \FeatherBB\Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
+            throw new \FeatherBB\Core\Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
         }
     }
 
@@ -345,7 +345,7 @@ class Email
         }
 
         if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-            throw new \FeatherBB\Error('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
+            throw new \FeatherBB\Core\Error('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
         $this->server_parse($socket, '220');

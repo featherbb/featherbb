@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Options head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->url->get('admin/options/') ?>">
+			<form method="post" action="<?php echo Url::get('admin/options/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
 				<div class="inform">
@@ -28,21 +31,21 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Board title label') ?></th>
 									<td>
-										<input type="text" name="form_board_title" size="50" maxlength="255" value="<?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?>" />
+										<input type="text" name="form_board_title" size="50" maxlength="255" value="<?php echo Utils::escape($feather->forum_settings['o_board_title']) ?>" />
 										<span><?php _e('Board title help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Board desc label') ?></th>
 									<td>
-										<textarea name="form_board_desc" cols="60" rows="3"><?php echo $feather->utils->escape($feather->forum_settings['o_board_desc']) ?></textarea>
+										<textarea name="form_board_desc" cols="60" rows="3"><?php echo Utils::escape($feather->forum_settings['o_board_desc']) ?></textarea>
 										<span><?php _e('Board desc help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Base URL label') ?></th>
 									<td>
-										<input type="text" name="form_base_url" size="50" maxlength="100" value="<?php echo $feather->utils->escape($feather->forum_settings['o_base_url']) ?>" />
+										<input type="text" name="form_base_url" size="50" maxlength="100" value="<?php echo Utils::escape($feather->forum_settings['o_base_url']) ?>" />
 										<span><?php _e('Base URL help') ?></span>
 									</td>
 								</tr>
@@ -222,14 +225,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Time format label') ?></th>
 									<td>
-										<input type="text" name="form_time_format" size="25" maxlength="25" value="<?php echo $feather->utils->escape($feather->forum_settings['o_time_format']) ?>" />
+										<input type="text" name="form_time_format" size="25" maxlength="25" value="<?php echo Utils::escape($feather->forum_settings['o_time_format']) ?>" />
 										<span><?php printf(__('Time format help'), gmdate($feather->forum_settings['o_time_format'], $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Date format label') ?></th>
 									<td>
-										<input type="text" name="form_date_format" size="25" maxlength="25" value="<?php echo $feather->utils->escape($feather->forum_settings['o_date_format']) ?>" />
+										<input type="text" name="form_date_format" size="25" maxlength="25" value="<?php echo Utils::escape($feather->forum_settings['o_date_format']) ?>" />
 										<span><?php printf(__('Date format help'), gmdate($feather->forum_settings['o_date_format'], $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
 									</td>
 								</tr>
@@ -412,7 +415,7 @@ if (!defined('FEATHER')) {
 										<label class="conl"><input type="radio" name="form_censoring" value="0"<?php if ($feather->forum_settings['o_censoring'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
-										<span class="clearb"><?php printf(__('Censor words help'), '<a href="'.$feather->url->get('admin/censoring/').'">'.__('Censoring').'</a>') ?></span>
+										<span class="clearb"><?php printf(__('Censor words help'), '<a href="'.Url::get('admin/censoring/').'">'.__('Censoring').'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>
@@ -490,7 +493,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Menu items label') ?></th>
 									<td>
-										<textarea name="form_additional_navlinks" rows="3" cols="55"><?php echo $feather->utils->escape($feather->forum_settings['o_additional_navlinks']) ?></textarea>
+										<textarea name="form_additional_navlinks" rows="3" cols="55"><?php echo Utils::escape($feather->forum_settings['o_additional_navlinks']) ?></textarea>
 										<span><?php _e('Menu items help') ?></span>
 									</td>
 								</tr>
@@ -557,7 +560,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Mailing list label') ?></th>
 									<td>
-										<textarea name="form_mailing_list" rows="5" cols="55"><?php echo $feather->utils->escape($feather->forum_settings['o_mailing_list']) ?></textarea>
+										<textarea name="form_mailing_list" rows="5" cols="55"><?php echo Utils::escape($feather->forum_settings['o_mailing_list']) ?></textarea>
 										<span><?php _e('Mailing list help') ?></span>
 									</td>
 								</tr>
@@ -585,7 +588,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Upload directory label') ?></th>
 									<td>
-										<input type="text" name="form_avatars_dir" size="35" maxlength="50" value="<?php echo $feather->utils->escape($feather->forum_settings['o_avatars_dir']) ?>" />
+										<input type="text" name="form_avatars_dir" size="35" maxlength="50" value="<?php echo Utils::escape($feather->forum_settings['o_avatars_dir']) ?>" />
 										<span><?php _e('Upload directory help') ?></span>
 									</td>
 								</tr>
@@ -622,14 +625,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Admin e-mail label') ?></th>
 									<td>
-										<input type="text" name="form_admin_email" size="50" maxlength="80" value="<?php echo $feather->utils->escape($feather->forum_settings['o_admin_email']) ?>" />
+										<input type="text" name="form_admin_email" size="50" maxlength="80" value="<?php echo Utils::escape($feather->forum_settings['o_admin_email']) ?>" />
 										<span><?php _e('Admin e-mail help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Webmaster e-mail label') ?></th>
 									<td>
-										<input type="text" name="form_webmaster_email" size="50" maxlength="80" value="<?php echo $feather->utils->escape($feather->forum_settings['o_webmaster_email']) ?>" />
+										<input type="text" name="form_webmaster_email" size="50" maxlength="80" value="<?php echo Utils::escape($feather->forum_settings['o_webmaster_email']) ?>" />
 										<span><?php _e('Webmaster e-mail help') ?></span>
 									</td>
 								</tr>
@@ -660,14 +663,14 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('SMTP address label') ?></th>
 									<td>
-										<input type="text" name="form_smtp_host" size="30" maxlength="100" value="<?php echo $feather->utils->escape($feather->forum_settings['o_smtp_host']) ?>" />
+										<input type="text" name="form_smtp_host" size="30" maxlength="100" value="<?php echo Utils::escape($feather->forum_settings['o_smtp_host']) ?>" />
 										<span><?php _e('SMTP address help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('SMTP username label') ?></th>
 									<td>
-										<input type="text" name="form_smtp_user" size="25" maxlength="50" value="<?php echo $feather->utils->escape($feather->forum_settings['o_smtp_user']) ?>" />
+										<input type="text" name="form_smtp_user" size="25" maxlength="50" value="<?php echo Utils::escape($feather->forum_settings['o_smtp_user']) ?>" />
 										<span><?php _e('SMTP username help') ?></span>
 									</td>
 								</tr>
@@ -675,7 +678,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php _e('SMTP password label') ?></th>
 									<td>
 										<label><input type="checkbox" name="form_smtp_change_pass" value="1" />&#160;<?php _e('SMTP change password help') ?></label>
-<?php $smtp_pass = !empty($feather->forum_settings['o_smtp_pass']) ? random_key($feather->utils->strlen($feather->forum_settings['o_smtp_pass']), true) : ''; ?>
+<?php $smtp_pass = !empty($feather->forum_settings['o_smtp_pass']) ? random_key(Utils::strlen($feather->forum_settings['o_smtp_pass']), true) : ''; ?>
 										<input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
 										<input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
 										<span><?php _e('SMTP password help') ?></span>
@@ -753,7 +756,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Rules label') ?></th>
 									<td>
-										<textarea name="form_rules_message" rows="10" cols="55"><?php echo $feather->utils->escape($feather->forum_settings['o_rules_message']) ?></textarea>
+										<textarea name="form_rules_message" rows="10" cols="55"><?php echo Utils::escape($feather->forum_settings['o_rules_message']) ?></textarea>
 										<span><?php _e('Rules help') ?></span>
 									</td>
 								</tr>
@@ -796,7 +799,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Announcement message label') ?></th>
 									<td>
-										<textarea name="form_announcement_message" rows="5" cols="55"><?php echo $feather->utils->escape($feather->forum_settings['o_announcement_message']) ?></textarea>
+										<textarea name="form_announcement_message" rows="5" cols="55"><?php echo Utils::escape($feather->forum_settings['o_announcement_message']) ?></textarea>
 										<span><?php _e('Announcement message help') ?></span>
 									</td>
 								</tr>
@@ -824,7 +827,7 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Maintenance message label') ?></th>
 									<td>
-										<textarea name="form_maintenance_message" rows="5" cols="55"><?php echo $feather->utils->escape($feather->forum_settings['o_maintenance_message']) ?></textarea>
+										<textarea name="form_maintenance_message" rows="5" cols="55"><?php echo Utils::escape($feather->forum_settings['o_maintenance_message']) ?></textarea>
 										<span><?php _e('Maintenance message help') ?></span>
 									</td>
 								</tr>

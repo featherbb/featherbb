@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Viewtopic
 {
     public function __construct()
@@ -23,7 +26,7 @@ class Viewtopic
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
         if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Antispam feature
@@ -56,11 +59,11 @@ class Viewtopic
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user->disp_posts * ($p - 1);
 
-        $url_topic = $this->feather->url->url_friendly($cur_topic['subject']);
-        $url_forum = $this->feather->url->url_friendly($cur_topic['forum_name']);
+        $url_topic = Url::url_friendly($cur_topic['subject']);
+        $url_forum = Url::url_friendly($cur_topic['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
         if ($this->feather->forum_settings['o_censoring'] == '1') {
             $cur_topic['subject'] = censor_words($cur_topic['subject']);
@@ -88,24 +91,24 @@ class Viewtopic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->addAsset('canonical', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->template->addAsset('canonical', Url::get('forum/'.$id.'/'.$url_forum.'/'));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->view2->addAsset('prev', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->template->addAsset('prev', Url::get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
             }
             if ($p < $num_pages) {
-                $this->feather->view2->addAsset('next', $this->feather->url->get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->template->addAsset('next', Url::get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
             }
         }
 
         if ($this->feather->forum_settings['o_feed_type'] == '1') {
-            $this->feather->view2->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
+            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
         } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
-            $this->feather->view2->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
+            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $this->feather->utils->escape($cur_topic['forum_name']), $this->feather->utils->escape($cur_topic['subject'])),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
             'active_page' => 'viewtopic',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

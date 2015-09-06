@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Bans
 {
     public function __construct()
@@ -22,7 +26,7 @@ class Bans
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            throw new \FeatherBB\Error(__('No permission'), '403');
+            throw new \FeatherBB\Core\Error(__('No permission'), '403');
         }
     }
 
@@ -45,22 +49,22 @@ class Bans
 
             $ban_data = $this->model->find_ban($start_from);
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'admin_console' => true,
                     'page' => $p,
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
-                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . $this->feather->url->paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
                     'ban_data' => $ban_data['data'],
                 )
             )->addTemplate('admin/bans/search_ban.php')->display();
         }
         else {
-            \FeatherBB\AdminUtils::generateAdminMenu('bans');
+            AdminUtils::generateAdminMenu('bans');
 
-            $this->feather->view2->setPageInfo(array(
+            $this->feather->template->setPageInfo(array(
                     'admin_console' => true,
                     'focus_element' => array('bans', 'new_ban_user'),
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Bans')),
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
                 )
             )->addTemplate('admin/bans/admin_bans.php')->display();
         }
@@ -72,12 +76,12 @@ class Bans
             $this->model->insert_ban();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('bans');
+        AdminUtils::generateAdminMenu('bans');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Bans')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
                 'ban' => $this->model->add_ban_info($id),
             )
         )->addTemplate('admin/bans/add_ban.php')->display();
@@ -94,12 +98,12 @@ class Bans
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
-        \FeatherBB\AdminUtils::generateAdminMenu('bans');
+        AdminUtils::generateAdminMenu('bans');
 
-        $this->feather->view2->setPageInfo(array(
+        $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Bans')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
                 'ban' => $this->model->edit_ban_info($id),
             )
         )->addTemplate('admin/bans/add_ban.php')->display();

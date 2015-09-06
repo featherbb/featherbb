@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -41,24 +44,24 @@ if (!defined('FEATHER')) {
 <div class="box">
 	<div class="inbox">
 		<p><?php _e('Links info') ?></p>
-		<p><a name="url"></a><code>[url=<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>]<?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>"><?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
-		<p><code>[url]<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>"><?php echo $feather->utils->escape($feather->url->base(true).'/') ?></a></samp></p>
-		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('/help') ?>"><?php _e('This help page') ?></a></samp></p>
+		<p><a name="url"></a><code>[url=<?php echo Utils::escape(Url::base(true).'/') ?>]<?php echo Utils::escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Utils::escape(Url::base(true).'/') ?>"><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
+		<p><code>[url]<?php echo Utils::escape(Url::base(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Utils::escape(Url::base(true).'/') ?>"><?php echo Utils::escape(Url::base(true).'/') ?></a></samp></p>
+		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('/help') ?>"><?php _e('This help page') ?></a></samp></p>
 		<p><code>[email]myname@example.com[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
 		<p><code>[email=myname@example.com]<?php _e('My email address') ?>[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com"><?php _e('My email address') ?></a></samp></p>
-		<p><code>[topic=1]<?php _e('Test topic') ?>[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('topic/1/') ?>"><?php _e('Test topic') ?></a></samp></p>
-		<p><code>[topic]1[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('topic/1/') ?>"><?php echo $feather->url->get('topic/1/') ?></a></samp></p>
-		<p><code>[post=1]<?php _e('Test post') ?>[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('post/1/#p1') ?>"><?php _e('Test post') ?></a></samp></p>
-		<p><code>[post]1[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('post/1/#p1') ?>"><?php echo $feather->url->get('post/1/#p1') ?></a></samp></p>
-		<p><code>[forum=1]<?php _e('Test forum') ?>[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('topic/1/') ?>"><?php _e('Test forum') ?></a></samp></p>
-		<p><code>[forum]1[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('forum/1/') ?>"><?php echo $feather->url->get('forum/1/') ?></a></samp></p>
-		<p><code>[user=2]<?php _e('Test user') ?>[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('user/2/') ?>"><?php _e('Test user') ?></a></samp></p>
-		<p><code>[user]2[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('user/2/') ?>"><?php echo $feather->url->get('user/2/') ?></a></samp></p>
+		<p><code>[topic=1]<?php _e('Test topic') ?>[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('topic/1/') ?>"><?php _e('Test topic') ?></a></samp></p>
+		<p><code>[topic]1[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('topic/1/') ?>"><?php echo Url::get('topic/1/') ?></a></samp></p>
+		<p><code>[post=1]<?php _e('Test post') ?>[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('post/1/#p1') ?>"><?php _e('Test post') ?></a></samp></p>
+		<p><code>[post]1[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('post/1/#p1') ?>"><?php echo Url::get('post/1/#p1') ?></a></samp></p>
+		<p><code>[forum=1]<?php _e('Test forum') ?>[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('topic/1/') ?>"><?php _e('Test forum') ?></a></samp></p>
+		<p><code>[forum]1[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('forum/1/') ?>"><?php echo Url::get('forum/1/') ?></a></samp></p>
+		<p><code>[user=2]<?php _e('Test user') ?>[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('user/2/') ?>"><?php _e('Test user') ?></a></samp></p>
+		<p><code>[user]2[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('user/2/') ?>"><?php echo Url::get('user/2/') ?></a></samp></p>
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php _e('Images info') ?></p>
         dede
-		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo $feather->utils->escape($feather->url->base(true)) ?>/style/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo $feather->utils->escape($feather->url->base(true)) ?>/style/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
+		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo Utils::escape(Url::base(true)) ?>/style/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo Utils::escape(Url::base(true)) ?>/style/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
 	</div>
 </div>
 <h2><span><?php _e('Quotes') ?></span></h2>
@@ -125,16 +128,14 @@ if (!defined('FEATHER')) {
 <?php
 
 // Display the smiley set
-require FEATHER_ROOT.'featherbb/Helpers/parser.php';
-
 $smiley_groups = array();
 
-foreach ($pd['smilies'] as $smiley_text => $smiley_data) {
+foreach ($feather->parser->pd['smilies'] as $smiley_text => $smiley_data) {
     $smiley_groups[$smiley_data['file']][] = $smiley_text;
 }
 
 foreach ($smiley_groups as $smiley_img => $smiley_texts) {
-    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.$pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
+    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.$feather->parser->pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
 }
 
 ?>

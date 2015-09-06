@@ -11,8 +11,10 @@
  *
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Middleware;
+
 use DB;
+use FeatherBB\Core\Utils;
 
 class Core extends \Slim\Middleware
 {
@@ -178,10 +180,10 @@ class Core extends \Slim\Middleware
         $this->hydrate('forum_env', $this->forum_env);
         // Load FeatherBB utils class
         $this->app->container->singleton('utils', function () {
-            return new \FeatherBB\Utils();
+            return new Utils();
         });
         // Record start time
-        $this->app->start = $this->app->utils->get_microtime();
+        $this->app->start = Utils::get_microtime();
         // Define now var
         $this->app->now = function () {
             return time();
@@ -189,31 +191,29 @@ class Core extends \Slim\Middleware
         // Load FeatherBB cache
         $this->app->container->singleton('cache', function ($container) {
             $path = $container->forum_env['FORUM_CACHE_DIR'];
-            return new \FeatherBB\Cache(array('name' => 'feather',
+            return new \FeatherBB\Core\Cache(array('name' => 'feather',
                                                'path' => $path,
                                                'extension' => '.cache'));
         });
         // Load FeatherBB view
-        $this->app->container->singleton('view2', function() {
-            return new \FeatherBB\View();
+        $this->app->container->singleton('template', function() {
+            return new \FeatherBB\Core\View();
         });
         // Load FeatherBB url class
         $this->app->container->singleton('url', function () {
-            return new \FeatherBB\Url();
+            return new \FeatherBB\Core\Url();
         });
         // Load FeatherBB hooks
         $this->app->container->singleton('hooks', function () {
-            return new \FeatherBB\Hooks();
+            return new \FeatherBB\Core\Hooks();
         });
         // Load FeatherBB email class
         $this->app->container->singleton('email', function () {
-            return new \FeatherBB\Email();
+            return new \FeatherBB\Core\Email();
         });
 
-        // TODO: move parser to autoload
-        require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
         $this->app->container->singleton('parser', function () {
-            return new \FeatherBB\Parser();
+            return new \FeatherBB\Core\Parser();
         });
 
         // This is the very first hook fired
@@ -248,8 +248,8 @@ class Core extends \Slim\Middleware
         $this->forum_settings = array_merge($this->app->cache->retrieve('config'), $this->forum_settings);
 
         // Set default style and assets
-        $this->app->view2->setStyle($this->forum_settings['o_default_style']);
-        $this->app->view2->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
+        $this->app->template->setStyle($this->forum_settings['o_default_style']);
+        $this->app->template->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
 
         // Populate FeatherBB Slim object with forum_settings vars
         $this->hydrate('forum_settings', $this->forum_settings);
@@ -257,7 +257,7 @@ class Core extends \Slim\Middleware
         extract($this->forum_settings); // Legacy
 
         // Run hooks of activated plugins
-        \FeatherBB\Plugin::runActivePlugins();
+        \FeatherBB\Core\Plugin::runActivePlugins();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');

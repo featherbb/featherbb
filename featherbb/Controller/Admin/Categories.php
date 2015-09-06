@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Categories
 {
     public function __construct()
@@ -29,7 +33,7 @@ class Categories
 
     public function add_category()
     {
-        $cat_name = $this->feather->utils->trim($this->request->post('cat_name'));
+        $cat_name = Utils::trim($this->request->post('cat_name'));
         if ($cat_name == '') {
             $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Must enter name message'));
         }
@@ -44,15 +48,19 @@ class Categories
     public function edit_categories()
     {
         if (empty($this->request->post('cat'))) {
-            throw new \FeatherBB\Error(__('Bad request'), '400');
+            throw new \FeatherBB\Core\Error(__('Bad request'), '400');
         }
 
         foreach ($this->request->post('cat') as $cat_id => $properties) {
             $category = array('id' => (int) $cat_id,
-                              'name' => $this->feather->utils->escape($properties['name']),
+                              'name' => Utils::escape($properties['name']),
                               'order' => (int) $properties['order'], );
             if ($category['name'] == '') {
+<<<<<<< HEAD
                 $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Must enter name message'));
+=======
+                redirect(Url::get('admin/categories/'), __('Must enter name message'));
+>>>>>>> development
             }
             $this->model->update_category($category);
         }
@@ -60,7 +68,11 @@ class Categories
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Categories updated redirect'));
+=======
+        redirect(Url::get('admin/categories/'), __('Categories updated redirect'));
+>>>>>>> development
     }
 
     public function delete_category()
@@ -68,10 +80,11 @@ class Categories
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
-            throw new \FeatherBB\Error(__('Bad request'), '400');
+            throw new \FeatherBB\Core\Error(__('Bad request'), '400');
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Delete category not validated'));
         }
 
@@ -79,15 +92,24 @@ class Categories
             $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Category deleted redirect'));
         } else {
             $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Unable to delete category'));
+=======
+            redirect(Url::get('admin/categories/'), __('Delete category not validated'));
+        }
+
+        if ($this->model->delete_category($cat_to_delete)) {
+            redirect(Url::get('admin/categories/'), __('Category deleted redirect'));
+        } else {
+            redirect(Url::get('admin/categories/'), __('Unable to delete category'));
+>>>>>>> development
         }
     }
 
     public function display()
     {
-        \FeatherBB\AdminUtils::generateAdminMenu('categories');
+        AdminUtils::generateAdminMenu('categories');
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Categories')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Categories')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),

@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Users
@@ -142,7 +144,7 @@ class Users
         $move['user_ids'] = $this->hook->fire('model.users.move_users.user_ids', $move['user_ids']);
 
         if (empty($move['user_ids'])) {
-            throw new \FeatherBB\Error(__('No users selected'), 404);
+            throw new \FeatherBB\Core\Error(__('No users selected'), 404);
         }
 
         // Are we trying to batch move any admins?
@@ -150,7 +152,7 @@ class Users
                         ->where('group_id', FEATHER_ADMIN)
                         ->find_one();
         if ($is_admin) {
-            throw new \FeatherBB\Error(__('No move admins message'), 403);
+            throw new \FeatherBB\Core\Error(__('No move admins message'), 403);
         }
 
         // Fetch all user groups
@@ -171,7 +173,7 @@ class Users
             if ( $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ) {
                 $new_group = $this->request->post('new_group');
             } else {
-                throw new \FeatherBB\Error(__('Invalid group message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid group message'), 400);
             }
             $new_group = $this->hook->fire('model.users.move_users.new_group', $new_group);
 
@@ -241,7 +243,11 @@ class Users
             DB::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('adminUsers'), __('Users move redirect'));
+=======
+            redirect(Url::get('admin/users/'), __('Users move redirect'));
+>>>>>>> development
         }
 
         $move = $this->hook->fire('model.users.move_users.move', $move);
@@ -263,7 +269,7 @@ class Users
         $user_ids = $this->hook->fire('model.users.delete_users.user_ids', $user_ids);
 
         if (empty($user_ids)) {
-            throw new \FeatherBB\Error(__('No users selected'), 404);
+            throw new \FeatherBB\Core\Error(__('No users selected'), 404);
         }
 
         // Are we trying to delete any admins?
@@ -271,7 +277,7 @@ class Users
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
-            throw new \FeatherBB\Error(__('No delete admins message'), 403);
+            throw new \FeatherBB\Core\Error(__('No delete admins message'), 403);
         }
 
         if ($this->request->post('delete_users_comply')) {
@@ -406,7 +412,11 @@ class Users
 
             $stats = $this->feather->cache->retrieve('users_info');
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('adminUsers'), __('Users delete redirect'));
+=======
+            redirect(Url::get('admin/users/'), __('Users delete redirect'));
+>>>>>>> development
         }
 
         return $user_ids;
@@ -427,7 +437,7 @@ class Users
         $user_ids = $this->hook->fire('model.users.ban_users.user_ids', $user_ids);
 
         if (empty($user_ids)) {
-            throw new \FeatherBB\Error(__('No users selected'), 404);
+            throw new \FeatherBB\Core\Error(__('No users selected'), 404);
         }
 
         // Are we trying to ban any admins?
@@ -435,7 +445,7 @@ class Users
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
-            throw new \FeatherBB\Error(__('No ban admins message'), 403);
+            throw new \FeatherBB\Core\Error(__('No ban admins message'), 403);
         }
 
         // Also, we cannot ban moderators
@@ -445,12 +455,12 @@ class Users
             ->where_in('u.id', $user_ids)
             ->find_one();
         if ($is_mod) {
-            throw new \FeatherBB\Error(__('No ban mods message'), 403);
+            throw new \FeatherBB\Core\Error(__('No ban mods message'), 403);
         }
 
         if ($this->request->post('ban_users_comply')) {
-            $ban_message = $this->feather->utils->trim($this->request->post('ban_message'));
-            $ban_expire = $this->feather->utils->trim($this->request->post('ban_expire'));
+            $ban_message = Utils::trim($this->request->post('ban_message'));
+            $ban_expire = Utils::trim($this->request->post('ban_expire'));
             $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
 
             $this->hook->fire('model.users.ban_users.comply', $ban_message, $ban_expire, $ban_the_ip);
@@ -459,14 +469,14 @@ class Users
                 $ban_expire = strtotime($ban_expire . ' GMT');
 
                 if ($ban_expire == -1 || !$ban_expire) {
-                    throw new \FeatherBB\Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
+                    throw new \FeatherBB\Core\Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
 
                 $diff = ($this->user->timezone + $this->user->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
-                    throw new \FeatherBB\Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
+                    throw new \FeatherBB\Core\Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
             } else {
                 $ban_expire = 'NULL';
@@ -525,7 +535,11 @@ class Users
                 // Regenerate the bans cache
                 $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
+<<<<<<< HEAD
                 $this->feather->url->redirect($this->feather->urlFor('adminUsers'), __('Users banned redirect'));
+=======
+                redirect(Url::get('admin/users/'), __('Users banned redirect'));
+>>>>>>> development
             }
         }
         return $user_ids;
@@ -541,14 +555,14 @@ class Users
         // trim() all elements in $form
         $form = array_map('trim', $form);
 
-        $posts_greater = $this->request->get('posts_greater') ? $this->feather->utils->trim($this->request->get('posts_greater')) : '';
-        $posts_less = $this->request->get('posts_less') ? $this->feather->utils->trim($this->request->get('posts_less')) : '';
-        $last_post_after = $this->request->get('last_post_after') ? $this->feather->utils->trim($this->request->get('last_post_after')) : '';
-        $last_post_before = $this->request->get('last_post_before') ? $this->feather->utils->trim($this->request->get('last_post_before')) : '';
-        $last_visit_after = $this->request->get('last_visit_after') ? $this->feather->utils->trim($this->request->get('last_visit_after')) : '';
-        $last_visit_before = $this->request->get('last_visit_before') ? $this->feather->utils->trim($this->request->get('last_visit_before')) : '';
-        $registered_after = $this->request->get('registered_after') ? $this->feather->utils->trim($this->request->get('registered_after')) : '';
-        $registered_before = $this->request->get('registered_before') ? $this->feather->utils->trim($this->request->get('registered_before')) : '';
+        $posts_greater = $this->request->get('posts_greater') ? Utils::trim($this->request->get('posts_greater')) : '';
+        $posts_less = $this->request->get('posts_less') ? Utils::trim($this->request->get('posts_less')) : '';
+        $last_post_after = $this->request->get('last_post_after') ? Utils::trim($this->request->get('last_post_after')) : '';
+        $last_post_before = $this->request->get('last_post_before') ? Utils::trim($this->request->get('last_post_before')) : '';
+        $last_visit_after = $this->request->get('last_visit_after') ? Utils::trim($this->request->get('last_visit_after')) : '';
+        $last_visit_before = $this->request->get('last_visit_before') ? Utils::trim($this->request->get('last_visit_before')) : '';
+        $registered_after = $this->request->get('registered_after') ? Utils::trim($this->request->get('registered_after')) : '';
+        $registered_before = $this->request->get('registered_before') ? Utils::trim($this->request->get('registered_before')) : '';
         $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
         $direction = $search['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
         $user_group = $this->request->get('user_group') ? intval($this->request->get('user_group')) : -1;
@@ -558,7 +572,7 @@ class Users
         $search['query_str'][] = 'user_group='.$user_group;
 
         if (preg_match('%[^0-9]%', $posts_greater.$posts_less)) {
-            throw new \FeatherBB\Error(__('Non numeric message'), 400);
+            throw new \FeatherBB\Core\Error(__('Non numeric message'), 400);
         }
 
         $search['conditions'] = array();
@@ -569,7 +583,7 @@ class Users
 
             $last_post_after = strtotime($last_post_after);
             if ($last_post_after === false || $last_post_after == -1) {
-                throw new \FeatherBB\Error(__('Invalid date time message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_post>'.$last_post_after;
@@ -579,7 +593,7 @@ class Users
 
             $last_post_before = strtotime($last_post_before);
             if ($last_post_before === false || $last_post_before == -1) {
-                throw new \FeatherBB\Error(__('Invalid date time message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_post<'.$last_post_before;
@@ -589,7 +603,7 @@ class Users
 
             $last_visit_after = strtotime($last_visit_after);
             if ($last_visit_after === false || $last_visit_after == -1) {
-                throw new \FeatherBB\Error(__('Invalid date time message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_visit>'.$last_visit_after;
@@ -599,7 +613,7 @@ class Users
 
             $last_visit_before = strtotime($last_visit_before);
             if ($last_visit_before === false || $last_visit_before == -1) {
-                throw new \FeatherBB\Error(__('Invalid date time message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_visit<'.$last_visit_before;
@@ -609,7 +623,7 @@ class Users
 
             $registered_after = strtotime($registered_after);
             if ($registered_after === false || $registered_after == -1) {
-                throw new \FeatherBB\Error(__('Invalid date time message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.registered>'.$registered_after;
@@ -619,7 +633,7 @@ class Users
 
             $registered_before = strtotime($registered_before);
             if ($registered_before === false || $registered_before == -1) {
-                throw new \FeatherBB\Error(__('Invalid date time message'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.registered<'.$registered_before;
@@ -692,7 +706,7 @@ class Users
                         ->order_by('g_title');
 
         foreach ($result as $cur_group) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.$this->feather->utils->escape($cur_group['g_title']).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         }
 
         $output = $this->hook->fire('model.users.get_group_list.output', $output);

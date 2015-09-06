@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Users
 {
     public function __construct()
@@ -32,13 +36,13 @@ class Users
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'move'              =>  $this->model->move_users(),
@@ -50,13 +54,13 @@ class Users
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'user_ids'          => $this->model->delete_users(),
@@ -68,13 +72,13 @@ class Users
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
                     'active_page' => 'moderate',
                     'focus_element' => array('bans2', 'ban_message'),
                     'admin_console' => true,
@@ -99,16 +103,16 @@ class Users
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
-            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . $this->feather->url->paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
+            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
             $can_delete = $can_move = $this->user->g_id == FEATHER_ADMIN;
             $can_ban = $this->user->g_id == FEATHER_ADMIN || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
-            $this->feather->view2->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
+            $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'paging_links' => $paging_links,
@@ -123,10 +127,10 @@ class Users
             )->addTemplate('admin/users/find_users.php')->display();
         }
         else {
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
-            $this->feather->view2->setPageInfo(array(
-                    'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users')),
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'focus_element' => array('find_user', 'form[username]'),
@@ -148,12 +152,12 @@ class Users
         $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'page' => $p,
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?ip_stats='.$id),
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?ip_stats='.$id),
                 'start_from'        =>  $start_from,
                 'ip_data'   =>  $this->model->get_ip_stats($id, $start_from),
             )
@@ -164,7 +168,7 @@ class Users
     public function showusers($ip)
     {
         if (!@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $ip) && !@preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%', $ip)) {
-            throw new \FeatherBB\Error(__('Bad IP message'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad IP message'), 400);
         }
 
         // Fetch user count
@@ -176,11 +180,11 @@ class Users
         $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?ip_stats='.$ip),
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?ip_stats='.$ip),
                 'page' => $p,
                 'start_from'        =>  $start_from,
                 'info'   =>  $this->model->get_info_poster($ip, $start_from),

@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Delete
@@ -48,7 +50,7 @@ class Delete
         $query = $query->find_one();
 
         if (!$query) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         return $query;
@@ -65,7 +67,11 @@ class Delete
             delete_topic($tid);
             update_forum($fid);
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Topic del redirect'));
+=======
+            redirect(Url::get('forum/'.$fid.'/'), __('Topic del redirect'));
+>>>>>>> development
         } else {
             $this->hook->fire('handle_deletion', $tid, $fid, $id);
 
@@ -84,7 +90,11 @@ class Delete
 
             $post = $post->find_one();
 
+<<<<<<< HEAD
             $this->feather->url->redirect($this->feather->url->get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
+=======
+            redirect(Url::get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
+>>>>>>> development
         }
     }
 }

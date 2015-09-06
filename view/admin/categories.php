@@ -53,7 +53,7 @@ if (!defined('FEATHER')) {
 <?php
 
     foreach ($cat_list as $cur_cat) {
-        echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.$feather->utils->escape($cur_cat['cat_name']).'</option>'."\n";
+        echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.Utils::escape($cur_cat['cat_name']).'</option>'."\n";
     }
 
 ?>
@@ -90,7 +90,7 @@ if (!defined('FEATHER')) {
     foreach ($cat_list as $cur_cat) {
         ?>
 								<tr>
-									<td class="tcl"><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][name]" value="<?php echo $feather->utils->escape($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
+									<td class="tcl"><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][name]" value="<?php echo Utils::escape($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
 									<td><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][order]" value="<?php echo $cur_cat['disp_position'] ?>" size="3" maxlength="3" /></td>
 								</tr>
 <?php

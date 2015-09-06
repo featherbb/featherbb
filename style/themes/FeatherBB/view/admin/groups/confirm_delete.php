@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,14 +19,14 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Group delete head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->url->get('admin/groups/delete/'.$id.'/') ?>">
+			<form method="post" action="<?php echo Url::get('admin/groups/delete/'.$id.'/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
-				<input type="hidden" name="group_to_delete" value="<?php echo $feather->url->get('admin/groups/delete/'.$id.'/') ?>" />
+				<input type="hidden" name="group_to_delete" value="<?php echo Url::get('admin/groups/delete/'.$id.'/') ?>" />
 					<fieldset>
 						<legend><?php _e('Confirm delete subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Confirm delete info'), $feather->utils->escape($group_title)) ?></p>
+							<p><?php printf(__('Confirm delete info'), Utils::escape($group_title)) ?></p>
 							<p class="warntext"><?php _e('Confirm delete warn') ?></p>
 						</div>
 					</fieldset>

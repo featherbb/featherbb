@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Censoring
@@ -25,11 +27,11 @@ class Censoring
 
     public function add_word()
     {
-        $search_for = $this->feather->utils->trim($this->request->post('new_search_for'));
-        $replace_with = $this->feather->utils->trim($this->request->post('new_replace_with'));
+        $search_for = Utils::trim($this->request->post('new_search_for'));
+        $replace_with = Utils::trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
-            throw new \FeatherBB\Error(__('Must enter word message'), 400);
+            throw new \FeatherBB\Core\Error(__('Must enter word message'), 400);
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -46,18 +48,22 @@ class Censoring
         $this->feather->cache->store('search_for', \FeatherBB\Model\Cache::get_censoring('search_for'));
         $this->feather->cache->store('replace_with', \FeatherBB\Model\Cache::get_censoring('replace_with'));
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminCensoring'), __('Word added redirect'));
+=======
+        redirect(Url::get('admin/censoring/'), __('Word added redirect'));
+>>>>>>> development
     }
 
     public function update_word()
     {
         $id = intval(key($this->request->post('update')));
 
-        $search_for = $this->feather->utils->trim($this->request->post('search_for')[$id]);
-        $replace_with = $this->feather->utils->trim($this->request->post('replace_with')[$id]);
+        $search_for = Utils::trim($this->request->post('search_for')[$id]);
+        $replace_with = Utils::trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
-            throw new \FeatherBB\Error(__('Must enter word message'), 400);
+            throw new \FeatherBB\Core\Error(__('Must enter word message'), 400);
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -74,7 +80,11 @@ class Censoring
         $this->feather->cache->store('search_for', \FeatherBB\Model\Cache::get_censoring('search_for'));
         $this->feather->cache->store('replace_with', \FeatherBB\Model\Cache::get_censoring('replace_with'));
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminCensoring'), __('Word updated redirect'));
+=======
+        redirect(Url::get('admin/censoring/'), __('Word updated redirect'));
+>>>>>>> development
     }
 
     public function remove_word()
@@ -90,7 +100,11 @@ class Censoring
         $this->feather->cache->store('search_for', \FeatherBB\Model\Cache::get_censoring('search_for'));
         $this->feather->cache->store('replace_with', \FeatherBB\Model\Cache::get_censoring('replace_with'));
 
+<<<<<<< HEAD
         $this->feather->url->redirect($this->feather->urlFor('adminCensoring'),  __('Word removed redirect'));
+=======
+        redirect(Url::get('admin/censoring/'),  __('Word removed redirect'));
+>>>>>>> development
     }
 
     public function get_words()

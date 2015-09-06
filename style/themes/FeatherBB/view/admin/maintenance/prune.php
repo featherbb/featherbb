@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -16,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Prune head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->url->get('admin/maintenance/') ?>">
+			<form method="post" action="<?php echo Url::get('admin/maintenance/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
@@ -26,7 +29,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php _e('Confirm prune subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], $feather->utils->forum_number_format($prune['num_topics'])) ?></p>
+							<p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], Utils::forum_number_format($prune['num_topics'])) ?></p>
 							<p class="warntext"><?php _e('Confirm prune warn') ?></p>
 						</div>
 					</fieldset>

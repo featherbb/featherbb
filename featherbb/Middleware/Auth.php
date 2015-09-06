@@ -11,8 +11,10 @@
  *
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Middleware;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Auth extends \Slim\Middleware
@@ -178,7 +180,7 @@ class Auth extends \Slim\Middleware
                 \DB::for_table('online')
                     ->where('ident', $this->app->user->username)
                     ->delete_many();
-                throw new \FeatherBB\Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.$this->app->utils->escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.$this->app->utils->escape($this->app->forum_settings['o_admin_email']).'">'.$this->app->utils->escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
+                throw new \FeatherBB\Core\Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
             }
         }
 
@@ -195,8 +197,8 @@ class Auth extends \Slim\Middleware
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, $this->app->forum_settings['o_maintenance_message']);
 
-        $this->app->view2->setPageInfo(array(
-            'title' => array($this->app->utils->escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
+        $this->app->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
             'active_page' => 'index',
             'message'    =>    $message,
             'no_back_link'    =>    '',
@@ -265,7 +267,7 @@ class Auth extends \Slim\Middleware
                      ->update_many('logged', time());
             }
 
-            $this->model->feather_setcookie(1, \FeatherBB\Utils::feather_hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            $this->model->feather_setcookie(1, \FeatherBB\Core\Utils::hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language.'/common.mo');

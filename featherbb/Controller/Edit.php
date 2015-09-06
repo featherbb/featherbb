@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Edit
 {
     public function __construct()
@@ -19,21 +22,16 @@ class Edit
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\edit();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/post.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/bbeditor.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function editpost($id)
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -52,11 +50,11 @@ class Edit
 
         // Do we have permission to edit this post?
         if (($this->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Start with a clean slate
@@ -74,8 +72,12 @@ class Edit
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
+<<<<<<< HEAD
                 // $this->feather->url->redirect($this->feather->urlFor('viewPost', array('pid' => $id)), __('Post redirect'));
                 $this->feather->url->redirect($this->feather->url->get('post/'.$id.'/#p'.$id), __('Post redirect'));
+=======
+                redirect(Url::get('post/'.$id.'/#p'.$id), __('Post redirect'));
+>>>>>>> development
             }
         } else {
             $post = '';
@@ -106,8 +108,8 @@ class Edit
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Edit post')),
+        $this->feather->template->setPageInfo(array(
+                            'title' => array(Utils::escape($this->config['o_board_title']), __('Edit post')),
                             'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                             'focus_element' => array('edit', 'req_message'),
                             'cur_post' => $cur_post,

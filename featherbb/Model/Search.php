@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Search
@@ -21,7 +23,7 @@ class Search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     public function get_search_results()
@@ -47,24 +49,24 @@ class Search
         if ($this->request->get('search_id')) {
             $search_id = intval($this->request->get('search_id'));
             if ($search_id < 1) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
         }
         // If it's a regular search (keywords and/or author)
         elseif ($action == 'search') {
-            $keywords = ($this->request->get('keywords')) ? utf8_strtolower($this->feather->utils->trim($this->request->get('keywords'))) : null;
-            $author = ($this->request->get('author')) ? utf8_strtolower($this->feather->utils->trim($this->request->get('author'))) : null;
+            $keywords = ($this->request->get('keywords')) ? utf8_strtolower(Utils::trim($this->request->get('keywords'))) : null;
+            $author = ($this->request->get('author')) ? utf8_strtolower(Utils::trim($this->request->get('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || ($this->feather->utils->strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !$this->search->is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !$this->search->is_cjk($keywords))) {
                 $keywords = '';
             }
 
-            if (preg_match('%^[\*\%]+$%', $author) || $this->feather->utils->strlen(str_replace(array('*', '%'), '', $author)) < 2) {
+            if (preg_match('%^[\*\%]+$%', $author) || Utils::strlen(str_replace(array('*', '%'), '', $author)) < 2) {
                 $author = '';
             }
 
             if (!$keywords && !$author) {
-                throw new \FeatherBB\Error(__('No terms'), 400);
+                throw new \FeatherBB\Core\Error(__('No terms'), 400);
             }
 
             if ($author) {
@@ -79,21 +81,21 @@ class Search
         elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
             $user_id = ($this->request->get('user_id')) ? intval($this->request->get('user_id')) : $this->user->id;
             if ($user_id < 2) {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
 
             // Subscribed topics can only be viewed by admins, moderators and the users themselves
             if ($action == 'show_subscriptions' && !$this->user->is_admmod && $user_id != $this->user->id) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
         } elseif ($action == 'show_recent') {
             $interval = $this->request->get('value') ? intval($this->request->get('value')) : 86400;
         } elseif ($action == 'show_replies') {
             if ($this->user->is_guest) {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
         } elseif ($action != 'show_new' && $action != 'show_unanswered') {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
 
@@ -120,7 +122,7 @@ class Search
 
                 unset($temp);
             } else {
-                throw new \FeatherBB\Error(__('No hits'), 204);
+                throw new \FeatherBB\Core\Error(__('No hits'), 204);
             }
         } else {
             $keyword_results = $author_results = array();
@@ -131,7 +133,7 @@ class Search
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
                 if ($this->user->last_search && (time() - $this->user->last_search) < $this->user->g_search_flood && (time() - $this->user->last_search) >= 0) {
-                    throw new \FeatherBB\Error(sprintf(__('Search flood'), $this->user->g_search_flood, $this->user->g_search_flood - (time() - $this->user->last_search)), 429);
+                    throw new \FeatherBB\Core\Error(sprintf(__('Search flood'), $this->user->g_search_flood, $this->user->g_search_flood - (time() - $this->user->last_search)), 429);
                 }
 
                 if (!$this->user->is_guest) {
@@ -180,7 +182,7 @@ class Search
                     $keywords_array = $this->hook->fire('get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
-                        throw new \FeatherBB\Error(__('No hits'), 400);
+                        throw new \FeatherBB\Core\Error(__('No hits'), 400);
                     }
 
                     // Should we search in message body or topic subject specifically?
@@ -290,13 +292,13 @@ class Search
                 // If we searched for both keywords and author name we want the intersection between the results
                 if ($author && $keywords) {
                     $search_ids = array_intersect_assoc($keyword_results, $author_results);
-                    $search_type = array('both', array($keywords, $this->feather->utils->trim($this->request->get('author'))), implode(',', $forums), $search_in);
+                    $search_type = array('both', array($keywords, Utils::trim($this->request->get('author'))), implode(',', $forums), $search_in);
                 } elseif ($keywords) {
                     $search_ids = $keyword_results;
                     $search_type = array('keywords', $keywords, implode(',', $forums), $search_in);
                 } else {
                     $search_ids = $author_results;
-                    $search_type = array('author', $this->feather->utils->trim($this->request->get('author')), implode(',', $forums), $search_in);
+                    $search_type = array('author', Utils::trim($this->request->get('author')), implode(',', $forums), $search_in);
                 }
 
                 $search_ids = $this->hook->fire('get_search_results_search_ids', $search_ids);
@@ -317,7 +319,7 @@ class Search
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
-                    throw new \FeatherBB\Error(__('No hits'), 204);
+                    throw new \FeatherBB\Core\Error(__('No hits'), 204);
                 }
             } elseif ($action == 'show_new' || $action == 'show_recent' || $action == 'show_replies' || $action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions' || $action == 'show_unanswered') {
                 $search_type = array('action', $action);
@@ -334,7 +336,7 @@ class Search
                 // If it's a search for new posts since last visit
                 if ($action == 'show_new') {
                     if ($this->user->is_guest) {
-                        throw new \FeatherBB\Error(__('No permission'), 403);
+                        throw new \FeatherBB\Core\Error(__('No permission'), 403);
                     }
 
                     $result = DB::for_table('topics')
@@ -358,7 +360,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No new posts'), 204);
+                        throw new \FeatherBB\Core\Error(__('No new posts'), 204);
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -383,7 +385,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No recent posts'), 204);
+                        throw new \FeatherBB\Core\Error(__('No recent posts'), 204);
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -408,7 +410,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No user posts'), 204);
+                        throw new \FeatherBB\Core\Error(__('No user posts'), 204);
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -431,7 +433,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No user posts'), 404);
+                        throw new \FeatherBB\Core\Error(__('No user posts'), 404);
                     }
 
                     // Pass on the user ID so that we can later know whose posts we're searching for
@@ -455,7 +457,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No user topics'), 404);
+                        throw new \FeatherBB\Core\Error(__('No user topics'), 404);
                     }
 
                     // Pass on the user ID so that we can later know whose topics we're searching for
@@ -464,7 +466,7 @@ class Search
                 // If it's a search for subscribed topics
                 elseif ($action == 'show_subscriptions') {
                     if ($this->user->is_guest) {
-                        throw new \FeatherBB\Error(__('Bad request'), 404);
+                        throw new \FeatherBB\Core\Error(__('Bad request'), 404);
                     }
 
                     $result = DB::for_table('topics')
@@ -483,7 +485,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No subscriptions'), 404);
+                        throw new \FeatherBB\Core\Error(__('No subscriptions'), 404);
                     }
 
                     // Pass on user ID so that we can later know whose subscriptions we're searching for
@@ -507,7 +509,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No unanswered'), 404);
+                        throw new \FeatherBB\Core\Error(__('No unanswered'), 404);
                     }
                 }
 
@@ -519,7 +521,7 @@ class Search
                 $pdo = DB::get_db();
                 $pdo = null;
             } else {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
 
 
@@ -569,7 +571,7 @@ class Search
 
         // If we're on the new posts search, display a "mark all as read" link
         if (!$this->user->is_guest && $search_type[0] == 'action' && $search_type[1] == 'show_new') {
-            $search['forum_actions'][] = '<a href="'.$this->feather->url->get('mark-read/').'">'.__('Mark all as read').'</a>';
+            $search['forum_actions'][] = '<a href="'.Url::get('mark-read/').'">'.__('Mark all as read').'</a>';
         }
 
         // Fetch results to display
@@ -604,7 +606,7 @@ class Search
             $search['start_from'] = $start_from;
 
             // Generate paging links
-            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.$this->feather->url->paginate_old($num_pages, $p, '?search_id='.$search_id);
+            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?search_id='.$search_id);
 
             // throw away the first $start_from of $search_ids, only keep the top $per_page of $search_ids
             $search_ids = array_slice($search_ids, $start_from, $per_page);
@@ -643,9 +645,9 @@ class Search
 
             if ($search_type[0] == 'action') {
                 if ($search_type[1] == 'show_user_topics') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_topics'), $this->feather->utils->escape($search['search_set'][0]['poster'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Url::get('search/?action=show_user_topics&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_topics'), Utils::escape($search['search_set'][0]['poster'])).'</a>';
                 } elseif ($search_type[1] == 'show_user_posts') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_posts'), $this->feather->utils->escape($search['search_set'][0]['pposter'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$search_type[2]).'">'.sprintf(__('Quick search show_user_posts'), Utils::escape($search['search_set'][0]['pposter'])).'</a>';
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
@@ -655,29 +657,29 @@ class Search
                     $subscriber_name = $subscriber_name->find_one_col('username');
 
                     if (!$subscriber_name) {
-                        throw new \FeatherBB\Error(__('Bad request'), 404);
+                        throw new \FeatherBB\Core\Error(__('Bad request'), 404);
                     }
 
-                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), $this->feather->utils->escape($subscriber_name)).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Url::get('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), Utils::escape($subscriber_name)).'</a>';
                 } else {
                     $search_url = str_replace('_', '/', $search_type[1]);
-                    $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/'.$search_url.'/').'">'.__('Quick search '.$search_type[1]).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Url::get('search/'.$search_url.'/').'">'.__('Quick search '.$search_type[1]).'</a>';
                 }
             } else {
                 $keywords = $author = '';
 
                 if ($search_type[0] == 'both') {
                     list($keywords, $author) = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf(__('By both show as '.$show_as), $this->feather->utils->escape($keywords), $this->feather->utils->escape($author));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By both show as '.$show_as), Utils::escape($keywords), Utils::escape($author));
                 } elseif ($search_type[0] == 'keywords') {
                     $keywords = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf(__('By keywords show as '.$show_as), $this->feather->utils->escape($keywords));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By keywords show as '.$show_as), Utils::escape($keywords));
                 } elseif ($search_type[0] == 'author') {
                     $author = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf(__('By user show as '.$show_as), $this->feather->utils->escape($author));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By user show as '.$show_as), Utils::escape($author));
                 }
 
-                $search['crumbs_text']['search_type'] = '<a href="'.$this->feather->url->get('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
+                $search['crumbs_text']['search_type'] = '<a href="'.Url::get('search/?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as).'">'.$search['crumbs_text']['search_type'].'</a>';
             }
         }
 
@@ -700,8 +702,8 @@ class Search
         $post_count = $topic_count = 0;
 
         foreach ($search['search_set'] as $cur_search) {
-            $forum = '<a href="'.$this->feather->url->get('forum/'.$cur_search['forum_id'].'/'.$this->feather->url->url_friendly($cur_search['forum_name']).'/').'">'.$this->feather->utils->escape($cur_search['forum_name']).'</a>';
-            $url_topic = $this->feather->url->url_friendly($cur_search['subject']);
+            $forum = '<a href="'.Url::get('forum/'.$cur_search['forum_id'].'/'.Url::url_friendly($cur_search['forum_name']).'/').'">'.Utils::escape($cur_search['forum_name']).'</a>';
+            $url_topic = Url::url_friendly($cur_search['subject']);
 
             if ($this->config['o_censoring'] == '1') {
                 $cur_search['subject'] = censor_words($cur_search['subject']);
@@ -725,15 +727,15 @@ class Search
                 }
 
                 $cur_search['message'] = $this->feather->parser->parse_message($cur_search['message'], $cur_search['hide_smilies']);
-                $pposter = $this->feather->utils->escape($cur_search['pposter']);
+                $pposter = Utils::escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && $this->user->g_view_users == '1') {
-                    $cur_search['pposter_disp'] = '<strong><a href="'.$this->feather->url->get('user/'.$cur_search['poster_id'].'/').'">'.$pposter.'</a></strong>';
+                    $cur_search['pposter_disp'] = '<strong><a href="'.Url::get('user/'.$cur_search['poster_id'].'/').'">'.$pposter.'</a></strong>';
                 } else {
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
 
-                $this->feather->view2->setPageInfo(array(
+                $this->feather->template->setPageInfo(array(
                     'post_count' => $post_count,
                     'url_topic' => $url_topic,
                     'cur_search' => $cur_search,
@@ -746,7 +748,7 @@ class Search
                 $cur_search['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_search['icon_type'] = 'icon';
 
-                $subject = '<a href="'.$this->feather->url->get('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.$this->feather->utils->escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.$this->feather->utils->escape($cur_search['poster']).'</span>';
+                $subject = '<a href="'.Url::get('topic/'.$cur_search['tid'].'/'.$url_topic.'/').'">'.Utils::escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['poster']).'</span>';
 
                 if ($cur_search['sticky'] == '1') {
                     $cur_search['item_status'] .= ' isticky';
@@ -762,7 +764,7 @@ class Search
                     $cur_search['item_status'] .= ' inew';
                     $cur_search['icon_type'] = 'icon icon-new';
                     $subject = '<strong>'.$subject.'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->url->get('topic/'.$cur_search['tid'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.Url::get('topic/'.$cur_search['tid'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -773,7 +775,7 @@ class Search
                 $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / $this->user->disp_posts);
 
                 if ($num_pages_topic > 1) {
-                    $subject_multipage = '<span class="pagestext">[ '.$this->feather->url->paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }
@@ -790,7 +792,7 @@ class Search
                     $start_from = $cur_search['start_from'];
                 }
 
-                $this->feather->view2->setPageInfo(array(
+                $this->feather->template->setPageInfo(array(
                     'cur_search' => $cur_search,
                     'start_from' => $start_from,
                     'topic_count' => $topic_count,
@@ -846,12 +848,12 @@ class Search
                         $output .= "\t\t\t\t\t\t\t".'</fieldset>'."\n";
                     }
 
-                    $output .= "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.$this->feather->utils->escape($cur_forum['cat_name']).'</span></legend>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.Utils::escape($cur_forum['cat_name']).'</span></legend>'."\n";
                     $output .= "\t\t\t\t\t\t\t\t".'<div class="rbox">';
                     $cur_category = $cur_forum['cid'];
                 }
 
-                $output .= "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.$cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.$this->feather->utils->escape($cur_forum['forum_name']).'</label>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.$cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.Utils::escape($cur_forum['forum_name']).'</label>'."\n";
             }
 
             if ($cur_category) {
@@ -877,11 +879,11 @@ class Search
                         $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";
                     }
 
-                    $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.$this->feather->utils->escape($cur_forum['cat_name']).'">'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cur_forum['cat_name']).'">'."\n";
                     $cur_category = $cur_forum['cid'];
                 }
 
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.$this->feather->utils->escape($cur_forum['forum_name']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.Utils::escape($cur_forum['forum_name']).'</option>'."\n";
             }
 
             $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";

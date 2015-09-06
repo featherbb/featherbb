@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Post
 {
     public function __construct()
@@ -35,7 +38,7 @@ class Post
 
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->feather->request->post('username')) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Fetch some info about the topic and/or the forum
@@ -45,7 +48,7 @@ class Post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -57,7 +60,7 @@ class Post
                 ($fid && (($cur_posting['post_topics'] == '' && $this->feather->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Start with a clean slate
@@ -120,7 +123,11 @@ class Post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
+<<<<<<< HEAD
                     $this->feather->url->redirect($this->feather->url->get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
+=======
+                    redirect(Url::get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
+>>>>>>> development
                 }
         }
 
@@ -129,28 +136,28 @@ class Post
         // If a topic ID was specified in the url (it's a reply)
         if ($tid) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.Url::get('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
                     $quote = $this->model->get_quote_message($qid, $tid);
-                    $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.Url::get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($fid) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.$this->feather->url->get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.Url::get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
-        $url_forum = $this->feather->url->url_friendly($cur_posting['forum_name']);
+        $url_forum = Url::url_friendly($cur_posting['forum_name']);
 
         $is_subscribed = $tid && $cur_posting['is_subscribed'];
 
         if (isset($cur_posting['subject'])) {
-            $url_topic = $this->feather->url->url_friendly($cur_posting['subject']);
+            $url_topic = Url::url_friendly($cur_posting['subject']);
         } else {
             $url_topic = '';
         }
@@ -198,8 +205,8 @@ class Post
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->view2->setPageInfo(array(
-                            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), $action),
+        $this->feather->template->setPageInfo(array(
+                            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
                             'required_fields' => $required_fields,
                             'focus_element' => $focus_element,
                             'active_page' => 'post',

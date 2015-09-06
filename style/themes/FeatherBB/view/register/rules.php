@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -17,7 +20,7 @@ if (!defined('FEATHER')) {
 <div id="rules" class="blockform">
 	<div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
 	<div class="box">
-		<form method="get" action="<?php echo $feather->url->get('register/') ?>">
+		<form method="get" action="<?php echo Url::get('register/') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Rules legend') ?></legend>

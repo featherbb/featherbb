@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -41,8 +41,8 @@ if (!defined('FEATHER')) {
 <div class="box">
 	<div class="inbox">
 		<p><?php _e('Links info') ?></p>
-		<p><a name="url"></a><code>[url=<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>]<?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>"><?php echo $feather->utils->escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
-		<p><code>[url]<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->utils->escape($feather->url->base(true).'/') ?>"><?php echo $feather->utils->escape($feather->url->base(true).'/') ?></a></samp></p>
+		<p><a name="url"></a><code>[url=<?php echo Utils::escape($feather->url->base(true).'/') ?>]<?php echo Utils::escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Utils::escape($feather->url->base(true).'/') ?>"><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
+		<p><code>[url]<?php echo Utils::escape($feather->url->base(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Utils::escape($feather->url->base(true).'/') ?>"><?php echo Utils::escape($feather->url->base(true).'/') ?></a></samp></p>
 		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->url->get('/help') ?>"><?php _e('This help page') ?></a></samp></p>
 		<p><code>[email]myname@example.com[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
 		<p><code>[email=myname@example.com]<?php _e('My email address') ?>[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com"><?php _e('My email address') ?></a></samp></p>
@@ -57,7 +57,7 @@ if (!defined('FEATHER')) {
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php _e('Images info') ?></p>
-		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo $feather->utils->escape($feather->url->base(true)) ?>/style/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo $feather->utils->escape($feather->url->base(true)) ?>/style/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
+		<p><code>[img=<?php _e('FeatherBB bbcode test') ?>]<?php echo Utils::escape($feather->url->base(true)) ?>/style/img/logo.png[/img]</code> <?php _e('produces') ?> <samp><img style="height: 21px" src="<?php echo Utils::escape($feather->url->base(true)) ?>/style/img/logo.png" alt="<?php _e('FeatherBB bbcode test') ?>" /></samp></p>
 	</div>
 </div>
 <h2><span><?php _e('Quotes') ?></span></h2>
@@ -124,16 +124,14 @@ if (!defined('FEATHER')) {
 <?php
 
 // Display the smiley set
-require FEATHER_ROOT.'featherbb/Helpers/parser.php';
-
 $smiley_groups = array();
 
-foreach ($pd['smilies'] as $smiley_text => $smiley_data) {
+foreach ($feather->parser->pd['smilies'] as $smiley_text => $smiley_data) {
     $smiley_groups[$smiley_data['file']][] = $smiley_text;
 }
 
 foreach ($smiley_groups as $smiley_img => $smiley_texts) {
-    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.$pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
+    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.$feather->parser->pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
 }
 
 ?>

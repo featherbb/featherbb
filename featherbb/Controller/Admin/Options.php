@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
+
 class Options
 {
     public function __construct()
@@ -22,21 +26,16 @@ class Options
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
-    }
-
     public function display()
     {
         if ($this->feather->request->isPost()) {
             $this->model->update_options();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('options');
+        AdminUtils::generateAdminMenu('options');
 
-        $this->feather->view2->setPageInfo(array(
-                'title' => array($this->feather->utils->escape($this->config['o_board_title']), __('Admin'), __('Options')),
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Options')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'languages' => $this->model->get_langs(),

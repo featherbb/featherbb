@@ -23,7 +23,7 @@ if (!defined('FEATHER')) {
 					<legend><?php _e('Login legend') ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="redirect_url" value="<?php echo $feather->utils->escape($redirect_url) ?>" />
+						<input type="hidden" name="redirect_url" value="<?php echo Utils::escape($redirect_url) ?>" />
 						<label class="conl required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="1" /><br /></label>
 						<label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password" size="25" tabindex="2" /><br /></label>
 

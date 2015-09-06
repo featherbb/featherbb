@@ -190,13 +190,13 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
 
 // 404 not found
 $feather->notFound(function () use ($feather){
-    throw new \FeatherBB\Error('Page not found', 404);
+    throw new \FeatherBB\Core\Error('Page not found', 404);
 });
 
 $feather->error(function (\Exception $e) use ($feather) {
     $feather->response->setStatus($e->getCode());
-    $feather->view2->setPageInfo(array(
-        'title' => array($feather->utils->escape($feather->config['o_board_title']), __('Error')),
+    $feather->template->setPageInfo(array(
+        'title' => array(\FeatherBB\Core\Utils::escape($feather->config['o_board_title']), __('Error')),
         'msg_title' => __('Error'),
         'msg'    =>   $e->getMessage(),
         'no_back_link'    => false,

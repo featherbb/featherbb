@@ -14,7 +14,7 @@ if (!defined('FEATHER')) {
 
 ?>
 	<div class="blockform">
-		<h2><span><?php echo $feather->utils->escape($user['username']).' - '.__('Section admin') ?></span></h2>
+		<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section admin') ?></span></h2>
 		<div class="box">
 			<form id="profile7" method="post" action="<?php echo $feather->url->get('user/'.$id.'/section/admin/') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">

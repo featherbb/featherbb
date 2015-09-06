@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 class Delete
 {
     public function __construct()
@@ -22,7 +25,7 @@ class Delete
     public function deletepost($id)
     {
         if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -44,11 +47,11 @@ class Delete
                 $cur_post['poster_id'] != $this->feather->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($this->feather->request()->isPost()) {
@@ -57,8 +60,8 @@ class Delete
 
         $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        $this->feather->view2->setPageInfo(array(
-            'title' => array($this->feather->utils->escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
             'id' => $id,

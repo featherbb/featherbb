@@ -29,20 +29,21 @@ function get_admin_ids()
 function check_username($username, $errors, $exclude_id = null)
 {
     global $feather, $errors, $feather_bans;
+    $feather = \Slim\Slim::getInstance();
 
     // Include UTF-8 function
-    require_once FEATHER_ROOT.'featherbb/Helpers/utf8/strcasecmp.php';
+    require_once $feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/register.mo');
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/prof_reg.mo');
+    load_textdomain('featherbb', $feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$feather->user->language.'/register.mo');
+    load_textdomain('featherbb', $feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$feather->user->language.'/prof_reg.mo');
 
     // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
     $username = preg_replace('%\s+%s', ' ', $username);
 
     // Validate username
-    if ($feather->utils->strlen($username) < 2) {
+    if (\FeatherBB\Core\Utils::strlen($username) < 2) {
         $errors[] = __('Username too short');
-    } elseif ($feather->utils->strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+    } elseif (\FeatherBB\Core\Utils::strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
         $errors[] = __('Username too long');
     } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
         $errors[] = __('Username guest');
@@ -62,11 +63,11 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => $feather->utils->ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => \FeatherBB\Core\Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
     if ($result) {
         $busy = $result['username'];
-        $errors[] = __('Username dupe 1').' '.$feather->utils->escape($busy).'. '.__('Username dupe 2');
+        $errors[] = __('Username dupe 1').' '.\FeatherBB\Core\Utils::escape($busy).'. '.__('Username dupe 2');
     }
 
     // Check username for any banned usernames
@@ -94,8 +95,8 @@ function generate_avatar_markup($user_id)
     foreach ($filetypes as $cur_type) {
         $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
-        if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.$feather->utils->escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+        if (file_exists($feather->forum_env['FEATHER_ROOT'].$path) && $img_size = getimagesize($feather->forum_env['FEATHER_ROOT'].$path)) {
+            $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime($feather->forum_env['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -118,7 +119,7 @@ function generate_page_title($page_title, $p = null)
     $page_title = array_reverse($page_title);
 
     if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf(__('Page'), $feather->utils->forum_number_format($p)).')';
+        $page_title[0] .= ' ('.sprintf(__('Page'), \FeatherBB\Core\Utils::forum_number_format($p)).')';
     }
 
     $crumbs = implode(__('Title separator'), $page_title);
@@ -225,14 +226,14 @@ function update_forum($forum_id)
 //
 function delete_avatar($user_id)
 {
-    global $feather_config;
+    $feather = \Slim\Slim::getInstance();
 
     $filetypes = array('jpg', 'gif', 'png');
 
     // Delete user avatar
     foreach ($filetypes as $cur_type) {
-        if (file_exists(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
-            @unlink(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+        if (file_exists($feather->forum_env['FEATHER_ROOT'].$feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
+            @unlink($feather->forum_env['FEATHER_ROOT'].$feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
         }
     }
 }
@@ -296,7 +297,7 @@ function delete_post($post_id, $topic_id)
         ->find_one()
         ->delete();
 
-    $search = new \FeatherBB\Search();
+    $search = new \FeatherBB\Core\Search();
 
     $search->strip_search_index($post_id);
 
@@ -360,7 +361,7 @@ function censor_words($text)
     }
 
     if (!empty($search_for) && !empty($replace_with)) {
-        return substr($feather->utils->ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+        return substr(\FeatherBB\Core\Utils::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
     } else {
         return $text;
     }
@@ -376,8 +377,6 @@ function get_title($user)
     global $feather_bans;
     static $ban_list;
 
-    $feather = \Slim\Slim::getInstance();
-
     // If not already built in a previous call, build an array of lowercase banned usernames
     if (empty($ban_list)) {
         $ban_list = array();
@@ -388,7 +387,7 @@ function get_title($user)
 
     // If the user has a custom title
     if ($user['title'] != '') {
-        $user_title = $feather->utils->escape($user['title']);
+        $user_title = \FeatherBB\Core\Utils::escape($user['title']);
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
@@ -396,7 +395,7 @@ function get_title($user)
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
-        $user_title = $feather->utils->escape($user['g_user_title']);
+        $user_title = \FeatherBB\Core\Utils::escape($user['g_user_title']);
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {
@@ -412,49 +411,13 @@ function get_title($user)
 
 
 //
-// Display a message
-//
-function message($msg, $http_status = null, $no_back_link = false)
-{
-    // Did we receive a custom header?
-    if (!is_null($http_status)) {
-        header('HTTP/1.1 ' . $http_status);
-    }
-
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
-    $http_status = (int) $http_status;
-    if ($http_status > 0) {
-        $feather->response->setStatus($http_status);
-    }
-
-    // Overwrite existing body
-    $feather->response->setBody('');
-
-    if (!defined('FEATHER_HEADER')) {
-        $feather->view2->setPageInfo(array(
-            'title' => array($feather->utils->escape($feather->config['o_board_title']), __('Info')),
-        ));
-    }
-
-    $feather->view2->setPageInfo(array(
-        'message'    =>    $msg,
-        'no_back_link'    => $no_back_link,
-        ))->addTemplate('message.php')->display();
-
-    // Don't display anything after a message
-    $feather->stop();
-}
-
-
-//
 // Generate a random key of length $len
 //
 function random_key($len, $readable = false, $hash = false)
 {
+    $feather = \Slim\Slim::getInstance();
     if (!function_exists('secure_random_bytes')) {
-        include FEATHER_ROOT.'featherbb/Helpers/srand.php';
+        include $feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/srand.php';
     }
 
     $key = secure_random_bytes($len);
@@ -504,7 +467,8 @@ function redirect($destination_url, $message = null)
 //
 function generate_stopwords_cache_id()
 {
-    $files = glob(FEATHER_ROOT.'featherbb/lang/*/stopwords.txt');
+    $feather = \Slim\Slim::getInstance();
+    $files = glob($feather->forum_env['FEATHER_ROOT'].'featherbb/lang/*/stopwords.txt');
     if ($files === false) {
         return 'cache_id_error';
     }

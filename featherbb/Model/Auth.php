@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Auth
@@ -113,7 +115,7 @@ class Auth
         $feather = \Slim\Slim::getInstance();
 
         $query['update'] = array(
-            'activate_string' => feather_hash($pass),
+            'activate_string' => hash($pass),
             'activate_key'    => $key,
             'last_email_sent' => $feather->now
         );

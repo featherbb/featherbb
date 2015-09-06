@@ -7,6 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -14,9 +17,9 @@ if (!defined('FEATHER')) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo $feather->utils->escape($user['username']).' - '.__('Section personality') ?></span></h2>
+	<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section personality') ?></span></h2>
 	<div class="box">
-		<form id="profile4" method="post" action="<?php echo $feather->url->get('user/'.$id.'/section/personality/') ?>">
+		<form id="profile4" method="post" action="<?php echo Url::get('user/'.$id.'/section/personality/') ?>">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php if ($feather->forum_settings['o_avatars'] == '1'): ?>				<div class="inform">
@@ -35,14 +38,14 @@ if (!defined('FEATHER')) {
 					<div class="infldset">
 						<p><?php _e('Signature info') ?></p>
 						<div class="txtarea">
-							<label><?php printf(__('Sig max size'), $feather->utils->forum_number_format($feather->forum_settings['p_sig_length']), $feather->forum_settings['p_sig_lines']) ?><br />
-							<textarea name="signature" rows="4" cols="65"><?php echo $feather->utils->escape($user['signature']) ?></textarea><br /></label>
+							<label><?php printf(__('Sig max size'), Utils::forum_number_format($feather->forum_settings['p_sig_length']), $feather->forum_settings['p_sig_lines']) ?><br />
+							<textarea name="signature" rows="4" cols="65"><?php echo Utils::escape($user['signature']) ?></textarea><br /></label>
 						</div>
 						<ul class="bblinks">
-							<li><span><a href="<?php echo $feather->url->get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1' && $feather->forum_settings['p_sig_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-							<li><span><a href="<?php echo $feather->url->get('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies_sig'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#bbcode') ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#url') ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#img') ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1' && $feather->forum_settings['p_sig_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
+							<li><span><a href="<?php echo Url::get('help/#smilies') ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies_sig'] == '1') ? __('on') : __('off'); ?></span></li>
 						</ul>
 						<?php echo $signature_preview ?>
 					</div>

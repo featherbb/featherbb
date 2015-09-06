@@ -10,7 +10,8 @@
 // The contents of this file are very much inspired by the file functions_search.php
 // from the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
+
 use DB;
 
 class Search
@@ -56,10 +57,10 @@ class Search
         $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
 
         // Remove any apostrophes or dashes which aren't part of words
-        $text = substr($this->feather->utils->ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
+        $text = substr(Utils::ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
 
         // Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
-        $text = $this->feather->utils->ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
+        $text = Utils::ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
 
         // Replace multiple whitespace or dashes
         $text = preg_replace('%(\s){2,}%u', '\1', $text);
@@ -112,7 +113,7 @@ class Search
         $word = str_replace(array('%', '*'), '', $word);
 
         // Check the word is within the min/max length
-        $num_chars = $this->feather->utils->strlen($word);
+        $num_chars = Utils::strlen($word);
         return $num_chars >= FEATHER_SEARCH_MIN_WORD && $num_chars <= FEATHER_SEARCH_MAX_WORD;
     }
 

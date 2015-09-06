@@ -26,7 +26,7 @@ if (!defined('FEATHER')) {
 					<fieldset>
 						<legend><?php _e('Confirm prune subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], $feather->utils->forum_number_format($prune['num_topics'])) ?></p>
+							<p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], Utils::forum_number_format($prune['num_topics'])) ?></p>
 							<p class="warntext"><?php _e('Confirm prune warn') ?></p>
 						</div>
 					</fieldset>

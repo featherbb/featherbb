@@ -28,7 +28,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php _e('New group label') ?></th>
 									<td>
 										<select name="new_group" tabindex="1">
-<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo $feather->utils->escape($group) ?></option>
+<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo Utils::escape($group) ?></option>
 <?php endforeach;
     ?>
 										</select>
