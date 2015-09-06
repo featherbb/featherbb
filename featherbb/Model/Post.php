@@ -386,13 +386,13 @@ class Post
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
+                    if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+                        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
                         $mail_tpl = $this->hook->fire('send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
                         $mail_tpl_full = $this->hook->fire('send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
@@ -595,13 +595,13 @@ class Post
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
+                    if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+                        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
                         $mail_tpl = $this->hook->fire('send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
@@ -660,7 +660,7 @@ class Post
         $this->hook->fire('warn_banned_user_start', $post, $new_pid);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
         $mail_tpl = $this->hook->fire('warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject

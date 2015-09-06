@@ -22,15 +22,10 @@ class Edit
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\edit();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/post.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/bbeditor.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/bbeditor.mo');
     }
 
     public function editpost($id)

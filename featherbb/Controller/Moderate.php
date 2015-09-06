@@ -22,15 +22,10 @@ class Moderate
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Moderate();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/topic.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/forum.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/misc.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/post.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/topic.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/misc.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/post.mo');
     }
 
     public function gethostpost($pid)

@@ -29,12 +29,13 @@ function get_admin_ids()
 function check_username($username, $errors, $exclude_id = null)
 {
     global $feather, $errors, $feather_bans;
+    $feather = \Slim\Slim::getInstance();
 
     // Include UTF-8 function
-    require_once FEATHER_ROOT.'featherbb/Helpers/utf8/strcasecmp.php';
+    require_once $feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/register.mo');
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/prof_reg.mo');
+    load_textdomain('featherbb', $feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$feather->user->language.'/register.mo');
+    load_textdomain('featherbb', $feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$feather->user->language.'/prof_reg.mo');
 
     // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
     $username = preg_replace('%\s+%s', ' ', $username);
@@ -94,8 +95,8 @@ function generate_avatar_markup($user_id)
     foreach ($filetypes as $cur_type) {
         $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
-        if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+        if (file_exists($feather->forum_env['FEATHER_ROOT'].$path) && $img_size = getimagesize($feather->forum_env['FEATHER_ROOT'].$path)) {
+            $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime($feather->forum_env['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -225,14 +226,14 @@ function update_forum($forum_id)
 //
 function delete_avatar($user_id)
 {
-    global $feather_config;
+    $feather = \Slim\Slim::getInstance();
 
     $filetypes = array('jpg', 'gif', 'png');
 
     // Delete user avatar
     foreach ($filetypes as $cur_type) {
-        if (file_exists(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
-            @unlink(FEATHER_ROOT.$feather_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+        if (file_exists($feather->forum_env['FEATHER_ROOT'].$feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
+            @unlink($feather->forum_env['FEATHER_ROOT'].$feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
         }
     }
 }
@@ -414,8 +415,9 @@ function get_title($user)
 //
 function random_key($len, $readable = false, $hash = false)
 {
+    $feather = \Slim\Slim::getInstance();
     if (!function_exists('secure_random_bytes')) {
-        include FEATHER_ROOT.'featherbb/Helpers/srand.php';
+        include $feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/srand.php';
     }
 
     $key = secure_random_bytes($len);
@@ -465,7 +467,8 @@ function redirect($destination_url, $message = null)
 //
 function generate_stopwords_cache_id()
 {
-    $files = glob(FEATHER_ROOT.'featherbb/lang/*/stopwords.txt');
+    $feather = \Slim\Slim::getInstance();
+    $files = glob($feather->forum_env['FEATHER_ROOT'].'featherbb/lang/*/stopwords.txt');
     if ($files === false) {
         return 'cache_id_error';
     }

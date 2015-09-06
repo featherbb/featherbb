@@ -18,7 +18,7 @@ class Auth
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->feather->user->language.'/login.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/login.mo');
     }
 
     public function login()
@@ -105,7 +105,7 @@ class Auth
 
             if ($user) {
                 // Load the "activate password" template
-                $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->feather->user->language.'/mail_templates/activate_password.tpl'));
+                $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/mail_templates/activate_password.tpl'));
                 $mail_tpl = $this->feather->hooks->fire('mail_tpl_password_forgotten', $mail_tpl);
 
                 // The first row contains the subject

@@ -217,7 +217,7 @@ class Profile
                     throw new \FeatherBB\Core\Error(__('Banned email'), 403);
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = $this->hook->fire('change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -254,7 +254,7 @@ class Profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
                     $mail_tpl = $this->hook->fire('change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -291,7 +291,7 @@ class Profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
             $mail_tpl = $this->hook->fire('change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
@@ -369,11 +369,11 @@ class Profile
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-            if (!@move_uploaded_file($uploaded_file['tmp_name'], FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
+            if (!@move_uploaded_file($uploaded_file['tmp_name'], $this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
                 throw new \FeatherBB\Core\Error(__('Move failed').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
             }
 
-            list($width, $height, $type, ) = @getimagesize(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
+            list($width, $height, $type, ) = @getimagesize($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp');
 
             // Determine type
             if ($type == IMAGETYPE_GIF) {
@@ -384,20 +384,20 @@ class Profile
                 $extension = '.png';
             } else {
                 // Invalid type
-                @unlink(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
+                @unlink($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp');
                 throw new \FeatherBB\Core\Error(__('Bad type'));
             }
 
             // Now check the width/height
             if (empty($width) || empty($height) || $width > $this->config['o_avatars_width'] || $height > $this->config['o_avatars_height']) {
-                @unlink(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp');
+                @unlink($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp');
                 throw new \FeatherBB\Core\Error(__('Too wide or high').' '.$this->config['o_avatars_width'].'x'.$this->config['o_avatars_height'].' '.__('pixels').'.');
             }
 
             // Delete any old avatars and put the new one in place
             delete_avatar($id);
-            @rename(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.'.tmp', FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.$extension);
-            @chmod(FEATHER_ROOT.$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
+            @rename($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp', $this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension);
+            @chmod($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
             throw new \FeatherBB\Core\Error(__('Unknown failure'));
         }

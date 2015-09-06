@@ -22,14 +22,9 @@ class Profile
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Profile();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/profile.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/profile.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
     }
 
     public function display($id, $section = null)
@@ -37,9 +32,9 @@ class Profile
         global $forum_time_formats, $forum_date_formats;
 
         // Include UTF-8 function
-        require FEATHER_ROOT.'featherbb/Helpers/utf8/substr_replace.php';
-        require FEATHER_ROOT.'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require FEATHER_ROOT.'featherbb/Helpers/utf8/strcasecmp.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/substr_replace.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
         if ($this->request->post('update_group_membership')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
@@ -96,7 +91,7 @@ class Profile
         $user = $this->model->get_user_info($id);
 
         if ($user['signature'] != '') {
-            require FEATHER_ROOT.'featherbb/Helpers/parser.php';
+            require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
             $parsed_signature = parse_signature($user['signature']);
         }
 
@@ -247,9 +242,9 @@ class Profile
     public function action($id, $action)
     {
         // Include UTF-8 function
-        require FEATHER_ROOT.'featherbb/Helpers/utf8/substr_replace.php';
-        require FEATHER_ROOT.'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require FEATHER_ROOT.'featherbb/Helpers/utf8/strcasecmp.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/substr_replace.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
         if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user->g_read_board == '0') {

@@ -24,12 +24,7 @@ class Login
 
 
         $this->model = new \FeatherBB\Model\Login();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/login.mo');
-    }
-
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/login.mo');
     }
 
     public function display()

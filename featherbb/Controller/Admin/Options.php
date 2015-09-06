@@ -26,11 +26,6 @@ class Options
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
-    }
-
     public function display()
     {
         if ($this->feather->request->isPost()) {

@@ -55,10 +55,8 @@ if (!empty($errors)) {
 <?php
 
 } elseif ($feather->request->post('preview')) {
-    require_once FEATHER_ROOT.'featherbb/Helpers/parser.php';
-    $preview_message = parse_message($post['message'], $post['hide_smilies']);
-
-    ?>
+    $preview_message = $feather->parser->parse_message($post['message'], $post['hide_smilies']);
+?>
 <div id="postpreview" class="blockpost">
 	<h2><span><?php _e('Post preview') ?></span></h2>
 	<div class="box">

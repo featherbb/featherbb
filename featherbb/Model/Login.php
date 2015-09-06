@@ -149,7 +149,7 @@ class Login
 
                 if ($result) {
                     // Load the "activate password" template
-                    $mail_tpl = trim(file_get_contents(FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
+                    $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
                     $mail_tpl = $this->hook->fire('mail_tpl_password_forgotten', $mail_tpl);
 
                     // The first row contains the subject

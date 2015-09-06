@@ -22,14 +22,14 @@ class Register
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Register();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/antispam.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/antispam.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
@@ -40,7 +40,7 @@ class Register
         }
 
         // Antispam feature
-        require FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/antispam.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled

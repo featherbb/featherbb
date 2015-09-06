@@ -17,8 +17,9 @@ class Lister
     public static function getPluginFiles($folder = '')
     {
         $plugin_files = array();
+        $feather = \Slim\Slim::getInstance();
 
-        $plugins_dir = new \RecursiveDirectoryIterator(FEATHER_ROOT.'plugins/'.$folder);
+        $plugins_dir = new \RecursiveDirectoryIterator($feather->forum_env['FEATHER_ROOT'].'plugins/'.$folder);
         $iterator = new \RecursiveIteratorIterator($plugins_dir);
         $iterator->setMaxDepth(1);
         $php_files = new \RegexIterator($iterator, '/.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);

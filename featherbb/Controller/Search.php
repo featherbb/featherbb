@@ -22,14 +22,14 @@ class Search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\search();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/userlist.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/search.mo');
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/userlist.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/search.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()
@@ -48,7 +48,7 @@ class Search
                 if (isset($search['is_result'])) {
 
                     if ($search['show_as'] == 'posts') {
-                        require FEATHER_ROOT.'featherbb/Helpers/parser.php';
+                        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
                     }
 
                     $this->feather->template->setPageInfo(array(

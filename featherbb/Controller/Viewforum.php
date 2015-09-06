@@ -18,12 +18,12 @@ class Viewforum
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Viewforum();
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display($id, $name = null, $page = null)

@@ -21,12 +21,12 @@ class Help
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$this->user->language.'/help.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/help.mo');
     }
 
     public function __autoload($class_name)
     {
-        require FEATHER_ROOT . $class_name . '.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
     }
 
     public function display()

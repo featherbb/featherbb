@@ -58,7 +58,7 @@ class Forums
     public function delete_forum($forum_id)
     {
         // Load the maintenance.php model file for prune public function
-        require FEATHER_ROOT . 'model/admin/maintenance.php';
+        require $this->feather->forum_env['FEATHER_ROOT'] . 'model/admin/maintenance.php';
 
         $forum_id = $this->hook->fire('delete_forum_start', $forum_id);
 

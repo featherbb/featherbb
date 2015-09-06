@@ -24,11 +24,6 @@ class Plugins
         $this->request = $this->feather->request;
     }
 
-    public function __autoload($class_name)
-    {
-        require FEATHER_ROOT . $class_name . '.php';
-    }
-
     public function index()
     {
         // Update permissions
@@ -109,7 +104,7 @@ class Plugins
         }
 
         // Make sure the file actually exists
-        if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
+        if (!file_exists($this->feather->forum_env['FEATHER_ROOT'].'plugins/'.$plugin)) {
             throw new \FeatherBB\Core\Error(sprintf(__('No plugin message'), Utils::escape($plugin)), 400);
         }
 
@@ -121,7 +116,7 @@ class Plugins
         // Attempt to load the plugin. We don't use @ here to suppress error messages,
         // because if we did and a parse error occurred in the plugin, we would only
         // get the "blank page of death"
-        include FEATHER_ROOT.'plugins/'.$plugin;
+        include $this->feather->forum_env['FEATHER_ROOT'].'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
             throw new \FeatherBB\Core\Error(sprintf(__('Plugin failed message'), Utils::escape($plugin)));
         }
