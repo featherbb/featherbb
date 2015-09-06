@@ -80,14 +80,14 @@ class Register
 
     public function cancel()
     {
-        $this->feather->redirect($this->feather->urlFor('home'));
+        Url::redirect($this->feather->urlFor('home'));
     }
 
     public function rules()
     {
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {
-            $this->feather->redirect($this->feather->urlFor('home'));
+            Url::redirect($this->feather->urlFor('home'));
         }
 
         // Display an error message if new registrations are disabled
@@ -96,7 +96,7 @@ class Register
         }
 
         if ($this->config['o_rules'] != '1') {
-            $this->feather->redirect($this->feather->urlFor('register'));
+            Url::redirect($this->feather->urlFor('register'));
         }
 
         $this->feather->template->setPageInfo(array(
