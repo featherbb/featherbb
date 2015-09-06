@@ -13,9 +13,12 @@
 
 namespace FeatherBB\Middleware;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Random;
+use FeatherBB\Core\Track;
+use FeatherBB\Core\Utils;
+use FeatherBB\Model\Cache;
 
 class Auth extends \Slim\Middleware
 {
@@ -66,7 +69,7 @@ class Auth extends \Slim\Middleware
                 }
 
                 // Reset tracked topics
-                set_tracked_topics(null);
+                Track::set_tracked_topics(null);
 
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
@@ -85,7 +88,7 @@ class Auth extends \Slim\Middleware
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = $this->app->getCookie($this->app->forum_settings['cookie_name'].'_track');
                 if (isset($cookie_tracked_topics)) {
-                    set_tracked_topics(json_decode($cookie_tracked_topics, true));
+                    Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
                 }
             }
         } else {
@@ -180,13 +183,13 @@ class Auth extends \Slim\Middleware
                 \DB::for_table('online')
                     ->where('ident', $this->app->user->username)
                     ->delete_many();
-                throw new \FeatherBB\Core\Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
+                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
             }
         }
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            $this->app->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+            $this->app->cache->store('bans', Cache::get_bans());
         }
     }
 
@@ -267,14 +270,14 @@ class Auth extends \Slim\Middleware
                      ->update_many('logged', time());
             }
 
-            $this->model->feather_setcookie(1, \FeatherBB\Core\Utils::hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            $this->model->feather_setcookie(1, Random::hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language.'/common.mo');
 
         // Load bans from cache
         if (!$this->app->cache->isCached('bans')) {
-            $this->app->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+            $this->app->cache->store('bans', Cache::get_bans());
         }
         $feather_bans = $this->app->cache->retrieve('bans');
 

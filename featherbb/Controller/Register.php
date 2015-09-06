@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Register
 {
@@ -46,7 +47,7 @@ class Register
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
         if ($this->config['o_regs_allow'] == '0' || $this->request->post('username') || $this->request->post('password')) {
-            throw new \FeatherBB\Core\Error(__('No new regs'), 403);
+            throw new Error(__('No new regs'), 403);
         }
 
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $this->config['o_default_timezone'];
@@ -92,7 +93,7 @@ class Register
 
         // Display an error message if new registrations are disabled
         if ($this->config['o_regs_allow'] == '0') {
-            throw new \FeatherBB\Core\Error(__('No new regs'), 403);
+            throw new Error(__('No new regs'), 403);
         }
 
         if ($this->config['o_rules'] != '1') {

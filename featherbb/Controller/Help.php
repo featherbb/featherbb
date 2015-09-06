@@ -10,7 +10,6 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 
 class Help
 {

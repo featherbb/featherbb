@@ -9,9 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
-use FeatherBB\Core\Url;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Utils;
 
 class Statistics
 {
@@ -51,7 +51,7 @@ class Statistics
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {
-            throw new \FeatherBB\Core\Error(__('PHPinfo disabled message'), 404);
+            throw new Error(__('PHPinfo disabled message'), 404);
         }
 
         phpinfo();

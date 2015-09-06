@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Moderate
 {
@@ -49,7 +50,7 @@ class Moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         // Move one topic
@@ -60,7 +61,7 @@ class Moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
+                throw new Error(__('No topics selected'), 400);
             }
 
             $topics = implode(',', array_map('intval', array_keys($topics)));
@@ -171,7 +172,7 @@ class Moderate
                 }*/
 
             if ($this->config['o_censoring'] == '1') {
-                $cur_topic['subject'] = censor_words($cur_topic['subject']);
+                $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
             }
 
             $this->feather->template->setPageInfo(array(
@@ -199,7 +200,7 @@ class Moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         // Fetch some info about the forum
@@ -207,7 +208,7 @@ class Moderate
 
         // Is this a redirect forum? In that case, abort!
         if ($cur_forum['redirect_url'] != '') {
-            throw new \FeatherBB\Core\Error(__('Bad request'), '404');
+            throw new Error(__('Bad request'), '404');
         }
 
         $sort_by = $this->model->forum_sort_by($cur_forum['sort_by']);
@@ -241,7 +242,7 @@ class Moderate
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         // Move one or more topics
@@ -252,7 +253,7 @@ class Moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
+                throw new Error(__('No topics selected'), 400);
             }
 
             // Check if there are enough forums to move the topic
@@ -277,7 +278,7 @@ class Moderate
 
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (count($topics) < 2) {
-                throw new \FeatherBB\Core\Error(__('Not enough topics selected'), 400);
+                throw new Error(__('Not enough topics selected'), 400);
             }
 
             $this->feather->template->setPageInfo(array(
@@ -293,7 +294,7 @@ class Moderate
         elseif ($this->request->post('delete_topics') || $this->request->post('delete_topics_comply')) {
             $topics = $this->request->post('topics') ? $this->request->post('topics') : array();
             if (empty($topics)) {
-                throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
+                throw new Error(__('No topics selected'), 400);
             }
 
             if ($this->request->post('delete_topics_comply')) {
@@ -318,7 +319,7 @@ class Moderate
             if ($this->request->post('open') || $this->request->post('close')) {
                 $topics = $this->request->post('topics') ? @array_map('intval', @array_keys($this->request->post('topics'))) : array();
                 if (empty($topics)) {
-                    throw new \FeatherBB\Core\Error(__('No topics selected'), 400);
+                    throw new Error(__('No topics selected'), 400);
                 }
 
                 $this->model->close_multiple_topics($action, $topics, $fid);

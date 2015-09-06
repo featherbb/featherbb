@@ -9,9 +9,9 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Utils;
 
 class Edit
 {
@@ -52,7 +52,7 @@ class Edit
         $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
+            throw new Error(__('Bad request'), 400);
         }
 
         return $cur_post;
@@ -67,7 +67,7 @@ class Edit
             $subject = Utils::trim($this->request->post('req_subject'));
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = Utils::trim(censor_words($subject));
+                $censored_subject = Utils::trim(Utils::censor($subject));
             }
 
             if ($subject == '') {
@@ -101,7 +101,7 @@ class Edit
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = Utils::trim(censor_words($message));
+                $censored_message = Utils::trim(Utils::censor($message));
 
                 if ($censored_message == '') {
                     $errors[] = __('No message after censoring');

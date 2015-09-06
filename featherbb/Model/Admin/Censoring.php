@@ -9,9 +9,11 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Model\Cache;
 
 class Censoring
 {
@@ -31,7 +33,7 @@ class Censoring
         $replace_with = Utils::trim($this->request->post('new_replace_with'));
 
         if ($search_for == '') {
-            throw new \FeatherBB\Core\Error(__('Must enter word message'), 400);
+            throw new Error(__('Must enter word message'), 400);
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -45,8 +47,8 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', \FeatherBB\Model\Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', \FeatherBB\Model\Cache::get_censoring('replace_with'));
+        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
 
         Url::redirect($this->feather->urlFor('adminCensoring'), __('Word added redirect'));
     }
@@ -59,7 +61,7 @@ class Censoring
         $replace_with = Utils::trim($this->request->post('replace_with')[$id]);
 
         if ($search_for == '') {
-            throw new \FeatherBB\Core\Error(__('Must enter word message'), 400);
+            throw new Error(__('Must enter word message'), 400);
         }
 
         $set_search_word = array('search_for' => $search_for,
@@ -73,8 +75,8 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', \FeatherBB\Model\Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', \FeatherBB\Model\Cache::get_censoring('replace_with'));
+        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
 
         Url::redirect($this->feather->urlFor('adminCensoring'), __('Word updated redirect'));
     }
@@ -89,8 +91,8 @@ class Censoring
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', \FeatherBB\Model\Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', \FeatherBB\Model\Cache::get_censoring('replace_with'));
+        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
+        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
 
         Url::redirect($this->feather->urlFor('adminCensoring'),  __('Word removed redirect'));
     }

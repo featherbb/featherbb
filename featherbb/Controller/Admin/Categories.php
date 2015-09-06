@@ -9,9 +9,11 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Model\Cache;
 
 class Categories
 {
@@ -48,7 +50,7 @@ class Categories
     public function edit_categories()
     {
         if (empty($this->request->post('cat'))) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), '400');
+            throw new Error(__('Bad request'), '400');
         }
 
         foreach ($this->request->post('cat') as $cat_id => $properties) {
@@ -62,7 +64,7 @@ class Categories
         }
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+        $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
         Url::redirect($this->feather->urlFor('adminCategories'), __('Categories updated redirect'));
 
@@ -73,7 +75,7 @@ class Categories
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), '400');
+            throw new Error(__('Bad request'), '400');
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {

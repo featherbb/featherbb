@@ -9,8 +9,6 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
 
 class Statistics

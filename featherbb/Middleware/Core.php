@@ -44,7 +44,6 @@ class Core extends \Slim\Middleware
 
         // Load files
         require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/utf8.php';
-        require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/functions.php';
         require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/l10n.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)

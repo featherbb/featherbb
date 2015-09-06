@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Edit
 {
@@ -40,17 +41,17 @@ class Edit
         $can_edit_subject = $id == $cur_post['first_post_id'];
 
         if ($this->config['o_censoring'] == '1') {
-            $cur_post['subject'] = censor_words($cur_post['subject']);
-            $cur_post['message'] = censor_words($cur_post['message']);
+            $cur_post['subject'] = Utils::censor($cur_post['subject']);
+            $cur_post['message'] = Utils::censor($cur_post['message']);
         }
 
         // Do we have permission to edit this post?
         if (($this->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+        if ($is_admmod && $this->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+            throw new Error(__('No permission'), 403);
         }
 
         // Start with a clean slate

@@ -7,7 +7,6 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
 // Make sure no one attempts to run this script "directly"

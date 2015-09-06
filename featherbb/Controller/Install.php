@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Install
 {
@@ -153,8 +154,8 @@ class Install
             }
         }
 
-        $config = array_merge($config, array('cookie_name' => mb_strtolower($this->feather->forum_env['FORUM_NAME']).'_cookie_'.random_key(7, false, true),
-                                             'cookie_seed' => random_key(16, false, true)));
+        $config = array_merge($config, array('cookie_name' => mb_strtolower($this->feather->forum_env['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
+                                             'cookie_seed' => Random::key(16, false, true)));
 
         // ... And write it on disk
         if ($this->write_config($config)) {

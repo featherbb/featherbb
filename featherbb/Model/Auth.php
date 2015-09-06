@@ -9,8 +9,6 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
 
 class Auth
@@ -90,10 +88,11 @@ class Auth
 
     public static function update_group($user_id, $group_id)
     {
+        self::$feather = \Slim\Slim::getInstance();
         $update_usergroup = DB::for_table('users')->where('id', $user_id)
             ->find_one()
             ->set('group_id', $group_id);
-        $update_usergroup = $this->feather->hooks->fireDB('update_usergroup_login', $update_usergroup);
+        $update_usergroup = self::$feather->hooks->fireDB('update_usergroup_login', $update_usergroup);
         return $update_usergroup->save();
     }
 

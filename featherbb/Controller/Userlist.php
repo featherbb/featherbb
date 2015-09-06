@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Userlist
 {
@@ -25,7 +26,7 @@ class Userlist
     public function display()
     {
         if ($this->feather->user->g_view_users == '0') {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         // Determine if we are allowed to view post counts

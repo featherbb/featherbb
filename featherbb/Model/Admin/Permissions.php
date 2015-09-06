@@ -9,9 +9,9 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Url;
+use FeatherBB\Model\Cache;
 
 class Permissions
 {
@@ -44,7 +44,7 @@ class Permissions
         }
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
+        $this->feather->cache->store('config', Cache::get_config());
         // $this->clear_feed_cache();
 
         Url::redirect($this->feather->urlFor('adminPermissions'), __('Perms updated redirect'));

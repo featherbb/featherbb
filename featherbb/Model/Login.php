@@ -9,9 +9,12 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Random;
+use FeatherBB\Core\Track;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Login
 {
@@ -44,14 +47,14 @@ class Login
         $authorized = false;
 
         if (!empty($user->password)) {
-            $form_password_hash = Utils::hash($form_password); // Will result in a SHA-1 hash
+            $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
             $authorized = ($user->password == $form_password_hash);
         }
 
         $authorized = $this->hook->fire('authorized_login', $authorized);
 
         if (!$authorized) {
-            throw new \FeatherBB\Core\Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
+            throw new Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
         }
 
         // Update the status if this is the first time the user logged in
@@ -64,7 +67,7 @@ class Login
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+                $this->feather->cache->store('users_info', Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
@@ -80,7 +83,7 @@ class Login
         $this->auth->feather_setcookie($user->id, $form_password_hash, $expire);
 
         // Reset tracked topics
-        set_tracked_topics(null);
+        Track:: set_tracked_topics(null);
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->request->post('redirect_url');
@@ -93,7 +96,7 @@ class Login
     {
         $token = $this->hook->fire('logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Utils::hash($this->user->id.Utils::hash($this->request->getIp()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash($this->request->getIp()))) {
             header('Location: '.Url::base());
             exit;
         }
@@ -114,7 +117,7 @@ class Login
 
         $this->hook->fire('logout_end');
 
-        $this->auth->feather_setcookie(1, Utils::hash(uniqid(rand(), true)), time() + 31536000);
+        $this->auth->feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
 
         Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
     }
@@ -166,15 +169,15 @@ class Login
                     // Loop through users we found
                     foreach($result as $cur_hit) {
                         if ($cur_hit->last_email_sent != '' && (time() - $cur_hit->last_email_sent) < 3600 && (time() - $cur_hit->last_email_sent) >= 0) {
-                            throw new \FeatherBB\Core\Error(sprintf(__('Email flood'), intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), 429);
+                            throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $cur_hit->last_email_sent)) / 60)), 429);
                         }
 
                         // Generate a new password and a new password activation code
-                        $new_password = random_pass(12);
-                        $new_password_key = random_pass(8);
+                        $new_password = Random::pass(12);
+                        $new_password_key = Random::pass(8);
 
                         $query['update'] = array(
-                            'activate_string' => Utils::hash($new_password),
+                            'activate_string' => Random::hash($new_password),
                             'activate_key'    => $new_password_key,
                             'last_email_sent' => time()
                         );
@@ -195,7 +198,7 @@ class Login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    throw new \FeatherBB\Core\Error(__('Forget mail').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', 400);
+                    throw new Error(__('Forget mail').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', 400);
                 } else {
                     $errors[] = __('No email match').' '.Utils::escape($email).'.';
                 }

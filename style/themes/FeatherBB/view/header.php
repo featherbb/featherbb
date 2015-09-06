@@ -7,8 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -132,7 +133,7 @@ if ($feather->user->is_guest) {
         echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Url::get('admin/').'">'.__('Admin').'</a></li>'."\n";
     }
 
-    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.Url::get('auth/logout/token/'.Utils::hash($feather->user->id.Utils::hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
+    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.Url::get('auth/logout/token/'.Random::hash($feather->user->id.Random::hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
 }
 
 // // Are there any additional navlinks we should insert into the array before imploding it?

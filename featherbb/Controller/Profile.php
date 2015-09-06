@@ -9,8 +9,10 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Model\Delete;
 
 class Profile
 {
@@ -38,25 +40,25 @@ class Profile
 
         if ($this->request->post('update_group_membership')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_group_membership($id, $this->feather);
         } elseif ($this->request->post('update_forums')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_mod_forums($id, $this->feather);
         } elseif ($this->request->post('ban')) {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
             $this->model->ban_user($id);
         } elseif ($this->request->post('delete_user') || $this->request->post('delete_user_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
             $this->model->delete_user($id, $this->feather);
@@ -82,7 +84,7 @@ class Profile
                                     ($this->user->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == FEATHER_ADMIN ||                            // or the user is an admin
                                     $info['is_moderator'])))) {                                      // or the user is another mod
-                                    throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                                    throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_profile($id, $info, $section, $this->feather);
@@ -91,8 +93,7 @@ class Profile
         $user = $this->model->get_user_info($id);
 
         if ($user['signature'] != '') {
-            require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
-            $parsed_signature = parse_signature($user['signature']);
+            $parsed_signature = $this->feather->parser->parse_signature($user['signature']);
         }
 
         // View or edit?
@@ -101,8 +102,7 @@ class Profile
                 ($this->user->g_id != FEATHER_ADMIN &&                // or we aren't an admin and ...
                 ($this->user->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
                 $user['g_id'] == FEATHER_ADMIN ||                     // or the user is an admin
-                $user['g_moderator'] == '1')))) {
-            // or the user is another mod
+                $user['g_moderator'] == '1')))) {                     // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
 
             $this->feather->template->setPageInfo(array(
@@ -112,7 +112,7 @@ class Profile
                 'id' => $id
             ));
 
-            $this->feather->template->addTemplate('profile/view_profile.php');
+            $this->feather->template->addTemplate('profile/view_profile.php')->display();
         } else {
             if (!$section || $section == 'essentials') {
                 $user_disp = $this->model->edit_essentials($id, $user);
@@ -161,12 +161,12 @@ class Profile
 
             } elseif ($section == 'personality') {
                 if ($this->config['o_avatars'] == '0' && $this->config['o_signatures'] == '0') {
-                    throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+                    throw new Error(__('Bad request'), 404);
                 }
 
                 $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
-                $user_avatar = generate_avatar_markup($id);
+                $user_avatar = Utils::generate_avatar_markup($id);
                 if ($user_avatar) {
                     $avatar_field .= ' <span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
@@ -219,7 +219,7 @@ class Profile
             } elseif ($section == 'admin') {
 
                 if (!$this->user->is_admmod || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '0')) {
-                    throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+                    throw new Error(__('Bad request'), 404);
                 }
 
                 $this->feather->template->setPageInfo(array(
@@ -234,7 +234,7 @@ class Profile
 
                 $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
             } else {
-                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+                throw new Error(__('Bad request'), 404);
             }
         }
     }
@@ -248,9 +248,9 @@ class Profile
 
         if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user->g_read_board == '0') {
-                throw new \FeatherBB\Core\Error(__('No view'), 403);
+                throw new Error(__('No view'), 403);
             } elseif ($this->user->g_view_users == '0' && ($this->user->is_guest || $this->user->id != $id)) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
         }
 
@@ -282,11 +282,11 @@ class Profile
 
         } elseif ($action == 'upload_avatar' || $action == 'upload_avatar2') {
             if ($this->config['o_avatars'] == '0') {
-                throw new \FeatherBB\Core\Error(__('Avatars disabled'), 400);
+                throw new Error(__('Avatars disabled'), 400);
             }
 
             if ($this->user->id != $id && !$this->user->is_admmod) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
             if ($this->feather->request()->isPost()) {
@@ -305,20 +305,20 @@ class Profile
 
         } elseif ($action == 'delete_avatar') {
             if ($this->user->id != $id && !$this->user->is_admmod) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
-            $this->model->delete_avatar($id);
+            Delete::avatar($id);
 
             Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
-                throw new \FeatherBB\Core\Error(__('No permission'), 403);
+                throw new Error(__('No permission'), 403);
             }
 
             $this->model->promote_user($id, $this->feather);
         } else {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+            throw new Error(__('Bad request'), 404);
         }
     }
 }

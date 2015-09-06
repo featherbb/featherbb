@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Topic
 {
@@ -36,7 +37,7 @@ class Topic
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
         $is_admmod = ($this->feather->user->g_id == FEATHER_ADMIN || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
         if ($is_admmod) {
-            $admin_ids = get_admin_ids();
+            $admin_ids = Utils::get_admin_ids();
         }
 
         // Can we or can we not post replies?
@@ -44,9 +45,9 @@ class Topic
 
         // Add/update this topic in our list of tracked topics
         if (!$this->feather->user->is_guest) {
-            $tracked_topics = get_tracked_topics();
+            $tracked_topics = Track::get_tracked_topics();
             $tracked_topics['topics'][$id] = time();
-            set_tracked_topics($tracked_topics);
+            Track::set_tracked_topics($tracked_topics);
         }
 
         // Determine the post offset (based on $_GET['p'])
@@ -62,7 +63,7 @@ class Topic
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
         if ($this->feather->forum_settings['o_censoring'] == '1') {
-            $cur_topic['subject'] = censor_words($cur_topic['subject']);
+            $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);

@@ -6,9 +6,9 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
-use FeatherBB\Core\Utils;
+
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -91,7 +91,7 @@ if (!defined('FEATHER')) {
                 ?>
 					<tr>
 						<td class="tcl"><?php echo '<a href="'.Url::get('user/'.$user['id'].'/').'">'.Utils::escape($user['username']).'</a>' ?></td>
-						<td class="tc2"><?php echo get_title($user) ?></td>
+						<td class="tc2"><?php echo Utils::get_title($user) ?></td>
 	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo Utils::forum_number_format($user['num_posts']) ?></td>
 	<?php endif;
                 ?>

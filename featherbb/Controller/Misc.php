@@ -9,8 +9,10 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Misc
 {
@@ -25,7 +27,7 @@ class Misc
     public function rules()
     {
         if ($this->feather->forum_settings['o_rules'] == '0' || ($this->feather->user->is_guest && $this->feather->user->g_read_board == '0' && $this->feather->forum_settings['o_regs_allow'] == '0')) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+            throw new Error(__('Bad request'), 404);
         }
 
         $this->feather->template->setPageInfo(array(
@@ -39,7 +41,7 @@ class Misc
         $this->model->update_last_visit();
 
         // Reset tracked topics
-        set_tracked_topics(null);
+        Track::set_tracked_topics(null);
 
         Url::redirect($this->feather->urlFor('home'), __('Mark read redirect'));
     }
@@ -48,7 +50,7 @@ class Misc
     {
         $tracked_topics = get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
-        set_tracked_topics($tracked_topics);
+        Track::set_tracked_topics($tracked_topics);
 
         Url::redirect($this->feather->urlFor('Forum', array('id' => $id)), __('Mark forum read redirect'));
     }
@@ -76,17 +78,17 @@ class Misc
     public function email($id)
     {
         if ($this->feather->user->g_send_email == '0') {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         if ($id < 2) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
+            throw new Error(__('Bad request'), 400);
         }
 
         $mail = $this->model->get_info_mail($id);
 
         if ($mail['email_setting'] == 2 && !$this->feather->user->is_admmod) {
-            throw new \FeatherBB\Core\Error(__('Form email disabled'), 403);
+            throw new Error(__('Form email disabled'), 403);
         }
 
 
@@ -114,7 +116,7 @@ class Misc
         $cur_post = $this->model->get_info_report($id);
 
         if ($this->feather->forum_settings['o_censoring'] == '1') {
-            $cur_post['subject'] = censor_words($cur_post['subject']);
+            $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
         $this->feather->template->setPageInfo(array(

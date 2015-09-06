@@ -9,9 +9,11 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Random;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Register
 {
@@ -44,7 +46,7 @@ class Register
         $already_registered = $already_registered->find_one();
 
         if ($already_registered) {
-            throw new \FeatherBB\Core\Error(__('Registration flood'), 429);
+            throw new Error(__('Registration flood'), 429);
         }
 
 
@@ -54,7 +56,7 @@ class Register
         if ($this->config['o_regs_verify'] == '1') {
             $email2 = strtolower(Utils::trim($this->request->post('req_email2')));
 
-            $user['password1'] = random_pass(12);
+            $user['password1'] = Random::pass(12);
             $password2 = $user['password1'];
         } else {
             $user['password1'] = Utils::trim($this->request->post('req_password1'));
@@ -122,7 +124,7 @@ class Register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$user['language'].'/common.po')) {
-                throw new \FeatherBB\Core\Error(__('Bad request'), 500);
+                throw new Error(__('Bad request'), 500);
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
@@ -141,7 +143,7 @@ class Register
         $now = time();
 
         $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : FEATHER_UNVERIFIED;
-        $password_hash = Utils::hash($user['password1']);
+        $password_hash = Random::hash($user['password1']);
 
         // Add the user
         $user['insert'] = array(
@@ -171,7 +173,7 @@ class Register
         if ($this->config['o_regs_verify'] == '0') {
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+                $this->feather->cache->store('users_info', Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');

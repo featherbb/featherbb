@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Search
 {
@@ -35,7 +36,7 @@ class Search
     public function display()
     {
         if ($this->user->g_search == '0') {
-            throw new \FeatherBB\Core\Error(__('No search permission'), 403);
+            throw new Error(__('No search permission'), 403);
         }
 
         // Figure out what to do :-)
@@ -44,10 +45,6 @@ class Search
             $search = $this->model->get_search_results();
                 // We have results to display
                 if (isset($search['is_result'])) {
-
-                    if ($search['show_as'] == 'posts') {
-                        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
-                    }
 
                     $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
