@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Random;
@@ -60,7 +61,7 @@ class Auth
                     Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
                 }
             }
-            throw new \FeatherBB\Core\Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
+            throw new Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             $this->feather->template->setPageInfo(array(
                                 'active_page' => 'login',
@@ -103,7 +104,7 @@ class Auth
             // Validate the email address
             $email = strtolower(Utils::trim($this->feather->request->post('req_email')));
             if (!$this->feather->email->is_valid_email($email)) {
-                throw new \FeatherBB\Core\Error(__('Invalid email'), 400);
+                throw new Error(__('Invalid email'), 400);
             }
             $user = ModelAuth::get_user_from_email($email);
 
@@ -124,7 +125,7 @@ class Auth
                 $mail_message = $this->feather->hooks->fire('mail_message_password_forgotten', $mail_message);
 
                 if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 && (time() - $user->last_email_sent) >= 0) {
-                    throw new \FeatherBB\Core\Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
+                    throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
                 }
 
                 // Generate a new password and a new password activation code
@@ -143,7 +144,7 @@ class Auth
 
                 Url::redirect($this->feather->urlFor('home'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
             } else {
-                throw new \FeatherBB\Core\Error(__('No email match').' '.Utils::escape($email).'.', 400);
+                throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }
         }
 

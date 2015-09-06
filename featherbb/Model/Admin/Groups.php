@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use DB;
@@ -53,7 +54,7 @@ class Groups
         } else {
             // We are editing a group
             if (!isset($groups[$id])) {
-                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+                throw new Error(__('Bad request'), 404);
             }
 
             $groups[$id] = $this->hook->fire('update_user_group', $groups[$id]);
@@ -128,7 +129,7 @@ class Groups
         // Set group title
         $title = Utils::trim($this->request->post('req_title'));
         if ($title == '') {
-            throw new \FeatherBB\Core\Error(__('Must enter title message'), 400);
+            throw new Error(__('Must enter title message'), 400);
         }
         $title = $this->hook->fire('add_edit_group_set_title', $title);
         // Set user title
@@ -204,7 +205,7 @@ class Groups
             // Creating a new group
             $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
             if ($title_exists) {
-                throw new \FeatherBB\Core\Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
+                throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
 
             DB::for_table('groups')
@@ -239,7 +240,7 @@ class Groups
             // We are editing an existing group
             $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
             if ($title_exists) {
-                throw new \FeatherBB\Core\Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
+                throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
             DB::for_table('groups')
                     ->find_one($this->request->post('group_id'))
@@ -274,12 +275,12 @@ class Groups
 
         // Make sure it's not the admin or guest groups
         if ($group_id == FEATHER_ADMIN || $group_id == FEATHER_GUEST) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+            throw new Error(__('Bad request'), 404);
         }
 
         // Make sure it's not a moderator group
         if ($groups[$group_id]['g_moderator'] != 0) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+            throw new Error(__('Bad request'), 404);
         }
 
         DB::for_table('config')->where('conf_name', 'o_default_user_group')

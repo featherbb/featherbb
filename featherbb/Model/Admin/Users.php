@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use FeatherBB\Model\Delete;
@@ -146,7 +147,7 @@ class Users
         $move['user_ids'] = $this->hook->fire('model.users.move_users.user_ids', $move['user_ids']);
 
         if (empty($move['user_ids'])) {
-            throw new \FeatherBB\Core\Error(__('No users selected'), 404);
+            throw new Error(__('No users selected'), 404);
         }
 
         // Are we trying to batch move any admins?
@@ -154,7 +155,7 @@ class Users
                         ->where('group_id', FEATHER_ADMIN)
                         ->find_one();
         if ($is_admin) {
-            throw new \FeatherBB\Core\Error(__('No move admins message'), 403);
+            throw new Error(__('No move admins message'), 403);
         }
 
         // Fetch all user groups
@@ -175,7 +176,7 @@ class Users
             if ( $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ) {
                 $new_group = $this->request->post('new_group');
             } else {
-                throw new \FeatherBB\Core\Error(__('Invalid group message'), 400);
+                throw new Error(__('Invalid group message'), 400);
             }
             $new_group = $this->hook->fire('model.users.move_users.new_group', $new_group);
 
@@ -267,7 +268,7 @@ class Users
         $user_ids = $this->hook->fire('model.users.delete_users.user_ids', $user_ids);
 
         if (empty($user_ids)) {
-            throw new \FeatherBB\Core\Error(__('No users selected'), 404);
+            throw new Error(__('No users selected'), 404);
         }
 
         // Are we trying to delete any admins?
@@ -275,7 +276,7 @@ class Users
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
-            throw new \FeatherBB\Core\Error(__('No delete admins message'), 403);
+            throw new Error(__('No delete admins message'), 403);
         }
 
         if ($this->request->post('delete_users_comply')) {
@@ -431,7 +432,7 @@ class Users
         $user_ids = $this->hook->fire('model.users.ban_users.user_ids', $user_ids);
 
         if (empty($user_ids)) {
-            throw new \FeatherBB\Core\Error(__('No users selected'), 404);
+            throw new Error(__('No users selected'), 404);
         }
 
         // Are we trying to ban any admins?
@@ -439,7 +440,7 @@ class Users
             ->where('group_id', FEATHER_ADMIN)
             ->find_one();
         if ($is_admin) {
-            throw new \FeatherBB\Core\Error(__('No ban admins message'), 403);
+            throw new Error(__('No ban admins message'), 403);
         }
 
         // Also, we cannot ban moderators
@@ -449,7 +450,7 @@ class Users
             ->where_in('u.id', $user_ids)
             ->find_one();
         if ($is_mod) {
-            throw new \FeatherBB\Core\Error(__('No ban mods message'), 403);
+            throw new Error(__('No ban mods message'), 403);
         }
 
         if ($this->request->post('ban_users_comply')) {
@@ -463,14 +464,14 @@ class Users
                 $ban_expire = strtotime($ban_expire . ' GMT');
 
                 if ($ban_expire == -1 || !$ban_expire) {
-                    throw new \FeatherBB\Core\Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
+                    throw new Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
 
                 $diff = ($this->user->timezone + $this->user->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
-                    throw new \FeatherBB\Core\Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
+                    throw new Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
             } else {
                 $ban_expire = 'NULL';
@@ -562,7 +563,7 @@ class Users
         $search['query_str'][] = 'user_group='.$user_group;
 
         if (preg_match('%[^0-9]%', $posts_greater.$posts_less)) {
-            throw new \FeatherBB\Core\Error(__('Non numeric message'), 400);
+            throw new Error(__('Non numeric message'), 400);
         }
 
         $search['conditions'] = array();
@@ -573,7 +574,7 @@ class Users
 
             $last_post_after = strtotime($last_post_after);
             if ($last_post_after === false || $last_post_after == -1) {
-                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
+                throw new Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_post>'.$last_post_after;
@@ -583,7 +584,7 @@ class Users
 
             $last_post_before = strtotime($last_post_before);
             if ($last_post_before === false || $last_post_before == -1) {
-                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
+                throw new Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_post<'.$last_post_before;
@@ -593,7 +594,7 @@ class Users
 
             $last_visit_after = strtotime($last_visit_after);
             if ($last_visit_after === false || $last_visit_after == -1) {
-                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
+                throw new Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_visit>'.$last_visit_after;
@@ -603,7 +604,7 @@ class Users
 
             $last_visit_before = strtotime($last_visit_before);
             if ($last_visit_before === false || $last_visit_before == -1) {
-                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
+                throw new Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.last_visit<'.$last_visit_before;
@@ -613,7 +614,7 @@ class Users
 
             $registered_after = strtotime($registered_after);
             if ($registered_after === false || $registered_after == -1) {
-                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
+                throw new Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.registered>'.$registered_after;
@@ -623,7 +624,7 @@ class Users
 
             $registered_before = strtotime($registered_before);
             if ($registered_before === false || $registered_before == -1) {
-                throw new \FeatherBB\Core\Error(__('Invalid date time message'), 400);
+                throw new Error(__('Invalid date time message'), 400);
             }
 
             $search['conditions'][] = 'u.registered<'.$registered_before;

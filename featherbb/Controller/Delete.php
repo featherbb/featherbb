@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
@@ -43,11 +44,11 @@ class Delete
                 $cur_post['poster_id'] != $this->feather->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
+            throw new Error(__('No permission'), 403);
         }
 
         if ($this->feather->request()->isPost()) {

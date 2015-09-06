@@ -12,8 +12,6 @@
 
 namespace FeatherBB\Core;
 
-use FeatherBB\Model\Cache;
-
 use DB;
 
 class Search
@@ -96,7 +94,7 @@ class Search
 
         if (!isset($stopwords)) {
             if (!$this->feather->cache->isCached('stopwords')) {
-                $this->feather->cache->store('stopwords', Cache::get_config(), '+1 week');
+                $this->feather->cache->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
             }
             $stopwords = $this->feather->cache->retrieve('stopwords');
         }

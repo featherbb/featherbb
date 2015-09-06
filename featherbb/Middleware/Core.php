@@ -14,6 +14,7 @@
 namespace FeatherBB\Middleware;
 
 use DB;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 
 class Core extends \Slim\Middleware

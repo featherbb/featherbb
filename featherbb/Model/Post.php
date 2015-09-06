@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Track;
@@ -68,7 +69,7 @@ class Post
         $cur_posting = $cur_posting->find_one();
 
         if (!$cur_posting) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+            throw new Error(__('Bad request'), 404);
         }
 
         $cur_posting = $this->hook->fire('get_info_post', $cur_posting);
@@ -765,7 +766,7 @@ class Post
         $quote = $quote->find_one();
 
         if (!$quote) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
+            throw new Error(__('Bad request'), 404);
         }
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)

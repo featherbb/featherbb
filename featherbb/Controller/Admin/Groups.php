@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
@@ -55,12 +56,12 @@ class Groups
     public function delete($id)
     {
         if ($id < 5) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 403);
+            throw new Error(__('Bad request'), 403);
         }
 
         // Make sure we don't remove the default group
         if ($id == $this->config['o_default_user_group']) {
-            throw new \FeatherBB\Core\Error(__('Cannot remove default message'), 403);
+            throw new Error(__('Cannot remove default message'), 403);
         }
 
         // Check if this group has any members

@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
@@ -50,12 +51,12 @@ class Index
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
-                throw new \FeatherBB\Core\Error(__('fopen disabled message'), 500);
+                throw new Error(__('fopen disabled message'), 500);
             }
 
             $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
             if (empty($latest_version)) {
-                throw new \FeatherBB\Core\Error(__('Upgrade check failed message'), 500);
+                throw new Error(__('Upgrade check failed message'), 500);
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
@@ -71,7 +72,7 @@ class Index
             if ($deleted) {
                 Url::redirect($this->feather->urlFor('adminIndex'), __('Deleted install.php redirect'));
             } else {
-                throw new \FeatherBB\Core\Error(__('Delete install.php failed'), 500);
+                throw new Error(__('Delete install.php failed'), 500);
             }
         }
 

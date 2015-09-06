@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
@@ -26,7 +27,7 @@ class Bans
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            throw new \FeatherBB\Core\Error(__('No permission'), '403');
+            throw new Error(__('No permission'), '403');
         }
     }
 

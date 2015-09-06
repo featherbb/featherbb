@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use DB;
@@ -52,7 +53,7 @@ class Edit
         $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
+            throw new Error(__('Bad request'), 400);
         }
 
         return $cur_post;

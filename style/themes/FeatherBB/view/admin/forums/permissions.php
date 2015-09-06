@@ -7,6 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 

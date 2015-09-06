@@ -1,4 +1,4 @@
-<?php // File: cache_parser_data.php. Automatically generated: 2015-09-06 03:54:56. DO NOT EDIT!!!
+<?php // File: cache_parser_data.php. Automatically generated: 2015-09-06 09:21:25. DO NOT EDIT!!!
 $pd = array (
   'newer_php_version' => true,
   'in_signature' => false,
@@ -73,7 +73,7 @@ $                               # Anchor to end of string.
   're_bbcode' => '% # re_bbcode Rev:20110220_1200
 # First, match opening tag of syntax: "[TAGNAME (= ("\')ATTRIBUTE("\') )]";
 \\[                              # Match opening bracket of outermost opening TAGNAME tag.
-(?>(b|code|color|colour|del|email|em|h|img|ins|i|table|tr|th|td|list|\\*|quote|sub|sup|s|tt|url|u|center|right|left|justify|youtube|large|small|err|dbug)\\s*+) # $1:
+(?>(b|code|color|colour|del|email|em|h|img|ins|i|table|tr|th|td|list|\\*|quote|sub|sup|s|tt|url|u|center|right|left|justify|youtube|large|small|err)\\s*+) # $1:
 (?>                             # Atomically group remainder of opening tag.
   (?:                           # Optional attribute.
     (=)\\s*+                     # $2: = Optional attribute\'s equals sign delimiter, ws.
@@ -112,7 +112,7 @@ $                               # Anchor to end of string.
   're_bbtag' => '%# re_bbtag Rev:20110220_1200
 # Match open or close BBtag.
 \\[/?+                           # Match opening bracket of outermost opening TAGNAME tag.
-(?>(b|code|color|colour|del|email|em|h|img|ins|i|table|tr|th|td|list|\\*|quote|sub|sup|s|tt|url|u|center|right|left|justify|youtube|large|small|err|dbug)\\s*+) #$1:
+(?>(b|code|color|colour|del|email|em|h|img|ins|i|table|tr|th|td|list|\\*|quote|sub|sup|s|tt|url|u|center|right|left|justify|youtube|large|small|err)\\s*+) #$1:
 (?:                             # Optional attribute.
   (=)\\s*+                       # $2: = Optional attribute\'s equals sign delimiter, ws.
   (?:                           # Group for 1-line attribute value alternatives.
@@ -284,7 +284,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'code' => 
@@ -343,7 +342,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'colour' => 
@@ -374,7 +372,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'del' => 
@@ -405,7 +402,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'email' => 
@@ -444,7 +440,6 @@ $                               # Anchor to end of string.
         '*' => true,
         'quote' => true,
         'url' => true,
-        'dbug' => true,
       ),
     ),
     'em' => 
@@ -475,7 +470,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'h' => 
@@ -506,7 +500,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'img' => 
@@ -566,7 +559,6 @@ $                               # Anchor to end of string.
         'large' => true,
         'small' => true,
         'err' => true,
-        'dbug' => true,
       ),
     ),
     'ins' => 
@@ -597,7 +589,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'i' => 
@@ -628,7 +619,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'table' => 
@@ -681,7 +671,6 @@ $                               # Anchor to end of string.
         'youtube' => true,
         'large' => true,
         'small' => true,
-        'dbug' => true,
       ),
       'tags_only' => true,
     ),
@@ -738,7 +727,6 @@ $                               # Anchor to end of string.
         'youtube' => true,
         'large' => true,
         'small' => true,
-        'dbug' => true,
       ),
       'tags_only' => true,
     ),
@@ -862,7 +850,6 @@ $                               # Anchor to end of string.
         'large' => true,
         'small' => true,
         'err' => true,
-        'dbug' => true,
       ),
       'tags_only' => true,
     ),
@@ -948,7 +935,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'sup' => 
@@ -979,7 +965,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     's' => 
@@ -1010,7 +995,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'tt' => 
@@ -1071,7 +1055,6 @@ $                               # Anchor to end of string.
         '*' => true,
         'quote' => true,
         'url' => true,
-        'dbug' => true,
       ),
     ),
     'u' => 
@@ -1102,7 +1085,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'center' => 
@@ -1133,7 +1115,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'right' => 
@@ -1164,7 +1145,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'left' => 
@@ -1195,7 +1175,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'justify' => 
@@ -1226,7 +1205,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'youtube' => 
@@ -1289,7 +1267,6 @@ $                               # Anchor to end of string.
         'large' => true,
         'small' => true,
         'err' => true,
-        'dbug' => true,
       ),
       'x_padding' => 20,
       'y_padding' => 45,
@@ -1322,7 +1299,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'small' => 
@@ -1353,7 +1329,6 @@ $                               # Anchor to end of string.
         'list' => true,
         '*' => true,
         'quote' => true,
-        'dbug' => true,
       ),
     ),
     'err' => 
@@ -1380,28 +1355,6 @@ $                               # Anchor to end of string.
       'in_sig' => true,
       'nest_type' => 'fix',
       'tag_type' => 'hidden',
-      'tags_excluded' => 
-      array (
-      ),
-    ),
-    'dbug' => 
-    array (
-      'depth' => 0,
-      'depth_max' => 5,
-      'handlers' => 
-      array (
-        'ATTRIB' => 
-        array (
-          'a_type' => 'text',
-          'c_type' => 'text',
-          'format' => '</p><p class="debug" title="%a_str%">%c_str%</p><p>',
-        ),
-      ),
-      'html_type' => 'block',
-      'in_post' => true,
-      'in_sig' => true,
-      'nest_type' => 'err',
-      'tag_type' => 'normal',
       'tags_excluded' => 
       array (
       ),

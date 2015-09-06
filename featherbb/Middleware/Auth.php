@@ -13,6 +13,7 @@
 
 namespace FeatherBB\Middleware;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
@@ -182,7 +183,7 @@ class Auth extends \Slim\Middleware
                 \DB::for_table('online')
                     ->where('ident', $this->app->user->username)
                     ->delete_many();
-                throw new \FeatherBB\Core\Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
+                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
             }
         }
 

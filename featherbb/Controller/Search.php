@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
@@ -35,7 +36,7 @@ class Search
     public function display()
     {
         if ($this->user->g_search == '0') {
-            throw new \FeatherBB\Core\Error(__('No search permission'), 403);
+            throw new Error(__('No search permission'), 403);
         }
 
         // Figure out what to do :-)

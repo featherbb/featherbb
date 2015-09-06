@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model;
 
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Random;
@@ -45,7 +46,7 @@ class Register
         $already_registered = $already_registered->find_one();
 
         if ($already_registered) {
-            throw new \FeatherBB\Core\Error(__('Registration flood'), 429);
+            throw new Error(__('Registration flood'), 429);
         }
 
 
@@ -123,7 +124,7 @@ class Register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$user['language'].'/common.po')) {
-                throw new \FeatherBB\Core\Error(__('Bad request'), 500);
+                throw new Error(__('Bad request'), 500);
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
