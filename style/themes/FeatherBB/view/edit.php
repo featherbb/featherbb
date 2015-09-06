@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -20,7 +20,8 @@ $cur_index = 1;
 	<div class="inbox">
 		<ul class="crumbs">
 			<li><a href="<?php echo $feather->url->base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo $feather->utils->escape($cur_post['forum_name']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('viewForum', array('id'=>$cur_post['fid'], 'name'=>$feather->url->url_friendly($cur_post['forum_name']),'page'=>'1')) ?>"><?= $feather->utils->escape($cur_post['forum_name']) ?></a></li>
+            <!-- <li><span>»&#160;</span><a href="<?= $feather->urlFor('viewTopic', array('id'=>$cur_post['tid'], 'name'=>$feather->url->url_friendly($cur_post['subject']))) ?>"><?= $feather->utils->escape($cur_post['subject']) ?></a></li> -->
 			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('topic/'.$cur_post['tid'].'/'.$feather->url->url_friendly($cur_post['subject']).'/') ?>"><?php echo $feather->utils->escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Edit post') ?></strong></li>
 		</ul>
