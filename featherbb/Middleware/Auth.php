@@ -11,7 +11,7 @@
  *
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Middleware;
 
 use FeatherBB\Utils;
 use FeatherBB\Url;

@@ -38,7 +38,7 @@ class Parser
         require FEATHER_ROOT . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
-        $cache_file = FEATHER_ROOT.'featherbb/cache/cache_parser_data.php';
+        $cache_file = FEATHER_ROOT.'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
         if ($this->request->post('reset') || !file_exists($cache_file)) {

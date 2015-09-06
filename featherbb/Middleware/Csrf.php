@@ -7,7 +7,7 @@
 *
 */
 
-namespace FeatherBB;
+namespace FeatherBB\Middleware;
 
 class Csrf extends \Slim\Middleware
 {
