@@ -31,10 +31,6 @@ class Help
 
     public function display()
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
             'active_page' => 'help',

@@ -23,10 +23,6 @@ class Index
 
     public function display()
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title'])),
             'active_page' => 'index',

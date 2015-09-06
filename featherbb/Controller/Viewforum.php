@@ -28,14 +28,6 @@ class Viewforum
 
     public function display($id, $name = null, $page = null)
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
-        if ($id < 1) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
-        }
-
         // Fetch some informations about the forum
         $cur_forum = $this->model->get_info_forum($id);
 

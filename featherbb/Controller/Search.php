@@ -34,9 +34,7 @@ class Search
 
     public function display()
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        } elseif ($this->user->g_search == '0') {
+        if ($this->user->g_search == '0') {
             throw new \FeatherBB\Core\Error(__('No search permission'), 403);
         }
 

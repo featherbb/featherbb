@@ -24,9 +24,7 @@ class Userlist
 
     public function display()
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        } elseif ($this->feather->user->g_view_users == '0') {
+        if ($this->feather->user->g_view_users == '0') {
             throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 

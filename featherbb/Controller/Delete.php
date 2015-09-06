@@ -24,10 +24,6 @@ class Delete
 
     public function deletepost($id)
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($id);
 
