@@ -8,7 +8,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER'))
@@ -36,7 +36,7 @@ else
 }
 
 if (!defined('PARSER_ROOT'))
-    define('PARSER_ROOT', dirname(__FILE__).'/');
+    define('PARSER_ROOT', dirname(__FILE__).'/parser/');
 
 
 class Parser

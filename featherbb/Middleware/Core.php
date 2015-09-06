@@ -212,10 +212,8 @@ class Core extends \Slim\Middleware
             return new \FeatherBB\Core\Email();
         });
 
-        // TODO: move parser to autoload
-        require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
         $this->app->container->singleton('parser', function () {
-            return new \FeatherBB\Parser();
+            return new \FeatherBB\Core\Parser();
         });
 
         // This is the very first hook fired
