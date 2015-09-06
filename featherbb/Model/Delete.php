@@ -67,11 +67,7 @@ class Delete
             delete_topic($tid);
             update_forum($fid);
 
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Topic del redirect'));
-=======
-            redirect(Url::get('forum/'.$fid.'/'), __('Topic del redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Topic del redirect'));
         } else {
             $this->hook->fire('handle_deletion', $tid, $fid, $id);
 
@@ -90,11 +86,7 @@ class Delete
 
             $post = $post->find_one();
 
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->url->get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
-=======
-            redirect(Url::get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
->>>>>>> development
+            Url::redirect(Url::get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
         }
     }
 }

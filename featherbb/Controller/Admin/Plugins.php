@@ -66,17 +66,10 @@ class Plugins
         try {
             $plugin->activate($class);
         } catch (\Exception $e) {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('adminPlugins'), $e->getMessage());
+            Url::redirect($this->feather->urlFor('adminPlugins'), $e->getMessage());
         }
         // Plugin has been activated, confirm and redirect
-        $this->feather->url->redirect($this->feather->urlFor('adminPlugins'), 'Plugin "'.$class::$name.'" activated!');
-=======
-            redirect(Url::get('admin/plugins/'), $e->getMessage());
-        }
-        // Plugin has been activated, confirm and redirect
-        $this->feather->url->redirect(Url::get('admin/plugins/'), 'Plugin "'.$class::$name.'" activated!');
->>>>>>> development
+        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin "'.$class::$name.'" activated!');
     }
 
     public function deactivate()
@@ -91,17 +84,10 @@ class Plugins
         try {
             $plugin->deactivate($class);
         } catch (\Exception $e) {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('adminPlugins'), $this->feather->utils->escape($e->getMessage()));
+            Url::redirect($this->feather->urlFor('adminPlugins'), $this->feather->utils->escape($e->getMessage()));
         }
         // Plugin has been activated, confirm and redirect
-        $this->feather->url->redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
-=======
-            redirect(Url::get('admin/plugins/'), Utils::escape($e->getMessage()));
-        }
-        // Plugin has been activated, confirm and redirect
-        $this->feather->url->redirect(Url::get('admin/plugins/'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
     }
 
     public function display()

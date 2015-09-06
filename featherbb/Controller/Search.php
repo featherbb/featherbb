@@ -74,11 +74,7 @@ class Search
                     $this->feather->template->addTemplate('search/footer.php', 10)->display();
 
                 } else {
-<<<<<<< HEAD
-                    $this->feather->url->redirect($this->feather->urlFor('search'), __('No hits'));
-=======
-                    redirect(Url::get('search/'), __('No hits'));
->>>>>>> development
+                    Url::redirect($this->feather->urlFor('search'), __('No hits'));
                 }
         }
         // Display the form
@@ -98,7 +94,7 @@ class Search
 <<<<<<< HEAD
         $this->feather->redirect($this->feather->urlFor('quickSearch', array('show' => '?action=show_'.$show)));
 =======
-        redirect(Url::get('search/?action=show_'.$show));
+        Url::redirect(Url::get('search/?action=show_'.$show));
 >>>>>>> development
     }
 }

@@ -59,15 +59,9 @@ class Index
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-<<<<<<< HEAD
-                $this->feather->url->redirect($this->feather->urlFor('adminIndex'), __('Running latest version message'));
+                Url::redirect($this->feather->urlFor('adminIndex'), __('Running latest version message'));
             } else {
-                $this->feather->url->redirect($this->feather->urlFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
-=======
-                redirect(Url::get('admin/'), __('Running latest version message'));
-            } else {
-                redirect(Url::get('admin/'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
->>>>>>> development
+                Url::redirect($this->feather->urlFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
         // Remove /install
@@ -75,11 +69,7 @@ class Index
             $deleted = $this->remove_install_folder($this->feather->forum_env['FEATHER_ROOT'].'install');
 
             if ($deleted) {
-<<<<<<< HEAD
-                $this->feather->url->redirect($this->feather->urlFor('adminIndex'), __('Deleted install.php redirect'));
-=======
-                redirect(Url::get('admin/'), __('Deleted install.php redirect'));
->>>>>>> development
+                Url::redirect($this->feather->urlFor('adminIndex'), __('Deleted install.php redirect'));
             } else {
                 throw new \FeatherBB\Core\Error(__('Delete install.php failed'), 500);
             }

@@ -94,46 +94,26 @@ class Moderate
         // Stick a topic
         if ($action == 'stick') {
             $this->model->stick_topic($id, $fid);
-
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Stick topic redirect'));
-=======
-            redirect(Url::get('topic/'.$id.'/'), __('Stick topic redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Stick topic redirect'));
         }
 
 
         // Unstick a topic
         if ($action == 'unstick') {
             $this->model->unstick_topic($id, $fid);
-
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Unstick topic redirect'));
-=======
-            redirect(Url::get('topic/'.$id.'/'), __('Unstick topic redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Unstick topic redirect'));
         }
 
         // Open a topic
         if ($action == 'open') {
             $this->model->open_topic($id, $fid);
-
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Open topic redirect'));
-=======
-            redirect(Url::get('topic/'.$id.'/'), __('Open topic redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Open topic redirect'));
         }
 
         // Close a topic
         if ($action == 'close') {
             $this->model->close_topic($id, $fid);
-
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Close topic redirect'));
-=======
-            redirect(Url::get('topic/'.$id.'/'), __('Close topic redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewTopic', array('id' => $id)), __('Close topic redirect'));
         }
 
         $cur_topic = $this->model->get_topic_info($fid, $id);
@@ -364,11 +344,7 @@ class Moderate
                 $this->model->close_multiple_topics($action, $topics, $fid);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-<<<<<<< HEAD
-                $this->feather->url->redirect($this->feather->urlFor('moderateForum', array('id' => $fid)), $redirect_msg);
-=======
-                redirect(Url::get('moderate/forum/'.$fid.'/'), $redirect_msg);
->>>>>>> development
+                Url::redirect($this->feather->urlFor('moderateForum', array('id' => $fid)), $redirect_msg);
             }
         }
     }

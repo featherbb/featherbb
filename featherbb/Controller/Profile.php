@@ -310,11 +310,7 @@ class Profile
 
             $this->model->delete_avatar($id);
 
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->url->get('user/'.$id.'/section/personality/'), __('Avatar deleted redirect'));
-=======
-            redirect(Url::get('user/'.$id.'/section/personality/'), __('Avatar deleted redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
                 throw new \FeatherBB\Core\Error(__('No permission'), 403);

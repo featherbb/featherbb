@@ -449,20 +449,6 @@ function random_pass($len)
 
 
 //
-// Display $message and redirect user to $destination_url
-//
-function redirect($destination_url, $message = null)
-{
-    $feather = \Slim\Slim::getInstance();
-
-    // Add a flash message
-    $feather->flash('info', $message);
-
-    $feather->redirect($destination_url);
-}
-
-
-//
 // Generate a cache ID based on the last modification time for all stopwords files
 //
 function generate_stopwords_cache_id()

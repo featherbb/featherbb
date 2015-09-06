@@ -24,11 +24,7 @@ class Auth
     public function login()
     {
         if (!$this->feather->user->is_guest) {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('home'), 'Already logged in');
-=======
-            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
->>>>>>> development
+            Url::redirect($this->feather->urlFor('home'), 'Already logged in');
         }
 
         if ($this->feather->request->isPost()) {
@@ -57,11 +53,7 @@ class Auth
                     $expire = $this->feather->hooks->fire('expire_login', $expire);
                     \FeatherBB\Model\Auth::feather_setcookie($user->id, $form_password_hash, $expire);
 
-<<<<<<< HEAD
-                    $this->feather->url->redirect($this->feather->urlFor('home'), __('Login redirect'));
-=======
-                    $this->feather->url->redirect(Url::base(), __('Login redirect'));
->>>>>>> development
+                    Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
                 }
             }
             throw new \FeatherBB\Core\Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
@@ -80,13 +72,8 @@ class Auth
     {
         $token = $this->feather->hooks->fire('logout_start', $token);
 
-<<<<<<< HEAD
         if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::feather_hash($this->feather->user->id.\FeatherBB\Utils::feather_hash($this->feather->request->getIp()))) {
-            $this->feather->url->redirect($this->feather->urlFor('home'), 'Not logged in');
-=======
-        if ($this->feather->user->is_guest || !isset($token) || $token != Utils::hash($this->feather->user->id.Utils::hash($this->feather->request->getIp()))) {
-            $this->feather->url->redirect(Url::get('/'), 'Not logged in');
->>>>>>> development
+            Url::redirect($this->feather->urlFor('home'), 'Not logged in');
         }
 
         \FeatherBB\Model\Auth::delete_online_by_id($this->feather->user->id);
@@ -99,21 +86,13 @@ class Auth
         \FeatherBB\Model\Auth::feather_setcookie(1, Utils::hash(uniqid(rand(), true)), time() + 31536000);
         $this->feather->hooks->fire('logout_end');
 
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('home'), __('Logout redirect'));
-=======
-        redirect(Url::base(), __('Logout redirect'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
     }
 
     public function forget()
     {
         if (!$this->feather->user->is_guest) {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('home'), 'Already logged in');
-=======
-            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
->>>>>>> development
+            Url::redirect($this->feather->urlFor('home'), 'Already logged in');
         }
 
         if ($this->feather->request->isPost()) {
@@ -158,11 +137,7 @@ class Auth
 
                 $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
 
-<<<<<<< HEAD
-                $this->feather->url->redirect($this->feather->urlFor('home'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
-=======
-                $this->feather->url->redirect(Url::get('/'), __('Forget mail').' <a href="mailto:'.Utils::escape($this->feather->forum_settings['o_admin_email']).'">'.Utils::escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
->>>>>>> development
+                Url::redirect($this->feather->urlFor('home'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
             } else {
                 throw new \FeatherBB\Core\Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }

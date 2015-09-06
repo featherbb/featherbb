@@ -35,13 +35,13 @@ class Categories
     {
         $cat_name = Utils::trim($this->request->post('cat_name'));
         if ($cat_name == '') {
-            $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Must enter name message'));
+            Url::redirect($this->feather->urlFor('adminCategories'), __('Must enter name message'));
         }
 
         if ($this->model->add_category($cat_name)) {
-            $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Category added redirect'));
+            Url::redirect($this->feather->urlFor('adminCategories'), __('Category added redirect'));
         } else { //TODO, add error message
-            $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Category added redirect'));
+            Url::redirect($this->feather->urlFor('adminCategories'), __('Category added redirect'));
         }
     }
 
@@ -56,11 +56,7 @@ class Categories
                               'name' => Utils::escape($properties['name']),
                               'order' => (int) $properties['order'], );
             if ($category['name'] == '') {
-<<<<<<< HEAD
-                $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Must enter name message'));
-=======
-                redirect(Url::get('admin/categories/'), __('Must enter name message'));
->>>>>>> development
+                Url::redirect($this->feather->urlFor('adminCategories'), __('Must enter name message'));
             }
             $this->model->update_category($category);
         }
@@ -68,11 +64,8 @@ class Categories
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Categories updated redirect'));
-=======
-        redirect(Url::get('admin/categories/'), __('Categories updated redirect'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('adminCategories'), __('Categories updated redirect'));
+
     }
 
     public function delete_category()
@@ -84,23 +77,13 @@ class Categories
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Delete category not validated'));
+            Url::redirect($this->feather->urlFor('adminCategories'), __('Delete category not validated'));
         }
 
         if ($this->model->delete_category($cat_to_delete)) {
-            $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Category deleted redirect'));
+            Url::redirect($this->feather->urlFor('adminCategories'), __('Category deleted redirect'));
         } else {
-            $this->feather->url->redirect($this->feather->urlFor('displayCategories'), __('Unable to delete category'));
-=======
-            redirect(Url::get('admin/categories/'), __('Delete category not validated'));
-        }
-
-        if ($this->model->delete_category($cat_to_delete)) {
-            redirect(Url::get('admin/categories/'), __('Category deleted redirect'));
-        } else {
-            redirect(Url::get('admin/categories/'), __('Unable to delete category'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('adminCategories'), __('Unable to delete category'));
         }
     }
 

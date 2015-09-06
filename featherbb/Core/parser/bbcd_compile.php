@@ -419,11 +419,7 @@ $s .= var_export($pd, true);
 $s .= ";\n";
 
 $s .= "?>";
-<<<<<<< HEAD:featherbb/Helpers/bbcd_compile.php
-file_put_contents(FEATHER_ROOT.'cache/cache_parser_data.php', $s);
-=======
 file_put_contents($feather->forum_env['FEATHER_ROOT'].'cache/cache_parser_data.php', $s);
->>>>>>> development:featherbb/Core/parser/bbcd_compile.php
 
 // Clean up our global variables.
 unset($all_tags); unset($all_block_tags);

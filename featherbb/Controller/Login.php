@@ -30,11 +30,7 @@ class Login
     public function display()
     {
         if (!$this->user->is_guest) {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('home'), 'Already logged in');
-=======
-            $this->feather->url->redirect(Url::get('/'), 'Already logged in');
->>>>>>> development
+            Url::redirect($this->feather->urlFor('home'), 'Already logged in');
         }
 
         $this->feather->template->setPageInfo(array(

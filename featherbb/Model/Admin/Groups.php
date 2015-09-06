@@ -260,15 +260,9 @@ class Groups
         $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('adminGroups'), __('Group edited redirect'));
+            Url::redirect($this->feather->urlFor('adminGroups'), __('Group edited redirect'));
         } else {
-            $this->feather->url->redirect($this->feather->urlFor('adminGroups'), __('Group added redirect'));
-=======
-            redirect(Url::get('admin/groups/'), __('Group edited redirect'));
-        } else {
-            redirect(Url::get('admin/groups/'), __('Group added redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('adminGroups'), __('Group added redirect'));
         }
     }
 
@@ -293,11 +287,7 @@ class Groups
         // Regenerate the config cache
         $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
 
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('adminGroups'), __('Default group redirect'));
-=======
-        redirect(Url::get('admin/groups/'), __('Default group redirect'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('adminGroups'), __('Default group redirect'));
     }
 
     public function check_members($group_id)
@@ -340,11 +330,7 @@ class Groups
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('adminGroups'), __('Group removed redirect'));
-=======
-        redirect(Url::get('admin/groups/'), __('Group removed redirect'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('adminGroups'), __('Group removed redirect'));
     }
 
     public function get_group_title($group_id)

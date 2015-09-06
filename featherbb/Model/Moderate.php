@@ -157,11 +157,7 @@ class Moderate
 
             update_forum($fid);
 
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $tid)), __('Delete posts redirect'));
-=======
-            redirect(Url::get('topic/'.$tid.'/'), __('Delete posts redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewTopic', array('id' => $tid)), __('Delete posts redirect'));
         }
 
         $posts = $this->hook->fire('delete_posts', $posts);
@@ -322,11 +318,7 @@ class Moderate
             update_forum($fid);
             update_forum($move_to_forum);
 
-<<<<<<< HEAD
-            $this->feather->url->redirect($this->feather->urlFor('viewTopic', array('id' => $new_tid)), __('Split posts redirect'));
-=======
-            redirect(Url::get('topic/'.$new_tid.'/'), __('Split posts redirect'));
->>>>>>> development
+            Url::redirect($this->feather->urlFor('viewTopic', array('id' => $new_tid)), __('Split posts redirect'));
         }
 
         $posts = $this->hook->fire('split_posts', $posts);
@@ -591,11 +583,7 @@ class Moderate
 
         $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
         $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $move_to_forum)), $redirect_msg);
-=======
-        redirect(Url::get('forum/'.$move_to_forum.'/'), $redirect_msg);
->>>>>>> development
+        Url::redirect($this->feather->urlFor('viewForum', array('id' => $move_to_forum)), $redirect_msg);
     }
 
     public function check_move_possible()
@@ -747,11 +735,7 @@ class Moderate
 
         // Update the forum FROM which the topic was moved and redirect
         update_forum($fid);
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Merge topics redirect'));
-=======
-        redirect(Url::get('forum/'.$fid.'/'), __('Merge topics redirect'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Merge topics redirect'));
     }
 
     public function delete_topics($topics, $fid)
@@ -835,11 +819,7 @@ class Moderate
 
         $this->hook->fire('delete_topics');
 
-<<<<<<< HEAD
-        $this->feather->url->redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Delete topics redirect'));
-=======
-        redirect(Url::get('forum/'.$fid.'/'), __('Delete topics redirect'));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Delete topics redirect'));
     }
 
     public function get_forum_info($fid)
