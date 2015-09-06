@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -25,10 +25,6 @@ class Viewtopic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         // Antispam feature
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);

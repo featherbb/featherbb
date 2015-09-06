@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -28,14 +28,6 @@ class Viewforum
 
     public function display($id, $name = null, $page = null)
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
-        if ($id < 1) {
-            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
-        }
-
         // Fetch some informations about the forum
         $cur_forum = $this->model->get_info_forum($id);
 

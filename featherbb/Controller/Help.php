@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -31,10 +31,6 @@ class Help
 
     public function display()
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
             'active_page' => 'help',

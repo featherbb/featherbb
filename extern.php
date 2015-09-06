@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -55,28 +55,31 @@
 
 -----------------------------------------------------------------------------*/
 
+namespace FeatherBB;
+use DB;
+use FeatherBB\Utils;
+use FeatherBB\Url;
+
 define('FEATHER_QUIET_VISIT', 1);
 
-// Load Slim Framework
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
+// Start a session for flash messages
+session_cache_limiter(false);
+session_start();
+error_reporting(E_ALL); // Let's report everything for development
+ini_set('display_errors', 1);
 
-// Load FeatherBB
-require 'featherbb/Helpers/classes/autoload.class.php';
-\FeatherBB\Loader::registerAutoloader();
+// Load Slim Framework
+require 'vendor/autoload.php';
 
 // Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
-$feather->add(new \FeatherBB\Csrf());
+$feather->add(new \FeatherBB\Middleware\Csrf());
 
 $feather_settings = array('config_file' => 'featherbb/config.php',
     'cache_dir' => 'cache/',
     'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
-$feather->add(new \FeatherBB\Auth());
-$feather->add(new \FeatherBB\Core($feather_settings));
-
-load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/common.mo');
-load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/index.mo');
+$feather->add(new \FeatherBB\Middleware\Auth());
+$feather->add(new \FeatherBB\Middleware\Core($feather_settings));
 
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
@@ -87,7 +90,7 @@ function featherbb_write_cache_file($file, $content)
 {
     $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
     if (!$fh) {
-        die('Unable to write cache file '.Utils::escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.Utils::escape(FORUM_CACHE_DIR).'\'', __FILE__, __LINE__);
+        die('Unable to write cache file '.Utils::escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.Utils::escape(FORUM_CACHE_DIR).'\'');
     }
 
     flock($fh, LOCK_EX);
@@ -205,7 +208,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
     // Check if there's a user matching $user and $password
     $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
 
-    $result = ORM::for_table('users')
+    $result = DB::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
                 ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -229,6 +232,9 @@ function authenticate_user($user, $password, $password_is_hash = false)
     } else {
         $feather->user->is_guest = false;
     }
+
+    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/common.mo');
+    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/index.mo');
 }
 
 // If we're a guest and we've sent a username/pass, we can try to authenticate using those details
@@ -334,10 +340,12 @@ function output_atom($feed)
     echo "\t".'<link href="'.Utils::escape($feed['link']).'"/>'."\n";
     echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
 
+    $feather = \Slim\Slim::getInstance();
+
     if ($feather->forum_settings['o_show_version'] == '1') {
-        echo "\t".'<generator version="'.$feather->forum_settings['o_cur_version'].'">FluxBB</generator>'."\n";
+        echo "\t".'<generator version="'.$feather->forum_settings['o_cur_version'].'">FeatherBB</generator>'."\n";
     } else {
-        echo "\t".'<generator>FluxBB</generator>'."\n";
+        echo "\t".'<generator>FeatherBB</generator>'."\n";
     }
 
     echo "\t".'<id>'.Utils::escape($feed['link']).'</id>'."\n";
@@ -439,8 +447,6 @@ function output_html($feed)
 
 // Show recent discussions
 if ($action == 'feed') {
-    require FEATHER_ROOT.'featherbb/Helpers/parser.php';
-
     // Determine what type of feed to output
     $type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
     if (!in_array($type, array('html', 'rss', 'atom', 'xml'))) {
@@ -484,7 +490,7 @@ if ($action == 'feed') {
         // Setup the feed
         $feed = array(
             'title'        =>    $feather->forum_settings['o_board_title'].__('Title separator').$cur_topic['subject'],
-            'link'            =>    get('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
+            'link'            =>    Url::get('topic/'.$tid.'/'.Url::url_friendly($cur_topic['subject']).'/'),
             'description'        =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
             'items'            =>    array(),
             'type'            =>    'posts'
@@ -508,7 +514,7 @@ if ($action == 'feed') {
             $item = array(
                 'id'            =>    $cur_post['id'],
                 'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : __('RSS reply').$cur_topic['subject'],
-                'link'            =>    get('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
+                'link'            =>    Url::get('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
                 'description'        =>    $cur_post['message'],
                 'author'        =>    array(
                     'name'    => $cur_post['poster'],
@@ -521,7 +527,7 @@ if ($action == 'feed') {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
-                $item['author']['uri'] = get('user/'.$cur_post['poster_id'].'/');
+                $item['author']['uri'] = Url::get('user/'.$cur_post['poster_id'].'/');
             } elseif ($cur_post['poster_email'] != '' && !$feather->user->is_guest) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
@@ -626,7 +632,7 @@ if ($action == 'feed') {
                 $item = array(
                     'id'            =>    $cur_topic['id'],
                     'title'            =>    $cur_topic['subject'],
-                    'link'            =>    get('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
+                    'link'            =>    Url::get('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
                     'description'    =>    $cur_topic['message'],
                     'author'        =>    array(
                         'name'    => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
@@ -639,7 +645,7 @@ if ($action == 'feed') {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
-                    $item['author']['uri'] = get('user/'.$cur_topic['poster_id'].'/');
+                    $item['author']['uri'] = Url::get('user/'.$cur_topic['poster_id'].'/');
                 } elseif ($cur_topic['poster_email'] != '' && !$feather->user->is_guest) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
@@ -700,7 +706,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     foreach ($result as $feather_user_online) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$feather_user_online['user_id'].'/').'">'.Utils::escape($feather_user_online['ident']).'</a>' : Utils::escape($feather_user_online['ident']);
+            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.Url::get('user/'.$feather_user_online['user_id'].'/').'">'.Utils::escape($feather_user_online['ident']).'</a>' : Utils::escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -748,7 +754,7 @@ elseif ($action == 'stats') {
     header('Pragma: public');
 
     echo sprintf(__('No of users'), Utils::forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.get('user/'.$stats['last_user']['id'].'/').'">'.Utils::escape($stats['last_user']['username']).'</a>' : Utils::escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.Url::get('user/'.$stats['last_user']['id'].'/').'">'.Utils::escape($stats['last_user']['username']).'</a>' : Utils::escape($stats['last_user']['username']))).'<br />'."\n";
     echo sprintf(__('No of topics'), Utils::forum_number_format($stats['total_topics'])).'<br />'."\n";
     echo sprintf(__('No of posts'), Utils::forum_number_format($stats['total_posts'])).'<br />'."\n";
 

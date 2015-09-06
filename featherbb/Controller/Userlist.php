@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -24,9 +24,7 @@ class Userlist
 
     public function display()
     {
-        if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        } elseif ($this->feather->user->g_view_users == '0') {
+        if ($this->feather->user->g_view_users == '0') {
             throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 

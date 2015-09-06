@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -30,28 +30,16 @@ class Moderate
 
     public function gethostpost($pid)
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         $this->model->display_ip_address_post($pid);
     }
 
     public function gethostip($ip)
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         $this->model->display_ip_info($ip);
     }
 
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         if ($action == 'get_host') {
             $this->model->display_ip_address();
         }
@@ -206,10 +194,6 @@ class Moderate
 
     public function display($id, $name = null, $page = null)
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
@@ -252,10 +236,6 @@ class Moderate
 
     public function dealposts($fid)
     {
-        if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Core\Error(__('No view'), 403);
-        }
-
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
