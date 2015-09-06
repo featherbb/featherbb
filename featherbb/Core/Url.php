@@ -9,8 +9,6 @@
 
 namespace FeatherBB\Core;
 
-use FeatherBB\Core\Utils;
-
 class Url
 {
     protected static $url_replace = array(

@@ -9,8 +9,6 @@
 
 namespace FeatherBB\Core;
 
-use \FeatherBB\Core\Utils;
-
 class Error extends \Exception
 {
     public function __construct($message, $code = 200, $no_back_link = false)

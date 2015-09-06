@@ -9,9 +9,6 @@
 
 namespace FeatherBB\Core;
 
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
-
 class View
 {
     protected $templatesDirectory,

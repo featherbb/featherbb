@@ -13,7 +13,6 @@
 namespace FeatherBB\Core;
 
 use DB;
-use \FeatherBB\Core\Utils;
 
 class Search
 {
