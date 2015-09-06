@@ -597,7 +597,7 @@ class Url
         $pages = array();
         $link_to_all = false;
 
-        // If $cur_page == -1, we link to all pages (used in viewforum.php)
+        // If $cur_page == -1, we link to all pages (used in Forum.php)
         if ($cur_page == -1) {
             $cur_page = 1;
             $link_to_all = true;
@@ -656,7 +656,7 @@ class Url
         $pages = array();
         $link_to_all = false;
 
-        // If $cur_page == -1, we link to all pages (used in viewforum.php)
+        // If $cur_page == -1, we link to all pages (used in Forum.php)
         if ($cur_page == -1) {
             $cur_page = 1;
             $link_to_all = true;

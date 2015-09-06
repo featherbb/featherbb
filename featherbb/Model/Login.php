@@ -217,7 +217,7 @@ class Login
 
         if (!isset($redirect_url)) {
             $redirect_url = Url::base();
-        } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) { // TODO
+        } elseif (preg_match('%Topic\.php\?pid=(\d+)$%', $redirect_url, $matches)) { // TODO
             $redirect_url .= '#p'.$matches[1];
         }
 

@@ -67,7 +67,7 @@ class Delete
             delete_topic($tid);
             update_forum($fid);
 
-            Url::redirect($this->feather->urlFor('viewForum', array('id' => $fid)), __('Topic del redirect'));
+            Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Topic del redirect'));
         } else {
             $this->hook->fire('handle_deletion', $tid, $fid, $id);
 

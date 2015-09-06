@@ -26,7 +26,7 @@ if (!defined('FEATHER')) {
 <?php if ($is_indexed) {
     echo "\t".'<meta name="robots" content="noindex, follow">'."\n";
 } ?>
-    <title><?php echo generate_page_title($title, $page_number) ?></title>
+    <title><?php echo Utils::generate_page_title($title, $page_number) ?></title>
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="<?= Url::base() ?>/style/themes/<?= $style ?>/style.css">
 <?php

@@ -13,7 +13,7 @@ use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use DB;
 
-class Viewforum
+class Forum
 {
     public function __construct()
     {

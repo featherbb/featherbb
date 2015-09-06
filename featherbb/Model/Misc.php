@@ -126,7 +126,7 @@ class Misc
 
         if (!isset($redirect_url)) {
             $redirect_url = Url::get('user/'.$recipient_id.'/');
-        } elseif (preg_match('%viewtopic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
+        } elseif (preg_match('%Topic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
             $redirect_url .= '#p'.$matches[1];
         }
 
@@ -307,7 +307,7 @@ class Misc
         $subscription = $this->hook->fireDB('subscribe_topic_query', $subscription);
         $subscription = $subscription->save();
 
-        Url::redirect($this->feather->urlFor('viewTopic', ['id' => $topic_id]), __('Subscribe redirect'));
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
     }
 
     public function unsubscribe_topic($topic_id)
@@ -335,7 +335,7 @@ class Misc
         $delete = $this->hook->fireDB('unsubscribe_topic_query', $delete);
         $delete = $delete->delete_many();
 
-        Url::redirect($this->feather->urlFor('viewTopic', ['id' => $topic_id]), __('Unsubscribe redirect'));
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
     }
 
     public function unsubscribe_forum($forum_id)
@@ -363,7 +363,7 @@ class Misc
         $delete = $this->hook->fireDB('unsubscribe_forum_query', $delete);
         $delete = $delete->delete_many();
 
-        Url::redirect($this->feather->urlFor('viewForum', ['id' => $forum_id]), __('Unsubscribe redirect'));
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id]), __('Unsubscribe redirect'));
     }
 
     public function subscribe_forum($forum_id)
@@ -414,6 +414,6 @@ class Misc
         $subscription = $this->hook->fireDB('subscribe_forum_query', $subscription);
         $subscription = $subscription->save();
 
-        Url::redirect($this->feather->urlFor('viewForum', ['id' => $forum_id]), __('Subscribe redirect'));
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id]), __('Subscribe redirect'));
     }
 }

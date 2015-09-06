@@ -15,15 +15,15 @@
 	<div class="box">
 <?php
 
-if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'viewtopic') && $is_admmod) {
+if (isset($footer_style) && ($footer_style == 'Forum' || $footer_style == 'Topic') && $is_admmod) {
     echo "\t\t".'<div id="modcontrols" class="inbox">'."\n";
 
-    if ($footer_style == 'viewforum') {
+    if ($footer_style == 'Forum') {
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
         echo "\t\t\t\t".'<dd><span><a href="'.get('moderate/forum/'.$forum_id.'/page/'.$p.'/').'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
-    } elseif ($footer_style == 'viewtopic') {
+    } elseif ($footer_style == 'Topic') {
         if (isset($pid)) {
             $parameter = 'param/'.$pid.'/';
         } elseif (isset($p) && $p != 1) {
@@ -92,13 +92,13 @@ if ($footer_style == 'index') {
     } elseif ($feather_config['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
-} elseif ($footer_style == 'viewforum') {
+} elseif ($footer_style == 'Forum') {
     if ($feather_config['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
     } elseif ($feather_config['o_feed_type'] == '2') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;fid='.$forum_id.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
-} elseif ($footer_style == 'viewtopic') {
+} elseif ($footer_style == 'Topic') {
     if ($feather_config['o_feed_type'] == '1') {
         echo "\t\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.$feather->url->base().'/extern.php?action=feed&amp;tid='.$id.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
     } elseif ($feather_config['o_feed_type'] == '2') {

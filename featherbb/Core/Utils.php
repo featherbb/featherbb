@@ -198,4 +198,24 @@ class Utils
 
         return sprintf(__('Size unit '.$units[$i]), round($size, 2));
     }
+
+    //
+    // Generate browser's title
+    //
+    public static function generate_page_title($page_title, $p = null)
+    {
+        if (!is_array($page_title)) {
+            $page_title = array($page_title);
+        }
+
+        $page_title = array_reverse($page_title);
+
+        if ($p > 1) {
+            $page_title[0] .= ' ('.sprintf(__('Page'), self::forum_number_format($p)).')';
+        }
+
+        $crumbs = implode(__('Title separator'), $page_title);
+
+        return $crumbs;
+    }
 }

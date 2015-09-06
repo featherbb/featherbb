@@ -39,15 +39,15 @@ $isAdmmod = function() use ($feather) {
 // Index
 $feather->get('/', $canReadBoard, '\FeatherBB\Controller\index:display')->name('home');
 
-// Viewforum
-$feather->get('/forum/:id(/:name)(/page/:page)(/)', $canReadBoard, '\FeatherBB\Controller\Viewforum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('viewForum');
+// Forum
+$feather->get('/forum/:id(/:name)(/page/:page)(/)', $canReadBoard, '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Forum');
 
-// Viewtopic
+// Topic
 $feather->group('/topic', $canReadBoard, function() use ($feather) {
-    $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Viewtopic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('viewTopic');
-    $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Viewtopic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
+    $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Topic');
+    $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Topic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
 });
-$feather->get('/post/:pid(/)', '\FeatherBB\Controller\Viewtopic:viewpost')->conditions(array('pid' => '[0-9]+'))->name('viewPost');
+$feather->get('/post/:pid(/)', '\FeatherBB\Controller\Topic:viewpost')->conditions(array('pid' => '[0-9]+'))->name('viewPost');
 
 // Userlist
 $feather->get('/userlist(/)', $canReadBoard, '\FeatherBB\Controller\Userlist:display')->name('userList');

@@ -62,7 +62,8 @@ class Register
         }
 
         // Validate username and passwords
-        $user['errors'] = check_username($user['username'], $user['errors']);
+        $profile = new \FeatherBB\Model\Profile();
+        $user['errors'] = $profile->check_username($user['username'], $user['errors']);
 
         if (Utils::strlen($user['password1']) < 6) {
             $user['errors'][] = __('Pass too short');
