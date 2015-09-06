@@ -86,7 +86,8 @@ class Post
         if ($this->user->is_guest) {
 
             // It's a guest, so we have to validate the username
-            $errors = check_username(Utils::trim($this->request->post('req_username')), $errors);
+            $profile = new \FeatherBB\Model\Profile();
+            $errors = $profile->check_username(Utils::trim($this->request->post('req_username')), $errors);
 
             $errors = $this->hook->fire('check_errors_before_post_antispam', $errors);
 

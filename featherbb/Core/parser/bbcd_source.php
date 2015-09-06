@@ -430,16 +430,6 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
             )
         )
     ),
-    'dbug' => array(
-        'html_name'                => 'div',
-        'html_type'                => 'block',
-        'handlers'                => array(
-            'ATTRIB'            => array(
-                'format'        =>
-                    '</p><p class="debug" title="%a_str%">%c_str%</p><p>'
-            )
-        )
-    ),
     '_ROOT_' => array(
         'in_post'                => false,
         'in_sig'                => false,

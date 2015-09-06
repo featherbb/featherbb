@@ -24,65 +24,6 @@ function get_admin_ids()
 
 
 //
-// Check username
-//
-function check_username($username, $errors, $exclude_id = null)
-{
-    global $feather, $errors, $feather_bans;
-    $feather = \Slim\Slim::getInstance();
-
-    // Include UTF-8 function
-    require_once $feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
-
-    load_textdomain('featherbb', $feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$feather->user->language.'/register.mo');
-    load_textdomain('featherbb', $feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$feather->user->language.'/prof_reg.mo');
-
-    // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
-    $username = preg_replace('%\s+%s', ' ', $username);
-
-    // Validate username
-    if (\FeatherBB\Core\Utils::strlen($username) < 2) {
-        $errors[] = __('Username too short');
-    } elseif (\FeatherBB\Core\Utils::strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
-        $errors[] = __('Username too long');
-    } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
-        $errors[] = __('Username guest');
-    } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $username) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $username)) {
-        $errors[] = __('Username IP');
-    } elseif ((strpos($username, '[') !== false || strpos($username, ']') !== false) && strpos($username, '\'') !== false && strpos($username, '"') !== false) {
-        $errors[] = __('Username reserved chars');
-    } elseif (preg_match('%(?:\[/?(?:b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|\*|topic|post|forum|user)\]|\[(?:img|url|quote|list)=)%i', $username)) {
-        $errors[] = __('Username BBCode');
-    }
-
-    // Check username for any censored words
-    if ($feather->forum_settings['o_censoring'] == '1' && censor_words($username) != $username) {
-        $errors[] = __('Username censor');
-    }
-
-    // Check that the username (or a too similar username) is not already registered
-    $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
-
-    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => \FeatherBB\Core\Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
-
-    if ($result) {
-        $busy = $result['username'];
-        $errors[] = __('Username dupe 1').' '.\FeatherBB\Core\Utils::escape($busy).'. '.__('Username dupe 2');
-    }
-
-    // Check username for any banned usernames
-    foreach ($feather_bans as $cur_ban) {
-        if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
-            $errors[] = __('Banned username');
-            break;
-        }
-    }
-
-    return $errors;
-}
-
-
-//
 // Outputs markup to display a user's avatar
 //
 function generate_avatar_markup($user_id)
@@ -102,29 +43,6 @@ function generate_avatar_markup($user_id)
     }
 
     return $avatar_markup;
-}
-
-
-//
-// Generate browser's title
-//
-function generate_page_title($page_title, $p = null)
-{
-    $feather = \Slim\Slim::getInstance();
-
-    if (!is_array($page_title)) {
-        $page_title = array($page_title);
-    }
-
-    $page_title = array_reverse($page_title);
-
-    if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf(__('Page'), \FeatherBB\Core\Utils::forum_number_format($p)).')';
-    }
-
-    $crumbs = implode(__('Title separator'), $page_title);
-
-    return $crumbs;
 }
 
 

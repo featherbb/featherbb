@@ -795,7 +795,7 @@ class Profile
 
                         if ($form['username'] != $info['old_username']) {
                             $errors = '';
-                            $errors = check_username($form['username'], $errors, $id);
+                            $errors = $this->check_username($form['username'], $errors, $id);
                             if (!empty($errors)) {
                                 throw new \FeatherBB\Core\Error($errors[0]);
                             }
@@ -1342,5 +1342,62 @@ class Profile
         $output = $this->hook->fire('get_forum_list', $output);
 
         return $output;
+    }
+
+    //
+    // Check username
+    //
+    public function check_username($username, $errors, $exclude_id = null)
+    {
+        global $errors, $feather_bans;
+
+        // Include UTF-8 function
+        require_once $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
+
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/prof_reg.mo');
+
+        // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
+        $username = preg_replace('%\s+%s', ' ', $username);
+
+        // Validate username
+        if (Utils::strlen($username) < 2) {
+            $errors[] = __('Username too short');
+        } elseif (Utils::strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+            $errors[] = __('Username too long');
+        } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
+            $errors[] = __('Username guest');
+        } elseif (filter_var($username, FILTER_VALIDATE_IP)) {
+            $errors[] = __('Username IP');
+        } elseif ((strpos($username, '[') !== false || strpos($username, ']') !== false) && strpos($username, '\'') !== false && strpos($username, '"') !== false) {
+            $errors[] = __('Username reserved chars');
+        } elseif (preg_match('%(?:\[/?(?:b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|\*|topic|post|forum|user)\]|\[(?:img|url|quote|list)=)%i', $username)) {
+            $errors[] = __('Username BBCode');
+        }
+
+        // Check username for any censored words
+        if ($this->feather->forum_settings['o_censoring'] == '1' && censor_words($username) != $username) {
+            $errors[] = __('Username censor');
+        }
+
+        // Check that the username (or a too similar username) is not already registered
+        $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
+
+        $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$this->feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+
+        if ($result) {
+            $busy = $result['username'];
+            $errors[] = __('Username dupe 1').' '.Utils::escape($busy).'. '.__('Username dupe 2');
+        }
+
+        // Check username for any banned usernames
+        foreach ($this->feather_bans as $cur_ban) {
+            if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
+                $errors[] = __('Banned username');
+                break;
+            }
+        }
+
+        return $errors;
     }
 }
