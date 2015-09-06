@@ -38,12 +38,12 @@ class Parser
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
         if ($this->request->post('reset') || !file_exists($cache_file)) {
-            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/Parser/bbcd_source.php');
-            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/Parser/bbcd_compile.php');
-            redirect(Url::get('admin/parser/'), $lang_admin_parser['reset_success']);
+            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_source.php');
+            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_compile.php');
+            Url::redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['reset_success']);
         }
 
-        // Load the current BBCode $pd array from featherbb/Helpers/parser_data.inc.php.
+        // Load the current BBCode $pd array from featherbb/Core/parser/parser_data.inc.php.
         require_once($cache_file);            // Fetch $pd compiled global regex data.
         $bbcd = $pd['bbcd'];                // Local scratch copy of $bbcd.
         $smilies = $pd['smilies'];            // Local scratch copy of $smilies.
@@ -64,7 +64,7 @@ class Parser
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
                                     if (move_uploaded_file($f['tmp_name'], $this->feather->forum_env['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
-                                        redirect(Url::get('admin/parser/'), $lang_admin_parser['upload success']);
+                                        Url::redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new \FeatherBB\Core\Error($lang_admin_parser['upload_err_1'], 500);
                                     }
@@ -198,7 +198,7 @@ class Parser
             }
 
             require_once('featherbb/Core/parser/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
-            redirect(Url::get('admin/parser/'), $lang_admin_parser['save_success']);
+            Url::redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['save_success']);
         }
 
         AdminUtils::generateAdminMenu('parser');

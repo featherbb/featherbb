@@ -265,14 +265,13 @@ class Register
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-            redirect(Url::base(),__('Reg email').' <a href="mailto:'.feather_escape($this->config['o_admin_email']).'">'.feather_escape($this->config['o_admin_email']).'</a>.');
-
+            Url::redirect($this->feather->urlFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
         }
 
         $this->auth->feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
 
         $this->hook->fire('insert_user');
 
-        redirect(Url::base(), __('Reg complete'));
+        Url::redirect($this->feather->urlFor('home'), __('Reg complete'));
     }
 }

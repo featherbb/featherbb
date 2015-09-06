@@ -906,7 +906,7 @@ class Url
     //
     // Display $message and redirect user to $destination_url
     //
-    public function redirect($destination_url, $message = null, $status = 302)
+    public static function redirect($destination_url, $message = null, $status = 302)
     {
         self::$feather = \Slim\Slim::getInstance();
 
@@ -915,7 +915,6 @@ class Url
             $message = array('info', $message);
         // Add a flash message
         self::$feather->flash($message[0], $message[1]);
-
         self::$feather->redirect($destination_url);
     }
 }

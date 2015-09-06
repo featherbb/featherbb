@@ -243,7 +243,7 @@ class Users
             DB::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
-            redirect(Url::get('admin/users/'), __('Users move redirect'));
+            Url::redirect($this->feather->urlFor('adminUsers'), __('Users move redirect'));
         }
 
         $move = $this->hook->fire('model.users.move_users.move', $move);
@@ -408,7 +408,7 @@ class Users
 
             $stats = $this->feather->cache->retrieve('users_info');
 
-            redirect(Url::get('admin/users/'), __('Users delete redirect'));
+            Url::redirect($this->feather->urlFor('adminUsers'), __('Users delete redirect'));
         }
 
         return $user_ids;
@@ -527,7 +527,7 @@ class Users
                 // Regenerate the bans cache
                 $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
 
-                redirect(Url::get('admin/users/'), __('Users banned redirect'));
+                Url::redirect($this->feather->urlFor('adminUsers'), __('Users banned redirect'));
             }
         }
         return $user_ids;

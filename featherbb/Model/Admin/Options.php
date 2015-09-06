@@ -232,7 +232,7 @@ class Options
         $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
         $this->clear_feed_cache();
 
-        redirect(Url::get('admin/options/'), __('Options updated redirect'));
+        Url::redirect($this->feather->urlFor('adminOptions'), __('Options updated redirect'));
     }
 
     public function clear_feed_cache()

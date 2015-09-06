@@ -59,7 +59,7 @@ class Profile
                 $query = $this->hook->fireDB('change_pass_activate_query', $query);
                 $query = $query->save();
 
-                $this->feather->url->redirect(Url::get('/'), __('Pass updated'));
+                Url::redirect($this->feather->urlFor('home'), __('Pass updated'));
             }
         }
 
@@ -137,8 +137,7 @@ class Profile
             }
 
             $this->hook->fire('change_pass');
-
-            redirect(Url::get('user/'.$id.'/section/essentials/'), __('Pass updated redirect'));
+            Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
         }
     }
 
@@ -195,7 +194,7 @@ class Profile
                 $update_mail = $this->hook->fireDB('change_email_query', $update_mail);
                 $update_mail = $update_mail->save();
 
-                $this->feather->url->redirect(Url::get('/'), __('Email updated'));
+                Url::redirect($this->feather->urlFor('home'), __('Email updated'));
             }
         } elseif ($this->request->isPost()) {
             $this->hook->fire('change_email_post');
@@ -404,7 +403,7 @@ class Profile
 
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
 
-        redirect(Url::get('user/'.$id.'/section/personality/'), __('Avatar upload redirect'));
+        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
     }
 
     public function update_group_membership($id)
@@ -471,7 +470,7 @@ class Profile
 
         $id = $this->hook->fire('update_group_membership', $id);
 
-        redirect(Url::get('user/'.$id.'/section/admin/'), __('Group membership redirect'));
+        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -541,7 +540,7 @@ class Profile
 
         $id = $this->hook->fire('update_mod_forums', $id);
 
-        redirect(Url::get('user/'.$id.'/section/admin/'), __('Update forums redirect'));
+        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
     }
 
     public function ban_user($id)
@@ -560,9 +559,9 @@ class Profile
         $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
-            redirect(Url::get('admin/bans/edit/'.$ban_id.'/'), __('Ban redirect'));
+            Url::redirect($this->feather->urlFor('editBan', array('id' => $ban_id)), __('Ban redirect'));
         } else {
-            redirect(Url::get('admin/bans/add/'.$id.'/'), __('Ban redirect'));
+            Url::redirect($this->feather->urlFor('addBan', array('id' => $id)), __('Ban redirect'));
         }
     }
 
@@ -594,7 +593,7 @@ class Profile
 
         $pid = $this->hook->fire('promote_user', $pid);
 
-        redirect(Url::get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
+        Url::redirect($this->feather->url->get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -734,7 +733,7 @@ class Profile
 
             $this->hook->fire('delete_user');
 
-            redirect(Url::base(), __('User delete redirect'));
+            Url::redirect($this->feather->urlFor('home'), __('User delete redirect'));
         }
     }
 
@@ -1038,7 +1037,8 @@ class Profile
             // If the user is a moderator or an administrator we have to update the moderator lists
             $group_id = DB::for_table('users')
                 ->where('id', $id);
-            $group_id = $this->hook->fireDB('update_profile_group_id', $update_online);
+            // TODO: restore hook
+            // $group_id = $this->hook->fireDB('update_profile_group_id', $update_online);
             $group_id = $group_id->find_one_col('group_id');
 
             $group_mod = DB::for_table('groups')
@@ -1084,7 +1084,7 @@ class Profile
 
         $section = $this->hook->fireDB('update_profile', $section, $id);
 
-        redirect(Url::get('user/'.$id.'/section/'.$section.'/'), __('Profile redirect'));
+        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => $section)), __('Profile redirect'));
     }
 
     public function get_user_info($id)

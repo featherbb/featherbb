@@ -86,7 +86,7 @@ class Login
         $redirect_url = $this->request->post('redirect_url');
         $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
 
-        redirect(Utils::escape($redirect_url), __('Login redirect'));
+        Url::redirect(Utils::escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
@@ -116,7 +116,7 @@ class Login
 
         $this->auth->feather_setcookie(1, Utils::hash(uniqid(rand(), true)), time() + 31536000);
 
-        redirect(Url::base(), __('Logout redirect'));
+        Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
     }
 
     public function password_forgotten()

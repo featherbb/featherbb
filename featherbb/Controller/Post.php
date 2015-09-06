@@ -123,7 +123,7 @@ class Post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    redirect(Url::get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
+                    Url::redirect(Url::get('post/'.$new['pid'].'/#p'.$new['pid']), __('Post redirect'));
                 }
         }
 
