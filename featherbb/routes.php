@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -191,15 +191,4 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
 // 404 not found
 $feather->notFound(function () use ($feather){
     throw new \FeatherBB\Core\Error('Page not found', 404);
-});
-
-$feather->error(function (\Exception $e) use ($feather) {
-    $feather->response->setStatus($e->getCode());
-    $feather->template->setPageInfo(array(
-        'title' => array(\FeatherBB\Core\Utils::escape($feather->config['o_board_title']), __('Error')),
-        'msg_title' => __('Error'),
-        'msg'    =>   $e->getMessage(),
-        'no_back_link'    => false,
-        ))->addTemplate('error.php')->display();
-    $feather->stop();
 });
