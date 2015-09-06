@@ -91,10 +91,6 @@ class Search
 
     public function quicksearches($show)
     {
-<<<<<<< HEAD
-        $this->feather->redirect($this->feather->urlFor('quickSearch', array('show' => '?action=show_'.$show)));
-=======
-        Url::redirect(Url::get('search/?action=show_'.$show));
->>>>>>> development
+        Url::redirect($this->feather->urlFor('quickSearch', array('show' => '?action=show_'.$show)));
     }
 }
