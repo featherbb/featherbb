@@ -161,7 +161,7 @@ if ($quickpost) {
     var baseUrl = '<?php echo Utils::escape(Url::base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo Url::base() ?>/js/bbeditor.js"></script>
+<script src="<?php echo Url::base() ?>/style/imports/bbeditor.js"></script>
 <script>postEditorToolbar('req_message');</script>
 
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>

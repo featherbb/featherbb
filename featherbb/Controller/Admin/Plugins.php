@@ -31,7 +31,8 @@ class Plugins
         //     $this->model->update_permissions();
         // }
 
-        AdminUtils::generateAdminMenu('plugins');
+        // AdminUtils::generateAdminMenu('plugins');
+        $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
         $pluginsList = \FeatherBB\Core\Lister::getValidPlugins();
         // var_dump($pluginsList);

@@ -82,7 +82,7 @@ $cur_index = 1;
     var baseUrl = '<?php echo Utils::escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
+<script src="<?php echo Url::base() ?>/style/imports/bbeditor.js"></script>
 
 <div id="postform" class="blockform">
 	<h2><span><?php echo $action ?></span></h2>

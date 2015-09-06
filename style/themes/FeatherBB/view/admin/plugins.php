@@ -15,6 +15,21 @@ if (!defined('FEATHER')) {
     exit;
 }
 ?>
+
+<div class="linkst">
+	<div class="inbox crumbsplus">
+		<ul class="crumbs">
+			<li><a href="<?php echo $feather->url->get('admin/index/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+		</ul>
+		<div class="pagepost">
+			<p class="pagelink"><?php echo $paging_links ?></p>
+		</div>
+		<div class="clearer"></div>
+	</div>
+</div>
+
 <div class="block">
     <h2>Plugins</h2>
     <div class="box">

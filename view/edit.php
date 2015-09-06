@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -72,7 +72,7 @@ endif;
     var baseUrl = '<?php echo Utils::escape($feather->url->base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo $feather->url->base() ?>/js/bbeditor.js"></script>
+<script src="<?php echo Url::base() ?>/style/imports/bbeditor.js"></script>
 <div id="editform" class="blockform">
 	<h2><span><?php _e('Edit post') ?></span></h2>
 	<div class="box">

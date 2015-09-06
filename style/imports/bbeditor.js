@@ -22,30 +22,30 @@ var content;
 // Import dependencies
 document.write('<link href="'+baseUrl+'/style/imports/bbeditor.css" rel="stylesheet" type="text/css">');
 document.write('<link href="'+baseUrl+'/style/imports/colorPicker.css" rel="stylesheet" type="text/css">');
-document.write('<script src="'+baseUrl+'/js/colorPicker.js"  type="text/javascript"></script>');
+document.write('<script src="'+baseUrl+'/style/imports/colorPicker.js"  type="text/javascript"></script>');
 
 
 function postEditorToolbar(obj) {
 	// Toolbar buttons
 	document.write("<div class=\"toolbar\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/bold.png\" name=\"btnBold\" title=\""+langBbeditor.btnBold+"\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/italic.png\" name=\"btnItalic\" title=\""+langBbeditor.btnItalic+"\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/underline.png\" name=\"btnUnderline\" title=\""+langBbeditor.btnUnderline+"\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\""+langBbeditor.btnColor+"\" onClick=\"toggleColorpicker()\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/bold.png\" name=\"btnBold\" title=\""+langBbeditor.btnBold+"\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/italic.png\" name=\"btnItalic\" title=\""+langBbeditor.btnItalic+"\" onClick=\"doAddTags('[i]','[/i]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/underline.png\" name=\"btnUnderline\" title=\""+langBbeditor.btnUnderline+"\" onClick=\"doAddTags('[u]','[/u]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/eyedropper.png\" name=\"btnColor\" title=\""+langBbeditor.btnColor+"\" onClick=\"toggleColorpicker()\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-left.png\" name=\"btnLeft\" title=\""+langBbeditor.btnLeft+"\" onClick=\"doAddTags('[left]','[/left]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-right.png\" name=\"btnRight\" title=\""+langBbeditor.btnRight+"\" onClick=\"doAddTags('[right]','[/right]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-justify.png\" name=\"btnJustify\" title=\""+langBbeditor.btnJustify+"\" onClick=\"doAddTags('[justify]','[/justify]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/align-center.png\" name=\"btnCenter\" title=\""+langBbeditor.btnCenter+"\" onClick=\"doAddTags('[center]','[/center]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/align-left.png\" name=\"btnLeft\" title=\""+langBbeditor.btnLeft+"\" onClick=\"doAddTags('[left]','[/left]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/align-right.png\" name=\"btnRight\" title=\""+langBbeditor.btnRight+"\" onClick=\"doAddTags('[right]','[/right]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/align-justify.png\" name=\"btnJustify\" title=\""+langBbeditor.btnJustify+"\" onClick=\"doAddTags('[justify]','[/justify]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/align-center.png\" name=\"btnCenter\" title=\""+langBbeditor.btnCenter+"\" onClick=\"doAddTags('[center]','[/center]','" + obj + "')\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/link.png\" name=\"btnLink\" title=\""+langBbeditor.btnLink+"\" onClick=\"doURL('" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/file-image-o.png\" name=\"btnPicture\" title=\""+langBbeditor.btnPicture+"\" onClick=\"doImage('" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/link.png\" name=\"btnLink\" title=\""+langBbeditor.btnLink+"\" onClick=\"doURL('" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/file-image-o.png\" name=\"btnPicture\" title=\""+langBbeditor.btnPicture+"\" onClick=\"doImage('" + obj + "')\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/list-ol.png\" name=\"btnList\" title=\""+langBbeditor.btnList+"\" onClick=\"doList('[list=1]','[/list]','" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/list-ul.png\" name=\"btnList\" title=\""+langBbeditor.btnList+"\" onClick=\"doList('[list]','[/list]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/list-ol.png\" name=\"btnList\" title=\""+langBbeditor.btnList+"\" onClick=\"doList('[list=1]','[/list]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/list-ul.png\" name=\"btnList\" title=\""+langBbeditor.btnList+"\" onClick=\"doList('[list]','[/list]','" + obj + "')\">");
 		document.write('<span class="toolbar-separator"></span>');
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/quote-left.png\" name=\"btnQuote\" title=\""+langBbeditor.btnQuote+"\" onClick=\"doQuote('" + obj + "')\">");
-		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/img/bbeditor/code.png\" name=\"btnCode\" title=\""+langBbeditor.btnCode+"\" onClick=\"doAddTags('[code]','[/code]','" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/quote-left.png\" name=\"btnQuote\" title=\""+langBbeditor.btnQuote+"\" onClick=\"doQuote('" + obj + "')\">");
+		document.write("<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/code.png\" name=\"btnCode\" title=\""+langBbeditor.btnCode+"\" onClick=\"doAddTags('[code]','[/code]','" + obj + "')\">");
 		// document.write("<i class=\"fa fa-smile-o toolbar-icon\" title=\"Smilies\" onClick=\"doSmiley('" + obj + "')\"></i>");
 	document.write("</div>");
 
