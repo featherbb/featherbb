@@ -206,13 +206,13 @@ class Forum
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_subject, 'page' => 1]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject, 'page' => 1]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject, 'page' => 1]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
@@ -221,7 +221,7 @@ class Forum
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->urlFor('topicAction', ['id' => $cur_topic['id'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }

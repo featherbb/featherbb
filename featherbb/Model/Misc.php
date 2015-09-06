@@ -126,7 +126,7 @@ class Misc
         }
 
         if (!isset($redirect_url)) {
-            $redirect_url = Url::get('user/'.$recipient_id.'/');
+            $redirect_url = $this->feather->urlFor('userProfile', ['id' => $recipient_id]);
         } elseif (preg_match('%Topic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
             $redirect_url .= '#p'.$matches[1];
         }

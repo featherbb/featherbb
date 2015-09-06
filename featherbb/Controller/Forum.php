@@ -62,13 +62,13 @@ class Forum
 
         $forum_actions = $this->model->get_forum_actions($fid, $this->feather->forum_settings['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
-        $this->feather->template->addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum, 'page' => $p]));
+        $this->feather->template->addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->template->addAsset('prev', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
+                $this->feather->template->addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                $this->feather->template->addAsset('next', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
+                $this->feather->template->addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
