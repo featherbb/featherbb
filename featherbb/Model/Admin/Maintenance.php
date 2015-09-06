@@ -183,13 +183,13 @@ class Maintenance
             if (!empty($result)) {
                 foreach ($result as $row) {
                     $this->prune($row['id'], $prune_sticky, $prune_date);
-                    update_forum($row['id']);
+                    \FeatherBB\Model\Forum::update($row['id']);
                 }
             }
         } else {
             $prune_from = intval($prune_from);
             $this->prune($prune_from, $prune_sticky, $prune_date);
-            update_forum($prune_from);
+            \FeatherBB\Model\Forum::update($prune_from);
         }
 
         // Locate any "orphaned redirect topics" and delete them

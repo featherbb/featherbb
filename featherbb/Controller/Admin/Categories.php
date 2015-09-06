@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
+use FeatherBB\Model\Cache;
 
 class Categories
 {
@@ -62,7 +63,7 @@ class Categories
         }
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+        $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
         Url::redirect($this->feather->urlFor('adminCategories'), __('Categories updated redirect'));
 

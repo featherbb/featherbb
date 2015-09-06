@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 use DB;
 
 class Search
@@ -696,7 +697,7 @@ class Search
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
-            $tracked_topics = get_tracked_topics();
+            $tracked_topics = Track::get_tracked_topics();
         }
 
         $post_count = $topic_count = 0;
@@ -706,7 +707,7 @@ class Search
             $url_topic = Url::url_friendly($cur_search['subject']);
 
             if ($this->config['o_censoring'] == '1') {
-                $cur_search['subject'] = censor_words($cur_search['subject']);
+                $cur_search['subject'] = Utils::censor($cur_search['subject']);
             }
 
             if ($search['show_as'] == 'posts') {
@@ -723,7 +724,7 @@ class Search
                 }
 
                 if ($this->config['o_censoring'] == '1') {
-                    $cur_search['message'] = censor_words($cur_search['message']);
+                    $cur_search['message'] = Utils::censor($cur_search['message']);
                 }
 
                 $cur_search['message'] = $this->feather->parser->parse_message($cur_search['message'], $cur_search['hide_smilies']);

@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Model\Cache;
+
 class Utils
 {
     public function __construct()
@@ -176,15 +178,6 @@ class Utils
         return $replaced;
     }
 
-
-    //
-    // Compute a hash of $str
-    //
-    public static function hash($str)
-    {
-        return sha1($str);
-    }
-
     //
     // Converts the file size in bytes to a human readable file size
     //
@@ -217,5 +210,108 @@ class Utils
         $crumbs = implode(__('Title separator'), $page_title);
 
         return $crumbs;
+    }
+
+    //
+    // Determines the correct title for $user
+    // $user must contain the elements 'username', 'title', 'posts', 'g_id' and 'g_user_title'
+    //
+    public static function get_title($user)
+    {
+        global $feather_bans;
+        static $ban_list;
+
+        // If not already built in a previous call, build an array of lowercase banned usernames
+        if (empty($ban_list)) {
+            $ban_list = array();
+            foreach ($feather_bans as $cur_ban) {
+                $ban_list[] = utf8_strtolower($cur_ban['username']);
+            }
+        }
+
+        // If the user has a custom title
+        if ($user['title'] != '') {
+            $user_title = self::escape($user['title']);
+        }
+        // If the user is banned
+        elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
+            $user_title = __('Banned');
+        }
+        // If the user group has a default user title
+        elseif ($user['g_user_title'] != '') {
+            $user_title = self::escape($user['g_user_title']);
+        }
+        // If the user is a guest
+        elseif ($user['g_id'] == FEATHER_GUEST) {
+            $user_title = __('Guest');
+        }
+        // If nothing else helps, we assign the default
+        else {
+            $user_title = __('Member');
+        }
+
+        return $user_title;
+    }
+
+    //
+    // Replace censored words in $text
+    //
+    public static function censor($text)
+    {
+        static $search_for, $replace_with;
+
+        $feather = \Slim\Slim::getInstance();
+
+        if (!$feather->cache->isCached('search_for')) {
+            $feather->cache->store('search_for', Cache::get_censoring('search_for'));
+            $search_for = $feather->cache->retrieve('search_for');
+        }
+
+        if (!$feather->cache->isCached('replace_with')) {
+            $feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+            $replace_with = $feather->cache->retrieve('replace_with');
+        }
+
+        if (!empty($search_for) && !empty($replace_with)) {
+            return substr(self::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+        } else {
+            return $text;
+        }
+    }
+
+    //
+    // Fetch admin IDs
+    //
+    public static function get_admin_ids()
+    {
+        // Get Slim current session
+        $feather = \Slim\Slim::getInstance();
+        if (!$feather->cache->isCached('admin_ids')) {
+            $feather->cache->store('admin_ids', Cache::get_admin_ids());
+        }
+
+        return $feather->cache->retrieve('admin_ids');
+    }
+
+    //
+    // Outputs markup to display a user's avatar
+    //
+    public static function generate_avatar_markup($user_id)
+    {
+        $feather = \Slim\Slim::getInstance();
+
+        $filetypes = array('jpg', 'gif', 'png');
+        $avatar_markup = '';
+
+        foreach ($filetypes as $cur_type) {
+            $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
+
+            if (file_exists($feather->forum_env['FEATHER_ROOT'].$path) && $img_size = getimagesize($feather->forum_env['FEATHER_ROOT'].$path)) {
+                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime($feather->forum_env['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';
+                break;
+            }
+        }
+
+        return $avatar_markup;
     }
 }

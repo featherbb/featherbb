@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 use DB;
 
 class Post
@@ -115,7 +116,7 @@ class Post
             $subject = $this->hook->fire('check_errors_before_new_topic_subject', $subject);
 
             if ($this->config['o_censoring'] == '1') {
-                $censored_subject = Utils::trim(censor_words($subject));
+                $censored_subject = Utils::trim(Utils::censor($subject));
                 $censored_subject = $this->hook->fire('check_errors_before_censored', $censored_subject);
             }
 
@@ -177,7 +178,7 @@ class Post
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = Utils::trim(censor_words($message));
+                $censored_message = Utils::trim(Utils::censor($message));
 
                 if ($censored_message == '') {
                     $errors[] = __('No message after censoring');
@@ -330,7 +331,7 @@ class Post
 
         $this->search->update_search_index('post', $new['pid'], $post['message']);
 
-        update_forum($cur_posting['id']);
+        Forum::update($cur_posting['id']);
 
         $new = $this->hook->fireDB('insert_reply', $new);
 
@@ -375,7 +376,7 @@ class Post
         if ($result) {
             $notification_emails = array();
 
-            $censored_message = Utils::trim(censor_words($post['message']));
+            $censored_message = Utils::trim(Utils::censor($post['message']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
@@ -547,7 +548,7 @@ class Post
 
         $this->search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
-        update_forum($fid);
+        Forum::update($fid);
 
         $new = $this->hook->fireDB('insert_topic', $new);
 
@@ -583,8 +584,8 @@ class Post
         if ($result) {
             $notification_emails = array();
 
-            $censored_message = Utils::trim(censor_words($post['message']));
-            $censored_subject = Utils::trim(censor_words($post['subject']));
+            $censored_message = Utils::trim(Utils::censor($post['message']));
+            $censored_subject = Utils::trim(Utils::censor($post['subject']));
 
             if ($this->config['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
@@ -704,9 +705,9 @@ class Post
             }
 
             // Topic tracking stuff...
-            $tracked_topics = get_tracked_topics();
+            $tracked_topics = Track::get_tracked_topics();
             $tracked_topics['topics'][$new_tid] = time();
-            set_tracked_topics($tracked_topics);
+            Track::set_tracked_topics($tracked_topics);
         } else {
             // Update the last_post field for guests
             $last_post = DB::for_table('online')
@@ -794,7 +795,7 @@ class Post
         }
 
         if ($this->config['o_censoring'] == '1') {
-            $quote['message'] = censor_words($quote['message']);
+            $quote['message'] = Utils::censor($quote['message']);
         }
 
         $quote['message'] = Utils::escape($quote['message']);

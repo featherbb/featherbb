@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Random;
 use DB;
 
 class Profile
@@ -112,7 +113,7 @@ class Profile
             $authorized = false;
 
             if (!empty($cur_user['password'])) {
-                $old_password_hash = Utils::hash($old_password);
+                $old_password_hash = Random::hash($old_password);
 
                 if ($cur_user['password'] == $old_password_hash || $this->user->is_admmod) {
                     $authorized = true;
@@ -123,7 +124,7 @@ class Profile
                 throw new \FeatherBB\Core\Error(__('Wrong pass'), 403);
             }
 
-            $new_password_hash = Utils::hash($new_password1);
+            $new_password_hash = Random::hash($new_password1);
 
             $update_password = DB::for_table('users')
                 ->where('id', $id)
@@ -199,7 +200,7 @@ class Profile
         } elseif ($this->request->isPost()) {
             $this->hook->fire('change_email_post');
 
-            if (Utils::hash($this->request->post('req_password')) !== $this->user->password) {
+            if (Random::hash($this->request->post('req_password')) !== $this->user->password) {
                 throw new \FeatherBB\Core\Error(__('Wrong pass'));
             }
 
@@ -273,7 +274,7 @@ class Profile
             }
 
 
-            $new_email_key = random_pass(8);
+            $new_email_key = Random::pass(8);
             $new_email_key = $this->hook->fire('change_email_new_email_key', $new_email_key);
 
             // Update the user
@@ -394,7 +395,7 @@ class Profile
             }
 
             // Delete any old avatars and put the new one in place
-            delete_avatar($id);
+            Delete::avatar($id);
             @rename($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp', $this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension);
             @chmod($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
@@ -426,13 +427,13 @@ class Profile
 
         // Regenerate the users info cache
         if (!$this->feather->cache->isCached('users_info')) {
-            $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+            $this->feather->cache->store('users_info', Cache::get_users_info());
         }
 
         $stats = $this->feather->cache->retrieve('users_info');
 
         if ($old_group_id == FEATHER_ADMIN || $new_group_id == FEATHER_ADMIN) {
-            $this->feather->cache->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
+            $this->feather->cache->store('admin_ids', Cache::get_admin_ids());
         }
 
         $new_group_mod = DB::for_table('groups')
@@ -696,12 +697,12 @@ class Profile
                         $result2 = $result2->find_one_col('id');
 
                         if ($result2 == $cur_post['id']) {
-                            delete_topic($cur_post['topic_id']);
+                            Delete::topic($cur_post['topic_id']);
                         } else {
-                            delete_post($cur_post['id'], $cur_post['topic_id']);
+                            Delete::post($cur_post['id'], $cur_post['topic_id']);
                         }
 
-                        update_forum($cur_post['forum_id']);
+                        Forum::update($cur_post['forum_id']);
                     }
                 }
             } else {
@@ -714,21 +715,21 @@ class Profile
 
             // Delete the user
             $delete_user = DB::for_table('users')
-                ->where('id', $id);
+                            ->where('id', $id);
             $delete_user = $delete_user->delete_many();
 
             // Delete user avatar
-            delete_avatar($id);
+            Delete::avatar($id);
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+                $this->feather->cache->store('users_info', Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
 
             if ($group_id == FEATHER_ADMIN) {
-                $this->feather->cache->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
+                $this->feather->cache->store('admin_ids', Cache::get_admin_ids());
             }
 
             $this->hook->fire('delete_user');
@@ -1071,14 +1072,14 @@ class Profile
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+                $this->feather->cache->store('users_info', Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bans_updated) {
-                $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+                $this->feather->cache->store('bans', Cache::get_bans());
             }
         }
 
@@ -1115,22 +1116,22 @@ class Profile
         $user_info['personal'][] = '<dt>'.__('Username').'</dt>';
         $user_info['personal'][] = '<dd>'.Utils::escape($user['username']).'</dd>';
 
-        $user_title_field = get_title($user);
+        $user_title_field = Utils::get_title($user);
         $user_info['personal'][] = '<dt>'.__('Title').'</dt>';
-        $user_info['personal'][] = '<dd>'.(($this->config['o_censoring'] == '1') ? censor_words($user_title_field) : $user_title_field).'</dd>';
+        $user_info['personal'][] = '<dd>'.(($this->config['o_censoring'] == '1') ? Utils::censor($user_title_field) : $user_title_field).'</dd>';
 
         if ($user['realname'] != '') {
             $user_info['personal'][] = '<dt>'.__('Realname').'</dt>';
-            $user_info['personal'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
+            $user_info['personal'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
             $user_info['personal'][] = '<dt>'.__('Location').'</dt>';
-            $user_info['personal'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['location']) : $user['location']).'</dd>';
+            $user_info['personal'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
-            $user['url'] = Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['url']) : $user['url']);
+            $user['url'] = Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['url']) : $user['url']);
             $user_info['personal'][] = '<dt>'.__('Website').'</dt>';
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
@@ -1149,7 +1150,7 @@ class Profile
 
         if ($user['jabber'] != '') {
             $user_info['messaging'][] = '<dt>'.__('Jabber').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['jabber']) : $user['jabber']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['jabber']) : $user['jabber']).'</dd>';
         }
 
         if ($user['icq'] != '') {
@@ -1159,21 +1160,21 @@ class Profile
 
         if ($user['msn'] != '') {
             $user_info['messaging'][] = '<dt>'.__('MSN').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['msn']) : $user['msn']).'</dd>';
         }
 
         if ($user['aim'] != '') {
             $user_info['messaging'][] = '<dt>'.__('AOL IM').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['aim']) : $user['aim']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['aim']) : $user['aim']).'</dd>';
         }
 
         if ($user['yahoo'] != '') {
             $user_info['messaging'][] = '<dt>'.__('Yahoo').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? censor_words($user['yahoo']) : $user['yahoo']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
         if ($this->config['o_avatars'] == '1') {
-            $avatar_field = generate_avatar_markup($user['id']);
+            $avatar_field = Utils::generate_avatar_markup($user['id']);
             if ($avatar_field != '') {
                 $user_info['personality'][] = '<dt>'.__('Avatar').'</dt>';
                 $user_info['personality'][] = '<dd>'.$avatar_field.'</dd>';
@@ -1376,7 +1377,7 @@ class Profile
         }
 
         // Check username for any censored words
-        if ($this->feather->forum_settings['o_censoring'] == '1' && censor_words($username) != $username) {
+        if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($username) != $username) {
             $errors[] = __('Username censor');
         }
 
@@ -1391,7 +1392,7 @@ class Profile
         }
 
         // Check username for any banned usernames
-        foreach ($this->feather_bans as $cur_ban) {
+        foreach ($feather_bans as $cur_ban) {
             if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
                 $errors[] = __('Banned username');
                 break;

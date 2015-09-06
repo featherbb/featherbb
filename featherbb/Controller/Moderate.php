@@ -171,7 +171,7 @@ class Moderate
                 }*/
 
             if ($this->config['o_censoring'] == '1') {
-                $cur_topic['subject'] = censor_words($cur_topic['subject']);
+                $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
             }
 
             $this->feather->template->setPageInfo(array(

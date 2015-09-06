@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
+use FeatherBB\Model\Cache;
 
 class Forums
 {
@@ -45,7 +46,7 @@ class Forums
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
-            $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+            $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
             Url::redirect($this->feather->urlFor('editForum', array('id' => $fid)), __('Forum added redirect'));
         } else {
@@ -103,7 +104,7 @@ class Forums
                 }
 
                 // Regenerate the quick jump cache
-                $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+                $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
                 Url::redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Forum updated redirect'));
 
@@ -111,7 +112,7 @@ class Forums
                 $this->model->delete_permissions($forum_id);
 
                 // Regenerate the quick jump cache
-                $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+                $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
                 Url::redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Perms reverted redirect'));
             }
@@ -137,7 +138,7 @@ class Forums
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
-            $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+            $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
             Url::redirect($this->feather->urlFor('adminForums'), __('Forum deleted redirect'));
 
@@ -165,7 +166,7 @@ class Forums
         }
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+        $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
         Url::redirect($this->feather->urlFor('adminForums'), __('Forums updated redirect'));
     }

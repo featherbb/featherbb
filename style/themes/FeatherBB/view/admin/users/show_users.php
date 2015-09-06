@@ -56,10 +56,10 @@ if (!defined('FEATHER')) {
 				<tr>
 					<td class="tcl"><?php echo '<a href="'.Url::get('user/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.Utils::escape($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
 					<td class="tc2"><a href="mailto:<?php echo Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?php echo Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
-					<td class="tc3"><?php echo get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
+					<td class="tc3"><?php echo Utils::get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
 					<td class="tc4"><?php echo Utils::forum_number_format($info['user_data'][$cur_poster['poster_id']]['num_posts']) ?></td>
 					<td class="tc5"><?php echo($info['user_data'][$cur_poster['poster_id']]['admin_note'] != '') ? Utils::escape($info['user_data'][$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="'.Url::get('admin/users/ip-stats/id/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.__('Results view IP link').'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.__('Results show posts link').'</a>' ?></td>
+					<td class="tcr"><?php echo '<a href="'.Url::get('admin/users/ip-stats/id/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.__('Results view IP link').'</a> | <a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.__('Results show posts link').'</a>' ?></td>
 				</tr>
 <?php
 

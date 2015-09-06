@@ -28,7 +28,7 @@ class Delete
         $cur_post = $this->model->get_info_delete($id);
 
         if ($this->feather->forum_settings['o_censoring'] == '1') {
-            $cur_post['subject'] = censor_words($cur_post['subject']);
+            $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -46,7 +46,7 @@ class Delete
             throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
+        if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 

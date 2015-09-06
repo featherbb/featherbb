@@ -45,10 +45,6 @@ class Search
                 // We have results to display
                 if (isset($search['is_result'])) {
 
-                    if ($search['show_as'] == 'posts') {
-                        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
-                    }
-
                     $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
                         'active_page' => 'search',

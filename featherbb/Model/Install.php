@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Random;
 use DB;
 
 class Install
@@ -395,7 +396,7 @@ class Install
         return $user = array(
             'group_id' => 1,
             'username' => $data['username'],
-            'password' => \FeatherBB\Core\Utils::hash($data['password']),
+            'password' => Random::hash($data['password']),
             'email' => $data['email'],
             'language' => $data['default_lang'],
             'style' => $data['default_style'],

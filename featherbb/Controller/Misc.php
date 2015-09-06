@@ -11,6 +11,7 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 
 class Misc
 {
@@ -39,7 +40,7 @@ class Misc
         $this->model->update_last_visit();
 
         // Reset tracked topics
-        set_tracked_topics(null);
+        Track::set_tracked_topics(null);
 
         Url::redirect($this->feather->urlFor('home'), __('Mark read redirect'));
     }
@@ -48,7 +49,7 @@ class Misc
     {
         $tracked_topics = get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
-        set_tracked_topics($tracked_topics);
+        Track::set_tracked_topics($tracked_topics);
 
         Url::redirect($this->feather->urlFor('Forum', array('id' => $id)), __('Mark forum read redirect'));
     }
@@ -114,7 +115,7 @@ class Misc
         $cur_post = $this->model->get_info_report($id);
 
         if ($this->feather->forum_settings['o_censoring'] == '1') {
-            $cur_post['subject'] = censor_words($cur_post['subject']);
+            $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
         $this->feather->template->setPageInfo(array(

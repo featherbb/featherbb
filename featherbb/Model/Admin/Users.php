@@ -11,6 +11,8 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Model\Delete;
+use FeatherBB\Model\Cache;
 use DB;
 
 class Users
@@ -374,12 +376,12 @@ class Users
                                         ->find_one_col('id');
 
                         if ($result2 == $cur_post['id']) {
-                            delete_topic($cur_post['topic_id']);
+                            \FeatherBB\Model\Delete::topic($cur_post['topic_id']);
                         } else {
-                            delete_post($cur_post['id'], $cur_post['topic_id']);
+                            \FeatherBB\Model\Delete::post($cur_post['id'], $cur_post['topic_id']);
                         }
 
-                        update_forum($cur_post['forum_id']);
+                        \FeatherBB\Model\Forum::update($cur_post['forum_id']);
                     }
                 }
             } else {
@@ -398,12 +400,12 @@ class Users
 
             // Delete user avatars
             foreach ($user_ids as $user_id) {
-                delete_avatar($user_id);
+                Delete::avatar($user_id);
             }
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+                $this->feather->cache->store('users_info', Cache::get_users_info());
             }
 
             $stats = $this->feather->cache->retrieve('users_info');
@@ -525,7 +527,7 @@ class Users
                 }
 
                 // Regenerate the bans cache
-                $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+                $this->feather->cache->store('bans', Cache::get_bans());
 
                 Url::redirect($this->feather->urlFor('adminUsers'), __('Users banned redirect'));
             }
@@ -669,7 +671,7 @@ class Users
 
         if ($result) {
             foreach ($result as $cur_user) {
-                $cur_user['user_title'] = get_title($cur_user);
+                $cur_user['user_title'] = Utils::get_title($cur_user);
 
                 // This script is a special case in that we want to display "Not verified" for non-verified users
                 if (($cur_user['g_id'] == '' || $cur_user['g_id'] == FEATHER_UNVERIFIED) && $cur_user['user_title'] != __('Banned')) {

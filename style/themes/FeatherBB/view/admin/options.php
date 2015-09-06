@@ -9,6 +9,7 @@
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Random;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -678,7 +679,7 @@ if (!defined('FEATHER')) {
 									<th scope="row"><?php _e('SMTP password label') ?></th>
 									<td>
 										<label><input type="checkbox" name="form_smtp_change_pass" value="1" />&#160;<?php _e('SMTP change password help') ?></label>
-<?php $smtp_pass = !empty($feather->forum_settings['o_smtp_pass']) ? random_key(Utils::strlen($feather->forum_settings['o_smtp_pass']), true) : ''; ?>
+<?php $smtp_pass = !empty($feather->forum_settings['o_smtp_pass']) ? Random::key(Utils::strlen($feather->forum_settings['o_smtp_pass']), true) : ''; ?>
 										<input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
 										<input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
 										<span><?php _e('SMTP password help') ?></span>

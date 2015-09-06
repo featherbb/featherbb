@@ -11,6 +11,7 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Model\Cache;
 use DB;
 
 class Options
@@ -229,7 +230,7 @@ class Options
         }
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
+        $this->feather->cache->store('config', Cache::get_config());
         $this->clear_feed_cache();
 
         Url::redirect($this->feather->urlFor('adminOptions'), __('Options updated redirect'));

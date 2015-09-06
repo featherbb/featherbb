@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 use DB;
+use FeatherBB\Model\Cache;
 
 class Groups
 {
@@ -257,7 +258,7 @@ class Groups
         $group_id = $this->hook->fire('add_edit_group.group_id', $group_id);
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+        $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
             Url::redirect($this->feather->urlFor('adminGroups'), __('Group edited redirect'));
@@ -285,7 +286,7 @@ class Groups
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', \FeatherBB\Model\Cache::get_config());
+        $this->feather->cache->store('config', Cache::get_config());
 
         Url::redirect($this->feather->urlFor('adminGroups'), __('Default group redirect'));
     }

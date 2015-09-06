@@ -14,7 +14,9 @@
 namespace FeatherBB\Middleware;
 
 use FeatherBB\Core\Utils;
-use FeatherBB\Core\Url;
+use FeatherBB\Core\Random;
+use FeatherBB\Core\Track;
+use FeatherBB\Model\Cache;
 use DB;
 
 class Auth extends \Slim\Middleware
@@ -66,7 +68,7 @@ class Auth extends \Slim\Middleware
                 }
 
                 // Reset tracked topics
-                set_tracked_topics(null);
+                Track::set_tracked_topics(null);
 
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
@@ -85,7 +87,7 @@ class Auth extends \Slim\Middleware
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = $this->app->getCookie($this->app->forum_settings['cookie_name'].'_track');
                 if (isset($cookie_tracked_topics)) {
-                    set_tracked_topics(json_decode($cookie_tracked_topics, true));
+                    Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
                 }
             }
         } else {
@@ -186,7 +188,7 @@ class Auth extends \Slim\Middleware
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            $this->app->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+            $this->app->cache->store('bans', Cache::get_bans());
         }
     }
 
@@ -267,14 +269,14 @@ class Auth extends \Slim\Middleware
                      ->update_many('logged', time());
             }
 
-            $this->model->feather_setcookie(1, \FeatherBB\Core\Utils::hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            $this->model->feather_setcookie(1, Random::hash(uniqid(rand(), true)), $this->app->now + 31536000);
         }
 
         load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language.'/common.mo');
 
         // Load bans from cache
         if (!$this->app->cache->isCached('bans')) {
-            $this->app->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+            $this->app->cache->store('bans', Cache::get_bans());
         }
         $feather_bans = $this->app->cache->retrieve('bans');
 

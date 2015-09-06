@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 use DB;
 
 class Forum
@@ -126,7 +127,7 @@ class Forum
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
-            $tracked_topics = get_tracked_topics();
+            $tracked_topics = Track::get_tracked_topics();
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
@@ -195,7 +196,7 @@ class Forum
                 }
 
                 if ($this->config['o_censoring'] == '1') {
-                    $cur_topic['subject'] = censor_words($cur_topic['subject']);
+                    $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
                 if ($cur_topic['sticky'] == '1') {
@@ -256,5 +257,55 @@ class Forum
         $forum_data = $this->hook->fire('print_topics', $forum_data);
 
         return $forum_data;
+    }
+
+    //
+    // Update posts, topics, last_post, last_post_id and last_poster for a forum
+    //
+    public static function update($forum_id)
+    {
+        $stats_query = DB::for_table('topics')
+                            ->where('forum_id', $forum_id)
+                            ->select_expr('COUNT(id)', 'total_topics')
+                            ->select_expr('SUM(num_replies)', 'total_replies')
+                            ->find_one();
+
+        $num_topics = intval($stats_query['total_topics']);
+        $num_replies = intval($stats_query['total_replies']);
+
+        $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
+
+        $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
+
+        $result = DB::for_table('topics')->select_many($select_update_forum)
+                    ->where('forum_id', $forum_id)
+                    ->where_null('moved_to')
+                    ->order_by_desc('last_post')
+                    ->find_one();
+
+        if ($result) {
+            // There are topics in the forum
+            $insert_update_forum = array(
+                'num_topics' => $num_topics,
+                'num_posts'  => $num_posts,
+                'last_post'  => $result['last_post'],
+                'last_post_id'  => $result['last_post_id'],
+                'last_poster'  => $result['last_poster'],
+            );
+        } else {
+            // There are no topics
+            $insert_update_forum = array(
+                'num_topics' => $num_topics,
+                'num_posts'  => $num_posts,
+                'last_post'  => 'NULL',
+                'last_post_id'  => 'NULL',
+                'last_poster'  => 'NULL',
+            );
+        }
+        DB::for_table('forums')
+            ->where('id', $forum_id)
+            ->find_one()
+            ->set($insert_update_forum)
+            ->save();
     }
 }

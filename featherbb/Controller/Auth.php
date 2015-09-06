@@ -11,6 +11,10 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Random;
+use FeatherBB\Core\Track;
+use FeatherBB\Model\Cache;
+use FeatherBB\Model\Auth as ModelAuth;
 use DB;
 
 class Auth
@@ -33,25 +37,25 @@ class Auth
             $form_password = Utils::trim($this->feather->request->post('req_password'));
             $save_pass = (bool) $this->feather->request->post('save_pass');
 
-            $user = \FeatherBB\Model\Auth::get_user_from_name($form_username);
+            $user = ModelAuth::get_user_from_name($form_username);
 
             if (!empty($user->password)) {
-                $form_password_hash = Utils::hash($form_password); // Will result in a SHA-1 hash
+                $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == FEATHER_UNVERIFIED) {
-                        \FeatherBB\Model\Auth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
+                        ModelAuth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
                         if (!$this->feather->cache->isCached('users_info')) {
-                            $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+                            $this->feather->cache->store('users_info', Cache::get_users_info());
                         }
                     }
 
-                    \FeatherBB\Model\Auth::delete_online_by_ip($this->feather->request->getIp());
+                    ModelAuth::delete_online_by_ip($this->feather->request->getIp());
                     // Reset tracked topics
-                    set_tracked_topics(null);
+                    Track::set_tracked_topics(null);
 
                     $expire = ($save_pass) ? $this->feather->now + 1209600 : $this->feather->now + $this->feather->forum_settings['o_timeout_visit'];
                     $expire = $this->feather->hooks->fire('expire_login', $expire);
-                    \FeatherBB\Model\Auth::feather_setcookie($user->id, $form_password_hash, $expire);
+                    ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
                     Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
                 }
@@ -72,18 +76,18 @@ class Auth
     {
         $token = $this->feather->hooks->fire('logout_start', $token);
 
-        if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::feather_hash($this->feather->user->id.\FeatherBB\Utils::feather_hash($this->feather->request->getIp()))) {
+        if ($this->feather->user->is_guest || !isset($token) || $token != Random::hash($this->feather->user->id.Random::hash($this->feather->request->getIp()))) {
             Url::redirect($this->feather->urlFor('home'), 'Not logged in');
         }
 
-        \FeatherBB\Model\Auth::delete_online_by_id($this->feather->user->id);
+        ModelAuth::delete_online_by_id($this->feather->user->id);
 
         // Update last_visit (make sure there's something to update it with)
         if (isset($this->feather->user->logged)) {
-            \FeatherBB\Model\Auth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
+            ModelAuth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
         }
 
-        \FeatherBB\Model\Auth::feather_setcookie(1, Utils::hash(uniqid(rand(), true)), time() + 31536000);
+        ModelAuth::feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
         $this->feather->hooks->fire('logout_end');
 
         Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
@@ -101,7 +105,7 @@ class Auth
             if (!$this->feather->email->is_valid_email($email)) {
                 throw new \FeatherBB\Core\Error(__('Invalid email'), 400);
             }
-            $user = \FeatherBB\Model\Auth::get_user_from_email($email);
+            $user = ModelAuth::get_user_from_email($email);
 
             if ($user) {
                 // Load the "activate password" template
@@ -124,10 +128,10 @@ class Auth
                 }
 
                 // Generate a new password and a new password activation code
-                $new_password = random_pass(12);
-                $new_password_key = random_pass(8);
+                $new_password = Random::pass(12);
+                $new_password_key = Random::pass(8);
 
-                \FeatherBB\Model\Auth::set_new_password($new_password, $new_password_key, $user->id);
+                ModelAuth::set_new_password($new_password, $new_password_key, $user->id);
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);

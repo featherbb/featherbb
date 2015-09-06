@@ -70,7 +70,7 @@ class Parser
     {
         if ($this->feather->config['o_censoring'] === '1')
         {
-            $text = censor_words($text);
+            $text = Utils::censor($text);
         }
         // Convert [&<>] characters to HTML entities (but preserve [""''] quotes).
         $text = htmlspecialchars($text, ENT_NOQUOTES);

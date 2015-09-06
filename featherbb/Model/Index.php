@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 use DB;
 
 class Index
@@ -83,7 +84,7 @@ class Index
         $query = $query->find_result_set();
 
         $forums = $new_topics = array();
-        $tracked_topics = get_tracked_topics();
+        $tracked_topics = Track::get_tracked_topics();
 
         foreach ($query as $cur_forum) {
             if (!isset($tracked_topics['forums'][$cur_forum->id]) || $tracked_topics['forums'][$cur_forum->id] < $cur_forum->last_post) {
@@ -241,7 +242,7 @@ class Index
 
         // Collect some statistics from the database
         if (!$this->feather->cache->isCached('users_info')) {
-            $this->feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+            $this->feather->cache->store('users_info', Cache::get_users_info());
         }
 
         $stats = $this->feather->cache->retrieve('users_info');

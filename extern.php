@@ -57,8 +57,9 @@
 
 namespace FeatherBB;
 use DB;
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Cache;
 
 define('FEATHER_QUIET_VISIT', 1);
 
@@ -227,7 +228,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
 
     if (!isset($feather->user->id) ||
         ($password_is_hash && $password != $feather->user->password) ||
-        (!$password_is_hash && \FeatherBB\Core\Utils::hash($password) != $feather->user->password)) {
+        (!$password_is_hash && \FeatherBB\Core\Random::hash($password) != $feather->user->password)) {
         set_default_user();
     } else {
         $feather->user->is_guest = false;
@@ -484,7 +485,7 @@ if ($action == 'feed') {
         }
 
         if ($feather->forum_settings['o_censoring'] == '1') {
-            $cur_topic['subject'] = censor_words($cur_topic['subject']);
+            $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
         // Setup the feed
@@ -624,7 +625,7 @@ if ($action == 'feed') {
 
             foreach ($result as $cur_topic) {
                 if ($feather->forum_settings['o_censoring'] == '1') {
-                    $cur_topic['subject'] = censor_words($cur_topic['subject']);
+                    $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
                 $cur_topic['message'] = parse_message($cur_topic['message'], $cur_topic['hide_smilies']);
@@ -734,7 +735,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 elseif ($action == 'stats') {
 
     if (!$feather->cache->isCached('users_info')) {
-        $feather->cache->store('users_info', \FeatherBB\Model\Cache::get_users_info());
+        $feather->cache->store('users_info', Cache::get_users_info());
     }
 
     $stats = $feather->cache->retrieve('users_info');

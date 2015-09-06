@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 use DB;
 
 class Moderate
@@ -111,7 +112,7 @@ class Moderate
                 ->where('topic_id', $tid);
 
             if ($this->user->g_id != FEATHER_ADMIN) {
-                $result->where_not_in('poster_id', get_admin_ids());
+                $result->where_not_in('poster_id', Utils::get_admin_ids());
             }
 
             $result = $this->hook->fireDB('delete_posts_first_query', $result);
@@ -155,7 +156,7 @@ class Moderate
             $update_topic = $this->hook->fireDB('delete_posts_update_topic_query', $update_topic);
             $update_topic = $update_topic->save();
 
-            update_forum($fid);
+            Forum::update($fid);
 
             Url::redirect($this->feather->urlFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
         }
@@ -315,8 +316,8 @@ class Moderate
             $update_new_topic = $this->hook->fireDB('split_posts_update_new_topic_query', $update_new_topic);
             $update_new_topic = $update_new_topic->save();
 
-            update_forum($fid);
-            update_forum($move_to_forum);
+            Forum::update($fid);
+            Forum::update($move_to_forum);
 
             Url::redirect($this->feather->urlFor('Topic', array('id' => $new_tid)), __('Split posts redirect'));
         }
@@ -463,12 +464,12 @@ class Moderate
                     $cur_post->poster_disp = Utils::escape($cur_post->poster);
                 }
 
-                // get_title() requires that an element 'username' be present in the array
+                // Utils::get_title() requires that an element 'username' be present in the array
                 $cur_post->username = $cur_post->poster;
-                $cur_post->user_title = get_title($cur_post);
+                $cur_post->user_title = Utils::get_title($cur_post);
 
                 if ($this->config['o_censoring'] == '1') {
-                    $cur_post->user_title = censor_words($cur_post->user_title);
+                    $cur_post->user_title = Utils::censor($cur_post->user_title);
                 }
             }
             // If the poster is a guest (or a user that has been deleted)
@@ -578,8 +579,8 @@ class Moderate
             }
         }
 
-        update_forum($fid); // Update the forum FROM which the topic was moved
-        update_forum($move_to_forum); // Update the forum TO which the topic was moved
+        Forum::update($fid); // Update the forum FROM which the topic was moved
+        Forum::update($move_to_forum); // Update the forum TO which the topic was moved
 
         $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
         $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
@@ -734,7 +735,7 @@ class Moderate
         $this->hook->fire('merge_topics');
 
         // Update the forum FROM which the topic was moved and redirect
-        update_forum($fid);
+        Forum::update($fid);
         Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Merge topics redirect'));
     }
 
@@ -763,7 +764,7 @@ class Moderate
         if ($this->user->g_id != FEATHER_ADMIN) {
             $authorized = DB::for_table('posts')
                             ->where_in('topic_id', $topics_sql)
-                            ->where('poster_id', get_admin_ids());
+                            ->where('poster_id', Utils::get_admin_ids());
             $authorized = $this->hook->fireDB('delete_topics_authorized', $authorized);
             $authorized = $authorized->find_many();
             if ($authorized) {
@@ -815,7 +816,7 @@ class Moderate
         $delete_posts = $this->hook->fireDB('delete_topics_delete_posts', $delete_posts);
         $delete_posts = $delete_posts->delete_many();
 
-        update_forum($fid);
+        Forum::update($fid);
 
         $this->hook->fire('delete_topics');
 
@@ -880,7 +881,7 @@ class Moderate
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
-            $tracked_topics = get_tracked_topics();
+            $tracked_topics = Track::get_tracked_topics();
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
@@ -927,7 +928,7 @@ class Moderate
                 }
 
                 if ($this->config['o_censoring'] == '1') {
-                    $cur_topic['subject'] = censor_words($cur_topic['subject']);
+                    $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
                 if ($cur_topic['sticky'] == '1') {

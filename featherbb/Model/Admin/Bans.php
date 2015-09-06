@@ -11,6 +11,7 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Model\Cache;
 use DB;
 
 class Bans
@@ -276,7 +277,7 @@ class Bans
         }
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+        $this->feather->cache->store('bans', Cache::get_bans());
 
         Url::redirect($this->feather->urlFor('adminBans'), __('Ban edited redirect'));
     }
@@ -291,7 +292,7 @@ class Bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', \FeatherBB\Model\Cache::get_bans());
+        $this->feather->cache->store('bans', Cache::get_bans());
 
         Url::redirect($this->feather->urlFor('adminBans'), __('Ban removed redirect'));
     }

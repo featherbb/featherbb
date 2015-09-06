@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Track;
 use DB;
 
 class Topic
@@ -69,7 +70,7 @@ class Topic
         if ($action == 'new') {
             if (!$this->user->is_guest) {
                 // We need to check if this topic has been viewed recently by the user
-                $tracked_topics = get_tracked_topics();
+                $tracked_topics = Track::get_tracked_topics();
                 $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : $this->user->last_visit;
 
                 $first_new_post_id = DB::for_table('posts')
@@ -280,10 +281,10 @@ class Topic
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 }
 
-                $cur_post['user_title_formatted'] = get_title($cur_post);
+                $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
 
                 if ($this->config['o_censoring'] == '1') {
-                    $cur_post['user_title_formatted'] = censor_words($cur_post['user_title_formatted']);
+                    $cur_post['user_title_formatted'] = Utils::censor($cur_post['user_title_formatted']);
                 }
 
                 // Format the online indicator
@@ -293,7 +294,7 @@ class Topic
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {
-                        $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']] = generate_avatar_markup($cur_post['poster_id']);
+                        $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']] = Utils::generate_avatar_markup($cur_post['poster_id']);
                     }
                 }
 
@@ -301,7 +302,7 @@ class Topic
                 if ($this->config['o_show_user_info'] == '1') {
                     if ($cur_post['location'] != '') {
                         if ($this->config['o_censoring'] == '1') {
-                            $cur_post['location'] = censor_words($cur_post['location']);
+                            $cur_post['location'] = Utils::censor($cur_post['location']);
                         }
 
                         $cur_post['user_info'][] = '<dd><span>'.__('From').' '.Utils::escape($cur_post['location']).'</span></dd>';
@@ -322,7 +323,7 @@ class Topic
 
                     if ($cur_post['url'] != '') {
                         if ($this->config['o_censoring'] == '1') {
-                            $cur_post['url'] = censor_words($cur_post['url']);
+                            $cur_post['url'] = Utils::censor($cur_post['url']);
                         }
 
                         $cur_post['user_contacts'][] = '<span class="website"><a href="'.Utils::escape($cur_post['url']).'" rel="nofollow">'.__('Website').'</a></span>';
@@ -346,7 +347,7 @@ class Topic
             // If the poster is a guest (or a user that has been deleted)
             else {
                 $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
-                $cur_post['user_title_formatted'] = get_title($cur_post);
+                $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
 
                 if ($this->user->is_admmod) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Url::get('moderate/get-host/post/'.$cur_post['id'].'/').'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';

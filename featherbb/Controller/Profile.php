@@ -11,6 +11,7 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Model\Delete;
 
 class Profile
 {
@@ -91,8 +92,7 @@ class Profile
         $user = $this->model->get_user_info($id);
 
         if ($user['signature'] != '') {
-            require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/parser.php';
-            $parsed_signature = parse_signature($user['signature']);
+            $parsed_signature = $this->feather->parser->parse_signature($user['signature']);
         }
 
         // View or edit?
@@ -101,8 +101,7 @@ class Profile
                 ($this->user->g_id != FEATHER_ADMIN &&                // or we aren't an admin and ...
                 ($this->user->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
                 $user['g_id'] == FEATHER_ADMIN ||                     // or the user is an admin
-                $user['g_moderator'] == '1')))) {
-            // or the user is another mod
+                $user['g_moderator'] == '1')))) {                     // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
 
             $this->feather->template->setPageInfo(array(
@@ -112,7 +111,7 @@ class Profile
                 'id' => $id
             ));
 
-            $this->feather->template->addTemplate('profile/view_profile.php');
+            $this->feather->template->addTemplate('profile/view_profile.php')->display();
         } else {
             if (!$section || $section == 'essentials') {
                 $user_disp = $this->model->edit_essentials($id, $user);
@@ -166,7 +165,7 @@ class Profile
 
                 $avatar_field = '<span><a href="'.Url::get('user/'.$id.'/action/upload_avatar/').'">'.__('Change avatar').'</a></span>';
 
-                $user_avatar = generate_avatar_markup($id);
+                $user_avatar = Utils::generate_avatar_markup($id);
                 if ($user_avatar) {
                     $avatar_field .= ' <span><a href="'.Url::get('user/'.$id.'/action/delete_avatar/').'">'.__('Delete avatar').'</a></span>';
                 } else {
@@ -308,7 +307,7 @@ class Profile
                 throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            $this->model->delete_avatar($id);
+            Delete::avatar($id);
 
             Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
