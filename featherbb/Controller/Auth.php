@@ -60,11 +60,7 @@ class Auth
                     Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
                 }
             }
-<<<<<<< HEAD
-            throw new \FeatherBB\Core\Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
-=======
-            throw new Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
->>>>>>> development
+            throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             $this->feather->template->setPageInfo(array(
                                 'active_page' => 'login',
@@ -80,11 +76,7 @@ class Auth
     {
         $token = $this->feather->hooks->fire('logout_start', $token);
 
-<<<<<<< HEAD
-        if ($this->feather->user->is_guest || !isset($token) || $token != Utils::hash($this->feather->user->id.Utils::hash($this->feather->request->getIp()))) {
-=======
         if ($this->feather->user->is_guest || !isset($token) || $token != Random::hash($this->feather->user->id.Random::hash($this->feather->request->getIp()))) {
->>>>>>> development
             Url::redirect($this->feather->urlFor('home'), 'Not logged in');
         }
 
