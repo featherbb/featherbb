@@ -36,10 +36,6 @@ class Misc
 
     public function markread()
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         $this->model->update_last_visit();
 
         // Reset tracked topics
@@ -50,10 +46,6 @@ class Misc
 
     public function markforumread($id)
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         $tracked_topics = get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
         set_tracked_topics($tracked_topics);
@@ -63,43 +55,27 @@ class Misc
 
     public function subscribeforum($id)
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         $this->model->subscribe_forum($id);
     }
 
     public function subscribetopic($id)
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         $this->model->subscribe_topic($id);
     }
 
     public function unsubscribeforum($id)
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         $this->model->unsubscribe_forum($id);
     }
 
     public function unsubscribetopic($id)
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         $this->model->unsubscribe_topic($id);
     }
 
     public function email($id)
     {
-        if ($this->feather->user->is_guest || $this->feather->user->g_send_email == '0') {
+        if ($this->feather->user->g_send_email == '0') {
             throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
@@ -130,10 +106,6 @@ class Misc
 
     public function report($id)
     {
-        if ($this->feather->user->is_guest) {
-            throw new \FeatherBB\Core\Error(__('No permission'), 403);
-        }
-
         if ($this->feather->request()->isPost()) {
             $this->model->insert_report($id);
         }

@@ -19,11 +19,20 @@ $canReadBoard = function () use ($feather) {
 };
 
 /**
+ * Middleware to check if user is allowed to read the board.
+ */
+$isGuest = function () use ($feather) {
+    if ($feather->user->is_guest) {
+        throw new Error(__('No permission'), 403);
+    }
+};
+
+/**
  * Middleware to check if user is allowed to moderate, if he's not redirect to homepage.
  */
 $isAdmmod = function() use ($feather) {
     if(!$feather->user->is_admmod) {
-        $feather->url->redirect($feather->urlFor('home'), __('No permission'));
+        throw new Error(__('No permission'), 403);
     }
 };
 
@@ -87,13 +96,13 @@ $feather->get('/help(/)', $canReadBoard, '\FeatherBB\Controller\help:display')->
 
 // Misc
 $feather->get('/rules(/)', '\FeatherBB\Controller\Misc:rules')->name('rules');
-$feather->get('/mark-read(/)', '\FeatherBB\Controller\Misc:markread')->name('markRead');
-$feather->get('/mark-forum-read/:id(/)', '\FeatherBB\Controller\Misc:markforumread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
-$feather->map('/email/:id(/)', '\FeatherBB\Controller\Misc:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('email');
-$feather->map('/report/:id(/)', '\FeatherBB\Controller\Misc:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
-$feather->get('/subscribe/forum/:id(/)', '\FeatherBB\Controller\Misc:subscribeforum')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
-$feather->get('/unsubscribe/forum/:id(/)', '\FeatherBB\Controller\Misc:unsubscribeforum')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
-$feather->get('/subscribe/topic/:id(/)', '\FeatherBB\Controller\Misc:subscribetopic')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
+$feather->get('/mark-read(/)', $isGuest, '\FeatherBB\Controller\Misc:markread')->name('markRead');
+$feather->get('/mark-forum-read/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:markforumread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
+$feather->map('/email/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('email');
+$feather->map('/report/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
+$feather->get('/subscribe/forum/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:subscribeforum')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
+$feather->get('/unsubscribe/forum/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:unsubscribeforum')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
+$feather->get('/subscribe/topic/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:subscribetopic')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
 
 // Profile routes
 $feather->group('/user', function() use ($feather) {
