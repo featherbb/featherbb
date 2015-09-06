@@ -103,6 +103,7 @@ $feather->map('/report/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:report')->
 $feather->get('/subscribe/forum/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:subscribeforum')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
 $feather->get('/unsubscribe/forum/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:unsubscribeforum')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
 $feather->get('/subscribe/topic/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:subscribetopic')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
+$feather->get('/unsubscribe/topic/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:unsubscribetopic')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
 
 // Profile routes
 $feather->group('/user', function() use ($feather) {
