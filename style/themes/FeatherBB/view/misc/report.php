@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 		<ul class="crumbs">
 			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?php echo Url::get('forum/'.$cur_post['fid'].'/'.$feather->url->url_friendly($cur_post['forum_name']).'/') ?>"><?php echo Utils::escape($cur_post['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo Url::get('post/'.$id.'/#p'.$id) ?>"><?php echo Utils::escape($cur_post['subject']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('viewPost', ['pid' => $id]).'#p'.$id ?>"><?php echo Utils::escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Report post') ?></strong></li>
 		</ul>
 	</div>

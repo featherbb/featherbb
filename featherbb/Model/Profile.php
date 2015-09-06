@@ -593,7 +593,7 @@ class Profile
 
         $pid = $this->hook->fire('promote_user', $pid);
 
-        Url::redirect($this->feather->url->get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
+        Url::redirect($this->feather->urlFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
     public function delete_user($id)

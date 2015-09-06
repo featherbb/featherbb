@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
@@ -25,7 +25,7 @@ if (!defined('FEATHER')) {
 } ?>">
 <h2><span><span class="conr">#<?php echo($search['start_from'] + $post_count) ?></span> <span><?php if ($cur_search['pid'] != $cur_search['first_post_id']) {
     _e('Re').' ';
-} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo Url::get('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo Utils::escape($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo Url::get('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php echo $feather->utils->format_time($cur_search['pposted']) ?></a></span></span></h2>
+} ?><?php echo $forum ?></span> <span>»&#160;<a href="<?php echo Url::get('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php echo Utils::escape($cur_search['subject']) ?></a></span> <span>»&#160;<a href="<?php echo $feather->urlFor('viewPost', ['pid' => $cur_search['pid']]).'#p'.$cur_search['pid'] ?>"><?php echo $feather->utils->format_time($cur_search['pposted']) ?></a></span></span></h2>
 <div class="box">
 	<div class="inbox">
 		<div class="postbody">
@@ -50,7 +50,7 @@ if (!defined('FEATHER')) {
 			<div class="postfootright">
 				<ul>
 					<li><span><a href="<?php echo Url::get('topic/'.$cur_search['tid'].'/'.$url_topic.'/') ?>"><?php _e('Go to topic') ?></a></span></li>
-					<li><span><a href="<?php echo Url::get('post/'.$cur_search['pid'].'/#p'.$cur_search['pid']) ?>"><?php _e('Go to post') ?></a></span></li>
+					<li><span><a href="<?php echo $feather->urlFor('viewPost', ['pid' => $cur_search['pid']]).'#p'.$cur_search['pid'] ?>"><?php _e('Go to post') ?></a></span></li>
 				</ul>
 			</div>
 		</div>

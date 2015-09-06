@@ -80,8 +80,7 @@ class Viewtopic
                 $first_new_post_id = $this->hook->fire('handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
-                    header('Location: '.Url::base().'/post/'.$first_new_post_id.'/#p'.$first_new_post_id);
-                    exit;
+                    Url::redirect($this->feather->urlFor('viewPost', ['pid' => $first_new_post_id]).'#p'.$first_new_post_id);
                 }
             }
 
@@ -98,8 +97,7 @@ class Viewtopic
             $last_post_id = $this->hook->fire('handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
-                header('Location: '.Url::base().'/post/'.$last_post_id.'/#p'.$last_post_id);
-                exit;
+                Url::redirect($this->feather->urlFor('viewPost', ['pid' => $last_post_id]).'#p'.$last_post_id);
             }
         }
 

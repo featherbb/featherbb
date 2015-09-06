@@ -919,7 +919,7 @@ class Moderate
                 $url_topic = Url::url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.Url::get('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.$this->feather->urlFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';

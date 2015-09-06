@@ -207,7 +207,7 @@ class Misc
                 $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
                 $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
                 $mail_message = str_replace('<username>', $this->user->username, $mail_message);
-                $mail_message = str_replace('<post_url>', Url::get('post/'.$post_id.'/#p'.$post_id), $mail_message);
+                $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
@@ -223,8 +223,7 @@ class Misc
         $last_report_sent = $this->hook->fireDB('insert_last_report_sent', $last_report_sent);
         $last_report_sent = $last_report_sent->save();
 
-        Url::redirect(Url::get('post/'.$post_id.'/#p'.$post_id), __('Report redirect'));
-        // Url::redirect($this->feather->url->get('forum/'.$report['forum_id'].'/'.$this->feather->url->url_friendly($report['subject']).'/'), __('Report redirect'));
+        Url::redirect($this->feather->urlFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
     }
 
     public function get_info_report($post_id)

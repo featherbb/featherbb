@@ -86,7 +86,7 @@ class Delete
 
             $post = $post->find_one();
 
-            Url::redirect(Url::get('post/'.$post['id'].'/#p'.$post['id']), __('Post del redirect'));
+            Url::redirect($this->feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
         }
     }
 }

@@ -1087,7 +1087,7 @@ class Parser
                         $attribute .= ' '.__('wrote'); // Append language-specific "wrote:".
                         if ($this->pd['config']['quote_links'])
                         {
-                            $attribute = ' <a href="'. $this->feather->url->get('post/'.$m[1].'/#p'.$m[1]) .'">'. $attribute .'</a>';
+                            $attribute = ' <a href="'. $this->feather->urlFor('viewPost', ['pid' => $m[1]]).'#p'.$m[1] .'">'. $attribute .'</a>';
                         }
                     }
                     else

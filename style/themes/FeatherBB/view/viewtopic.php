@@ -43,7 +43,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-	<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?php echo Url::get('post/'.$post['id'].'/#p'.$post['id']) ?>"><?php echo $feather->utils->format_time($post['posted']) ?></a></span></h2>
+	<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?php echo $feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?php echo $feather->utils->format_time($post['posted']) ?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">

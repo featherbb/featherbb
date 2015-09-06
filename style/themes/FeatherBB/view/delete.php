@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 		<ul class="crumbs">
 			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
 			<li><span>»&#160;</span><a href="<?= Url::get('forum/'.$cur_post['fid'].'/'.$cur_post['forum_name'].'/') ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?= Url::get('post/'.$id.'/#p'.$id) ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('viewPost', ['pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Delete post') ?></strong></li>
 		</ul>
 	</div>

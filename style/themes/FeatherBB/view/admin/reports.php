@@ -34,7 +34,7 @@ if (!empty($report_data)) {
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Url::get('users/'.$report['reported_by'].'/').'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
 									<td class="location"><?= \FeatherBB\Core\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => Url::get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => Url::get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
-																						sprintf(__('Post ID'), $report['pid']) => Url::get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
+																						sprintf(__('Post ID'), $report['pid']) => $feather->urlFor('viewPost', ['pid' => $report['pid']]).'#p'.$report['pid'])) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Reason') ?><div><input type="submit" name="zap_id[<?= $report['id'] ?>]" value="<?php _e('Zap') ?>" /></div></th>
@@ -84,7 +84,7 @@ if (!empty($report_zapped_data)) {
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Url::get('users/'.$report['reported_by'].'/').'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
 									<td class="location"><?= \FeatherBB\Core\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => Url::get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => Url::get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
-																						sprintf(__('Post ID'), $report['pid']) => Url::get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
+																						sprintf(__('Post ID'), $report['pid']) => $feather->urlFor('viewPost', ['pid' => $report['pid']]).'#p'.$report['pid'])) ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Reason') ?></th>
