@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Maintenance
@@ -23,7 +23,7 @@ class Maintenance
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     public function rebuild()
@@ -33,7 +33,7 @@ class Maintenance
 
         // Check per page is > 0
         if ($per_page < 1) {
-            throw new \FeatherBB\Error(__('Posts must be integer message'), 400);
+            throw new \FeatherBB\Core\Error(__('Posts must be integer message'), 400);
         }
 
         @set_time_limit(0);
@@ -222,7 +222,7 @@ class Maintenance
 
         $prune['days'] = Utils::trim($this->request->post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
-            throw new \FeatherBB\Error(__('Days must be integer message'), 400);
+            throw new \FeatherBB\Core\Error(__('Days must be integer message'), 400);
         }
 
         $prune['date'] = time() - ($prune['days'] * 86400);
@@ -253,7 +253,7 @@ class Maintenance
         $prune['num_topics'] = $query->count('id');
 
         if (!$prune['num_topics']) {
-            throw new \FeatherBB\Error(sprintf(__('No old topics message'), $prune['days']), 204);
+            throw new \FeatherBB\Core\Error(sprintf(__('No old topics message'), $prune['days']), 204);
         }
 
         $prune = $this->hook->fire('maintenance.get_info_prune.prune', $prune);

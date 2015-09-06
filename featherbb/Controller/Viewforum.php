@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Viewforum
 {
@@ -29,11 +29,11 @@ class Viewforum
     public function display($id, $name = null, $page = null)
     {
         if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         if ($id < 1) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         // Fetch some informations about the forum

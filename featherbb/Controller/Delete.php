@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Delete
 {
@@ -25,7 +25,7 @@ class Delete
     public function deletepost($id)
     {
         if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Fetch some informations about the post, the topic and the forum
@@ -47,11 +47,11 @@ class Delete
                 $cur_post['poster_id'] != $this->feather->user->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], get_admin_ids())) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         if ($this->feather->request()->isPost()) {

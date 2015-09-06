@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Help
 {
@@ -32,7 +32,7 @@ class Help
     public function display()
     {
         if ($this->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         $this->feather->template->setPageInfo(array(

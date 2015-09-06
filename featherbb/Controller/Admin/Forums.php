@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Forums
 {
@@ -115,7 +116,7 @@ class Forums
             }
 
         } else {
-            \FeatherBB\AdminUtils::generateAdminMenu('forums');
+            AdminUtils::generateAdminMenu('forums');
 
             $this->feather->template->setPageInfo(array(
                     'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
@@ -141,7 +142,7 @@ class Forums
 
         } else { // If the user hasn't confirmed
 
-            \FeatherBB\AdminUtils::generateAdminMenu('forums');
+            AdminUtils::generateAdminMenu('forums');
 
             $this->feather->template->setPageInfo(array(
                     'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
@@ -174,7 +175,7 @@ class Forums
             $this->edit_positions();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('forums');
+        AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \FeatherBB\Model\Admin\Categories();
         $this->feather->template->setPageInfo(array(

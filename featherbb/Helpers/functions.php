@@ -40,9 +40,9 @@ function check_username($username, $errors, $exclude_id = null)
     $username = preg_replace('%\s+%s', ' ', $username);
 
     // Validate username
-    if (\FeatherBB\Utils::strlen($username) < 2) {
+    if (\FeatherBB\Core\Utils::strlen($username) < 2) {
         $errors[] = __('Username too short');
-    } elseif (\FeatherBB\Utils::strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+    } elseif (\FeatherBB\Core\Utils::strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
         $errors[] = __('Username too long');
     } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
         $errors[] = __('Username guest');
@@ -62,11 +62,11 @@ function check_username($username, $errors, $exclude_id = null)
     // Check that the username (or a too similar username) is not already registered
     $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => \FeatherBB\Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+    $result = \DB::for_table('online')->raw_query('SELECT username FROM '.$feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => \FeatherBB\Core\Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
     if ($result) {
         $busy = $result['username'];
-        $errors[] = __('Username dupe 1').' '.\FeatherBB\Utils::escape($busy).'. '.__('Username dupe 2');
+        $errors[] = __('Username dupe 1').' '.\FeatherBB\Core\Utils::escape($busy).'. '.__('Username dupe 2');
     }
 
     // Check username for any banned usernames
@@ -95,7 +95,7 @@ function generate_avatar_markup($user_id)
         $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
         if (file_exists(FEATHER_ROOT.$path) && $img_size = getimagesize(FEATHER_ROOT.$path)) {
-            $avatar_markup = '<img src="'.\FeatherBB\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+            $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime(FEATHER_ROOT.$path)).'" '.$img_size[3].' alt="" />';
             break;
         }
     }
@@ -118,7 +118,7 @@ function generate_page_title($page_title, $p = null)
     $page_title = array_reverse($page_title);
 
     if ($p > 1) {
-        $page_title[0] .= ' ('.sprintf(__('Page'), \FeatherBB\Utils::forum_number_format($p)).')';
+        $page_title[0] .= ' ('.sprintf(__('Page'), \FeatherBB\Core\Utils::forum_number_format($p)).')';
     }
 
     $crumbs = implode(__('Title separator'), $page_title);
@@ -296,7 +296,7 @@ function delete_post($post_id, $topic_id)
         ->find_one()
         ->delete();
 
-    $search = new \FeatherBB\Search();
+    $search = new \FeatherBB\Core\Search();
 
     $search->strip_search_index($post_id);
 
@@ -360,7 +360,7 @@ function censor_words($text)
     }
 
     if (!empty($search_for) && !empty($replace_with)) {
-        return substr(\FeatherBB\Utils::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+        return substr(\FeatherBB\Core\Utils::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
     } else {
         return $text;
     }
@@ -386,7 +386,7 @@ function get_title($user)
 
     // If the user has a custom title
     if ($user['title'] != '') {
-        $user_title = \FeatherBB\Utils::escape($user['title']);
+        $user_title = \FeatherBB\Core\Utils::escape($user['title']);
     }
     // If the user is banned
     elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
@@ -394,7 +394,7 @@ function get_title($user)
     }
     // If the user group has a default user title
     elseif ($user['g_user_title'] != '') {
-        $user_title = \FeatherBB\Utils::escape($user['g_user_title']);
+        $user_title = \FeatherBB\Core\Utils::escape($user['g_user_title']);
     }
     // If the user is a guest
     elseif ($user['g_id'] == FEATHER_GUEST) {

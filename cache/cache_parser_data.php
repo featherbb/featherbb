@@ -1,4 +1,4 @@
-<?php // File: cache_parser_data.php. Automatically generated: 2015-08-23 06:16:14. DO NOT EDIT!!!
+<?php // File: cache_parser_data.php. Automatically generated: 2015-09-06 05:08:39. DO NOT EDIT!!!
 $pd = array (
   'newer_php_version' => true,
   'in_signature' => false,
@@ -166,92 +166,92 @@ $                               # Anchor to end of string.
     ':)' => 
     array (
       'file' => 'smile.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/smile.png" alt="Smile" title="Smile" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/smile.png" alt="Smile" title="Smile" />',
     ),
     '=)' => 
     array (
       'file' => 'smile.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/smile.png" alt="Smile" title="Smile" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/smile.png" alt="Smile" title="Smile" />',
     ),
     ':|' => 
     array (
       'file' => 'neutral.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/neutral.png" alt="Neutral" title="Neutral" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/neutral.png" alt="Neutral" title="Neutral" />',
     ),
     '=|' => 
     array (
       'file' => 'neutral.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/neutral.png" alt="Neutral" title="Neutral" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/neutral.png" alt="Neutral" title="Neutral" />',
     ),
     ':(' => 
     array (
       'file' => 'sad.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/sad.png" alt="Sad" title="Sad" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/sad.png" alt="Sad" title="Sad" />',
     ),
     '=(' => 
     array (
       'file' => 'sad.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/sad.png" alt="Sad" title="Sad" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/sad.png" alt="Sad" title="Sad" />',
     ),
     ':D' => 
     array (
       'file' => 'big_smile.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/big_smile.png" alt="Big Smile" title="Big Smile" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/big_smile.png" alt="Big Smile" title="Big Smile" />',
     ),
     '=D' => 
     array (
       'file' => 'big_smile.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/big_smile.png" alt="Big Smile" title="Big Smile" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/big_smile.png" alt="Big Smile" title="Big Smile" />',
     ),
     ':o' => 
     array (
       'file' => 'yikes.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/yikes.png" alt="Yikes" title="Yikes" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/yikes.png" alt="Yikes" title="Yikes" />',
     ),
     ':O' => 
     array (
       'file' => 'yikes.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/yikes.png" alt="Yikes" title="Yikes" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/yikes.png" alt="Yikes" title="Yikes" />',
     ),
     ';)' => 
     array (
       'file' => 'wink.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/wink.png" alt="Wink" title="Wink" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/wink.png" alt="Wink" title="Wink" />',
     ),
     ':/' => 
     array (
       'file' => 'hmm.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/hmm.png" alt="Hmm" title="Hmm" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/hmm.png" alt="Hmm" title="Hmm" />',
     ),
     ':P' => 
     array (
       'file' => 'tongue.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/tongue.png" alt="Tongue" title="Tongue" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/tongue.png" alt="Tongue" title="Tongue" />',
     ),
     ':p' => 
     array (
       'file' => 'tongue.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/tongue.png" alt="Tongue" title="Tongue" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/tongue.png" alt="Tongue" title="Tongue" />',
     ),
     ':lol:' => 
     array (
       'file' => 'lol.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/lol.png" alt="Lol" title="Lol" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/lol.png" alt="Lol" title="Lol" />',
     ),
     ':mad:' => 
     array (
       'file' => 'mad.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/mad.png" alt="Mad" title="Mad" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/mad.png" alt="Mad" title="Mad" />',
     ),
     ':rolleyes:' => 
     array (
       'file' => 'roll.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/roll.png" alt="Roll" title="Roll" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/roll.png" alt="Roll" title="Roll" />',
     ),
     ':cool:' => 
     array (
       'file' => 'cool.png',
-      'html' => '<img width="15" height="15" src="/featherbb/img/smilies/cool.png" alt="Cool" title="Cool" />',
+      'html' => '<img width="15" height="15" src="/featherbb/style/img/smilies/cool.png" alt="Cool" title="Cool" />',
     ),
   ),
   'bbcd' => 

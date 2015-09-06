@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Bans
 {
@@ -25,7 +26,7 @@ class Bans
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
 
         if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-            throw new \FeatherBB\Error(__('No permission'), '403');
+            throw new \FeatherBB\Core\Error(__('No permission'), '403');
         }
     }
 
@@ -58,7 +59,7 @@ class Bans
             )->addTemplate('admin/bans/search_ban.php')->display();
         }
         else {
-            \FeatherBB\AdminUtils::generateAdminMenu('bans');
+            AdminUtils::generateAdminMenu('bans');
 
             $this->feather->template->setPageInfo(array(
                     'admin_console' => true,
@@ -75,7 +76,7 @@ class Bans
             $this->model->insert_ban();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('bans');
+        AdminUtils::generateAdminMenu('bans');
 
         $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
@@ -97,7 +98,7 @@ class Bans
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
-        \FeatherBB\AdminUtils::generateAdminMenu('bans');
+        AdminUtils::generateAdminMenu('bans');
 
         $this->feather->template->setPageInfo(array(
                 'admin_console' => true,

@@ -21,7 +21,7 @@ if (!defined('FEATHER')) {
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 
-    $styles = \FeatherBB\Lister::getStyles();
+    $styles = \FeatherBB\Core\Lister::getStyles();
 
     // Only display the style selection box if there's more than one style available
     if (count($styles) == 1) {

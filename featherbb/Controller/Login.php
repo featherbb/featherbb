@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Login
 {

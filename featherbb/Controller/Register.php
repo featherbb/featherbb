@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Register
 {
@@ -46,7 +46,7 @@ class Register
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
         if ($this->config['o_regs_allow'] == '0' || $this->request->post('username') || $this->request->post('password')) {
-            throw new \FeatherBB\Error(__('No new regs'), 403);
+            throw new \FeatherBB\Core\Error(__('No new regs'), 403);
         }
 
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $this->config['o_default_timezone'];
@@ -71,7 +71,7 @@ class Register
                         'is_indexed' => true,
                         'errors' => $user['errors'],
                         'index_questions'    =>    $index_questions,
-                        'languages' => \FeatherBB\Lister::getLangs(),
+                        'languages' => \FeatherBB\Core\Lister::getLangs(),
                         'question' => array_keys($lang_antispam_questions),
                         'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
                             )
@@ -95,7 +95,7 @@ class Register
 
         // Display an error message if new registrations are disabled
         if ($this->config['o_regs_allow'] == '0') {
-            throw new \FeatherBB\Error(__('No new regs'), 403);
+            throw new \FeatherBB\Core\Error(__('No new regs'), 403);
         }
 
         if ($this->config['o_rules'] != '1') {

@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Delete
@@ -50,7 +50,7 @@ class Delete
         $query = $query->find_one();
 
         if (!$query) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         return $query;

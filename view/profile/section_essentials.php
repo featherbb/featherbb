@@ -209,7 +209,7 @@ if (!defined('FEATHER')) {
 
 <?php
 
-    $languages = \FeatherBB\Lister::getLangs();
+    $languages = \FeatherBB\Core\Lister::getLangs();
 
     // Only display the language selection box if there's more than one language available
     if (count($languages) > 1) {

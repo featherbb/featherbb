@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Viewforum
@@ -62,7 +62,7 @@ class Viewforum
         $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
-            throw new \FeatherBB\Error(__('Bad request'), '404');
+            throw new \FeatherBB\Core\Error(__('Bad request'), '404');
         }
 
         $cur_forum = $this->hook->fire('get_info_forum', $cur_forum);

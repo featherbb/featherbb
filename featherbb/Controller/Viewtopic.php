@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Viewtopic
 {
@@ -26,7 +26,7 @@ class Viewtopic
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
         if ($this->feather->user->g_read_board == '0') {
-            throw new \FeatherBB\Error(__('No view'), 403);
+            throw new \FeatherBB\Core\Error(__('No view'), 403);
         }
 
         // Antispam feature

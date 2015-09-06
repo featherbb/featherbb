@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Groups
 {
@@ -39,7 +40,7 @@ class Groups
             $this->model->set_default_group($groups, $this->feather);
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('groups');
+        AdminUtils::generateAdminMenu('groups');
 
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -54,12 +55,12 @@ class Groups
     public function delete($id)
     {
         if ($id < 5) {
-            throw new \FeatherBB\Error(__('Bad request'), 403);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 403);
         }
 
         // Make sure we don't remove the default group
         if ($id == $this->config['o_default_user_group']) {
-            throw new \FeatherBB\Error(__('Cannot remove default message'), 403);
+            throw new \FeatherBB\Core\Error(__('Cannot remove default message'), 403);
         }
 
         // Check if this group has any members
@@ -70,7 +71,7 @@ class Groups
             if ($this->request->post('del_group_comply') || $this->request->post('del_group')) {
                 $this->model->delete_group($id);
             } else {
-                \FeatherBB\AdminUtils::generateAdminMenu('groups');
+                AdminUtils::generateAdminMenu('groups');
 
                 $this->feather->template->setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -83,7 +84,7 @@ class Groups
             }
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('groups');
+        AdminUtils::generateAdminMenu('groups');
 
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
@@ -108,7 +109,7 @@ class Groups
         // Add/edit a group (stage 1)
         elseif ($this->request->post('add_group') || isset($id)) {
 
-            \FeatherBB\AdminUtils::generateAdminMenu('groups');
+            AdminUtils::generateAdminMenu('groups');
 
             $group = $this->model->info_add_group($groups, $id);
 

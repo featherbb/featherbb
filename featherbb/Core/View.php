@@ -7,10 +7,10 @@
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
 */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class View
 {

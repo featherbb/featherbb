@@ -10,8 +10,10 @@
 // The contents of this file are very much inspired by the file functions_search.php
 // from the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
+
 use DB;
+use \FeatherBB\Core\Utils;
 
 class Search
 {

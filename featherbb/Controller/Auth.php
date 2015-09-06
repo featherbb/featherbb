@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Auth
@@ -36,7 +36,7 @@ class Auth
             $user = \FeatherBB\Model\Auth::get_user_from_name($form_username);
 
             if (!empty($user->password)) {
-                $form_password_hash = \FeatherBB\Utils::hash($form_password); // Will result in a SHA-1 hash
+                $form_password_hash = Utils::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == FEATHER_UNVERIFIED) {
                         \FeatherBB\Model\Auth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
@@ -56,7 +56,7 @@ class Auth
                     $this->feather->url->redirect(Url::base(), __('Login redirect'));
                 }
             }
-            throw new \FeatherBB\Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
+            throw new \FeatherBB\Core\Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             $this->feather->template->setPageInfo(array(
                                 'active_page' => 'login',
@@ -72,7 +72,7 @@ class Auth
     {
         $token = $this->feather->hooks->fire('logout_start', $token);
 
-        if ($this->feather->user->is_guest || !isset($token) || $token != \FeatherBB\Utils::hash($this->feather->user->id.\FeatherBB\Utils::hash($this->feather->request->getIp()))) {
+        if ($this->feather->user->is_guest || !isset($token) || $token != Utils::hash($this->feather->user->id.Utils::hash($this->feather->request->getIp()))) {
             $this->feather->url->redirect(Url::get('/'), 'Not logged in');
         }
 
@@ -83,7 +83,7 @@ class Auth
             \FeatherBB\Model\Auth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
         }
 
-        \FeatherBB\Model\Auth::feather_setcookie(1, \FeatherBB\Utils::hash(uniqid(rand(), true)), time() + 31536000);
+        \FeatherBB\Model\Auth::feather_setcookie(1, Utils::hash(uniqid(rand(), true)), time() + 31536000);
         $this->feather->hooks->fire('logout_end');
 
         redirect(Url::base(), __('Logout redirect'));
@@ -99,7 +99,7 @@ class Auth
             // Validate the email address
             $email = strtolower(Utils::trim($this->feather->request->post('req_email')));
             if (!$this->feather->email->is_valid_email($email)) {
-                throw new \FeatherBB\Error(__('Invalid email'), 400);
+                throw new \FeatherBB\Core\Error(__('Invalid email'), 400);
             }
             $user = \FeatherBB\Model\Auth::get_user_from_email($email);
 
@@ -120,7 +120,7 @@ class Auth
                 $mail_message = $this->feather->hooks->fire('mail_message_password_forgotten', $mail_message);
 
                 if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 && (time() - $user->last_email_sent) >= 0) {
-                    throw new \FeatherBB\Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
+                    throw new \FeatherBB\Core\Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
                 }
 
                 // Generate a new password and a new password activation code
@@ -139,7 +139,7 @@ class Auth
 
                 $this->feather->url->redirect(Url::get('/'), __('Forget mail').' <a href="mailto:'.Utils::escape($this->feather->forum_settings['o_admin_email']).'">'.Utils::escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
             } else {
-                throw new \FeatherBB\Error(__('No email match').' '.Utils::escape($email).'.', 400);
+                throw new \FeatherBB\Core\Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }
         }
 

@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Search
@@ -23,7 +23,7 @@ class Search
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     public function get_search_results()
@@ -49,7 +49,7 @@ class Search
         if ($this->request->get('search_id')) {
             $search_id = intval($this->request->get('search_id'));
             if ($search_id < 1) {
-                throw new \FeatherBB\Error(__('Bad request'), 400);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 400);
             }
         }
         // If it's a regular search (keywords and/or author)
@@ -66,7 +66,7 @@ class Search
             }
 
             if (!$keywords && !$author) {
-                throw new \FeatherBB\Error(__('No terms'), 400);
+                throw new \FeatherBB\Core\Error(__('No terms'), 400);
             }
 
             if ($author) {
@@ -81,21 +81,21 @@ class Search
         elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
             $user_id = ($this->request->get('user_id')) ? intval($this->request->get('user_id')) : $this->user->id;
             if ($user_id < 2) {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
 
             // Subscribed topics can only be viewed by admins, moderators and the users themselves
             if ($action == 'show_subscriptions' && !$this->user->is_admmod && $user_id != $this->user->id) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
         } elseif ($action == 'show_recent') {
             $interval = $this->request->get('value') ? intval($this->request->get('value')) : 86400;
         } elseif ($action == 'show_replies') {
             if ($this->user->is_guest) {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
         } elseif ($action != 'show_new' && $action != 'show_unanswered') {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
 
@@ -122,7 +122,7 @@ class Search
 
                 unset($temp);
             } else {
-                throw new \FeatherBB\Error(__('No hits'), 204);
+                throw new \FeatherBB\Core\Error(__('No hits'), 204);
             }
         } else {
             $keyword_results = $author_results = array();
@@ -133,7 +133,7 @@ class Search
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
                 if ($this->user->last_search && (time() - $this->user->last_search) < $this->user->g_search_flood && (time() - $this->user->last_search) >= 0) {
-                    throw new \FeatherBB\Error(sprintf(__('Search flood'), $this->user->g_search_flood, $this->user->g_search_flood - (time() - $this->user->last_search)), 429);
+                    throw new \FeatherBB\Core\Error(sprintf(__('Search flood'), $this->user->g_search_flood, $this->user->g_search_flood - (time() - $this->user->last_search)), 429);
                 }
 
                 if (!$this->user->is_guest) {
@@ -182,7 +182,7 @@ class Search
                     $keywords_array = $this->hook->fire('get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
-                        throw new \FeatherBB\Error(__('No hits'), 400);
+                        throw new \FeatherBB\Core\Error(__('No hits'), 400);
                     }
 
                     // Should we search in message body or topic subject specifically?
@@ -319,7 +319,7 @@ class Search
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
-                    throw new \FeatherBB\Error(__('No hits'), 204);
+                    throw new \FeatherBB\Core\Error(__('No hits'), 204);
                 }
             } elseif ($action == 'show_new' || $action == 'show_recent' || $action == 'show_replies' || $action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions' || $action == 'show_unanswered') {
                 $search_type = array('action', $action);
@@ -336,7 +336,7 @@ class Search
                 // If it's a search for new posts since last visit
                 if ($action == 'show_new') {
                     if ($this->user->is_guest) {
-                        throw new \FeatherBB\Error(__('No permission'), 403);
+                        throw new \FeatherBB\Core\Error(__('No permission'), 403);
                     }
 
                     $result = DB::for_table('topics')
@@ -360,7 +360,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No new posts'), 204);
+                        throw new \FeatherBB\Core\Error(__('No new posts'), 204);
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -385,7 +385,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No recent posts'), 204);
+                        throw new \FeatherBB\Core\Error(__('No recent posts'), 204);
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -410,7 +410,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No user posts'), 204);
+                        throw new \FeatherBB\Core\Error(__('No user posts'), 204);
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -433,7 +433,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No user posts'), 404);
+                        throw new \FeatherBB\Core\Error(__('No user posts'), 404);
                     }
 
                     // Pass on the user ID so that we can later know whose posts we're searching for
@@ -457,7 +457,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No user topics'), 404);
+                        throw new \FeatherBB\Core\Error(__('No user topics'), 404);
                     }
 
                     // Pass on the user ID so that we can later know whose topics we're searching for
@@ -466,7 +466,7 @@ class Search
                 // If it's a search for subscribed topics
                 elseif ($action == 'show_subscriptions') {
                     if ($this->user->is_guest) {
-                        throw new \FeatherBB\Error(__('Bad request'), 404);
+                        throw new \FeatherBB\Core\Error(__('Bad request'), 404);
                     }
 
                     $result = DB::for_table('topics')
@@ -485,7 +485,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No subscriptions'), 404);
+                        throw new \FeatherBB\Core\Error(__('No subscriptions'), 404);
                     }
 
                     // Pass on user ID so that we can later know whose subscriptions we're searching for
@@ -509,7 +509,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new \FeatherBB\Error(__('No unanswered'), 404);
+                        throw new \FeatherBB\Core\Error(__('No unanswered'), 404);
                     }
                 }
 
@@ -521,7 +521,7 @@ class Search
                 $pdo = DB::get_db();
                 $pdo = null;
             } else {
-                throw new \FeatherBB\Error(__('Bad request'), 404);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 404);
             }
 
 
@@ -657,7 +657,7 @@ class Search
                     $subscriber_name = $subscriber_name->find_one_col('username');
 
                     if (!$subscriber_name) {
-                        throw new \FeatherBB\Error(__('Bad request'), 404);
+                        throw new \FeatherBB\Core\Error(__('Bad request'), 404);
                     }
 
                     $search['crumbs_text']['search_type'] = '<a href="'.Url::get('search/?action=show_subscription&amp;user_id='.$subscriber_id).'">'.sprintf(__('Quick search show_subscriptions'), Utils::escape($subscriber_name)).'</a>';

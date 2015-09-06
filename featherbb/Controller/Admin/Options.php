@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Options
 {
@@ -36,7 +37,7 @@ class Options
             $this->model->update_options();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('options');
+        AdminUtils::generateAdminMenu('options');
 
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Options')),

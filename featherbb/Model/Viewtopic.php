@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Viewtopic
@@ -39,7 +39,7 @@ class Viewtopic
         $result = $result->find_one();
 
         if (!$result) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $post['topic_id'] = $result['topic_id'];
@@ -147,7 +147,7 @@ class Viewtopic
         $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $cur_topic = $this->hook->fire('get_info_topic', $cur_topic);
@@ -246,7 +246,7 @@ class Viewtopic
         }
 
         if (empty($post_ids)) {
-            throw new \FeatherBB\Error('The post table and topic table seem to be out of sync!', 500);
+            throw new \FeatherBB\Core\Error('The post table and topic table seem to be out of sync!', 500);
         }
 
         // Retrieve the posts (and their respective poster/online status)

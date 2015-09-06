@@ -7,8 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -32,7 +32,7 @@ if (!empty($report_data)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Url::get('users/'.$report['reported_by'].'/').'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?= \FeatherBB\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => Url::get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+									<td class="location"><?= \FeatherBB\Core\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => Url::get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => Url::get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
 																						sprintf(__('Post ID'), $report['pid']) => Url::get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
@@ -82,7 +82,7 @@ if (!empty($report_zapped_data)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Url::get('users/'.$report['reported_by'].'/').'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?= \FeatherBB\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => Url::get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+									<td class="location"><?= \FeatherBB\Core\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => Url::get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => Url::get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
 																						sprintf(__('Post ID'), $report['pid']) => Url::get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>

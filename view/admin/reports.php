@@ -29,7 +29,7 @@ if (!empty($report_data)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->url->get('users/'.$report['reported_by'].'/').'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?= \FeatherBB\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+									<td class="location"><?= \FeatherBB\Core\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => $feather->url->get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
 																						sprintf(__('Post ID'), $report['pid']) => $feather->url->get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>
@@ -79,7 +79,7 @@ if (!empty($report_zapped_data)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->url->get('users/'.$report['reported_by'].'/').'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
-									<td class="location"><?= \FeatherBB\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
+									<td class="location"><?= \FeatherBB\Core\AdminUtils::breadcrumbs_admin(array($report['forum_name'] => $feather->url->get('forum/'.$report['forum_id'].'/'.$feather->url->url_friendly($report['forum_name']).'/'),
 																						$report['subject'] => $feather->url->get('forum/'.$report['topic_id'].'/'.$feather->url->url_friendly($report['subject'])),
 																						sprintf(__('Post ID'), $report['pid']) => $feather->url->get('post/'.$report['pid'].'/#p'.$report['pid']))) ?></td>
 								</tr>

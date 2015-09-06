@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
 class Utils
 {
@@ -32,7 +32,7 @@ class Utils
     // charset up until version 5.5.3 (where a special charset has to be used), they
     // need to be replaced, by question marks in this case.
     //
-    public function strip_bad_multibyte_chars($str)
+    public static function strip_bad_multibyte_chars($str)
     {
         $result = '';
         $length = self::strlen($str);

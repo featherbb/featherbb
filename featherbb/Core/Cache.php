@@ -10,7 +10,7 @@
 * Usage : $cache = new \FeatherBB\Cache(array('name' => , 'path' =>, 'extension' =>));
 */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
 class Cache
 {

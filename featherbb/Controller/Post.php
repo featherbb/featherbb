@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Post
 {
@@ -38,7 +38,7 @@ class Post
 
         // If $_POST['username'] is filled, we are facing a bot
         if ($this->feather->request->post('username')) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Fetch some info about the topic and/or the forum
@@ -48,7 +48,7 @@ class Post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -60,7 +60,7 @@ class Post
                 ($fid && (($cur_posting['post_topics'] == '' && $this->feather->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Start with a clean slate
@@ -145,7 +145,7 @@ class Post
             $action = __('Post new topic');
             $form = '<form id="post" method="post" action="'.Url::get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
         } else {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         $url_forum = Url::url_friendly($cur_posting['forum_name']);

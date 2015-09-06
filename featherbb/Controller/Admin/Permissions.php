@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Permissions
 {
@@ -37,7 +38,7 @@ class Permissions
             $this->model->update_permissions();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('permissions');
+        AdminUtils::generateAdminMenu('permissions');
 
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Permissions')),

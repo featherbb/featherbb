@@ -9,7 +9,7 @@
 
 namespace Plugins;
 
-use \FeatherBB\Plugin as Plugin;
+use \FeatherBB\Core\Plugin as Plugin;
 
 class Test extends Plugin
 {

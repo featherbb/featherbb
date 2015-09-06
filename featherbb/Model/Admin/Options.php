@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Options
@@ -93,7 +93,7 @@ class Options
         $form = $this->hook->fire('options.update_options.form', $form);
 
         if ($form['board_title'] == '') {
-            throw new \FeatherBB\Error(__('Must enter title message'), 400);
+            throw new \FeatherBB\Core\Error(__('Must enter title message'), 400);
         }
 
         // Make sure base_url doesn't end with a slash
@@ -104,20 +104,20 @@ class Options
         // Convert IDN to Punycode if needed
         if (preg_match('/[^\x00-\x7F]/', $form['base_url'])) {
             if (!function_exists('idn_to_ascii')) {
-                throw new \FeatherBB\Error(__('Base URL problem'), 400);
+                throw new \FeatherBB\Core\Error(__('Base URL problem'), 400);
             } else {
                 $form['base_url'] = idn_to_ascii($form['base_url']);
             }
         }
 
-        $languages = \FeatherBB\Lister::getLangs();
+        $languages = \FeatherBB\Core\Lister::getLangs();
         if (!in_array($form['default_lang'], $languages)) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
-        $styles = \FeatherBB\Lister::getStyles();
+        $styles = \FeatherBB\Core\Lister::getStyles();
         if (!in_array($form['default_style'], $styles)) {
-            throw new \FeatherBB\Error(__('Bad request'), 404);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }
 
         if ($form['time_format'] == '') {
@@ -129,11 +129,11 @@ class Options
         }
 
         if (!$this->email->is_valid_email($form['admin_email'])) {
-            throw new \FeatherBB\Error(__('Invalid e-mail message'), 400);
+            throw new \FeatherBB\Core\Error(__('Invalid e-mail message'), 400);
         }
 
         if (!$this->email->is_valid_email($form['webmaster_email'])) {
-            throw new \FeatherBB\Error(__('Invalid webmaster e-mail message'), 400);
+            throw new \FeatherBB\Core\Error(__('Invalid webmaster e-mail message'), 400);
         }
 
         if ($form['mailing_list'] != '') {
@@ -157,7 +157,7 @@ class Options
             if ($smtp_pass1 == $smtp_pass2) {
                 $form['smtp_pass'] = $smtp_pass1;
             } else {
-                throw new \FeatherBB\Error(__('SMTP passwords did not match'), 400);
+                throw new \FeatherBB\Core\Error(__('SMTP passwords did not match'), 400);
             }
         }
 
@@ -196,23 +196,23 @@ class Options
         }
 
         if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         if ($form['feed_ttl'] < 0) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         if ($form['timeout_online'] >= $form['timeout_visit']) {
-            throw new \FeatherBB\Error(__('Timeout error message'), 400);
+            throw new \FeatherBB\Core\Error(__('Timeout error message'), 400);
         }
 
         foreach ($form as $key => $input) {
@@ -254,7 +254,7 @@ class Options
 
     public function get_styles()
     {
-        $styles = \FeatherBB\Lister::getStyles();
+        $styles = \FeatherBB\Core\Lister::getStyles();
         $styles = $this->hook->fire('options.get_styles.styles', $styles);
 
         $output = '';
@@ -273,7 +273,7 @@ class Options
 
     public function get_langs()
     {
-        $langs = \FeatherBB\Lister::getLangs();
+        $langs = \FeatherBB\Core\Lister::getLangs();
         $langs = $this->hook->fire('options.get_langs.langs', $langs);
 
         $output = '';

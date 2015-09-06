@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Plugins
 {
@@ -35,9 +36,9 @@ class Plugins
         //     $this->model->update_permissions();
         // }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('plugins');
+        AdminUtils::generateAdminMenu('plugins');
 
-        $pluginsList = \FeatherBB\Lister::getValidPlugins();
+        $pluginsList = \FeatherBB\Core\Lister::getValidPlugins();
         // var_dump($pluginsList);
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
         // var_dump($activePlugins);
@@ -57,12 +58,12 @@ class Plugins
         // The plugin to load should be supplied via GET
         $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
         if (!$class) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // Check if plugin follows PSR-4 conventions and extends base forum plugin
         if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
-            throw new \FeatherBB\Error(sprintf(__('No plugin message'), Utils::escape($class)), 400);
+            throw new \FeatherBB\Core\Error(sprintf(__('No plugin message'), Utils::escape($class)), 400);
         }
 
         $plugin = new $class;
@@ -80,7 +81,7 @@ class Plugins
         // The plugin to load should be supplied via GET
         $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
         if (!$class) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         $plugin = new $class;
@@ -98,18 +99,18 @@ class Plugins
         // The plugin to load should be supplied via GET
         $plugin = $this->request->get('plugin') ? $this->request->get('plugin') : '';
         if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin)) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         // AP_ == Admins only, AMP_ == admins and moderators
         $prefix = substr($plugin, 0, strpos($plugin, '_'));
         if ($this->user->g_moderator == '1' && $prefix == 'AP') {
-            throw new \FeatherBB\Error(__('No permission'), 403);
+            throw new \FeatherBB\Core\Error(__('No permission'), 403);
         }
 
         // Make sure the file actually exists
         if (!file_exists(FEATHER_ROOT.'plugins/'.$plugin)) {
-            throw new \FeatherBB\Error(sprintf(__('No plugin message'), Utils::escape($plugin)), 400);
+            throw new \FeatherBB\Core\Error(sprintf(__('No plugin message'), Utils::escape($plugin)), 400);
         }
 
         // Construct REQUEST_URI if it isn't set TODO?
@@ -122,7 +123,7 @@ class Plugins
         // get the "blank page of death"
         include FEATHER_ROOT.'plugins/'.$plugin;
         if (!defined('FEATHER_PLUGIN_LOADED')) {
-            throw new \FeatherBB\Error(sprintf(__('Plugin failed message'), Utils::escape($plugin)));
+            throw new \FeatherBB\Core\Error(sprintf(__('Plugin failed message'), Utils::escape($plugin)));
         }
 
         $this->feather->template->setPageInfo(array(

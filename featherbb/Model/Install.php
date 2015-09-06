@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Install
@@ -395,7 +395,7 @@ class Install
         return $user = array(
             'group_id' => 1,
             'username' => $data['username'],
-            'password' => \FeatherBB\Utils::hash($data['password']),
+            'password' => \FeatherBB\Core\Utils::hash($data['password']),
             'email' => $data['email'],
             'language' => $data['default_lang'],
             'style' => $data['default_style'],

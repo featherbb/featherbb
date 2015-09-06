@@ -6,7 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Plugins\\' => array('/plugins'),
-    'FeatherBB\\' => array($baseDir . '/featherbb/Core'),
+    'Plugins\\' => array($baseDir . '/plugins'),
+    'FeatherBB\\' => array($baseDir . '/featherbb'),
     '' => array($baseDir . '/'),
 );

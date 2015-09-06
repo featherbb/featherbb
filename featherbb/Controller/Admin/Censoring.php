@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Censoring
 {
@@ -47,7 +48,7 @@ class Censoring
             $this->model->remove_word();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('censoring');
+        AdminUtils::generateAdminMenu('censoring');
 
         $this->feather->template->setPageInfo(array(
                 'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Censoring')),

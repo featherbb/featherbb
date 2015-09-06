@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Index
 {
@@ -49,12 +50,12 @@ class Index
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
-                throw new \FeatherBB\Error(__('fopen disabled message'), 500);
+                throw new \FeatherBB\Core\Error(__('fopen disabled message'), 500);
             }
 
             $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
             if (empty($latest_version)) {
-                throw new \FeatherBB\Error(__('Upgrade check failed message'), 500);
+                throw new \FeatherBB\Core\Error(__('Upgrade check failed message'), 500);
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
@@ -70,11 +71,11 @@ class Index
             if ($deleted) {
                 redirect(Url::get('admin/'), __('Deleted install.php redirect'));
             } else {
-                throw new \FeatherBB\Error(__('Delete install.php failed'), 500);
+                throw new \FeatherBB\Core\Error(__('Delete install.php failed'), 500);
             }
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('index');
+        AdminUtils::generateAdminMenu('index');
 
         $this->feather->template->setPageInfo(array(
                             'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Index')),

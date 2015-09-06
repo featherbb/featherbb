@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Categories
 {
@@ -47,7 +48,7 @@ class Categories
     public function edit_categories()
     {
         if (empty($this->request->post('cat'))) {
-            throw new \FeatherBB\Error(__('Bad request'), '400');
+            throw new \FeatherBB\Core\Error(__('Bad request'), '400');
         }
 
         foreach ($this->request->post('cat') as $cat_id => $properties) {
@@ -71,7 +72,7 @@ class Categories
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
-            throw new \FeatherBB\Error(__('Bad request'), '400');
+            throw new \FeatherBB\Core\Error(__('Bad request'), '400');
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
@@ -87,7 +88,7 @@ class Categories
 
     public function display()
     {
-        \FeatherBB\AdminUtils::generateAdminMenu('categories');
+        AdminUtils::generateAdminMenu('categories');
 
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Categories')),

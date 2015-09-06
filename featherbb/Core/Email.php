@@ -7,10 +7,10 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Email
 {
@@ -311,12 +311,12 @@ class Email
         $server_response = '';
         while (substr($server_response, 3, 1) != ' ') {
             if (!($server_response = fgets($socket, 256))) {
-                throw new \FeatherBB\Error('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
+                throw new \FeatherBB\Core\Error('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
             }
         }
 
         if (!(substr($server_response, 0, 3) == $expected_response)) {
-            throw new \FeatherBB\Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
+            throw new \FeatherBB\Core\Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
         }
     }
 
@@ -348,7 +348,7 @@ class Email
         }
 
         if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-            throw new \FeatherBB\Error('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
+            throw new \FeatherBB\Core\Error('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
         $this->server_parse($socket, '220');

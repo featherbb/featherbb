@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Install
 {
@@ -30,7 +30,7 @@ class Install
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\install();
-        $this->available_langs = \FeatherBB\Lister::getLangs();
+        $this->available_langs = \FeatherBB\Core\Lister::getLangs();
         $this->feather->template->setStyle('FeatherBB');
     }
 
@@ -95,7 +95,7 @@ class Install
                 }
 
                 // Validate language
-                if (!in_array($data['default_lang'], \FeatherBB\Lister::getLangs())) {
+                if (!in_array($data['default_lang'], \FeatherBB\Core\Lister::getLangs())) {
                     $this->errors[] = __('Error default language');
                 }
 

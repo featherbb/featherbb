@@ -7,7 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB;
+namespace FeatherBB\Core;
+
+use \FeatherBB\Core\Utils;
 
 class Error extends \Exception
 {
@@ -34,7 +36,7 @@ class Error extends \Exception
 
         if (!defined('FEATHER_HEADER')) {
             $this->feather->template->setPageInfo(array(
-                'title' => array(\FeatherBB\Utils::escape($this->feather->config['o_board_title']), __('Info')),
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Info')),
             ));
         }
 

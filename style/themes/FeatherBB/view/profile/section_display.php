@@ -7,8 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
@@ -24,7 +24,7 @@ if (!defined('FEATHER')) {
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 
-    $styles = \FeatherBB\Lister::getStyles();
+    $styles = \FeatherBB\Core\Lister::getStyles();
 
     // Only display the style selection box if there's more than one style available
     if (count($styles) == 1) {

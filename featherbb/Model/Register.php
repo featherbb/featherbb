@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Register
@@ -44,7 +44,7 @@ class Register
         $already_registered = $already_registered->find_one();
 
         if ($already_registered) {
-            throw new \FeatherBB\Error(__('Registration flood'), 429);
+            throw new \FeatherBB\Core\Error(__('Registration flood'), 429);
         }
 
 
@@ -121,7 +121,7 @@ class Register
         if ($this->request->post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', $this->request->post('language'));
             if (!file_exists(FEATHER_ROOT.'featherbb/lang/'.$user['language'].'/common.po')) {
-                throw new \FeatherBB\Error(__('Bad request'), 500);
+                throw new \FeatherBB\Core\Error(__('Bad request'), 500);
             }
         } else {
             $user['language'] = $this->config['o_default_lang'];
@@ -140,7 +140,7 @@ class Register
         $now = time();
 
         $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : FEATHER_UNVERIFIED;
-        $password_hash = \FeatherBB\Utils::hash($user['password1']);
+        $password_hash = Utils::hash($user['password1']);
 
         // Add the user
         $user['insert'] = array(

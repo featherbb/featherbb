@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Maintenance
 {
@@ -44,7 +45,7 @@ class Maintenance
             $prune_from = Utils::trim($this->feather->request->post('prune_from'));
             $prune_sticky = intval($this->feather->request->post('prune_sticky'));
 
-            \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
+            AdminUtils::generateAdminMenu('maintenance');
 
             if ($this->feather->request->post('prune_comply')) {
                 $this->model->prune_comply($prune_from, $prune_sticky);
@@ -61,7 +62,7 @@ class Maintenance
             )->addTemplate('admin/maintenance/prune.php')->display();
         }
 
-        \FeatherBB\AdminUtils::generateAdminMenu('maintenance');
+        AdminUtils::generateAdminMenu('maintenance');
 
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Admin'), __('Maintenance')),

@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Controller\Admin;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Url;
 
 class Users
 {
@@ -35,10 +36,10 @@ class Users
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
             $this->feather->template->setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
@@ -53,10 +54,10 @@ class Users
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
             if ($this->user->g_id > FEATHER_ADMIN) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
             $this->feather->template->setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
@@ -71,10 +72,10 @@ class Users
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
             if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
-                throw new \FeatherBB\Error(__('No permission'), 403);
+                throw new \FeatherBB\Core\Error(__('No permission'), 403);
             }
 
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
             $this->feather->template->setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
@@ -126,7 +127,7 @@ class Users
             )->addTemplate('admin/users/find_users.php')->display();
         }
         else {
-            \FeatherBB\AdminUtils::generateAdminMenu('users');
+            AdminUtils::generateAdminMenu('users');
 
             $this->feather->template->setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users')),
@@ -167,7 +168,7 @@ class Users
     public function showusers($ip)
     {
         if (!@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $ip) && !@preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%', $ip)) {
-            throw new \FeatherBB\Error(__('Bad IP message'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad IP message'), 400);
         }
 
         // Fetch user count

@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Utils;
-use FeatherBB\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use DB;
 
 class Edit
@@ -23,7 +23,7 @@ class Edit
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
-        $this->search = new \FeatherBB\Search();
+        $this->search = new \FeatherBB\Core\Search();
     }
 
     // Fetch some info about the post, the topic and the forum
@@ -52,7 +52,7 @@ class Edit
         $cur_post = $cur_post->find_one();
 
         if (!$cur_post) {
-            throw new \FeatherBB\Error(__('Bad request'), 400);
+            throw new \FeatherBB\Core\Error(__('Bad request'), 400);
         }
 
         return $cur_post;
