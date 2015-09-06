@@ -12,12 +12,12 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
-class Viewtopic
+class Topic
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \FeatherBB\Model\Viewtopic();
+        $this->model = new \FeatherBB\Model\Topic();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/topic.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/post.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/bbeditor.mo');
@@ -105,7 +105,7 @@ class Viewtopic
 
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
-            'active_page' => 'viewtopic',
+            'active_page' => 'Topic',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
             'is_indexed' => true,
@@ -125,7 +125,7 @@ class Viewtopic
             'lang_bbeditor'    =>    $lang_bbeditor,
             'url_forum'        =>    $url_forum,
             'url_topic'        =>    $url_topic,
-        ))->addTemplate('viewtopic.php')->display();
+        ))->addTemplate('Topic.php')->display();
 
         // Increment "num_views" for topic
         $this->model->increment_views($id);

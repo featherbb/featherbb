@@ -50,7 +50,7 @@ class Misc
         $tracked_topics['forums'][$id] = time();
         set_tracked_topics($tracked_topics);
 
-        Url::redirect($this->feather->urlFor('viewForum', array('id' => $id)), __('Mark forum read redirect'));
+        Url::redirect($this->feather->urlFor('Forum', array('id' => $id)), __('Mark forum read redirect'));
     }
 
     public function subscribeforum($id)

@@ -351,7 +351,7 @@ msgid "User has posted label"
 msgstr "User has posted earlier"
 
 msgid "User has posted help"
-msgstr "This feature displays a dot in front of topics in viewforum.php in case the currently logged in user has posted in that topic earlier. Disable if you are experiencing high server load."
+msgstr "This feature displays a dot in front of topics in Forum.php in case the currently logged in user has posted in that topic earlier. Disable if you are experiencing high server load."
 
 msgid "Topic views label"
 msgstr "Topic views"

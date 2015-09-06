@@ -12,12 +12,12 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
 
-class Viewforum
+class Forum
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \FeatherBB\Model\Viewforum();
+        $this->model = new \FeatherBB\Model\Forum();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
     }
 
@@ -80,7 +80,7 @@ class Viewforum
 
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_forum['forum_name'])),
-            'active_page' => 'viewforum',
+            'active_page' => 'Forum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
             'is_indexed' => true,
@@ -92,6 +92,6 @@ class Viewforum
             'start_from' => $start_from,
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
-        ))->addTemplate('viewforum.php')->display();
+        ))->addTemplate('Forum.php')->display();
     }
 }
