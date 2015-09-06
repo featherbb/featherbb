@@ -132,18 +132,18 @@ class Post
         // If a topic ID was specified in the url (it's a reply)
         if ($tid) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.Url::get('post/reply/'.$tid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.$this->feather->urlFor('newReply', ['tid' => $tid]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
                     $quote = $this->model->get_quote_message($qid, $tid);
-                    $form = '<form id="post" method="post" action="'.Url::get('post/reply/'.$tid.'/quote/'.$qid.'/').'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.$this->feather->urlFor('newQuoteReply', ['pid' => $tid, 'qid' => $qid]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($fid) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.Url::get('post/new-topic/'.$fid.'/').'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.$this->feather->urlFor('newTopic', ['fid' => $fid]).'" onsubmit="return process_form(this)">';
         } else {
             throw new \FeatherBB\Core\Error(__('Bad request'), 404);
         }

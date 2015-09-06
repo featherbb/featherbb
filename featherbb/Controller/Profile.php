@@ -164,13 +164,13 @@ class Profile
                     throw new \FeatherBB\Core\Error(__('Bad request'), 404);
                 }
 
-                $avatar_field = '<span><a href="'.Url::get('user/'.$id.'/action/upload_avatar/').'">'.__('Change avatar').'</a></span>';
+                $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
                 $user_avatar = generate_avatar_markup($id);
                 if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.Url::get('user/'.$id.'/action/delete_avatar/').'">'.__('Delete avatar').'</a></span>';
+                    $avatar_field .= ' <span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.Url::get('user/'.$id.'/action/upload_avatar/').'">'.__('Upload avatar').'</a></span>';
+                    $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user['signature'] != '') {
