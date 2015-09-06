@@ -234,13 +234,13 @@ class View
         ob_start();
 
         if ($nested) {
-            require $this->getTemplatePathname('header.new.php');
+            require $this->getTemplatePathname('header.php');
         }
         foreach ($this->getTemplates() as $tpl) {
             require $tpl;
         }
         if ($nested) {
-            require $this->getTemplatePathname('footer.new.php');
+            require $this->getTemplatePathname('footer.php');
         }
         return ob_get_clean();
     }
