@@ -9,9 +9,11 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Lister;
+use FeatherBB\Core\Random;
+use FeatherBB\Middleware\Core;
 
 class Install
 {
@@ -31,7 +33,7 @@ class Install
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\install();
-        $this->available_langs = \FeatherBB\Core\Lister::getLangs();
+        $this->available_langs = Lister::getLangs();
         $this->feather->template->setStyle('FeatherBB');
     }
 
@@ -96,7 +98,7 @@ class Install
                 }
 
                 // Validate language
-                if (!in_array($data['default_lang'], \FeatherBB\Core\Lister::getLangs())) {
+                if (!in_array($data['default_lang'], Lister::getLangs())) {
                     $this->errors[] = __('Error default language');
                 }
 
@@ -165,7 +167,7 @@ class Install
 
     public function create_db(array $data)
     {
-        \FeatherBB\Core::init_db($data);
+        Core::init_db($data);
 
         // Load appropriate language
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
