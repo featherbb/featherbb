@@ -18,13 +18,9 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->url->get('admin/index/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->url->get('admin/users/') ?>"><?php _e('Users') ?></a></li>
-			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('adminPlugins') ?>"><strong><?php _e('Extension') ?></strong></a></li>
 		</ul>
-		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
-		</div>
 		<div class="clearer"></div>
 	</div>
 </div>
@@ -34,38 +30,37 @@ if (!defined('FEATHER')) {
     <div class="box">
         <div class="inbox">
             <table class="table">
-                <caption>The following plugins are available</caption>
+                <caption><?php _e('Available plugins') ?></caption>
                 <thead>
                     <tr>
-                        <th>Extension</th>
-                        <th>Description</th>
+                        <th><?php _e('Extension') ?></th>
+                        <th><?php _e('Description') ?></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($pluginsList as $plugin => $class) : ?>
+                    <?php foreach ($plugins as $plugin) : ?>
                         <tr>
                             <td>
-                                <strong><?= $class::$name; ?></strong>
+                                <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
                                 <div class="plugin-actions">
-                                    <?php if (array_key_exists($class, $activePlugins)) { ?>
-                                        <a href="<?= $feather->urlFor('deactivatePlugin', ['name' => $class]) ?>">Deactivate</a>
+                                    <?php if (in_array($plugin->name, $activePlugins)) { ?>
+                                        <a href="<?= $feather->urlFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Deactivate') ?></a>
                                     <?php } else { ?>
-                                        <a href="<?= $feather->urlFor('activatePlugin', ['name' => $class]) ?>">Activate</a>
+                                        <a href="<?= $feather->urlFor('activatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Activate') ?></a>
                                     <?php } ?>
                                 </div>
                             </td>
                             <td>
-                                <?= $class::$description; ?>
+                                <?= $plugin->description; ?>
                                 <div class="plugin-details">
-                                    Version <?= $class::$version; ?> |
-                                    By <?= $class::$author; ?>
+                                    By <?= $plugin->author->name; ?>
                                 </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <p style="text-align:right"><?= count($pluginsList) ?> éléments</p>
+            <p style="text-align:right"><?= count($plugins) ?> éléments</p>
         </div>
     </div>
 </div>

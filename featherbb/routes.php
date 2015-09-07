@@ -192,11 +192,10 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
 
     // Admin plugins
     $feather->group('/plugins', function() use ($feather) {
-        $feather->map('/(/)', '\FeatherBB\Controller\Admin\Plugins:index')->via('GET', 'POST')->name('adminPlugins');
+        $feather->map('(/)', '\FeatherBB\Controller\Admin\Plugins:index')->via('GET', 'POST')->name('adminPlugins');
         $feather->map('/:name(/)', '\FeatherBB\Controller\Admin\Plugins:index')->via('GET', 'POST')->name('infoPlugin');
-        $feather->map('/activate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:activate')->via('GET')->name('activatePlugin');
-        $feather->map('/deactivate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:deactivate')->via('GET')->name('deactivatePlugin');
-        // $feather->map('/loader(/)', '\FeatherBB\Controller\Admin\Plugins:display')->via('GET', 'POST');
+        $feather->get('/activate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:activate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('activatePlugin');
+        $feather->get('/deactivate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:deactivate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('deactivatePlugin');
     });
 
     // Admin maintenance
