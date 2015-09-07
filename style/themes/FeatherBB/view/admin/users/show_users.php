@@ -19,8 +19,8 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo Url::get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo Url::get('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?php echo $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
@@ -54,12 +54,12 @@ if (!defined('FEATHER')) {
             if (isset($info['user_data'][$cur_poster['poster_id']])) {
                 ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="'.Url::get('user/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.Utils::escape($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
+					<td class="tcl"><?php echo '<a href="'.$feather->urlFor('userProfile', ['id' => $info['user_data'][$cur_poster['poster_id']]['id']]).'">'.Utils::escape($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
 					<td class="tc2"><a href="mailto:<?php echo Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?php echo Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
 					<td class="tc3"><?php echo Utils::get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
 					<td class="tc4"><?php echo Utils::forum_number_format($info['user_data'][$cur_poster['poster_id']]['num_posts']) ?></td>
 					<td class="tc5"><?php echo($info['user_data'][$cur_poster['poster_id']]['admin_note'] != '') ? Utils::escape($info['user_data'][$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="'.Url::get('admin/users/ip-stats/id/'.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.__('Results view IP link').'</a> | <a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'/').'">'.__('Results show posts link').'</a>' ?></td>
+					<td class="tcr"><?php echo '<a href="'.$feather->urlFor('usersIpStats', ['id' => $info['user_data'][$cur_poster['poster_id']]['id']]).'">'.__('Results view IP link').'</a> | <a href="'.$feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.__('Results show posts link').'</a>' ?></td>
 				</tr>
 <?php
 
@@ -94,8 +94,8 @@ if (!defined('FEATHER')) {
 			<p class="pagelink"><?php echo $paging_links ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo Url::get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo Url::get('admin/users/') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?php echo $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

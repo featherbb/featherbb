@@ -18,7 +18,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Add forum head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo Url::get('admin/forums/add') ?>">
+			<form method="post" action="<?php echo $feather->urlFor('addForum') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <?php
 if (!empty($cat_list)) {
@@ -67,7 +67,7 @@ if (!empty($forum_data)) {
     ?>
 		<h2 class="block2"><span><?php _e('Manage forums head') ?></span></h2>
 		<div class="box">
-			<form id="edforum" method="post" action="<?php echo Url::get('admin/forums/') ?>">
+			<form id="edforum" method="post" action="<?php echo $feather->urlFor('adminForums') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="update_positions" value="<?php _e('Update positions') ?>" tabindex="3" /></p>
 <?php
@@ -90,7 +90,7 @@ if (!empty($forum_data)) {
 	foreach ($cat_data['cat_forums'] as $forum) {
         ?>
 								<tr>
-									<td class="tcl"><a href="<?php echo Url::get('admin/forums/edit/'.$forum['forum_id'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Edit link') ?></a> | <a href="<?php echo Url::get('admin/forums/delete/'.$forum['forum_id'].'/') ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Delete link') ?></a></td>
+									<td class="tcl"><a href="<?php echo $feather->urlFor('editForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Edit link') ?></a> | <a href="<?php echo $feather->urlFor('deleteForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?php echo $cur_index++ ?>"><?php _e('Delete link') ?></a></td>
 									<td class="tc2"><input type="text" name="position[<?php echo $forum['forum_id'] ?>]" size="3" maxlength="3" value="<?php echo $forum['position'] ?>" tabindex="<?php echo $cur_index++ ?>" /></td>
 									<td class="tcr"><strong><?php echo Utils::escape($forum['forum_name']) ?></strong></td>
 								</tr>

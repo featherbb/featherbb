@@ -19,12 +19,12 @@ if (!defined('FEATHER')) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo Url::get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo Url::get('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('addBan') ?>"><?php _e('Bans') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
+			<p class="pagelink"><?= $paging_links ?></p>
 		</div>
 		<div class="clearer"></div>
 	</div>
@@ -53,13 +53,13 @@ if (!defined('FEATHER')) {
         foreach ($ban_data as $cur_ban) {
             ?>
 				<tr>
-					<td class="tcl"><?php echo($cur_ban['username'] != '') ? Utils::escape($cur_ban['username']) : '&#160;' ?></td>
-					<td class="tc2"><?php echo($cur_ban['email'] != '') ? Utils::escape($cur_ban['email']) : '&#160;' ?></td>
-					<td class="tc3"><?php echo($cur_ban['ip'] != '') ? Utils::escape($cur_ban['ip']) : '&#160;' ?></td>
-					<td class="tc4"><?php echo $feather->utils->format_time($cur_ban['expire'], true) ?></td>
-					<td class="tc5"><?php echo($cur_ban['message'] != '') ? Utils::escape($cur_ban['message']) : '&#160;' ?></td>
-					<td class="tc6"><?php echo($cur_ban['ban_creator_username'] != '') ? '<a href="'.Url::get('user/'.$cur_ban['ban_creator'].'/').'">'.Utils::escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
-					<td class="tcr"><?php echo '<a href="'.Url::get('admin/bans/edit/'.$cur_ban['id'].'/').'">'.__('Edit').'</a> | <a href="'.Url::get('admin/bans/delete/'.$cur_ban['id'].'/').'">'.__('Remove').'</a>' ?></td>
+					<td class="tcl"><?= ($cur_ban['username'] != '') ? Utils::escape($cur_ban['username']) : '&#160;' ?></td>
+					<td class="tc2"><?= ($cur_ban['email'] != '') ? Utils::escape($cur_ban['email']) : '&#160;' ?></td>
+					<td class="tc3"><?= ($cur_ban['ip'] != '') ? Utils::escape($cur_ban['ip']) : '&#160;' ?></td>
+					<td class="tc4"><?= $feather->utils->format_time($cur_ban['expire'], true) ?></td>
+					<td class="tc5"><?= ($cur_ban['message'] != '') ? Utils::escape($cur_ban['message']) : '&#160;' ?></td>
+					<td class="tc6"><?= ($cur_ban['ban_creator_username'] != '') ? '<a href="'.$feather->urlFor('userProfile', ['id' => $cur_ban['ban_creator']]).'">'.Utils::escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
+					<td class="tcr"><?= '<a href="'.$feather->urlFor('editBan', ['id' => $cur_ban['id']]).'">'.__('Edit').'</a> | <a href="'.$feather->urlFor('deleteBan', ['id' => $cur_ban['id']]).'">'.__('Remove').'</a>' ?></td>
 				</tr>
 <?php
 
@@ -78,11 +78,11 @@ if (!defined('FEATHER')) {
 <div class="linksb">
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
+			<p class="pagelink"><?= $paging_links ?></p>
 		</div>
         <ul class="crumbs">
-            <li><a href="<?php echo Url::get('admin/') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?php echo Url::get('admin/bans/') ?>"><?php _e('Bans') ?></a></li>
+            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= $feather->urlFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
 		<div class="clearer"></div>

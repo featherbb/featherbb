@@ -54,7 +54,7 @@ class Login
         $authorized = $this->hook->fire('authorized_login', $authorized);
 
         if (!$authorized) {
-            throw new Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
+            throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         }
 
         // Update the status if this is the first time the user logged in
@@ -191,7 +191,7 @@ class Login
 
                         // Do the user specific replacements to the template
                         $cur_mail_message = str_replace('<username>', $cur_hit->username, $mail_message);
-                        $cur_mail_message = str_replace('<activation_url>', Url::get('user/'.$cur_hit->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
+                        $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['id' => $cur_hit->id, 'action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                         $cur_mail_message = $this->hook->fire('cur_mail_message_password_forgotten', $cur_mail_message);
 

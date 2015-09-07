@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 use FeatherBB\Core\Url;use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
@@ -18,7 +18,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section admin') ?></span></h2>
 		<div class="box">
-			<form id="profile7" method="post" action="<?php echo Url::get('user/'.$id.'/section/admin/') ?>">
+			<form id="profile7" method="post" action="<?php echo $feather->urlFor('profileSection', ['id' => $id, 'section' => 'admin'])?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />

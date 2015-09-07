@@ -31,7 +31,7 @@ class Moderate
     public function display_ip_info($ip)
     {
         $ip = $this->hook->fire('display_ip_info', $ip);
-        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Url::get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 
     public function display_ip_address_post($pid)
@@ -49,7 +49,7 @@ class Moderate
 
         $ip = $this->hook->fire('display_ip_address_post', $ip);
 
-        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Url::get('admin/users/show-users/ip/'.$ip.'/').'">'.__('Show more users').'</a>');
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 
     public function get_moderators($fid)
@@ -460,7 +460,7 @@ class Moderate
             // If the poster is a registered user
             if ($cur_post->poster_id > 1) {
                 if ($this->user->g_view_users == '1') {
-                    $cur_post->poster_disp = '<a href="'.Url::get('user/'.$cur_post->poster_id.'/').'">'.Utils::escape($cur_post->poster).'</a>';
+                    $cur_post->poster_disp = '<a href="'.$this->feather->urlFor('userProfile', ['id' => $cur_post->poster_id]).'">'.Utils::escape($cur_post->poster).'</a>';
                 } else {
                     $cur_post->poster_disp = Utils::escape($cur_post->poster);
                 }
@@ -921,7 +921,7 @@ class Moderate
                 $url_topic = Url::url_friendly($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.Url::get('post/'.$cur_topic['last_post_id'].'/#p'.$cur_topic['last_post_id']).'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.$this->feather->urlFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.$this->feather->utils->format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -938,13 +938,13 @@ class Moderate
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_disp'] = '<a href="'.Url::get('topic/'.$cur_topic['moved_to'].'/'.$url_topic.'/').'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.Url::get('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_disp'] = '<a href="'.Url::get('topic/'.$cur_topic['id'].'/'.$url_topic.'/').'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
@@ -953,7 +953,7 @@ class Moderate
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.Url::get('topic/'.$cur_topic['id'].'/action/new/').'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->urlFor('Topic', ['id' => $cur_topic['id'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }

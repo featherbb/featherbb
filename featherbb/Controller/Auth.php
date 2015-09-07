@@ -60,7 +60,7 @@ class Auth
                     Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
                 }
             }
-            throw new Error(__('Wrong user/pass').' <a href="'.Url::get('login/action/forget/').'">'.__('Forgotten pass').'</a>', 403);
+            throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             $this->feather->template->setPageInfo(array(
                                 'active_page' => 'login',
@@ -135,7 +135,7 @@ class Auth
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
-                $cur_mail_message = str_replace('<activation_url>', Url::get('user/'.$user->id.'/action/change_pass/?key='.$new_password_key), $cur_mail_message);
+                $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = $this->feather->hooks->fire('cur_mail_message_password_forgotten', $cur_mail_message);
 

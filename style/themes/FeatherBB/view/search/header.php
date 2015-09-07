@@ -19,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
 			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo Url::get('search/') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('search') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
 			<li><span>»&#160;</span><strong><?php echo $search['crumbs_text']['search_type'] ?></strong></li>
 		</ul>
 		<div class="pagepost">

@@ -19,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Move users') ?></span></h2>
 		<div class="box">
-			<form name="confirm_move_users" method="post" action="<?php echo Url::get('admin/users/') ?>">
+			<form name="confirm_move_users" method="post" action="<?php echo $feather->urlFor('adminUsers') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<input type="hidden" name="users" value="<?php echo implode(',', $move['user_ids']) ?>" />
 				<div class="inform">

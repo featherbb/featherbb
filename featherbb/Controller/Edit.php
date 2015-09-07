@@ -69,8 +69,7 @@ class Edit
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                // Url::redirect($this->feather->urlFor('viewPost', array('pid' => $id)), __('Post redirect'));
-                Url::redirect($this->feather->url->get('post/'.$id.'/#p'.$id), __('Post redirect'));
+                Url::redirect($this->feather->urlFor('viewPost', ['pid' => $id]).'#p'.$id, __('Post redirect'));
             }
         } else {
             $post = '';

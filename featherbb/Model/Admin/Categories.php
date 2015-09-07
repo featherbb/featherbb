@@ -60,7 +60,7 @@ class Categories
 
         foreach ($forums_in_cat as $forum) {
             // Prune all posts and topics
-            $this->maintenance = new \FeatherBB\Model\Admin\maintenance();
+            $this->maintenance = new \FeatherBB\Model\Admin\Maintenance();
             $this->maintenance->prune($forum->id, 1, -1);
 
             // Delete forum

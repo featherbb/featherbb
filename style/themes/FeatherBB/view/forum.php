@@ -20,7 +20,7 @@ if (!defined('FEATHER')) {
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
 			<li><a href="<?php echo Url::base() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php Url::get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -95,7 +95,7 @@ if (!defined('FEATHER')) {
 		</div>
 		<ul class="crumbs">
 			<li><a href="<?php echo Url::base() ?>/"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><strong><a href="<?php Url::get('forum/'.$id.'/'.$url_forum.'/') ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="<?php $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
 		</ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
 		<div class="clearer"></div>
