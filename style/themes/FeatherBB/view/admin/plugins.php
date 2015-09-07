@@ -48,9 +48,9 @@ if (!defined('FEATHER')) {
                                 <strong><?= $class::$name; ?></strong>
                                 <div class="plugin-actions">
                                     <?php if (array_key_exists($class, $activePlugins)) { ?>
-                                        <a href="<?= Url::get('/admin/plugins/deactivate?plugin='.$class) ?>">Deactivate</a>
+                                        <a href="<?= $feather->urlFor('deactivatePlugin', ['name' => $class]) ?>">Deactivate</a>
                                     <?php } else { ?>
-                                        <a href="<?= Url::get('/admin/plugins/activate?plugin='.$class) ?>">Activate</a>
+                                        <a href="<?= $feather->urlFor('activatePlugin', ['name' => $class]) ?>">Activate</a>
                                     <?php } ?>
                                 </div>
                             </td>

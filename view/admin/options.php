@@ -416,7 +416,7 @@ if (!defined('FEATHER')) {
 									<label class="conl"><input type="radio" name="form_censoring" value="0"<?php if ($feather->forum_settings['o_censoring'] == '0') {
 											echo ' checked="checked"';
 										} ?> />&#160;<strong><?php _e('No') ?></strong></label>
-									<span class="clearb"><?php printf(__('Censor words help'), '<a href="'.Url::get('admin/censoring/').'">'.__('Censoring').'</a>') ?></span>
+									<span class="clearb"><?php printf(__('Censor words help'), '<a href="'.$feather->urlFor('adminCensoring').'">'.__('Censoring').'</a>') ?></span>
 								</td>
 							</tr>
 							<tr>

@@ -49,27 +49,27 @@ class Plugins
         )->addTemplate('admin/plugins.php')->display();
     }
 
-    public function activate()
+    public function activate($pluginName = null)
     {
         // The plugin to load should be supplied via GET
-        $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
-        if (!$class) {
+        // $pluginName = $this->request->get('plugin') ? $this->request->get('plugin') : null;
+        if (!$pluginName) {
             throw new Error(__('Bad request'), 400);
         }
 
         // Check if plugin follows PSR-4 conventions and extends base forum plugin
-        if (!class_exists($class) || !property_exists($class, 'isValidFBPlugin')) {
-            throw new Error(sprintf(__('No plugin message'), Utils::escape($class)), 400);
+        if (!class_exists($pluginName) || !property_exists($pluginName, 'isValidFBPlugin')) {
+            throw new Error(sprintf(__('No plugin message'), Utils::escape($pluginName)), 400);
         }
 
-        $plugin = new $class;
+        $plugin = new $pluginName;
         try {
-            $plugin->activate($class);
+            $plugin->activate($pluginName);
         } catch (\Exception $e) {
             Url::redirect($this->feather->urlFor('adminPlugins'), $e->getMessage());
         }
         // Plugin has been activated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin "'.$class::$name.'" activated!');
+        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin "'.$pluginName::$name.'" activated!');
     }
 
     public function deactivate()

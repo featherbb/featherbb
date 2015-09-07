@@ -46,17 +46,17 @@ if (!defined('FEATHER')) {
 		<p><?php _e('Links info') ?></p>
 		<p><a name="url"></a><code>[url=<?php echo Utils::escape(Url::base(true).'/') ?>]<?php echo Utils::escape($feather->forum_settings['o_board_title']) ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Utils::escape(Url::base(true).'/') ?>"><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></a></samp></p>
 		<p><code>[url]<?php echo Utils::escape(Url::base(true).'/') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Utils::escape(Url::base(true).'/') ?>"><?php echo Utils::escape(Url::base(true).'/') ?></a></samp></p>
-		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('/help') ?>"><?php _e('This help page') ?></a></samp></p>
+		<p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('help') ?>"><?php _e('This help page') ?></a></samp></p>
 		<p><code>[email]myname@example.com[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
 		<p><code>[email=myname@example.com]<?php _e('My email address') ?>[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com"><?php _e('My email address') ?></a></samp></p>
-		<p><code>[topic=1]<?php _e('Test topic') ?>[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('topic/1/') ?>"><?php _e('Test topic') ?></a></samp></p>
-		<p><code>[topic]1[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('topic/1/') ?>"><?php echo Url::get('topic/1/') ?></a></samp></p>
-		<p><code>[post=1]<?php _e('Test post') ?>[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('post/1/#p1') ?>"><?php _e('Test post') ?></a></samp></p>
-		<p><code>[post]1[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('post/1/#p1') ?>"><?php echo Url::get('post/1/#p1') ?></a></samp></p>
-		<p><code>[forum=1]<?php _e('Test forum') ?>[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('topic/1/') ?>"><?php _e('Test forum') ?></a></samp></p>
-		<p><code>[forum]1[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('forum/1/') ?>"><?php echo Url::get('forum/1/') ?></a></samp></p>
-		<p><code>[user=2]<?php _e('Test user') ?>[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('user/2/') ?>"><?php _e('Test user') ?></a></samp></p>
-		<p><code>[user]2[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo Url::get('user/2/') ?>"><?php echo Url::get('user/2/') ?></a></samp></p>
+		<p><code>[topic=1]<?php _e('Test topic') ?>[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('Topic', ['id' => '1']) ?>"><?php _e('Test topic') ?></a></samp></p>
+		<p><code>[topic]1[/topic]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('Topic', ['id' => '1']) ?>"><?php echo $feather->urlFor('Topic', ['id' => '1']) ?></a></samp></p>
+		<p><code>[post=1]<?php _e('Test post') ?>[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('viewPost', ['pid' => '1']).'#1' ?>"><?php _e('Test post') ?></a></samp></p>
+		<p><code>[post]1[/post]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('viewPost', ['pid' => '1']).'#1' ?>"><?php echo $feather->urlFor('viewPost', ['pid' => '1']).'#1' ?></a></samp></p>
+		<p><code>[forum=1]<?php _e('Test forum') ?>[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('Topic', ['id' => '1']) ?>"><?php _e('Test forum') ?></a></samp></p>
+		<p><code>[forum]1[/forum]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('Forum', ['id' => '1']) ?>"><?php echo $feather->urlFor('Forum', ['id' => '1']) ?></a></samp></p>
+		<p><code>[user=2]<?php _e('Test user') ?>[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('userProfile', ['id' => '2']) ?>"><?php _e('Test user') ?></a></samp></p>
+		<p><code>[user]2[/user]</code> <?php _e('produces') ?> <samp><a href="<?php echo $feather->urlFor('userProfile', ['id' => '2']) ?>"><?php echo $feather->urlFor('userProfile', ['id' => '2']) ?></a></samp></p>
 	</div>
 	<div class="inbox">
 		<p><a name="img"></a><?php _e('Images info') ?></p>

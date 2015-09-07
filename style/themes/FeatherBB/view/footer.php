@@ -29,13 +29,13 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
     if ($active_page == 'Forum') {
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/forum/'.$fid.'/page/'.$page_number.'/').'">'.__('Moderate forum').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateForum', ['id' => $fid, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
     } elseif ($active_page == 'Topic') {
         if (isset($pid)) {
-            $parameter = 'param/'.$pid.'/';
+            $parameter = $pid;
         } elseif (isset($page_number) && $page_number != 1) {
-            $parameter = 'param/'.$page_number.'/';
+            $parameter = $page_number;
         } else {
             $parameter = '';
         }
@@ -45,19 +45,19 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
         // TODO: all
         //echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/param/'.$p).'">'.__('Moderate topic').'</a>'.($num_pages > 1 ? ' (<a href="'.Url::get('moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/'.$parameter.'/all/').'">'.__('All').'</a>)' : '').'</span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$tid.'/forum/'.$fid.'/action/moderate/page/'.$page_number.'/').'">'.__('Moderate topic').'</a></span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$tid.'/forum/'.$fid.'/action/move/'.$parameter).'">'.__('Move topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopicPage', ['id' => $tid, 'fid' => $fid, 'action' => 'moderate', 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'move', 'param' => $parameter]).'">'.__('Move topic').'</a></span></dd>'."\n";
 
         if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$tid.'/forum/'.$fid.'/action/open/'.$parameter).'">'.__('Open topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'open', 'param' => $parameter]).'">'.__('Open topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$tid.'/forum/'.$fid.'/action/close/'.$parameter).'">'.__('Close topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'close', 'param' => $parameter]).'">'.__('Close topic').'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$tid.'/forum/'.$fid.'/action/unstick/'.$parameter).'">'.__('Unstick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'unstick', 'param' => $parameter]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.Url::get('moderate/topic/'.$tid.'/forum/'.$fid.'/action/stick/'.$parameter).'">'.__('Stick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'stick', 'param' => $parameter]).'">'.__('Stick topic').'</a></span></dd>'."\n";
         }
 
         echo "\t\t\t".'</dl>'."\n";

@@ -103,7 +103,7 @@ if (!defined('FEATHER')) {
 <?php
 
         foreach ($plugins as $plugin_name => $plugin) {
-            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="'.Url::get('admin/loader/?plugin='.$plugin_name).'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
+            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('infoPlugin', ['name' => $plugin_name]).'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
         }
 
         ?>
