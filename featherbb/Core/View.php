@@ -194,7 +194,7 @@ class View
     {
         $pathname = $this->templatesDirectory . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR);
         if (!is_file($pathname)) {
-            $pathname = $this->app->forum_env['FEATHER_ROOT'] . 'featherbb/View/' . ltrim($file, DIRECTORY_SEPARATOR); // Fallback on default view
+            $pathname = $this->app->forum_env['FEATHER_ROOT'] . 'view/' . ltrim($file, DIRECTORY_SEPARATOR); // Fallback on default view
             if (!is_file($pathname)) {
                 throw new \RuntimeException("View cannot add template `$file` to stack because the template does not exist");
             }
@@ -251,7 +251,7 @@ class View
 
     public function setStyle($style)
     {
-        if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/')) {
+        if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
