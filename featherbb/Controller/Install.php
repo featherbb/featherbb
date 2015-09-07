@@ -9,9 +9,10 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Random;
+use FeatherBB\Middleware\Core;
 
 class Install
 {
@@ -165,7 +166,7 @@ class Install
 
     public function create_db(array $data)
     {
-        \FeatherBB\Core::init_db($data);
+        Core::init_db($data);
 
         // Load appropriate language
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
