@@ -18,7 +18,7 @@ if (!defined('FEATHER')) {
 <div class="blockform">
 	<h2><span><?php _e('Change email') ?></span></h2>
 	<div class="box">
-		<form id="change_email" method="post" action="<?php echo Url::get('user/'.$id.'/action/change_email') ?>" onsubmit="return process_form(this)">
+		<form id="change_email" method="post" action="<?php echo $feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_email']) ?>" onsubmit="return process_form(this)">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>

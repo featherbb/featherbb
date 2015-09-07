@@ -229,7 +229,7 @@ class Profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
-                    $mail_message = str_replace('<profile_url>', Url::get('user/'.$id.'/'), $mail_message);
+                    $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_message', $mail_message);
 
@@ -266,7 +266,7 @@ class Profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                    $mail_message = str_replace('<profile_url>', Url::get('user/'.$id.'/'), $mail_message);
+                    $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = $this->hook->fire('change_email_mail_dupe_message', $mail_message);
 
@@ -303,7 +303,7 @@ class Profile
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
-            $mail_message = str_replace('<activation_url>', Url::get('user/'.$id.'/action/change_email/?key='.$new_email_key), $mail_message);
+            $mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
 
@@ -595,7 +595,7 @@ class Profile
 
         $pid = $this->hook->fire('promote_user', $pid);
 
-        Url::redirect($this->feather->url->get('post/'.$pid.'/#p'.$pid), __('User promote redirect'));
+        Url::redirect($this->feather->urlFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -1140,7 +1140,7 @@ class Profile
         if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-            $user['email_field'] = '<a href="'.Url::get('email/'.$user['id'].'/').'">'.__('Send email').'</a>';
+            $user['email_field'] = '<a href="'.$this->feather->urlFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
         }
@@ -1196,11 +1196,11 @@ class Profile
         if ($this->user->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
-                $quick_searches[] = '<a href="'.Url::get('search/?action=show_user_topics&amp;user_id='.$user['id']).'">'.__('Show topics').'</a>';
-                $quick_searches[] = '<a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$user['id']).'">'.__('Show posts').'</a>';
+                $quick_searches[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
+                $quick_searches[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
             if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
-                $quick_searches[] = '<a href="'.Url::get('search/?action=show_subscriptions&amp;user_id='.$user['id']).'">'.__('Show subscriptions').'</a>';
+                $quick_searches[] = '<a href="'.$this->feather->urlFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
             if (!empty($quick_searches)) {
@@ -1238,12 +1238,12 @@ class Profile
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.Url::get('email/'.$id.'/').'">'.__('Send email').'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.$this->feather->urlFor('email', ['id' => $id]).'">'.__('Send email').'</a></span></p>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Url::get('user/'.$id.'/action/change_email/').'">'.__('Change email').'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
@@ -1259,11 +1259,11 @@ class Profile
         }
 
         if ($this->user->g_search == '1' || $this->user->g_id == FEATHER_ADMIN) {
-            $posts_actions[] = '<a href="'.Url::get('search/?action=show_user_topics&amp;user_id='.$id).'">'.__('Show topics').'</a>';
-            $posts_actions[] = '<a href="'.Url::get('search/?action=show_user_posts&amp;user_id='.$id).'">'.__('Show posts').'</a>';
+            $posts_actions[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
+            $posts_actions[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
             if ($this->config['o_topic_subscriptions'] == '1') {
-                $posts_actions[] = '<a href="'.Url::get('search/?action=show_subscriptions&amp;user_id='.$id).'">'.__('Show subscriptions').'</a>';
+                $posts_actions[] = '<a href="'.$this->feather->urlFor('search').'?action=show_subscriptions&amp;user_id='.$id.'">'.__('Show subscriptions').'</a>';
             }
         }
 

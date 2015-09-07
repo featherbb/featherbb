@@ -88,13 +88,13 @@ class Topic
             'promptQuote' => __('promptQuote')
         );
 
-        $this->feather->template->addAsset('canonical', Url::get('forum/'.$id.'/'.$url_forum.'/'));
+        $this->feather->template->addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->template->addAsset('prev', Url::get('forum/'.$id.'/'.$url_forum.'/page/'.($p - 1).'/'));
+                $this->feather->template->addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                $this->feather->template->addAsset('next', Url::get('forum/'.$id.'/'.$url_forum.'/page/'.($p + 1).'/'));
+                $this->feather->template->addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 

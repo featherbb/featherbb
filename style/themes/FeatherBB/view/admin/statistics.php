@@ -28,7 +28,7 @@ if (!defined('FEATHER')) {
 <?php if ($feather->user->g_id == FEATHER_ADMIN): ?>					<dt><?php _e('Environment label') ?></dt>
 					<dd>
 						<?php printf(__('Environment data OS'), PHP_OS) ?><br />
-						<?php printf(__('Environment data version'), phpversion(), '<a href="'.Url::get('admin/phpinfo/').'">'.__('Show info').'</a>') ?><br />
+						<?php printf(__('Environment data version'), phpversion(), '<a href="'.$feather->urlFor('phpinfo').'">'.__('Show info').'</a>') ?><br />
 						<?php printf(__('Environment data acc')."\n", $php_accelerator) ?>
 					</dd>
 					<dt><?php _e('Database label') ?></dt>

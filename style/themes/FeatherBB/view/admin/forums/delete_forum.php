@@ -18,7 +18,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Confirm delete head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo Url::get('admin/forums/delete/'.$cur_forum['id'].'/') ?>">
+			<form method="post" action="<?php echo $feather->urlFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>

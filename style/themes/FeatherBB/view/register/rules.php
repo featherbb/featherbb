@@ -19,7 +19,7 @@ if (!defined('FEATHER')) {
 <div id="rules" class="blockform">
 	<div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
 	<div class="box">
-		<form method="get" action="<?php echo Url::get('register/') ?>">
+		<form method="get" action="<?php echo $feather->urlFor('register') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Rules legend') ?></legend>
