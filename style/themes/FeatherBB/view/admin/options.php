@@ -20,7 +20,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Options head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo Url::get('admin/options/') ?>">
+			<form method="post" action="<?php echo $feather->urlFor('adminOptions') ?>">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
 				<div class="inform">

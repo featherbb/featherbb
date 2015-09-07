@@ -130,7 +130,7 @@ if ($feather->user->is_guest) {
     echo "\t\t\t\t\t\t".'<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Url::get('user/'.$feather->user->id.'/').'">'.__('Profile').'</a></li>'."\n";
 
     if ($feather->user->is_admmod) {
-        echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Url::get('admin/').'">'.__('Admin').'</a></li>'."\n";
+        echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('adminIndex').'">'.__('Admin').'</a></li>'."\n";
     }
 
     echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.Url::get('auth/logout/token/'.Random::hash($feather->user->id.Random::hash($feather->request->getIp()))).'/">'.__('Logout').'</a></li>'."\n";
@@ -181,12 +181,12 @@ if ($feather->user->is_guest) { ?>
     if ($feather->user->is_admmod) {
         if ($feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2') {
             if ($has_reports) {
-                echo "\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Url::get('admin/reports/').'">'.__('New reports').'</a></strong></span></li>'."\n";
+                echo "\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.$feather->urlFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
             }
         }
 
         if ($feather->forum_settings['o_maintenance'] == '1') {
-            echo "\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Url::get('admin/maintenance/').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+            echo "\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.$feather->urlFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
     echo "\t\t\t\t\t".'</ul>'."\n";

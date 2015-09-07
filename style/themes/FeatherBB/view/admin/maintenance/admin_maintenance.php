@@ -18,13 +18,13 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Maintenance head') ?></span></h2>
 		<div class="box">
-			<form method="get" action="<?php echo Url::get('admin/maintenance/') ?>">
+			<form method="get" action="<?php echo $feather->urlFor('adminMaintenance') ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="rebuild" />
 					<fieldset>
 						<legend><?php _e('Rebuild index subhead') ?></legend>
 						<div class="infldset">
-							<p><?php printf(__('Rebuild index info'), '<a href="'.Url::get('admin/options/#maintenance').'">'.__('Maintenance mode').'</a>') ?></p>
+							<p><?php printf(__('Rebuild index info'), '<a href="'.$feather->urlFor('adminOptions').'#maintenance">'.__('Maintenance mode').'</a>') ?></p>
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php _e('Posts per cycle label') ?></th>
@@ -54,7 +54,7 @@ if (!defined('FEATHER')) {
 				</div>
 			</form>
 
-			<form method="post" action="<?php echo Url::get('admin/maintenance/') ?>" onsubmit="return process_form(this)">
+			<form method="post" action="<?php echo $feather->urlFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
 				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
@@ -89,7 +89,7 @@ if (!defined('FEATHER')) {
 									</td>
 								</tr>
 							</table>
-							<p class="topspace"><?php printf(__('Prune info'), '<a href="'.Url::get('admin/options/#maintenance').'">'.__('Maintenance mode').'</a>') ?></p>
+							<p class="topspace"><?php printf(__('Prune info'), '<a href="'.$feather->urlFor('adminOptions').'#maintenance">'.__('Maintenance mode').'</a>') ?></p>
 							<div class="fsetsubmit"><input type="submit" name="prune" value="<?php _e('Prune') ?>" tabindex="8" /></div>
 						</div>
 					</fieldset>

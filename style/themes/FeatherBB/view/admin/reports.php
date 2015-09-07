@@ -19,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('New reports head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?= Url::get('admin/reports/') ?>">
+			<form method="post" action="<?= $feather->urlFor('adminReports') ?>">
 				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <?php
 if (!empty($report_data)) {

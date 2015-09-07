@@ -81,8 +81,7 @@ class Index
         $this->feather->template->setPageInfo(array(
                             'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Index')),
                             'active_page' => 'admin',
-                            'admin_console' => true,
-                            'install_file_exists'    =>   is_dir($this->feather->forum_env['FEATHER_ROOT'].'install'),
+                            'admin_console' => true
                             )
                     )->addTemplate('admin/index.php')->display();
     }

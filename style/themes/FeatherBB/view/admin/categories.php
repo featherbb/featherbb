@@ -19,7 +19,7 @@ if (!defined('FEATHER')) {
 	<div class="blockform">
 		<h2><span><?php _e('Add categories head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo Url::get('admin/categories/add/') ?>">
+			<form method="post" action="<?= $feather->urlFor('addCategory') ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Add categories subhead') ?></legend>
@@ -28,9 +28,9 @@ if (!defined('FEATHER')) {
 								<tr>
 									<th scope="row"><?php _e('Add category label') ?><div><input type="submit" value="<?php _e('Add new submit') ?>" tabindex="2" /></div></th>
 									<td>
-										<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+										<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 										<input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
-										<span><?php printf(__('Add category help'), '<a href="'.Url::get('admin/forums').'">'.__('Forums').'</a>') ?></span>
+										<span><?php printf(__('Add category help'), '<a href="'.$feather->urlFor('adminForums').'">'.__('Forums').'</a>') ?></span>
 									</td>
 								</tr>
 							</table>
@@ -42,8 +42,8 @@ if (!defined('FEATHER')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php _e('Delete categories head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo Url::get('admin/categories/delete') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('deleteCategory') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Delete categories subhead') ?></legend>
@@ -74,8 +74,8 @@ if (!defined('FEATHER')) {
 
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php _e('Edit categories head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo Url::get('admin/categories/edit/') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('editCategory') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Edit categories subhead') ?></legend>
@@ -93,8 +93,8 @@ if (!defined('FEATHER')) {
     foreach ($cat_list as $cur_cat) {
         ?>
 								<tr>
-									<td class="tcl"><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][name]" value="<?php echo Utils::escape($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
-									<td><input type="text" name="cat[<?php echo $cur_cat['id'] ?>][order]" value="<?php echo $cur_cat['disp_position'] ?>" size="3" maxlength="3" /></td>
+									<td class="tcl"><input type="text" name="cat[<?= $cur_cat['id'] ?>][name]" value="<?= Utils::escape($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
+									<td><input type="text" name="cat[<?= $cur_cat['id'] ?>][order]" value="<?= $cur_cat['disp_position'] ?>" size="3" maxlength="3" /></td>
 								</tr>
 <?php
 

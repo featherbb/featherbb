@@ -6,7 +6,7 @@
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 // Make sure no one attempts to run this script "directly"
 if (!defined('FEATHER')) {
     exit;
@@ -31,13 +31,6 @@ if (!defined('FEATHER')) {
 				</ul>
 			</div>
 		</div>
-
-<?php if ($install_file_exists) : ?>
-		<h2 class="block2"><span><?php _e('Alerts head') ?></span></h2>
-		<div id="adalerts" class="box">
-			<p><?php printf(__('Install file exists'), '<a href="'.$feather->url->get('admin/action/remove_install_file/').'">'.__('Delete install file').'</a>') ?></p>
-		</div>
-<?php endif; ?>
 
 		<h2 class="block2"><span><?php _e('About head') ?></span></h2>
 		<div id="adstats" class="box">

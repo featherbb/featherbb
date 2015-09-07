@@ -138,7 +138,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     };
 
     // Admin index
-    $feather->get('(/action/:action)(/)', '\FeatherBB\Controller\Admin\index:display');
+    $feather->get('(/action/:action)(/)', '\FeatherBB\Controller\Admin\index:display')->name('adminAction');
     $feather->get('/index(/)', '\FeatherBB\Controller\Admin\index:display')->name('adminIndex');
 
     // Admin bans
