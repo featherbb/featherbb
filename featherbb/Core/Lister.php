@@ -12,53 +12,20 @@ namespace FeatherBB\Core;
 class Lister
 {
     /**
-     * Get all php files in plugin folder.
-     */
-    public static function getPluginFiles($folder = '')
-    {
-        $plugin_files = array();
-        $feather = \Slim\Slim::getInstance();
-
-        $plugins_dir = new \RecursiveDirectoryIterator($feather->forum_env['FEATHER_ROOT'].'plugins/'.$folder);
-        $iterator = new \RecursiveIteratorIterator($plugins_dir);
-        $iterator->setMaxDepth(1);
-        $php_files = new \RegexIterator($iterator, '/.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
-
-        foreach ($php_files as $file) {
-            $plugin_files[] = $file[0];
-        }
-
-        return $plugin_files;
-    }
-
-    /**
      * Get all valid plugin files.
      */
-    public static function getValidPlugins($folder = '')
+    public static function getPlugins()
     {
-        $valid_plugins = array();
-
-        $plugin_files = self::getPluginFiles($folder);
-
+        $plugins = array();
         $feather = \Slim\Slim::getInstance();
-        $feather_root = $feather->forum_env['FEATHER_ROOT'];
 
-        foreach ($plugin_files as $key => $file_path) {
-            // Remove forum base path
-            $relative_path = DIRECTORY_SEPARATOR.preg_replace("/" . preg_quote($feather_root, "/") . "/", '', $file_path);
-            preg_match('/^(.+)\.php$/i', $relative_path, $class_name);
-            $parts = explode(DIRECTORY_SEPARATOR, $class_name[1]);
-            $parts[1] = ucfirst($parts[1]); // Replace \plugins to \Core\Plugins for convention
-            $name_space = join($parts, "\\");
-            // Check if plugin follows PSR-4 conventions and extends base forum plugin
-            if (class_exists($name_space) && property_exists($name_space, 'isValidFBPlugin')) {
-                $class = new $name_space;
-                $valid_plugins[end($parts)] =  $name_space;
-            }
-        }
+        foreach (glob($feather->forum_env['FEATHER_ROOT'].'plugins/*/featherbb.json') as $plugin_file)
+		{
+            $plugins[] =  json_decode(file_get_contents($plugin_file));
+		}
 
-        ksort($valid_plugins);
-        return $valid_plugins;
+        natcasesort($plugins);
+        return $plugins;
     }
 
     /**

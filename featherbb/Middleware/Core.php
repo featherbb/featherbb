@@ -15,6 +15,7 @@ namespace FeatherBB\Middleware;
 
 use DB;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Plugin as PluginManager;
 
 class Core extends \Slim\Middleware
 {
@@ -118,6 +119,12 @@ class Core extends \Slim\Middleware
         DB::configure('id_column_overrides', array(
             $config['db_prefix'].'groups' => 'g_id',
         ));
+    }
+
+    public static function loadPlugins()
+    {
+        $manager = new PluginManager();
+        $manager->loadPlugins();
     }
 
     // Getters / setters for Slim container (avoid magic get error)
@@ -255,8 +262,8 @@ class Core extends \Slim\Middleware
         $this->app->config = $this->forum_settings; // Legacy
         extract($this->forum_settings); // Legacy
 
-        // Run hooks of activated plugins
-        \FeatherBB\Core\Plugin::runActivePlugins();
+        // Run activated plugins
+        self::loadPlugins();
 
         // Define time formats
         $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');

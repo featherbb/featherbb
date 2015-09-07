@@ -9,9 +9,11 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\Lister;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Plugin as PluginManager;
 
 class Plugins
 {
@@ -22,72 +24,50 @@ class Plugins
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/plugins.mo');
     }
 
     public function index()
     {
-        // Update permissions
-        // if ($this->feather->request->isPost()) {
-        //     $this->model->update_permissions();
-        // }
-
         // AdminUtils::generateAdminMenu('plugins');
         $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
-        $pluginsList = \FeatherBB\Core\Lister::getValidPlugins();
-        // var_dump($pluginsList);
+        $plugins = Lister::getPlugins();
+        // var_dump($plugins);
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
         // var_dump($activePlugins);
+        // $this->feather->cache->delete('active_plugins');
 
         $this->feather->template->setPageInfo(array(
                 'admin_console' => true,
                 'active_page' => 'admin',
-                'pluginsList'    =>    $pluginsList,
+                'plugins'    =>    $plugins,
                 'activePlugins'    =>    $activePlugins,
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), 'Plugins'),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
             )
         )->addTemplate('admin/plugins.php')->display();
     }
 
-    public function activate($pluginName = null)
+    public function activate($plugin = null)
     {
-        // The plugin to load should be supplied via GET
-        // $pluginName = $this->request->get('plugin') ? $this->request->get('plugin') : null;
-        if (!$pluginName) {
-            throw new Error(__('Bad request'), 400);
-        }
+        if (!$plugin) throw new Error(__('Bad request'), 400);
 
-        // Check if plugin follows PSR-4 conventions and extends base forum plugin
-        if (!class_exists($pluginName) || !property_exists($pluginName, 'isValidFBPlugin')) {
-            throw new Error(sprintf(__('No plugin message'), Utils::escape($pluginName)), 400);
-        }
+        $manager = new PluginManager();
+        $manager->activate($plugin);
 
-        $plugin = new $pluginName;
-        try {
-            $plugin->activate($pluginName);
-        } catch (\Exception $e) {
-            Url::redirect($this->feather->urlFor('adminPlugins'), $e->getMessage());
-        }
         // Plugin has been activated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin "'.$pluginName::$name.'" activated!');
+        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin activated!');
     }
 
-    public function deactivate()
+    public function deactivate($plugin = null)
     {
-        // The plugin to load should be supplied via GET
-        $class = $this->request->get('plugin') ? $this->request->get('plugin') : null;
-        if (!$class) {
-            throw new Error(__('Bad request'), 400);
-        }
+        if (!$plugin) throw new Error(__('Bad request'), 400);
 
-        $plugin = new $class;
-        try {
-            $plugin->deactivate($class);
-        } catch (\Exception $e) {
-            Url::redirect($this->feather->urlFor('adminPlugins'), $this->feather->utils->escape($e->getMessage()));
-        }
+        $manager = new PluginManager();
+        $manager->deactivate($plugin);
+
         // Plugin has been activated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin "'.$class::$name.'" deactivated!'));
+        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
 
     public function display()
