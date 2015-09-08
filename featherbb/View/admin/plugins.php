@@ -10,20 +10,10 @@
 use FeatherBB\Core\Url;
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 ?>
-
-<div class="linkst">
-	<div class="inbox crumbsplus">
-		<ul class="crumbs">
-			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?= $feather->urlFor('adminPlugins') ?>"><strong><?php _e('Extension') ?></strong></a></li>
-		</ul>
-		<div class="clearer"></div>
-	</div>
-</div>
 
 <div class="block">
     <h2>Plugins</h2>
@@ -38,7 +28,7 @@ if (!defined('FEATHER')) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($plugins as $plugin) : ?>
+                    <?php foreach ($availablePlugins as $plugin) : ?>
                         <tr>
                             <td>
                                 <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
@@ -60,7 +50,7 @@ if (!defined('FEATHER')) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <p style="text-align:right"><?= count($plugins) ?> éléments</p>
+            <p style="text-align:right"><?= count($availablePlugins) ?> éléments</p>
         </div>
     </div>
 </div>

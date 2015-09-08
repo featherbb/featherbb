@@ -218,6 +218,7 @@ class Utils
     //
     public static function get_title($user)
     {
+        $feather = \Slim\Slim::getInstance();
         global $feather_bans;
         static $ban_list;
 
@@ -242,7 +243,7 @@ class Utils
             $user_title = self::escape($user['g_user_title']);
         }
         // If the user is a guest
-        elseif ($user['g_id'] == FEATHER_GUEST) {
+        elseif ($user['g_id'] == $feather->forum_env['FEATHER_GUEST']) {
             $user_title = __('Guest');
         }
         // If nothing else helps, we assign the default

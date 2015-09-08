@@ -11,7 +11,7 @@ use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 ?>
@@ -25,10 +25,10 @@ if (!defined('FEATHER')) {
 					<dd>
 						<?php printf(__('Server load data')."\n", $server_load, $num_online) ?>
 					</dd>
-<?php if ($feather->user->g_id == FEATHER_ADMIN): ?>					<dt><?php _e('Environment label') ?></dt>
+<?php if ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']): ?>					<dt><?php _e('Environment label') ?></dt>
 					<dd>
 						<?php printf(__('Environment data OS'), PHP_OS) ?><br />
-						<?php printf(__('Environment data version'), phpversion(), '<a href="'.$feather->urlFor('phpinfo').'">'.__('Show info').'</a>') ?><br />
+						<?php printf(__('Environment data version'), phpversion(), '<a href="'.$feather->urlFor('phpInfo').'">'.__('Show info').'</a>') ?><br />
 						<?php printf(__('Environment data acc')."\n", $php_accelerator) ?>
 					</dd>
 					<dt><?php _e('Database label') ?></dt>

@@ -11,7 +11,7 @@ use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 ?>
@@ -33,7 +33,7 @@ if (!defined('FEATHER')) {
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] != FEATHER_ADMIN && $cur_group['g_id'] != FEATHER_GUEST) {
+    if ($cur_group['g_id'] != $feather->forum_env['FEATHER_ADMIN'] && $cur_group['g_id'] != $feather->forum_env['FEATHER_GUEST']) {
         if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
@@ -66,7 +66,7 @@ foreach ($groups as $cur_group) {
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] > FEATHER_GUEST && $cur_group['g_moderator'] == 0) {
+    if ($cur_group['g_id'] > $feather->forum_env['FEATHER_GUEST'] && $cur_group['g_moderator'] == 0) {
         if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
@@ -98,7 +98,7 @@ foreach ($groups as $cur_group) {
 							<table>
 <?php
 foreach ($groups as $cur_group) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.$feather->urlFor('editGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > FEATHER_MEMBER) ? ' | <a href="'.$feather->urlFor('deleteGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
+    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.$feather->urlFor('editGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > $feather->forum_env['FEATHER_MEMBER']) ? ' | <a href="'.$feather->urlFor('deleteGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>

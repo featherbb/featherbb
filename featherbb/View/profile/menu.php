@@ -10,7 +10,7 @@
 use FeatherBB\Core\Url;
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 
@@ -46,7 +46,7 @@ if (!defined('FEATHER')) {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo $feather->urlFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>"><?php _e('Section privacy') ?></a></li>
-<?php if ($feather->user->g_id == FEATHER_ADMIN || ($feather->user->g_moderator == '1' && $feather->user->g_mod_ban_users == '1')): ?>					<li<?php if ($page == 'admin') {
+<?php if ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN'] || ($feather->user->g_moderator == '1' && $feather->user->g_mod_ban_users == '1')): ?>					<li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
     ?>><a href="<?php echo $feather->urlFor('profileSection', ['id' => $id, 'section' => 'admin']) ?>"><?php _e('Section admin') ?></a></li>

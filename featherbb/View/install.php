@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 
@@ -72,7 +72,7 @@ if (!defined('FEATHER')) {
                         ?>
 
                         <div class="blockform">
-                            <h2><span><?php echo sprintf(__('Install'), FORUM_VERSION) ?></span></h2>
+                            <h2><span><?php echo sprintf(__('Install'), $feather->forum_env['FORUM_VERSION']) ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
                                     <?php if (!empty($errors)): ?>

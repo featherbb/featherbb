@@ -42,7 +42,7 @@ class Auth
             if (!empty($user->password)) {
                 $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
-                    if ($user->group_id == FEATHER_UNVERIFIED) {
+                    if ($user->group_id == $this->feather->forum_env['FEATHER_UNVERIFIED']) {
                         ModelAuth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
                         if (!$this->feather->cache->isCached('users_info')) {
                             $this->feather->cache->store('users_info', Cache::get_users_info());

@@ -25,11 +25,6 @@ class Censoring
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/censoring.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
-    }
-
     public function display()
     {
         // Add a censor word

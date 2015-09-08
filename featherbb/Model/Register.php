@@ -142,7 +142,7 @@ class Register
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
-        $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : FEATHER_UNVERIFIED;
+        $intial_group_id = ($this->config['o_regs_verify'] == '0') ? $this->config['o_default_user_group'] : $this->feather->forum_env['FEATHER_UNVERIFIED'];
         $password_hash = Random::hash($user['password1']);
 
         // Add the user

@@ -33,7 +33,7 @@ class Delete
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == FEATHER_ADMIN || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
@@ -46,7 +46,7 @@ class Delete
             throw new Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && $this->feather->user->g_id != FEATHER_ADMIN && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && $this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             throw new Error(__('No permission'), 403);
         }
 

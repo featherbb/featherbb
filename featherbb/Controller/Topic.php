@@ -35,7 +35,7 @@ class Topic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == FEATHER_ADMIN || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
         if ($is_admmod) {
             $admin_ids = Utils::get_admin_ids();
         }

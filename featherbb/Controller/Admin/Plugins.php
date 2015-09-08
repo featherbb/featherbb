@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Lister;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Utils;
@@ -32,18 +33,20 @@ class Plugins
         // AdminUtils::generateAdminMenu('plugins');
         $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
-        $plugins = Lister::getPlugins();
-        // var_dump($plugins);
+        $availablePlugins = Lister::getPlugins();
+        // var_dump($availablePlugins);
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
         // var_dump($activePlugins);
         // $this->feather->cache->delete('active_plugins');
 
+        AdminUtils::generateAdminMenu('plugins');
+
         $this->feather->template->setPageInfo(array(
-                'admin_console' => true,
-                'active_page' => 'admin',
-                'plugins'    =>    $plugins,
-                'activePlugins'    =>    $activePlugins,
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
+            'admin_console' => true,
+            'active_page' => 'admin',
+            'availablePlugins'    =>    $availablePlugins,
+            'activePlugins'    =>    $activePlugins,
+            'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
             )
         )->addTemplate('admin/plugins.php')->display();
     }

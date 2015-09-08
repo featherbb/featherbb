@@ -10,7 +10,7 @@
 use FeatherBB\Core\Url;use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 
@@ -62,7 +62,7 @@ if (!defined('FEATHER')) {
 				</div>
 <?php
 
-            if ($user['g_moderator'] == '1' || $user['g_id'] == FEATHER_ADMIN) {
+            if ($user['g_moderator'] == '1' || $user['g_id'] == $feather->forum_env['FEATHER_ADMIN']) {
                 ?>
 				<div class="inform">
 					<fieldset>

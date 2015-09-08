@@ -8,7 +8,7 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 ?>
@@ -16,7 +16,7 @@ if (!defined('FEATHER')) {
 <div id="searchform" class="blockform">
 	<h2><span><?php _e('Search') ?></span></h2>
 	<div class="box">
-		<form id="search" method="get" action="">
+		<form id="search" method="get" action="<?= $feather->urlFor('search') ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Search criteria legend') ?></legend>

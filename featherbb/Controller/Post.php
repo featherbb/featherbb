@@ -54,7 +54,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == FEATHER_ADMIN || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
         if ((($tid && (($cur_posting['post_replies'] == '' && $this->feather->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||

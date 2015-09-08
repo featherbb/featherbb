@@ -41,7 +41,7 @@ class Core extends \Slim\Middleware
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
         // Populate forum_env
         $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
-        $this->env_to_globals($this->forum_env); // Legacy
+        // $this->env_to_globals($this->forum_env); // Legacy
 
         // Load files
         require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/utf8.php';
@@ -54,7 +54,6 @@ class Core extends \Slim\Middleware
     public static function load_default_forum_env()
     {
         return array(
-                'FEATHER' => true, // Legacy
                 'FEATHER_ROOT' => '',
                 'FORUM_CONFIG_FILE' => 'featherbb/config.php',
                 'FORUM_CACHE_DIR' => 'cache/',
@@ -147,12 +146,12 @@ class Core extends \Slim\Middleware
     }
 
     // Legacy function, to ensure backward compatibility with globals
-    public function env_to_globals(array $vars)
-    {
-        foreach ($vars as $key => $value) {
-            define($key, $value);
-        }
-    }
+    // public function env_to_globals(array $vars)
+    // {
+    //     foreach ($vars as $key => $value) {
+    //         define($key, $value);
+    //     }
+    // }
 
     public function hydrate($name, array $data)
     {

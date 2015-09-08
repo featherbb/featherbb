@@ -50,14 +50,15 @@ class Cache
 
     public static function get_users_info()
     {
+        $feather = \Slim\Slim::getInstance();
         $stats = array();
         $select_get_users_info = array('id', 'username');
         $stats['total_users'] = DB::for_table('users')
-                                    ->where_not_equal('group_id', FEATHER_UNVERIFIED)
+                                    ->where_not_equal('group_id', $feather->forum_env['FEATHER_UNVERIFIED'])
                                     ->where_not_equal('id', 1)
                                     ->count();
         $stats['last_user'] = DB::for_table('users')->select_many($select_get_users_info)
-                            ->where_not_equal('group_id', FEATHER_UNVERIFIED)
+                            ->where_not_equal('group_id', $feather->forum_env['FEATHER_UNVERIFIED'])
                             ->order_by_desc('registered')
                             ->limit(1)
                             ->find_array()[0];
@@ -66,9 +67,10 @@ class Cache
 
     public static function get_admin_ids()
     {
+        $feather = \Slim\Slim::getInstance();
         return DB::for_table('users')
                 ->select('id')
-                ->where('group_id', FEATHER_ADMIN)
+                ->where('group_id', $feather->forum_env['FEATHER_ADMIN'])
                 ->find_array();
     }
 

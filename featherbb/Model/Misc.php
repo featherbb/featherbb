@@ -76,7 +76,7 @@ class Misc
             throw new Error(__('No email message'), 400);
         }
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
-        elseif (strlen($message) > FEATHER_MAX_POSTSIZE) {
+        elseif (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
             throw new Error(__('Too long email message'), 400);
         }
 

@@ -59,7 +59,7 @@ class Search
             $keywords = ($this->request->get('keywords')) ? utf8_strtolower(Utils::trim($this->request->get('keywords'))) : null;
             $author = ($this->request->get('author')) ? utf8_strtolower(Utils::trim($this->request->get('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < FEATHER_SEARCH_MIN_WORD && !$this->search->is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < $this->feather->forum_env['FEATHER_SEARCH_MIN_WORD'] && !$this->search->is_cjk($keywords))) {
                 $keywords = '';
             }
 
@@ -321,7 +321,7 @@ class Search
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
-                    throw new Error(__('No hits'), 204);
+                    throw new Error(__('No hits'), 400);
                 }
             } elseif ($action == 'show_new' || $action == 'show_recent' || $action == 'show_replies' || $action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions' || $action == 'show_unanswered') {
                 $search_type = array('action', $action);
