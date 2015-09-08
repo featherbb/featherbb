@@ -21,11 +21,6 @@ class Forum
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
-    }
-
     public function display($fid, $name = null, $page = null)
     {
         // Fetch some informations about the forum

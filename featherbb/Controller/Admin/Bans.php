@@ -31,11 +31,6 @@ class Bans
         }
     }
 
-    public function __autoload($class_name)
-    {
-        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
-    }
-
     public function display()
     {
         // Display bans
