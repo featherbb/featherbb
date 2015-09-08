@@ -49,7 +49,7 @@ class Moderate
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
+        if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -199,7 +199,7 @@ class Moderate
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
+        if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -241,7 +241,7 @@ class Moderate
         $moderators = $this->model->get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
+        if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator == '0' || !array_key_exists($this->user->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 

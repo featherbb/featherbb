@@ -133,14 +133,14 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
      * Middleware to check if user is admin.
      */
     $isAdmin = function() use ($feather) {
-        if($feather->user->g_id != FEATHER_ADMIN) {
+        if($feather->user->g_id != $feather->forum_env['FEATHER_ADMIN']) {
             $feather->url->redirect($feather->urlFor('home'), __('No permission'));
         }
     };
 
     // Admin index
-    $feather->get('(/action/:action)(/)', '\FeatherBB\Controller\Admin\index:display')->name('adminAction');
-    $feather->get('/index(/)', '\FeatherBB\Controller\Admin\index:display')->name('adminIndex');
+    $feather->get('(/action/:action)(/)', '\FeatherBB\Controller\Admin\Index:display')->name('adminAction');
+    $feather->get('/index(/)', '\FeatherBB\Controller\Admin\Index:display')->name('adminIndex');
 
     // Admin bans
     $feather->group('/bans', function() use ($feather) {

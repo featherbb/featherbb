@@ -11,7 +11,7 @@ use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER')) {
+if (!isset($feather)) {
     exit;
 }
 
@@ -29,7 +29,7 @@ if (!defined('FEATHER')) {
 						<label><?php _e('Realname') ?><br /><input type="text" name="form_realname" value="<?php echo Utils::escape($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
 <?php if (isset($title_field)): ?>							<?php echo $title_field ?>
 <?php endif; ?>							<label><?php _e('Location') ?><br /><input type="text" name="form_location" value="<?php echo Utils::escape($user['location']) ?>" size="30" maxlength="30" /><br /></label>
-<?php if ($feather->user->g_post_links == '1' || $feather->user->g_id == FEATHER_ADMIN) : ?>							<label><?php _e('Website') ?><br /><input type="text" name="form_url" value="<?php echo Utils::escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
+<?php if ($feather->user->g_post_links == '1' || $feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']) : ?>							<label><?php _e('Website') ?><br /><input type="text" name="form_url" value="<?php echo Utils::escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>
 					</div>
 				</fieldset>

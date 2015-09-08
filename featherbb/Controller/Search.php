@@ -22,16 +22,12 @@ class Search
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \FeatherBB\Model\search();
+        $this->model = new \FeatherBB\Model\Search();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/userlist.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/search.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/forum.mo');
     }
 
-    public function __autoload($class_name)
-    {
-        require $this->feather->forum_env['FEATHER_ROOT'] . $class_name . '.php';
-    }
 
     public function display()
     {
@@ -43,34 +39,35 @@ class Search
         if ($this->request->get('action') || ($this->request->get('search_id'))) {
 
             $search = $this->model->get_search_results();
-                // We have results to display
-                if (isset($search['is_result'])) {
 
-                    $this->feather->template->setPageInfo(array(
-                        'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
-                        'active_page' => 'search',
-                    ));
+            // We have results to display
+            if (isset($search['is_result'])) {
 
-                    $this->model->display_search_results($search, $this->feather);
+                $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
+                    'active_page' => 'search',
+                ));
 
-                    $this->feather->template->setPageInfo(array(
-                        'search' => $search,
-                    ));
+                $this->model->display_search_results($search, $this->feather);
 
-                    $this->feather->template->addTemplate('search/header.php', 1);
+                $this->feather->template->setPageInfo(array(
+                    'search' => $search,
+                ));
 
-                    if ($search['show_as'] == 'posts') {
-                        $this->feather->template->addTemplate('search/posts.php', 5);
-                    }
-                    else {
-                        $this->feather->template->addTemplate('search/topics.php', 5);
-                    }
+                $this->feather->template->addTemplate('search/header.php', 1);
 
-                    $this->feather->template->addTemplate('search/footer.php', 10)->display();
-
-                } else {
-                    Url::redirect($this->feather->urlFor('search'), __('No hits'));
+                if ($search['show_as'] == 'posts') {
+                    $this->feather->template->addTemplate('search/posts.php', 5);
                 }
+                else {
+                    $this->feather->template->addTemplate('search/topics.php', 5);
+                }
+
+                $this->feather->template->addTemplate('search/footer.php', 10)->display();
+
+            } else {
+                Url::redirect($this->feather->urlFor('search'), __('No hits'));
+            }
         }
         // Display the form
         else {
@@ -86,6 +83,7 @@ class Search
 
     public function quicksearches($show)
     {
-        Url::redirect($this->feather->urlFor('quickSearch', array('show' => '?action=show_'.$show)));
+        // Url::redirect($this->feather->urlFor('search', array('show' => '?action=show_'.$show)));
+        $this->feather->redirect($this->feather->urlFor('search').'?action=show_'.$show);
     }
 }

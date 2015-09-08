@@ -10,12 +10,6 @@
 
 namespace FeatherBB\Core;
 
-// Make sure no one attempts to run this script "directly"
-if (!defined('FEATHER'))
-    exit;
-
-define('FEATHER_PARSER', 1);
-
 // !!!! AVOIDING PCRE STACK OVERFLOWS WHICH SEG-FAULT CRASH APACHE/PHP !!!!
 // By default, PHP sets up pcre.recursion_limit way too high (100000). According
 // to PCRE documentation, a sensible value for this parameter is the stacksize

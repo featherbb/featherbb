@@ -161,8 +161,8 @@ class Post
         $message = $this->hook->fire('check_errors_before_post_message', $message);
 
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
-        if (strlen($message) > FEATHER_MAX_POSTSIZE) {
-            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(FEATHER_MAX_POSTSIZE));
+        if (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
+            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format($this->feather->forum_env['FEATHER_MAX_POSTSIZE']));
         } elseif ($this->config['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = __('All caps message');
         }

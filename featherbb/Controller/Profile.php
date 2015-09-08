@@ -39,25 +39,25 @@ class Profile
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
         if ($this->request->post('update_group_membership')) {
-            if ($this->user->g_id > FEATHER_ADMIN) {
+            if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_group_membership($id, $this->feather);
         } elseif ($this->request->post('update_forums')) {
-            if ($this->user->g_id > FEATHER_ADMIN) {
+            if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_mod_forums($id, $this->feather);
         } elseif ($this->request->post('ban')) {
-            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
             $this->model->ban_user($id);
         } elseif ($this->request->post('delete_user') || $this->request->post('delete_user_comply')) {
-            if ($this->user->g_id > FEATHER_ADMIN) {
+            if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -80,9 +80,9 @@ class Profile
 
             if ($this->user->id != $id &&                                                            // If we aren't the user (i.e. editing your own profile)
                                     (!$this->user->is_admmod ||                                      // and we are not an admin or mod
-                                    ($this->user->g_id != FEATHER_ADMIN &&                           // or we aren't an admin and ...
+                                    ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] &&                           // or we aren't an admin and ...
                                     ($this->user->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
-                                    $info['group_id'] == FEATHER_ADMIN ||                            // or the user is an admin
+                                    $info['group_id'] == $this->feather->forum_env['FEATHER_ADMIN'] ||                            // or the user is an admin
                                     $info['is_moderator'])))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
             }
@@ -99,9 +99,9 @@ class Profile
         // View or edit?
         if ($this->user->id != $id &&                                 // If we aren't the user (i.e. editing your own profile)
                 (!$this->user->is_admmod ||                           // and we are not an admin or mod
-                ($this->user->g_id != FEATHER_ADMIN &&                // or we aren't an admin and ...
+                ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] &&                // or we aren't an admin and ...
                 ($this->user->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
-                $user['g_id'] == FEATHER_ADMIN ||                     // or the user is an admin
+                $user['g_id'] == $this->feather->forum_env['FEATHER_ADMIN'] ||                     // or the user is an admin
                 $user['g_moderator'] == '1')))) {                     // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
 
@@ -312,7 +312,7 @@ class Profile
 
             Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
-            if ($this->user->g_id != FEATHER_ADMIN && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
+            if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 

@@ -58,7 +58,7 @@ class Login
         }
 
         // Update the status if this is the first time the user logged in
-        if ($user->group_id == FEATHER_UNVERIFIED) {
+        if ($user->group_id == $this->feather->forum_env['FEATHER_UNVERIFIED']) {
             $update_usergroup = DB::for_table('users')->where('id', $user->id)
                 ->find_one()
                 ->set('group_id', $this->config['o_default_user_group']);

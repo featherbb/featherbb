@@ -82,7 +82,7 @@ class Bans
 
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
-            if ($group_id == FEATHER_ADMIN) {
+            if ($group_id == $this->feather->forum_env['FEATHER_ADMIN']) {
                 throw new Error(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
@@ -171,7 +171,7 @@ class Bans
                             ->find_one_col('group_id');
 
             if ($group_id) {
-                if ($group_id == FEATHER_ADMIN) {
+                if ($group_id == $this->feather->forum_env['FEATHER_ADMIN']) {
                     throw new Error(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
