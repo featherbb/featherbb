@@ -23,7 +23,7 @@ class Forums
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \FeatherBB\Model\Admin\forums();
+        $this->model = new \FeatherBB\Model\Admin\Forums();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/forums.mo');
     }
 

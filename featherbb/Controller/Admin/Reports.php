@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Reports
 {
@@ -21,7 +22,7 @@ class Reports
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \FeatherBB\Model\Admin\reports();
+        $this->model = new \FeatherBB\Model\Admin\Reports();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/reports.mo');
     }
 
@@ -29,7 +30,10 @@ class Reports
     {
         // Zap a report
         if ($this->feather->request->isPost()) {
-            $this->model->zap_report();
+            $zap_id = intval(key($this->request->post('zap_id')));
+            $user_id = $this->user->id;
+            $this->model->zap_report($zap_id, $user_id);
+            Url::redirect($this->feather->urlFor('adminReports'), __('Report zapped redirect'));
         }
 
         AdminUtils::generateAdminMenu('reports');

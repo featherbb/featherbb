@@ -23,7 +23,7 @@ class Parser
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \FeatherBB\Model\Admin\parser();
+        $this->model = new \FeatherBB\Model\Admin\Parser();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/parser.mo');
     }
 
@@ -52,7 +52,6 @@ class Parser
         $count = count($bbcd);
 
         if ($this->request->post('form_sent')) {
-
 
             // Upload new smiley image to style/img/smilies
             if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {

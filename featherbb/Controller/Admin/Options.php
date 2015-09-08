@@ -21,7 +21,7 @@ class Options
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \FeatherBB\Model\Admin\options();
+        $this->model = new \FeatherBB\Model\Admin\Options();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
     }
 
