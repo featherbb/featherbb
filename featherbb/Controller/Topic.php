@@ -20,6 +20,7 @@ class Topic
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Topic();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/topic.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo'); // To be removed
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/post.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/bbeditor.mo');
     }
@@ -137,6 +138,16 @@ class Topic
         $post = $this->model->redirect_to_post($pid);
 
         return $this->display($post['topic_id'], null, $post['get_p'], $pid);
+    }
+
+    public function subscribe($id)
+    {
+        $this->model->subscribe($id);
+    }
+
+    public function unsubscribe($id)
+    {
+        $this->model->unsubscribe($id);
     }
 
     public function action($id, $action)

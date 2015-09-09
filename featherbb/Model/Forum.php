@@ -309,4 +309,83 @@ class Forum
             ->set($insert_update_forum)
             ->save();
     }
+
+    public function unsubscribe($forum_id)
+    {
+        $forum_id = $this->hook->fire('unsubscribe_forum_start', $forum_id);
+
+        if ($this->config['o_forum_subscriptions'] != '1') {
+            throw new Error(__('No permission'), 403);
+        }
+
+        $is_subscribed = DB::for_table('forum_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('forum_id', $forum_id);
+        $is_subscribed = $this->hook->fireDB('unsubscribe_forum_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
+
+        if (!$is_subscribed) {
+            throw new Error(__('Not subscribed forum'), 400);
+        }
+
+        // Delete the subscription
+        $delete = DB::for_table('forum_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('forum_id', $forum_id);
+        $delete = $this->hook->fireDB('unsubscribe_forum_query', $delete);
+        $delete = $delete->delete_many();
+
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id]), __('Unsubscribe redirect'));
+    }
+
+    public function subscribe($forum_id)
+    {
+        $forum_id = $this->hook->fire('subscribe_forum_start', $forum_id);
+
+        if ($this->config['o_forum_subscriptions'] != '1') {
+            throw new Error(__('No permission'), 403);
+        }
+
+        // Make sure the user can view the forum
+        $authorized['where'] = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $authorized = DB::for_table('forums')
+                        ->table_alias('f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($authorized['where'])
+                        ->where('f.id', $forum_id);
+        $authorized = $this->hook->fireDB('subscribe_forum_authorized_query', $authorized);
+        $authorized = $authorized->find_one();
+
+        if (!$authorized) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        $is_subscribed = DB::for_table('forum_subscriptions')
+            ->where('user_id', $this->user->id)
+            ->where('forum_id', $forum_id);
+        $is_subscribed = $this->hook->fireDB('subscribe_forum_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
+
+        if ($is_subscribed) {
+            throw new Error(__('Already subscribed forum'), 400);
+        }
+
+        // Insert the subscription
+        $subscription['insert'] = array(
+            'user_id' => $this->user->id,
+            'forum_id'  => $forum_id
+        );
+        $subscription = DB::for_table('forum_subscriptions')
+                            ->create()
+                            ->set($subscription['insert']);
+        $subscription = $this->hook->fireDB('subscribe_forum_query', $subscription);
+        $subscription = $subscription->save();
+
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id]), __('Subscribe redirect'));
+    }
 }

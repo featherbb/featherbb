@@ -37,16 +37,36 @@ $isAdmmod = function() use ($feather) {
 };
 
 // Index
-$feather->get('/', $canReadBoard, '\FeatherBB\Controller\index:display')->name('home');
+$feather->get('/', $canReadBoard, '\FeatherBB\Controller\Index:display')->name('home');
+$feather->get('/rules(/)', '\FeatherBB\Controller\Index:rules')->name('rules');
+$feather->get('/mark-read(/)', $isGuest, '\FeatherBB\Controller\Index:markread')->name('markRead');
 
 // Forum
-$feather->get('/forum/:id(/:name)(/)', $canReadBoard, '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Forum');
-$feather->get('/forum/:id(/:name)(/page/:page)(/)', $canReadBoard, '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('ForumPaginate');
+$feather->group('/forum', $canReadBoard, function() use ($feather) {
+    $isGuest = function () use ($feather) {
+        if ($feather->user->is_guest) {
+            throw new Error(__('No permission'), 403);
+        }
+    };
+    $feather->get('/:id(/:name)(/)', '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Forum');
+    $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('ForumPaginate');
+    $feather->get('/mark-read/:id(/)', $isGuest, '\FeatherBB\Controller\Forum:markread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
+    $feather->get('/subscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Forum:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
+    $feather->get('/unsubscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Forum:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
+});
 
 // Topic
 $feather->group('/topic', $canReadBoard, function() use ($feather) {
+    $isGuest = function () use ($feather) {
+        if ($feather->user->is_guest) {
+            throw new Error(__('No permission'), 403);
+        }
+    };
+
     $feather->get('/:id(/:name)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Topic');
     $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('TopicPaginate');
+    $feather->get('/subscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Topic:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
+    $feather->get('/unsubscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Topic:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
     $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Topic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
 });
 $feather->get('/post/:pid(/)', '\FeatherBB\Controller\Topic:viewpost')->conditions(array('pid' => '[0-9]+'))->name('viewPost');
@@ -76,17 +96,16 @@ $feather->group('/register', function() use ($feather) {
 });
 
 // Post routes
-$feather->group('/post', function() use ($feather) {
+$feather->group('/post', $canReadBoard, function() use ($feather) {
     $feather->map('/new-topic/:fid(/)', '\FeatherBB\Controller\Post:newpost')->conditions(array('fid' => '[0-9]+'))->via('GET', 'POST')->name('newTopic');
     $feather->map('/reply/:tid(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('newReply');
     $feather->map('/reply/:tid(/)(/quote/:qid)(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST')->name('newQuoteReply');
+    $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Post:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
+    $feather->map('/report/:id(/)', '\FeatherBB\Controller\Post:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
 });
 
 // Edit
 $feather->map('/edit/:id(/)', $canReadBoard, '\FeatherBB\Controller\Edit:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
-
-// Delete
-$feather->map('/delete/:id(/)', $canReadBoard, '\FeatherBB\Controller\Delete:deletepost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
 
 // Search routes
 $feather->group('/search', $canReadBoard, function() use ($feather) {
@@ -95,24 +114,14 @@ $feather->group('/search', $canReadBoard, function() use ($feather) {
 });
 
 // Help
-$feather->get('/help(/)', $canReadBoard, '\FeatherBB\Controller\help:display')->name('help');
-
-// Misc
-$feather->get('/rules(/)', '\FeatherBB\Controller\Misc:rules')->name('rules');
-$feather->get('/mark-read(/)', $isGuest, '\FeatherBB\Controller\Misc:markread')->name('markRead');
-$feather->get('/mark-forum-read/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:markforumread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
-$feather->map('/email/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('email');
-$feather->map('/report/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
-$feather->get('/subscribe/forum/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:subscribeforum')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
-$feather->get('/unsubscribe/forum/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:unsubscribeforum')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
-$feather->get('/subscribe/topic/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:subscribetopic')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
-$feather->get('/unsubscribe/topic/:id(/)', $isGuest, '\FeatherBB\Controller\Misc:unsubscribetopic')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
+$feather->get('/help(/)', $canReadBoard, '\FeatherBB\Controller\Help:display')->name('help');
 
 // Profile routes
-$feather->group('/user', function() use ($feather) {
+$feather->group('/user', $isGuest, function() use ($feather) {
     $feather->get('/:id(/)', '\FeatherBB\Controller\Profile:display')->conditions(array('id' => '[0-9]+'))->name('userProfile');
     $feather->map('/:id(/section/:section)(/)', '\FeatherBB\Controller\Profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileSection');
     $feather->map('/:id(/action/:action)(/)', '\FeatherBB\Controller\Profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileAction');
+    $feather->map('/email/:id(/)', '\FeatherBB\Controller\Profile:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('email');
 });
 
 // Moderate routes
@@ -151,7 +160,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     });
 
     // Admin options
-    $feather->map('/options(/)', $isAdmin, '\FeatherBB\Controller\Admin\options:display')->via('GET', 'POST')->name('adminOptions');
+    $feather->map('/options(/)', $isAdmin, '\FeatherBB\Controller\Admin\Options:display')->via('GET', 'POST')->name('adminOptions');
 
     // Admin categories
     $feather->group('/categories', $isAdmin, function() use ($feather) {
@@ -191,7 +200,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     });
 
     // Admin plugins
-    $feather->group('/plugins', $isAdmin, function() use ($feather) {
+    $feather->group('/plugins', function() use ($feather) {
         $feather->map('(/)', '\FeatherBB\Controller\Admin\Plugins:index')->via('GET', 'POST')->name('adminPlugins');
         $feather->map('/:name(/)', '\FeatherBB\Controller\Admin\Plugins:index')->via('GET', 'POST')->name('infoPlugin');
         $feather->get('/activate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:activate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('activatePlugin');

@@ -20,7 +20,9 @@ class Post
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Post();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/delete.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/register.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/bbeditor.mo');
@@ -224,5 +226,71 @@ class Post
                             'quote' => $quote,
                             'errors'    =>    $errors,
                             ))->addTemplate('post.php')->display();
+    }
+
+    public function delete($id)
+    {
+        // Fetch some informations about the post, the topic and the forum
+        $cur_post = $this->model->get_info_delete($id);
+
+        if ($this->feather->forum_settings['o_censoring'] == '1') {
+            $cur_post['subject'] = Utils::censor($cur_post['subject']);
+        }
+
+        // Sort out who the moderators are and if we are currently a moderator (or an admin)
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+
+        $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
+
+        // Do we have permission to edit this post?
+        if (($this->feather->user->g_delete_posts == '0' ||
+                ($this->feather->user->g_delete_topics == '0' && $is_topic_post) ||
+                $cur_post['poster_id'] != $this->feather->user->id ||
+                $cur_post['closed'] == '1') &&
+                !$is_admmod) {
+            throw new Error(__('No permission'), 403);
+        }
+
+        if ($is_admmod && $this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+            throw new Error(__('No permission'), 403);
+        }
+
+        if ($this->feather->request()->isPost()) {
+            $this->model->handle_deletion($is_topic_post, $id, $cur_post['tid'], $cur_post['fid']);
+        }
+
+        $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
+
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
+            'active_page' => 'delete',
+            'cur_post' => $cur_post,
+            'id' => $id,
+            'is_topic_post' => $is_topic_post
+        ))->addTemplate('delete.php')->display();
+    }
+
+    public function report($id)
+    {
+        if ($this->feather->request()->isPost()) {
+            $this->model->insert_report($id);
+        }
+
+        // Fetch some info about the post, the topic and the forum
+        $cur_post = $this->model->get_info_report($id);
+
+        if ($this->feather->forum_settings['o_censoring'] == '1') {
+            $cur_post['subject'] = Utils::censor($cur_post['subject']);
+        }
+
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Report post')),
+            'active_page' => 'report',
+            'required_fields' => array('req_reason' => __('Reason')),
+            'focus_element' => array('report', 'req_reason'),
+            'id' => $id,
+            'cur_post' => $cur_post
+            ))->addTemplate('misc/report.php')->display();
     }
 }

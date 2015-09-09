@@ -27,6 +27,32 @@ class Topic
         $this->hook = $this->feather->hooks;
     }
 
+    //
+    // Delete a topic and all of its posts
+    //
+    public static function delete($topic_id)
+    {
+        // Delete the topic and any redirect topics
+        $where_delete_topic = array(
+            array('id' => $topic_id),
+            array('moved_to' => $topic_id)
+        );
+
+        DB::for_table('topics')
+            ->where_any_is($where_delete_topic)
+            ->delete_many();
+
+        // Delete posts in topic
+        DB::for_table('posts')
+            ->where('topic_id', $topic_id)
+            ->delete_many();
+
+        // Delete any subscriptions for this topic
+        DB::for_table('topic_subscriptions')
+            ->where('topic_id', $topic_id)
+            ->delete_many();
+    }
+
     // Redirect to a post in particular
     public function redirect_to_post($post_id)
     {
@@ -200,6 +226,87 @@ class Topic
         $quickpost = $this->hook->fire('is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
 
         return $quickpost;
+    }
+
+    public function subscribe($topic_id)
+    {
+        $topic_id = $this->hook->fire('subscribe_topic_start', $topic_id);
+
+        if ($this->config['o_topic_subscriptions'] != '1') {
+            throw new Error(__('No permission'), 403);
+        }
+
+        // Make sure the user can view the topic
+        $authorized['where'] = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $authorized = DB::for_table('topics')
+                            ->table_alias('t')
+                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                            ->where_any_is($authorized['where'])
+                            ->where('t.id', $topic_id)
+                            ->where_null('t.moved_to');
+        $authorized = $this->hook->fireDB('subscribe_topic_authorized_query', $authorized);
+        $authorized = $authorized->find_one();
+
+        if (!$authorized) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        $is_subscribed = DB::for_table('topic_subscriptions')
+                        ->where('user_id', $this->user->id)
+                        ->where('topic_id', $topic_id);
+        $is_subscribed = $this->hook->fireDB('subscribe_topic_is_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
+
+        if ($is_subscribed) {
+            throw new Error(__('Already subscribed topic'), 400);
+        }
+
+        $subscription['insert'] = array(
+            'user_id' => $this->user->id,
+            'topic_id'  => $topic_id
+        );
+
+        // Insert the subscription
+        $subscription = DB::for_table('topic_subscriptions')
+                                    ->create()
+                                    ->set($subscription['insert']);
+        $subscription = $this->hook->fireDB('subscribe_topic_query', $subscription);
+        $subscription = $subscription->save();
+
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
+    }
+
+    public function unsubscribe($topic_id)
+    {
+        $topic_id = $this->hook->fire('unsubscribe_topic_start', $topic_id);
+
+        if ($this->config['o_topic_subscriptions'] != '1') {
+            throw new Error(__('No permission'), 403);
+        }
+
+        $is_subscribed = DB::for_table('topic_subscriptions')
+                            ->where('user_id', $this->user->id)
+                            ->where('topic_id', $topic_id);
+        $is_subscribed = $this->hook->fireDB('unsubscribe_topic_subscribed_query', $is_subscribed);
+        $is_subscribed = $is_subscribed->find_one();
+
+        if (!$is_subscribed) {
+            throw new Error(__('Not subscribed topic'), 400);
+        }
+
+        // Delete the subscription
+        $delete = DB::for_table('topic_subscriptions')
+                    ->where('user_id', $this->user->id)
+                    ->where('topic_id', $topic_id);
+        $delete = $this->hook->fireDB('unsubscribe_topic_query', $delete);
+        $delete = $delete->delete_many();
+
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
     }
 
     // Subscraction link

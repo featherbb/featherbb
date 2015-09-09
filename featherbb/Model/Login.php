@@ -228,4 +228,27 @@ class Login
 
         return $redirect_url;
     }
+
+    // TODO: This function was in Misc controller
+    public function get_redirect_url2($recipient_id)
+    {
+        $recipient_id = $this->hook->fire('get_redirect_url_start', $recipient_id);
+
+        // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
+        // TODO
+        if ($this->request->getReferrer()) {
+            $redirect_url = validate_redirect($this->request->getReferrer(), null);
+        }
+
+        if (!isset($redirect_url)) {
+            $redirect_url = $this->feather->urlFor('userProfile', ['id' => $recipient_id]);
+        } elseif (preg_match('%Topic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
+            $redirect_url .= '#p'.$matches[1];
+        }
+
+        $redirect_url = $this->hook->fire('get_redirect_url', $redirect_url);
+
+        return $redirect_url;
+    }
+
 }

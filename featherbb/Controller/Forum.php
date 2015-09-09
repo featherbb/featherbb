@@ -11,6 +11,7 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Track;
 
 class Forum
 {
@@ -19,6 +20,7 @@ class Forum
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Forum();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo');
     }
 
     public function display($fid, $name = null, $page = null)
@@ -88,5 +90,24 @@ class Forum
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
         ))->addTemplate('Forum.php')->display();
+    }
+
+    public function markread($id)
+    {
+        $tracked_topics = Track::get_tracked_topics();
+        $tracked_topics['forums'][$id] = time();
+        Track::set_tracked_topics($tracked_topics);
+
+        Url::redirect($this->feather->urlFor('Forum', array('id' => $id)), __('Mark forum read redirect'));
+    }
+
+    public function subscribe($id)
+    {
+        $this->model->subscribe($id);
+    }
+
+    public function unsubscribe($id)
+    {
+        $this->model->unsubscribe($id);
     }
 }
