@@ -26,21 +26,6 @@ class Index
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
     }
 
-    public function remove_install_folder($directory)
-    {
-        foreach(glob("{$directory}/*") as $file)
-        {
-            if(is_dir($file)) {
-                $this->remove_install_folder($file);
-            } else {
-                unlink($file);
-            }
-        }
-        $deleted = rmdir($directory);
-
-        return $deleted;
-    }
-
     public function display($action = null)
     {
         // Check for upgrade
@@ -60,24 +45,14 @@ class Index
                 Url::redirect($this->feather->urlFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
-        // Remove /install
-        elseif ($action == 'remove_install_file') {
-            $deleted = $this->remove_install_folder($this->feather->forum_env['FEATHER_ROOT'].'install');
-
-            if ($deleted) {
-                Url::redirect($this->feather->urlFor('adminIndex'), __('Deleted install.php redirect'));
-            } else {
-                throw new Error(__('Delete install.php failed'), 500);
-            }
-        }
 
         AdminUtils::generateAdminMenu('index');
 
         $this->feather->template->setPageInfo(array(
-                            'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Index')),
-                            'active_page' => 'admin',
-                            'admin_console' => true
-                            )
-                    )->addTemplate('admin/index.php')->display();
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Index')),
+                'active_page' => 'admin',
+                'admin_console' => true
+            )
+        )->addTemplate('admin/index.php')->display();
     }
 }

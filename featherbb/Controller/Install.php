@@ -32,7 +32,7 @@ class Install
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->model = new \FeatherBB\Model\install();
+        $this->model = new \FeatherBB\Model\Install();
         $this->available_langs = Lister::getLangs();
         $this->feather->template->setStyle('FeatherBB');
     }

@@ -10,30 +10,24 @@
 namespace FeatherBB\Model\Admin;
 
 use DB;
-use FeatherBB\Core\Url;
 
 class Reports
 {
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
 
-    public function zap_report()
+    public function zap_report($zap_id, $user_id)
     {
-        $zap_id = intval(key($this->request->post('zap_id')));
         $zap_id = $this->hook->fire('reports.zap_report.zap_id', $zap_id);
 
         $result = DB::for_table('reports')->where('id', $zap_id);
         $result = $this->hook->fireDB('reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(), 'zapped_by' => $this->user->id);
+        $set_zap_report = array('zapped' => time(), 'zapped_by' => $user_id);
         $set_zap_report = $this->hook->fire('reports.zap_report.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped
@@ -59,7 +53,7 @@ class Reports
                 ->delete_many();
         }
 
-        Url::redirect($this->feather->urlFor('adminReports'), __('Report zapped redirect'));
+        return true;
     }
 
     public function get_reports()
