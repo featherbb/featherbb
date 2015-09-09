@@ -1360,4 +1360,22 @@ class Post
 
         return $post_data;
     }
+
+    public function display_ip_address($pid)
+    {
+        $pid = $this->hook->fire('display_ip_address_post_start', $pid);
+
+        $ip = DB::for_table('posts')
+            ->where('id', $pid);
+        $ip = $this->hook->fireDB('display_ip_address_post_query', $ip);
+        $ip = $ip->find_one_col('poster_ip');
+
+        if (!$ip) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        $ip = $this->hook->fire('display_ip_address_post', $ip);
+
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
+    }
 }

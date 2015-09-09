@@ -62,11 +62,19 @@ $feather->group('/topic', $canReadBoard, function() use ($feather) {
             throw new Error(__('No permission'), 403);
         }
     };
-
+    $isAdmmod = function() use ($feather) {
+        if(!$feather->user->is_admmod) {
+            throw new Error(__('No permission'), 403);
+        }
+    };
     $feather->get('/:id(/:name)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Topic');
     $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('TopicPaginate');
-    $feather->get('/subscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Topic:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
-    $feather->get('/unsubscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Topic:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
+    $feather->get('/subscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Topic:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
+    $feather->get('/unsubscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Topic:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
+    $feather->get('/close/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:close')->conditions(array('id' => '[0-9]+'))->name('closeTopic');
+    $feather->get('/open/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:open')->conditions(array('id' => '[0-9]+'))->name('openTopic');
+    $feather->get('/stick/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:stick')->conditions(array('id' => '[0-9]+'))->name('stickTopic');
+    $feather->get('/unstick/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:unstick')->conditions(array('id' => '[0-9]+'))->name('unstickTopic');
     $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Topic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
 });
 
@@ -79,6 +87,7 @@ $feather->group('/post', $canReadBoard, function() use ($feather) {
     $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Post:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
     $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Post:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
     $feather->map('/report/:id(/)', '\FeatherBB\Controller\Post:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
+    $feather->get('/get-host/:pid(/)', '\FeatherBB\Controller\Post:gethost')->conditions(array('pid' => '[0-9]+'))->name('getPostHost');
 });
 
 // Userlist
@@ -120,14 +129,13 @@ $feather->group('/user', $isGuest, function() use ($feather) {
     $feather->map('/:id(/section/:section)(/)', '\FeatherBB\Controller\Profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileSection');
     $feather->map('/:id(/action/:action)(/)', '\FeatherBB\Controller\Profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileAction');
     $feather->map('/email/:id(/)', '\FeatherBB\Controller\Profile:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('email');
+    $feather->get('/get-host/:ip(/)', '\FeatherBB\Controller\Profile:gethostip')->name('getHostIp');
 });
 
 // Moderate routes
 $feather->group('/moderate', $isAdmmod, $canReadBoard, function() use ($feather) {
     $feather->get('/forum/:id(/)', '\FeatherBB\Controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForum');
     $feather->get('/forum/:id(/page/:page)(/)', '\FeatherBB\Controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForumPage');
-    $feather->get('/get-host/post/:pid(/)', '\FeatherBB\Controller\Moderate:gethostpost')->conditions(array('pid' => '[0-9]+'))->name('getHostPost');
-    $feather->get('/get-host/ip/:ip(/)', '\FeatherBB\Controller\Moderate:gethostip')->name('getHostIp');
     $feather->map('/topic/:id/forum/:fid/action/:action(/param/:param)(/)', '\FeatherBB\Controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'param' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopic');
     $feather->map('/topic/:id/forum/:fid/action/:action(/page/:page)(/)', '\FeatherBB\Controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopicPage');
     $feather->post('/forum/:fid(/page/:page)(/)', '\FeatherBB\Controller\Moderate:dealposts')->conditions(array('fid' => '[0-9]+', 'page' => '[0-9]+'))->name('dealPosts');

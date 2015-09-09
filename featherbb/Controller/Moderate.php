@@ -29,22 +29,8 @@ class Moderate
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/post.mo');
     }
 
-    public function gethostpost($pid)
-    {
-        $this->model->display_ip_address_post($pid);
-    }
-
-    public function gethostip($ip)
-    {
-        $this->model->display_ip_info($ip);
-    }
-
     public function moderatetopic($id = null, $fid = null, $action = null, $param = null)
     {
-        if ($action == 'get_host') {
-            $this->model->display_ip_address();
-        }
-
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
@@ -78,31 +64,6 @@ class Moderate
                     'list_forums'   => $this->model->get_forum_list_move($fid),
                 )
             )->addTemplate('moderate/move_topics.php')->display();
-        }
-
-        // Stick a topic
-        if ($action == 'stick') {
-            $this->model->stick_topic($id, $fid);
-            Url::redirect($this->feather->urlFor('Topic', array('id' => $id)), __('Stick topic redirect'));
-        }
-
-
-        // Unstick a topic
-        if ($action == 'unstick') {
-            $this->model->unstick_topic($id, $fid);
-            Url::redirect($this->feather->urlFor('Topic', array('id' => $id)), __('Unstick topic redirect'));
-        }
-
-        // Open a topic
-        if ($action == 'open') {
-            $this->model->open_topic($id, $fid);
-            Url::redirect($this->feather->urlFor('Topic', array('id' => $id)), __('Open topic redirect'));
-        }
-
-        // Close a topic
-        if ($action == 'close') {
-            $this->model->close_topic($id, $fid);
-            Url::redirect($this->feather->urlFor('Topic', array('id' => $id)), __('Close topic redirect'));
         }
 
         $cur_topic = $this->model->get_topic_info($fid, $id);

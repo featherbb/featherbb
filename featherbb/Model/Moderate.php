@@ -28,30 +28,6 @@ class Moderate
         $this->search = new \FeatherBB\Core\Search();
     }
 
-    public function display_ip_info($ip)
-    {
-        $ip = $this->hook->fire('display_ip_info', $ip);
-        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
-    }
-
-    public function display_ip_address_post($pid)
-    {
-        $pid = $this->hook->fire('display_ip_address_post_start', $pid);
-
-        $ip = DB::for_table('posts')
-            ->where('id', $pid);
-        $ip = $this->hook->fireDB('display_ip_address_post_query', $ip);
-        $ip = $ip->find_one_col('poster_ip');
-
-        if (!$ip) {
-            throw new Error(__('Bad request'), 404);
-        }
-
-        $ip = $this->hook->fire('display_ip_address_post', $ip);
-
-        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
-    }
-
     public function get_moderators($fid)
     {
         $moderators = DB::for_table('forums')
@@ -982,28 +958,6 @@ class Moderate
         $topic_data = $this->hook->fire('display_topics', $topic_data);
 
         return $topic_data;
-    }
-
-    public function stick_topic($id, $fid)
-    {
-        $stick_topic = DB::for_table('topics')
-                            ->where('id', $id)
-                            ->where('forum_id', $fid)
-                            ->find_one()
-                            ->set('sticky', 1);
-        $stick_topic = $this->hook->fireDB('stick_topic', $stick_topic);
-        $stick_topic = $stick_topic->save();
-    }
-
-    public function unstick_topic($id, $fid)
-    {
-        $unstick_topic = DB::for_table('topics')
-            ->where('id', $id)
-            ->where('forum_id', $fid)
-            ->find_one()
-            ->set('sticky', 0);
-        $unstick_topic = $this->hook->fireDB('unstick_topic', $unstick_topic);
-        $unstick_topic = $unstick_topic->save();
     }
 
     public function open_topic($id, $fid)

@@ -380,4 +380,9 @@ class Post
             'cur_post' => $cur_post
             ))->addTemplate('misc/report.php')->display();
     }
+
+    public function gethost($pid)
+    {
+        $this->model->display_ip_address($pid);
+    }
 }

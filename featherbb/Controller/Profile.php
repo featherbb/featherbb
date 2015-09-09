@@ -351,6 +351,11 @@ class Profile
             'focus_element' => array('email', 'req_subject'),
             'id' => $id,
             'mail' => $mail
-            ))->addTemplate('misc/email.php')->display();
+        ))->addTemplate('misc/email.php')->display();
+    }
+
+    public function gethostip($ip)
+    {
+        $this->model->display_ip_info($ip);
     }
 }

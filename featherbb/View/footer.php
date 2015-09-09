@@ -49,15 +49,15 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
         echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'move', 'param' => $parameter]).'">'.__('Move topic').'</a></span></dd>'."\n";
 
         if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'open', 'param' => $parameter]).'">'.__('Open topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('openTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'close', 'param' => $parameter]).'">'.__('Close topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('closeTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'unstick', 'param' => $parameter]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('unstickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'action' => 'stick', 'param' => $parameter]).'">'.__('Stick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('stickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
         }
 
         echo "\t\t\t".'</dl>'."\n";

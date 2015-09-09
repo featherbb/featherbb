@@ -150,6 +150,30 @@ class Topic
         $this->model->unsubscribe($id);
     }
 
+    public function close($id)
+    {
+        $topic = $this->model->setClosed($id, 1);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
+    }
+
+    public function open($id)
+    {
+        $topic = $this->model->setClosed($id, 0);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
+    }
+
+    public function stick($id)
+    {
+        $topic = $this->model->setSticky($id, 1);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
+    }
+
+    public function unstick($id)
+    {
+        $topic = $this->model->setSticky($id, 0);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
+    }
+
     public function action($id, $action)
     {
         $this->model->handle_actions($id, $action);

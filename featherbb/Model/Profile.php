@@ -1494,4 +1494,10 @@ class Profile
 
         Url::redirect($this->feather->urlFor('home'), __('Email sent redirect'));
     }
+
+    public function display_ip_info($ip)
+    {
+        $ip = $this->hook->fire('display_ip_info', $ip);
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
+    }
 }

@@ -72,6 +72,16 @@ class Forum
         return $cur_forum;
     }
 
+    public function get_moderators($fid)
+    {
+        $moderators = DB::for_table('forums')
+                        ->where('id', $fid);
+        $moderators = $this->hook->fireDB('get_moderators', $moderators);
+        $moderators = $moderators->find_one_col('moderators');
+
+        return $moderators;
+    }
+
     // Returns the text required by the query to sort the forum
     public function sort_forum_by($sort_by_sql)
     {

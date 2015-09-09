@@ -328,6 +328,28 @@ class Topic
         return $subscraction;
     }
 
+    public function setSticky($id, $value)
+    {
+        $sticky = DB::for_table('topics')
+                            ->find_one($id)
+                            ->set('sticky', $value);
+        $sticky = $this->hook->fireDB('stick_topic', $sticky);
+        $sticky->save();
+
+        return $sticky;
+    }
+
+    public function setClosed($id, $value)
+    {
+        $closed = DB::for_table('topics')
+                            ->find_one($id)
+                            ->set('closed', $value);
+        $closed = $this->hook->fireDB('stick_topic', $closed);
+        $closed->save();
+
+        return $closed;
+    }
+
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
@@ -443,7 +465,7 @@ class Topic
                 }
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->urlFor('getHostPost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->urlFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
                         $cur_post['user_info'][] = '<dd><span>'.__('Note').' <strong>'.Utils::escape($cur_post['admin_note']).'</strong></span></dd>';
@@ -456,7 +478,7 @@ class Topic
                 $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
 
                 if ($this->user->is_admmod) {
-                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->urlFor('getHostPost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
+                    $cur_post['user_info'][] = '<dd><span><a href="'.$this->feather->urlFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
                 if ($this->config['o_show_user_info'] == '1' && $cur_post['poster_email'] != '' && !$this->user->is_guest && $this->user->g_send_email == '1') {
