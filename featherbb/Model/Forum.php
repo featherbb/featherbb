@@ -343,9 +343,7 @@ class Forum
             ->where('user_id', $this->user->id)
             ->where('forum_id', $forum_id);
         $delete = $this->hook->fireDB('unsubscribe_forum_query', $delete);
-        $delete = $delete->delete_many();
-
-        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id]), __('Unsubscribe redirect'));
+        $delete->delete_many();
     }
 
     public function subscribe($forum_id)
@@ -394,8 +392,6 @@ class Forum
                             ->create()
                             ->set($subscription['insert']);
         $subscription = $this->hook->fireDB('subscribe_forum_query', $subscription);
-        $subscription = $subscription->save();
-
-        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id]), __('Subscribe redirect'));
+        $subscription->save();
     }
 }

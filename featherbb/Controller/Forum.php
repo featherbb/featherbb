@@ -92,22 +92,24 @@ class Forum
         ))->addTemplate('Forum.php')->display();
     }
 
-    public function markread($id)
+    public function markread($id, $name = '')
     {
         $tracked_topics = Track::get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
         Track::set_tracked_topics($tracked_topics);
 
-        Url::redirect($this->feather->urlFor('Forum', array('id' => $id)), __('Mark forum read redirect'));
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $id, 'name' => $name]), __('Mark forum read redirect'));
     }
 
-    public function subscribe($id)
+    public function subscribe($id, $name = '')
     {
         $this->model->subscribe($id);
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id, 'name' => $name]), __('Subscribe redirect'));
     }
 
-    public function unsubscribe($id)
+    public function unsubscribe($id, $name = '')
     {
         $this->model->unsubscribe($id);
+        Url::redirect($this->feather->urlFor('Forum', ['id' => $forum_id, 'name' => $name]), __('Unsubscribe redirect'));
     }
 }

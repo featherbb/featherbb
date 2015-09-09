@@ -466,131 +466,131 @@ class Moderate
         return $post_data;
     }
 
-    public function move_topics_to($fid, $tfid = null, $param = null)
-    {
-        $fid = $this->hook->fire('move_topics_to_start', $fid);
+    // public function move_topics_to($fid, $tfid = null, $param = null)
+    // {
+    //     $fid = $this->hook->fire('move_topics_to_start', $fid);
+    //
+    //     if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
+    //         throw new Error(__('Bad request'), 400);
+    //     }
+    //
+    //     $topics = explode(',', $this->request->post('topics'));
+    //     $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
+    //     if (empty($topics) || $move_to_forum < 1) {
+    //         throw new Error(__('Bad request'), 400);
+    //     }
+    //
+    //     // Verify that the topic IDs are valid
+    //     $result = DB::for_table('topics')
+    //                 ->where_in('id', $topics)
+    //                 ->where('forum_id', $fid);
+    //     $result = $this->hook->fireDB('move_topics_to_topic_valid', $result);
+    //     $result = $result->find_many();
+    //
+    //     if (count($result) != count($topics)) {
+    //         throw new Error(__('Bad request'), 400);
+    //     }
+    //
+    //
+    //     // Verify that the move to forum ID is valid
+    //     $authorized['where'] = array(
+    //         array('fp.post_topics' => 'IS NULL'),
+    //         array('fp.post_topics' => '1')
+    //     );
+    //
+    //     $authorized = DB::for_table('forums')
+    //                     ->table_alias('f')
+    //                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
+    //                     ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+    //                     ->where_any_is($authorized['where'])
+    //                     ->where_null('f.redirect_url');
+    //     $authorized = $this->hook->fireDB('move_topics_to_authorized', $authorized);
+    //     $authorized = $authorized->find_one();
+    //
+    //     if (!$authorized) {
+    //         throw new Error(__('Bad request'), 404);
+    //     }
+    //
+    //     // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
+    //     $delete_redirect = DB::for_table('topics')
+    //                             ->where('forum_id', $move_to_forum)
+    //                             ->where_in('moved_to', $topics);
+    //     $delete_redirect = $this->hook->fireDB('move_topics_to_delete_redirect', $delete_redirect);
+    //     $delete_redirect = $delete_redirect->delete_many();
+    //
+    //     // Move the topic(s)
+    //     $move_topics = DB::for_table('topics')->where_in('id', $topics)
+    //                     ->find_one()
+    //                     ->set('forum_id', $move_to_forum);
+    //     $move_topics = $this->hook->fireDB('move_topics_to_query', $move_topics);
+    //     $move_topics = $move_topics->save();
+    //
+    //     // Should we create redirect topics?
+    //     if ($this->request->post('with_redirect')) {
+    //         foreach ($topics as $cur_topic) {
+    //             // Fetch info for the redirect topic
+    //             $moved_to['select'] = array('poster', 'subject', 'posted', 'last_post');
+    //
+    //             $moved_to = DB::for_table('topics')->select_many($moved_to['select'])
+    //                             ->where('id', $cur_topic);
+    //             $moved_to = $this->hook->fireDB('move_topics_to_fetch_redirect', $moved_to);
+    //             $moved_to = $moved_to->find_one();
+    //
+    //             // Create the redirect topic
+    //             $insert_move_topics_to = array(
+    //                 'poster' => $moved_to['poster'],
+    //                 'subject'  => $moved_to['subject'],
+    //                 'posted'  => $moved_to['posted'],
+    //                 'last_post'  => $moved_to['last_post'],
+    //                 'moved_to'  => $cur_topic,
+    //                 'forum_id'  => $fid,
+    //             );
+    //
+    //             // Insert the report
+    //             $move_topics_to = DB::for_table('topics')
+    //                                 ->create()
+    //                                 ->set($insert_move_topics_to);
+    //             $move_topics_to = $this->hook->fireDB('move_topics_to_redirect', $move_topics_to);
+    //             $move_topics_to = $move_topics_to->save();
+    //
+    //         }
+    //     }
+    //
+    //     Forum::update($fid); // Update the forum FROM which the topic was moved
+    //     Forum::update($move_to_forum); // Update the forum TO which the topic was moved
+    //
+    //     $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
+    //     $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
+    //     Url::redirect($this->feather->urlFor('Forum', array('id' => $move_to_forum)), $redirect_msg);
+    // }
 
-        if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
-            throw new Error(__('Bad request'), 400);
-        }
-
-        $topics = explode(',', $this->request->post('topics'));
-        $move_to_forum = $this->request->post('move_to_forum') ? intval($this->request->post('move_to_forum')) : 0;
-        if (empty($topics) || $move_to_forum < 1) {
-            throw new Error(__('Bad request'), 400);
-        }
-
-        // Verify that the topic IDs are valid
-        $result = DB::for_table('topics')
-                    ->where_in('id', $topics)
-                    ->where('forum_id', $fid);
-        $result = $this->hook->fireDB('move_topics_to_topic_valid', $result);
-        $result = $result->find_many();
-
-        if (count($result) != count($topics)) {
-            throw new Error(__('Bad request'), 400);
-        }
-
-
-        // Verify that the move to forum ID is valid
-        $authorized['where'] = array(
-            array('fp.post_topics' => 'IS NULL'),
-            array('fp.post_topics' => '1')
-        );
-
-        $authorized = DB::for_table('forums')
-                        ->table_alias('f')
-                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                        ->where_any_is($authorized['where'])
-                        ->where_null('f.redirect_url');
-        $authorized = $this->hook->fireDB('move_topics_to_authorized', $authorized);
-        $authorized = $authorized->find_one();
-
-        if (!$authorized) {
-            throw new Error(__('Bad request'), 404);
-        }
-
-        // Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
-        $delete_redirect = DB::for_table('topics')
-                                ->where('forum_id', $move_to_forum)
-                                ->where_in('moved_to', $topics);
-        $delete_redirect = $this->hook->fireDB('move_topics_to_delete_redirect', $delete_redirect);
-        $delete_redirect = $delete_redirect->delete_many();
-
-        // Move the topic(s)
-        $move_topics = DB::for_table('topics')->where_in('id', $topics)
-                        ->find_one()
-                        ->set('forum_id', $move_to_forum);
-        $move_topics = $this->hook->fireDB('move_topics_to_query', $move_topics);
-        $move_topics = $move_topics->save();
-
-        // Should we create redirect topics?
-        if ($this->request->post('with_redirect')) {
-            foreach ($topics as $cur_topic) {
-                // Fetch info for the redirect topic
-                $moved_to['select'] = array('poster', 'subject', 'posted', 'last_post');
-
-                $moved_to = DB::for_table('topics')->select_many($moved_to['select'])
-                                ->where('id', $cur_topic);
-                $moved_to = $this->hook->fireDB('move_topics_to_fetch_redirect', $moved_to);
-                $moved_to = $moved_to->find_one();
-
-                // Create the redirect topic
-                $insert_move_topics_to = array(
-                    'poster' => $moved_to['poster'],
-                    'subject'  => $moved_to['subject'],
-                    'posted'  => $moved_to['posted'],
-                    'last_post'  => $moved_to['last_post'],
-                    'moved_to'  => $cur_topic,
-                    'forum_id'  => $fid,
-                );
-
-                // Insert the report
-                $move_topics_to = DB::for_table('topics')
-                                    ->create()
-                                    ->set($insert_move_topics_to);
-                $move_topics_to = $this->hook->fireDB('move_topics_to_redirect', $move_topics_to);
-                $move_topics_to = $move_topics_to->save();
-
-            }
-        }
-
-        Forum::update($fid); // Update the forum FROM which the topic was moved
-        Forum::update($move_to_forum); // Update the forum TO which the topic was moved
-
-        $redirect_msg = (count($topics) > 1) ? __('Move topics redirect') : __('Move topic redirect');
-        $redirect_msg = $this->hook->fire('move_topics_to_redirect_message', $redirect_msg);
-        Url::redirect($this->feather->urlFor('Forum', array('id' => $move_to_forum)), $redirect_msg);
-    }
-
-    public function check_move_possible()
-    {
-        $this->hook->fire('check_move_possible_start');
-
-        $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
-        $result['where'] = array(
-            array('fp.post_topics' => 'IS NULL'),
-            array('fp.post_topics' => '1')
-        );
-        $result['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
-
-        $result = DB::for_table('categories')
-                    ->table_alias('c')
-                    ->select_many($result['select'])
-                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                    ->where_any_is($result['where'])
-                    ->where_null('f.redirect_url')
-                    ->order_by_many($result['order_by']);
-        $result = $this->hook->fireDB('check_move_possible', $result);
-        $result = $result->find_many();
-
-        if (count($result) < 2) {
-            throw new Error(__('Nowhere to move'), 403);
-        }
-    }
+    // public function check_move_possible()
+    // {
+    //     $this->hook->fire('check_move_possible_start');
+    //
+    //     $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+    //     $result['where'] = array(
+    //         array('fp.post_topics' => 'IS NULL'),
+    //         array('fp.post_topics' => '1')
+    //     );
+    //     $result['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
+    //
+    //     $result = DB::for_table('categories')
+    //                 ->table_alias('c')
+    //                 ->select_many($result['select'])
+    //                 ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+    //                 ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+    //                 ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+    //                 ->where_any_is($result['where'])
+    //                 ->where_null('f.redirect_url')
+    //                 ->order_by_many($result['order_by']);
+    //     $result = $this->hook->fireDB('check_move_possible', $result);
+    //     $result = $result->find_many();
+    //
+    //     if (count($result) < 2) {
+    //         throw new Error(__('Nowhere to move'), 403);
+    //     }
+    // }
 
     public function merge_topics($fid)
     {

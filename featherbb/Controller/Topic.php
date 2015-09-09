@@ -12,6 +12,7 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 
 class Topic
 {
@@ -140,38 +141,61 @@ class Topic
         return $this->display($post['topic_id'], null, $post['get_p'], $pid);
     }
 
-    public function subscribe($id)
+    public function subscribe($id, $name = '')
     {
         $this->model->subscribe($id);
     }
 
-    public function unsubscribe($id)
+    public function unsubscribe($id, $name = '')
     {
         $this->model->unsubscribe($id);
     }
 
-    public function close($id)
+    public function close($id, $name = '')
     {
         $topic = $this->model->setClosed($id, 1);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
     }
 
-    public function open($id)
+    public function open($id, $name = '')
     {
         $topic = $this->model->setClosed($id, 0);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
     }
 
-    public function stick($id)
+    public function stick($id, $name = '')
     {
         $topic = $this->model->setSticky($id, 1);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
     }
 
-    public function unstick($id)
+    public function unstick($id, $name = '')
     {
         $topic = $this->model->setSticky($id, 0);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
+    }
+
+    // Move a single topic
+    public function move($tid, $name = '', $fid)
+    {
+        if ($new_fid = $this->feather->request->post('move_to_forum')) {
+            $this->model->move_to($fid, $new_fid, $tid);
+            Url::redirect($this->feather->urlFor('Topic', array('id' => $tid, 'name' => $name)), __('Move topic redirect'));
+        }
+
+        // Check if there are enough forums to move the topic
+        if ( !$this->model->check_move_possible() ) {
+            throw new Error(__('Nowhere to move'), 403);
+        }
+
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                'active_page' => 'moderate',
+                'action'    =>    'single',
+                'topics'    =>    $tid,
+                'list_forums'   => $this->model->get_forum_list_move($fid),
+            )
+        )->addTemplate('moderate/move_topics.php')->display();
     }
 
     public function action($id, $action)

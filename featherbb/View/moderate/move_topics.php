@@ -20,7 +20,7 @@ if (!isset($feather)) {
 		<form method="post" action="">
 			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 			<div class="inform">
-			<input type="hidden" name="topics" value="<?php echo $topics ?>" />
+			    <input type="hidden" name="topics" value="<?php echo $topics ?>" />
 				<fieldset>
 					<legend><?php _e('Move legend') ?></legend>
 					<div class="infldset">

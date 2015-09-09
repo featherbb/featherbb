@@ -50,9 +50,10 @@ $feather->group('/forum', $canReadBoard, function() use ($feather) {
     };
     $feather->get('/:id(/:name)(/)', '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Forum');
     $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('ForumPaginate');
-    $feather->get('/mark-read/:id(/)', $isGuest, '\FeatherBB\Controller\Forum:markread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
-    $feather->get('/subscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Forum:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
-    $feather->get('/unsubscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Forum:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
+    $feather->get('/mark-read/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Forum:markread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
+    $feather->get('/subscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Forum:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
+    $feather->get('/unsubscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Forum:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
+    $feather->get('/moderate:fid(/:name)/page/:page(/)', '\FeatherBB\Controller\Forum:moderate')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForum');
 });
 
 // Topic
@@ -75,6 +76,7 @@ $feather->group('/topic', $canReadBoard, function() use ($feather) {
     $feather->get('/open/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:open')->conditions(array('id' => '[0-9]+'))->name('openTopic');
     $feather->get('/stick/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:stick')->conditions(array('id' => '[0-9]+'))->name('stickTopic');
     $feather->get('/unstick/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:unstick')->conditions(array('id' => '[0-9]+'))->name('unstickTopic');
+    $feather->map('/move/:id(/:name)/forum/:fid(/)', $isAdmmod, '\FeatherBB\Controller\Topic:move')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+'))->via('GET', 'POST')->name('moveTopic');
     $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Topic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
 });
 
@@ -134,11 +136,9 @@ $feather->group('/user', $isGuest, function() use ($feather) {
 
 // Moderate routes
 $feather->group('/moderate', $isAdmmod, $canReadBoard, function() use ($feather) {
-    $feather->get('/forum/:id(/)', '\FeatherBB\Controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForum');
-    $feather->get('/forum/:id(/page/:page)(/)', '\FeatherBB\Controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForumPage');
-    $feather->map('/topic/:id/forum/:fid/action/:action(/param/:param)(/)', '\FeatherBB\Controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'param' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopic');
-    $feather->map('/topic/:id/forum/:fid/action/:action(/page/:page)(/)', '\FeatherBB\Controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopicPage');
+    // $feather->get('/forum/:fid(/:name)/page/:page(/)', '\FeatherBB\Controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForum');
     $feather->post('/forum/:fid(/page/:page)(/)', '\FeatherBB\Controller\Moderate:dealposts')->conditions(array('fid' => '[0-9]+', 'page' => '[0-9]+'))->name('dealPosts');
+    $feather->map('/topic/:id/forum/:fid/action/:action(/page/:page)(/)', '\FeatherBB\Controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopic');
 });
 
 // Admin routes

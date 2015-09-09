@@ -75,22 +75,6 @@ class Moderate
 
         $start_from = $this->user->disp_posts * ($p - 1);
 
-        // Move a topic - send a POST after
-        if ($action == 'move') {
-            // Check if there are enough forums to move the topic
-            $this->model->check_move_possible();
-
-            $this->feather->template->setPageInfo(array(
-                        'title' => array(Utils::escape($this->config['o_board_title']), __('Moderate')),
-                        'active_page' => 'moderate',
-                        'page' => $p,
-                        'action'    =>    'single',
-                        'id'    =>    $id,
-                        'topics'    =>    $id,
-                        'list_forums'   => $this->model->get_forum_list_move($fid),
-                        )
-                )->addTemplate('moderate/move_topics.php')->display();
-        }
 
         // Moderate a topic
         if ($action == 'moderate') {
