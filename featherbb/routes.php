@@ -37,7 +37,7 @@ $isAdmmod = function() use ($feather) {
 };
 
 // Index
-$feather->get('/', $canReadBoard, '\FeatherBB\Controller\index:display')->name('home');
+$feather->get('/', $canReadBoard, '\FeatherBB\Controller\Index:display')->name('home');
 
 // Forum
 $feather->get('/forum/:id(/:name)(/)', $canReadBoard, '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Forum');
@@ -151,7 +151,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     });
 
     // Admin options
-    $feather->map('/options(/)', $isAdmin, '\FeatherBB\Controller\Admin\options:display')->via('GET', 'POST')->name('adminOptions');
+    $feather->map('/options(/)', $isAdmin, '\FeatherBB\Controller\Admin\Options:display')->via('GET', 'POST')->name('adminOptions');
 
     // Admin categories
     $feather->group('/categories', $isAdmin, function() use ($feather) {

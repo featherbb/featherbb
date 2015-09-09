@@ -126,7 +126,7 @@ class Topic
             'lang_bbeditor'    =>    $lang_bbeditor,
             'url_forum'        =>    $url_forum,
             'url_topic'        =>    $url_topic,
-        ))->addTemplate('Topic.php')->display();
+        ))->addTemplate('topic.php')->display();
 
         // Increment "num_views" for topic
         $this->model->increment_views($id);
