@@ -101,11 +101,9 @@ $feather->group('/post', $canReadBoard, function() use ($feather) {
     $feather->map('/reply/:tid(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('newReply');
     $feather->map('/reply/:tid(/)(/quote/:qid)(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST')->name('newQuoteReply');
     $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Post:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
+    $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Post:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
     $feather->map('/report/:id(/)', '\FeatherBB\Controller\Post:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
 });
-
-// Edit
-$feather->map('/edit/:id(/)', $canReadBoard, '\FeatherBB\Controller\Edit:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
 
 // Search routes
 $feather->group('/search', $canReadBoard, function() use ($feather) {
