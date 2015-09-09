@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2015 FeatherBB
- * based on code by (C) 2008-2012 FluxBB
+ * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -55,24 +55,58 @@
 
 -----------------------------------------------------------------------------*/
 
+namespace FeatherBB;
+use DB;
+use FeatherBB\Core\Cache;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
+
 define('FEATHER_QUIET_VISIT', 1);
 
-if (!defined('FEATHER_ROOT')) {
-    define('FEATHER_ROOT', dirname(__FILE__).'/');
-}
+// Start a session for flash messages
+session_cache_limiter(false);
+session_start();
+error_reporting(E_ALL); // Let's report everything for development
+ini_set('display_errors', 1);
 
 // Load Slim Framework
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
+require 'vendor/autoload.php';
 
-// Instantiate Slim
+// Instantiate Slim and add CSRF
 $feather = new \Slim\Slim();
+$feather->add(new \FeatherBB\Middleware\Csrf());
 
-require FEATHER_ROOT.'include/common.php';
+$feather_settings = array('config_file' => 'featherbb/config.php',
+    'cache_dir' => 'cache/',
+    'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+$feather->add(new \FeatherBB\Middleware\Auth());
+$feather->add(new \FeatherBB\Middleware\Core($feather_settings));
 
 // The length at which topic subjects will be truncated (for HTML output)
 if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
     define('FORUM_EXTERN_MAX_SUBJECT_LENGTH', 30);
+}
+
+function featherbb_write_cache_file($file, $content)
+{
+    $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
+    if (!$fh) {
+        die('Unable to write cache file '.Utils::escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.Utils::escape(FORUM_CACHE_DIR).'\'');
+    }
+
+    flock($fh, LOCK_EX);
+    ftruncate($fh, 0);
+
+    fwrite($fh, $content);
+
+    flock($fh, LOCK_UN);
+    fclose($fh);
+
+    if (function_exists('opcache_invalidate')) {
+        opcache_invalidate(FORUM_CACHE_DIR.$file, true);
+    } elseif (function_exists('apc_delete_file')) {
+        @apc_delete_file(FORUM_CACHE_DIR.$file);
+    }
 }
 
 //
@@ -81,6 +115,86 @@ if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
 function escape_cdata($str)
 {
     return str_replace(']]>', ']]&gt;', $str);
+}
+
+//
+// Try to determine the current URL
+//
+function get_current_url($max_length = 0)
+{
+    $protocol = get_current_protocol();
+    $port = (isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false) ? ':'.$_SERVER['SERVER_PORT'] : '';
+
+    $url = urldecode($protocol.'://'.$_SERVER['HTTP_HOST'].$port.$_SERVER['REQUEST_URI']);
+
+    if (strlen($url) <= $max_length || $max_length == 0) {
+        return $url;
+    }
+
+    // We can't find a short enough url
+    return null;
+}
+
+//
+// Fill $feather->user with default values (for guests)
+//
+function set_default_user()
+{
+    // Get Slim current session
+    $feather = \Slim\Slim::getInstance();
+
+    $remote_addr = $feather->request->getIp();
+
+    // Fetch guest user
+    $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
+    $where_set_default_user = array('u.id' => '1');
+
+    $result = \DB::for_table('users')
+        ->table_alias('u')
+        ->select_many($select_set_default_user)
+        ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
+        ->left_outer_join('online', array('o.ident', '=', $remote_addr), 'o', true)
+        ->where($where_set_default_user)
+        ->find_result_set();
+
+    if (!$result) {
+        exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
+    }
+
+    foreach ($result as $feather->user);
+
+    // Update online list
+    if (!$feather->user->logged) {
+        $feather->user->logged = time();
+
+        // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
+        switch ($feather->forum_settings['db_type']) {
+            case 'mysql':
+            case 'mysqli':
+            case 'mysql_innodb':
+            case 'mysqli_innodb':
+            case 'sqlite':
+            case 'sqlite3':
+                \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->forum_settings['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                break;
+
+            default:
+                \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->forum_settings['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->forum_settings['db_prefix'].'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                break;
+        }
+    } else {
+        \DB::for_table('online')->where('ident', $remote_addr)
+            ->update_many('logged', time());
+    }
+
+    $feather->user->disp_topics = $feather->forum_settings['o_disp_topics_default'];
+    $feather->user->disp_posts = $feather->forum_settings['o_disp_posts_default'];
+    $feather->user->timezone = $feather->forum_settings['o_default_timezone'];
+    $feather->user->dst = $feather->forum_settings['o_default_dst'];
+    $feather->user->language = $feather->forum_settings['o_default_lang'];
+    $feather->user->style = $feather->forum_settings['o_default_style'];
+    $feather->user->is_guest = true;
+    $feather->user->is_admmod = false;
 }
 
 //
@@ -95,7 +209,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
     // Check if there's a user matching $user and $password
     $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
 
-    $result = ORM::for_table('users')
+    $result = DB::for_table('users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
                 ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
@@ -114,11 +228,14 @@ function authenticate_user($user, $password, $password_is_hash = false)
 
     if (!isset($feather->user->id) ||
         ($password_is_hash && $password != $feather->user->password) ||
-        (!$password_is_hash && feather_hash($password) != $feather->user->password)) {
+        (!$password_is_hash && \FeatherBB\Core\Random::hash($password) != $feather->user->password)) {
         set_default_user();
     } else {
         $feather->user->is_guest = false;
     }
+
+    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/common.mo');
+    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.$feather->user->language.'/index.mo');
 }
 
 // If we're a guest and we've sent a username/pass, we can try to authenticate using those details
@@ -128,7 +245,7 @@ if ($feather->user->is_guest && isset($_SERVER['PHP_AUTH_USER'])) {
 
 if ($feather->user->g_read_board == '0') {
     http_authenticate_user();
-    exit($lang_common['No view']);
+    exit(__('No view'));
 }
 
 $action = isset($_GET['action']) ? strtolower($_GET['action']) : 'feed';
@@ -151,13 +268,13 @@ switch ($action) {
 //
 function http_authenticate_user()
 {
-    global $feather_config, $feather;
+    global $feather;
 
     if (!$feather->user->is_guest) {
         return;
     }
 
-    header('WWW-Authenticate: Basic realm="'.$feather_config['o_board_title'].' External Syndication"');
+    header('WWW-Authenticate: Basic realm="'.$feather->forum_settings['o_board_title'].' External Syndication"');
     header('HTTP/1.0 401 Unauthorized');
 }
 
@@ -167,8 +284,6 @@ function http_authenticate_user()
 //
 function output_rss($feed)
 {
-    global $lang_common, $feather_config;
-
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
     header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -178,14 +293,14 @@ function output_rss($feed)
     echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
     echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
     echo "\t".'<channel>'."\n";
-    echo "\t\t".'<atom:link href="'.feather_escape(get_current_url()).'" rel="self" type="application/rss+xml" />'."\n";
+    echo "\t\t".'<atom:link href="'.Utils::escape(get_current_url()).'" rel="self" type="application/rss+xml" />'."\n";
     echo "\t\t".'<title><![CDATA['.escape_cdata($feed['title']).']]></title>'."\n";
-    echo "\t\t".'<link>'.feather_escape($feed['link']).'</link>'."\n";
+    echo "\t\t".'<link>'.Utils::escape($feed['link']).'</link>'."\n";
     echo "\t\t".'<description><![CDATA['.escape_cdata($feed['description']).']]></description>'."\n";
     echo "\t\t".'<lastBuildDate>'.gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</lastBuildDate>'."\n";
 
-    if ($feather_config['o_show_version'] == '1') {
-        echo "\t\t".'<generator>FeatherBB '.$feather_config['o_cur_version'].'</generator>'."\n";
+    if ($feather->forum_settings['o_show_version'] == '1') {
+        echo "\t\t".'<generator>FeatherBB '.$feather->forum_settings['o_cur_version'].'</generator>'."\n";
     } else {
         echo "\t\t".'<generator>FeatherBB</generator>'."\n";
     }
@@ -193,11 +308,11 @@ function output_rss($feed)
     foreach ($feed['items'] as $item) {
         echo "\t\t".'<item>'."\n";
         echo "\t\t\t".'<title><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t\t".'<link>'.feather_escape($item['link']).'</link>'."\n";
+        echo "\t\t\t".'<link>'.Utils::escape($item['link']).'</link>'."\n";
         echo "\t\t\t".'<description><![CDATA['.escape_cdata($item['description']).']]></description>'."\n";
         echo "\t\t\t".'<author><![CDATA['.(isset($item['author']['email']) ? escape_cdata($item['author']['email']) : 'dummy@example.com').' ('.escape_cdata($item['author']['name']).')]]></author>'."\n";
         echo "\t\t\t".'<pubDate>'.gmdate('r', $item['pubdate']).'</pubDate>'."\n";
-        echo "\t\t\t".'<guid>'.feather_escape($item['link']).'</guid>'."\n";
+        echo "\t\t\t".'<guid>'.Utils::escape($item['link']).'</guid>'."\n";
 
         echo "\t\t".'</item>'."\n";
     }
@@ -212,8 +327,6 @@ function output_rss($feed)
 //
 function output_atom($feed)
 {
-    global $lang_common, $feather_config;
-
     // Send XML/no cache headers
     header('Content-Type: application/atom+xml; charset=utf-8');
     header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -224,24 +337,26 @@ function output_atom($feed)
     echo '<feed xmlns="http://www.w3.org/2005/Atom">'."\n";
 
     echo "\t".'<title type="html"><![CDATA['.escape_cdata($feed['title']).']]></title>'."\n";
-    echo "\t".'<link rel="self" href="'.feather_escape(get_current_url()).'"/>'."\n";
-    echo "\t".'<link href="'.feather_escape($feed['link']).'"/>'."\n";
+    echo "\t".'<link rel="self" href="'.Utils::escape(get_current_url()).'"/>'."\n";
+    echo "\t".'<link href="'.Utils::escape($feed['link']).'"/>'."\n";
     echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
 
-    if ($feather_config['o_show_version'] == '1') {
-        echo "\t".'<generator version="'.$feather_config['o_cur_version'].'">FluxBB</generator>'."\n";
+    $feather = \Slim\Slim::getInstance();
+
+    if ($feather->forum_settings['o_show_version'] == '1') {
+        echo "\t".'<generator version="'.$feather->forum_settings['o_cur_version'].'">FeatherBB</generator>'."\n";
     } else {
-        echo "\t".'<generator>FluxBB</generator>'."\n";
+        echo "\t".'<generator>FeatherBB</generator>'."\n";
     }
 
-    echo "\t".'<id>'.feather_escape($feed['link']).'</id>'."\n";
+    echo "\t".'<id>'.Utils::escape($feed['link']).'</id>'."\n";
 
     $content_tag = ($feed['type'] == 'posts') ? 'content' : 'summary';
 
     foreach ($feed['items'] as $item) {
         echo "\t".'<entry>'."\n";
         echo "\t\t".'<title type="html"><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t".'<link rel="alternate" href="'.feather_escape($item['link']).'"/>'."\n";
+        echo "\t\t".'<link rel="alternate" href="'.Utils::escape($item['link']).'"/>'."\n";
         echo "\t\t".'<'.$content_tag.' type="html"><![CDATA['.escape_cdata($item['description']).']]></'.$content_tag.'>'."\n";
         echo "\t\t".'<author>'."\n";
         echo "\t\t\t".'<name><![CDATA['.escape_cdata($item['author']['name']).']]></name>'."\n";
@@ -251,13 +366,13 @@ function output_atom($feed)
         }
 
         if (isset($item['author']['uri'])) {
-            echo "\t\t\t".'<uri>'.feather_escape($item['author']['uri']).'</uri>'."\n";
+            echo "\t\t\t".'<uri>'.Utils::escape($item['author']['uri']).'</uri>'."\n";
         }
 
         echo "\t\t".'</author>'."\n";
         echo "\t\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', $item['pubdate']).'</updated>'."\n";
 
-        echo "\t\t".'<id>'.feather_escape($item['link']).'</id>'."\n";
+        echo "\t\t".'<id>'.Utils::escape($item['link']).'</id>'."\n";
         echo "\t".'</entry>'."\n";
     }
 
@@ -270,8 +385,6 @@ function output_atom($feed)
 //
 function output_xml($feed)
 {
-    global $lang_common, $feather_config;
-
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
     header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -280,7 +393,7 @@ function output_xml($feed)
 
     echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
     echo '<source>'."\n";
-    echo "\t".'<url>'.feather_escape($feed['link']).'</url>'."\n";
+    echo "\t".'<url>'.Utils::escape($feed['link']).'</url>'."\n";
 
     $forum_tag = ($feed['type'] == 'posts') ? 'post' : 'topic';
 
@@ -288,7 +401,7 @@ function output_xml($feed)
         echo "\t".'<'.$forum_tag.' id="'.$item['id'].'">'."\n";
 
         echo "\t\t".'<title><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t".'<link>'.feather_escape($item['link']).'</link>'."\n";
+        echo "\t\t".'<link>'.Utils::escape($item['link']).'</link>'."\n";
         echo "\t\t".'<content><![CDATA['.escape_cdata($item['description']).']]></content>'."\n";
         echo "\t\t".'<author>'."\n";
         echo "\t\t\t".'<name><![CDATA['.escape_cdata($item['author']['name']).']]></name>'."\n";
@@ -298,7 +411,7 @@ function output_xml($feed)
         }
 
         if (isset($item['author']['uri'])) {
-            echo "\t\t\t".'<uri>'.feather_escape($item['author']['uri']).'</uri>'."\n";
+            echo "\t\t\t".'<uri>'.Utils::escape($item['author']['uri']).'</uri>'."\n";
         }
 
         echo "\t\t".'</author>'."\n";
@@ -324,19 +437,17 @@ function output_html($feed)
 
     foreach ($feed['items'] as $item) {
         if (utf8_strlen($item['title']) > FORUM_EXTERN_MAX_SUBJECT_LENGTH) {
-            $subject_truncated = feather_escape(feather_trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
+            $subject_truncated = Utils::escape($feather->utils->trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
         } else {
-            $subject_truncated = feather_escape($item['title']);
+            $subject_truncated = Utils::escape($item['title']);
         }
 
-        echo '<li><a href="'.feather_escape($item['link']).'" title="'.feather_escape($item['title']).'">'.$subject_truncated.'</a></li>'."\n";
+        echo '<li><a href="'.Utils::escape($item['link']).'" title="'.Utils::escape($item['title']).'">'.$subject_truncated.'</a></li>'."\n";
     }
 }
 
 // Show recent discussions
 if ($action == 'feed') {
-    require FEATHER_ROOT.'include/parser.php';
-
     // Determine what type of feed to output
     $type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
     if (!in_array($type, array('html', 'rss', 'atom', 'xml'))) {
@@ -370,18 +481,18 @@ if ($action == 'feed') {
 
         if (!$cur_topic) {
             http_authenticate_user();
-            exit($lang_common['Bad request']);
+            exit(__('Bad request'));
         }
 
-        if ($feather_config['o_censoring'] == '1') {
-            $cur_topic['subject'] = censor_words($cur_topic['subject']);
+        if ($feather->forum_settings['o_censoring'] == '1') {
+            $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
         // Setup the feed
         $feed = array(
-            'title'        =>    $feather_config['o_board_title'].$lang_common['Title separator'].$cur_topic['subject'],
-            'link'            =>    get_link('topic/'.$tid.'/'.url_friendly($cur_topic['subject']).'/'),
-            'description'        =>    sprintf($lang_common['RSS description topic'], $cur_topic['subject']),
+            'title'        =>    $feather->forum_settings['o_board_title'].__('Title separator').$cur_topic['subject'],
+            'link'            =>    Url::get('topic/'.$tid.'/'.Url::url_friendly($cur_topic['subject']).'/'),
+            'description'        =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
             'items'            =>    array(),
             'type'            =>    'posts'
         );
@@ -403,8 +514,8 @@ if ($action == 'feed') {
 
             $item = array(
                 'id'            =>    $cur_post['id'],
-                'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : $lang_common['RSS reply'].$cur_topic['subject'],
-                'link'            =>    get_link('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
+                'title'            =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : __('RSS reply').$cur_topic['subject'],
+                'link'            =>    Url::get('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
                 'description'        =>    $cur_post['message'],
                 'author'        =>    array(
                     'name'    => $cur_post['poster'],
@@ -417,7 +528,7 @@ if ($action == 'feed') {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
-                $item['author']['uri'] = get_link('user/'.$cur_post['poster_id'].'/');
+                $item['author']['uri'] = Url::get('user/'.$cur_post['poster_id'].'/');
             } elseif ($cur_post['poster_email'] != '' && !$feather->user->is_guest) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
@@ -436,7 +547,7 @@ if ($action == 'feed') {
 
         // Were any forum IDs supplied?
         if (isset($_GET['fid']) && is_scalar($_GET['fid']) && $_GET['fid'] != '') {
-            $fids = explode(',', feather_trim($_GET['fid']));
+            $fids = explode(',', $feather->utils->trim($_GET['fid']));
             $fids = array_map('intval', $fids);
 
             if (!empty($fids)) {
@@ -458,14 +569,14 @@ if ($action == 'feed') {
                     ->find_one_col('f.forum_name');
 
                 if ($cur_topic) {
-                    $forum_name = $lang_common['Title separator'].$cur_topic;
+                    $forum_name = __('Title separator').$cur_topic;
                 }
             }
         }
 
         // Any forum IDs to exclude?
         if (isset($_GET['nfid']) && is_scalar($_GET['nfid']) && $_GET['nfid'] != '') {
-            $nfids = explode(',', feather_trim($_GET['nfid']));
+            $nfids = explode(',', $feather->utils->trim($_GET['nfid']));
             $nfids = array_map('intval', $nfids);
 
             if (!empty($nfids)) {
@@ -474,8 +585,8 @@ if ($action == 'feed') {
         }
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
-        if ($feather_config['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
-            $cache_id = 'feed'.sha1($feather->user->g_id.'|'.$lang_common['lang_identifier'].'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
+        if ($feather->forum_settings['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
+            $cache_id = 'feed'.sha1($feather->user->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
         // Load cached feed
@@ -487,9 +598,9 @@ if ($action == 'feed') {
         if (!isset($feed) || $cache_expire < $now) {
             // Setup the feed
             $feed = array(
-                'title'        =>    $feather_config['o_board_title'].$forum_name,
+                'title'        =>    $feather->forum_settings['o_board_title'].$forum_name,
                 'link'            =>    '/index.php',
-                'description'    =>    sprintf($lang_common['RSS description'], $feather_config['o_board_title']),
+                'description'    =>    sprintf(__('RSS description'), $feather->forum_settings['o_board_title']),
                 'items'            =>    array(),
                 'type'            =>    'topics'
             );
@@ -513,8 +624,8 @@ if ($action == 'feed') {
                         ->find_array();
 
             foreach ($result as $cur_topic) {
-                if ($feather_config['o_censoring'] == '1') {
-                    $cur_topic['subject'] = censor_words($cur_topic['subject']);
+                if ($feather->forum_settings['o_censoring'] == '1') {
+                    $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
                 $cur_topic['message'] = parse_message($cur_topic['message'], $cur_topic['hide_smilies']);
@@ -522,7 +633,7 @@ if ($action == 'feed') {
                 $item = array(
                     'id'            =>    $cur_topic['id'],
                     'title'            =>    $cur_topic['subject'],
-                    'link'            =>    get_link('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
+                    'link'            =>    Url::get('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
                     'description'    =>    $cur_topic['message'],
                     'author'        =>    array(
                         'name'    => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
@@ -535,7 +646,7 @@ if ($action == 'feed') {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
-                    $item['author']['uri'] = get_link('user/'.$cur_topic['poster_id'].'/');
+                    $item['author']['uri'] = Url::get('user/'.$cur_topic['poster_id'].'/');
                 } elseif ($cur_topic['poster_email'] != '' && !$feather->user->is_guest) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
@@ -546,10 +657,10 @@ if ($action == 'feed') {
             // Output feed as PHP code
             if (isset($cache_id)) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FEATHER_ROOT.'include/cache.php';
+                    require FEATHER_ROOT.'featherbb/Helpers/cache.php';
                 }
 
-                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather_config['o_feed_ttl'] * 60)).';'."\n\n".'?>';
+                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather->forum_settings['o_feed_ttl'] * 60)).';'."\n\n".'?>';
                 featherbb_write_cache_file('cache_'.$cache_id.'.php', $content);
             }
         }
@@ -560,13 +671,13 @@ if ($action == 'feed') {
         }
 
         // Prepend the current base URL onto some links. Done after caching to handle http/https correctly
-        $feed['link'] = get_base_url(true).$feed['link'];
+        $feed['link'] = $feather->url->base(true).$feed['link'];
 
         foreach ($feed['items'] as $key => $item) {
-            $feed['items'][$key]['link'] = get_base_url(true).$item['link'];
+            $feed['items'][$key]['link'] = $feather->url->base(true).$item['link'];
 
             if (isset($item['author']['uri'])) {
-                $feed['items'][$key]['author']['uri'] = get_base_url(true).$item['author']['uri'];
+                $feed['items'][$key]['author']['uri'] = $feather->url->base(true).$item['author']['uri'];
             }
         }
 
@@ -579,8 +690,6 @@ if ($action == 'feed') {
 
 // Show users online
 elseif ($action == 'online' || $action == 'online_full') {
-    // Load the index.php language file
-    require FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/index.php';
 
     // Fetch users online info and generate strings for output
     $num_guests = $num_users = 0;
@@ -598,7 +707,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     foreach ($result as $feather_user_online) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$feather_user_online['user_id'].'/').'">'.feather_escape($feather_user_online['ident']).'</a>' : feather_escape($feather_user_online['ident']);
+            $users[] = ($feather->user->g_view_users == '1') ? '<a href="'.Url::get('user/'.$feather_user_online['user_id'].'/').'">'.Utils::escape($feather_user_online['ident']).'</a>' : Utils::escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -611,12 +720,12 @@ elseif ($action == 'online' || $action == 'online_full') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf($lang_index['Guests online'], forum_number_format($num_guests)).'<br />'."\n";
+    echo sprintf(__('Guests online'), Utils::forum_number_format($num_guests)).'<br />'."\n";
 
     if ($action == 'online_full' && !empty($users)) {
-        echo sprintf($lang_index['Users online'], implode(', ', $users)).'<br />'."\n";
+        echo sprintf(__('Users online'), implode(', ', $users)).'<br />'."\n";
     } else {
-        echo sprintf($lang_index['Users online'], forum_number_format($num_users)).'<br />'."\n";
+        echo sprintf(__('Users online'), Utils::forum_number_format($num_users)).'<br />'."\n";
     }
 
     exit;
@@ -624,22 +733,12 @@ elseif ($action == 'online' || $action == 'online_full') {
 
 // Show board statistics
 elseif ($action == 'stats') {
-    // Load the index.php language file
-    require FEATHER_ROOT.'lang/'.$feather_config['o_default_lang'].'/index.php';
 
-    // Collect some statistics from the database
-    if (file_exists(FORUM_CACHE_DIR.'cache_users_info.php')) {
-        include FORUM_CACHE_DIR.'cache_users_info.php';
+    if (!$feather->cache->isCached('users_info')) {
+        $feather->cache->store('users_info', Cache::get_users_info());
     }
 
-    if (!defined('feather_userS_INFO_LOADED')) {
-        if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-            require FEATHER_ROOT.'include/cache.php';
-        }
-
-        generate_users_info_cache();
-        require FORUM_CACHE_DIR.'cache_users_info.php';
-    }
+    $stats = $feather->cache->retrieve('users_info');
 
     $stats_query = \DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')
@@ -655,12 +754,12 @@ elseif ($action == 'stats') {
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf($lang_index['Newest user'], (($feather->user->g_view_users == '1') ? '<a href="'.get_link('user/'.$stats['last_user']['id'].'/').'">'.feather_escape($stats['last_user']['username']).'</a>' : feather_escape($stats['last_user']['username']))).'<br />'."\n";
-    echo sprintf($lang_index['No of topics'], forum_number_format($stats['total_topics'])).'<br />'."\n";
-    echo sprintf($lang_index['No of posts'], forum_number_format($stats['total_posts'])).'<br />'."\n";
+    echo sprintf(__('No of users'), Utils::forum_number_format($stats['total_users'])).'<br />'."\n";
+    echo sprintf(__('Newest user'), (($feather->user->g_view_users == '1') ? '<a href="'.Url::get('user/'.$stats['last_user']['id'].'/').'">'.Utils::escape($stats['last_user']['username']).'</a>' : Utils::escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf(__('No of topics'), Utils::forum_number_format($stats['total_topics'])).'<br />'."\n";
+    echo sprintf(__('No of posts'), Utils::forum_number_format($stats['total_posts'])).'<br />'."\n";
 
     exit;
 }
 // If we end up here, the script was called with some wacky parameters
-exit($lang_common['Bad request']);
+exit(__('Bad request'));

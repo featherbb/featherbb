@@ -1,0 +1,180 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "fopen disabled message"
+msgstr "Unable to check for upgrade since 'allow_url_fopen' is disabled on this system."
+
+msgid "Upgrade check failed message"
+msgstr "Check for upgrade failed for unknown reasons."
+
+msgid "Running latest version message"
+msgstr "You are running the latest version of FeatherBB."
+
+msgid "New version available message"
+msgstr "A new version of FeatherBB has been released. You can download the latest version at %s."
+
+msgid "Deleted install.php redirect"
+msgstr "The file was successfully removed."
+
+msgid "Delete install.php failed"
+msgstr "Could not remove install.php. Please do so by hand."
+
+msgid "Not available"
+msgstr "Not available"
+
+msgid "Forum admin head"
+msgstr "Forum administration"
+
+msgid "NA"
+msgstr "N/A"
+
+msgid "Welcome to admin"
+msgstr "Welcome to the FeatherBB administration control panel. From here you can control vital aspects of the board. Depending on whether you are an administrator or a moderator you can:"
+
+msgid "Welcome 1"
+msgstr "Organize categories and forums."
+
+msgid "Welcome 2"
+msgstr "Set forum-wide options and preferences."
+
+msgid "Welcome 3"
+msgstr "Control permissions for users and guests."
+
+msgid "Welcome 4"
+msgstr "View IP statistics for users."
+
+msgid "Welcome 5"
+msgstr "Ban users."
+
+msgid "Welcome 6"
+msgstr "Censor words."
+
+msgid "Welcome 7"
+msgstr "Set up user groups and promotions."
+
+msgid "Welcome 8"
+msgstr "Prune old posts."
+
+msgid "Welcome 9"
+msgstr "Handle post reports."
+
+msgid "Alerts head"
+msgstr "Alerts"
+
+msgid "Install file exists"
+msgstr "The install folder still exists, but should be removed. %s."
+
+msgid "Delete install file"
+msgstr "Delete it"
+
+msgid "About head"
+msgstr "About FeatherBB"
+
+msgid "FeatherBB version label"
+msgstr "FeatherBB version"
+
+msgid "Check for upgrade"
+msgstr "Check for upgrade"
+
+msgid "FeatherBB version data"
+msgstr "v%s - %s"
+
+msgid "Server statistics label"
+msgstr "Server statistics"
+
+msgid "View server statistics"
+msgstr "View server statistics"
+
+msgid "Support label"
+msgstr "Support"
+
+msgid "Forum label"
+msgstr "Forum"
+
+msgid "IRC label"
+msgstr "IRC channel"
+
+msgid "PHPinfo disabled message"
+msgstr "The PHP function phpinfo() has been disabled on this server."
+
+msgid "Server statistics head"
+msgstr "Server statistics"
+
+msgid "Server load label"
+msgstr "Server load"
+
+msgid "Server load data"
+msgstr "%s - %s user(s) online"
+
+msgid "Environment label"
+msgstr "Environment"
+
+msgid "Environment data OS"
+msgstr "Operating system: %s"
+
+msgid "Show info"
+msgstr "Show info"
+
+msgid "Environment data version"
+msgstr "PHP: %s - %s"
+
+msgid "Environment data acc"
+msgstr "Accelerator: %s"
+
+msgid "Turck MMCache"
+msgstr "Turck MMCache"
+
+msgid "Turck MMCache link"
+msgstr "turck-mmcache.sourceforge.net/"
+
+msgid "ionCube PHP Accelerator"
+msgstr "ionCube PHP Accelerator"
+
+msgid "ionCube PHP Accelerator link"
+msgstr "www.php-accelerator.co.uk/"
+
+msgid "Alternative PHP Cache (APC)"
+msgstr "Alternative PHP Cache (APC)"
+
+msgid "Alternative PHP Cache (APC) link"
+msgstr "www.php.net/apc/"
+
+msgid "Zend Optimizer"
+msgstr "Zend Optimizer"
+
+msgid "Zend Optimizer link"
+msgstr "www.zend.com/products/guard/zend-optimizer/"
+
+msgid "eAccelerator"
+msgstr "eAccelerator"
+
+msgid "eAccelerator link"
+msgstr "www.eaccelerator.net/"
+
+msgid "XCache"
+msgstr "XCache"
+
+msgid "XCache link"
+msgstr "xcache.lighttpd.net/"
+
+msgid "Database label"
+msgstr "Database"
+
+msgid "Database data rows"
+msgstr "Rows: %s"
+
+msgid "Database data size"
+msgstr "Size: %s"

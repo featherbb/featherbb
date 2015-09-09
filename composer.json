@@ -1,0 +1,34 @@
+{
+	"name": "featherbb/featherbb",
+	"type": "project",
+	"license": "GNU General Public Licence",
+	"description": "Lighter than a feather.",
+	"keywords": ["forum", "lightweight", "featherbb"],
+	"homepage": "http://featherbb.org/",
+	"authors": [{
+		"name": "adaur",
+		"role": "Project Leader"
+	}, {
+		"name": "capkokoon",
+		"role": "Contributor"
+	}, {
+		"name": "beaver",
+		"role": "Contributor"
+	}],
+	"autoload": {
+        "classmap": ["featherbb/Core/Database.php", "featherbb/Core/pomo/MO.php"],
+		"psr-4": {
+			"Plugins\\": "plugins/",
+			"FeatherBB\\": "featherbb/",
+			"": ""
+		}
+	},
+	"require": {
+		"php": ">=5.3",
+		"slim/slim": "^2.6"
+	},
+	"support": {
+		"email": "admin@featherbb.org",
+		"issues": "https://github.com/featherbb/featherbb/issues"
+	}
+}

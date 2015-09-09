@@ -1,6 +1,8 @@
-cache/
-include/config.php
+featherbb/config.php
 .idea/
 nbproject/
 lang/French
 .htaccess
+composer.lock
+cache/*.php
+cache/*.cache
