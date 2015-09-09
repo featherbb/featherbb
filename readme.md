@@ -27,6 +27,7 @@ the forums or in the GitHub bug tracker.
 * Major namespaces cleanup [[adaur](http://github.com/adaur)]
 * New caching system [[capkokoon](http://github.com/capkokoon)]
 * New error handler [[capkokoon](http://github.com/capkokoon)]
+* New installer [[capkokoon](http://github.com/capkokoon)]
 * Static functions files converted to OOP [[capkokoon](http://github.com/capkokoon)] [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)]
 
 ### Beta 2 (2015-08-11)
