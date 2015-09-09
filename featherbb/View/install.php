@@ -192,11 +192,11 @@ if (!isset($feather)) {
                                             <legend><?php _e('General information') ?></legend>
                                             <div class="infldset">
                                                 <label class="required"><strong><?php _e('Board title') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[title]" value="<? echo $data['title'] ?>" size="60" maxlength="255" required />
+                                                <input type="text" name="install[title]" value="<?php echo $data['title'] ?>" size="60" maxlength="255" required />
                                                 <label><?php _e('Board description') ?></label>
-                                                <input type="text" name="install[description]" value="<? echo $data['description'] ?>" size="60" maxlength="255" required />
+                                                <input type="text" name="install[description]" value="<?php echo $data['description'] ?>" size="60" maxlength="255" required />
                                                 <label class="required"><strong><?php _e('Base URL') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[base_url]" value="<? echo $data['base_url'] ?>" size="60" maxlength="100" required />
+                                                <input type="text" name="install[base_url]" value="<?php echo $data['base_url'] ?>" size="60" maxlength="100" required />
                                                 <label class="required"><strong><?php _e('Default language') ?> <span><?php _e('Required') ?></span></strong></label>
                                                 <select name="install[default_lang]" required />
                                                 <?php
