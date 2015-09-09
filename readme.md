@@ -16,6 +16,19 @@ This is __FeatherBB v1.0.0 Beta__. It is intended for testing purposes only and 
 for use in a production environment. Please report all the bugs you may encounter to
 the forums or in the GitHub bug tracker.
 
+### Beta 3 (2015-09-09)
+* Plugin system and some hooks [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)] 
+* New architecture ready for Composer [[beaver](http://github.com/beaver-dev)]
+* New template system [[capkokoon](http://github.com/capkokoon)] [[adaur](http://github.com/adaur)]
+* Gettext implemented [[adaur](http://github.com/adaur)]
+* Dynamic URLs within code [[beaver](http://github.com/beaver-dev)]
+* Better permission handling [[adaur](http://github.com/adaur)]
+* OOP parser [[adaur](http://github.com/adaur)]
+* Major namespaces cleanup [[adaur](http://github.com/adaur)]
+* New caching system [[capkokoon](http://github.com/capkokoon)]
+* New error handler [[capkokoon](http://github.com/capkokoon)]
+* Static functions files converted to OOP [[capkokoon](http://github.com/capkokoon)] [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)]
+
 ### Beta 2 (2015-08-11)
 
 * New DB Layer [[adaur](http://github.com/adaur)]
