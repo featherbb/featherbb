@@ -309,7 +309,7 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            Delete::avatar($id);
+            $this->model->delete_avatar($id);
 
             Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {

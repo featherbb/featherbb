@@ -385,7 +385,7 @@ class View
         );
 
         if (is_object($this->app->user) && $this->app->user->is_admmod) {
-            $data['has_reports'] = \FeatherBB\Model\Header::get_reports();
+            $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
         }
 
         if ($this->app->forum_env['FEATHER_SHOW_INFO']) {

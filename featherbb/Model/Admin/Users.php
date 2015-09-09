@@ -14,7 +14,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
-use FeatherBB\Model\Delete;
+// use FeatherBB\Model\Delete;
 
 class Users
 {
@@ -400,8 +400,9 @@ class Users
 
 
             // Delete user avatars
+            $userProfile = new FeatherBB\Model\Profile;
             foreach ($user_ids as $user_id) {
-                Delete::avatar($user_id);
+                $userProfile->delete_avatar($user_id);
             }
 
             // Regenerate the users info cache

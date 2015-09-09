@@ -69,7 +69,17 @@ $feather->group('/topic', $canReadBoard, function() use ($feather) {
     $feather->get('/unsubscribe/:id(/)', $isGuest, '\FeatherBB\Controller\Topic:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
     $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Topic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
 });
-$feather->get('/post/:pid(/)', '\FeatherBB\Controller\Topic:viewpost')->conditions(array('pid' => '[0-9]+'))->name('viewPost');
+
+// Post routes
+$feather->group('/post', $canReadBoard, function() use ($feather) {
+    $feather->get('/:pid(/)', '\FeatherBB\Controller\Topic:viewpost')->conditions(array('pid' => '[0-9]+'))->name('viewPost');
+    $feather->map('/new-topic/:fid(/)', '\FeatherBB\Controller\Post:newpost')->conditions(array('fid' => '[0-9]+'))->via('GET', 'POST')->name('newTopic');
+    $feather->map('/reply/:tid(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('newReply');
+    $feather->map('/reply/:tid(/)(/quote/:qid)(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST')->name('newQuoteReply');
+    $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Post:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
+    $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Post:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
+    $feather->map('/report/:id(/)', '\FeatherBB\Controller\Post:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
+});
 
 // Userlist
 $feather->get('/userlist(/)', $canReadBoard, '\FeatherBB\Controller\Userlist:display')->name('userList');
@@ -93,16 +103,6 @@ $feather->group('/register', function() use ($feather) {
     $feather->get('(/)', '\FeatherBB\Controller\Register:rules')->name('registerRules');
     $feather->map('/agree(/)', '\FeatherBB\Controller\Register:display')->via('GET', 'POST')->name('register');
     $feather->get('/cancel(/)', '\FeatherBB\Controller\Register:cancel')->name('registerCancel');
-});
-
-// Post routes
-$feather->group('/post', $canReadBoard, function() use ($feather) {
-    $feather->map('/new-topic/:fid(/)', '\FeatherBB\Controller\Post:newpost')->conditions(array('fid' => '[0-9]+'))->via('GET', 'POST')->name('newTopic');
-    $feather->map('/reply/:tid(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('newReply');
-    $feather->map('/reply/:tid(/)(/quote/:qid)(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST')->name('newQuoteReply');
-    $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Post:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
-    $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Post:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
-    $feather->map('/report/:id(/)', '\FeatherBB\Controller\Post:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
 });
 
 // Search routes

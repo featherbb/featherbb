@@ -396,7 +396,7 @@ class Profile
             }
 
             // Delete any old avatars and put the new one in place
-            Delete::avatar($id);
+            $this->delete_avatar($id);
             @rename($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp', $this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension);
             @chmod($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
@@ -406,6 +406,21 @@ class Profile
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
 
         Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
+    }
+
+    //
+    // Deletes any avatars owned by the specified user ID
+    //
+    public function delete_avatar($user_id)
+    {
+        $filetypes = array('jpg', 'gif', 'png');
+
+        // Delete user avatar
+        foreach ($filetypes as $cur_type) {
+            if (file_exists($this->feather->forum_env['FEATHER_ROOT'].$this->feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
+                @unlink($this->feather->forum_env['FEATHER_ROOT'].$this->feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+            }
+        }
     }
 
     public function update_group_membership($id)
@@ -720,7 +735,7 @@ class Profile
             $delete_user = $delete_user->delete_many();
 
             // Delete user avatar
-            Delete::avatar($id);
+            $this->delete_avatar($id);
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {

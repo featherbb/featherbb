@@ -56,6 +56,18 @@ class Reports
         return true;
     }
 
+    public static function has_reports()
+    {
+        $feather = \Slim\Slim::getInstance();
+
+        $feather->hooks->fire('get_reports_start');
+
+        $result_header = DB::for_table('reports')->where_null('zapped');
+        $result_header = $feather->hooks->fireDB('get_reports_query', $result_header);
+
+        return (bool) $result_header->find_one();
+    }
+
     public function get_reports()
     {
         $reports = array();
