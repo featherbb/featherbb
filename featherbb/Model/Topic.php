@@ -757,7 +757,7 @@ class Topic
 
             // Move the posts to the new topic
             $move_posts = DB::for_table('posts')->where_in('id', $posts_array)
-                ->find_one()
+                ->find_result_set()
                 ->set('topic_id', $new_tid);
             $move_posts = $this->hook->fireDB('split_posts_move_query', $move_posts);
             $move_posts->save();
