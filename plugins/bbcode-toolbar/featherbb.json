@@ -1,0 +1,9 @@
+{
+    "name": "bbcode-toolbar",
+    "title": "BBCode Toolbar",
+    "description": "Add a default toolbar to format BBCode in your posts.",
+    "version": "0.1.0",
+    "author": {
+        "name": "beaver"
+    }
+}

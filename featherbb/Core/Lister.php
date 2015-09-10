@@ -24,7 +24,6 @@ class Lister
             $plugins[] =  json_decode(file_get_contents($plugin_file));
 		}
 
-        natcasesort($plugins);
         return $plugins;
     }
 

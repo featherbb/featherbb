@@ -11,6 +11,7 @@
 session_cache_limiter(false);
 session_start();
 error_reporting(E_ALL); // Let's report everything for development
+ini_set('display_errors', 1);
 
 // Load Slim Framework
 require 'vendor/autoload.php';

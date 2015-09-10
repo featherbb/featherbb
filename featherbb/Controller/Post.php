@@ -35,6 +35,8 @@ class Post
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
+        $this->feather->hooks->fire('post.create', $fid, $tid, $qid);
+
         // Antispam feature
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
@@ -273,6 +275,8 @@ class Post
 
     public function editpost($id)
     {
+        $id = $this->feather->hooks->fire('post.edit', $id);
+
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_edit($id);
 
@@ -300,6 +304,8 @@ class Post
         $errors = array();
 
         if ($this->feather->request()->isPost()) {
+            $this->feather->hooks->fire('post.edit.submit', $id);
+
             // Let's see if everything went right
             $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
 
@@ -308,6 +314,7 @@ class Post
 
             // Did everything go according to plan?
             if (empty($errors) && !$this->feather->request->post('preview')) {
+                $this->feather->hooks->fire('post.edit.valid', $id);
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
@@ -319,6 +326,7 @@ class Post
 
         if ($this->feather->request->post('preview')) {
             $preview_message = $this->feather->parser->parse_message($post['message'], $post['hide_smilies']);
+            $preview_message = $this->feather->hooks->fire('post.edit.preview', $preview_message);
         } else {
             $preview_message = '';
         }
@@ -343,19 +351,19 @@ class Post
         );
 
         $this->feather->template->setPageInfo(array(
-                            'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Edit post')),
-                            'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
-                            'focus_element' => array('edit', 'req_message'),
-                            'cur_post' => $cur_post,
-                            'errors' => $errors,
-                            'preview_message' => $preview_message,
-                            'id' => $id,
-                            'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
-                            'can_edit_subject' => $can_edit_subject,
-                            'lang_bbeditor'    =>    $lang_bbeditor,
-                            'post' => $post,
-                            )
-                    )->addTemplate('edit.php')->display();
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Edit post')),
+                'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
+                'focus_element' => array('edit', 'req_message'),
+                'cur_post' => $cur_post,
+                'errors' => $errors,
+                'preview_message' => $preview_message,
+                'id' => $id,
+                'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
+                'can_edit_subject' => $can_edit_subject,
+                'lang_bbeditor'    =>    $lang_bbeditor,
+                'post' => $post,
+            )
+        )->addTemplate('edit.php')->display();
     }
 
     public function report($id)
