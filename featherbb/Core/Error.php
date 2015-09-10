@@ -11,39 +11,16 @@ namespace FeatherBB\Core;
 
 class Error extends \Exception
 {
-    public function __construct($message, $code = 200, $no_back_link = false)
+    protected $backlink;
+
+    public function __construct($message, $code = 400, $backlink = true)
     {
-        $this->feather = \Slim\Slim::getInstance();
-        return $this->error($message, $code, $no_back_link);
+        parent::__construct($message, $code);
+        $this->backlink = (bool) $backlink;
     }
 
-    protected function error($msg, $http_status = null, $no_back_link)
+    public function hasBacklink()
     {
-        // Did we receive a custom header?
-        if (!is_null($http_status)) {
-            header('HTTP/1.1 ' . $http_status);
-        }
-
-        $http_status = (int) $http_status;
-        if ($http_status > 0) {
-            $this->feather->response->setStatus($http_status);
-        }
-
-        // Overwrite existing body
-        $this->feather->response->setBody('');
-
-        if (!defined('FEATHER_HEADER')) {
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Info')),
-            ));
-        }
-
-        $this->feather->template->setPageInfo(array(
-            'msg'    =>    $msg,
-            'no_back_link'    => $no_back_link,
-        ))->addTemplate('message.php')->display();
-
-        // Don't display anything after a message
-        $this->feather->stop();
+        return $this->backlink;
     }
 }

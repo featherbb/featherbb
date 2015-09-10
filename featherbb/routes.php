@@ -215,5 +215,31 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
 
 // 404 not found
 $feather->notFound(function () use ($feather){
-    throw new Error('Page not found', 404);
+    throw new Error('Page not found', 404); // TODO : translation
+});
+
+$feather->error(function (\Exception $e) use ($feather) {
+    $error = array(
+        'code' => $e->getCode(),
+        'message' => $e->getMessage(),
+        'back' => true,
+    );
+
+    // Hide internal mechanism
+    if (!in_array(get_class($e), array('FeatherBB\Core\Error'))) {
+        $error['message'] = 'There was an internal error'; // TODO : translation
+    }
+
+    if (method_exists($e, 'hasBacklink')) {
+        $error['back'] = $e->hasBacklink();
+    }
+
+    $feather->response->setStatus($e->getCode());
+    $feather->response->setBody(''); // Reset buffer
+    $feather->template->setPageInfo(array(
+        'title' => array(\FeatherBB\Core\Utils::escape($feather->forum_settings['o_board_title']), __('Error')),
+        'msg'    =>    $error['message'],
+        'backlink'    => $error['back'],
+    ))->addTemplate('error.php')->display();
+    $feather->stop();
 });

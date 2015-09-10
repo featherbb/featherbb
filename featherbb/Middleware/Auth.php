@@ -202,10 +202,9 @@ class Auth extends \Slim\Middleware
 
         $this->app->template->setPageInfo(array(
             'title' => array(Utils::escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
-            'active_page' => 'index',
-            'message'    =>    $message,
-            'no_back_link'    =>    '',
-        ))->addTemplate('message.php')->display();
+            'msg'    =>    $message,
+            'backlink'    =>   false,
+        ))->addTemplate('maintenance.php')->display();
 
         // Don't display anything after a message
         $this->app->stop();

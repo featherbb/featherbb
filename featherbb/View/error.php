@@ -14,13 +14,13 @@ if (!isset($feather)) {
 
 ?>
 <div id="msg" class="block error">
-    <h2><span><?= $msg_title ?></span></h2>
-    <div class="box">
-        <div class="inbox">
-            <p><?php echo $msg ?></p>
-            <?php if (!$no_back_link) {
-                echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'.__('Go back').'</a></p>';
-            } ?>
+	<h2><span><?= __('Error') ?></span></h2>
+	<div class="box">
+		<div class="inbox">
+			<p><?php echo $msg ?></p>
+<?php if ($backlink) {
+    echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'._('Go back').'</a></p>';
+} ?>
         </div>
-    </div>
+	</div>
 </div>
