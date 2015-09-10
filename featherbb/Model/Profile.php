@@ -40,8 +40,7 @@ class Profile
 
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
-                header('Location: '.Url::base());
-                exit;
+                Url::redirect($this->feather->urlFor('home'));
             }
 
             $cur_user = DB::for_table('users')

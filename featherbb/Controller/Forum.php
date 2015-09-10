@@ -31,8 +31,7 @@ class Forum
 
         // Is this a redirect forum? In that case, redirect!
         if ($cur_forum['redirect_url'] != '') {
-            header('Location: '.$cur_forum['redirect_url']);
-            exit;
+            Url::redirect($this->feather->urlFor('Forum', ['id' => $cur_forum['redirect_url']]));
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)

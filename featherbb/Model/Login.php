@@ -97,8 +97,7 @@ class Login
         $token = $this->hook->fire('logout_start', $token, $id);
 
         if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash($this->request->getIp()))) {
-            header('Location: '.Url::base());
-            exit;
+            Url::redirect($this->feather->urlFor('home'));
         }
 
         // Remove user from "users online" list
@@ -127,8 +126,7 @@ class Login
         $this->hook->fire('password_forgotten_start');
 
         if (!$this->user->is_guest) {
-            header('Location: '.Url::base());
-            exit;
+            Url::redirect($this->feather->urlFor('home'));
         }
         // Start with a clean slate
         $errors = array();

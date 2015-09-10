@@ -136,13 +136,6 @@ $feather->group('/user', $isGuest, function() use ($feather) {
     $feather->get('/get-host/:ip(/)', '\FeatherBB\Controller\Profile:gethostip')->name('getHostIp');
 });
 
-// Moderate routes
-$feather->group('/moderate', $isAdmmod, $canReadBoard, function() use ($feather) {
-    // $feather->get('/forum/:fid(/:name)/page/:page(/)', '\FeatherBB\Controller\Moderate:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForum');
-    // $feather->post('/forum/:fid(/page/:page)(/)', '\FeatherBB\Controller\Moderate:dealposts')->conditions(array('fid' => '[0-9]+', 'page' => '[0-9]+'))->name('dealPosts');
-    // $feather->map('/topic/:id/forum/:fid/action/:action(/page/:page)(/)', '\FeatherBB\Controller\Moderate:moderatetopic')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopic');
-});
-
 // Admin routes
 $feather->group('/admin', $isAdmmod, function() use ($feather) {
 
