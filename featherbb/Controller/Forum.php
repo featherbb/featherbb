@@ -90,7 +90,7 @@ class Forum
             'start_from' => $start_from,
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
-        ))->addTemplate('Forum.php')->display();
+        ))->addTemplate('forum.php')->display();
     }
 
     public function moderate($id, $name = null, $page = null)
