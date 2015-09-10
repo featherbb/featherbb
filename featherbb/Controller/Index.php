@@ -12,6 +12,7 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Model\Auth;
 
 class Index

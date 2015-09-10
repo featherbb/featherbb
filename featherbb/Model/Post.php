@@ -424,7 +424,7 @@ class Post
     //
     // Delete a single post
     //
-    public function delete($post_id, $topic_id)
+    public static function delete($post_id, $topic_id)
     {
         $result = DB::for_table('posts')
             ->select_many('id', 'poster', 'posted')
@@ -452,7 +452,8 @@ class Post
             ->find_one()
             ->delete();
 
-        $this->search->strip_search_index($post_id);
+        $search = new \FeatherBB\Core\Search();
+        $search->strip_search_index($post_id);
 
         // Count number of replies in the topic
         $num_replies = DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
