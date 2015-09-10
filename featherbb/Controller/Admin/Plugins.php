@@ -69,7 +69,7 @@ class Plugins
         $manager = new PluginManager();
         $manager->deactivate($plugin);
 
-        // Plugin has been activated, confirm and redirect
+        // Plugin has been deactivated, confirm and redirect
         Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
 

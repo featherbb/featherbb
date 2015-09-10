@@ -154,9 +154,13 @@ if (!empty($queries_info)) { ?>
 		</div>
 	</div>
 <?php } ?>
+<div id="js-adds">
+    <script type="text/javascript">de</script>
+</div>
 </section>
 </body>
 <!-- JS -->
+
 <?php foreach ($assets['js'] as $script) {
     echo '<script ';
     foreach ($script['params'] as $key => $value) {

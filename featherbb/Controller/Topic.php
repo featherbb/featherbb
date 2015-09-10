@@ -28,6 +28,8 @@ class Topic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
+        $this->feather->hooks->fire('topic.display', $id, $name, $page, $pid);
+
         // Antispam feature
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);

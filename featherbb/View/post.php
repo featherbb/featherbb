@@ -85,7 +85,6 @@ $cur_index = 1;
     var baseUrl = '<?php echo Utils::escape(Url::base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?php echo Url::base() ?>/style/imports/bbeditor.js"></script>
 
 <div id="postform" class="blockform">
 	<h2><span><?php echo $action ?></span></h2>
@@ -119,10 +118,8 @@ if ($fid): ?>
     echo Utils::escape($post['subject']);
 } ?>" size="80" maxlength="70" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
 <?php endif; ?>						<label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <script>postEditorToolbar('req_message');</script>
 						<textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?php echo $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
 						<ul class="bblinks">
-                            <li>ok</li>
 							<li><span><a href="<?php echo $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
 							<li><span><a href="<?php echo $feather->urlFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
 							<li><span><a href="<?php echo $feather->urlFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
