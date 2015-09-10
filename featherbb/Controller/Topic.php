@@ -12,6 +12,7 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 
 class Topic
 {
@@ -20,6 +21,7 @@ class Topic
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Topic();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/topic.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo'); // To be removed
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/post.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/bbeditor.mo');
     }
@@ -137,6 +139,139 @@ class Topic
         $post = $this->model->redirect_to_post($pid);
 
         return $this->display($post['topic_id'], null, $post['get_p'], $pid);
+    }
+
+    public function subscribe($id, $name = '')
+    {
+        $this->model->subscribe($id);
+    }
+
+    public function unsubscribe($id, $name = '')
+    {
+        $this->model->unsubscribe($id);
+    }
+
+    public function close($id, $name = '')
+    {
+        $topic = $this->model->setClosed($id, 1);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
+    }
+
+    public function open($id, $name = '')
+    {
+        $topic = $this->model->setClosed($id, 0);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
+    }
+
+    public function stick($id, $name = '')
+    {
+        $topic = $this->model->setSticky($id, 1);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
+    }
+
+    public function unstick($id, $name = '')
+    {
+        $topic = $this->model->setSticky($id, 0);
+        Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
+    }
+
+    // Move a single topic
+    public function move($tid, $name = '', $fid)
+    {
+        if ($new_fid = $this->feather->request->post('move_to_forum')) {
+            $this->model->move_to($fid, $new_fid, $tid);
+            Url::redirect($this->feather->urlFor('Topic', array('id' => $tid, 'name' => $name)), __('Move topic redirect'));
+        }
+
+        // Check if there are enough forums to move the topic
+        if ( !$this->model->check_move_possible() ) {
+            throw new Error(__('Nowhere to move'), 403);
+        }
+
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                'active_page' => 'moderate',
+                'action'    =>    'single',
+                'topics'    =>    $tid,
+                'list_forums'   => $this->model->get_forum_list_move($fid),
+            )
+        )->addTemplate('moderate/move_topics.php')->display();
+    }
+
+    public function moderate($id = null, $fid = null, $page = null)
+    {
+        // Make sure that only admmods allowed access this page
+        $forumModel = new \FeatherBB\Model\Forum();
+        $moderators = $forumModel->get_moderators($id);
+        $mods_array = ($moderators != '') ? unserialize($moderators) : array();
+
+        if ($this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->feather->user->g_moderator == '0' || !array_key_exists($this->feather->user->username, $mods_array))) {
+            throw new Error(__('No permission'), 403);
+        }
+
+        $cur_topic = $this->model->get_topic_info($fid, $id);
+
+        // Determine the post offset (based on $_GET['p'])
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / $this->feather->user->disp_posts);
+
+        $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+
+        $start_from = $this->feather->user->disp_posts * ($p - 1);
+
+        // Delete one or more posts
+        if ($this->feather->request->post('delete_posts') || $this->feather->request->post('delete_posts_comply')) {
+            $posts = $this->model->delete_posts($id, $fid);
+
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                    'active_page' => 'moderate',
+                    'posts' => $posts,
+                )
+            )->addTemplate('moderate/delete_posts.php')->display();
+        }
+        if ($this->feather->request->post('split_posts') || $this->feather->request->post('split_posts_comply')) {
+
+            $this->feather->template->setPageInfo(array(
+                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                    'focus_element' => array('subject','new_subject'),
+                    'page' => $p,
+                    'active_page' => 'moderate',
+                    'id' => $id,
+                    'posts' => $this->model->split_posts($id, $fid, $p),
+                    'list_forums' => $this->model->get_forum_list_split($fid),
+                )
+            )->addTemplate('moderate/split_posts.php')->display();
+
+        }
+
+        // Show the moderate posts view
+
+        // Used to disable the Move and Delete buttons if there are no replies to this topic
+        $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
+
+        /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
+                $this->feather->user->disp_posts = $cur_topic['num_replies'] + 1;
+        }*/
+
+        if ($this->feather->config['o_censoring'] == '1') {
+            $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
+        }
+
+        $this->feather->template->setPageInfo(array(
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+                'page' => $p,
+                'active_page' => 'moderate',
+                'cur_topic' => $cur_topic,
+                'url_topic' => Url::url_friendly($cur_topic['subject']),
+                'url_forum' => Url::url_friendly($cur_topic['forum_name']),
+                'fid' => $fid,
+                'id' => $id,
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/topic/'.$id.'/forum/'.$fid.'/action/moderate/#'),
+                'post_data' => $this->model->display_posts_moderate($id, $start_from),
+                'button_status' => $button_status,
+                'start_from' => $start_from,
+            )
+        )->addTemplate('moderate/posts_view.php')->display();
     }
 
     public function action($id, $action)

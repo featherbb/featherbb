@@ -77,6 +77,38 @@ class Post
         return $cur_posting;
     }
 
+    // Fetch some info about the post, the topic and the forum
+    public function get_info_edit($id)
+    {
+        $id = $this->hook->fire('get_info_edit_start', $id);
+
+        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $cur_post['where'] = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $cur_post = DB::for_table('posts')
+            ->table_alias('p')
+            ->select_many($cur_post['select'])
+            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+            ->where_any_is($cur_post['where'])
+            ->where('p.id', $id);
+
+        $cur_post = $this->hook->fireDB('get_info_edit_query', $cur_post);
+
+        $cur_post = $cur_post->find_one();
+
+        if (!$cur_post) {
+            throw new Error(__('Bad request'), 400);
+        }
+
+        return $cur_post;
+    }
+
     // Checks the post for errors before posting
     public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
     {
@@ -192,6 +224,62 @@ class Post
         return $errors;
     }
 
+    public function check_errors_before_edit($can_edit_subject, $errors)
+    {
+        $errors = $this->hook->fire('check_errors_before_edit_start', $errors);
+
+        // If it's a topic it must contain a subject
+        if ($can_edit_subject) {
+            $subject = Utils::trim($this->request->post('req_subject'));
+
+            if ($this->config['o_censoring'] == '1') {
+                $censored_subject = Utils::trim(Utils::censor($subject));
+            }
+
+            if ($subject == '') {
+                $errors[] = __('No subject');
+            } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
+                $errors[] = __('No subject after censoring');
+            } elseif (Utils::strlen($subject) > 70) {
+                $errors[] = __('Too long subject');
+            } elseif ($this->config['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($subject) && !$this->user->is_admmod) {
+                $errors[] = __('All caps subject');
+            }
+        }
+
+        // Clean up message from POST
+        $message = Utils::linebreaks(Utils::trim($this->request->post('req_message')));
+
+        // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        if (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
+            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format($this->feather->forum_env['FEATHER_MAX_POSTSIZE']));
+        } elseif ($this->config['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !$this->user->is_admmod) {
+            $errors[] = __('All caps message');
+        }
+
+        // Validate BBCode syntax
+        if ($this->config['p_message_bbcode'] == '1') {
+            $message = $this->feather->parser->preparse_bbcode($message, $errors);
+        }
+
+        if (empty($errors)) {
+            if ($message == '') {
+                $errors[] = __('No message');
+            } elseif ($this->config['o_censoring'] == '1') {
+                // Censor message to see if that causes problems
+                $censored_message = Utils::trim(Utils::censor($message));
+
+                if ($censored_message == '') {
+                    $errors[] = __('No message after censoring');
+                }
+            }
+        }
+
+        $errors = $this->hook->fire('check_errors_before_edit', $errors);
+
+        return $errors;
+    }
+
     // If the previous check went OK, setup some variables used later
     public function setup_variables($errors, $is_admmod)
     {
@@ -232,6 +320,349 @@ class Post
         $post = $this->hook->fire('setup_variables', $post);
 
         return $post;
+    }
+
+    // If the previous check went OK, setup some variables used later
+    public function setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors)
+    {
+        $this->hook->fire('setup_edit_variables_start');
+
+        $post = array();
+
+        $post['hide_smilies'] = $this->request->post('hide_smilies') ? '1' : '0';
+        $post['stick_topic'] = $this->request->post('stick_topic') ? '1' : '0';
+        if (!$is_admmod) {
+            $post['stick_topic'] = $cur_post['sticky'];
+        }
+
+        // Clean up message from POST
+        $post['message'] = Utils::linebreaks(Utils::trim($this->request->post('req_message')));
+
+        // Validate BBCode syntax
+        if ($this->config['p_message_bbcode'] == '1') {
+            $post['message'] = $this->feather->parser->preparse_bbcode($post['message'], $errors);
+        }
+
+        // Replace four-byte characters (MySQL cannot handle them)
+        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
+
+        // Get the subject
+        if ($can_edit_subject) {
+            $post['subject'] = Utils::trim($this->request->post('req_subject'));
+        }
+
+        $post = $this->hook->fire('setup_edit_variables', $post);
+
+        return $post;
+    }
+
+    public function get_info_delete($id)
+    {
+        $id = $this->hook->fire('get_info_delete_start', $id);
+
+        $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $query['where'] = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $query = DB::for_table('posts')
+            ->table_alias('p')
+            ->select_many($query['select'])
+            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+            ->where_any_is($query['where'])
+            ->where('p.id', $id);
+
+        $query = $this->hook->fireDB('get_info_delete_query', $query);
+
+        $query = $query->find_one();
+
+        if (!$query) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        return $query;
+    }
+
+    public function handle_deletion($is_topic_post, $id, $tid, $fid)
+    {
+        $this->hook->fire('handle_deletion_start', $is_topic_post, $id, $tid, $fid);
+
+        if ($is_topic_post) {
+            $this->hook->fire('model.topic.delete', $tid, $fid);
+
+            // Delete the topic and all of its posts
+            Topic::delete($tid);
+            Forum::update($fid);
+
+            Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Topic del redirect'));
+        } else {
+            $this->hook->fire('handle_deletion', $tid, $fid, $id);
+
+            // Delete just this one post
+            $this->delete($id, $tid);
+            Forum::update($fid);
+
+            // Redirect towards the previous post
+            $post = DB::for_table('posts')
+                ->select('id')
+                ->where('topic_id', $tid)
+                ->where_lt('id', $id)
+                ->order_by_desc('id');
+
+            $post = $this->hook->fireDB('handle_deletion_query', $post);
+
+            $post = $post->find_one();
+
+            Url::redirect($this->feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
+        }
+    }
+
+    //
+    // Delete a single post
+    //
+    public static function delete($post_id, $topic_id)
+    {
+        $result = DB::for_table('posts')
+            ->select_many('id', 'poster', 'posted')
+            ->where('topic_id', $topic_id)
+            ->order_by_desc('id')
+            ->limit(2)
+            ->find_many();
+
+        $i = 0;
+        foreach ($result as $cur_result) {
+            if ($i == 0) {
+                $last_id = $cur_result['id'];
+            }
+            else {
+                $second_last_id = $cur_result['id'];
+                $second_poster = $cur_result['poster'];
+                $second_posted = $cur_result['posted'];
+            }
+            ++$i;
+        }
+
+        // Delete the post
+        DB::for_table('posts')
+            ->where('id', $post_id)
+            ->find_one()
+            ->delete();
+
+        $search = new \FeatherBB\Core\Search();
+        $search->strip_search_index($post_id);
+
+        // Count number of replies in the topic
+        $num_replies = DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
+
+        // If the message we deleted is the most recent in the topic (at the end of the topic)
+        if ($last_id == $post_id) {
+            // If there is a $second_last_id there is more than 1 reply to the topic
+            if (isset($second_last_id)) {
+                $update_topic = array(
+                    'last_post'  => $second_posted,
+                    'last_post_id'  => $second_last_id,
+                    'last_poster'  => $second_poster,
+                    'num_replies'  => $num_replies,
+                );
+                DB::for_table('topics')
+                    ->where('id', $topic_id)
+                    ->find_one()
+                    ->set($update_topic)
+                    ->save();
+            } else {
+                // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
+                DB::for_table('topics')
+                    ->where('id', $topic_id)
+                    ->find_one()
+                    ->set_expr('last_post', 'posted')
+                    ->set_expr('last_post_id', 'id')
+                    ->set_expr('last_poster', 'poster')
+                    ->set('num_replies', $num_replies)
+                    ->save();
+            }
+        } else {
+            // Otherwise we just decrement the reply counter
+            DB::for_table('topics')
+                ->where('id', $topic_id)
+                ->find_one()
+                ->set('num_replies', $num_replies)
+                ->save();
+        }
+    }
+
+    public function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod)
+    {
+        $this->hook->fire('edit_post_start');
+
+        if ($can_edit_subject) {
+            // Update the topic and any redirect topics
+            $where_topic = array(
+                array('id' => $cur_post['tid']),
+                array('moved_to' => $cur_post['tid'])
+            );
+
+            $query['update_topic'] = array(
+                'subject' => $post['subject'],
+                'sticky'  => $post['stick_topic']
+            );
+
+            $query = DB::for_table('topics')->where_any_is($where_topic)
+                                            ->find_one()
+                                            ->set($query['update_topic']);
+
+            $query = $this->hook->fireDB('edit_post_can_edit_subject', $query);
+
+            $query = $query->save();
+
+            // We changed the subject, so we need to take that into account when we update the search words
+            $this->search->update_search_index('edit', $id, $post['message'], $post['subject']);
+        } else {
+            $this->search->update_search_index('edit', $id, $post['message']);
+        }
+
+        // Update the post
+        unset($query);
+        $query['update_post'] = array(
+            'message' => $post['message'],
+            'hide_smilies'  => $post['hide_smilies']
+        );
+
+        if (!$this->request->post('silent') || !$is_admmod) {
+            $query['update_post']['edited'] = time();
+            $query['update_post']['edited_by'] = $this->user->username;
+        }
+
+        $query = DB::for_table('posts')->where('id', $id)
+                                       ->find_one()
+                                       ->set($query['update_post']);
+        $query = $this->hook->fireDB('edit_post_query', $query);
+        $query = $query->save();
+    }
+
+    public function insert_report($post_id)
+    {
+        $post_id = $this->hook->fire('insert_report_start', $post_id);
+
+        // Clean up reason from POST
+        $reason = Utils::linebreaks(Utils::trim($this->request->post('req_reason')));
+        if ($reason == '') {
+            throw new Error(__('No reason'), 400);
+        } elseif (strlen($reason) > 65535) { // TEXT field can only hold 65535 bytes
+            throw new Error(__('Reason too long'), 400);
+        }
+
+        if ($this->user->last_report_sent != '' && (time() - $this->user->last_report_sent) < $this->user->g_report_flood && (time() - $this->user->last_report_sent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), $this->user->g_report_flood, $this->user->g_report_flood - (time() - $this->user->last_report_sent)), 429);
+        }
+
+        // Get the topic ID
+        $topic = DB::for_table('posts')->select('topic_id')
+                                      ->where('id', $post_id);
+        $topic = $this->hook->fireDB('insert_report_topic_id', $topic);
+        $topic = $topic->find_one();
+
+        if (!$topic) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        // Get the subject and forum ID
+        $report['select'] = array('subject', 'forum_id');
+        $report = DB::for_table('topics')->select_many($report['select'])
+                                        ->where('id', $topic['topic_id']);
+        $report = $this->hook->fireDB('insert_report_get_subject', $report);
+        $report = $report->find_one();
+
+        if (!$report) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        // Should we use the internal report handling?
+        if ($this->config['o_report_method'] == '0' || $this->config['o_report_method'] == '2') {
+
+            // Insert the report
+            $query['insert'] = array(
+                'post_id' => $post_id,
+                'topic_id'  => $topic['topic_id'],
+                'forum_id'  => $report['forum_id'],
+                'reported_by'  => $this->user->id,
+                'created'  => time(),
+                'message'  => $reason,
+            );
+            $query = DB::for_table('reports')
+                ->create()
+                ->set($query['insert']);
+            $query = $this->hook->fireDB('insert_report_query', $query);
+            $query = $query->save();
+        }
+
+        // Should we email the report?
+        if ($this->config['o_report_method'] == '1' || $this->config['o_report_method'] == '2') {
+            // We send it to the complete mailing-list in one swoop
+            if ($this->config['o_mailing_list'] != '') {
+                // Load the "new report" template
+                $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
+                $mail_tpl = $this->hook->fire('insert_report_mail_tpl', $mail_tpl);
+
+                // The first row contains the subject
+                $first_crlf = strpos($mail_tpl, "\n");
+                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
+                $mail_message = trim(substr($mail_tpl, $first_crlf));
+
+                $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
+                $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
+                $mail_message = str_replace('<username>', $this->user->username, $mail_message);
+                $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
+                $mail_message = str_replace('<reason>', $reason, $mail_message);
+                $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+
+                $mail_message = $this->hook->fire('insert_report_mail_message', $mail_message);
+
+                $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+            }
+        }
+
+        $last_report_sent = DB::for_table('users')->where('id', $this->user->id)
+            ->find_one()
+            ->set('last_report_sent', time());
+        $last_report_sent = $this->hook->fireDB('insert_last_report_sent', $last_report_sent);
+        $last_report_sent = $last_report_sent->save();
+
+        Url::redirect($this->feather->urlFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
+    }
+
+    public function get_info_report($post_id)
+    {
+        $post_id = $this->hook->fire('get_info_report_start', $post_id);
+
+        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
+        $cur_post['where'] = array(
+            array('fp.read_forum' => 'IS NULL'),
+            array('fp.read_forum' => '1')
+        );
+
+        $cur_post = DB::for_table('posts')
+                        ->table_alias('p')
+                        ->select_many($cur_post['select'])
+                        ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+                        ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                        ->where_any_is($cur_post['where'])
+                        ->where('p.id', $post_id);
+        $cur_post = $this->hook->fireDB('get_info_report_query', $cur_post);
+        $cur_post = $cur_post->find_one();
+
+        if (!$cur_post) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        $cur_post = $this->hook->fire('get_info_report', $cur_post);
+
+        return $cur_post;
     }
 
     // Insert a reply
@@ -871,6 +1302,41 @@ class Post
         return $checkboxes;
     }
 
+    public function get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
+    {
+        $this->hook->fire('get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
+
+        $checkboxes = array();
+
+        if ($can_edit_subject && $is_admmod) {
+            if ($this->request->post('stick_topic') || $cur_post['sticky'] == '1') {
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
+            } else {
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
+            }
+        }
+
+        if ($this->config['o_smilies'] == '1') {
+            if ($this->request->post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
+            } else {
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
+            }
+        }
+
+        if ($is_admmod) {
+            if ($this->request->isPost() && $this->request->post('silent') || $this->request->isPost() == '') {
+                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.__('Silent edit').'<br /></label>';
+            } else {
+                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.__('Silent edit').'<br /></label>';
+            }
+        }
+
+        $checkboxes = $this->hook->fire('get_checkboxes', $checkboxes);
+
+        return $checkboxes;
+    }
+
     // Display the topic review if needed
     public function topic_review($tid)
     {
@@ -894,5 +1360,23 @@ class Post
         $post_data = $this->hook->fire('topic_review', $post_data);
 
         return $post_data;
+    }
+
+    public function display_ip_address($pid)
+    {
+        $pid = $this->hook->fire('display_ip_address_post_start', $pid);
+
+        $ip = DB::for_table('posts')
+            ->where('id', $pid);
+        $ip = $this->hook->fireDB('display_ip_address_post_query', $ip);
+        $ip = $ip->find_one_col('poster_ip');
+
+        if (!$ip) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        $ip = $this->hook->fire('display_ip_address_post', $ip);
+
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 }

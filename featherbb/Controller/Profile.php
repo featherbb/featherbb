@@ -27,6 +27,7 @@ class Profile
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/profile.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/misc.mo');
     }
 
     public function display($id, $section = null)
@@ -308,7 +309,7 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            Delete::avatar($id);
+            $this->model->delete_avatar($id);
 
             Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
@@ -320,5 +321,41 @@ class Profile
         } else {
             throw new Error(__('Bad request'), 404);
         }
+    }
+
+    public function email($id)
+    {
+        if ($this->feather->user->g_send_email == '0') {
+            throw new Error(__('No permission'), 403);
+        }
+
+        if ($id < 2) {
+            throw new Error(__('Bad request'), 400);
+        }
+
+        $mail = $this->model->get_info_mail($id);
+
+        if ($mail['email_setting'] == 2 && !$this->feather->user->is_admmod) {
+            throw new Error(__('Form email disabled'), 403);
+        }
+
+
+        if ($this->feather->request()->isPost()) {
+            $this->model->send_email($mail);
+        }
+
+        $this->feather->template->setPageInfo(array(
+            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
+            'active_page' => 'email',
+            'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
+            'focus_element' => array('email', 'req_subject'),
+            'id' => $id,
+            'mail' => $mail
+        ))->addTemplate('misc/email.php')->display();
+    }
+
+    public function gethostip($ip)
+    {
+        $this->model->display_ip_info($ip);
     }
 }

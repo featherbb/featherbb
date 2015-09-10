@@ -14,7 +14,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
-use FeatherBB\Model\Delete;
+// use FeatherBB\Model\Delete;
 
 class Users
 {
@@ -377,9 +377,9 @@ class Users
                                         ->find_one_col('id');
 
                         if ($result2 == $cur_post['id']) {
-                            \FeatherBB\Model\Delete::topic($cur_post['topic_id']);
+                            \FeatherBB\Model\Topic::delete($cur_post['topic_id']);
                         } else {
-                            \FeatherBB\Model\Delete::post($cur_post['id'], $cur_post['topic_id']);
+                            \FeatherBB\Model\Post::delete($cur_post['id'], $cur_post['topic_id']);
                         }
 
                         \FeatherBB\Model\Forum::update($cur_post['forum_id']);
@@ -387,10 +387,9 @@ class Users
                 }
             } else {
                 // Set all their posts to guest
-                // TODO: invert where_in and update_many values ? To test.
                 DB::for_table('posts')
-                        ->where_in('poster_id', '1')
-                        ->update_many('poster_id', $user_ids);
+                        ->where_in('poster_id', $user_ids)
+                        ->update_many('poster_id', '1');
             }
 
             // Delete the users
@@ -400,8 +399,9 @@ class Users
 
 
             // Delete user avatars
+            $userProfile = new \FeatherBB\Model\Profile();
             foreach ($user_ids as $user_id) {
-                Delete::avatar($user_id);
+                $userProfile->delete_avatar($user_id);
             }
 
             // Regenerate the users info cache
