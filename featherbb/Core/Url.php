@@ -911,10 +911,12 @@ class Url
         self::$feather = \Slim\Slim::getInstance();
 
         // Set default type to info if not provided
-        if (!is_array($message))
+        if (is_string($message))
             $message = array('info', $message);
-        // Add a flash message
-        self::$feather->flash($message[0], $message[1]);
+        // Add a flash message if needed
+        if (is_array($message))
+            self::$feather->flash($message[0], $message[1]);
+
         self::$feather->redirect($destination_url);
     }
 }

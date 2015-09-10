@@ -31,7 +31,7 @@ if (!isset($feather)) {
 	</div>
 </div>
 
-<form method="post" action="<?php echo $feather->urlFor('moderateForum', ['id' => $id]) ?>">
+<form method="post" action="<?php echo $feather->urlFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
 <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
 <input type="hidden" name="page" value="<?php echo Utils::escape($p) ?>" />
 <div id="vf" class="blocktable">

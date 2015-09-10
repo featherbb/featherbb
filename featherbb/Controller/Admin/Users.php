@@ -23,7 +23,7 @@ class Users
         $this->config = $this->feather->config;
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
-        $this->model = new \FeatherBB\Model\Admin\users();
+        $this->model = new \FeatherBB\Model\Admin\Users();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/users.mo');
     }
 

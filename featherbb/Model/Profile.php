@@ -40,8 +40,7 @@ class Profile
 
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
-                header('Location: '.Url::base());
-                exit;
+                Url::redirect($this->feather->urlFor('home'));
             }
 
             $cur_user = DB::for_table('users')
@@ -396,7 +395,7 @@ class Profile
             }
 
             // Delete any old avatars and put the new one in place
-            Delete::avatar($id);
+            $this->delete_avatar($id);
             @rename($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp', $this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension);
             @chmod($this->feather->forum_env['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
@@ -406,6 +405,21 @@ class Profile
         $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
 
         Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
+    }
+
+    //
+    // Deletes any avatars owned by the specified user ID
+    //
+    public function delete_avatar($user_id)
+    {
+        $filetypes = array('jpg', 'gif', 'png');
+
+        // Delete user avatar
+        foreach ($filetypes as $cur_type) {
+            if (file_exists($this->feather->forum_env['FEATHER_ROOT'].$this->feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
+                @unlink($this->feather->forum_env['FEATHER_ROOT'].$this->feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+            }
+        }
     }
 
     public function update_group_membership($id)
@@ -720,7 +734,7 @@ class Profile
             $delete_user = $delete_user->delete_many();
 
             // Delete user avatar
-            Delete::avatar($id);
+            $this->delete_avatar($id);
 
             // Regenerate the users info cache
             if (!$this->feather->cache->isCached('users_info')) {
@@ -1401,5 +1415,88 @@ class Profile
         }
 
         return $errors;
+    }
+
+    public function get_info_mail($recipient_id)
+    {
+        $recipient_id = $this->hook->fire('get_info_mail_start', $recipient_id);
+
+        $mail['select'] = array('username', 'email', 'email_setting');
+
+        $mail = DB::for_table('users')
+                ->select_many($mail['select'])
+                ->where('id', $recipient_id);
+        $mail = $this->hook->fireDB('get_info_mail_query', $mail);
+        $mail = $mail->find_one();
+
+        if (!$mail) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        $mail['recipient'] = $mail['username'];
+        $mail['recipient_email'] = $mail['email'];
+
+        $mail = $this->hook->fireDB('get_info_mail', $mail);
+
+        return $mail;
+    }
+
+    public function send_email($mail)
+    {
+        $mail = $this->hook->fire('send_email_start', $mail);
+
+        // Clean up message and subject from POST
+        $subject = Utils::trim($this->request->post('req_subject'));
+        $message = Utils::trim($this->request->post('req_message'));
+
+        if ($subject == '') {
+            throw new Error(__('No email subject'), 400);
+        } elseif ($message == '') {
+            throw new Error(__('No email message'), 400);
+        }
+        // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
+        elseif (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
+            throw new Error(__('Too long email message'), 400);
+        }
+
+        if ($this->user->last_email_sent != '' && (time() - $this->user->last_email_sent) < $this->user->g_email_flood && (time() - $this->user->last_email_sent) >= 0) {
+            throw new Error(sprintf(__('Email flood'), $this->user->g_email_flood, $this->user->g_email_flood - (time() - $this->user->last_email_sent)), 429);
+        }
+
+        // Load the "form email" template
+        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = $this->hook->fire('send_email_mail_tpl', $mail_tpl);
+
+        // The first row contains the subject
+        $first_crlf = strpos($mail_tpl, "\n");
+        $mail_subject = Utils::trim(substr($mail_tpl, 8, $first_crlf-8));
+        $mail_message = Utils::trim(substr($mail_tpl, $first_crlf));
+
+        $mail_subject = str_replace('<mail_subject>', $subject, $mail_subject);
+        $mail_message = str_replace('<sender>', $this->user->username, $mail_message);
+        $mail_message = str_replace('<board_title>', $this->config['o_board_title'], $mail_message);
+        $mail_message = str_replace('<mail_message>', $message, $mail_message);
+        $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+
+        $mail_message = $this->hook->fire('send_email_mail_message', $mail_message);
+
+        $this->email->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
+
+        $update_last_mail_sent = DB::for_table('users')->where('id', $this->user->id)
+                                                  ->find_one()
+                                                  ->set('last_email_sent', time());
+        $update_last_mail_sent = $this->hook->fireDB('send_email_update_last_mail_sent', $update_last_mail_sent);
+        $update_last_mail_sent = $update_last_mail_sent->save();
+
+        // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
+        //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
+
+        Url::redirect($this->feather->urlFor('home'), __('Email sent redirect'));
+    }
+
+    public function display_ip_info($ip)
+    {
+        $ip = $this->hook->fire('display_ip_info', $ip);
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 }

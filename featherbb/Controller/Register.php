@@ -31,8 +31,7 @@ class Register
     public function display()
     {
         if (!$this->user->is_guest) {
-            header('Location: '.Url::base());
-            exit;
+            Url::redirect($this->feather->urlFor('home'));
         }
 
         // Antispam feature

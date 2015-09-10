@@ -18,10 +18,10 @@ use FeatherBB\Middleware\Core;
 class Install
 {
     protected $supported_dbs = array('mysql' => 'MySQL',
-                                     'pgsql' => 'PostgreSQL',
-                                     'sqlite' => 'SQLite',
-                                     'sqlite3' => 'SQLite3',
-                                    );
+        'pgsql' => 'PostgreSQL',
+        'sqlite' => 'SQLite',
+        'sqlite3' => 'SQLite3',
+    );
     protected $available_langs;
     protected $optional_fields = array('db_user', 'db_pass', 'db_prefix');
     protected $install_lang = 'English';
@@ -56,7 +56,7 @@ class Install
                 // Handle empty fields
                 if (empty($value)) {
                     // If the field is required, or if user and pass are missing even though mysql or pgsql are selected as DB
-                    if (!in_array($field, $this->optional_fields) || (in_array($field, array('db_user', 'db_pass')) && in_array($data['db_type'], array('mysql', 'pgsql')))) {
+                    if (!in_array($field, $this->optional_fields) || (in_array($field, array('db_user')) && in_array($data['db_type'], array('mysql', 'pgsql')))) {
                         $missing_fields[] = $field;
                     }
                 }
@@ -121,11 +121,11 @@ class Install
             // End validation and check errors
             if (!empty($this->errors)) {
                 $this->feather->template->setPageInfo(array(
-                                                        'languages' => $this->available_langs,
-                                                        'supported_dbs' => $this->supported_dbs,
-                                                        'data' => $data,
-                                                        'errors' => $this->errors,
-                                                    ))->addTemplate('install.php')->display(false);
+                    'languages' => $this->available_langs,
+                    'supported_dbs' => $this->supported_dbs,
+                    'data' => $data,
+                    'errors' => $this->errors,
+                ))->addTemplate('install.php')->display(false);
             } else {
                 $data['default_style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
@@ -134,15 +134,15 @@ class Install
         } else {
             $base_url = str_replace('index.php', '', $this->feather->request->getUrl().$this->feather->request->getRootUri());
             $data = array('title' => __('My FeatherBB Forum'),
-                          'description' => __('Description'),
-                          'base_url' => $base_url,
-                          'default_lang' => $this->install_lang);
-          $this->feather->template->setPageInfo(array(
-                                                  'languages' => $this->available_langs,
-                                                  'supported_dbs' => $this->supported_dbs,
-                                                  'data' => $data,
-                                                  'alerts' => array(),
-                                              ))->addTemplate('install.php')->display(false);
+                'description' => __('Description'),
+                'base_url' => $base_url,
+                'default_lang' => $this->install_lang);
+            $this->feather->template->setPageInfo(array(
+                'languages' => $this->available_langs,
+                'supported_dbs' => $this->supported_dbs,
+                'data' => $data,
+                'alerts' => array(),
+            ))->addTemplate('install.php')->display(false);
         }
     }
 
@@ -157,7 +157,7 @@ class Install
         }
 
         $config = array_merge($config, array('cookie_name' => mb_strtolower($this->feather->forum_env['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
-                                             'cookie_seed' => Random::key(16, false, true)));
+            'cookie_seed' => Random::key(16, false, true)));
 
         // ... And write it on disk
         if ($this->write_config($config)) {
