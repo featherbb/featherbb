@@ -11,10 +11,11 @@ namespace FeatherBB\Core;
 
 class AdminUtils
 {
+    protected static $feather;
 
     public static function generateAdminMenu($page = '')
     {
-        $feather = \Slim\Slim::getInstance();
+        self::$feather = \Slim\Slim::getInstance();
 
         $is_admin = ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']) ? true : false;
 
