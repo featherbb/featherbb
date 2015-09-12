@@ -125,7 +125,7 @@ if ($active_page == 'index') {
 // Display debug info (if enabled/defined)
 if (!empty($exec_info)) { ?>
 	<p id="debugtime">[ <?= sprintf(__('Querytime'), round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.sprintf(__('Memory usage'), $exec_info['mem_usage']).' '.sprintf(__('Peak usage'), $exec_info['mem_peak_usage'])?> ]</p>
-<? }
+<?php }
 if (!empty($queries_info)) { ?>
 	<div id="debug" class="blocktable">
 		<h2><span><?php _e('Debug table') ?></span></h2>
