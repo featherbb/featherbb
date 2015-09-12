@@ -19,7 +19,7 @@ if (!isset($feather)) {
 		<div class="inbox">
 			<p><?php echo $msg ?></p>
 <?php if ($backlink) {
-    echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'._('Go back').'</a></p>';
+    echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'.__('Go back').'</a></p>';
 } ?>
         </div>
 	</div>
