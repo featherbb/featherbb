@@ -19,9 +19,7 @@ class BBCodeToolbar extends BasePlugin
         $this->hooks->bind('post.create', [$this, 'addToolbar']);
         $this->hooks->bind('post.edit', [$this, 'addToolbar']);
         $this->hooks->bind('topic.display', [$this, 'addToolbar']);
-        // $this->hooks->bind('view.alter_data', function($data){
-        //     var_dump($data);
-        // });
+        // $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
     }
 
     public function addToolbar()

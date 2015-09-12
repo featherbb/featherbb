@@ -30,13 +30,11 @@ class Plugins
 
     public function index()
     {
-        // AdminUtils::generateAdminMenu('plugins');
         $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
         $availablePlugins = Lister::getPlugins();
-        // var_dump($availablePlugins);
         $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
-        // var_dump($activePlugins);
+        // var_dump($availablePlugins, $activePlugins);
         // $this->feather->cache->delete('active_plugins');
 
         AdminUtils::generateAdminMenu('plugins');
@@ -72,5 +70,29 @@ class Plugins
         // Plugin has been deactivated, confirm and redirect
         Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
+
+    public function info($pluginName = null)
+    {
+        if (!$pluginName) throw new Error(__('Bad request'), 400);
+
+        // $manager = new PluginManager();
+        // $plugin = $manager->displayInfos($pluginName);
+        // echo $plugin->name;
+
+
+        AdminUtils::generateAdminMenu($pluginName);
+
+        $this->feather->template->setPageInfo(array(
+                'admin_console' => true,
+                'active_page' => 'admin',
+                'availablePlugins'    =>    [],
+                'activePlugins'    =>    [],
+                'page' => $pluginName,
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
+            )
+        )->addTemplate('admin/plugins.php')->display();
+    }
+
+
 
 }

@@ -54,6 +54,20 @@ class Plugin
         }
     }
 
+    public function getName($items)
+    {
+        // Split name
+        $classNamespace = explode('\\', get_class($this));
+        $className = end($classNamespace);
+
+        // Prettify and return name of child class
+        preg_match_all('%[A-Z]*[a-z]+%m', $className, $result, PREG_PATTERN_ORDER);
+
+        $items[] = Utils::escape(implode(' ', $result[0]));
+
+        return $items;
+    }
+
     /**
      * Activate a plugin
      */

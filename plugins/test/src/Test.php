@@ -16,7 +16,8 @@ class Test extends BasePlugin
     public function run()
     {
         $this->hooks->bind('get_forum_actions', [$this, 'addMarkRead']);
-
+        $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
+        $this->feather->get('/test-plugin(/)', [$this, 'testRoute']);
     }
 
     public function addMarkRead($forum_actions)
@@ -24,5 +25,10 @@ class Test extends BasePlugin
         $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test1</a>';
         $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test2</a>';
         return $forum_actions;
+    }
+
+    public function testRoute()
+    {
+        echo 'This only is a test plugin.';
     }
 }
