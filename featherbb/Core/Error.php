@@ -42,7 +42,6 @@ class Error extends \Exception
         if (method_exists($e, 'hasBacklink')) {
             $error['back'] = $e->hasBacklink();
         }*/
-
         $this->feather->response->setStatus($code);
         $this->feather->response->setBody(''); // Reset buffer
         $this->feather->template->setPageInfo(array(

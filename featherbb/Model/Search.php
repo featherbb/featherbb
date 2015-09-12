@@ -124,7 +124,7 @@ class Search
 
                 unset($temp);
             } else {
-                throw new Error(__('No hits'), 204);
+                throw new Error(__('No hits'), 404);
             }
         } else {
             $keyword_results = $author_results = array();
@@ -362,7 +362,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No new posts'), 204);
+                        throw new Error(__('No new posts'), 404);
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -387,7 +387,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No recent posts'), 204);
+                        throw new Error(__('No recent posts'), 404);
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -412,7 +412,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No user posts'), 204);
+                        throw new Error(__('No user posts'), 404);
                     }
                 }
                 // If it's a search for posts by a specific user ID
