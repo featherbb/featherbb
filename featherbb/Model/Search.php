@@ -739,14 +739,6 @@ class Search
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
 
-                $this->feather->template->setPageInfo(array(
-                    'post_count' => $post_count,
-                    'url_topic' => $url_topic,
-                    'cur_search' => $cur_search,
-                    'forum' => $forum,
-                    )
-                );
-
             } else {
                 ++$topic_count;
                 $status_text = array();
