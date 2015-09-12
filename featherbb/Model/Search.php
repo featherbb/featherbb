@@ -124,7 +124,7 @@ class Search
 
                 unset($temp);
             } else {
-                throw new Error(__('No hits'), 204);
+                throw new Error(__('No hits'), 404);
             }
         } else {
             $keyword_results = $author_results = array();
@@ -356,13 +356,13 @@ class Search
                         $result = $result->where('t.forum_id', intval($this->request->get('fid')));
                     }
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No new posts'), 204);
+                        throw new Error(__('No new posts'), 404);
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -381,13 +381,13 @@ class Search
                         $result = $result->where('t.forum_id', intval($this->request->get('fid')));
                     }
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No recent posts'), 204);
+                        throw new Error(__('No recent posts'), 404);
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -406,13 +406,13 @@ class Search
                         $result = $result->group_by('t.last_post');
                     }
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No user posts'), 204);
+                        throw new Error(__('No user posts'), 404);
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -429,7 +429,7 @@ class Search
                                 ->where('p.poster_id', $user_id)
                                 ->order_by_desc('p.posted');
 
-                    $result = $this->hook->fire('get_search_results_post_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_post_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -453,7 +453,7 @@ class Search
                                 ->where('p.poster_id', $user_id)
                                 ->order_by_desc('t.last_post');
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -481,7 +481,7 @@ class Search
                                 ->where_any_is($result['where'])
                                 ->order_by_desc('t.last_post');
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -505,7 +505,7 @@ class Search
                                 ->where_any_is($result['where'])
                                 ->order_by_desc('t.last_post');
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -636,8 +636,7 @@ class Search
                                 ->order_by($sort_by_sql, $sort_dir);
                 $result = $this->hook->fireDB('get_search_results_select_topics_query', $result);
             }
-            $result = $result->find_many();
-
+            $result = $result->find_array();
             $search['search_set'] = array();
             foreach($result as $row) {
                 $search['search_set'][] = $row;
@@ -703,6 +702,8 @@ class Search
 
         $post_count = $topic_count = 0;
 
+        $display = array();
+
         foreach ($search['search_set'] as $cur_search) {
             $forum_name = Url::url_friendly($cur_search['forum_name']);
             $forum = '<a href="'.$this->feather->urlFor('Forum', ['id' => $cur_search['forum_id'], 'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
@@ -745,6 +746,7 @@ class Search
                     'forum' => $forum,
                     )
                 );
+
             } else {
                 ++$topic_count;
                 $status_text = array();
@@ -790,24 +792,22 @@ class Search
                 }
 
                 if (!isset($cur_search['start_from'])) {
-                    $start_from = 0;
-                } else {
-                    $start_from = $cur_search['start_from'];
+                    $cur_search['start_from'] = 0;
                 }
 
-                $this->feather->template->setPageInfo(array(
-                    'cur_search' => $cur_search,
-                    'start_from' => $start_from,
-                    'topic_count' => $topic_count,
-                    'subject' => $subject,
-                    'forum' => $forum,
-                    'post_count' => $post_count,
-                    'url_topic' => $url_topic,
-                    )
-                );
+                $cur_search['topic_count'] = $topic_count;
+                $cur_search['subject'] = $subject;
             }
+
+            $cur_search['post_count'] = $post_count;
+            $cur_search['forum'] = $forum;
+            $cur_search['url_topic'] = $url_topic;
+
+            $display['cur_search'][] = $cur_search;
         }
-        $search = $this->hook->fire('display_search_results', $search);
+        $display = $this->hook->fire('display_search_results', $display, $search);
+
+        return $display;
     }
 
     public function get_list_forums()

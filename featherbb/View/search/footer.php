@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-if ($search['show_as'] == 'topics') :
+if ($footer['show_as'] == 'topics') :
 ?>
 			</tbody>
 		</table>
@@ -29,14 +29,14 @@ endif;
 <div class="postlinksb">
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $search['paging_links'] ?></p>
+			<p class="pagelink"><?php echo $footer['paging_links'] ?></p>
 		</div>
 		<ul class="crumbs">
 			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('search') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo $search['crumbs_text']['search_type'] ?></strong></li>
+			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('search') ?>"><?php echo $footer['crumbs_text']['show_as'] ?></a></li>
+			<li><span>»&#160;</span><strong><?php echo $footer['crumbs_text']['search_type'] ?></strong></li>
 		</ul>
-<?php echo(!empty($search['forum_actions']) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $search['forum_actions']).'</p>'."\n" : '') ?>
+<?php echo(!empty($footer['forum_actions']) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $footer['forum_actions']).'</p>'."\n" : '') ?>
 		<div class="clearer"></div>
 	</div>
 </div>

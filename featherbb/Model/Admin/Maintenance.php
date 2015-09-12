@@ -254,7 +254,7 @@ class Maintenance
         $prune['num_topics'] = $query->count('id');
 
         if (!$prune['num_topics']) {
-            throw new Error(sprintf(__('No old topics message'), $prune['days']), 204);
+            throw new Error(sprintf(__('No old topics message'), $prune['days']), 404);
         }
 
         $prune = $this->hook->fire('maintenance.get_info_prune.prune', $prune);
