@@ -124,7 +124,7 @@ class Search
 
                 unset($temp);
             } else {
-                throw new Error(__('No hits'), 204);
+                throw new Error(__('No hits'), 404);
             }
         } else {
             $keyword_results = $author_results = array();
@@ -356,13 +356,13 @@ class Search
                         $result = $result->where('t.forum_id', intval($this->request->get('fid')));
                     }
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No new posts'), 204);
+                        throw new Error(__('No new posts'), 404);
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -381,13 +381,13 @@ class Search
                         $result = $result->where('t.forum_id', intval($this->request->get('fid')));
                     }
 
-                    $result = $this->hook->fire('get_search_results_topic_query', $result);
+                    $result = $this->hook->fireDB('get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No recent posts'), 204);
+                        throw new Error(__('No recent posts'), 404);
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -412,7 +412,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        throw new Error(__('No user posts'), 204);
+                        throw new Error(__('No user posts'), 404);
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -636,8 +636,7 @@ class Search
                                 ->order_by($sort_by_sql, $sort_dir);
                 $result = $this->hook->fireDB('get_search_results_select_topics_query', $result);
             }
-            $result = $result->find_many();
-
+            $result = $result->find_array();
             $search['search_set'] = array();
             foreach($result as $row) {
                 $search['search_set'][] = $row;
@@ -703,6 +702,8 @@ class Search
 
         $post_count = $topic_count = 0;
 
+        $display = array();
+
         foreach ($search['search_set'] as $cur_search) {
             $forum_name = Url::url_friendly($cur_search['forum_name']);
             $forum = '<a href="'.$this->feather->urlFor('Forum', ['id' => $cur_search['forum_id'], 'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
@@ -745,6 +746,7 @@ class Search
                     'forum' => $forum,
                     )
                 );
+
             } else {
                 ++$topic_count;
                 $status_text = array();
@@ -790,131 +792,22 @@ class Search
                 }
 
                 if (!isset($cur_search['start_from'])) {
-                    $start_from = 0;
-                } else {
-                    $start_from = $cur_search['start_from'];
-                }
-
-                $this->feather->template->setPageInfo(array(
-                    'cur_search' => $cur_search,
-                    'start_from' => $start_from,
-                    'topic_count' => $topic_count,
-                    'subject' => $subject,
-                    'forum' => $forum,
-                    'post_count' => $post_count,
-                    'url_topic' => $url_topic,
-                    )
-                );
-            }
-        }
-        $search = $this->hook->fire('display_search_results', $search);
-    }
-
-    public function print_search_results($search)
-    {
-        $search = $this->hook->fire('display_search_results_start', $search);
-
-        $results_data = array();
-
-        // Get topic/forum tracking data
-        if (!$this->user->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
-        }
-
-        $post_count = $topic_count = 0;
-
-        foreach ($search['search_set'] as $cur_search) {
-            if ($this->config['o_censoring'] == '1') {
-                $cur_search['subject'] = Utils::censor($cur_search['subject']);
-            }
-
-            $forum_name = Url::url_friendly($cur_search['forum_name']);
-            $cur_search['forum'] = '<a href="'.$this->feather->urlFor('Forum', ['id' => $cur_search['forum_id'], 'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
-            $cur_search['url_topic'] = Url::url_friendly($cur_search['subject']);
-
-            if ($search['show_as'] == 'posts') {
-                ++$post_count;
-                $cur_search['icon_type'] = 'icon';
-
-                if (!$this->user->is_guest && $cur_search['last_post'] > $this->user->last_visit && (!isset($tracked_topics['topics'][$cur_search['tid']]) || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post']) && (!isset($tracked_topics['forums'][$cur_search['forum_id']]) || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post'])) {
-                    $cur_search['item_status'] = 'inew';
-                    $cur_search['icon_type'] = 'icon icon-new';
-                    $cur_search['icon_text'] = __('New icon');
-                } else {
-                    $cur_search['item_status'] = '';
-                    $cur_search['icon_text'] = '<!-- -->';
-                }
-
-                if ($this->config['o_censoring'] == '1') {
-                    $cur_search['message'] = Utils::censor($cur_search['message']);
-                }
-
-                $cur_search['message'] = $this->feather->parser->parse_message($cur_search['message'], $cur_search['hide_smilies']);
-                $pposter = Utils::escape($cur_search['pposter']);
-
-                if ($cur_search['poster_id'] > 1 && $this->user->g_view_users == '1') {
-                    $cur_search['pposter_disp'] = '<strong><a href="'.$this->feather->urlFor('userProfile', ['id' => $cur_search['poster_id']]).'">'.$pposter.'</a></strong>';
-                } else {
-                    $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
-                }
-
-                $results_data[] = $cur_search;
-            } else {
-                ++$topic_count;
-                $cur_search['icon_type'] = 'icon';
-                $cur_search['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
-                $status_text = array();
-
-                $subject = '<a href="'.$this->feather->urlFor('Topic', ['id' => $cur_search['tid'], 'name' => $cur_search['url_topic']]).'">'.Utils::escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['poster']).'</span>';
-
-                if ($cur_search['sticky'] == '1') {
-                    $cur_search['item_status'] .= ' isticky';
-                    $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
-                }
-
-                if ($cur_search['closed'] != '0') {
-                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
-                    $cur_search['item_status'] .= ' iclosed';
-                }
-
-                if (!$this->user->is_guest && $cur_search['last_post'] > $this->user->last_visit && (!isset($tracked_topics['topics'][$cur_search['tid']]) || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post']) && (!isset($tracked_topics['forums'][$cur_search['forum_id']]) || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post'])) {
-                    $cur_search['item_status'] .= ' inew';
-                    $cur_search['icon_type'] .= ' icon-new';
-                    $subject = '<strong>'.$subject.'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.$this->feather->urlFor('topicAction', ['id' => $cur_search['tid'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
-                } else {
-                    $subject_new_posts = null;
-                }
-
-                // Insert the status text before the subject
-                $subject = implode(' ', $status_text).' '.$subject;
-
-                $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / $this->user->disp_posts);
-
-                if ($num_pages_topic > 1) {
-                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
-                } else {
-                    $subject_multipage = null;
-                }
-
-                // Should we show the "New posts" and/or the multipage links?
-                if (!empty($subject_new_posts) || !empty($subject_multipage)) {
-                    $subject .= !empty($subject_new_posts) ? ' '.$subject_new_posts : '';
-                    $subject .= !empty($subject_multipage) ? ' '.$subject_multipage : '';
-                }
-
-                $cur_search['subject'] = $subject;
-
-                if (!isset($cur_search['start_from'])) {
                     $cur_search['start_from'] = 0;
                 }
 
-                $results_data[] = $cur_search;
+                $cur_search['topic_count'] = $topic_count;
+                $cur_search['subject'] = $subject;
             }
-        }
 
-        $results_data = $this->hook->fire('display_search_results', $results_data);
-        return $results_data;
+            $cur_search['post_count'] = $post_count;
+            $cur_search['forum'] = $forum;
+            $cur_search['url_topic'] = $url_topic;
+
+            $display['cur_search'][] = $cur_search;
+        }
+        $display = $this->hook->fire('display_search_results', $display, $search);
+
+        return $display;
     }
 
     public function get_list_forums()

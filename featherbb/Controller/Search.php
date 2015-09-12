@@ -48,8 +48,15 @@ class Search
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
                     'active_page' => 'search',
                     'search' => $search,
-                    'search_results' => $this->model->print_search_results($search)
+                    'footer' => $search,
                 ));
+
+                $display = $this->model->display_search_results($search, $this->feather);
+
+                $this->feather->template->setPageInfo(array(
+                        'display' => $display,
+                    )
+                );
 
                 $this->feather->template->addTemplate('search/header.php', 1);
 
