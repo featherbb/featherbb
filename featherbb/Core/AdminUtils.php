@@ -17,13 +17,13 @@ class AdminUtils
     {
         self::$feather = \Slim\Slim::getInstance();
 
-        $is_admin = ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']) ? true : false;
+        $is_admin = (self::$feather->user->g_id == self::$feather->forum_env['FEATHER_ADMIN']) ? true : false;
 
         // See if there are any plugins
         // $plugins = forum_list_plugins($is_admin);
         $plugins = array();
 
-        $feather->template->setPageInfo(array(
+        self::$feather->template->setPageInfo(array(
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
             'plugins'    =>    $plugins,
