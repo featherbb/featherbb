@@ -29,7 +29,7 @@ if (!isset($feather)) {
 } ?>
     <title><?php echo Utils::generate_page_title($title, $page_number) ?></title>
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="<?= Url::base() ?>/style/themes/<?= $style ?>/style.css">
+    <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= $style ?>/style.css">
 <?php
 
 foreach($assets as $type => $items) {
@@ -42,14 +42,14 @@ foreach($assets as $type => $items) {
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'href="'.Url::base().'/'.$item['file'].'">'."\n";
+        echo 'href="'.Url::base_static().'/'.$item['file'].'">'."\n";
     }
 }
 if ($admin_console) {
     if (file_exists($feather->forum_env['FEATHER_ROOT'].'style/themes/'.$feather->user->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/themes/'.$feather->user->style.'/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.$feather->user->style.'/base_admin.css" />'."\n";
     } else {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/imports/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
     }
 }
 if (isset($required_fields)) :

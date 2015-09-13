@@ -76,12 +76,12 @@ class Post
         // Did someone just hit "Submit" or "Preview"?
         if ($this->feather->request()->isPost()) {
 
-                // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
-                if ($this->feather->request->post('pid')) {
-                    $pid = $this->feather->request->post('pid');
-                } else {
-                    $pid = '';
-                }
+            // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
+            if ($this->feather->request->post('pid')) {
+                $pid = $this->feather->request->post('pid');
+            } else {
+                $pid = '';
+            }
 
             if ($this->feather->request->post('page')) {
                 $page = $this->feather->request->post('page');
