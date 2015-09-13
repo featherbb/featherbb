@@ -27,7 +27,7 @@ if (!isset($feather)) {
 <?php if ($is_indexed) {
     echo "\t".'<meta name="robots" content="noindex, follow">'."\n";
 } ?>
-    <title><?php echo Utils::generate_page_title($title, $page_number) ?></title>
+    <title><?= Utils::generate_page_title($title, $page_number) ?></title>
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= $style ?>/style.css">
 <?php
@@ -162,10 +162,10 @@ if ($feather->user->is_guest) {
     <div class="container">
         <div class="container-title-status">
             <h1 class="title-site">
-                <a href="<?php echo Url::base() ?>" title="" class="site-name">
-                    <p><?php echo Utils::escape($feather->forum_settings['o_board_title']) ?></p>
+                <a href="<?= Url::base() ?>" title="" class="site-name">
+                    <p><?= Utils::escape($feather->forum_settings['o_board_title']) ?></p>
                 </a>
-                <div id="brddesc"><?php echo htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
+                <div id="brddesc"><?= htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
             </h1>
             <div class="status-avatar">
                 <div id="brdwelcome" class="inbox">
@@ -214,7 +214,7 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
             <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
             <div class="box">
                 <div id="announce-block" class="inbox">
-                    <div class="usercontent"><?php echo $feather->forum_settings['o_announcement_message'] ?></div>
+                    <div class="usercontent"><?= $feather->forum_settings['o_announcement_message'] ?></div>
                 </div>
             </div>
         </div>

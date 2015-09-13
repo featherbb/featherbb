@@ -19,12 +19,12 @@ if (!isset($feather)) {
 		<h2><span><?php _e('Group settings head') ?></span></h2>
 		<div class="box">
 			<form id="groups2" method="post" action="" onsubmit="return process_form(this)">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="add_edit_group" value="<?php _e('Save') ?>" /></p>
 				<div class="inform">
-					<input type="hidden" name="mode" value="<?php echo $group['mode'] ?>" />
-<?php if ($group['mode'] == 'edit'): ?>					<input type="hidden" name="group_id" value="<?php echo $id ?>" />
-<?php endif; ?><?php if ($group['mode'] == 'add'): ?>					<input type="hidden" name="base_group" value="<?php echo $group['base_group'] ?>" />
+					<input type="hidden" name="mode" value="<?= $group['mode'] ?>" />
+<?php if ($group['mode'] == 'edit'): ?>					<input type="hidden" name="group_id" value="<?= $id ?>" />
+<?php endif; ?><?php if ($group['mode'] == 'add'): ?>					<input type="hidden" name="base_group" value="<?= $group['base_group'] ?>" />
 <?php endif; ?>					<fieldset>
 						<legend><?php _e('Group settings subhead') ?></legend>
 						<div class="infldset">
@@ -41,7 +41,7 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('User title label') ?></th>
 									<td>
-										<input type="text" name="user_title" size="25" maxlength="50" value="<?php echo Utils::escape($group['info']['g_user_title']) ?>" tabindex="2" />
+										<input type="text" name="user_title" size="25" maxlength="50" value="<?= Utils::escape($group['info']['g_user_title']) ?>" tabindex="2" />
 										<span><?php printf(__('User title help'), ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST'] ? __('Member') : __('Guest'))) ?></span>
 									</td>
 								</tr>
@@ -50,9 +50,9 @@ if (!isset($feather)) {
 									<td>
 										<select name="promote_next_group" tabindex="3">
 											<option value="0"><?php _e('Disable promotion') ?></option>
-											<?php echo $group_list ?>
+											<?= $group_list ?>
 										</select>
-										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?php echo Utils::escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
+										<input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?= Utils::escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
 										<span><?php printf(__('Promote users help'), __('Disable promotion')) ?></span>
 									</td>
 								</tr>
@@ -275,28 +275,28 @@ if (!isset($feather)) {
 <?php endif; ?>								<tr>
 									<th scope="row"><?php _e('Post flood label') ?></th>
 									<td>
-										<input type="text" name="post_flood" size="5" maxlength="4" value="<?php echo $group['info']['g_post_flood'] ?>" tabindex="41" />
+										<input type="text" name="post_flood" size="5" maxlength="4" value="<?= $group['info']['g_post_flood'] ?>" tabindex="41" />
 										<span><?php _e('Post flood help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Search flood label') ?></th>
 									<td>
-										<input type="text" name="search_flood" size="5" maxlength="4" value="<?php echo $group['info']['g_search_flood'] ?>" tabindex="42" />
+										<input type="text" name="search_flood" size="5" maxlength="4" value="<?= $group['info']['g_search_flood'] ?>" tabindex="42" />
 										<span><?php _e('Search flood help') ?></span>
 									</td>
 								</tr>
 <?php if ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST']): ?>								<tr>
 									<th scope="row"><?php _e('E-mail flood label') ?></th>
 									<td>
-										<input type="text" name="email_flood" size="5" maxlength="4" value="<?php echo $group['info']['g_email_flood'] ?>" tabindex="43" />
+										<input type="text" name="email_flood" size="5" maxlength="4" value="<?= $group['info']['g_email_flood'] ?>" tabindex="43" />
 										<span><?php _e('E-mail flood help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Report flood label') ?></th>
 									<td>
-										<input type="text" name="report_flood" size="5" maxlength="4" value="<?php echo $group['info']['g_report_flood'] ?>" tabindex="44" />
+										<input type="text" name="report_flood" size="5" maxlength="4" value="<?= $group['info']['g_report_flood'] ?>" tabindex="44" />
 										<span><?php _e('Report flood help') ?></span>
 									</td>
 								</tr>

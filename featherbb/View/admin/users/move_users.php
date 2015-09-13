@@ -19,9 +19,9 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Move users') ?></span></h2>
 		<div class="box">
-			<form name="confirm_move_users" method="post" action="<?php echo $feather->urlFor('adminUsers') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-				<input type="hidden" name="users" value="<?php echo implode(',', $move['user_ids']) ?>" />
+			<form name="confirm_move_users" method="post" action="<?= $feather->urlFor('adminUsers') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+				<input type="hidden" name="users" value="<?= implode(',', $move['user_ids']) ?>" />
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Move users subhead') ?></legend>
@@ -31,7 +31,7 @@ if (!isset($feather)) {
 									<th scope="row"><?php _e('New group label') ?></th>
 									<td>
 										<select name="new_group" tabindex="1">
-<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?php echo $gid ?>"><?php echo Utils::escape($group) ?></option>
+<?php foreach ($move['all_groups'] as $gid => $group) : ?>											<option value="<?= $gid ?>"><?= Utils::escape($group) ?></option>
 <?php endforeach;
     ?>
 										</select>

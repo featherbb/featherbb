@@ -18,8 +18,8 @@ if (!isset($feather)) {
 	<h2><span><?php _e('Merge topics') ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-			<input type="hidden" name="topics" value="<?php echo implode(',', array_map('intval', array_keys($topics))) ?>" />
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+			<input type="hidden" name="topics" value="<?= implode(',', array_map('intval', array_keys($topics))) ?>" />
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Confirm merge legend') ?></legend>

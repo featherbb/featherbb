@@ -74,7 +74,7 @@ if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 			<div class="conl">
 			<form id="qjump" method="get" action="">
 				<div><label><span><?php _e('Jump to') ?><br /></span></label>
-					<select name="id" onchange="window.location=('<?php echo Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
+					<select name="id" onchange="window.location=('<?= Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
 <?php
 		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
 			echo "\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";

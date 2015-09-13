@@ -19,12 +19,12 @@ if (!isset($feather)) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
+			<p class="pagelink"><?= $paging_links ?></p>
 		</div>
 		<div class="clearer"></div>
 	</div>
@@ -54,19 +54,19 @@ if (!isset($feather)) {
             if (isset($info['user_data'][$cur_poster['poster_id']])) {
                 ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="'.$feather->urlFor('userProfile', ['id' => $info['user_data'][$cur_poster['poster_id']]['id']]).'">'.Utils::escape($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
-					<td class="tc2"><a href="mailto:<?php echo Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?php echo Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
-					<td class="tc3"><?php echo Utils::get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
-					<td class="tc4"><?php echo Utils::forum_number_format($info['user_data'][$cur_poster['poster_id']]['num_posts']) ?></td>
+					<td class="tcl"><?= '<a href="'.$feather->urlFor('userProfile', ['id' => $info['user_data'][$cur_poster['poster_id']]['id']]).'">'.Utils::escape($info['user_data'][$cur_poster['poster_id']]['username']).'</a>' ?></td>
+					<td class="tc2"><a href="mailto:<?= Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?>"><?= Utils::escape($info['user_data'][$cur_poster['poster_id']]['email']) ?></a></td>
+					<td class="tc3"><?= Utils::get_title($info['user_data'][$cur_poster['poster_id']]) ?></td>
+					<td class="tc4"><?= Utils::forum_number_format($info['user_data'][$cur_poster['poster_id']]['num_posts']) ?></td>
 					<td class="tc5"><?php echo($info['user_data'][$cur_poster['poster_id']]['admin_note'] != '') ? Utils::escape($info['user_data'][$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="'.$feather->urlFor('usersIpStats', ['id' => $info['user_data'][$cur_poster['poster_id']]['id']]).'">'.__('Results view IP link').'</a> | <a href="'.$feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.__('Results show posts link').'</a>' ?></td>
+					<td class="tcr"><?= '<a href="'.$feather->urlFor('usersIpStats', ['id' => $info['user_data'][$cur_poster['poster_id']]['id']]).'">'.__('Results view IP link').'</a> | <a href="'.$feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$info['user_data'][$cur_poster['poster_id']]['id'].'">'.__('Results show posts link').'</a>' ?></td>
 				</tr>
 <?php
 
             } else {
                 ?>
 				<tr>
-					<td class="tcl"><?php echo Utils::escape($cur_poster['poster']) ?></td>
+					<td class="tcl"><?= Utils::escape($cur_poster['poster']) ?></td>
 					<td class="tc2">&#160;</td>
 					<td class="tc3"><?php _e('Results guest') ?></td>
 					<td class="tc4">&#160;</td>
@@ -91,11 +91,11 @@ if (!isset($feather)) {
 <div class="linksb">
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
+			<p class="pagelink"><?= $paging_links ?></p>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

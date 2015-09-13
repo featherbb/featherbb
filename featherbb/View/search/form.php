@@ -32,7 +32,7 @@ if (!isset($feather)) {
 				<fieldset>
 					<legend><?php _e('Search in legend') ?></legend>
 					<div class="infldset">
-					<?php echo $forums ?>
+					<?= $forums ?>
 						<label class="conl"><?php _e('Search in')."\n" ?>
 						<br /><select id="search_in" name="search_in">
 							<option value="0"><?php _e('Message and subject') ?></option>

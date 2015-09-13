@@ -42,7 +42,7 @@ if (!empty($errors)) {
 	<h2><span><?php _e('Register') ?></span></h2>
 	<div class="box">
 		<form id="register" method="post" action="" onsubmit="this.register.disabled=true;if(process_form(this)){return true;}else{this.register.disabled=false;return false;}">
-		<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+		<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div class="inform">
 				<div class="forminfo">
 					<h3><?php _e('Important information') ?></h3>
@@ -126,7 +126,7 @@ if (!empty($errors)) {
 					<legend><?php _e('Robot title') ?></legend>
 					<div class="infldset">
 						<p><?php _e('Robot info')    ?></p>
-						<label class="required"><strong><?php echo sprintf(__('Robot question'), $question[$index_questions]) ?> <span><?php _e('Required') ?></span></strong><br /><input name="captcha" id="captcha" type="text" size="10" maxlength="30" /><input name="captcha_q" value="<?php echo $qencoded ?>" type="hidden" /></label>
+						<label class="required"><strong><?= sprintf(__('Robot question'), $question[$index_questions]) ?> <span><?php _e('Required') ?></span></strong><br /><input name="captcha" id="captcha" type="text" size="10" maxlength="30" /><input name="captcha_q" value="<?= $qencoded ?>" type="hidden" /></label>
 					</div>
 				</fieldset>
 			</div>

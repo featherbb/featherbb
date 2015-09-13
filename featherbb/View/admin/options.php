@@ -20,8 +20,8 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Options head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->urlFor('adminOptions') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('adminOptions') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="form_sent" value="1" />
@@ -32,21 +32,21 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Board title label') ?></th>
 									<td>
-										<input type="text" name="form_board_title" size="50" maxlength="255" value="<?php echo Utils::escape($feather->forum_settings['o_board_title']) ?>" />
+										<input type="text" name="form_board_title" size="50" maxlength="255" value="<?= Utils::escape($feather->forum_settings['o_board_title']) ?>" />
 										<span><?php _e('Board title help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Board desc label') ?></th>
 									<td>
-										<textarea name="form_board_desc" cols="60" rows="3"><?php echo Utils::escape($feather->forum_settings['o_board_desc']) ?></textarea>
+										<textarea name="form_board_desc" cols="60" rows="3"><?= Utils::escape($feather->forum_settings['o_board_desc']) ?></textarea>
 										<span><?php _e('Board desc help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Base URL label') ?></th>
 									<td>
-										<input type="text" name="form_base_url" size="50" maxlength="100" value="<?php echo Utils::escape($feather->forum_settings['o_base_url']) ?>" />
+										<input type="text" name="form_base_url" size="50" maxlength="100" value="<?= Utils::escape($feather->forum_settings['o_base_url']) ?>" />
 										<span><?php _e('Base URL help') ?></span>
 									</td>
 								</tr>
@@ -194,7 +194,7 @@ if (!isset($feather)) {
 									<th scope="row"><?php _e('Language label') ?></th>
 									<td>
 										<select name="form_default_lang">
-                                            <?php echo $languages; ?>
+                                            <?= $languages; ?>
 										</select>
 										<span><?php _e('Language help') ?></span>
 									</td>
@@ -203,7 +203,7 @@ if (!isset($feather)) {
 									<th scope="row"><?php _e('Default style label') ?></th>
 									<td>
 										<select name="form_default_style">
-											<?php echo $styles; ?>
+											<?= $styles; ?>
 										</select>
 										<span><?php _e('Default style help') ?></span>
 									</td>
@@ -226,35 +226,35 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Time format label') ?></th>
 									<td>
-										<input type="text" name="form_time_format" size="25" maxlength="25" value="<?php echo Utils::escape($feather->forum_settings['o_time_format']) ?>" />
+										<input type="text" name="form_time_format" size="25" maxlength="25" value="<?= Utils::escape($feather->forum_settings['o_time_format']) ?>" />
 										<span><?php printf(__('Time format help'), gmdate($feather->forum_settings['o_time_format'], $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Date format label') ?></th>
 									<td>
-										<input type="text" name="form_date_format" size="25" maxlength="25" value="<?php echo Utils::escape($feather->forum_settings['o_date_format']) ?>" />
+										<input type="text" name="form_date_format" size="25" maxlength="25" value="<?= Utils::escape($feather->forum_settings['o_date_format']) ?>" />
 										<span><?php printf(__('Date format help'), gmdate($feather->forum_settings['o_date_format'], $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Visit timeout label') ?></th>
 									<td>
-										<input type="text" name="form_timeout_visit" size="5" maxlength="5" value="<?php echo $feather->forum_settings['o_timeout_visit'] ?>" />
+										<input type="text" name="form_timeout_visit" size="5" maxlength="5" value="<?= $feather->forum_settings['o_timeout_visit'] ?>" />
 										<span><?php _e('Visit timeout help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Online timeout label') ?></th>
 									<td>
-										<input type="text" name="form_timeout_online" size="5" maxlength="5" value="<?php echo $feather->forum_settings['o_timeout_online'] ?>" />
+										<input type="text" name="form_timeout_online" size="5" maxlength="5" value="<?= $feather->forum_settings['o_timeout_online'] ?>" />
 										<span><?php _e('Online timeout help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Redirect time label') ?></th>
 									<td>
-										<input type="text" name="form_redirect_delay" size="3" maxlength="3" value="<?php echo $feather->forum_settings['o_redirect_delay'] ?>" />
+										<input type="text" name="form_redirect_delay" size="3" maxlength="3" value="<?= $feather->forum_settings['o_redirect_delay'] ?>" />
 										<span><?php _e('Redirect time help') ?></span>
 									</td>
 								</tr>
@@ -342,35 +342,35 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Topic review label') ?></th>
 									<td>
-										<input type="text" name="form_topic_review" size="3" maxlength="3" value="<?php echo $feather->forum_settings['o_topic_review'] ?>" />
+										<input type="text" name="form_topic_review" size="3" maxlength="3" value="<?= $feather->forum_settings['o_topic_review'] ?>" />
 										<span><?php _e('Topic review help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Topics per page label') ?></th>
 									<td>
-										<input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="<?php echo $feather->forum_settings['o_disp_topics_default'] ?>" />
+										<input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="<?= $feather->forum_settings['o_disp_topics_default'] ?>" />
 										<span><?php _e('Topics per page help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Posts per page label') ?></th>
 									<td>
-										<input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="<?php echo $feather->forum_settings['o_disp_posts_default'] ?>" />
+										<input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="<?= $feather->forum_settings['o_disp_posts_default'] ?>" />
 										<span><?php _e('Posts per page help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Indent label') ?></th>
 									<td>
-										<input type="text" name="form_indent_num_spaces" size="3" maxlength="3" value="<?php echo $feather->forum_settings['o_indent_num_spaces'] ?>" />
+										<input type="text" name="form_indent_num_spaces" size="3" maxlength="3" value="<?= $feather->forum_settings['o_indent_num_spaces'] ?>" />
 										<span><?php _e('Indent help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Quote depth label') ?></th>
 									<td>
-										<input type="text" name="form_quote_depth" size="3" maxlength="3" value="<?php echo $feather->forum_settings['o_quote_depth'] ?>" />
+										<input type="text" name="form_quote_depth" size="3" maxlength="3" value="<?= $feather->forum_settings['o_quote_depth'] ?>" />
 										<span><?php _e('Quote depth help') ?></span>
 									</td>
 								</tr>
@@ -494,7 +494,7 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Menu items label') ?></th>
 									<td>
-										<textarea name="form_additional_navlinks" rows="3" cols="55"><?php echo Utils::escape($feather->forum_settings['o_additional_navlinks']) ?></textarea>
+										<textarea name="form_additional_navlinks" rows="3" cols="55"><?= Utils::escape($feather->forum_settings['o_additional_navlinks']) ?></textarea>
 										<span><?php _e('Menu items help') ?></span>
 									</td>
 								</tr>
@@ -529,7 +529,7 @@ if (!isset($feather)) {
 											<option value="0"<?php if ($feather->forum_settings['o_feed_ttl'] == '0') {
     echo ' selected="selected"';
 } ?>><?php _e('No cache') ?></option>
-											<?php echo $times ?>
+											<?= $times ?>
 										</select>
 										<span><?php _e('Feed TTL help') ?></span>
 									</td>
@@ -561,7 +561,7 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Mailing list label') ?></th>
 									<td>
-										<textarea name="form_mailing_list" rows="5" cols="55"><?php echo Utils::escape($feather->forum_settings['o_mailing_list']) ?></textarea>
+										<textarea name="form_mailing_list" rows="5" cols="55"><?= Utils::escape($feather->forum_settings['o_mailing_list']) ?></textarea>
 										<span><?php _e('Mailing list help') ?></span>
 									</td>
 								</tr>
@@ -589,28 +589,28 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Upload directory label') ?></th>
 									<td>
-										<input type="text" name="form_avatars_dir" size="35" maxlength="50" value="<?php echo Utils::escape($feather->forum_settings['o_avatars_dir']) ?>" />
+										<input type="text" name="form_avatars_dir" size="35" maxlength="50" value="<?= Utils::escape($feather->forum_settings['o_avatars_dir']) ?>" />
 										<span><?php _e('Upload directory help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Max width label') ?></th>
 									<td>
-										<input type="text" name="form_avatars_width" size="5" maxlength="5" value="<?php echo $feather->forum_settings['o_avatars_width'] ?>" />
+										<input type="text" name="form_avatars_width" size="5" maxlength="5" value="<?= $feather->forum_settings['o_avatars_width'] ?>" />
 										<span><?php _e('Max width help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Max height label') ?></th>
 									<td>
-										<input type="text" name="form_avatars_height" size="5" maxlength="5" value="<?php echo $feather->forum_settings['o_avatars_height'] ?>" />
+										<input type="text" name="form_avatars_height" size="5" maxlength="5" value="<?= $feather->forum_settings['o_avatars_height'] ?>" />
 										<span><?php _e('Max height help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Max size label') ?></th>
 									<td>
-										<input type="text" name="form_avatars_size" size="6" maxlength="6" value="<?php echo $feather->forum_settings['o_avatars_size'] ?>" />
+										<input type="text" name="form_avatars_size" size="6" maxlength="6" value="<?= $feather->forum_settings['o_avatars_size'] ?>" />
 										<span><?php _e('Max size help') ?></span>
 									</td>
 								</tr>
@@ -626,14 +626,14 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Admin e-mail label') ?></th>
 									<td>
-										<input type="text" name="form_admin_email" size="50" maxlength="80" value="<?php echo Utils::escape($feather->forum_settings['o_admin_email']) ?>" />
+										<input type="text" name="form_admin_email" size="50" maxlength="80" value="<?= Utils::escape($feather->forum_settings['o_admin_email']) ?>" />
 										<span><?php _e('Admin e-mail help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Webmaster e-mail label') ?></th>
 									<td>
-										<input type="text" name="form_webmaster_email" size="50" maxlength="80" value="<?php echo Utils::escape($feather->forum_settings['o_webmaster_email']) ?>" />
+										<input type="text" name="form_webmaster_email" size="50" maxlength="80" value="<?= Utils::escape($feather->forum_settings['o_webmaster_email']) ?>" />
 										<span><?php _e('Webmaster e-mail help') ?></span>
 									</td>
 								</tr>
@@ -664,14 +664,14 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('SMTP address label') ?></th>
 									<td>
-										<input type="text" name="form_smtp_host" size="30" maxlength="100" value="<?php echo Utils::escape($feather->forum_settings['o_smtp_host']) ?>" />
+										<input type="text" name="form_smtp_host" size="30" maxlength="100" value="<?= Utils::escape($feather->forum_settings['o_smtp_host']) ?>" />
 										<span><?php _e('SMTP address help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('SMTP username label') ?></th>
 									<td>
-										<input type="text" name="form_smtp_user" size="25" maxlength="50" value="<?php echo Utils::escape($feather->forum_settings['o_smtp_user']) ?>" />
+										<input type="text" name="form_smtp_user" size="25" maxlength="50" value="<?= Utils::escape($feather->forum_settings['o_smtp_user']) ?>" />
 										<span><?php _e('SMTP username help') ?></span>
 									</td>
 								</tr>
@@ -680,8 +680,8 @@ if (!isset($feather)) {
 									<td>
 										<label><input type="checkbox" name="form_smtp_change_pass" value="1" />&#160;<?php _e('SMTP change password help') ?></label>
 <?php $smtp_pass = !empty($feather->forum_settings['o_smtp_pass']) ? Random::key(Utils::strlen($feather->forum_settings['o_smtp_pass']), true) : ''; ?>
-										<input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
-										<input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="<?php echo $smtp_pass ?>" />
+										<input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="<?= $smtp_pass ?>" />
+										<input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="<?= $smtp_pass ?>" />
 										<span><?php _e('SMTP password help') ?></span>
 									</td>
 								</tr>
@@ -757,7 +757,7 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Rules label') ?></th>
 									<td>
-										<textarea name="form_rules_message" rows="10" cols="55"><?php echo Utils::escape($feather->forum_settings['o_rules_message']) ?></textarea>
+										<textarea name="form_rules_message" rows="10" cols="55"><?= Utils::escape($feather->forum_settings['o_rules_message']) ?></textarea>
 										<span><?php _e('Rules help') ?></span>
 									</td>
 								</tr>
@@ -800,7 +800,7 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Announcement message label') ?></th>
 									<td>
-										<textarea name="form_announcement_message" rows="5" cols="55"><?php echo Utils::escape($feather->forum_settings['o_announcement_message']) ?></textarea>
+										<textarea name="form_announcement_message" rows="5" cols="55"><?= Utils::escape($feather->forum_settings['o_announcement_message']) ?></textarea>
 										<span><?php _e('Announcement message help') ?></span>
 									</td>
 								</tr>
@@ -828,7 +828,7 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Maintenance message label') ?></th>
 									<td>
-										<textarea name="form_maintenance_message" rows="5" cols="55"><?php echo Utils::escape($feather->forum_settings['o_maintenance_message']) ?></textarea>
+										<textarea name="form_maintenance_message" rows="5" cols="55"><?= Utils::escape($feather->forum_settings['o_maintenance_message']) ?></textarea>
 										<span><?php _e('Maintenance message help') ?></span>
 									</td>
 								</tr>

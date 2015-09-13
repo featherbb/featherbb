@@ -19,8 +19,8 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Censoring head') ?></span></h2>
 		<div class="box">
-			<form id="censoring" method="post" action="<?php echo $feather->urlFor('adminCensoring') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form id="censoring" method="post" action="<?= $feather->urlFor('adminCensoring') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Add word subhead') ?></legend>

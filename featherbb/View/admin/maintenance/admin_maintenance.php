@@ -18,7 +18,7 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Maintenance head') ?></span></h2>
 		<div class="box">
-			<form method="get" action="<?php echo $feather->urlFor('adminMaintenance') ?>">
+			<form method="get" action="<?= $feather->urlFor('adminMaintenance') ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="rebuild" />
 					<fieldset>
@@ -54,8 +54,8 @@ if (!isset($feather)) {
 				</div>
 			</form>
 
-			<form method="post" action="<?php echo $feather->urlFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
 					<fieldset>
@@ -82,7 +82,7 @@ if (!isset($feather)) {
 									<td>
 										<select name="prune_from" tabindex="7">
 											<option value="all"><?php _e('All forums') ?></option>
-												<?php echo $categories; ?>
+												<?= $categories; ?>
 											</optgroup>
 										</select>
 										<span><?php _e('Prune from help') ?></span>

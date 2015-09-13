@@ -17,12 +17,12 @@ if (!isset($feather)) {
 	<h2><span><?php _e('Delete posts') ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Confirm delete legend') ?></legend>
 					<div class="infldset">
-						<input type="hidden" name="posts" value="<?php echo implode(',', array_map('intval', array_keys($posts))) ?>" />
+						<input type="hidden" name="posts" value="<?= implode(',', array_map('intval', array_keys($posts))) ?>" />
 						<p><?php _e('Delete posts comply') ?></p>
 					</div>
 				</fieldset>

@@ -17,7 +17,7 @@ if (!isset($feather)) {
 	<h2><span><?= __('Maintenance') ?></span></h2>
 	<div class="box">
 		<div class="inbox">
-			<p><?php echo $msg ?></p>
+			<p><?= $msg ?></p>
 <?php if ($backlink) {
     echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'._('Go back').'</a></p>';
 } ?>

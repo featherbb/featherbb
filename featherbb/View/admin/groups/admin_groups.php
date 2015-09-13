@@ -21,8 +21,8 @@ if (!isset($feather)) {
 		<div class="box">
 				<div class="inform">
 					<fieldset>
-                        <form id="groups" method="post" action="<?php echo $feather->urlFor('addGroup') ?>">
-                        <input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+                        <form id="groups" method="post" action="<?= $feather->urlFor('addGroup') ?>">
+                        <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 						<legend><?php _e('Add group subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
@@ -54,8 +54,8 @@ foreach ($groups as $cur_group) {
 				</div>
 				<div class="inform">
 					<fieldset>
-                        <form id="groups" method="post" action="<?php echo $feather->urlFor('adminGroups') ?>">
-                        	<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+                        <form id="groups" method="post" action="<?= $feather->urlFor('adminGroups') ?>">
+                        	<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 						<legend><?php _e('Default group subhead') ?></legend>
 						<div class="infldset">
 							<table class="aligntop">

@@ -17,10 +17,10 @@ if (!isset($feather)) {
 
 ?>
 <div class="blockform">
-	<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section display') ?></span></h2>
+	<h2><span><?= Utils::escape($user['username']).' - '.__('Section display') ?></span></h2>
 	<div class="box">
-		<form id="profile5" method="post" action="<?php echo $feather->urlFor('profileSection', ['id' => $id, 'section' => 'display']) ?>">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+		<form id="profile5" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'display']) ?>">
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 
@@ -90,8 +90,8 @@ if (!isset($feather)) {
 				<fieldset>
 					<legend><?php _e('Pagination legend') ?></legend>
 					<div class="infldset">
-						<label class="conl"><?php _e('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?php echo $user['disp_topics'] ?>" size="6" maxlength="2" /><br /></label>
-						<label class="conl"><?php _e('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?php echo $user['disp_posts'] ?>" size="6" maxlength="2" /><br /></label>
+						<label class="conl"><?php _e('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?= $user['disp_topics'] ?>" size="6" maxlength="2" /><br /></label>
+						<label class="conl"><?php _e('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?= $user['disp_posts'] ?>" size="6" maxlength="2" /><br /></label>
 						<p class="clearb"><?php _e('Paginate info') ?> <?php _e('Leave blank') ?></p>
 					</div>
 				</fieldset>

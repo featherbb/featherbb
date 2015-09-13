@@ -18,12 +18,12 @@ if (!isset($feather)) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('search') ?>"><?php echo $search['crumbs_text']['show_as'] ?></a></li>
-			<li><span>»&#160;</span><strong><?php echo $search['crumbs_text']['search_type'] ?></strong></li>
+			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('search') ?>"><?= $search['crumbs_text']['show_as'] ?></a></li>
+			<li><span>»&#160;</span><strong><?= $search['crumbs_text']['search_type'] ?></strong></li>
 		</ul>
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $search['paging_links'] ?></p>
+			<p class="pagelink"><?= $search['paging_links'] ?></p>
 		</div>
 		<div class="clearer"></div>
 	</div>

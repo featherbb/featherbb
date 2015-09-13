@@ -20,11 +20,11 @@ if (!isset($feather)) {
 	<div class="box">
 		<form id="bans2" method="post" action="">
 			<div class="inform">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-				<input type="hidden" name="mode" value="<?php echo $ban['mode'] ?>" />
-				<?php if ($ban['mode'] == 'edit'): ?>				<input type="hidden" name="ban_id" value="<?php echo $ban['id'] ?>" />
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+				<input type="hidden" name="mode" value="<?= $ban['mode'] ?>" />
+				<?php if ($ban['mode'] == 'edit'): ?>				<input type="hidden" name="ban_id" value="<?= $ban['id'] ?>" />
 				<?php endif; ?>
-				<?php if ($ban['mode'] == 'add' && isset($ban['user_id'])): ?><input type="hidden" name="ban_user_id" value="<?php echo $ban['user_id'] ?>" />
+				<?php if ($ban['mode'] == 'add' && isset($ban['user_id'])): ?><input type="hidden" name="ban_user_id" value="<?= $ban['user_id'] ?>" />
 				<?php endif; ?><fieldset>
 					<legend><?php _e('Ban advanced subhead') ?></legend>
 					<div class="infldset">

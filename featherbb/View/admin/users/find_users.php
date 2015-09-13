@@ -19,20 +19,20 @@ if (!isset($feather)) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
+			<p class="pagelink"><?= $paging_links ?></p>
 		</div>
 		<div class="clearer"></div>
 	</div>
 </div>
 
 
-<form id="search-users-form" action="<?php echo $feather->urlFor('adminUsers') ?>" method="post">
-<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+<form id="search-users-form" action="<?= $feather->urlFor('adminUsers') ?>" method="post">
+<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <div id="users2" class="blocktable">
 	<h2><span><?php _e('Results head') ?></span></h2>
 	<div class="box">
@@ -57,13 +57,13 @@ if (!isset($feather)) {
         foreach ($user_data as $user) {
             ?>
 				<tr>
-					<td class="tcl"><?php echo '<a href="'.$feather->urlFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
-					<td class="tc2"><a href="mailto:<?php echo Utils::escape($user['email']) ?>"><?php echo Utils::escape($user['email']) ?></a></td>
-					<td class="tc3"><?php echo $user['user_title'] ?></td>
-					<td class="tc4"><?php echo Utils::forum_number_format($user['num_posts']) ?></td>
+					<td class="tcl"><?= '<a href="'.$feather->urlFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
+					<td class="tc2"><a href="mailto:<?= Utils::escape($user['email']) ?>"><?= Utils::escape($user['email']) ?></a></td>
+					<td class="tc3"><?= $user['user_title'] ?></td>
+					<td class="tc4"><?= Utils::forum_number_format($user['num_posts']) ?></td>
 					<td class="tc5"><?php echo($user['admin_note'] != '') ? Utils::escape($user['admin_note']) : '&#160;' ?></td>
-					<td class="tcr"><?php echo '<a href="'.$feather->urlFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.$feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
-<?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?php echo $user['id'] ?>]" value="1" /></td>
+					<td class="tcr"><?= '<a href="'.$feather->urlFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.$feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
+<?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?= $user['id'] ?>]" value="1" /></td>
 <?php endif;
             ?>
 				</tr>
@@ -84,7 +84,7 @@ if (!isset($feather)) {
 <div class="linksb">
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
-			<p class="pagelink"><?php echo $paging_links ?></p>
+			<p class="pagelink"><?= $paging_links ?></p>
 <?php if ($can_action): ?>			<p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?php _e('Unselect all') ?>')"><?php _e('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?php _e('Ban') ?>" /><?php endif;
     if ($can_delete) : ?><input type="submit" name="delete_users" value="<?php _e('Delete') ?>" /><?php endif;
     if ($can_move) : ?><input type="submit" name="move_users" value="<?php _e('Change group') ?>" /><?php endif;
@@ -93,8 +93,8 @@ if (!isset($feather)) {
     ?>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+			<li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

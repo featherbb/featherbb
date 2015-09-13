@@ -17,16 +17,16 @@ if (!isset($feather)) {
 	<h2><span><?php _e('Split posts') ?></span></h2>
 	<div class="box">
 		<form id="subject" method="post" action="">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Confirm split legend') ?></legend>
 					<div class="infldset">
-						<input type="hidden" name="posts" value="<?php echo implode(',', array_map('intval', array_keys($posts))) ?>" />
+						<input type="hidden" name="posts" value="<?= implode(',', array_map('intval', array_keys($posts))) ?>" />
 						<label class="required"><strong><?php _e('New subject') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
 						<label><?php _e('Move to') ?>
 						<br /><select name="move_to_forum">
-								<?php echo $list_forums ?>
+								<?= $list_forums ?>
 							</optgroup>
 						</select>
 						<br /></label>

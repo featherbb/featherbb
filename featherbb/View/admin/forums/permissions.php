@@ -19,8 +19,8 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Edit forum head') ?></span></h2>
 		<div class="box">
-			<form id="edit_forum" method="post" action="<?php echo $feather->urlFor('editForum', ['id' => $cur_forum['id']]) ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form id="edit_forum" method="post" action="<?= $feather->urlFor('editForum', ['id' => $cur_forum['id']]) ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>
@@ -29,11 +29,11 @@ if (!isset($feather)) {
 							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php _e('Forum name label') ?></th>
-									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?php echo Utils::escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
+									<td><input type="text" name="forum_name" size="35" maxlength="80" value="<?= Utils::escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Forum description label') ?></th>
-									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?php echo Utils::escape($cur_forum['forum_desc']) ?></textarea></td>
+									<td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?= Utils::escape($cur_forum['forum_desc']) ?></textarea></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Category label') ?></th>
@@ -89,36 +89,36 @@ if (!isset($feather)) {
     foreach ($perm_data as $perm) {
         ?>
 								<tr>
-									<th class="atcl"><?php echo Utils::escape($perm['g_title']) ?></th>
+									<th class="atcl"><?= Utils::escape($perm['g_title']) ?></th>
 									<td<?php if (!$perm['read_forum_def']) {
     echo ' class="nodefault"';
 }
         ?>>
-										<input type="hidden" name="read_forum_old[<?php echo $perm['g_id'] ?>]" value="<?php echo($perm['read_forum']) ? '1' : '0';
+										<input type="hidden" name="read_forum_old[<?= $perm['g_id'] ?>]" value="<?php echo($perm['read_forum']) ? '1' : '0';
         ?>" />
-										<input type="checkbox" name="read_forum_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo($perm['read_forum']) ? ' checked="checked"' : '';
+										<input type="checkbox" name="read_forum_new[<?= $perm['g_id'] ?>]" value="1"<?php echo($perm['read_forum']) ? ' checked="checked"' : '';
         ?><?php echo($perm['g_read_board'] == '0') ? ' disabled="disabled"' : '';
-        ?> tabindex="<?php echo $cur_index++ ?>" />
+        ?> tabindex="<?= $cur_index++ ?>" />
 									</td>
 									<td<?php if (!$perm['post_replies_def'] && $cur_forum['redirect_url'] == '') {
     echo ' class="nodefault"';
 }
         ?>>
-										<input type="hidden" name="post_replies_old[<?php echo $perm['g_id'] ?>]" value="<?php echo($perm['post_replies']) ? '1' : '0';
+										<input type="hidden" name="post_replies_old[<?= $perm['g_id'] ?>]" value="<?php echo($perm['post_replies']) ? '1' : '0';
         ?>" />
-										<input type="checkbox" name="post_replies_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo($perm['post_replies']) ? ' checked="checked"' : '';
+										<input type="checkbox" name="post_replies_new[<?= $perm['g_id'] ?>]" value="1"<?php echo($perm['post_replies']) ? ' checked="checked"' : '';
         ?><?php echo($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : '';
-        ?> tabindex="<?php echo $cur_index++ ?>" />
+        ?> tabindex="<?= $cur_index++ ?>" />
 									</td>
 									<td<?php if (!$perm['post_topics_def'] && $cur_forum['redirect_url'] == '') {
     echo ' class="nodefault"';
 }
         ?>>
-										<input type="hidden" name="post_topics_old[<?php echo $perm['g_id'] ?>]" value="<?php echo($perm['post_topics']) ? '1' : '0';
+										<input type="hidden" name="post_topics_old[<?= $perm['g_id'] ?>]" value="<?php echo($perm['post_topics']) ? '1' : '0';
         ?>" />
-										<input type="checkbox" name="post_topics_new[<?php echo $perm['g_id'] ?>]" value="1"<?php echo($perm['post_topics']) ? ' checked="checked"' : '';
+										<input type="checkbox" name="post_topics_new[<?= $perm['g_id'] ?>]" value="1"<?php echo($perm['post_topics']) ? ' checked="checked"' : '';
         ?><?php echo($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : '';
-        ?> tabindex="<?php echo $cur_index++ ?>" />
+        ?> tabindex="<?= $cur_index++ ?>" />
 									</td>
 								</tr>
 <?php
@@ -128,11 +128,11 @@ if (!isset($feather)) {
 ?>
 							</tbody>
 							</table>
-							<div class="fsetsubmit"><input type="submit" name="revert_perms" value="<?php _e('Revert to default') ?>" tabindex="<?php echo $cur_index++ ?>" /></div>
+							<div class="fsetsubmit"><input type="submit" name="revert_perms" value="<?php _e('Revert to default') ?>" tabindex="<?= $cur_index++ ?>" /></div>
 						</div>
 					</fieldset>
 				</div>
-				<p class="submitend"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="<?php echo $cur_index++ ?>" /></p>
+				<p class="submitend"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="<?= $cur_index++ ?>" /></p>
 			</form>
 		</div>
 	</div>

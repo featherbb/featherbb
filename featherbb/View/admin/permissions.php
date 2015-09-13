@@ -18,8 +18,8 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Permissions head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->urlFor('adminPermissions') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('adminPermissions') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
 				<div class="inform">
 					<input type="hidden" name="form_sent" value="1" />
@@ -135,14 +135,14 @@ if (!isset($feather)) {
 								<tr>
 									<th scope="row"><?php _e('Max sig length label') ?></th>
 									<td>
-										<input type="text" name="form[sig_length]" size="5" maxlength="5" value="<?php echo $feather->forum_settings['p_sig_length'] ?>" />
+										<input type="text" name="form[sig_length]" size="5" maxlength="5" value="<?= $feather->forum_settings['p_sig_length'] ?>" />
 										<span class="clearb"><?php _e('Max sig length help') ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php _e('Max sig lines label') ?></th>
 									<td>
-										<input type="text" name="form[sig_lines]" size="3" maxlength="3" value="<?php echo $feather->forum_settings['p_sig_lines'] ?>" />
+										<input type="text" name="form[sig_lines]" size="3" maxlength="3" value="<?= $feather->forum_settings['p_sig_lines'] ?>" />
 										<span class="clearb"><?php _e('Max sig lines help') ?></span>
 									</td>
 								</tr>

@@ -18,7 +18,7 @@ if (!isset($feather)) {
 foreach ($display['cur_search'] as $search) {
     ?>
     <div
-        class="blockpost<?php echo ($search['post_count'] % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($search['pid'] == $search['first_post_id']) {
+        class="blockpost<?= ($search['post_count'] % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($search['pid'] == $search['first_post_id']) {
             echo ' firstpost';
         } ?><?php if ($search['post_count'] == 1) {
             echo ' blockpost1';
@@ -28,9 +28,9 @@ foreach ($display['cur_search'] as $search) {
         <h2><span><span
                     class="conr">#<?php echo($search['post_count']) ?></span> <span><?php if ($search['pid'] != $search['first_post_id']) {
                         _e('Re') . ' ';
-                    } ?><?php echo $search['forum'] ?></span> <span>»&#160;<a
-                        href="<?php echo $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php echo Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
-                        href="<?php echo $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php echo $feather->utils->format_time($search['pposted']) ?></a></span></span>
+                    } ?><?= $search['forum'] ?></span> <span>»&#160;<a
+                        href="<?= $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
+                        href="<?= $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= $feather->utils->format_time($search['pposted']) ?></a></span></span>
         </h2>
 
         <div class="box">
@@ -38,22 +38,22 @@ foreach ($display['cur_search'] as $search) {
                 <div class="postbody">
                     <div class="postleft">
                         <dl>
-                            <dt><?php echo $search['pposter_disp'] ?></dt>
+                            <dt><?= $search['pposter_disp'] ?></dt>
                             <?php if ($search['pid'] == $search['first_post_id']) : ?>
                                 <dd>
                                     <span><?php _e('Replies') . ' ' . Utils::forum_number_format($search['num_replies']) ?></span>
                                 </dd>
                             <?php endif; ?>
                             <dd>
-                                <div class="<?php echo $search['icon_type'] ?>">
-                                    <div class="nosize"><?php echo $search['icon_text'] ?></div>
+                                <div class="<?= $search['icon_type'] ?>">
+                                    <div class="nosize"><?= $search['icon_text'] ?></div>
                                 </div>
                             </dd>
                         </dl>
                     </div>
                     <div class="postright">
                         <div class="postmsg">
-                            <?php echo $search['message'] . "\n" ?>
+                            <?= $search['message'] . "\n" ?>
                         </div>
                     </div>
                     <div class="clearer"></div>
@@ -64,10 +64,10 @@ foreach ($display['cur_search'] as $search) {
                     <div class="postfootright">
                         <ul>
                             <li><span><a
-                                        href="<?php echo $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php _e('Go to topic') ?></a></span>
+                                        href="<?= $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php _e('Go to topic') ?></a></span>
                             </li>
                             <li><span><a
-                                        href="<?php echo $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
+                                        href="<?= $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
                             </li>
                         </ul>
                     </div>

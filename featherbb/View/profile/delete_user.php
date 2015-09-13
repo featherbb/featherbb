@@ -19,8 +19,8 @@ if (!isset($feather)) {
 <div class="blockform">
 	<h2><span><?php _e('Confirm delete user') ?></span></h2>
 	<div class="box">
-		<form id="confirm_del_user" method="post" action="<?php echo $feather->urlFor('userProfile', ['id' => $id]) ?>">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+		<form id="confirm_del_user" method="post" action="<?= $feather->urlFor('userProfile', ['id' => $id]) ?>">
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Confirm delete legend') ?></legend>
