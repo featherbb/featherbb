@@ -32,7 +32,7 @@ class Post
     //  Get some info about the post
     public function get_info_post($tid, $fid)
     {
-        $this->hook->fire('get_info_post_start', $tid, $fid);
+        $this->hook->fire('model.get_info_post_start', $tid, $fid);
 
         $cur_posting['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -72,7 +72,7 @@ class Post
             throw new Error(__('Bad request'), 404);
         }
 
-        $cur_posting = $this->hook->fire('get_info_post', $cur_posting);
+        $cur_posting = $this->hook->fire('model.get_info_post', $cur_posting);
 
         return $cur_posting;
     }
@@ -80,7 +80,7 @@ class Post
     // Fetch some info about the post, the topic and the forum
     public function get_info_edit($id)
     {
-        $id = $this->hook->fire('get_info_edit_start', $id);
+        $id = $this->hook->fire('model.get_info_edit_start', $id);
 
         $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $cur_post['where'] = array(
@@ -114,7 +114,7 @@ class Post
     {
         global $lang_antispam, $lang_antispam_questions;
 
-        $fid = $this->hook->fire('check_errors_before_post_start', $fid);
+        $fid = $this->hook->fire('model.check_errors_before_post_start', $fid);
 
         // Antispam feature
         if ($this->user->is_guest) {
@@ -123,7 +123,7 @@ class Post
             $profile = new \FeatherBB\Model\Profile();
             $errors = $profile->check_username(Utils::trim($this->request->post('req_username')), $errors);
 
-            $errors = $this->hook->fire('check_errors_before_post_antispam', $errors);
+            $errors = $this->hook->fire('model.check_errors_before_post_antispam', $errors);
 
             $question = $this->request->post('captcha_q') ? trim($this->request->post('captcha_q')) : '';
             $answer = $this->request->post('captcha') ? strtoupper(trim($this->request->post('captcha'))) : '';
@@ -146,11 +146,11 @@ class Post
         // If it's a new topic
         if ($fid) {
             $subject = Utils::trim($this->request->post('req_subject'));
-            $subject = $this->hook->fire('check_errors_before_new_topic_subject', $subject);
+            $subject = $this->hook->fire('model.check_errors_before_new_topic_subject', $subject);
 
             if ($this->config['o_censoring'] == '1') {
                 $censored_subject = Utils::trim(Utils::censor($subject));
-                $censored_subject = $this->hook->fire('check_errors_before_censored', $censored_subject);
+                $censored_subject = $this->hook->fire('model.check_errors_before_censored', $censored_subject);
             }
 
             if ($subject == '') {
@@ -163,14 +163,14 @@ class Post
                 $errors[] = __('All caps subject');
             }
 
-            $errors = $this->hook->fire('check_errors_before_new_topic_errors', $errors);
+            $errors = $this->hook->fire('model.check_errors_before_new_topic_errors', $errors);
         }
 
         if ($this->user->is_guest) {
             $email = strtolower(Utils::trim(($this->config['p_force_guest_email'] == '1') ? $this->request->post('req_email') : $this->request->post('email')));
 
             if ($this->config['p_force_guest_email'] == '1' || $email != '') {
-                $errors = $this->hook->fire('check_errors_before_post_email', $errors, $email);
+                $errors = $this->hook->fire('model.check_errors_before_post_email', $errors, $email);
 
                 if (!$this->email->is_valid_email($email)) {
                     $errors[] = __('Invalid email');
@@ -190,7 +190,7 @@ class Post
 
         // Clean up message from POST
         $message = Utils::linebreaks(Utils::trim($this->request->post('req_message')));
-        $message = $this->hook->fire('check_errors_before_post_message', $message);
+        $message = $this->hook->fire('model.check_errors_before_post_message', $message);
 
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
@@ -202,11 +202,11 @@ class Post
         // Validate BBCode syntax
         if ($this->config['p_message_bbcode'] == '1') {
             $message = $this->feather->parser->preparse_bbcode($message, $errors);
-            $message = $this->hook->fire('check_errors_before_post_bbcode', $message);
+            $message = $this->hook->fire('model.check_errors_before_post_bbcode', $message);
         }
 
         if (empty($errors)) {
-            $errors = $this->hook->fire('check_errors_before_post_no_error', $errors);
+            $errors = $this->hook->fire('model.check_errors_before_post_no_error', $errors);
             if ($message == '') {
                 $errors[] = __('No message');
             } elseif ($this->config['o_censoring'] == '1') {
@@ -219,14 +219,14 @@ class Post
             }
         }
 
-        $errors = $this->hook->fire('check_errors_before_post', $errors);
+        $errors = $this->hook->fire('model.check_errors_before_post', $errors);
 
         return $errors;
     }
 
     public function check_errors_before_edit($can_edit_subject, $errors)
     {
-        $errors = $this->hook->fire('check_errors_before_edit_start', $errors);
+        $errors = $this->hook->fire('model.check_errors_before_edit_start', $errors);
 
         // If it's a topic it must contain a subject
         if ($can_edit_subject) {
@@ -275,7 +275,7 @@ class Post
             }
         }
 
-        $errors = $this->hook->fire('check_errors_before_edit', $errors);
+        $errors = $this->hook->fire('model.check_errors_before_edit', $errors);
 
         return $errors;
     }
@@ -285,7 +285,7 @@ class Post
     {
         $post = array();
 
-        $post = $this->hook->fire('setup_variables_start', $post, $errors, $is_admmod);
+        $post = $this->hook->fire('model.setup_variables_start', $post, $errors, $is_admmod);
 
         if (!$this->user->is_guest) {
             $post['username'] = $this->user->username;
@@ -317,7 +317,7 @@ class Post
 
         $post['time'] = time();
 
-        $post = $this->hook->fire('setup_variables', $post);
+        $post = $this->hook->fire('model.setup_variables', $post);
 
         return $post;
     }
@@ -325,7 +325,7 @@ class Post
     // If the previous check went OK, setup some variables used later
     public function setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors)
     {
-        $this->hook->fire('setup_edit_variables_start');
+        $this->hook->fire('model.setup_edit_variables_start');
 
         $post = array();
 
@@ -351,14 +351,14 @@ class Post
             $post['subject'] = Utils::trim($this->request->post('req_subject'));
         }
 
-        $post = $this->hook->fire('setup_edit_variables', $post);
+        $post = $this->hook->fire('model.setup_edit_variables', $post);
 
         return $post;
     }
 
     public function get_info_delete($id)
     {
-        $id = $this->hook->fire('get_info_delete_start', $id);
+        $id = $this->hook->fire('model.get_info_delete_start', $id);
 
         $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
         $query['where'] = array(
@@ -389,10 +389,10 @@ class Post
 
     public function handle_deletion($is_topic_post, $id, $tid, $fid)
     {
-        $this->hook->fire('handle_deletion_start', $is_topic_post, $id, $tid, $fid);
+        $this->hook->fire('model.handle_deletion_start', $is_topic_post, $id, $tid, $fid);
 
         if ($is_topic_post) {
-            $this->hook->fire('model.topic.delete', $tid, $fid);
+            $this->hook->fire('model.model.topic.delete', $tid, $fid);
 
             // Delete the topic and all of its posts
             Topic::delete($tid);
@@ -400,7 +400,7 @@ class Post
 
             Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Topic del redirect'));
         } else {
-            $this->hook->fire('handle_deletion', $tid, $fid, $id);
+            $this->hook->fire('model.handle_deletion', $tid, $fid, $id);
 
             // Delete just this one post
             $this->delete($id, $tid);
@@ -496,7 +496,7 @@ class Post
 
     public function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod)
     {
-        $this->hook->fire('edit_post_start');
+        $this->hook->fire('model.edit_post_start');
 
         if ($can_edit_subject) {
             // Update the topic and any redirect topics
@@ -545,7 +545,7 @@ class Post
 
     public function insert_report($post_id)
     {
-        $post_id = $this->hook->fire('insert_report_start', $post_id);
+        $post_id = $this->hook->fire('model.insert_report_start', $post_id);
 
         // Clean up reason from POST
         $reason = Utils::linebreaks(Utils::trim($this->request->post('req_reason')));
@@ -605,7 +605,7 @@ class Post
             if ($this->config['o_mailing_list'] != '') {
                 // Load the "new report" template
                 $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
-                $mail_tpl = $this->hook->fire('insert_report_mail_tpl', $mail_tpl);
+                $mail_tpl = $this->hook->fire('model.insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -619,7 +619,7 @@ class Post
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                $mail_message = $this->hook->fire('insert_report_mail_message', $mail_message);
+                $mail_message = $this->hook->fire('model.insert_report_mail_message', $mail_message);
 
                 $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
             }
@@ -636,7 +636,7 @@ class Post
 
     public function get_info_report($post_id)
     {
-        $post_id = $this->hook->fire('get_info_report_start', $post_id);
+        $post_id = $this->hook->fire('model.get_info_report_start', $post_id);
 
         $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
         $cur_post['where'] = array(
@@ -660,7 +660,7 @@ class Post
             throw new Error(__('Bad request'), 404);
         }
 
-        $cur_post = $this->hook->fire('get_info_report', $cur_post);
+        $cur_post = $this->hook->fire('model.get_info_report', $cur_post);
 
         return $cur_post;
     }
@@ -773,7 +773,7 @@ class Post
     // Send notifications for replies
     public function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
     {
-        $this->hook->fire('send_notifications_reply_start', $tid, $cur_posting, $new_pid, $post);
+        $this->hook->fire('model.send_notifications_reply_start', $tid, $cur_posting, $new_pid, $post);
 
         // Get the post time for the previous post in this topic
         $previous_post_time = DB::for_table('posts')
@@ -823,16 +823,16 @@ class Post
                     if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
                         $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
-                        $mail_tpl = $this->hook->fire('send_notifications_reply_mail_tpl', $mail_tpl);
+                        $mail_tpl = $this->hook->fire('model.send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
                         $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
-                        $mail_tpl_full = $this->hook->fire('send_notifications_reply_mail_tpl_full', $mail_tpl_full);
+                        $mail_tpl_full = $this->hook->fire('model.send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
                         $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                        $mail_subject = $this->hook->fire('send_notifications_reply_mail_subject', $mail_subject);
+                        $mail_subject = $this->hook->fire('model.send_notifications_reply_mail_subject', $mail_subject);
                         $mail_message = trim(substr($mail_tpl, $first_crlf));
 
                         $first_crlf = strpos($mail_tpl_full, "\n");
@@ -845,7 +845,7 @@ class Post
                         $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
                         $mail_message = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $tid]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
-                        $mail_message = $this->hook->fire('send_notifications_reply_mail_message', $mail_message);
+                        $mail_message = $this->hook->fire('model.send_notifications_reply_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject_full);
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
@@ -854,7 +854,7 @@ class Post
                         $mail_message_full = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
                         $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
-                        $mail_message_full = $this->hook->fire('send_notifications_reply_mail_message_full', $mail_message_full);
+                        $mail_message_full = $this->hook->fire('model.send_notifications_reply_mail_message_full', $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
                         $notification_emails[$cur_subscriber['language']][1] = $mail_message;
@@ -875,7 +875,7 @@ class Post
                 }
             }
 
-            $this->hook->fire('send_notifications_reply');
+            $this->hook->fire('model.send_notifications_reply');
 
             unset($cleaned_message);
         }
@@ -990,7 +990,7 @@ class Post
     // Send notifications for new topics
     public function send_notifications_new_topic($post, $cur_posting, $new_tid)
     {
-        $this->hook->fire('send_notifications_new_topic_start', $post, $cur_posting, $new_tid);
+        $this->hook->fire('model.send_notifications_new_topic_start', $post, $cur_posting, $new_tid);
 
         // Get any subscribed users that should be notified (banned users are excluded)
         $result['where'] = array(
@@ -1032,7 +1032,7 @@ class Post
                     if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
                         $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
-                        $mail_tpl = $this->hook->fire('send_notifications_new_topic_mail_tpl', $mail_tpl);
+                        $mail_tpl = $this->hook->fire('model.send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
                         $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
@@ -1053,7 +1053,7 @@ class Post
                         $mail_message = str_replace('<topic_url>', $this->feather->urlFor('Topic', ['id' => $new_tid]), $mail_message);
                         $mail_message = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $cur_posting['id']]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
-                        $mail_message = $this->hook->fire('send_notifications_new_topic_mail_message', $mail_message);
+                        $mail_message = $this->hook->fire('model.send_notifications_new_topic_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
                         $mail_message_full = str_replace('<topic_subject>', $this->config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message_full);
@@ -1063,7 +1063,7 @@ class Post
                         $mail_message_full = str_replace('<topic_url>', $this->feather->urlFor('Topic', ['id' => $new_tid]), $mail_message_full);
                         $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
-                        $mail_message_full = $this->hook->fire('send_notifications_new_topic_mail_message_full', $mail_message_full);
+                        $mail_message_full = $this->hook->fire('model.send_notifications_new_topic_mail_message_full', $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
                         $notification_emails[$cur_subscriber['language']][1] = $mail_message;
@@ -1082,7 +1082,7 @@ class Post
                 }
             }
 
-            $this->hook->fire('send_notifications_new_topic');
+            $this->hook->fire('model.send_notifications_new_topic');
 
             unset($cleaned_message);
         }
@@ -1091,11 +1091,11 @@ class Post
     // Warn the admin if a banned user posts
     public function warn_banned_user($post, $new_pid)
     {
-        $this->hook->fire('warn_banned_user_start', $post, $new_pid);
+        $this->hook->fire('model.warn_banned_user_start', $post, $new_pid);
 
         // Load the "banned email post" template
         $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
-        $mail_tpl = $this->hook->fire('warn_banned_user_mail_tpl', $mail_tpl);
+        $mail_tpl = $this->hook->fire('model.warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
@@ -1106,7 +1106,7 @@ class Post
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
         $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
-        $mail_message = $this->hook->fire('warn_banned_user_mail_message', $mail_message);
+        $mail_message = $this->hook->fire('model.warn_banned_user_mail_message', $mail_message);
 
         $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
     }
@@ -1114,7 +1114,7 @@ class Post
     // Increment post count, change group if needed
     public function increment_post_count($post, $new_tid)
     {
-        $this->hook->fire('increment_post_count_start', $post, $new_tid);
+        $this->hook->fire('model.increment_post_count_start', $post, $new_tid);
 
         if (!$this->user->is_guest) {
             $increment = DB::for_table('users')
@@ -1150,7 +1150,7 @@ class Post
             $last_post = $last_post->save();
         }
 
-        $this->hook->fire('increment_post_count');
+        $this->hook->fire('model.increment_post_count');
     }
 
     //
@@ -1160,7 +1160,7 @@ class Post
     {
         $result = array(0 => array(), 1 => array()); // 0 = inside, 1 = outside
 
-        $result = $this->hook->fire('split_text_start', $result, $text, $start, $end, $retab);
+        $result = $this->hook->fire('model.split_text_start', $result, $text, $start, $end, $retab);
 
         // split the text into parts
         $parts = preg_split('%'.preg_quote($start, '%').'(.*)'.preg_quote($end, '%').'%Us', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -1176,7 +1176,7 @@ class Post
             $result[1] = str_replace("\t", $spaces, $result[1]);
         }
 
-        $result = $this->hook->fire('split_text_start', $result);
+        $result = $this->hook->fire('model.split_text_start', $result);
 
         return $result;
     }
@@ -1186,7 +1186,7 @@ class Post
     {
         $quote = array();
 
-        $quote = $this->hook->fire('get_quote_message', $quote, $qid, $tid);
+        $quote = $this->hook->fire('model.get_quote_message', $quote, $qid, $tid);
 
         $quote['select'] = array('poster', 'message');
 
@@ -1253,7 +1253,7 @@ class Post
             $quote = '> '.$quote['poster'].' '.__('wrote')."\n\n".'> '.$quote['message']."\n";
         }
 
-        $quote = $this->hook->fire('get_quote_message', $quote);
+        $quote = $this->hook->fire('model.get_quote_message', $quote);
 
         return $quote;
     }
@@ -1261,7 +1261,7 @@ class Post
     // Get the current state of checkboxes
     public function get_checkboxes($fid, $is_admmod, $is_subscribed)
     {
-        $this->hook->fire('get_checkboxes_start', $fid, $is_admmod, $is_subscribed);
+        $this->hook->fire('model.get_checkboxes_start', $fid, $is_admmod, $is_subscribed);
 
         $cur_index = 1;
 
@@ -1297,14 +1297,14 @@ class Post
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.($this->request->post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
-        $checkboxes = $this->hook->fire('get_checkboxes', $checkboxes);
+        $checkboxes = $this->hook->fire('model.get_checkboxes', $checkboxes);
 
         return $checkboxes;
     }
 
     public function get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
     {
-        $this->hook->fire('get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
+        $this->hook->fire('model.get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
 
         $checkboxes = array();
 
@@ -1332,7 +1332,7 @@ class Post
             }
         }
 
-        $checkboxes = $this->hook->fire('get_checkboxes', $checkboxes);
+        $checkboxes = $this->hook->fire('model.get_checkboxes', $checkboxes);
 
         return $checkboxes;
     }
@@ -1342,14 +1342,14 @@ class Post
     {
         $post_data = array();
 
-        $post_data = $this->hook->fire('topic_review_start', $post_data, $tid);
+        $post_data = $this->hook->fire('model.topic_review_start', $post_data, $tid);
 
         $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
 
         $result = DB::for_table('posts')->select_many($select_topic_review)
                     ->where('topic_id', $tid)
                     ->order_by_desc('id');
-        $result = $this->hook->fire('topic_review_query', $result);
+        $result = $this->hook->fire('model.topic_review_query', $result);
         $result = $result->find_many();
 
         foreach($result as $cur_post) {
@@ -1357,14 +1357,14 @@ class Post
             $post_data[] = $cur_post;
         }
 
-        $post_data = $this->hook->fire('topic_review', $post_data);
+        $post_data = $this->hook->fire('model.topic_review', $post_data);
 
         return $post_data;
     }
 
     public function display_ip_address($pid)
     {
-        $pid = $this->hook->fire('display_ip_address_post_start', $pid);
+        $pid = $this->hook->fire('model.display_ip_address_post_start', $pid);
 
         $ip = DB::for_table('posts')
             ->where('id', $pid);
@@ -1375,7 +1375,7 @@ class Post
             throw new Error(__('Bad request'), 404);
         }
 
-        $ip = $this->hook->fire('display_ip_address_post', $ip);
+        $ip = $this->hook->fire('model.display_ip_address_post', $ip);
 
         throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }

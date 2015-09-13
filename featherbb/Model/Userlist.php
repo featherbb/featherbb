@@ -42,7 +42,7 @@ class Userlist
 
         $num_users = $num_users->count('id');
 
-        $num_users = $this->hook->fire('fetch_user_count', $num_users);
+        $num_users = $this->hook->fire('model.fetch_user_count', $num_users);
 
         return $num_users;
     }
@@ -50,7 +50,7 @@ class Userlist
     // Generates the dropdown menu containing groups
     public function generate_dropdown_menu($show_group)
     {
-        $show_group = $this->hook->fire('generate_dropdown_menu_start', $show_group);
+        $show_group = $this->hook->fire('model.generate_dropdown_menu_start', $show_group);
 
         $dropdown_menu = '';
 
@@ -71,7 +71,7 @@ class Userlist
             }
         }
 
-        $dropdown_menu = $this->hook->fire('generate_dropdown_menu', $dropdown_menu);
+        $dropdown_menu = $this->hook->fire('model.generate_dropdown_menu', $dropdown_menu);
 
         return $dropdown_menu;
     }
@@ -81,7 +81,7 @@ class Userlist
     {
         $userlist_data = array();
 
-        $username = $this->hook->fire('print_users_start', $username, $start_from, $sort_by, $sort_dir, $show_group);
+        $username = $this->hook->fire('model.print_users_start', $username, $start_from, $sort_by, $sort_dir, $show_group);
 
         // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
         $result = DB::for_table('users')
@@ -129,7 +129,7 @@ class Userlist
             }
         }
 
-        $userlist_data = $this->hook->fire('print_users', $userlist_data);
+        $userlist_data = $this->hook->fire('model.print_users', $userlist_data);
 
         return $userlist_data;
     }

@@ -32,7 +32,7 @@ class Search
     {
         $search = array();
 
-        $search = $this->hook->fire('get_search_results_start', $search);
+        $search = $this->hook->fire('model.get_search_results_start', $search);
 
         $action = ($this->request->get('action')) ? $this->request->get('action') : null;
         $forums = $this->request->get('forums') ? (is_array($this->request->get('forums')) ? $this->request->get('forums') : array_filter(explode(',', $this->request->get('forums')))) : ($this->request->get('forums') ? array($this->request->get('forums')) : array());
@@ -113,7 +113,7 @@ class Search
 
             if ($search_data) {
                 $temp = unserialize($search_data);
-                $temp = $this->hook->fire('get_search_results_temp', $temp);
+                $temp = $this->hook->fire('model.get_search_results_temp', $temp);
 
                 $search_ids = unserialize($temp['search_ids']);
                 $num_hits = $temp['num_hits'];
@@ -175,13 +175,13 @@ class Search
                         break;
                 }
 
-                $sort_by = $this->hook->fire('get_search_results_sort_by', $sort_by);
+                $sort_by = $this->hook->fire('model.get_search_results_sort_by', $sort_by);
 
                 // If it's a search for keywords
                 if ($keywords) {
                     // split the keywords into words
                     $keywords_array = $this->search->split_words($keywords, false);
-                    $keywords_array = $this->hook->fire('get_search_results_keywords_array', $keywords_array);
+                    $keywords_array = $this->hook->fire('model.get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
                         throw new Error(__('No hits'), 400);
@@ -189,7 +189,7 @@ class Search
 
                     // Should we search in message body or topic subject specifically?
                     $search_in_cond = ($search_in) ? (($search_in > 0) ? ' AND m.subject_match = 0' : ' AND m.subject_match = 1') : '';
-                    $search_in_cond = $this->hook->fire('get_search_results_search_cond', $search_in_cond);
+                    $search_in_cond = $this->hook->fire('model.get_search_results_search_cond', $search_in_cond);
 
                     $word_count = 0;
                     $match_type = 'and';
@@ -251,7 +251,7 @@ class Search
                         }
                     }
 
-                    $keyword_results = $this->hook->fire('get_search_results_search_keyword_results', $keyword_results);
+                    $keyword_results = $this->hook->fire('model.get_search_results_search_keyword_results', $keyword_results);
                     // Sort the results - annoyingly array_multisort re-indexes arrays with numeric keys, so we need to split the keys out into a separate array then combine them again after
                     $post_ids = array_keys($keyword_results);
                     $topic_ids = array_values($keyword_results);
@@ -303,8 +303,8 @@ class Search
                     $search_type = array('author', Utils::trim($this->request->get('author')), implode(',', $forums), $search_in);
                 }
 
-                $search_ids = $this->hook->fire('get_search_results_search_ids', $search_ids);
-                $search_type = $this->hook->fire('get_search_results_search_type', $search_type);
+                $search_ids = $this->hook->fire('model.get_search_results_search_ids', $search_ids);
+                $search_type = $this->hook->fire('model.get_search_results_search_type', $search_type);
 
                 unset($keyword_results, $author_results);
 
@@ -316,8 +316,8 @@ class Search
 
                 $search_ids = array_unique($search_ids);
 
-                $search_ids = $this->hook->fire('get_search_results_search_ids', $search_ids);
-                $search_type = $this->hook->fire('get_search_results_search_type', $search_type);
+                $search_ids = $this->hook->fire('model.get_search_results_search_ids', $search_ids);
+                $search_type = $this->hook->fire('model.get_search_results_search_type', $search_type);
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
@@ -686,14 +686,14 @@ class Search
 
         $search['show_as'] = $show_as;
 
-        $search = $this->hook->fire('get_search_results', $search);
+        $search = $this->hook->fire('model.get_search_results', $search);
 
         return $search;
     }
 
     public function display_search_results($search)
     {
-        $search = $this->hook->fire('display_search_results_start', $search);
+        $search = $this->hook->fire('model.display_search_results_start', $search);
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
@@ -797,7 +797,7 @@ class Search
 
             $display['cur_search'][] = $cur_search;
         }
-        $display = $this->hook->fire('display_search_results', $display, $search);
+        $display = $this->hook->fire('model.display_search_results', $display, $search);
 
         return $display;
     }
@@ -806,7 +806,7 @@ class Search
     {
         $output = '';
 
-        $output = $this->hook->fire('get_list_forums_start', $output);
+        $output = $this->hook->fire('model.get_list_forums_start', $output);
 
         $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
         $result['where'] = array(
@@ -886,7 +886,7 @@ class Search
             $output .= "\t\t\t\t\t\t".'<br /></label>'."\n";
         }
 
-        $output = $this->hook->fire('get_list_forums', $output);
+        $output = $this->hook->fire('model.get_list_forums', $output);
 
         return $output;
     }

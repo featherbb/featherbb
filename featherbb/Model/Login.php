@@ -32,7 +32,7 @@ class Login
 
     public function login()
     {
-        $this->hook->fire('login_start');
+        $this->hook->fire('model.login_start');
 
         $form_username = Utils::trim($this->request->post('req_username'));
         $form_password = Utils::trim($this->request->post('req_password'));
@@ -51,7 +51,7 @@ class Login
             $authorized = ($user->password == $form_password_hash);
         }
 
-        $authorized = $this->hook->fire('authorized_login', $authorized);
+        $authorized = $this->hook->fire('model.authorized_login', $authorized);
 
         if (!$authorized) {
             throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
@@ -79,7 +79,7 @@ class Login
         $delete_online = $delete_online->delete_many();
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
-        $expire = $this->hook->fire('expire_login', $expire);
+        $expire = $this->hook->fire('model.expire_login', $expire);
         $this->auth->feather_setcookie($user->id, $form_password_hash, $expire);
 
         // Reset tracked topics
@@ -87,14 +87,14 @@ class Login
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
         $redirect_url = $this->request->post('redirect_url');
-        $redirect_url = $this->hook->fire('redirect_url_login', $redirect_url);
+        $redirect_url = $this->hook->fire('model.redirect_url_login', $redirect_url);
 
         Url::redirect(Utils::escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
     {
-        $token = $this->hook->fire('logout_start', $token, $id);
+        $token = $this->hook->fire('model.logout_start', $token, $id);
 
         if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash($this->request->getIp()))) {
             Url::redirect($this->feather->urlFor('home'));
@@ -114,7 +114,7 @@ class Login
             $update_last_visit = $update_last_visit->save();
         }
 
-        $this->hook->fire('logout_end');
+        $this->hook->fire('model.logout_end');
 
         $this->auth->feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
 
@@ -123,7 +123,7 @@ class Login
 
     public function password_forgotten()
     {
-        $this->hook->fire('password_forgotten_start');
+        $this->hook->fire('model.password_forgotten_start');
 
         if (!$this->user->is_guest) {
             Url::redirect($this->feather->urlFor('home'));
@@ -151,7 +151,7 @@ class Login
                 if ($result) {
                     // Load the "activate password" template
                     $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
-                    $mail_tpl = $this->hook->fire('mail_tpl_password_forgotten', $mail_tpl);
+                    $mail_tpl = $this->hook->fire('model.mail_tpl_password_forgotten', $mail_tpl);
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
@@ -162,7 +162,7 @@ class Login
                     $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-                    $mail_message = $this->hook->fire('mail_message_password_forgotten', $mail_message);
+                    $mail_message = $this->hook->fire('model.mail_message_password_forgotten', $mail_message);
 
                     // Loop through users we found
                     foreach($result as $cur_hit) {
@@ -191,7 +191,7 @@ class Login
                         $cur_mail_message = str_replace('<username>', $cur_hit->username, $mail_message);
                         $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['id' => $cur_hit->id, 'action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
-                        $cur_mail_message = $this->hook->fire('cur_mail_message_password_forgotten', $cur_mail_message);
+                        $cur_mail_message = $this->hook->fire('model.cur_mail_message_password_forgotten', $cur_mail_message);
 
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
@@ -203,14 +203,14 @@ class Login
             }
         }
 
-        $errors = $this->hook->fire('password_forgotten', $errors);
+        $errors = $this->hook->fire('model.password_forgotten', $errors);
 
         return $errors;
     }
 
     public function get_redirect_url()
     {
-        $this->hook->fire('get_redirect_url_start');
+        $this->hook->fire('model.get_redirect_url_start');
 
         if (!empty($this->request->getReferrer())) {
             $redirect_url = $this->request->getReferrer();
@@ -222,7 +222,7 @@ class Login
             $redirect_url .= '#p'.$matches[1];
         }
 
-        $redirect_url = $this->hook->fire('get_redirect_url', $redirect_url);
+        $redirect_url = $this->hook->fire('model.get_redirect_url', $redirect_url);
 
         return $redirect_url;
     }
@@ -230,7 +230,7 @@ class Login
     // TODO: This function was in Misc controller
     public function get_redirect_url2($recipient_id)
     {
-        $recipient_id = $this->hook->fire('get_redirect_url_start', $recipient_id);
+        $recipient_id = $this->hook->fire('model.get_redirect_url_start', $recipient_id);
 
         // Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to the user's profile after the email is sent)
         // TODO
@@ -244,7 +244,7 @@ class Login
             $redirect_url .= '#p'.$matches[1];
         }
 
-        $redirect_url = $this->hook->fire('get_redirect_url', $redirect_url);
+        $redirect_url = $this->hook->fire('model.get_redirect_url', $redirect_url);
 
         return $redirect_url;
     }

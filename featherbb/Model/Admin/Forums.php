@@ -32,7 +32,7 @@ class Forums
         $set_add_forum = array('forum_name' => $forum_name,
                                 'cat_id' => $cat_id);
 
-        $set_add_forum = $this->hook->fire('add_forum', $set_add_forum);
+        $set_add_forum = $this->hook->fire('model.add_forum', $set_add_forum);
 
         $forum = DB::for_table('forums')
                     ->create()
@@ -55,7 +55,7 @@ class Forums
 
     public function delete_forum($forum_id)
     {
-        $forum_id = $this->hook->fire('delete_forum_start', $forum_id);
+        $forum_id = $this->hook->fire('model.delete_forum_start', $forum_id);
 
         // Prune all posts and topics
         $this->maintenance = new \FeatherBB\Model\Admin\Maintenance();
@@ -104,7 +104,7 @@ class Forums
     public function get_forums()
     {
         $forum_data = array();
-        $forum_data = $this->hook->fire('get_forums_start', $forum_data);
+        $forum_data = $this->hook->fire('model.get_forums_start', $forum_data);
 
         $select_get_forums = array('cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position');
 
@@ -128,13 +128,13 @@ class Forums
                                                                'position' => $forum['forum_position']);
         }
 
-        $forum_data = $this->hook->fire('get_forums', $forum_data);
+        $forum_data = $this->hook->fire('model.get_forums', $forum_data);
         return $forum_data;
     }
 
     public function update_positions($forum_id, $position)
     {
-        $this->hook->fire('update_positions_start', $forum_id, $position);
+        $this->hook->fire('model.update_positions_start', $forum_id, $position);
 
         return DB::for_table('forums')
                 ->find_one($forum_id)
@@ -149,7 +149,7 @@ class Forums
     public function get_permissions($forum_id)
     {
         $perm_data = array();
-        $forum_id = $this->hook->fire('get_permissions_start', $forum_id);
+        $forum_id = $this->hook->fire('model.get_permissions_start', $forum_id);
 
         $select_permissions = array('g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
 
@@ -175,7 +175,7 @@ class Forums
             $perm_data[] = $cur_perm;
         }
 
-        $perm_data = $this->hook->fire('get_permissions', $perm_data);
+        $perm_data = $this->hook->fire('model.get_permissions', $perm_data);
         return $perm_data;
     }
 
@@ -199,7 +199,7 @@ class Forums
 
     public function update_permissions(array $permissions_data)
     {
-        $permissions_data = $this->hook->fire('update_permissions_start', $permissions_data);
+        $permissions_data = $this->hook->fire('model.update_permissions_start', $permissions_data);
 
         $permissions = DB::for_table('forum_perms')
                             ->where('forum_id', $permissions_data['forum_id'])

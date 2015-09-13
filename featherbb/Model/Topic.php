@@ -56,7 +56,7 @@ class Topic
     // Redirect to a post in particular
     public function redirect_to_post($post_id)
     {
-        $post_id = $this->hook->fire('redirect_to_post', $post_id);
+        $post_id = $this->hook->fire('model.redirect_to_post', $post_id);
 
         $result['select'] = array('topic_id', 'posted');
 
@@ -79,11 +79,11 @@ class Topic
                         ->where_lt('posted', $posted)
                         ->count('id');
 
-        $num_posts = $this->hook->fire('redirect_to_post_num', $num_posts);
+        $num_posts = $this->hook->fire('model.redirect_to_post_num', $num_posts);
 
         $post['get_p'] = ceil(($num_posts + 1) / $this->user->disp_posts);
 
-        $post = $this->hook->fire('redirect_to_post', $post);
+        $post = $this->hook->fire('model.redirect_to_post', $post);
 
         return $post;
     }
@@ -91,7 +91,7 @@ class Topic
     // Redirect to new posts or last post
     public function handle_actions($topic_id, $action)
     {
-        $action = $this->hook->fire('handle_actions_start', $action, $topic_id);
+        $action = $this->hook->fire('model.handle_actions_start', $action, $topic_id);
 
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
@@ -105,7 +105,7 @@ class Topic
                                         ->where_gt('posted', $last_viewed)
                                         ->min('id');
 
-                $first_new_post_id = $this->hook->fire('handle_actions_first_new', $first_new_post_id);
+                $first_new_post_id = $this->hook->fire('model.handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
                     Url::redirect($this->feather->urlFor('viewPost', ['pid' => $first_new_post_id]).'#p'.$first_new_post_id);
@@ -122,14 +122,14 @@ class Topic
                                 ->where('topic_id', $topic_id)
                                 ->max('id');
 
-            $last_post_id = $this->hook->fire('handle_actions_last_post', $last_post_id);
+            $last_post_id = $this->hook->fire('model.handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
                 Url::redirect($this->feather->urlFor('viewPost', ['pid' => $last_post_id]).'#p'.$last_post_id);
             }
         }
 
-        $this->hook->fire('handle_actions', $action, $topic_id);
+        $this->hook->fire('model.handle_actions', $action, $topic_id);
     }
 
     // Gets some info about the topic
@@ -176,7 +176,7 @@ class Topic
             throw new Error(__('Bad request'), 404);
         }
 
-        $cur_topic = $this->hook->fire('get_info_topic', $cur_topic);
+        $cur_topic = $this->hook->fire('model.get_info_topic', $cur_topic);
 
         return $cur_topic;
     }
@@ -184,7 +184,7 @@ class Topic
     // Generates the post link
     public function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
     {
-        $closed = $this->hook->fire('get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
+        $closed = $this->hook->fire('model.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
 
         if ($closed == '0') {
             if (($post_replies == '' && $this->user->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
@@ -202,7 +202,7 @@ class Topic
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
         }
 
-        $post_link = $this->hook->fire('get_post_link_start', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
+        $post_link = $this->hook->fire('model.get_post_link_start', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
 
         return $post_link;
     }
@@ -223,14 +223,14 @@ class Topic
             $quickpost = true;
         }
 
-        $quickpost = $this->hook->fire('is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
+        $quickpost = $this->hook->fire('model.is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
 
         return $quickpost;
     }
 
     public function subscribe($topic_id)
     {
-        $topic_id = $this->hook->fire('subscribe_topic_start', $topic_id);
+        $topic_id = $this->hook->fire('model.subscribe_topic_start', $topic_id);
 
         if ($this->config['o_topic_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
@@ -283,7 +283,7 @@ class Topic
 
     public function unsubscribe($topic_id)
     {
-        $topic_id = $this->hook->fire('unsubscribe_topic_start', $topic_id);
+        $topic_id = $this->hook->fire('model.unsubscribe_topic_start', $topic_id);
 
         if ($this->config['o_topic_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
@@ -323,7 +323,7 @@ class Topic
             $subscraction = '';
         }
 
-        $subscraction = $this->hook->fire('get_subscraction', $subscraction, $is_subscribed, $topic_id);
+        $subscraction = $this->hook->fire('model.get_subscraction', $subscraction, $is_subscribed, $topic_id);
 
         return $subscraction;
     }
@@ -352,7 +352,7 @@ class Topic
 
     public function check_move_possible()
     {
-        $this->hook->fire('check_move_possible_start');
+        $this->hook->fire('model.check_move_possible_start');
 
         $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
         $result['where'] = array(
@@ -421,7 +421,7 @@ class Topic
             }
         }
 
-        $output = $this->hook->fire('get_forum_list_move', $output);
+        $output = $this->hook->fire('model.get_forum_list_move', $output);
 
         return $output;
     }
@@ -466,14 +466,14 @@ class Topic
             $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'"'.($id == $cur_forum->fid ? ' selected="selected"' : '').'>'.Utils::escape($cur_forum->forum_name).'</option>'."\n";
         }
 
-        $output = $this->hook->fire('get_forum_list_split', $output);
+        $output = $this->hook->fire('model.get_forum_list_split', $output);
 
         return $output;
     }
 
     public function move_to($fid, $new_fid, $tid = null)
     {
-        $this->hook->fire('move_to_start', $fid, $new_fid, $tid);
+        $this->hook->fire('model.move_to_start', $fid, $new_fid, $tid);
 
         $topics = is_string($tid) ? [$tid] : $tid;
         $new_fid = intval($new_fid);
@@ -564,7 +564,7 @@ class Topic
     public function delete_posts($tid, $fid)
     {
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
-        $posts = $this->hook->fire('delete_posts_start', $posts, $tid, $fid);
+        $posts = $this->hook->fire('model.delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
             throw new Error(__('No posts selected'), 404);
@@ -632,7 +632,7 @@ class Topic
             Url::redirect($this->feather->urlFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
         }
 
-        $posts = $this->hook->fire('delete_posts', $posts);
+        $posts = $this->hook->fire('model.delete_posts', $posts);
         return $posts;
     }
 
@@ -668,7 +668,7 @@ class Topic
     public function split_posts($tid, $fid, $p = null)
     {
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
-        $posts = $this->hook->fire('split_posts_start', $posts, $tid, $fid);
+        $posts = $this->hook->fire('model.split_posts_start', $posts, $tid, $fid);
         if (empty($posts)) {
             throw new Error(__('No posts selected'), 404);
         }
@@ -821,7 +821,7 @@ class Topic
             Url::redirect($this->feather->urlFor('Topic', array('id' => $new_tid)), __('Split posts redirect'));
         }
 
-        $posts = $this->hook->fire('split_posts', $posts);
+        $posts = $this->hook->fire('model.split_posts', $posts);
         return $posts;
     }
 
@@ -830,7 +830,7 @@ class Topic
     {
         $post_data = array();
 
-        $post_data = $this->hook->fire('print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
+        $post_data = $this->hook->fire('model.print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
 
         $post_count = 0; // Keep track of post numbers
 
@@ -1006,14 +1006,14 @@ class Topic
             $post_data[] = $cur_post;
         }
 
-        $post_data = $this->hook->fire('print_posts', $post_data);
+        $post_data = $this->hook->fire('model.print_posts', $post_data);
 
         return $post_data;
     }
 
     public function display_posts_moderate($tid, $start_from)
     {
-        $this->hook->fire('display_posts_view_start', $tid, $start_from);
+        $this->hook->fire('model.display_posts_view_start', $tid, $start_from);
 
         $post_data = array();
 
@@ -1076,7 +1076,7 @@ class Topic
             $post_data[] = $cur_post;
         }
 
-        $post_data = $this->hook->fire('display_posts_view', $post_data);
+        $post_data = $this->hook->fire('model.display_posts_view', $post_data);
 
         return $post_data;
     }
@@ -1088,7 +1088,7 @@ class Topic
                         ->where('id', $id)
                         ->find_one()
                         ->set_expr('num_views', 'num_views+1');
-            $query = $this->hook->fire('increment_views', $query);
+            $query = $this->hook->fire('model.increment_views', $query);
             $query = $query->save();
         }
     }

@@ -30,7 +30,7 @@ class Maintenance
     public function rebuild()
     {
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
-        $per_page = $this->hook->fire('maintenance.rebuild.per_page', $per_page);
+        $per_page = $this->hook->fire('model.maintenance.rebuild.per_page', $per_page);
 
         // Check per page is > 0
         if ($per_page < 1) {
@@ -64,9 +64,9 @@ class Maintenance
         $query_str = '';
 
         $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
-        $per_page = $this->hook->fire('maintenance.get_query_str.per_page', $per_page);
+        $per_page = $this->hook->fire('model.maintenance.get_query_str.per_page', $per_page);
         $start_at = $this->request->get('i_start_at') ? intval($this->request->get('i_start_at')) : 0;
-        $start_at = $this->hook->fire('maintenance.get_query_str.start_at', $start_at);
+        $start_at = $this->hook->fire('model.maintenance.get_query_str.start_at', $start_at);
 
         // Fetch posts to process this cycle
         $result['select'] = array('p.id', 'p.message', 't.subject', 't.first_post_id');
@@ -107,7 +107,7 @@ class Maintenance
         $pdo = DB::get_db();
         $pdo = null;
 
-        $query_str = $this->hook->fire('maintenance.get_query_str', $query_str);
+        $query_str = $this->hook->fire('model.maintenance.get_query_str', $query_str);
         return $query_str;
     }
 
@@ -134,7 +134,7 @@ class Maintenance
         foreach ($topics_id as $row) {
             $topic_ids[] = $row['id'];
         }
-        $topic_ids = $this->hook->fire('maintenance.prune.topic_ids', $topic_ids);
+        $topic_ids = $this->hook->fire('model.maintenance.prune.topic_ids', $topic_ids);
 
         if (!empty($topic_ids)) {
             // Fetch posts to prune
@@ -146,7 +146,7 @@ class Maintenance
             foreach ($posts_id as $row) {
                 $post_ids[] = $row['id'];
             }
-            $post_ids = $this->hook->fire('maintenance.prune.post_ids', $post_ids);
+            $post_ids = $this->hook->fire('model.maintenance.prune.post_ids', $post_ids);
 
             if ($post_ids != '') {
                 // Delete topics
@@ -171,7 +171,7 @@ class Maintenance
     public function prune_comply($prune_from, $prune_sticky)
     {
         $prune_days = intval($this->request->post('prune_days'));
-        $prune_days = $this->hook->fire('maintenance.prune_comply.prune_days', $prune_days);
+        $prune_days = $this->hook->fire('model.maintenance.prune_comply.prune_days', $prune_days);
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
         @set_time_limit(0);
@@ -207,7 +207,7 @@ class Maintenance
             foreach ($result as $row) {
                 $orphans[] = $row['id'];
             }
-            $orphans = $this->hook->fire('maintenance.prune_comply.orphans', $orphans);
+            $orphans = $this->hook->fire('model.maintenance.prune_comply.orphans', $orphans);
 
             DB::for_table('topics')
                     ->where_in('id', $orphans)
@@ -228,7 +228,7 @@ class Maintenance
 
         $prune['date'] = time() - ($prune['days'] * 86400);
 
-        $prune = $this->hook->fire('maintenance.get_info_prune.prune_dates', $prune);
+        $prune = $this->hook->fire('model.maintenance.get_info_prune.prune_dates', $prune);
 
         // Concatenate together the query for counting number of topics to prune
         $query = DB::for_table('topics')->where_lt('last_post', $prune['date'])
@@ -257,7 +257,7 @@ class Maintenance
             throw new Error(sprintf(__('No old topics message'), $prune['days']), 404);
         }
 
-        $prune = $this->hook->fire('maintenance.get_info_prune.prune', $prune);
+        $prune = $this->hook->fire('model.maintenance.get_info_prune.prune', $prune);
         return $prune;
     }
 
@@ -293,7 +293,7 @@ class Maintenance
             $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.Utils::escape($forum['forum_name']).'</option>'."\n";
         }
 
-        $output = $this->hook->fire('maintenance.get_categories.output', $output);
+        $output = $this->hook->fire('model.maintenance.get_categories.output', $output);
         return $output;
     }
 
@@ -306,7 +306,7 @@ class Maintenance
             $first_id = $first_id_sql;
         }
 
-        $first_id = $this->hook->fire('maintenance.get_first_id', $first_id);
+        $first_id = $this->hook->fire('model.maintenance.get_first_id', $first_id);
         return $first_id;
     }
 }
