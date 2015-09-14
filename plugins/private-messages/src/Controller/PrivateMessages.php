@@ -47,18 +47,22 @@ class PrivateMessages
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations', ['id' => $fid]).'/#');
 
         $limit = $this->feather->user['disp_topics'];
-        $de = $this->model->getMessages($fid, $uid, $limit, $start_from);
-        var_dump($de);
-        //
-        // $data = array(
-        // 	':uid'	=>	$this->feather->user['id'],
-        // 	':fid'	=>	$box_id,
-        // 	':start'=>	$start_from,
-        // );
-
-        // var_dump($this->feather->user);
-        // ->name('FP.pms.Conversations');
+        $messages = $this->model->getMessages($fid, $uid, $limit, $start_from);
     }
 
+    public function move($fid = 2, $page = 1)
+    {
+
+    }
+
+    public function delete($fid = 2, $page = 1)
+    {
+
+    }
+
+    public function update($fid = 2, $page = 1)
+    {
+        
+    }
 
 }
