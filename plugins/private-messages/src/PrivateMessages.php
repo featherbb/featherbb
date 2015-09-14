@@ -14,11 +14,12 @@ use FeatherBB\Core\Error;
 
 class PrivateMessages extends BasePlugin
 {
-    public function __construct()
-    {
-        parent::__construct();
-        
-    }
+    // public function __construct()
+    // {
+    //     parent::__construct();
+    //     var_dump($this->feather->user);
+    //     // load_textdomain('private_messages', 'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
+    // }
 
     public function run()
     {
@@ -30,13 +31,6 @@ class PrivateMessages extends BasePlugin
         //         throw new Error(__('No permission'), 403);
         //     }
         // }, [$this, 'testRoute'])->name('testRoute');
-    }
-
-    public function addMarkRead($forum_actions)
-    {
-        $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test1</a>';
-        $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test2</a>';
-        return $forum_actions;
     }
 
     public function addNavlink($navlinks)
@@ -94,18 +88,13 @@ class PrivateMessages extends BasePlugin
 
         // Create tables
         $installer = new \FeatherBB\Model\Install();
-        $errors = [];
         foreach ($database_scheme as $table => $sql) {
-            if (!$installer->create_table($this->feather->forum_settings['db_prefix'].$table, $sql)) {
-                $errors[] = $table;
-            }
-        }
-        if (!empty($errors)) {
-            $this->feather->flash('error', 'A problem was encountered while creating tables '.implode(', ', $errors));
+            $installer->create_table($this->feather->forum_settings['db_prefix'].$table, $sql);
         }
 
-        // Create default
-        $folders = array($lang_install['New'], $lang_install['Inbox'], $lang_install['Archived']);
+        // Create default inboxes
+        load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->forum_settings['o_default_lang'].'/private-messages.mo');
+        $folders = array(__('New', 'private_messages'), __('Inbox', 'private_messages'), __('Archived', 'private_messages'));
     	foreach ($folders as $folder)
     	{
     		$insert = array(
@@ -113,8 +102,12 @@ class PrivateMessages extends BasePlugin
     			'user_id'	=>	1,
     		);
 
-    		$db->insert('folders', $insert);
+    		$installer->add_data('pms_folders', $insert);
     	}
+
+        // if (!empty($errors)) {
+        //     $this->feather->flash('error', 'A problem was encountered while creating tables '.implode(', ', $errors));
+        // }
 
     }
 

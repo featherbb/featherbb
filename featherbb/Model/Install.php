@@ -113,6 +113,14 @@ class Install
             KEY `online_ident_idx` (`ident`(25)),
             KEY `online_logged_idx` (`logged`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'plugins' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            `name` varchar(200) NOT NULL DEFAULT '',
+            `installed` tinyint(1) unsigned NOT NULL DEFAULT '1',
+            `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `plugin_namex` (`name`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'posts' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `poster` varchar(200) NOT NULL DEFAULT '',
