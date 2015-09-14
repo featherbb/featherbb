@@ -174,6 +174,7 @@ class View
     public function setTemplatesDirectory($directory)
     {
         $this->templatesDirectory = rtrim($directory, DIRECTORY_SEPARATOR);
+        return $this;
     }
 
     /**

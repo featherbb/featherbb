@@ -75,14 +75,14 @@ class Plugin
     {
         $activePlugins = $this->getActivePlugins();
 
-        // Check if plugin is not yet activated
+        // Check if plugin is not yet activated...
         if (!in_array($plugin, $activePlugins)) {
             $activePlugins[] = $plugin;
-
-            $class = $this->load($plugin);
-            $class->install();
-
             $this->feather->cache->store('active_plugins', $activePlugins);
+            // ... And if it is valid
+            if ($class = $this->load($plugin)) {
+                $class->install();
+            }
         }
     }
 
@@ -121,12 +121,32 @@ class Plugin
 
     protected function load($plugin)
     {
+        // "Complex" plugins which need to register namespace via bootstrap.php
         if (file_exists($file = $this->feather->forum_env['FEATHER_ROOT'].'plugins/'.$plugin.'/bootstrap.php')) {
             $className = require $file;
             $class = new $className();
             return $class;
         }
+        // Simple plugins, only a featherbb.json and the main class
+        if ( file_exists( $file = $this->checkSimple($plugin) ) ) {
+            require $file;
+            $className = '\FeatherBB\Plugins\\'.$this->getNamespace($plugin);
+            $class = new $className();
+            return $class;
+        }
+        // Invalid plugin
         return false;
+    }
+
+    // Clean a Simple Plugin's parent folder name to load it
+    protected function getNamespace($path) {
+        return str_replace (" ", "", str_replace ("/", "\\", ucwords (str_replace ('-', ' ', str_replace ('/ ', '/', ucwords (str_replace ('/', '/ ', $path)))))));
+    }
+
+    // For plugins that don't need to provide a Composer auoloader, check if it can be loaded
+    protected function checkSimple($plugin)
+    {
+        return $this->feather->forum_env['FEATHER_ROOT'].'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
 
 }

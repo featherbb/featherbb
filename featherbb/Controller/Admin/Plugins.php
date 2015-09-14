@@ -88,7 +88,7 @@ class Plugins
                 'availablePlugins'    =>    [],
                 'activePlugins'    =>    [],
                 'page' => $pluginName,
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
+                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension'), Utils::escape($pluginName)),
             )
         )->addTemplate('admin/plugins.php')->display();
     }

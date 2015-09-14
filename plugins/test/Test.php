@@ -10,6 +10,7 @@
 namespace FeatherBB\Plugins;
 
 use FeatherBB\Core\Plugin as BasePlugin;
+use FeatherBB\Core\Error;
 
 class Test extends BasePlugin
 {
@@ -17,7 +18,13 @@ class Test extends BasePlugin
     {
         $this->hooks->bind('get_forum_actions', [$this, 'addMarkRead']);
         $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
-        $this->feather->get('/test-plugin(/)', [$this, 'testRoute']);
+        $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+        $feather = $this->feather;
+        $this->feather->get('/test-plugin(/)', function() use ($feather) {
+            if(!$feather->user->is_admmod) {
+                throw new Error(__('No permission'), 403);
+            }
+        }, [$this, 'testRoute'])->name('testRoute');
     }
 
     public function addMarkRead($forum_actions)
@@ -25,6 +32,12 @@ class Test extends BasePlugin
         $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test1</a>';
         $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test2</a>';
         return $forum_actions;
+    }
+
+    public function addNavlink($navlinks)
+    {
+        $navlinks[] = [3 => '<a href="'.$this->feather->urlFor('testRoute').'">Test plugin</a>'];
+        return $navlinks;
     }
 
     public function testRoute()

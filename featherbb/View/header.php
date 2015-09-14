@@ -109,43 +109,42 @@ endif;
                 <div id="brdmenu" class="inbox">
                     <ul>
 <?php
-echo "\t\t\t\t\t\t".'<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>'."\n";
+$navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>'."\n";
 
 if ($feather->user->g_read_board == '1' && $feather->user->g_view_users == '1') {
-    echo "\t\t\t\t\t\t".'<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('userList').'">'.__('User list').'</a></li>'."\n";
+    $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('userList').'">'.__('User list').'</a></li>'."\n";
 }
 
 if ($feather->forum_settings['o_rules'] == '1' && (!$feather->user->is_guest || $feather->user->g_read_board == '1' || $feather->forum_settings['o_regs_allow'] == '1')) {
-    echo "\t\t\t\t\t\t".'<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('rules').'">'.__('Rules').'</a></li>'."\n";
+    $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('rules').'">'.__('Rules').'</a></li>'."\n";
 }
 
 if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
-    echo "\t\t\t\t\t\t".'<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('search').'">'.__('Search').'</a></li>'."\n";
+    $navlinks[] = '<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('search').'">'.__('Search').'</a></li>'."\n";
 }
 
 if ($feather->user->is_guest) {
-    echo "\t\t\t\t\t\t".'<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('register').'">'.__('Register').'</a></li>'."\n";
-    echo "\t\t\t\t\t\t".'<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('login').'">'.__('Login').'</a></li>'."\n";
+    $navlinks[] = '<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('register').'">'.__('Register').'</a></li>'."\n";
+    $navlinks[] = '<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('login').'">'.__('Login').'</a></li>'."\n";
 } else {
-    echo "\t\t\t\t\t\t".'<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('userProfile', ['id' => $feather->user->id]).'">'.__('Profile').'</a></li>'."\n";
+    $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('userProfile', ['id' => $feather->user->id]).'">'.__('Profile').'</a></li>'."\n";
 
     if ($feather->user->is_admmod) {
-        echo "\t\t\t\t\t\t".'<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('adminIndex').'">'.__('Admin').'</a></li>'."\n";
+        $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('adminIndex').'">'.__('Admin').'</a></li>'."\n";
     }
 
-    echo "\t\t\t\t\t\t".'<li id="navlogout"><a href="'.$feather->urlFor('logout', ['token' => Random::hash($feather->user->id.Random::hash($feather->request->getIp()))]).'">'.__('Logout').'</a></li>'."\n";
+    $navlinks[] = '<li id="navlogout"><a href="'.$feather->urlFor('logout', ['token' => Random::hash($feather->user->id.Random::hash($feather->request->getIp()))]).'">'.__('Logout').'</a></li>'."\n";
 }
 
 // // Are there any additional navlinks we should insert into the array before imploding it?
-// if ($feather->user->g_read_board == '1' && $feather->forum_settings['o_additional_navlinks'] != '') {
-//     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $feather->forum_settings['o_additional_navlinks']."\n", $extra_links)) {
-//         // Insert any additional links into the $links array (at the correct index)
-//         $num_links = count($extra_links[1]);
-//         for ($i = 0; $i < $num_links; ++$i) {
-//             array_splice($links, $extra_links[1][$i], 0, array('<li id="navextra'.($i + 1).'">'.$extra_links[2][$i].'</li>'));
-//         }
-//     }
-// }
+$extraLinks = $feather->hooks->fire('header.navlinks', []);
+if ($feather->user->g_read_board == '1' && !empty($extraLinks)) {
+    foreach ($extraLinks as $key => $link) {
+        $list = '<li id="navextra'.key($link).'">'.$link[key($link)].'</li>'."\n";
+        array_splice($navlinks, key($link), 0, $list);
+    }
+}
+echo "\t\t\t".implode("\t\t\t", $navlinks);
 ?>
                         </ul>
                     </div>

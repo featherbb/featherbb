@@ -1,0 +1,9 @@
+{
+    "name": "private-messages",
+    "title": "Private messages",
+    "description": "Manage your private conversations with other members of the community.",
+    "version": "0.1.0",
+    "author": {
+        "name": "beaver"
+    }
+}
