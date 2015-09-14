@@ -11,6 +11,7 @@ namespace FeatherBB\Plugins;
 
 use FeatherBB\Core\Plugin as BasePlugin;
 use FeatherBB\Core\Error;
+use DB;
 
 class PrivateMessages extends BasePlugin
 {
@@ -24,18 +25,28 @@ class PrivateMessages extends BasePlugin
     public function run()
     {
         $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
-        // $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
-        // $feather = $this->feather;
-        // $this->feather->get('/conversations(/)', function() use ($feather) {
-        //     if(!$feather->user->logged) {
-        //         throw new Error(__('No permission'), 403);
-        //     }
-        // }, [$this, 'testRoute'])->name('testRoute');
+        $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+
+        $feather = $this->feather;
+        $this->feather->group('/conversations',
+            function() use ($feather) {
+                if(!$feather->user->logged) throw new Error(__('No permission'), 403);
+            }, function() use ($feather){
+                $feather->get('(/)', [$this, 'testRoute2'])->name('testRoute2');
+            }
+        );
+    }
+
+    public function testRoute2()
+    {
+
+        var_dump($this->feather->user);
+        // ->name('testRoute2');
     }
 
     public function addNavlink($navlinks)
     {
-        $navlinks[] = [5 => '<a href="'.$this->feather->urlFor('testRoute').'">Test plugin</a>'];
+        $navlinks[] = '5 = <a href="'.$this->feather->urlFor('testRoute2').'">PMS</a>';
         return $navlinks;
     }
 
@@ -94,21 +105,28 @@ class PrivateMessages extends BasePlugin
 
         // Create default inboxes
         load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->forum_settings['o_default_lang'].'/private-messages.mo');
-        $folders = array(__('New', 'private_messages'), __('Inbox', 'private_messages'), __('Archived', 'private_messages'));
+        $folders = array(
+            __('New', 'private_messages'),
+            __('Inbox', 'private_messages'),
+            __('Archived', 'private_messages')
+        );
+
     	foreach ($folders as $folder)
     	{
     		$insert = array(
     			'name'	=>	$folder,
     			'user_id'	=>	1,
     		);
-
     		$installer->add_data('pms_folders', $insert);
     	}
+    }
 
-        // if (!empty($errors)) {
-        //     $this->feather->flash('error', 'A problem was encountered while creating tables '.implode(', ', $errors));
-        // }
-
+    public function remove()
+    {
+        $db = DB::get_db();
+        $tables = ['pms_data', 'pms_folders', 'pms_messages', 'pms_conversations'];
+        $req = 'DROP TABLE IF EXISTS '.implode(', ', $tables);
+        return $db->exec($req);
     }
 
 }

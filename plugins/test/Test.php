@@ -18,6 +18,7 @@ class Test extends BasePlugin
     {
         $this->hooks->bind('model.get_forum_actions', [$this, 'addMarkRead']);
         $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+
         $feather = $this->feather;
         $this->feather->get('/test-plugin(/)', function() use ($feather) {
             if(!$feather->user->is_admmod) {
@@ -35,7 +36,7 @@ class Test extends BasePlugin
 
     public function addNavlink($navlinks)
     {
-        $navlinks[] = [3 => '<a href="'.$this->feather->urlFor('testRoute').'">Test plugin</a>'];
+        $navlinks[] = '3 = <a href="'.$this->feather->urlFor('testRoute').'">Test plugin</a>';
         return $navlinks;
     }
 
