@@ -246,7 +246,6 @@ class View
     {
         extract($data);
         ob_start();
-        var_dump($this->getTemplatesDirectory());
         if ($nested) {
             require $this->getTemplatePathname('header.php');
         }
