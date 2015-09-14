@@ -86,16 +86,11 @@ class Plugin
      */
     public function activate($name, $needInstall = true)
     {
-        $activePlugins = $this->getActivePlugins();
-
-        // Check if plugin is not yet activated...
-        if (!in_array($name, $activePlugins)) {
-            // ... And if it is valid
-            if ($class = $this->load($name)) {
-                // Do we need to run extra code for installation ?
-                if ($needInstall) {
-                    $class->install();
-                }
+        // Check if plugin name is valid
+        if ($class = $this->load($name)) {
+            // Do we need to run extra code for installation ?
+            if ($needInstall) {
+                $class->install();
             }
         }
     }
@@ -109,31 +104,27 @@ class Plugin
     }
 
     /**
-     * Deactivate a plugin
+     * Default empty install function to avoid erros when deactivating.
+     * Daughter classes may override this method for custom deactivation.
      */
-    public function deactivate($plugin)
+    public function deactivate()
     {
-        $activePlugins = $this->getActivePlugins();
-
-        // Check if plugin is actually activated
-        if (($k = array_search($plugin, $activePlugins)) !== false) {
-            unset($activePlugins[$k]);
-            $this->feather->cache->store('activePlugins', $activePlugins);
-        }
     }
 
-    public function uninstall($plugin)
+    public function uninstall($name)
     {
-        // Daughter classes may override this method for custom uninstall
-        $this->deactivate($plugin);
-
-        $class = $this->load($plugin);
-        $class->uninstall();
+        // Check if plugin name is valid
+        if ($class = $this->load($name)) {
+            // Do we need to run extra code for installation ?
+            if (method_exists($class, 'remove')) {
+                $class->remove();
+            }
+        }
     }
 
     public function run()
     {
-        // Daughter classes may override this method for custom run
+        // Daughter classes HAVE TO override this method for custom run
     }
 
     protected function load($plugin)

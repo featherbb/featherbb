@@ -63,6 +63,14 @@ class Plugins
         Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
 
+    public function uninstall($plugin = null)
+    {
+        if (!$plugin) throw new Error(__('Bad request'), 400);
+        $this->model->uninstall($plugin);
+        // // Plugin has been deactivated, confirm and redirect
+        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
+    }
+
     public function info($pluginName = null)
     {
         if (!$pluginName) throw new Error(__('Bad request'), 400);

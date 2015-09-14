@@ -206,6 +206,7 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
         $feather->map('/info/:name(/)', '\FeatherBB\Controller\Admin\Plugins:info')->via('GET', 'POST')->name('infoPlugin');
         $feather->get('/activate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:activate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('activatePlugin');
         $feather->get('/deactivate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:deactivate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('deactivatePlugin');
+        $feather->get('/uninstall/:name(/)', '\FeatherBB\Controller\Admin\Plugins:uninstall')->conditions(array('name' => '[a-zA-Z\-]+'))->name('uninstallPlugin');
     });
 
     // Admin maintenance
