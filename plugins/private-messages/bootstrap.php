@@ -2,4 +2,4 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-return 'FeatherBB\Plugins\Test';
+return 'FeatherBB\Plugins\PrivateMessages';

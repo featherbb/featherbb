@@ -35,7 +35,19 @@ class Plugin
 
     public function getActivePlugins()
     {
-        $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
+        $activePlugins = $this->feather->cache->isCached('activePlugins') ? $this->feather->cache->retrieve('activePlugins') : array();
+
+        return $activePlugins;
+    }
+
+    public function setActivePlugins()
+    {
+        $activePlugins = [];
+        $results = DB::for_table('plugins')->select('name')->where('active', 1)->find_array();
+        foreach ($results as $plugin) {
+            $activePlugins[] = $plugin['name'];
+        }
+        $this->feather->cache->store('activePlugins', $activePlugins);
 
         return $activePlugins;
     }
@@ -46,6 +58,7 @@ class Plugin
     public function loadPlugins()
     {
         $activePlugins = $this->getActivePlugins();
+        // var_dump($activePlugins);
 
         foreach ($activePlugins as $plugin) {
             if ($class = $this->load($plugin)) {
@@ -54,27 +67,45 @@ class Plugin
         }
     }
 
+    public function getName($items)
+    {
+        // Split name
+        $classNamespace = explode('\\', get_class($this));
+        $className = end($classNamespace);
+
+        // Prettify and return name of child class
+        preg_match_all('%[A-Z]*[a-z]+%m', $className, $result, PREG_PATTERN_ORDER);
+
+        $items[] = Utils::escape(implode(' ', $result[0]));
+
+        return $items;
+    }
+
     /**
      * Activate a plugin
      */
-    public function activate($plugin)
+    public function activate($name, $needInstall = true)
     {
         $activePlugins = $this->getActivePlugins();
 
-        // Check if plugin is not yet activated
-        if (!in_array($plugin, $activePlugins)) {
-            $activePlugins[] = $plugin;
-
-            $class = $this->load($plugin);
-            $class->install();
-
-            $this->feather->cache->store('active_plugins', $activePlugins);
+        // Check if plugin is not yet activated...
+        if (!in_array($name, $activePlugins)) {
+            // ... And if it is valid
+            if ($class = $this->load($name)) {
+                // Do we need to run extra code for installation ?
+                if ($needInstall) {
+                    $class->install();
+                }
+            }
         }
     }
 
+    /**
+     * Default empty install function to avoid erros when activating.
+     * Daughter classes may override this method for custom install.
+     */
     public function install()
     {
-        // Daughter classes may override this method for custom install
     }
 
     /**
@@ -87,7 +118,7 @@ class Plugin
         // Check if plugin is actually activated
         if (($k = array_search($plugin, $activePlugins)) !== false) {
             unset($activePlugins[$k]);
-            $this->feather->cache->store('active_plugins', $activePlugins);
+            $this->feather->cache->store('activePlugins', $activePlugins);
         }
     }
 
@@ -107,12 +138,32 @@ class Plugin
 
     protected function load($plugin)
     {
+        // "Complex" plugins which need to register namespace via bootstrap.php
         if (file_exists($file = $this->feather->forum_env['FEATHER_ROOT'].'plugins/'.$plugin.'/bootstrap.php')) {
             $className = require $file;
             $class = new $className();
             return $class;
         }
+        // Simple plugins, only a featherbb.json and the main class
+        if ( file_exists( $file = $this->checkSimple($plugin) ) ) {
+            require $file;
+            $className = '\FeatherBB\Plugins\\'.$this->getNamespace($plugin);
+            $class = new $className();
+            return $class;
+        }
+        // Invalid plugin
         return false;
+    }
+
+    // Clean a Simple Plugin's parent folder name to load it
+    protected function getNamespace($path) {
+        return str_replace (" ", "", str_replace ("/", "\\", ucwords (str_replace ('-', ' ', str_replace ('/ ', '/', ucwords (str_replace ('/', '/ ', $path)))))));
+    }
+
+    // For plugins that don't need to provide a Composer auoloader, check if it can be loaded
+    protected function checkSimple($plugin)
+    {
+        return $this->feather->forum_env['FEATHER_ROOT'].'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
 
 }

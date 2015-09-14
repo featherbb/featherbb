@@ -154,9 +154,6 @@ if (!empty($queries_info)) { ?>
 		</div>
 	</div>
 <?php } ?>
-<div id="js-adds">
-    <script type="text/javascript">de</script>
-</div>
 </section>
 </body>
 <!-- JS -->

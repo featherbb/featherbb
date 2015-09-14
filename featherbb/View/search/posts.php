@@ -15,6 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
+
 foreach ($display['cur_search'] as $search) {
     ?>
     <div

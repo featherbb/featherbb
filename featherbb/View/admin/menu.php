@@ -102,8 +102,9 @@ if (!isset($feather)) {
 				<ul>
 <?php
 
-        foreach ($plugins as $plugin_name => $plugin) {
-            echo "\t\t\t\t\t".'<li'.(($page == $plugin_name) ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('infoPlugin', ['name' => $plugin_name]).'">'.str_replace('_', ' ', $plugin).'</a></li>'."\n";
+        foreach ($plugins as $plugin) {
+            $plugin_url = URL::url_friendly($plugin);
+            echo "\t\t\t\t\t".'<li'.(($page == $plugin_url) ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('infoPlugin', ['name' => $plugin_url]).'">'.$plugin.'</a></li>'."\n";
         }
 
         ?>

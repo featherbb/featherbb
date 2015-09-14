@@ -1,0 +1,33 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Folders"
+msgstr "Folders"
+
+msgid "New"
+msgstr "Unread"
+
+msgid "Inbox"
+msgstr "Inbox"
+
+msgid "Archived"
+msgstr "Archived"
+
+msgid "Storage"
+msgstr "Storage"
+
+msgid "Options"
+msgstr "Options"
