@@ -29,7 +29,7 @@ if (!isset($feather)) {
 						<label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password" size="25" tabindex="2" /><br /></label>
 
 						<div class="rbox clearb">
-							<label><input type="checkbox" name="save_pass" value="1" tabindex="3" /><?php _e('Remember me') ?><br /></label>
+							<label><input type="checkbox" name="save_pass" value="1" tabindex="3" checked="checked" /><?php _e('Remember me') ?><br /></label>
 						</div>
 
 						<p class="clearb"><?php _e('Login info') ?></p>
