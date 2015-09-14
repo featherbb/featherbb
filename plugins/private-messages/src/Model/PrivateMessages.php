@@ -54,4 +54,32 @@ class PrivateMessages
             ->count();
     }
 
+    public function getMessages($fid, $uid, $limit, $start)
+    {
+        $where[] = ['cd.folder_id' => $fid];
+        if ($fid == 1) {
+            $where[] = ['cd.viewed' => 0];
+        }
+
+        $select = array(
+            'c.id', 'c.subject', 'c.poster', 'c.poster_id', 'c.num_replies', 'c.last_post', 'c.last_poster', 'c.last_post_id',
+            'cd.viewed',
+            'poster_gid' => 'u.group_id', 'u.email',
+            'last_poster_id' => 'l.id', 'last_poster_gid' => 'l.group_id'
+        );
+        return DB::for_table('pms_conversations')
+            ->table_alias('c')
+            ->select_many($select)
+            ->inner_join('pms_data', array('c.id', '=', 'cd.conversation_id'), 'cd')
+            ->left_outer_join('users', array('u.id', '=', 'c.poster_id'), 'u')
+            ->left_outer_join('users', array('l.username', '=', 'c.last_poster'), 'l', true)
+            ->where('cd.user_id', $uid)
+            ->where('cd.deleted', 0)
+            ->where_any_is($where)
+            ->order_by_desc('c.last_post')
+            ->limit($limit)
+            ->offset($start)
+            ->find_many();
+    }
+
 }

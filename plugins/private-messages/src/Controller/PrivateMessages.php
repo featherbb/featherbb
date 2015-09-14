@@ -30,13 +30,14 @@ class PrivateMessages
     {
         // Set default page to "Inbox" folder
         $fid = !empty($fid) ? intval($fid) : 2;
+        $uid = intval($this->feather->user->id);
         // Check if current user owns the folder
-        if (!$inbox = $this->model->checkFolderOwner($fid, $this->feather->user->id)) {
+        if (!$inbox = $this->model->checkFolderOwner($fid, $uid)) {
             throw new Error(__('Wrong folder owner'), 403);
         }
         // echo $inbox->name;
 
-        $nbMessages = $this->model->countMessages($fid, $this->feather->user->id);
+        $nbMessages = $this->model->countMessages($fid, $uid);
 
         $num_pages = ceil($nbMessages / $this->feather->user['disp_topics']);
 
@@ -44,7 +45,10 @@ class PrivateMessages
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
 
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations', ['id' => $fid]).'/#');
-        echo $paging_links;
+
+        $limit = $this->feather->user['disp_topics'];
+        $de = $this->model->getMessages($fid, $uid, $limit, $start_from);
+        var_dump($de);
         //
         // $data = array(
         // 	':uid'	=>	$this->feather->user['id'],
