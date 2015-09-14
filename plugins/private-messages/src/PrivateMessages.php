@@ -32,21 +32,15 @@ class PrivateMessages extends BasePlugin
             function() use ($feather) {
                 if(!$feather->user->logged) throw new Error(__('No permission'), 403);
             }, function() use ($feather){
-                $feather->get('(/)', [$this, 'testRoute2'])->name('testRoute2');
+                $feather->get('(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+'))->name('Conversations');
+                $feather->get('(/:id)/page/:page(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.page');
             }
         );
     }
 
-    public function testRoute2()
-    {
-
-        var_dump($this->feather->user);
-        // ->name('testRoute2');
-    }
-
     public function addNavlink($navlinks)
     {
-        $navlinks[] = '5 = <a href="'.$this->feather->urlFor('testRoute2').'">PMS</a>';
+        $navlinks[] = '5 = <a href="'.$this->feather->urlFor('Conversations').'">PMS</a>';
         return $navlinks;
     }
 

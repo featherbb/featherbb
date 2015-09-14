@@ -24,7 +24,7 @@ class Test extends BasePlugin
             if(!$feather->user->is_admmod) {
                 throw new Error(__('No permission'), 403);
             }
-        }, [$this, 'testRoute'])->name('testRoute');
+        }, [$this, 'testRoute'])->name('FPtest');
     }
 
     public function addMarkRead($forum_actions)
@@ -36,7 +36,7 @@ class Test extends BasePlugin
 
     public function addNavlink($navlinks)
     {
-        $navlinks[] = '3 = <a href="'.$this->feather->urlFor('testRoute').'">Test plugin</a>';
+        $navlinks[] = '3 = <a href="'.$this->feather->urlFor('FPtest').'">Test plugin</a>';
         return $navlinks;
     }
 
