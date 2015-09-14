@@ -31,12 +31,12 @@ class Profile
 
     public function change_pass($id)
     {
-        $id = $this->hook->fire('change_pass_start', $id);
+        $id = $this->hook->fire('model.change_pass_start', $id);
 
         if ($this->request->get('key')) {
 
             $key = $this->request->get('key');
-            $key = $this->hook->fire('change_pass_key', $key);
+            $key = $this->hook->fire('model.change_pass_key', $key);
 
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
@@ -66,7 +66,7 @@ class Profile
 
         // Make sure we are allowed to change this user's password
         if ($this->user->id != $id) {
-            $id = $this->hook->fire('change_pass_key_not_id', $id);
+            $id = $this->hook->fire('model.change_pass_key_not_id', $id);
 
             if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
                 throw new Error(__('No permission'), 403);
@@ -137,18 +137,18 @@ class Profile
                 $this->auth->feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
             }
 
-            $this->hook->fire('change_pass');
+            $this->hook->fire('model.change_pass');
             Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
         }
     }
 
     public function change_email($id)
     {
-        $id = $this->hook->fire('change_email_start', $id);
+        $id = $this->hook->fire('model.change_email_start', $id);
 
         // Make sure we are allowed to change this user's email
         if ($this->user->id != $id) {
-            $id = $this->hook->fire('change_email_not_id', $id);
+            $id = $this->hook->fire('model.change_email_not_id', $id);
 
             if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
                 throw new Error(__('No permission'), 403);
@@ -176,7 +176,7 @@ class Profile
 
         if ($this->request->get('key')) {
             $key = $this->request->get('key');
-            $key = $this->hook->fire('change_email_key', $key);
+            $key = $this->hook->fire('model.change_email_key', $key);
 
             $new_email_key = DB::for_table('users')
                 ->where('id', $id);
@@ -198,7 +198,7 @@ class Profile
                 Url::redirect($this->feather->urlFor('home'), __('Email updated'));
             }
         } elseif ($this->request->isPost()) {
-            $this->hook->fire('change_email_post');
+            $this->hook->fire('model.change_email_post');
 
             if (Random::hash($this->request->post('req_password')) !== $this->user->password) {
                 throw new Error(__('Wrong pass'));
@@ -206,7 +206,7 @@ class Profile
 
             // Validate the email address
             $new_email = strtolower(Utils::trim($this->request->post('req_new_email')));
-            $new_email = $this->hook->fire('change_email_new_email', $new_email);
+            $new_email = $this->hook->fire('model.change_email_new_email', $new_email);
             if (!$this->email->is_valid_email($new_email)) {
                 throw new Error(__('Invalid email'), 400);
             }
@@ -218,19 +218,19 @@ class Profile
                 } elseif ($this->config['o_mailing_list'] != '') {
                     // Load the "banned email change" template
                     $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
-                    $mail_tpl = $this->hook->fire('change_email_mail_tpl', $mail_tpl);
+                    $mail_tpl = $this->hook->fire('model.change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                    $mail_subject = $this->hook->fire('change_email_mail_subject', $mail_subject);
+                    $mail_subject = $this->hook->fire('model.change_email_mail_subject', $mail_subject);
 
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
                     $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
-                    $mail_message = $this->hook->fire('change_email_mail_message', $mail_message);
+                    $mail_message = $this->hook->fire('model.change_email_mail_message', $mail_message);
 
                     $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
@@ -255,19 +255,19 @@ class Profile
 
                     // Load the "dupe email change" template
                     $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
-                    $mail_tpl = $this->hook->fire('change_email_mail_dupe_tpl', $mail_tpl);
+                    $mail_tpl = $this->hook->fire('model.change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
                     $first_crlf = strpos($mail_tpl, "\n");
                     $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                    $mail_subject = $this->hook->fire('change_email_mail_dupe_subject', $mail_subject);
+                    $mail_subject = $this->hook->fire('model.change_email_mail_dupe_subject', $mail_subject);
 
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                     $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
-                    $mail_message = $this->hook->fire('change_email_mail_dupe_message', $mail_message);
+                    $mail_message = $this->hook->fire('model.change_email_mail_dupe_message', $mail_message);
 
                     $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
                 }
@@ -275,7 +275,7 @@ class Profile
 
 
             $new_email_key = Random::pass(8);
-            $new_email_key = $this->hook->fire('change_email_new_email_key', $new_email_key);
+            $new_email_key = $this->hook->fire('model.change_email_new_email_key', $new_email_key);
 
             // Update the user
             unset($user);
@@ -292,32 +292,32 @@ class Profile
 
             // Load the "activate email" template
             $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
-            $mail_tpl = $this->hook->fire('change_email_mail_activate_tpl', $mail_tpl);
+            $mail_tpl = $this->hook->fire('model.change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
             $first_crlf = strpos($mail_tpl, "\n");
             $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-            $mail_subject = $this->hook->fire('change_email_mail_activate_subject', $mail_subject);
+            $mail_subject = $this->hook->fire('model.change_email_mail_activate_subject', $mail_subject);
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
             $mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
-            $mail_message = $this->hook->fire('change_email_mail_activate_message', $mail_message);
+            $mail_message = $this->hook->fire('model.change_email_mail_activate_message', $mail_message);
 
             $this->email->feather_mail($new_email, $mail_subject, $mail_message);
 
-            $this->hook->fire('change_email_sent');
+            $this->hook->fire('model.change_email_sent');
 
             throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', true);
         }
-        $this->hook->fire('change_email');
+        $this->hook->fire('model.change_email');
     }
 
     public function upload_avatar($id, $files_data)
     {
-        $files_data = $this->hook->fire('upload_avatar_start', $files_data, $id);
+        $files_data = $this->hook->fire('model.upload_avatar_start', $files_data, $id);
 
         if (!isset($files_data['req_file'])) {
             throw new Error(__('No file'));
@@ -355,7 +355,7 @@ class Profile
         }
 
         if (is_uploaded_file($uploaded_file['tmp_name'])) {
-            $uploaded_file = $this->hook->fire('upload_avatar_is_uploaded_file', $uploaded_file);
+            $uploaded_file = $this->hook->fire('model.upload_avatar_is_uploaded_file', $uploaded_file);
 
             // Preliminary file check, adequate in most cases
             $allowed_types = array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
@@ -402,7 +402,7 @@ class Profile
             throw new Error(__('Unknown failure'));
         }
 
-        $uploaded_file = $this->hook->fire('upload_avatar', $uploaded_file);
+        $uploaded_file = $this->hook->fire('model.upload_avatar', $uploaded_file);
 
         Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
     }
@@ -424,7 +424,7 @@ class Profile
 
     public function update_group_membership($id)
     {
-        $id = $this->hook->fire('update_group_membership_start', $id);
+        $id = $this->hook->fire('model.update_group_membership_start', $id);
 
         $new_group_id = intval($this->request->post('group_id'));
 
@@ -484,7 +484,7 @@ class Profile
             }
         }
 
-        $id = $this->hook->fire('update_group_membership', $id);
+        $id = $this->hook->fire('model.update_group_membership', $id);
 
         Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
     }
@@ -496,7 +496,7 @@ class Profile
             ->where('id', $id)
             ->find_one_col('username');
 
-        $username = $this->hook->fire('get_username', $username);
+        $username = $this->hook->fire('model.get_username', $username);
 
         return $username;
     }
@@ -554,14 +554,14 @@ class Profile
             }
         }
 
-        $id = $this->hook->fire('update_mod_forums', $id);
+        $id = $this->hook->fire('model.update_mod_forums', $id);
 
         Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
     }
 
     public function ban_user($id)
     {
-        $id = $this->hook->fire('ban_user_start', $id);
+        $id = $this->hook->fire('model.ban_user_start', $id);
 
         // Get the username of the user we are banning
         $username = $this->get_username($id);
@@ -583,7 +583,7 @@ class Profile
 
     public function promote_user($id)
     {
-        $id = $this->hook->fire('promote_user_start', $id);
+        $id = $this->hook->fire('model.promote_user_start', $id);
 
         $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
 
@@ -607,14 +607,14 @@ class Profile
         $update_user = $this->hook->fireDB('promote_user_query', $update_user);
         $update_user = $update_user->save();
 
-        $pid = $this->hook->fire('promote_user', $pid);
+        $pid = $this->hook->fire('model.promote_user', $pid);
 
         Url::redirect($this->feather->urlFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
     public function delete_user($id)
     {
-        $id = $this->hook->fire('delete_user_start', $id);
+        $id = $this->hook->fire('model.delete_user_start', $id);
 
         // Get the username and group of the user we are deleting
         $result['select'] = array('group_id', 'username');
@@ -687,7 +687,7 @@ class Profile
                 // Hold on, this could take some time!
                 @set_time_limit(0);
 
-                $this->hook->fire('delete_user_posts');
+                $this->hook->fire('model.delete_user_posts');
 
                 // Find all posts made by this user
                 unset($result);
@@ -747,7 +747,7 @@ class Profile
                 $this->feather->cache->store('admin_ids', Cache::get_admin_ids());
             }
 
-            $this->hook->fire('delete_user');
+            $this->hook->fire('model.delete_user');
 
             Url::redirect($this->feather->urlFor('home'), __('User delete redirect'));
         }
@@ -776,11 +776,11 @@ class Profile
 
     public function update_profile($id, $info, $section)
     {
-        $info = $this->hook->fire('update_profile_start', $info, $id, $section);
+        $info = $this->hook->fire('model.update_profile_start', $info, $id, $section);
 
         $username_updated = false;
 
-        $section = $this->hook->fire('update_profile_section', $section, $id, $info);
+        $section = $this->hook->fire('model.update_profile_section', $section, $id, $info);
 
         // Validate input depending on section
         switch ($section) {
@@ -994,7 +994,7 @@ class Profile
                 throw new Error(__('Bad request'), 404);
         }
 
-        $form = $this->hook->fire('update_profile_form', $form, $section, $id, $info);
+        $form = $this->hook->fire('model.update_profile_form', $form, $section, $id, $info);
 
         // Single quotes around non-empty values and nothing for empty values
         $temp = array();
@@ -1126,7 +1126,7 @@ class Profile
     {
         $user_info = array();
 
-        $user_info = $this->hook->fire('parse_user_info_start', $user_info, $user);
+        $user_info = $this->hook->fire('model.parse_user_info_start', $user_info, $user);
 
         $user_info['personal'][] = '<dt>'.__('Username').'</dt>';
         $user_info['personal'][] = '<dd>'.Utils::escape($user['username']).'</dd>';
@@ -1234,7 +1234,7 @@ class Profile
         $user_info['activity'][] = '<dt>'.__('Registered').'</dt>';
         $user_info['activity'][] = '<dd>'.$this->feather->utils->format_time($user['registered'], true).'</dd>';
 
-        $user_info = $this->hook->fire('parse_user_info', $user_info);
+        $user_info = $this->hook->fire('model.parse_user_info', $user_info);
 
         return $user_info;
     }
@@ -1243,7 +1243,7 @@ class Profile
     {
         $user_disp = array();
 
-        $user_disp = $this->hook->fire('edit_essentials_start', $user_disp, $id, $user);
+        $user_disp = $this->hook->fire('model.edit_essentials_start', $user_disp, $id, $user);
 
         if ($this->user->is_admmod) {
             if ($this->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || $this->user->g_mod_rename_users == '1') {
@@ -1283,7 +1283,7 @@ class Profile
 
         $user_disp['posts_field'] .= (!empty($posts_actions) ? '<p class="actions">'.implode(' - ', $posts_actions).'</p>' : '')."\n";
 
-        $user_disp = $this->hook->fire('edit_essentials', $user_disp);
+        $user_disp = $this->hook->fire('model.edit_essentials', $user_disp);
 
         return $user_disp;
     }
@@ -1292,7 +1292,7 @@ class Profile
     {
         $output = '';
 
-        $user = $this->hook->fire('get_group_list_start', $user);
+        $user = $this->hook->fire('model.get_group_list_start', $user);
 
         $result['select'] = array('g_id', 'g_title');
 
@@ -1311,7 +1311,7 @@ class Profile
             }
         }
 
-        $output = $this->hook->fire('get_group_list', $output);
+        $output = $this->hook->fire('model.get_group_list', $output);
 
         return $output;
     }
@@ -1320,7 +1320,7 @@ class Profile
     {
         $output = '';
 
-        $id = $this->hook->fire('get_forum_list_start', $id);
+        $id = $this->hook->fire('model.get_forum_list_start', $id);
 
         $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators');
         $result['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
@@ -1355,7 +1355,7 @@ class Profile
             $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.Utils::escape($cur_forum['forum_name']).'<br /></label>'."\n";
         }
 
-        $output = $this->hook->fire('get_forum_list', $output);
+        $output = $this->hook->fire('model.get_forum_list', $output);
 
         return $output;
     }
@@ -1419,7 +1419,7 @@ class Profile
 
     public function get_info_mail($recipient_id)
     {
-        $recipient_id = $this->hook->fire('get_info_mail_start', $recipient_id);
+        $recipient_id = $this->hook->fire('model.get_info_mail_start', $recipient_id);
 
         $mail['select'] = array('username', 'email', 'email_setting');
 
@@ -1443,7 +1443,7 @@ class Profile
 
     public function send_email($mail)
     {
-        $mail = $this->hook->fire('send_email_start', $mail);
+        $mail = $this->hook->fire('model.send_email_start', $mail);
 
         // Clean up message and subject from POST
         $subject = Utils::trim($this->request->post('req_subject'));
@@ -1465,7 +1465,7 @@ class Profile
 
         // Load the "form email" template
         $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/form_email.tpl'));
-        $mail_tpl = $this->hook->fire('send_email_mail_tpl', $mail_tpl);
+        $mail_tpl = $this->hook->fire('model.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
         $first_crlf = strpos($mail_tpl, "\n");
@@ -1478,7 +1478,7 @@ class Profile
         $mail_message = str_replace('<mail_message>', $message, $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
-        $mail_message = $this->hook->fire('send_email_mail_message', $mail_message);
+        $mail_message = $this->hook->fire('model.send_email_mail_message', $mail_message);
 
         $this->email->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
 
@@ -1496,7 +1496,7 @@ class Profile
 
     public function display_ip_info($ip)
     {
-        $ip = $this->hook->fire('display_ip_info', $ip);
+        $ip = $this->hook->fire('model.display_ip_info', $ip);
         throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 }

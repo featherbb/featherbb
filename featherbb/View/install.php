@@ -18,7 +18,7 @@ if (!isset($feather)) {
 <head>
     <meta charset="utf-8">
     <title><?php _e('FeatherBB Installation') ?></title>
-    <link rel="stylesheet" type="text/css" href="style/themes/<?php echo $feather->forum_env['FORUM_NAME'] ?>/style.css" />
+    <link rel="stylesheet" type="text/css" href="style/themes/<?= $feather->forum_env['FORUM_NAME'] ?>/style.css" />
 </head>
 
 <body>
@@ -72,7 +72,7 @@ if (!isset($feather)) {
                         ?>
 
                         <div class="blockform">
-                            <h2><span><?php echo sprintf(__('Install'), $feather->forum_env['FORUM_VERSION']) ?></span></h2>
+                            <h2><span><?= sprintf(__('Install'), $feather->forum_env['FORUM_VERSION']) ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
                                     <?php if (!empty($errors)): ?>
@@ -192,11 +192,11 @@ if (!isset($feather)) {
                                             <legend><?php _e('General information') ?></legend>
                                             <div class="infldset">
                                                 <label class="required"><strong><?php _e('Board title') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[title]" value="<?php echo $data['title'] ?>" size="60" maxlength="255" required />
+                                                <input type="text" name="install[title]" value="<?= $data['title'] ?>" size="60" maxlength="255" required />
                                                 <label><?php _e('Board description') ?></label>
-                                                <input type="text" name="install[description]" value="<?php echo $data['description'] ?>" size="60" maxlength="255" required />
+                                                <input type="text" name="install[description]" value="<?= $data['description'] ?>" size="60" maxlength="255" required />
                                                 <label class="required"><strong><?php _e('Base URL') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[base_url]" value="<?php echo $data['base_url'] ?>" size="60" maxlength="100" required />
+                                                <input type="text" name="install[base_url]" value="<?= $data['base_url'] ?>" size="60" maxlength="100" required />
                                                 <label class="required"><strong><?php _e('Default language') ?> <span><?php _e('Required') ?></span></strong></label>
                                                 <select name="install[default_lang]" required />
                                                 <?php

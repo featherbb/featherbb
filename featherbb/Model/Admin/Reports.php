@@ -21,14 +21,14 @@ class Reports
 
     public function zap_report($zap_id, $user_id)
     {
-        $zap_id = $this->hook->fire('reports.zap_report.zap_id', $zap_id);
+        $zap_id = $this->hook->fire('model.reports.zap_report.zap_id', $zap_id);
 
         $result = DB::for_table('reports')->where('id', $zap_id);
         $result = $this->hook->fireDB('reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
         $set_zap_report = array('zapped' => time(), 'zapped_by' => $user_id);
-        $set_zap_report = $this->hook->fire('reports.zap_report.set_zap_report', $set_zap_report);
+        $set_zap_report = $this->hook->fire('model.reports.zap_report.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped
         if (!$result) {
@@ -84,7 +84,7 @@ class Reports
         $reports = $this->hook->fireDB('reports.get_reports.query', $reports);
         $reports = $reports->find_array();
 
-        $reports = $this->hook->fire('reports.get_reports', $reports);
+        $reports = $this->hook->fire('model.reports.get_reports', $reports);
         return $reports;
     }
 
@@ -106,7 +106,7 @@ class Reports
         $zapped_reports = $this->hook->fireDB('reports.get_zapped_reports.query', $zapped_reports);
         $zapped_reports = $zapped_reports->find_array();
 
-        $zapped_reports = $this->hook->fire('reports.get_zapped_reports', $zapped_reports);
+        $zapped_reports = $this->hook->fire('model.reports.get_zapped_reports', $zapped_reports);
         return $zapped_reports;
     }
 }

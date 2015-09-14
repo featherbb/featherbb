@@ -19,13 +19,13 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Prune head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->urlFor('adminMaintenance') ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('adminMaintenance') ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 					<input type="hidden" name="action" value="prune" />
-					<input type="hidden" name="prune_days" value="<?php echo $prune['days'] ?>" />
-					<input type="hidden" name="prune_sticky" value="<?php echo $prune_sticky ?>" />
-					<input type="hidden" name="prune_from" value="<?php echo $prune_from ?>" />
+					<input type="hidden" name="prune_days" value="<?= $prune['days'] ?>" />
+					<input type="hidden" name="prune_sticky" value="<?= $prune_sticky ?>" />
+					<input type="hidden" name="prune_from" value="<?= $prune_from ?>" />
 					<fieldset>
 						<legend><?php _e('Confirm prune subhead') ?></legend>
 						<div class="infldset">

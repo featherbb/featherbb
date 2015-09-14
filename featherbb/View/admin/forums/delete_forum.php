@@ -18,8 +18,8 @@ if (!isset($feather)) {
 	<div class="blockform">
 		<h2><span><?php _e('Confirm delete head') ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->urlFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php _e('Confirm delete subhead') ?></legend>

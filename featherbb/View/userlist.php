@@ -24,13 +24,13 @@ if (!isset($feather)) {
 				<fieldset>
 					<legend><?php _e('User find legend') ?></legend>
 					<div class="infldset">
-<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?php echo Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if ($feather->user->g_search_users == '1'): ?>						<label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>						<label class="conl"><?php _e('User group')."\n" ?>
 						<br /><select name="show_group">
 							<option value="-1"<?php if ($show_group == -1) {
     echo ' selected="selected"';
 } ?>><?php _e('All users') ?></option>
-<?php echo $dropdown_menu ?>
+<?= $dropdown_menu ?>
 						</select>
 						<br /></label>
 						<label class="conl"><?php _e('Sort by')."\n" ?>
@@ -67,7 +67,7 @@ if (!isset($feather)) {
 
 <div class="linkst">
 	<div class="inbox">
-		<p class="pagelink"><?php echo $paging_links ?></p>
+		<p class="pagelink"><?= $paging_links ?></p>
 		<div class="clearer"></div>
 	</div>
 </div>
@@ -90,12 +90,12 @@ if (!isset($feather)) {
             foreach ($userlist_data as $user) {
                 ?>
 					<tr>
-						<td class="tcl"><?php echo '<a href="'.$feather->urlFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
-						<td class="tc2"><?php echo Utils::get_title($user) ?></td>
-	<?php if ($show_post_count): ?>					<td class="tc3"><?php echo Utils::forum_number_format($user['num_posts']) ?></td>
+						<td class="tcl"><?= '<a href="'.$feather->urlFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
+						<td class="tc2"><?= Utils::get_title($user) ?></td>
+	<?php if ($show_post_count): ?>					<td class="tc3"><?= Utils::forum_number_format($user['num_posts']) ?></td>
 	<?php endif;
                 ?>
-						<td class="tcr"><?php echo $feather->utils->format_time($user['registered'], true) ?></td>
+						<td class="tcr"><?= $feather->utils->format_time($user['registered'], true) ?></td>
 					</tr>
 			<?php
 
@@ -112,7 +112,7 @@ if (!isset($feather)) {
 
 <div class="linksb">
 	<div class="inbox">
-		<p class="pagelink"><?php echo $paging_links ?></p>
+		<p class="pagelink"><?= $paging_links ?></p>
 		<div class="clearer"></div>
 	</div>
 </div>

@@ -44,7 +44,7 @@ if (!isset($feather)) {
 					</dd>
 					<dt><?php _e('Server statistics label') ?></dt>
 					<dd>
-						<a href="<?php echo $feather->urlFor('statistics') ?>"><?php _e('View server statistics') ?></a>
+						<a href="<?= $feather->urlFor('statistics') ?>"><?php _e('View server statistics') ?></a>
 					</dd>
 					<dt><?php _e('Support label') ?></dt>
 					<dd>

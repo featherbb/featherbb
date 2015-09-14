@@ -17,22 +17,22 @@ if (!isset($feather)) {
 ?>
 
 	<div class="blockform">
-		<h2><span><?php echo $lang_admin_parser['Parser head'] ?></span></h2>
+		<h2><span><?= $lang_admin_parser['Parser head'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo $feather->urlFor('adminParser') ?>" enctype="multipart/form-data">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form method="post" action="<?= $feather->urlFor('adminParser') ?>" enctype="multipart/form-data">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<p class="submittop">
 					<input type="submit" name="save" value="<?php _e('Save changes') ?>" />
-					<input type="submit" name="reset" value="<?php echo $lang_admin_parser['reset defaults'] ?>" />
+					<input type="submit" name="reset" value="<?= $lang_admin_parser['reset defaults'] ?>" />
 				</p>
 				<div class="inform">
 					<input type="hidden" name="form_sent" value="1" />
 					<fieldset>
-						<legend><?php echo $lang_admin_parser['Config subhead'] ?></legend>
+						<legend><?= $lang_admin_parser['Config subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop" cellspacing="0">
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['textile'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['textile'] ?></th>
 									<td colspan="2">
 										<input type="radio" name="config[textile]" value="1"<?php if ($config['textile']) {
     echo ' checked="checked"';
@@ -41,11 +41,11 @@ if (!isset($feather)) {
 } ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
-										<span><?php echo $lang_admin_parser['textile help'] ?></span>
+										<span><?= $lang_admin_parser['textile help'] ?></span>
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['quote_links'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['quote_links'] ?></th>
 									<td colspan="2">
 										<input type="radio" name="config[quote_links]" value="1"<?php if ($config['quote_links']) {
     echo ' checked="checked"';
@@ -54,11 +54,11 @@ if (!isset($feather)) {
 } ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
-										<span><?php echo $lang_admin_parser['quote_links help'] ?></span>
+										<span><?= $lang_admin_parser['quote_links help'] ?></span>
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['quote_imgs'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['quote_imgs'] ?></th>
 									<td colspan="2">
 										<input type="radio" name="config[quote_imgs]" value="1"<?php if ($config['quote_imgs']) {
     echo ' checked="checked"';
@@ -67,11 +67,11 @@ if (!isset($feather)) {
 } ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
-										<span><?php echo $lang_admin_parser['quote_imgs help'] ?></span>
+										<span><?= $lang_admin_parser['quote_imgs help'] ?></span>
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['click_imgs'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['click_imgs'] ?></th>
 									<td colspan="2">
 										<input type="radio" name="config[click_imgs]" value="1"<?php if ($config['click_imgs']) {
     echo ' checked="checked"';
@@ -80,12 +80,12 @@ if (!isset($feather)) {
 } ?> /> <strong><?php _e('No') ?></strong>
 									</td>
 									<td>
-										<span><?php echo $lang_admin_parser['click_imgs help'] ?></span>
+										<span><?= $lang_admin_parser['click_imgs help'] ?></span>
 									</td>
 								</tr>
 
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['valid_imgs'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['valid_imgs'] ?></th>
 									<td colspan="2">
 										<input type="radio" name="config[valid_imgs]" value="1"<?php if ($config['valid_imgs']) {
     echo ' checked="checked"';
@@ -98,49 +98,49 @@ if (!isset($feather)) {
     echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> /> <strong><?php _e('No') ?></strong>
 									</td>
-									<td><?php echo $lang_admin_parser['valid_imgs help'] ?></td>
+									<td><?= $lang_admin_parser['valid_imgs help'] ?></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['max_size'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['max_size'] ?></th>
 									<td colspan="2">
 										<input type="text" name="config[max_size]" size="10" maxlength="8" value="<?php echo($config['max_size'])?>"<?php if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> />
 									</td>
-									<td><span><?php echo $lang_admin_parser['max_size help'] ?></span></td>
+									<td><span><?= $lang_admin_parser['max_size help'] ?></span></td>
 								</tr>
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['def_xy'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['def_xy'] ?></th>
 									<td>
-										<input type="text" name="config[def_width]" size="5" maxlength="5" value="<?php echo $config['def_width'] ?>" /> X:Width
+										<input type="text" name="config[def_width]" size="5" maxlength="5" value="<?= $config['def_width'] ?>" /> X:Width
 									</td>
 									<td>
-										<input type="text" name="config[def_height]" size="5" maxlength="5" value="<?php echo $config['def_height'] ?>" /> Y:Height
+										<input type="text" name="config[def_height]" size="5" maxlength="5" value="<?= $config['def_height'] ?>" /> Y:Height
 									</td>
 									<td>
-										<span><?php echo $lang_admin_parser['def_xy help'] ?></span>
+										<span><?= $lang_admin_parser['def_xy help'] ?></span>
 									</td>
 								</tr>
 
 
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['max_xy'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['max_xy'] ?></th>
 									<td>
-										<input type="text" name="config[max_width]" size="5" maxlength="5" value="<?php echo $config['max_width'] ?>" /> X:Width
+										<input type="text" name="config[max_width]" size="5" maxlength="5" value="<?= $config['max_width'] ?>" /> X:Width
 									</td>
 									<td>
-										<input type="text" name="config[max_height]" size="5" maxlength="5" value="<?php echo $config['max_height'] ?>" /> Y:Height
+										<input type="text" name="config[max_height]" size="5" maxlength="5" value="<?= $config['max_height'] ?>" /> Y:Height
 									</td>
-									<td><?php echo $lang_admin_parser['max_xy help'] ?></td>
+									<td><?= $lang_admin_parser['max_xy help'] ?></td>
 								</tr>
 
 								<tr>
-									<th scope="row"><?php echo $lang_admin_parser['smiley_size'] ?></th>
+									<th scope="row"><?= $lang_admin_parser['smiley_size'] ?></th>
 									<td colspan=2>
-										<input type="text" name="config[smiley_size]" size="5" maxlength="5" value="<?php echo $config['smiley_size'] .'%' ?>" />
+										<input type="text" name="config[smiley_size]" size="5" maxlength="5" value="<?= $config['smiley_size'] .'%' ?>" />
 									</td>
 									<td>
-										<span><?php echo $lang_admin_parser['smiley_size help'] ?></span>
+										<span><?= $lang_admin_parser['smiley_size help'] ?></span>
 									</td>
 								</tr>
 
@@ -150,13 +150,13 @@ if (!isset($feather)) {
 				</div>
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_parser['Smilies subhead'] ?></legend>
+						<legend><?= $lang_admin_parser['Smilies subhead'] ?></legend>
 						<div class="infldset">
 							<table cellspacing="0">
 							<thead>
 								<tr>
-									<th scope="col"><?php echo $lang_admin_parser['smiley_text_label'] ?></th>
-									<th scope="col"><?php echo $lang_admin_parser['smiley_file_label'] ?></th>
+									<th scope="col"><?= $lang_admin_parser['smiley_text_label'] ?></th>
+									<th scope="col"><?= $lang_admin_parser['smiley_file_label'] ?></th>
 									<th scope="col">:)</th>
 								</tr>
 							</thead>
@@ -211,7 +211,7 @@ if (!isset($feather)) {
 									<th scope="row"><?php echo($lang_admin_parser['smiley_upload']); ?></th>
  <?php if (ini_get('file_uploads')) {
     ?>
-									<td><input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $feather->forum_settings['o_avatars_size'] ?>" />
+									<td><input type="hidden" name="MAX_FILE_SIZE" value="<?= $feather->forum_settings['o_avatars_size'] ?>" />
 										<input type="file" name="new_smiley" id="upload_smiley" /></td>
 									<td><input type="submit" name="upload" value="<?php echo($lang_admin_parser['upload_button']);
     ?>" /></td>
@@ -233,15 +233,15 @@ if (!isset($feather)) {
 
 				<div class="inform">
 					<fieldset>
-						<legend><?php echo $lang_admin_parser['BBCodes subhead'] ?></legend>
+						<legend><?= $lang_admin_parser['BBCodes subhead'] ?></legend>
 						<div class="infldset">
 							<table cellspacing="0">
 							<thead>
 								<tr>
-									<th class="tcl" scope="col"><?php echo $lang_admin_parser['tagname_label'] ?></th>
-									<th class="tc3" scope="col"><?php echo $lang_admin_parser['in_post_label'] ?></th>
-									<th class="hidehead" scope="col"><?php echo $lang_admin_parser['in_sig_label'] ?></th>
-									<th class="tc2" scope="col"><?php echo $lang_admin_parser['depth_max'] ?></th>
+									<th class="tcl" scope="col"><?= $lang_admin_parser['tagname_label'] ?></th>
+									<th class="tc3" scope="col"><?= $lang_admin_parser['in_post_label'] ?></th>
+									<th class="hidehead" scope="col"><?= $lang_admin_parser['in_sig_label'] ?></th>
+									<th class="tc2" scope="col"><?= $lang_admin_parser['depth_max'] ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -293,7 +293,7 @@ foreach ($bbcd as $tagname => $tagdata) {
 
 				<p class="submitend">
 					<input type="submit" name="save" value="<?php _e('Save changes') ?>" />
-					<input type="submit" name="reset" value="<?php echo $lang_admin_parser['reset defaults'] ?>" />
+					<input type="submit" name="reset" value="<?= $lang_admin_parser['reset defaults'] ?>" />
 				</p>
 			</form>
 		</div>

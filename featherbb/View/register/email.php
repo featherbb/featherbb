@@ -17,16 +17,16 @@ if (!isset($feather)) {
 ?>
 
 <div id="emailform" class="blockform">
-	<h2><span><?php _e('Send email to') ?> <?php echo Utils::escape($recipient) ?></span></h2>
+	<h2><span><?php _e('Send email to') ?> <?= Utils::escape($recipient) ?></span></h2>
 	<div class="box">
-		<form id="email" method="post" action="misc.php?email=<?php echo $recipient_id ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+		<form id="email" method="post" action="misc.php?email=<?= $recipient_id ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div class="inform">
 				<fieldset>
 					<legend><?php _e('Write email') ?></legend>
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
-						<input type="hidden" name="redirect_url" value="<?php echo Utils::escape($redirect_url) ?>" />
+						<input type="hidden" name="redirect_url" value="<?= Utils::escape($redirect_url) ?>" />
 						<label class="required"><strong><?php _e('Email subject') ?> <span><?php _e('Required') ?></span></strong><br />
 						<input class="longinput" type="text" name="req_subject" size="75" maxlength="70" tabindex="1" /><br /></label>
 						<label class="required"><strong><?php _e('Email message') ?> <span><?php _e('Required') ?></span></strong><br />

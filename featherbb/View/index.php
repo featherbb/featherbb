@@ -28,8 +28,8 @@ foreach ($index_data as $forum) {
 	</div>
 	<?php endif;
     ?>
-	<div id="idx<?php echo $forum->cid ?>" class="blocktable">
-	<h2><span><?php echo Utils::escape($forum->cat_name) ?></span></h2>
+	<div id="idx<?= $forum->cid ?>" class="blocktable">
+	<h2><span><?= Utils::escape($forum->cat_name) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
@@ -46,18 +46,18 @@ foreach ($index_data as $forum) {
     $cur_cat = $forum->cid;
     endif;
     ?>
-				<tr class="<?php echo $forum->item_status ?>">
+				<tr class="<?= $forum->item_status ?>">
 					<td class="tcl">
-						<div class="<?php echo $forum->icon_type ?>"><div class="nosize"><?php echo Utils::forum_number_format($forum->forum_count_formatted) ?></div></div>
+						<div class="<?= $forum->icon_type ?>"><div class="nosize"><?= Utils::forum_number_format($forum->forum_count_formatted) ?></div></div>
 						<div class="tclcon">
 							<div>
-								<?php echo $forum->forum_field."\n".$forum->moderators_formatted ?>
+								<?= $forum->forum_field."\n".$forum->moderators_formatted ?>
 							</div>
 						</div>
 					</td>
-					<td class="tc2"><?php echo Utils::forum_number_format($forum->num_topics_formatted) ?></td>
-					<td class="tc3"><?php echo Utils::forum_number_format($forum->num_posts_formatted) ?></td>
-					<td class="tcr"><?php echo $forum->last_post_formatted ?></td>
+					<td class="tc2"><?= Utils::forum_number_format($forum->num_topics_formatted) ?></td>
+					<td class="tc3"><?= Utils::forum_number_format($forum->num_posts_formatted) ?></td>
+					<td class="tcr"><?= $forum->last_post_formatted ?></td>
 				</tr>
 	<?php
 
@@ -75,7 +75,7 @@ if (!empty($forum_actions)) :
 ?>
 <div class="linksb">
 	<div class="inbox crumbsplus">
-		<p class="subscribelink clearb"><?php echo implode(' - ', $forum_actions); ?></p>
+		<p class="subscribelink clearb"><?= implode(' - ', $forum_actions); ?></p>
 	</div>
 </div>
 <?php

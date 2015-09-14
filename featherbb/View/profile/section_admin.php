@@ -16,10 +16,10 @@ if (!isset($feather)) {
 
 ?>
 	<div class="blockform">
-		<h2><span><?php echo Utils::escape($user['username']).' - '.__('Section admin') ?></span></h2>
+		<h2><span><?= Utils::escape($user['username']).' - '.__('Section admin') ?></span></h2>
 		<div class="box">
-			<form id="profile7" method="post" action="<?php echo $feather->urlFor('profileSection', ['id' => $id, 'section' => 'admin'])?>">
-				<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<form id="profile7" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'admin'])?>">
+				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 				<div class="inform">
 				<input type="hidden" name="form_sent" value="1" />
 					<fieldset>
@@ -41,7 +41,7 @@ if (!isset($feather)) {
 						<legend><?php _e('Group membership legend') ?></legend>
 						<div class="infldset">
 							<select id="group_id" name="group_id">
-                                                            <?php echo $group_list ?>
+                                                            <?= $group_list ?>
 							</select>
 							<input type="submit" name="update_group_membership" value="<?php _e('Save') ?>" />
 						</div>
@@ -69,7 +69,7 @@ if (!isset($feather)) {
 						<legend><?php _e('Set mods legend') ?></legend>
 						<div class="infldset">
 							<p><?php _e('Moderator in info') ?></p>
-                                                        <?php echo $forum_list ?>
+                                                        <?= $forum_list ?>
 								</div>
 							</div>
 							<br class="clearb" /><input type="submit" name="update_forums" value="<?php _e('Update forums') ?>" />

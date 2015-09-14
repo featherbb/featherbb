@@ -20,22 +20,22 @@ if (!isset($feather)) {
 <div class="linkst">
 	<div class="inbox crumbsplus">
 		<ul class="crumbs">
-			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></li>
+			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
 		</ul>
 		<div class="pagepost">
-			<p class="pagelink conl"><?php echo $paging_links ?></p>
+			<p class="pagelink conl"><?= $paging_links ?></p>
 		</div>
 		<div class="clearer"></div>
 	</div>
 </div>
 
-<form method="post" action="<?php echo $feather->urlFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
-<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
-<input type="hidden" name="page" value="<?php echo Utils::escape($p) ?>" />
+<form method="post" action="<?= $feather->urlFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
+<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+<input type="hidden" name="page" value="<?= Utils::escape($p) ?>" />
 <div id="vf" class="blocktable">
-	<h2><span><?php echo Utils::escape($cur_forum['forum_name']) ?></span></h2>
+	<h2><span><?= Utils::escape($cur_forum['forum_name']) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<table>
@@ -56,20 +56,20 @@ if (!isset($feather)) {
             foreach ($topic_data as $topic) {
                 ++$topic_count;
                 ?>
-							<tr class="<?php echo $topic['item_status'] ?>">
+							<tr class="<?= $topic['item_status'] ?>">
 					<td class="tcl">
-						<div class="<?php echo $topic['icon_type'] ?>"><div class="nosize"><?php echo Utils::forum_number_format($topic_count + $start_from) ?></div></div>
+						<div class="<?= $topic['icon_type'] ?>"><div class="nosize"><?= Utils::forum_number_format($topic_count + $start_from) ?></div></div>
 						<div class="tclcon">
 							<div>
-								<?php echo $topic['subject_disp']."\n" ?>
+								<?= $topic['subject_disp']."\n" ?>
 							</div>
 						</div>
 					</td>
 					<td class="tc2"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
 <?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>					<td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
 <?php endif;
-                ?>					<td class="tcr"><?php echo $topic['last_post_disp'] ?></td>
-					<td class="tcmod"><input type="checkbox" name="topics[<?php echo $topic['id'] ?>]" value="1" /></td>
+                ?>					<td class="tcr"><?= $topic['last_post_disp'] ?></td>
+					<td class="tcmod"><input type="checkbox" name="topics[<?= $topic['id'] ?>]" value="1" /></td>
 				</tr>
 			<?php
 
@@ -89,13 +89,13 @@ if (!isset($feather)) {
 <div class="linksb">
 	<div class="inbox crumbsplus">
 		<div class="pagepost">
-			<p class="pagelink conl"><?php echo $paging_links ?></p>
-			<p class="conr modbuttons"><input type="submit" name="move_topics" value="<?php _e('Move') ?>"<?php echo $button_status ?> /> <input type="submit" name="delete_topics" value="<?php _e('Delete') ?>"<?php echo $button_status ?> /> <input type="submit" name="merge_topics" value="<?php _e('Merge') ?>"<?php echo $button_status ?> /> <input type="submit" name="open" value="<?php _e('Open') ?>"<?php echo $button_status ?> /> <input type="submit" name="close" value="<?php _e('Close') ?>"<?php echo $button_status ?> /></p>
+			<p class="pagelink conl"><?= $paging_links ?></p>
+			<p class="conr modbuttons"><input type="submit" name="move_topics" value="<?php _e('Move') ?>"<?= $button_status ?> /> <input type="submit" name="delete_topics" value="<?php _e('Delete') ?>"<?= $button_status ?> /> <input type="submit" name="merge_topics" value="<?php _e('Merge') ?>"<?= $button_status ?> /> <input type="submit" name="open" value="<?php _e('Open') ?>"<?= $button_status ?> /> <input type="submit" name="close" value="<?php _e('Close') ?>"<?= $button_status ?> /></p>
 			<div class="clearer"></div>
 		</div>
 		<ul class="crumbs">
-			<li><a href="<?php echo Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?php echo $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?php echo Utils::escape($cur_forum['forum_name']) ?></a></li>
+			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
 			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
 		</ul>
 		<div class="clearer"></div>

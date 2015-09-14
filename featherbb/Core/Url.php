@@ -782,6 +782,17 @@ class Url
     }
 
     //
+    // Fetch the base_url for static files, optionally support HTTPS and HTTP
+    //
+    public static function base_static()
+    {
+        self::$feather = \Slim\Slim::getInstance();
+        $url = self::$feather->request->getScriptName();
+        $url = str_replace('/index.php', '', $url);
+        return $url;
+    }
+
+    //
     // function is_valid($url) {
     //
     // Return associative array of valid URI components, or FALSE if $url is not

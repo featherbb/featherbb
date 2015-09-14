@@ -30,7 +30,7 @@ class Forum
     // Returns basic informations about the forum
     public function get_forum_info($id)
     {
-        $id = $this->hook->fire('get_info_forum_start', $id);
+        $id = $this->hook->fire('model.get_info_forum_start', $id);
 
         $cur_forum['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
@@ -67,7 +67,7 @@ class Forum
             throw new Error(__('Bad request'), '404');
         }
 
-        $cur_forum = $this->hook->fire('get_info_forum', $cur_forum);
+        $cur_forum = $this->hook->fire('model.get_info_forum', $cur_forum);
 
         return $cur_forum;
     }
@@ -85,7 +85,7 @@ class Forum
     // Returns the text required by the query to sort the forum
     public function sort_forum_by($sort_by_sql)
     {
-        $sort_by_sql = $this->hook->fire('sort_forum_by_start', $sort_by_sql);
+        $sort_by_sql = $this->hook->fire('model.sort_forum_by_start', $sort_by_sql);
 
         switch ($sort_by_sql) {
             case 0:
@@ -102,7 +102,7 @@ class Forum
                 break;
         }
 
-        $sort_by = $this->hook->fire('sort_forum_by', $sort_by);
+        $sort_by = $this->hook->fire('model.sort_forum_by', $sort_by);
 
         return $sort_by;
     }
@@ -112,7 +112,7 @@ class Forum
     {
         $forum_actions = array();
 
-        $forum_actions = $this->hook->fire('get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
+        $forum_actions = $this->hook->fire('model.get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
 
         if (!$this->user->is_guest) {
             if ($subscriptions == 1) {
@@ -126,7 +126,7 @@ class Forum
             $forum_actions[] = '<a href="'.$this->feather->urlFor('markForumRead', ['id' => $forum_id]).'">'.__('Mark forum read').'</a>';
         }
 
-        $forum_actions = $this->hook->fire('get_page_head', $forum_actions);
+        $forum_actions = $this->hook->fire('model.get_page_head', $forum_actions);
 
         return $forum_actions;
     }
@@ -134,7 +134,7 @@ class Forum
     // Returns the elements needed to display topics
     public function print_topics($forum_id, $sort_by, $start_from)
     {
-        $forum_id = $this->hook->fire('print_topics_start', $forum_id, $sort_by, $start_from);
+        $forum_id = $this->hook->fire('model.print_topics_start', $forum_id, $sort_by, $start_from);
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
@@ -150,7 +150,7 @@ class Forum
                         ->order_by_desc('id')
                         ->limit($this->user->disp_topics)
                         ->offset($start_from);
-        $result = $this->hook->fire('print_topics_ids_query', $result);
+        $result = $this->hook->fire('model.print_topics_ids_query', $result);
         $result = $result->find_many();
 
         $forum_data = array();
@@ -265,14 +265,14 @@ class Forum
             }
         }
 
-        $forum_data = $this->hook->fire('print_topics', $forum_data);
+        $forum_data = $this->hook->fire('model.print_topics', $forum_data);
 
         return $forum_data;
     }
 
     public function display_topics_moderate($fid, $sort_by, $start_from)
     {
-        $this->hook->fire('display_topics_start', $fid, $sort_by, $start_from);
+        $this->hook->fire('model.display_topics_start', $fid, $sort_by, $start_from);
 
         $topic_data = array();
 
@@ -375,7 +375,7 @@ class Forum
             }
         }
 
-        $topic_data = $this->hook->fire('display_topics', $topic_data);
+        $topic_data = $this->hook->fire('model.display_topics', $topic_data);
 
         return $topic_data;
     }
@@ -432,7 +432,7 @@ class Forum
 
     public function unsubscribe($forum_id)
     {
-        $forum_id = $this->hook->fire('unsubscribe_forum_start', $forum_id);
+        $forum_id = $this->hook->fire('model.unsubscribe_forum_start', $forum_id);
 
         if ($this->config['o_forum_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
@@ -458,7 +458,7 @@ class Forum
 
     public function subscribe($forum_id)
     {
-        $forum_id = $this->hook->fire('subscribe_forum_start', $forum_id);
+        $forum_id = $this->hook->fire('model.subscribe_forum_start', $forum_id);
 
         if ($this->config['o_forum_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
@@ -515,7 +515,7 @@ class Forum
 
     public function delete_topics($topics, $fid)
     {
-        $this->hook->fire('delete_topics', $topics, $fid);
+        $this->hook->fire('model.delete_topics', $topics, $fid);
 
         if (@preg_match('%[^0-9,]%', $topics)) {
             throw new Error(__('Bad request'), 400);
@@ -596,7 +596,7 @@ class Forum
 
     public function merge_topics($fid)
     {
-        $fid = $this->hook->fire('merge_topics_start', $fid);
+        $fid = $this->hook->fire('model.merge_topics_start', $fid);
 
         if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
             throw new Error(__('Bad request'), 404);
@@ -624,7 +624,7 @@ class Forum
                             ->where('forum_id', $fid)
                             ->order_by_asc('id')
                             ->find_one_col('id');
-        $merge_to_tid = $this->hook->fire('merge_topics_tid', $merge_to_tid);
+        $merge_to_tid = $this->hook->fire('model.merge_topics_tid', $merge_to_tid);
 
         // Make any redirect topics point to our new, merged topic
         $query = 'UPDATE '.$this->feather->forum_settings['db_prefix'].'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
@@ -686,7 +686,7 @@ class Forum
 
         // Count number of replies in the topic
         $num_replies = DB::for_table('posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
-        $num_replies = $this->hook->fire('merge_topics_num_replies', $num_replies);
+        $num_replies = $this->hook->fire('model.merge_topics_num_replies', $num_replies);
 
         // Get last_post, last_post_id and last_poster
         $last_post['select'] = array('posted', 'id', 'poster');
@@ -713,7 +713,7 @@ class Forum
         $topic = $this->hook->fireDB('merge_topics_update_topic', $topic);
         $topic = $topic->save();
 
-        $this->hook->fire('merge_topics');
+        $this->hook->fire('model.merge_topics');
 
         // Update the forum FROM which the topic was moved and redirect
         self::update($fid);

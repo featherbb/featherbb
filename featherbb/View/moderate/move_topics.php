@@ -18,15 +18,15 @@ if (!isset($feather)) {
 	<h2><span><?php echo($action == 'single') ? __('Move topic') : __('Move topics') ?></span></h2>
 	<div class="box">
 		<form method="post" action="">
-			<input type="hidden" name="<?php echo $csrf_key; ?>" value="<?php echo $csrf_token; ?>">
+			<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 			<div class="inform">
-			    <input type="hidden" name="topics" value="<?php echo $topics ?>" />
+			    <input type="hidden" name="topics" value="<?= $topics ?>" />
 				<fieldset>
 					<legend><?php _e('Move legend') ?></legend>
 					<div class="infldset">
 						<label><?php _e('Move to') ?>
 						<br /><select name="move_to_forum">
-								<?php echo $list_forums ?>
+								<?= $list_forums ?>
 							</optgroup>
 						</select>
 						<br /></label>

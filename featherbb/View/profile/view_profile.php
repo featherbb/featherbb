@@ -22,7 +22,7 @@ if (!isset($feather)) {
 				<legend><?php _e('Section personal') ?></legend>
 					<div class="infldset">
 						<dl>
-							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['personal'])."\n" ?>
+							<?= implode("\n\t\t\t\t\t\t\t", $user_info['personal'])."\n" ?>
 						</dl>
 						<div class="clearer"></div>
 					</div>
@@ -33,7 +33,7 @@ if (!isset($feather)) {
 				<legend><?php _e('Section messaging') ?></legend>
 					<div class="infldset">
 						<dl>
-							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['messaging'])."\n" ?>
+							<?= implode("\n\t\t\t\t\t\t\t", $user_info['messaging'])."\n" ?>
 						</dl>
 						<div class="clearer"></div>
 					</div>
@@ -44,7 +44,7 @@ if (!isset($feather)) {
 				<legend><?php _e('Section personality') ?></legend>
 					<div class="infldset">
 						<dl>
-							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['personality'])."\n" ?>
+							<?= implode("\n\t\t\t\t\t\t\t", $user_info['personality'])."\n" ?>
 						</dl>
 						<div class="clearer"></div>
 					</div>
@@ -55,7 +55,7 @@ if (!isset($feather)) {
 				<legend><?php _e('User activity') ?></legend>
 					<div class="infldset">
 						<dl>
-							<?php echo implode("\n\t\t\t\t\t\t\t", $user_info['activity'])."\n" ?>
+							<?= implode("\n\t\t\t\t\t\t\t", $user_info['activity'])."\n" ?>
 						</dl>
 						<div class="clearer"></div>
 					</div>

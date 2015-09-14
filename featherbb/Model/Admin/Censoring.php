@@ -39,7 +39,7 @@ class Censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        $set_search_word = $this->hook->fire('add_censoring_word_data', $set_search_word);
+        $set_search_word = $this->hook->fire('model.add_censoring_word_data', $set_search_word);
 
         $result = DB::for_table('censoring')
             ->create()
@@ -67,7 +67,7 @@ class Censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        $set_search_word = $this->hook->fire('update_censoring_word_start', $set_search_word);
+        $set_search_word = $this->hook->fire('model.update_censoring_word_start', $set_search_word);
 
         $result = DB::for_table('censoring')
             ->find_one($id)
@@ -84,7 +84,7 @@ class Censoring
     public function remove_word()
     {
         $id = intval(key($this->request->post('remove')));
-        $id = $this->hook->fire('remove_censoring_word_start', $id);
+        $id = $this->hook->fire('model.remove_censoring_word_start', $id);
 
         $result = DB::for_table('censoring')->find_one($id);
         $result = $this->hook->fireDB('remove_censoring_word', $result);

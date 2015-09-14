@@ -30,7 +30,7 @@ class Index
     // Returns page head
     public function get_page_head()
     {
-        $this->hook->fire('get_page_head_start');
+        $this->hook->fire('model.get_page_head_start');
 
         if ($this->config['o_feed_type'] == '1') {
             $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
@@ -38,7 +38,7 @@ class Index
             $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
         }
 
-        $page_head = $this->hook->fire('get_page_head', $page_head);
+        $page_head = $this->hook->fire('model.get_page_head', $page_head);
 
         return $page_head;
     }
@@ -46,7 +46,7 @@ class Index
     // Returns forum action
     public function get_forum_actions()
     {
-        $this->hook->fire('get_forum_actions_start');
+        $this->hook->fire('model.get_forum_actions_start');
 
         $forum_actions = array();
 
@@ -55,7 +55,7 @@ class Index
             $forum_actions[] = '<a href="'.$this->feather->urlFor('markRead').'">'.__('Mark all as read').'</a>';
         }
 
-        $forum_actions = $this->hook->fire('get_forum_actions', $forum_actions);
+        $forum_actions = $this->hook->fire('model.get_forum_actions', $forum_actions);
 
         return $forum_actions;
     }
@@ -63,7 +63,7 @@ class Index
     // Detects if a "new" icon has to be displayed
     protected function get_new_posts()
     {
-        $this->hook->fire('get_new_posts_start');
+        $this->hook->fire('model.get_new_posts_start');
 
         $query['select'] = array('f.id', 'f.last_post');
         $query['where'] = array(
@@ -116,7 +116,7 @@ class Index
             }
         }
 
-        $new_topics = $this->hook->fire('get_new_posts', $new_topics);
+        $new_topics = $this->hook->fire('model.get_new_posts', $new_topics);
 
         return $new_topics;
     }
@@ -124,7 +124,7 @@ class Index
     // Returns the elements needed to display categories and their forums
     public function print_categories_forums()
     {
-        $this->hook->fire('print_categories_forums_start');
+        $this->hook->fire('model.print_categories_forums_start');
 
         // Get list of forums and topics with new posts since last visit
         if (!$this->user->is_guest) {
@@ -231,7 +231,7 @@ class Index
             ++$i;
         }
 
-        $index_data = $this->hook->fire('print_categories_forums', $index_data);
+        $index_data = $this->hook->fire('model.print_categories_forums', $index_data);
 
         return $index_data;
     }
@@ -239,7 +239,7 @@ class Index
     // Returns the elements needed to display stats
     public function collect_stats()
     {
-        $this->hook->fire('collect_stats_start');
+        $this->hook->fire('model.collect_stats_start');
 
         // Collect some statistics from the database
         if (!$this->feather->cache->isCached('users_info')) {
@@ -265,7 +265,7 @@ class Index
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
         }
 
-        $stats = $this->hook->fire('collect_stats', $stats);
+        $stats = $this->hook->fire('model.collect_stats', $stats);
 
         return $stats;
     }
@@ -273,7 +273,7 @@ class Index
     // Returns the elements needed to display users online
     public function fetch_users_online()
     {
-        $this->hook->fire('fetch_users_online_start');
+        $this->hook->fire('model.fetch_users_online_start');
 
         // Fetch users online info and generate strings for output
         $online = array();
@@ -310,7 +310,7 @@ class Index
             $online['num_users'] = 0;
         }
 
-        $online = $this->hook->fire('fetch_users_online', $online);
+        $online = $this->hook->fire('model.fetch_users_online', $online);
 
         return $online;
     }

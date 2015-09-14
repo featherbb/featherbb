@@ -17,7 +17,7 @@ if (!isset($feather)) {
 	<div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
 	<div class="box">
 		<div id="rules-block" class="inbox">
-			<div class="usercontent"><?php echo $feather->forum_settings['o_rules_message'] ?></div>
+			<div class="usercontent"><?= $feather->forum_settings['o_rules_message'] ?></div>
 		</div>
 	</div>
 </div>

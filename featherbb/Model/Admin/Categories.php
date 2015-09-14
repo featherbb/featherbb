@@ -25,7 +25,7 @@ class Categories
 
     public function add_category($cat_name)
     {
-        $cat_name = $this->hook->fire('add_category', $cat_name);
+        $cat_name = $this->hook->fire('model.add_category', $cat_name);
 
         $set_add_category = array('cat_name' => $cat_name);
 
@@ -37,7 +37,7 @@ class Categories
 
     public function update_category(array $category)
     {
-        $category = $this->hook->fire('update_category', $category);
+        $category = $this->hook->fire('model.update_category', $category);
 
         $set_update_category = array('cat_name' => $category['name'],
                                     'disp_position' => $category['order']);
@@ -50,7 +50,7 @@ class Categories
 
     public function delete_category($cat_to_delete)
     {
-        $cat_to_delete = $this->hook->fire('delete_category_start', $cat_to_delete);
+        $cat_to_delete = $this->hook->fire('model.delete_category_start', $cat_to_delete);
 
         $forums_in_cat = DB::for_table('forums')
                             ->select('id')
