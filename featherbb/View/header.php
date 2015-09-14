@@ -136,9 +136,16 @@ if ($feather->user->is_guest) {
     $navlinks[] = '<li id="navlogout"><a href="'.$feather->urlFor('logout', ['token' => Random::hash($feather->user->id.Random::hash($feather->request->getIp()))]).'">'.__('Logout').'</a></li>'."\n";
 }
 
-// // Are there any additional navlinks we should insert into the array before imploding it?
+// Are there any additional navlinks we should insert into the array before imploding it?
 $extraLinks = $feather->hooks->fire('header.navlinks', []);
-if ($feather->user->g_read_board == '1' && !empty($extraLinks)) {
+if ($feather->user->g_read_board == '1' && (!empty($extraLinks) || $feather->forum_settings['o_additional_navlinks'] != '')) {
+    if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $feather->forum_settings['o_additional_navlinks']."\n", $extra_links)) {
+        // Insert any additional links into the $links array (at the correct index)
+        $num_links = count($extra_links[1]);
+        for ($i = 0; $i < $num_links; ++$i) {
+            array_splice($navlinks, $extra_links[1][$i], 0, array('<li id="navextra'.($i + 1).'">'.$extra_links[2][$i].'</li>'));
+        }
+    }
     foreach ($extraLinks as $key => $link) {
         $list = '<li id="navextra'.key($link).'">'.$link[key($link)].'</li>'."\n";
         array_splice($navlinks, key($link), 0, $list);
