@@ -30,12 +30,14 @@ class Post
 
     public function newreply($fid = null, $tid = null, $qid = null)
     {
+        $this->feather->hooks->fire('controller.post.newreply');
+
         $this->newpost('', $fid, $tid);
     }
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        $this->feather->hooks->fire('post.create', $fid, $tid, $qid);
+        $this->feather->hooks->fire('controller.post.create', $fid, $tid, $qid);
 
         // Antispam feature
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.php';
@@ -233,6 +235,8 @@ class Post
 
     public function delete($id)
     {
+        $id = $this->feather->hooks->fire('controller.post.delete', $id);
+
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($id);
 
@@ -276,7 +280,7 @@ class Post
 
     public function editpost($id)
     {
-        $id = $this->feather->hooks->fire('post.edit', $id);
+        $id = $this->feather->hooks->fire('controller.post.edit', $id);
 
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_edit($id);
@@ -305,7 +309,7 @@ class Post
         $errors = array();
 
         if ($this->feather->request()->isPost()) {
-            $this->feather->hooks->fire('post.edit.submit', $id);
+            $this->feather->hooks->fire('controller.post.edit.submit', $id);
 
             // Let's see if everything went right
             $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
@@ -315,7 +319,7 @@ class Post
 
             // Did everything go according to plan?
             if (empty($errors) && !$this->feather->request->post('preview')) {
-                $this->feather->hooks->fire('post.edit.valid', $id);
+                $this->feather->hooks->fire('controller.post.edit.valid', $id);
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
@@ -327,7 +331,7 @@ class Post
 
         if ($this->feather->request->post('preview')) {
             $preview_message = $this->feather->parser->parse_message($post['message'], $post['hide_smilies']);
-            $preview_message = $this->feather->hooks->fire('post.edit.preview', $preview_message);
+            $preview_message = $this->feather->hooks->fire('controller.post.edit.preview', $preview_message);
         } else {
             $preview_message = '';
         }
@@ -369,6 +373,8 @@ class Post
 
     public function report($id)
     {
+        $id = $this->feather->hooks->fire('controller.post.report', $id);
+
         if ($this->feather->request()->isPost()) {
             $this->model->insert_report($id);
         }
@@ -392,6 +398,8 @@ class Post
 
     public function gethost($pid)
     {
+        $pid = $this->feather->hooks->fire('controller.post.gethost', $pid);
+
         $this->model->display_ip_address($pid);
     }
 }

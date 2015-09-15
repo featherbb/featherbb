@@ -39,6 +39,8 @@ class Install
 
     public function run()
     {
+        $this->feather->hooks->fire('controller.install.run_install');
+
         if (!empty($this->feather->request->post('choose_lang'))) {
             if (in_array(Utils::trim($this->feather->request->post('install_lang')), $this->available_langs)) {
                 $this->install_lang = $this->feather->request->post('install_lang');
@@ -148,6 +150,8 @@ class Install
 
     public function create_config(array $data)
     {
+        $this->feather->hooks->fire('controller.install.create_config');
+
         // Generate config ...
         $config = array();
         foreach ($data as $key => $value) {
@@ -167,6 +171,8 @@ class Install
 
     public function create_db(array $data)
     {
+        $this->feather->hooks->fire('controller.install.create_db');
+
         Core::init_db($data);
 
         // Load appropriate language
@@ -211,17 +217,23 @@ class Install
 
     public function write_config($array)
     {
+        $this->feather->hooks->fire('controller.install.write_config');
+
         return file_put_contents($this->feather->forum_env['FORUM_CONFIG_FILE'], '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
     }
 
     public function write_htaccess()
     {
+        $this->feather->hooks->fire('controller.install.write_htaccess');
+
         $data = file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'.htaccess.dist');
         return file_put_contents($this->feather->forum_env['FEATHER_ROOT'].'.htaccess', $data);
     }
 
     public function load_default_config(array $data)
     {
+        $this->feather->hooks->fire('controller.install.load_default_config');
+
         return array(
             'o_cur_version'                => $this->feather->forum_env['FORUM_VERSION'],
             'o_database_revision'        => $this->feather->forum_env['FORUM_DB_REVISION'],

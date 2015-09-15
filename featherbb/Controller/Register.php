@@ -30,6 +30,8 @@ class Register
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.register.display');
+
         if (!$this->user->is_guest) {
             Url::redirect($this->feather->urlFor('home'));
         }
@@ -75,11 +77,15 @@ class Register
 
     public function cancel()
     {
+        $this->feather->hooks->fire('controller.register.cancel');
+
         Url::redirect($this->feather->urlFor('home'));
     }
 
     public function rules()
     {
+        $this->feather->hooks->fire('controller.register.rules');
+
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {
             Url::redirect($this->feather->urlFor('home'));
