@@ -75,7 +75,6 @@ endif;
     var baseUrl = '<?= Utils::escape(Url::base(true)); ?>',
         langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
 </script>
-<script src="<?= Url::base() ?>/style/imports/bbeditor.js"></script>
 <div id="editform" class="blockform">
 	<h2><span><?php _e('Edit post') ?></span></h2>
 	<div class="box">

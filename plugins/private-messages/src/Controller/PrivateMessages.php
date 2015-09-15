@@ -38,7 +38,6 @@ class PrivateMessages
         if (!$inbox = $this->model->checkFolderOwner($fid, $uid)) {
             throw new Error(__('Wrong folder owner', 'private_messages'), 403);
         }
-        // echo $inbox->name;
 
         // Display delete confirm form
         if ($this->request->post('delete')) {
@@ -56,6 +55,16 @@ class PrivateMessages
 
         $limit = $this->feather->user['disp_topics'];
         $messages = $this->model->getMessages($fid, $uid, $limit, $start_from);
+
+        $this->feather->template
+            ->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5)
+            ->setPageInfo(array(
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inbox->name),
+                'active_page' => 'navextra1',
+                'inbox' => $inbox,
+                'is_indexed' => true
+            )
+        )->addTemplate('index.php')->display();
     }
 
     public function move($fid = 2, $page = 1)
@@ -69,7 +78,7 @@ class PrivateMessages
         if (!$this->request->post('topics'))
     		throw new Error(__('Select more than one topic', 'private_messages'), 403);
 
-    	$topics = ($this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
+    	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
 
     	if (empty($topics))
     		throw new Error(__('Select more than one topic', 'private_messages'), 403);

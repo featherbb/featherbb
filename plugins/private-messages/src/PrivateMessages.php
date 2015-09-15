@@ -15,12 +15,23 @@ use DB;
 
 class PrivateMessages extends BasePlugin
 {
-    // public function __construct()
-    // {
-    //     parent::__construct();
-    //     var_dump($this->feather->user);
-    //     // load_textdomain('private_messages', 'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
-    // }
+
+    public static function generateMenu($page = '')
+    {
+        $feather = \Slim\Slim::getInstance();
+
+        $is_admin = ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']) ? true : false;
+
+        // See if there are any plugins that want to display in the menu
+        $plugins = self::adminPluginsMenu($is_admin);
+
+        $feather->template->setPageInfo(array(
+            'page'    =>    $page,
+            'is_admin'    =>    $is_admin,
+            'plugins'    =>    $plugins,
+            ), 1
+        )->addTemplate('admin/menu.php');
+    }
 
     public function run()
     {
@@ -34,6 +45,7 @@ class PrivateMessages extends BasePlugin
             }, function() use ($feather){
                 $feather->get('(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+'))->name('Conversations');
                 $feather->get('(/:id)/page/:page(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.page');
+                $feather->get('/send(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->name('newConversation');
             }
         );
     }

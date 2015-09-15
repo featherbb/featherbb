@@ -29,6 +29,7 @@ class PrivateMessages
     {
         return DB::for_table('pms_folders')
             ->select('name')
+            ->select('id')
             ->where_any_is([
                 ['user_id' => $uid],
                 ['user_id' => 1]
