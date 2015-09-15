@@ -11,7 +11,7 @@ namespace FeatherBB\Core;
 
 class View
 {
-    protected $templatesDirectory,
+    protected $directories = array(),
     $templates,
     $app,
     $data,
@@ -36,6 +36,8 @@ class View
     {
         $this->data = $this->page = new \Slim\Helper\Set();
         $this->app = \Slim\Slim::getInstance();
+        // Set default dir for view fallback
+        $this->addTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'] . 'featherbb/View/', 10);
     }
 
     /********************************************************************************
@@ -166,24 +168,36 @@ class View
     * Resolve template paths
     *******************************************************************************/
 
-    /**
-    * Set the base directory that contains view templates
-    * @param   string $directory
-    * @throws  \InvalidArgumentException If directory is not a directory
-    */
-    public function setTemplatesDirectory($directory)
+
+    public function addTemplatesDirectory($data, $priority = 10)
     {
-        $this->templatesDirectory = rtrim($directory, DIRECTORY_SEPARATOR);
+        $directories = (array) $data;
+        foreach ($directories as $key => $tpl_dir) {
+            if (is_dir($tpl_dir)) {
+                $this->directories[(int) $priority][] = rtrim((string) $tpl_dir, DIRECTORY_SEPARATOR);
+            }
+        }
         return $this;
     }
 
     /**
-    * Get templates base directory
+    * Get templates directories ordered by priority
     * @return string
     */
     public function getTemplatesDirectory()
     {
-        return $this->templatesDirectory;
+        $output = array();
+        if (count($this->directories) > 1) {
+            ksort($this->directories);
+        }
+        foreach ($this->directories as $priority) {
+            if (!empty($priority)) {
+                foreach ($priority as $tpl_dir) {
+                    $output[] = $tpl_dir;
+                }
+            }
+        }
+        return $output;
     }
 
     /**
@@ -193,14 +207,13 @@ class View
     */
     public function getTemplatePathname($file)
     {
-        $pathname = $this->templatesDirectory . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR);
-        if (!is_file($pathname)) {
-            $pathname = $this->app->forum_env['FEATHER_ROOT'] . 'featherbb/View/' . ltrim($file, DIRECTORY_SEPARATOR); // Fallback on default view
-            if (!is_file($pathname)) {
-                throw new \RuntimeException("View cannot add template `$file` to stack because the template does not exist");
+        foreach ($this->getTemplatesDirectory() as $tpl_dir) {
+            $pathname = realpath($tpl_dir . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR));
+            if (is_file($pathname)) {
+                return (string) $pathname;
             }
         }
-        return (string) $pathname;
+        throw new \RuntimeException("View cannot add template `$file` to stack because the template does not exist");
     }
 
     /********************************************************************************
@@ -233,7 +246,6 @@ class View
     {
         extract($data);
         ob_start();
-
         if ($nested) {
             require $this->getTemplatePathname('header.php');
         }
@@ -256,7 +268,7 @@ class View
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
-        $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view');
+        $this->addTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view', 9);
         return $this;
     }
 
