@@ -38,13 +38,26 @@ class PrivateMessages
             ->find_one();
     }
 
+    // Get all inboxes owned by a user
+    public function getUserFolders($uid)
+    {
+        return DB::for_table('pms_folders')
+            ->select('name')
+            ->select('id')
+            ->where_any_is([
+                ['user_id' => $uid],
+                ['user_id' => 1]
+            ])
+            ->find_many();
+    }
+
     // Get messages count from context
     public function countMessages($fid, $uid)
     {
         $where[] = ['cd.folder_id' => $fid];
-        if ($fid == 1) {
-            $where[] = ['cd.viewed' => 0];
-        }
+        // if ($fid == 1) {
+        //     $where[] = ['cd.viewed' => 0];
+        // }
         return DB::for_table('pms_conversations')
             ->select('id')
             ->table_alias('c')
@@ -55,12 +68,13 @@ class PrivateMessages
             ->count();
     }
 
+    // Get messages from inbox
     public function getMessages($fid, $uid, $limit, $start)
     {
         $where[] = ['cd.folder_id' => $fid];
-        if ($fid == 1) {
-            $where[] = ['cd.viewed' => 0];
-        }
+        // if ($fid == 1) {
+        //     $where[] = ['cd.viewed' => 0];
+        // }
 
         $select = array(
             'c.id', 'c.subject', 'c.poster', 'c.poster_id', 'c.num_replies', 'c.last_post', 'c.last_poster', 'c.last_post_id',
@@ -83,6 +97,7 @@ class PrivateMessages
             ->find_many();
     }
 
+    // Delete one or more messages
     public function delete($convers, $uid)
     {
         // Get the number of conversation messages and the number of replies from all conversations

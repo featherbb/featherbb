@@ -35,6 +35,7 @@ class PrivateMessages
         // Set default page to "Inbox" folder
         $fid = !empty($fid) ? intval($fid) : 2;
         $uid = intval($this->feather->user->id);
+
         // Check if current user owns the folder
         if (!$inbox = $this->model->checkFolderOwner($fid, $uid)) {
             throw new Error(__('Wrong folder owner', 'private_messages'), 403);
@@ -45,24 +46,31 @@ class PrivateMessages
             $this->delete();
         }
 
-        $nbMessages = $this->model->countMessages($fid, $uid);
+        // Get all inboxes owned by the user and count messages in it
+        $inboxes = $this->model->getUserFolders($uid);
+        foreach ($inboxes as $inbox) {
+            $inbox->nbMsg = $this->model->countMessages($inbox->id, $uid);
+        }
 
-        $num_pages = ceil($nbMessages / $this->feather->user['disp_topics']);
 
+        // Page data
+        $num_pages = ceil($inboxes[$fid]->nbMsg / $this->feather->user['disp_topics']);
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
-
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations', ['id' => $fid]).'/#');
 
+        // Fetch conversations from current inbox
         $limit = $this->feather->user['disp_topics'];
         $messages = $this->model->getMessages($fid, $uid, $limit, $start_from);
 
+        // And display the view
         $this->feather->template
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inbox->name),
                 'active_page' => 'navextra1',
                 'admin_console' => true,
-                'inbox' => $inbox
+                'inboxes' => $inboxes,
+                'current_inbox' => $inboxes[$fid-1]
             )
         )
         ->addTemplate('menu.php')
