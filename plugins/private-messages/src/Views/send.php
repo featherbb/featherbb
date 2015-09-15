@@ -37,12 +37,12 @@ if (!isset($feather)) {
 						<div class="infldset txtarea">
 <? if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
                             <label class="required"><strong>Send to <span>{required}</span></strong><br /></label>
-                            <input type="text" name="data[username]" placeholder="Username" size="25" tabindex="1" /><br />
+                            <input type="text" name="username" placeholder="Username" size="25" tabindex="1" required/><br />
                             <div class="clearer"></div>
                             <label class="required"><strong>Subject <span>{required}</span></strong><br /></label>
-                            <input class="longinput" type="text" name="data[subject]" placeholder="Subject" size="80" maxlength="70" tabindex="2" /><br />
+                            <input class="longinput" type="text" name="subject" placeholder="Subject" size="80" maxlength="70" tabindex="2" required/><br />
                             <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br /></label>
-                            <textarea name="data[message]" id="message" rows="20" cols="95" tabindex="2"></textarea><br />
+                            <textarea name="message" id="message" rows="20" cols="95" tabindex="2" required></textarea><br />
                             <ul class="bblinks">
     							<li><span><a href="<?= $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
     							<li><span><a href="<?= $feather->urlFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
@@ -57,7 +57,7 @@ if (!isset($feather)) {
 						<legend><?php _e('Options') ?></legend>
 						<div class="infldset">
 							<div class="rbox">
-								<label><input type="checkbox" name="hide_smilies" value="1" tabindex="3" />{hide_smilies}<br /></label>
+								<label><input type="checkbox" name="smilies" value="1" tabindex="3" />{hide_smilies}<br /></label>
 							</div>
 						</div>
 					</fieldset>
