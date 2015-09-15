@@ -147,4 +147,57 @@ class PrivateMessages
 		}
     }
 
+    public function addConversation(array $data = array())
+    {
+        $result = DB::for_table('pms_conversations')
+                    ->create()
+                    ->set($data);
+        $result->save();
+        return $result->id();
+    }
+
+
+
+    public function getConversation($id = null)
+    {
+
+    }
+
+    public function addMessage(array $data = array(), $tid = null, $uid = null)
+    {
+        $add = DB::for_table('pms_messages')
+                    ->create()
+                    ->set($data)
+                    ->set('conversation_id', $tid);
+        $add->save();
+        $update = DB::for_table('pms_conversations')
+                    ->find_one($tid)
+                    ->set(array(
+                        'first_post_id'	=>	$add->id(),
+                        'last_post_id'	=>	$add->id(),
+                    ))
+                    ->save();
+        $notifs = DB::for_table('pms_data')
+                ->create()
+                ->set(array(
+    					'conversation_id'	=>	$tid,
+    					'user_id'	=>	$uid,
+    					'viewed'	=>	(($uid == $this->feather->user->id) ? 1 : 0)))
+                ->save();
+
+        return ($add && $update && $notifs) ? $add->id() : false;
+    }
+
+    public function isAllowed($username = null)
+    {
+        if (!$username) {
+            return false;
+        }
+
+        $result = DB::for_table('users')
+                    ->where('username', $username)
+                    ->where_gt('id', 1)
+                    ->find_one();
+        return $result;
+    }
 }

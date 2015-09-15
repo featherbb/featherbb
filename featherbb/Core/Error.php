@@ -15,7 +15,7 @@ class Error extends \Exception
 
     public function __construct($message, $code = 400, $backlink = true)
     {
-        parent::__construct($message, $code);
+        parent::__construct(Utils::escape($message), $code);
         $this->backlink = (bool) $backlink;
     }
 
