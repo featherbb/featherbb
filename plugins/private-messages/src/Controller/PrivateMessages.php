@@ -26,6 +26,7 @@ class PrivateMessages
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Plugins\Model\PrivateMessages();
         load_textdomain('private_messages', dirname(dirname(__FILE__)).'/lang/'.$this->feather->user->language.'/private-messages.mo');
+        $this->feather->template->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5);
     }
 
 
@@ -57,14 +58,15 @@ class PrivateMessages
         $messages = $this->model->getMessages($fid, $uid, $limit, $start_from);
 
         $this->feather->template
-            ->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5)
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inbox->name),
                 'active_page' => 'navextra1',
-                'inbox' => $inbox,
-                'is_indexed' => true
+                'admin_console' => true,
+                'inbox' => $inbox
             )
-        )->addTemplate('index.php')->display();
+        )
+        ->addTemplate('menu.php')
+        ->addTemplate('index.php')->display();
     }
 
     public function move($fid = 2, $page = 1)
