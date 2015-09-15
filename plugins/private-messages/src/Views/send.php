@@ -37,7 +37,7 @@ if (!isset($feather)) {
 						<div class="infldset txtarea">
 <? if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
                             <label class="required"><strong>Send to <span>{required}</span></strong><br /></label>
-                            <input type="text" name="username" placeholder="Username" size="25" tabindex="1" required/><br />
+                            <input type="text" name="username" placeholder="Username" <?= ($username ? 'value="'.$username.'"' : '')?> size="25" tabindex="1" required/><br />
                             <div class="clearer"></div>
                             <label class="required"><strong>Subject <span>{required}</span></strong><br /></label>
                             <input class="longinput" type="text" name="subject" placeholder="Subject" size="80" maxlength="70" tabindex="2" required/><br />

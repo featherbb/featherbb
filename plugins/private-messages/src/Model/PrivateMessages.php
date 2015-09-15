@@ -200,4 +200,15 @@ class PrivateMessages
                     ->find_one();
         return $result;
     }
+
+    public function getUserByID($id = null)
+    {
+        if (!$id) {
+            return false;
+        }
+        $result = DB::for_table('users')
+                    ->where('id', $id)
+                    ->find_one();
+        return $result;
+    }
 }

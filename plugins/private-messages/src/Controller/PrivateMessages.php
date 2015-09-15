@@ -137,7 +137,7 @@ class PrivateMessages
 
     }
 
-    public function send($id = null, $uid = null)
+    public function send($uid = null)
     {
         if ($this->feather->request->isPost()) {
             // First raw validation
@@ -218,6 +218,17 @@ class PrivateMessages
                 }
             }
         } else {
+            $receiver = null;
+            if (!is_null($uid)) {
+                if ($uid < 2) {
+                    throw new Error('Wrong user id', 400);
+                }
+                if ($user = $this->model->getUserByID($uid)) {
+                    $this->feather->template->setPageInfo(array('username' => Utils::escape($user->username)));
+                } else {
+                    throw new Error('Unable to find user', 400);
+                }
+            }
             $this->feather->template->addTemplate('send.php')->display();
         }
     }
