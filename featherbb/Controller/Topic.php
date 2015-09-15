@@ -28,7 +28,7 @@ class Topic
 
     public function display($id = null, $name = null, $page = null, $pid = null)
     {
-        $this->feather->hooks->fire('topic.display', $id, $name, $page, $pid);
+        $this->feather->hooks->fire('controller.topic.display', $id, $name, $page, $pid);
 
         // Antispam feature
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.php';
@@ -40,9 +40,6 @@ class Topic
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
         $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
-        if ($is_admmod) {
-            $admin_ids = Utils::get_admin_ids();
-        }
 
         // Can we or can we not post replies?
         $post_link = $this->model->get_post_link($id, $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
@@ -138,6 +135,8 @@ class Topic
 
     public function viewpost($pid)
     {
+        $pid = $this->feather->hooks->fire('controller.topic.viewpost', $pid);
+
         $post = $this->model->redirect_to_post($pid);
 
         return $this->display($post['topic_id'], null, $post['get_p'], $pid);
@@ -145,34 +144,46 @@ class Topic
 
     public function subscribe($id, $name = '')
     {
+        $id = $this->feather->hooks->fire('controller.topic.subscribe', $id);
+
         $this->model->subscribe($id);
     }
 
     public function unsubscribe($id, $name = '')
     {
+        $id = $this->feather->hooks->fire('controller.topic.unsubscribe', $id);
+
         $this->model->unsubscribe($id);
     }
 
     public function close($id, $name = '')
     {
+        $id = $this->feather->hooks->fire('controller.topic.close', $id);
+
         $topic = $this->model->setClosed($id, 1);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
     }
 
     public function open($id, $name = '')
     {
+        $id = $this->feather->hooks->fire('controller.topic.open', $id);
+
         $topic = $this->model->setClosed($id, 0);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
     }
 
     public function stick($id, $name = '')
     {
+        $id = $this->feather->hooks->fire('controller.topic.stick', $id);
+
         $topic = $this->model->setSticky($id, 1);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
     }
 
     public function unstick($id, $name = '')
     {
+        $id = $this->feather->hooks->fire('controller.topic.unstick', $id);
+
         $topic = $this->model->setSticky($id, 0);
         Url::redirect($this->feather->urlFor('Topic', ['id' => $id, 'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
     }
@@ -180,6 +191,8 @@ class Topic
     // Move a single topic
     public function move($tid, $name = '', $fid)
     {
+        $tid = $this->feather->hooks->fire('controller.topic.move', $tid);
+
         if ($new_fid = $this->feather->request->post('move_to_forum')) {
             $this->model->move_to($fid, $new_fid, $tid);
             Url::redirect($this->feather->urlFor('Topic', array('id' => $tid, 'name' => $name)), __('Move topic redirect'));
@@ -202,6 +215,8 @@ class Topic
 
     public function moderate($id = null, $fid = null, $page = null)
     {
+        $this->feather->hooks->fire('controller.topic.moderate');
+
         // Make sure that only admmods allowed access this page
         $forumModel = new \FeatherBB\Model\Forum();
         $moderators = $forumModel->get_moderators($id);
@@ -278,6 +293,8 @@ class Topic
 
     public function action($id, $action)
     {
+        $this->feather->hooks->fire('controller.topic.action');
+
         $this->model->handle_actions($id, $action);
     }
 }

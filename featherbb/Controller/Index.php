@@ -27,6 +27,8 @@ class Index
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.index.index');
+
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title'])),
             'active_page' => 'index',
@@ -41,6 +43,8 @@ class Index
 
     public function rules()
     {
+        $this->feather->hooks->fire('controller.index.rules');
+
         if ($this->feather->forum_settings['o_rules'] == '0' || ($this->feather->user->is_guest && $this->feather->user->g_read_board == '0' && $this->feather->forum_settings['o_regs_allow'] == '0')) {
             throw new Error(__('Bad request'), 404);
         }
@@ -53,6 +57,8 @@ class Index
 
     public function markread()
     {
+        $this->feather->hooks->fire('controller.index.markread');
+
         Auth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
         // Reset tracked topics
         Track::set_tracked_topics(null);

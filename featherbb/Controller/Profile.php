@@ -39,18 +39,20 @@ class Profile
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
+        $id = $this->feather->hooks->fire('controller.profile.display', $id);
+
         if ($this->request->post('update_group_membership')) {
             if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_group_membership($id, $this->feather);
+            $this->model->update_group_membership($id);
         } elseif ($this->request->post('update_forums')) {
             if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_mod_forums($id, $this->feather);
+            $this->model->update_mod_forums($id);
         } elseif ($this->request->post('ban')) {
             if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
@@ -62,7 +64,7 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->delete_user($id, $this->feather);
+            $this->model->delete_user($id);
 
             $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Confirm delete user')),
@@ -88,7 +90,7 @@ class Profile
                                     throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_profile($id, $info, $section, $this->feather);
+            $this->model->update_profile($id, $info, $section);
         }
 
         $user = $this->model->get_user_info($id);
@@ -247,6 +249,8 @@ class Profile
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
+        $id = $this->feather->hooks->fire('controller.profile.action', $id);
+
         if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user->g_read_board == '0') {
                 throw new Error(__('No view'), 403);
@@ -256,7 +260,7 @@ class Profile
         }
 
         if ($action == 'change_pass') {
-            $this->model->change_pass($id, $this->feather);
+            $this->model->change_pass($id);
 
             $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Change pass')),
@@ -269,7 +273,7 @@ class Profile
             $this->feather->template->addTemplate('profile/change_pass.php')->display();
 
         } elseif ($action == 'change_email') {
-            $this->model->change_email($id, $this->feather);
+            $this->model->change_email($id);
 
             $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Change email')),
@@ -317,7 +321,7 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->promote_user($id, $this->feather);
+            $this->model->promote_user($id);
         } else {
             throw new Error(__('Bad request'), 404);
         }
@@ -325,6 +329,8 @@ class Profile
 
     public function email($id)
     {
+        $id = $this->feather->hooks->fire('controller.profile.email', $id);
+
         if ($this->feather->user->g_send_email == '0') {
             throw new Error(__('No permission'), 403);
         }
@@ -356,6 +362,8 @@ class Profile
 
     public function gethostip($ip)
     {
+        $ip = $this->feather->hooks->fire('controller.profile.gethostip', $ip);
+
         $this->model->display_ip_info($ip);
     }
 }

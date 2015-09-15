@@ -26,6 +26,7 @@ class Forum
 
     public function display($fid, $name = null, $page = null)
     {
+        $this->feather->hooks->fire('controller.forum.display');
         // Fetch some informations about the forum
         $cur_forum = $this->model->get_forum_info($fid);
 
@@ -94,6 +95,8 @@ class Forum
 
     public function moderate($id, $name = null, $page = null)
     {
+        $this->feather->hooks->fire('controller.forum.moderate');
+
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
@@ -136,6 +139,8 @@ class Forum
 
     public function markread($id)
     {
+        $this->feather->hooks->fire('controller.forum.markread');
+
         $tracked_topics = Track::get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
         Track::set_tracked_topics($tracked_topics);
@@ -145,18 +150,24 @@ class Forum
 
     public function subscribe($id)
     {
+        $this->feather->hooks->fire('controller.forum.subscribe');
+
         $this->model->subscribe($id);
         Url::redirect($this->feather->urlFor('Forum', ['id' => $id]), __('Subscribe redirect'));
     }
 
     public function unsubscribe($id)
     {
+        $this->feather->hooks->fire('controller.forum.unsubscribe');
+
         $this->model->unsubscribe($id);
         Url::redirect($this->feather->urlFor('Forum', ['id' => $id]), __('Unsubscribe redirect'));
     }
 
     public function dealposts($fid, $page)
     {
+        $this->feather->hooks->fire('controller.forum.dealposts');
+
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();

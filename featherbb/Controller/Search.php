@@ -32,6 +32,8 @@ class Search
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.search.display');
+
         if ($this->user->g_search == '0') {
             throw new Error(__('No search permission'), 403);
         }
@@ -87,6 +89,8 @@ class Search
 
     public function quicksearches($show)
     {
+        $this->feather->hooks->fire('controller.search.quicksearches');
+
         Url::redirect($this->feather->urlFor('search').'?action=show_'.$show);
     }
 }

@@ -32,7 +32,7 @@ class Auth
         }
 
         if ($this->feather->request->isPost()) {
-            $this->feather->hooks->fire('login_start');
+            $this->feather->hooks->fire('controller.login');
             $form_username = Utils::trim($this->feather->request->post('req_username'));
             $form_password = Utils::trim($this->feather->request->post('req_password'));
             $save_pass = (bool) $this->feather->request->post('save_pass');
@@ -54,7 +54,7 @@ class Auth
                     Track::set_tracked_topics(null);
 
                     $expire = ($save_pass) ? $this->feather->now + 1209600 : $this->feather->now + $this->feather->forum_settings['o_timeout_visit'];
-                    $expire = $this->feather->hooks->fire('expire_login', $expire);
+                    $expire = $this->feather->hooks->fire('controller.expire_login', $expire);
                     ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
                     Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
@@ -74,7 +74,7 @@ class Auth
 
     public function logout($token)
     {
-        $token = $this->feather->hooks->fire('logout_start', $token);
+        $token = $this->feather->hooks->fire('controller.logout', $token);
 
         if ($this->feather->user->is_guest || !isset($token) || $token != Random::hash($this->feather->user->id.Random::hash($this->feather->request->getIp()))) {
             Url::redirect($this->feather->urlFor('home'), 'Not logged in');
@@ -88,7 +88,7 @@ class Auth
         }
 
         ModelAuth::feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
-        $this->feather->hooks->fire('logout_end');
+        $this->feather->hooks->fire('controller.logout_end');
 
         Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
     }
@@ -110,7 +110,7 @@ class Auth
             if ($user) {
                 // Load the "activate password" template
                 $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/mail_templates/activate_password.tpl'));
-                $mail_tpl = $this->feather->hooks->fire('mail_tpl_password_forgotten', $mail_tpl);
+                $mail_tpl = $this->feather->hooks->fire('controller.mail_tpl_password_forgotten', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -121,7 +121,7 @@ class Auth
                 $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->feather->forum_settings['o_board_title'], $mail_message);
 
-                $mail_message = $this->feather->hooks->fire('mail_message_password_forgotten', $mail_message);
+                $mail_message = $this->feather->hooks->fire('controller.mail_message_password_forgotten', $mail_message);
 
                 if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 && (time() - $user->last_email_sent) >= 0) {
                     throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
@@ -137,7 +137,7 @@ class Auth
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
                 $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
-                $cur_mail_message = $this->feather->hooks->fire('cur_mail_message_password_forgotten', $cur_mail_message);
+                $cur_mail_message = $this->feather->hooks->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
                 $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
 

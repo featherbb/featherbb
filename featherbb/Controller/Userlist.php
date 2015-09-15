@@ -25,6 +25,8 @@ class Userlist
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.userlist.display');
+
         if ($this->feather->user->g_view_users == '0') {
             throw new Error(__('No permission'), 403);
         }

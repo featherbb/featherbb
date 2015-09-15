@@ -25,6 +25,8 @@ class Help
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.help.start');
+
         $this->feather->template->setPageInfo(array(
             'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
             'active_page' => 'help',
