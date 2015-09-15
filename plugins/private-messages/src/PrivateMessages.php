@@ -45,7 +45,8 @@ class PrivateMessages extends BasePlugin
             }, function() use ($feather){
                 $feather->get('(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+'))->name('Conversations');
                 $feather->get('(/:id)/page/:page(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.page');
-                $feather->get('/send(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->name('newConversation');
+                $feather->map('/send(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.send');
+                $feather->get('/reply(/:conv_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('conv_id' => '[0-9]+'))->name('Conversations.reply');
             }
         );
     }
