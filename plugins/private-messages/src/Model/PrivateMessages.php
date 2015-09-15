@@ -82,4 +82,53 @@ class PrivateMessages
             ->find_many();
     }
 
+    public function delete($convers, $uid)
+    {
+        // Get the number of conversation messages and the number of replies from all conversations
+        $numConvers = count($convers);
+        $numReplies = DB::for_table('pms_conversations')
+            ->table_alias('c')
+            ->select('c.num_replies')
+            ->inner_join('pms_data', array('c.id', '=', 'cd.conversation_id'), 'cd')
+            // ->inner_join('pms_data', array('cd.user_id', '=', $uid), null, true)
+            ->where('cd.user_id', $uid)
+            ->where_in('c.id', $convers)
+            ->sum('c.num_replies');
+        $numPms = ($numReplies + $numConvers);
+
+        // Soft delete messages
+        DB::configure('id_column_overrides', array(
+            'pms_data' => 'conversation_id'
+        ));
+        DB::for_table('pms_data')
+            ->where('user_id', $uid)
+            ->where_id_in($convers)
+            ->find_result_set()
+            ->set('deleted', 1)
+            ->save();
+
+        // Decrement user PMs count
+        // DB::for_table('users')
+        //     ->where('id', $uid)
+        //     ->set_expr('num_pms', 'num_pms-'.$numPms);
+        //     ->save();
+
+        // Now check if anyone left in the conversation has any of these topics undeleted. If so, then we leave them. Otherwise, actually delete them.
+		foreach ($convers as $cid)
+		{
+            $left = DB::for_table('pms_data')
+                ->where('conversation_id', $cid)
+                ->where('deleted', 0);
+
+            if ($left->count()) { // People are still left
+                continue;
+            }
+
+            DB::for_table('pms_data')->where('conversation_id', $cid)->delete_many();
+            DB::for_table('pms_messages')->where('conversation_id', $cid)->delete_many();
+            DB::for_table('pms_conversations')->where('id', $cid)->delete_many();
+
+		}
+    }
+
 }
