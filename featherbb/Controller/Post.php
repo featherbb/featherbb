@@ -207,27 +207,28 @@ class Post
         );
 
         $this->feather->template->setPageInfo(array(
-                            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
-                            'required_fields' => $required_fields,
-                            'focus_element' => $focus_element,
-                            'active_page' => 'post',
-                            'post' => $post,
-                            'tid' => $tid,
-                            'fid' => $fid,
-                            'cur_posting' => $cur_posting,
-                            'lang_antispam' => $lang_antispam,
-                            'lang_antispam_questions' => $lang_antispam_questions,
-                            'lang_bbeditor'    =>    $lang_bbeditor,
-                            'index_questions' => $index_questions,
-                            'checkboxes' => $checkboxes,
-                            'action' => $action,
-                            'form' => $form,
-                            'post_data' => $post_data,
-                            'url_forum' => $url_forum,
-                            'url_topic' => $url_topic,
-                            'quote' => $quote,
-                            'errors'    =>    $errors,
-                            ))->addTemplate('post.php')->display();
+                'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
+                'required_fields' => $required_fields,
+                'focus_element' => $focus_element,
+                'active_page' => 'post',
+                'post' => $post,
+                'tid' => $tid,
+                'fid' => $fid,
+                'cur_posting' => $cur_posting,
+                'lang_antispam' => $lang_antispam,
+                'lang_antispam_questions' => $lang_antispam_questions,
+                'lang_bbeditor'    =>    $lang_bbeditor,
+                'index_questions' => $index_questions,
+                'checkboxes' => $checkboxes,
+                'action' => $action,
+                'form' => $form,
+                'post_data' => $post_data,
+                'url_forum' => $url_forum,
+                'url_topic' => $url_topic,
+                'quote' => $quote,
+                'errors'    =>    $errors,
+            )
+        )->addTemplate('post.php')->display();
     }
 
     public function delete($id)

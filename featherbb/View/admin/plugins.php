@@ -36,7 +36,8 @@ if (!isset($feather)) {
                                     <?php if (in_array($plugin->name, $activePlugins)) { ?>
                                         <a href="<?= $feather->urlFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Deactivate') ?></a>
                                     <?php } else { ?>
-                                        <a href="<?= $feather->urlFor('activatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Activate') ?></a>
+                                        <a href="<?= $feather->urlFor('activatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Activate') ?></a> <br>
+                                        <a href="<?= $feather->urlFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?php _e('Uninstall') ?></a>
                                     <?php } ?>
                                 </div>
                             </td>
