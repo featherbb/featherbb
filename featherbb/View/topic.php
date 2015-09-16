@@ -60,7 +60,7 @@ foreach ($post_data as $post) {
 }
     ?>
 <?php if (count($post['user_contacts'])) {
-    echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' ', $post['user_contacts']).'</dd>'."\n";
+    echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' | ', $post['user_contacts']).'</dd>'."\n";
 }
     ?>
 					</dl>
