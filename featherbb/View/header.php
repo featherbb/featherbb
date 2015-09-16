@@ -153,7 +153,7 @@ echo "\t\t\t".implode("\t\t\t", $navlinks);
                         </ul>
                     </div>
                 <div class="navbar-right">
-                    <form method="get" action="/search" class="nav-search">
+                    <form method="get" action="<?php echo Url::base(); ?>/search/" class="nav-search">
                         <input type="hidden" name="action" value="search">
                         <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php _e('Search') ?>">
                     </form>

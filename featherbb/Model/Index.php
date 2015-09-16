@@ -180,7 +180,7 @@ class Index
             // Are there new posts since our last visit?
             if (isset($new_topics[$cur_forum->fid])) {
                 $cur_forum->item_status .= ' inew';
-                $forum_field_new = '<span class="newtext">[ <a href="'.$this->feather->urlFor('quickSearch', ['show' => '?action=show_new&amp;fid='.$cur_forum->fid]).'">'.__('New posts').'</a> ]</span>';
+                $forum_field_new = '<span class="newtext">[ <a href="'.$this->feather->urlFor('quickSearch', ['show' => 'new&amp;fid='.$cur_forum->fid]).'">'.__('New posts').'</a> ]</span>';
                 $cur_forum->icon_type = 'icon icon-new';
             }
 
