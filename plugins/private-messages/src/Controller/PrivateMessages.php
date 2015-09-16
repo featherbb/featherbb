@@ -59,18 +59,14 @@ class PrivateMessages
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations', ['id' => $fid]).'/#');
 
-        // Fetch conversations from current inbox
-        $limit = $this->feather->user['disp_topics'];
-        $messages = $this->model->getMessages($fid, $uid, $limit, $start_from);
-
-        // And display the view
         $this->feather->template
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inboxes[$fid]['name']),
                 'active_page' => 'navextra1',
                 'admin_console' => true,
                 'inboxes' => $inboxes,
-                'current_inbox_id' => $fid
+                'current_inbox_id' => $fid,
+                'messages' => $this->model->getMessages($fid, $uid, $this->feather->user['disp_topics'], $start_from)
             )
         )
         ->addTemplate('menu.php')
