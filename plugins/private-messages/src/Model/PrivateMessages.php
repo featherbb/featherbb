@@ -174,7 +174,7 @@ class PrivateMessages
         return $result;
     }
 
-    public function addMessage(array $data = array(), $conv_id = null, $uid = null)
+    public function addMessage(array $data = array(), $conv_id = null, array $uid = array())
     {
         $add = DB::for_table('pms_messages')
                     ->create()
@@ -188,15 +188,16 @@ class PrivateMessages
                         'last_post_id'	=>	$add->id(),
                     ))
                     ->save();
-        if (!is_null($uid)) {
-            $notifs = DB::for_table('pms_data')
-                    ->create()
-                    ->set(array(
-                            'conversation_id'	=>	$conv_id,
-                            'user_id'	=>	$uid,
-                            'viewed'	=>	(($uid == $this->feather->user->id) ? 1 : 0)))
-                    ->save();
-
+        if (!empty($uid)) {
+            foreach ($uid as $user) {
+                $notifs = DB::for_table('pms_data')
+                        ->create()
+                        ->set(array(
+                                'conversation_id'	=>	$conv_id,
+                                'user_id'	=>	$user,
+                                'viewed'	=>	(($user == $this->feather->user->id) ? 1 : 0)))
+                        ->save();
+            }
         } else {
             $notifs = DB::for_table('pms_data')
                     ->where('conversation_id', $conv_id)

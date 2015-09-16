@@ -240,7 +240,7 @@ class PrivateMessages
                         }
                     } else {
                         // Add message in conversation + add receiver
-                        if ($msg_id = $this->model->addMessage($msg_data, $conv_id, $user->id)) {
+                        if ($msg_id = $this->model->addMessage($msg_data, $conv_id, array($user->id, $this->feather->user->id))) {
                             Url::redirect($this->feather->urlFor('Conversations'), 'Your PM has been sent to '.$user->username.' !');
                         }
                     }
