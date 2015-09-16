@@ -39,7 +39,7 @@ if (!isset($feather)) {
                             <?php if(!empty($inboxes)):
                                 foreach ($inboxes as $iid => $data) { ?>
                                 <li<?= ($iid == $current_inbox_id) ? ' class="isactive"' : ''; ?>>
-                                    <a href="<?= $feather->urlFor('Conversations', ['id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
+                                    <a href="<?= $feather->urlFor('Conversations', ['inbox_id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
                                 </li>
                             <?php } endif; ?>
                         </ul>

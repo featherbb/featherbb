@@ -48,8 +48,7 @@ class PrivateMessages extends BasePlugin
             function() use ($feather) {
                 if(!$feather->user->logged) throw new Error(__('No permission'), 403);
             }, function() use ($feather){
-                $feather->get('(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+'))->name('Conversations');
-                $feather->get('(/:id)/page/:page(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.page');
+                $feather->get('(/inbox(/:inbox_id))(/)(/:conv_id)(/)(/page(/:page))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+', 'conv_id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations');
                 $feather->map('/send(/)(:uid)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('uid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.send');
                 $feather->map('/reply(/:conv_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('conv_id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.reply');
             }
