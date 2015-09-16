@@ -19,11 +19,11 @@ if (!isset($feather)) {
         <div class="linkst">
             <div class="inbox">
                 <ul class="crumbs">
-                    <li><a href="<?= Url::base() ?>"><?php _e('Index') ?><?=$current_inbox->id; ?></a></li>
+                    <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations', ['id' => $current_inbox->id]) ?>"><?= Utils::escape($current_inbox->name) ?></a></li>
+                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations', ['id' => $current_inbox_id]) ?>"><?= Utils::escape($inboxes[$current_inbox_id]['name']) ?></a></li>
                     <li><span>»&#160;</span><strong><?php _e('My conversations', 'private_messages') ?></strong></li>
-                    <li class="postlink actions conr"><span><a href="<?= $feather->urlFor('newConversation') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li>
+                    <li class="postlink actions conr"><span><a href="<?= $feather->urlFor('Conversations.send') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li>
                 </ul>
                 <div class="pagepost"></div>
                 <div class="clearer"></div>
@@ -37,9 +37,9 @@ if (!isset($feather)) {
                     <div class="inbox">
                         <ul>
                             <?php if(!empty($inboxes)):
-                                foreach ($inboxes as $inbox) { ?>
-                                <li<?= ($inbox->id == $current_inbox->id) ? ' class="isactive"' : ''; ?>>
-                                    <a href="<?= $feather->urlFor('Conversations', ['id' => $inbox->id]) ?>"><?= Utils::escape($inbox->name) ?><?= (intval($inbox->nbMsg) > 0) ? ' ('.$inbox->nbMsg.')' : ''; ?></a>
+                                foreach ($inboxes as $iid => $data) { ?>
+                                <li<?= ($iid == $current_inbox_id) ? ' class="isactive"' : ''; ?>>
+                                    <a href="<?= $feather->urlFor('Conversations', ['id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
                                 </li>
                             <?php } endif; ?>
                         </ul>

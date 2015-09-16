@@ -45,14 +45,20 @@ class PrivateMessages
     // Get all inboxes owned by a user
     public function getUserFolders($uid)
     {
-        return DB::for_table('pms_folders')
+        $result = DB::for_table('pms_folders')
             ->select('name')
             ->select('id')
             ->where_any_is([
                 ['user_id' => $uid],
                 ['user_id' => 1]
             ])
-            ->find_many();
+            ->find_array();
+
+        $output = false;
+        foreach($result as $inbox) {
+            $output[(int) $inbox['id']] = array('name' => $inbox['name']);
+        }
+        return $output;
     }
 
     // Get messages count from context
