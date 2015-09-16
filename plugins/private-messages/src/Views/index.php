@@ -22,6 +22,7 @@ if (!isset($feather)) {
                 <input type="hidden" name="p" value="1" />
                 <div id="vf" class="blocktable">
                     <div class="box">
+<? if (!empty($conversations)) { ?>
                         <div class="inbox">
                             <table>
                                 <thead>
@@ -35,8 +36,7 @@ if (!isset($feather)) {
                                     </tr>
                                 </thead>
                                 <tbody>
-<? if (!empty($conversations)) {
-    $count = 1;
+    <? $count = 1;
     foreach ($conversations as $conv) { ?>
                                     <tr class="<?=($count % 2 == 0) ? 'roweven ' : 'rowodd '?>inew">
                                         <td class="tcl">
@@ -57,11 +57,14 @@ if (!isset($feather)) {
                                         <td class="tcr"><?= ($conv['last_post'] ? '<a href="#">'.$feather->utils->format_time($conv['last_post']).'</a>' : 'Never')?> <span class="byuser">by <a href="<?= $feather->urlFor('userProfile', ['id' => 2])?>"><?= Utils::escape($conv['last_poster'])?></a></span></td>
                                         <td class="tcmod"><input type="checkbox" name="topics[]" value="1" /></td>
                                     </tr>
-    <? }
-} ?>
+    <? } ?>
+
                                 </tbody>
                             </table>
                         </div>
+                            <? } else { ?>
+
+                            <? } ?>
                     </div>
                 </div>
                 <div class="pagepost">
