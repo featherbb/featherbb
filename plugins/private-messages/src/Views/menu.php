@@ -49,9 +49,9 @@ if (!isset($feather)) {
                 <div class="box">
                     <div class="inbox">
                         <ul>
-                            <li>Inbox: 0% full</li>
+                            <li class="big">Inbox: 0% full</li>
                             <li><div id="pm_bar_style" style="width:0px;"></div></li>
-                            <li>Quota: 0 / &infin;</li>
+                            <li class="big">Quota: 0 / &infin;</li>
                         </ul>
                     </div>
                 </div>
@@ -60,8 +60,8 @@ if (!isset($feather)) {
                 <div class="box">
                     <div class="inbox">
                         <ul>
-                            <li><a href="http://localhost/panther/pms_misc.php?action=blocked">Blocked Users</a></li>
-                            <li><a href="http://localhost/panther/pms_misc.php?action=folders">My Folders</a></li>
+                            <li><a href="#">Blocked Users</a></li>
+                            <li><a href="#">My Folders</a></li>
                         </ul>
                     </div>
                 </div>

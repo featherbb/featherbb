@@ -54,6 +54,8 @@ class PrivateMessages extends BasePlugin
                 $feather->map('/reply(/:conv_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('conv_id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.reply');
             }
         );
+
+        $this->feather->template->addAsset('css', 'plugins/private-messages/src/style/private-messages.css');
     }
 
     public function addNavlink($navlinks)
