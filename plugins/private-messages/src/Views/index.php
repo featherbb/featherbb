@@ -51,23 +51,26 @@ div#pm_bar_style {
                                     </tr>
                                 </thead>
                                 <tbody>
-<? if (!empty($messages)) {
+<? if (!empty($conversations)) {
     $count = 1;
-    foreach ($messages as $message) { ?>
-        <?= var_dump($message) ?>
+    foreach ($conversations as $conv) { ?>
                                     <tr class="<?=($count % 2 == 0) ? 'roweven ' : 'rowodd '?>inew">
                                         <td class="tcl">
-                                            <div class="icon <?= ($message['viewed'] ? 'icon-new' : '')?>"><div class="nosize">1</div></div>
+                                            <div class="icon <?= ($conv['viewed'] ? 'icon-new' : '')?>"><div class="nosize">1</div></div>
                                             <div class="tclcon">
                                                 <div>
-                                                    <strong><a href="<?= $feather->urlFor('Conversations', ['id' => 1])?>"><?= Utils::escape($message['subject'])?></a></strong> <? ($message['viewed'] ? '<span class="newtext">[ <a href="#" title="Go to the first new post in this topic.">New posts</a> ]</span>' : '')?>
+                                                    <strong><a href="<?= $feather->urlFor('Conversations', ['id' => 1])?>"><?= Utils::escape($conv['subject'])?></a></strong> <? ($conv['viewed'] ? '<span class="newtext">[ <a href="#" title="Go to the first new post in this topic.">New posts</a> ]</span>' : '')?>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="tcl"><a href="<?= $feather->urlFor('userProfile', ['id' => $message['poster_id']]) ?>"><span><?= Utils::escape($message['poster'])?></span></a></td>
-                                        <td class="tc2"><a href="<?= $feather->urlFor('userProfile', ['id' => 2]) ?>"><span>TODO</span></a></td>
-                                        <td class="tc2"><?= (int) $message['num_replies']?></td>
-                                        <td class="tcr"><?= ($message['last_post'] ? '<a href="#">'.$feather->utils->format_time($message['last_post']).'</a>' : 'Never')?> <span class="byuser">by <a href="<?= $feather->urlFor('userProfile', ['id' => 2])?>"><?= Utils::escape($message['last_poster'])?></a></span></td>
+                                        <td class="tcl"><a href="<?= $feather->urlFor('userProfile', ['id' => $conv['poster_id']]) ?>"><span><?= Utils::escape($conv['poster'])?></span></a></td>
+                                        <td class="tc2"><? if (isset($conv['receivers']) && is_array($conv['receivers'])) {
+                                            foreach ($conv['receivers'] as $uid => $name) { ?>
+                                                <a href="<?= $feather->urlFor('userProfile', ['id' => $uid]) ?>"><span><?= Utils::escape($name)?></span></a>
+                                            <? } }?>
+                                        </td>
+                                        <td class="tc2"><?= (int) $conv['num_replies']?></td>
+                                        <td class="tcr"><?= ($conv['last_post'] ? '<a href="#">'.$feather->utils->format_time($conv['last_post']).'</a>' : 'Never')?> <span class="byuser">by <a href="<?= $feather->urlFor('userProfile', ['id' => 2])?>"><?= Utils::escape($conv['last_poster'])?></a></span></td>
                                         <td class="tcmod"><input type="checkbox" name="topics[]" value="1" /></td>
                                     </tr>
     <? }

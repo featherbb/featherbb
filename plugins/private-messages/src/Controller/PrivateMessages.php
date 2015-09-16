@@ -66,7 +66,7 @@ class PrivateMessages
                 'admin_console' => true,
                 'inboxes' => $inboxes,
                 'current_inbox_id' => $fid,
-                'messages' => $this->model->getMessages($fid, $uid, $this->feather->user['disp_topics'], $start_from)
+                'conversations' => $this->model->getConversations($fid, $uid, $this->feather->user['disp_topics'], $start_from)
             )
         )
         ->addTemplate('menu.php')

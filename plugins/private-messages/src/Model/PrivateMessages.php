@@ -78,33 +78,49 @@ class PrivateMessages
             ->count();
     }
 
-    // Get messages from inbox
-    public function getMessages($fid, $uid, $limit, $start)
+    public function getConversations($inboxes = null, $uid = null, $limit = 50, $start = 0)
     {
-        $where[] = ['cd.folder_id' => $fid];
-        // if ($fid == 1) {
-        //     $where[] = ['cd.viewed' => 0];
-        // }
+        $inboxes = (array) $inboxes;
+        $where = array();
+        foreach($inboxes as $id => $inbox_id) {
+            $where[]['d.folder_id'] = (int) $inbox_id;
+        }
 
         $select = array(
             'c.id', 'c.subject', 'c.poster', 'c.poster_id', 'c.num_replies', 'c.last_post', 'c.last_poster', 'c.last_post_id',
-            'cd.viewed',
+            'd.viewed',
             'poster_gid' => 'u.group_id', 'u.email',
-            'last_poster_id' => 'l.id', 'last_poster_gid' => 'l.group_id'
+            'last_poster_id' => 'u2.id', 'last_poster_gid' => 'u2.group_id'
         );
-        return DB::for_table('pms_conversations')
-            ->table_alias('c')
+        $result = DB::for_table('pms_conversations')
             ->select_many($select)
-            ->inner_join('pms_data', array('c.id', '=', 'cd.conversation_id'), 'cd')
+            ->table_alias('c')
+            ->inner_join('pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
+            // ->left_outer_join('pms_messages', array('m.poster_id', '=', 'c.last_post_id'), 'm')
             ->left_outer_join('users', array('u.id', '=', 'c.poster_id'), 'u')
-            ->left_outer_join('users', array('l.username', '=', 'c.last_poster'), 'l', true)
-            ->where('cd.user_id', $uid)
-            ->where('cd.deleted', 0)
+            ->left_outer_join('users', array('u2.username', '=', 'c.last_poster'), 'u2', true)
+            ->where('d.user_id', $uid)
+            ->where('d.deleted', 0)
             ->where_any_is($where)
             ->order_by_desc('c.last_post')
             ->limit($limit)
             ->offset($start)
-            ->find_many();
+            ->find_array();
+
+        foreach($result as $key => $conversation) {
+            $receivers = DB::for_table('pms_data')
+                            ->table_alias('d')
+                            ->select(array('d.user_id', 'u.username'))
+                            ->left_outer_join('users', array('u.id', '=', 'd.user_id'), 'u')
+                            ->where('d.conversation_id', $conversation['id'])
+                            ->find_array();
+            if (is_array($receivers)) {
+                foreach ($receivers as $receiver) {
+                    $result[$key]['receivers'][$receiver['user_id']] = $receiver['username'];
+                }
+            }
+        }
+        return $result;
     }
 
     // Delete one or more messages
