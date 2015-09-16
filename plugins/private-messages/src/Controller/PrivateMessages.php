@@ -30,7 +30,7 @@ class PrivateMessages
     }
 
 
-    public function index($fid = 2, $page = 1)
+    public function index($fid = 2, $conv_id = null, $page = 1)
     {
         // Set default page to "Inbox" folder
         $fid = !empty($fid) ? intval($fid) : 2;
