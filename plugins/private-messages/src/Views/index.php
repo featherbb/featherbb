@@ -16,22 +16,6 @@ if (!isset($feather)) {
 }
 
 ?>
-<style media="screen">
-div#pm_bar {
-    border: 1px solid #336699;
-    width: 100px;
-    height: 10px;
-    text-align: right;
-    display:inline-block;
-}
-
-div#pm_bar_style {
-    background-color: #336699;
-    height: 10px;
-    display:block;
-}
-</style>
-
         <div class="block">
             <form method="post" action="#" id="topics">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
