@@ -137,7 +137,7 @@ class PrivateMessages
 
     }
 
-    public function send($uid = null)
+    public function send($uid = null, $conv_id = null)
     {
         if ($this->feather->request->isPost()) {
             // First raw validation
@@ -148,51 +148,60 @@ class PrivateMessages
                 'smilies' => 0,
                 'preview' => null,
             ), $this->feather->request->post());
-            unset($data['message']);
             $data = array_map(array('FeatherBB\Core\Utils', 'trim'), $data);
-            $data = array_map(array('FeatherBB\Core\Utils', 'escape'), $data);
-            $data['message'] = $this->feather->request->post('message');
+
+            $conv = false;
+            if (!is_null($conv_id)) {
+                if ($conv_id < 1) {
+                    throw new Error('Wrong conversation ID', 400);
+                }
+                if (!$conv = $this->model->getConversation($conv_id, $this->feather->user->id)) {
+                    throw new Error('Unknown conversation ID', 400);
+                }
+            }
 
             if ($this->feather->request->post('preview')) {
                 $msg = $this->feather->parser->parse_message($data['message'], $data['smilies']);
                 $this->feather->template->setPageInfo(array(
                     'parsed_message' => $msg,
-                    'username' => $data['username'],
-                    'subject' => $data['subject'],
+                    'username' => Utils::escape($data['username']),
+                    'subject' => Utils::escape($data['subject']),
                     'message' => Utils::escape($data['message'])
-                ))->addTemplate('send.php')->display();
+                    ))->addTemplate('send.php')->display();
             } else {
                 // Prevent flood
                 if (!is_null($data['preview']) && $this->feather->user['last_post'] != '' && ($this->feather->now - $this->feather->user['last_post']) < $this->feather->user['g_post_flood']) {
                     throw new Error(sprintf($lang_post['Flood start'], $this->feather->user['g_post_flood'], $this->feather->user['g_post_flood'] - ($this->feather->now - $this->feather->user['last_post'])), 429);
                 }
 
-                // Validate username / TODO : allow multiple usernames
-                if (!$user = $this->model->isAllowed($data['username'])) {
-                    throw new Error('You can\'t send an PM to '.($data['username'] ? $data['username'] : 'nobody'), 400);
-                }
+                if (!$conv) {
+                    // Validate username / TODO : allow multiple usernames
+                    if (!$user = $this->model->isAllowed($data['username'])) {
+                        throw new Error('You can\'t send an PM to '.($data['username'] ? $data['username'] : 'nobody'), 400);
+                    }
 
-                // Avoid self messages
-                if ($user->id == $this->feather->user->id) {
-                    throw new Error('No self message', 403);
+                    // Avoid self messages
+                    if ($user->id == $this->feather->user->id) {
+                        throw new Error('No self message', 403);
+                    }
+
+                    // Validate subject
+                    if ($this->feather->forum_settings['o_censoring'] == '1')
+                    $data['subject'] = Utils::trim(Utils::censor($data['subject']));
+                    if (empty($data['subject'])) {
+                        throw new Error('No subject or censored subject', 400);
+                    } else if (Utils::strlen($data['subject']) > 70) {
+                        throw new Error('Too long subject', 400);
+                    } else if ($this->feather->forum_settings['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($data['subject']) && !$this->feather->user->is_admmod) {
+                        throw new Error('All caps subject forbidden', 400);
+                    }
                 }
 
                 // TODO : inbox full
 
-                // Validate subject
-                if ($this->feather->forum_settings['o_censoring'] == '1')
-                    $data['subject'] = Utils::trim(Utils::censor($data['subject']));
-                if (empty($data['subject'])) {
-                    throw new Error('No subject or censored subject', 400);
-                } else if (Utils::strlen($data['subject']) > 70) {
-                    throw new Error('Too long subject', 400);
-                } else if ($this->feather->forum_settings['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($data['subject']) && !$this->feather->user->is_admmod) {
-                    throw new Error('All caps subject forbidden', 400);
-                }
-
                 // Validate message
                 if ($this->feather->forum_settings['o_censoring'] == '1')
-                    $data['message'] = Utils::trim(Utils::censor($data['message']));
+                $data['message'] = Utils::trim(Utils::censor($data['message']));
                 if (empty($data['message'])) {
                     throw new Error('No message or censored message', 400);
                 } else if (Utils::strlen($data['message']) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
@@ -206,15 +215,17 @@ class PrivateMessages
                 // Check if he has reached his max limit of PM
                 // Block feature ?
 
-                $conv_data = array(
-                    'subject'	=>	$data['subject'],
-                    'poster'	=>	$this->feather->user->username,
-                    'poster_id'	=>	$this->feather->user->id,
-                    'num_replies'	=>	0,
-                    'last_post'	=>	$this->feather->now,
-                    'last_poster'	=>	$this->feather->user->username);
-                // Create conversation
-                if ($conv_id = $this->model->addConversation($conv_data)) {
+                if (!$conv) {
+                    $conv_data = array(
+                        'subject'	=>	$data['subject'],
+                        'poster'	=>	$this->feather->user->username,
+                        'poster_id'	=>	$this->feather->user->id,
+                        'num_replies'	=>	0,
+                        'last_post'	=>	$this->feather->now,
+                        'last_poster'	=>	$this->feather->user->username);
+                    $conv_id = $this->model->addConversation($conv_data);
+                }
+                if ($conv_id) {
                     $msg_data = array(
                         'poster'	=>	$this->feather->user->username,
                         'poster_id'	=>	$this->feather->user->id,
@@ -223,14 +234,21 @@ class PrivateMessages
                         'hide_smilies'	=>	$data['smilies'],
                         'sent'	=>	$this->feather->now,
                     );
-                    // Add message in conversation + add receiver
-                    if ($msg_id = $this->model->addMessage($msg_data, $conv_id, $user->id)) {
-                        Url::redirect($this->feather->urlFor('Conversations'), 'Your PM has been sent to '.$user->username.' !');
+                    if ($conv) {
+                        if ($msg_id = $this->model->addMessage($msg_data, $conv_id)) {
+                            Url::redirect($this->feather->urlFor('Conversations'), 'You have successfully responded to the conversation '.$conv->subject.' !');
+                        }
+                    } else {
+                        // Add message in conversation + add receiver
+                        if ($msg_id = $this->model->addMessage($msg_data, $conv_id, $user->id)) {
+                            Url::redirect($this->feather->urlFor('Conversations'), 'Your PM has been sent to '.$user->username.' !');
+                        }
                     }
+                } else {
+                    throw new Error('Unable to create conversation');
                 }
             }
         } else {
-            $receiver = null;
             if (!is_null($uid)) {
                 if ($uid < 2) {
                     throw new Error('Wrong user id', 400);
@@ -241,7 +259,24 @@ class PrivateMessages
                     throw new Error('Unable to find user', 400);
                 }
             }
+            if (!is_null($conv_id)) {
+                if ($conv_id < 1) {
+                    throw new Error('Wrong conversation ID', 400);
+                }
+                if ($conv = $this->model->getConversation($conv_id, $this->feather->user->id)) {
+                    $this->feather->template->setPageInfo(array(
+                        'conv' => $conv,
+                        'msg_data' => $this->model->getMessagesFromConversation($conv_id, $this->feather->user->id)
+                        ))->addTemplate('reply.php')->display();
+                    } else {
+                        throw new Error('Unknown conversation ID', 400);
+                    }
+            }
             $this->feather->template->addTemplate('send.php')->display();
         }
+    }
+
+    public function reply($conv_id = null) {
+        $this->send(null, $conv_id);
     }
 }

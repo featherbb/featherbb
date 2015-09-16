@@ -22,6 +22,10 @@ class PrivateMessages
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hooks = $this->feather->hooks;
+
+        DB::configure('id_column_overrides', array(
+            'pms_data' => 'conversation_id',
+        ));
     }
 
     // Check if current user owns the folder
@@ -157,33 +161,50 @@ class PrivateMessages
     }
 
 
-
-    public function getConversation($id = null)
+    // Return false if the conv has been deleted, or if the uid has no rights to access it
+    public function getConversation($conv_id = null, $uid = null)
     {
-
+        $result = DB::for_table('pms_conversations')
+                    ->table_alias('c')
+                    ->inner_join('pms_data', array('d.conversation_id', '=', 'c.id'), 'd')
+                    ->where_any_is(array(array('c.poster_id' => $uid),
+                                         array('d.user_id' => $uid)))
+                    ->where('c.id', $conv_id)
+                    ->find_one();
+        return $result;
     }
 
-    public function addMessage(array $data = array(), $tid = null, $uid = null)
+    public function addMessage(array $data = array(), $conv_id = null, $uid = null)
     {
         $add = DB::for_table('pms_messages')
                     ->create()
                     ->set($data)
-                    ->set('conversation_id', $tid);
+                    ->set('conversation_id', $conv_id);
         $add->save();
         $update = DB::for_table('pms_conversations')
-                    ->find_one($tid)
+                    ->find_one($conv_id)
                     ->set(array(
                         'first_post_id'	=>	$add->id(),
                         'last_post_id'	=>	$add->id(),
                     ))
                     ->save();
-        $notifs = DB::for_table('pms_data')
-                ->create()
-                ->set(array(
-    					'conversation_id'	=>	$tid,
-    					'user_id'	=>	$uid,
-    					'viewed'	=>	(($uid == $this->feather->user->id) ? 1 : 0)))
-                ->save();
+        if (!is_null($uid)) {
+            $notifs = DB::for_table('pms_data')
+                    ->create()
+                    ->set(array(
+                            'conversation_id'	=>	$conv_id,
+                            'user_id'	=>	$uid,
+                            'viewed'	=>	(($uid == $this->feather->user->id) ? 1 : 0)))
+                    ->save();
+
+        } else {
+            $notifs = DB::for_table('pms_data')
+                    ->where('conversation_id', $conv_id)
+                    ->find_result_set();
+
+            $notifs->set('viewed', (($uid == $this->feather->user->id) ? 1 : 0))
+                    ->save();
+        }
 
         return ($add && $update && $notifs) ? $add->id() : false;
     }
@@ -209,6 +230,17 @@ class PrivateMessages
         $result = DB::for_table('users')
                     ->where('id', $id)
                     ->find_one();
+        return $result;
+    }
+
+    public function getMessagesFromConversation($conv_id = null, $uid = null, $limit = 10)
+    {
+        $result = DB::for_table('pms_messages')
+                    ->table_alias('m')
+                    ->where('m.conversation_id', $conv_id)
+                    ->order_by_asc('sent')
+                    ->limit($limit)
+                    ->find_many();
         return $result;
     }
 }
