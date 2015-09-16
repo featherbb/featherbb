@@ -17,9 +17,10 @@ if (!isset($feather)) {
 
 ?>
         <div class="block">
-            <form method="post" action="#" id="topics">
+            <form method="post" action="<?= $feather->request()->getPath(); ?>" id="topics">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <input type="hidden" name="p" value="1" />
+                <input type="hidden" name="inbox_id" value="<?= $current_inbox_id ?>" />
                 <div id="vf" class="blocktable">
                     <div class="box">
 <? if (!empty($conversations)) { ?>
@@ -68,7 +69,7 @@ if (!isset($feather)) {
                     </div>
                 </div>
                 <div class="pagepost">
-                    <p class="pagelink conl"><span class="pages-label">Pages: </span><strong class="item1">1</strong></p>
+                    <p class="pagelink conl"><span class="pages-label"><?php _e('Pages'); ?></span><?= $paging_links; ?></p>
                     <p class="conr"><input type="submit" name="move" value="Move" />&#160;<input type="submit" name="delete" value="Delete" /></p>
                 </div>
             </form>

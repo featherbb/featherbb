@@ -57,7 +57,7 @@ class PrivateMessages
         $num_pages = ceil($inboxes[$fid]['nb_msg'] / $this->feather->user['disp_topics']);
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.home', array('inbox_id' => $fid)).'/#');
+        $paging_links = Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.home', ['id' => $fid]).'/#');
 
         $this->feather->template
             ->setPageInfo(array(
@@ -66,6 +66,7 @@ class PrivateMessages
                 'admin_console' => true,
                 'inboxes' => $inboxes,
                 'current_inbox_id' => $fid,
+                'paging_links' => $paging_links,
                 'conversations' => $this->model->getConversations($fid, $uid, $this->feather->user['disp_topics'], $start_from)
             )
         )
@@ -97,35 +98,50 @@ class PrivateMessages
             $uid = intval($this->feather->user->id);
             $this->model->delete($topics, $uid);
 
-    		redirect(panther_link($panther_url['inbox']), $lang_pm['Messages deleted']);
+            $redirect_id = $this->request->post('inbox_id');
+            Url::redirect($this->feather->urlFor('Conversations', ['id' => $redirect_id]), __('Conversations deleted', 'private_messages'));
     	}
-    	// else
-    	// {
-    	// 	$page_title = array(panther_htmlspecialchars($this->feather->forum_settings['o_board_title']), $lang_common['PM'], $lang_pm['PM Inbox']);
-    	// 	define('PANTHER_ACTIVE_PAGE', 'pm');
-    	// 	require PANTHER_ROOT.'header.php';
-        //
-    	// 	$pm_tpl = panther_template('delete_messages.tpl');
-    	// 	$search = array(
-    	// 		'{index_link}' => panther_link($panther_url['index']),
-    	// 		'{index}' => $lang_common['Index'],
-    	// 		'{inbox_link}' => panther_link($panther_url['inbox']),
-    	// 		'{inbox}' => $lang_common['PM'],
-    	// 		'{my_messages}' => $lang_pm['My messages'],
-    	// 		'{send_message_link}' => panther_link($panther_url['send_message']),
-    	// 		'{send_message}' => $lang_pm['Send message'],
-    	// 		'{pm_menu}' => generate_pm_menu(),
-    	// 		'{form_action}' => panther_link($panther_url['inbox']),
-    	// 		'{topics}' => implode(',', $topics),
-    	// 		'{delete_messages_comply}' => $lang_pm['Delete messages comply'],
-    	// 		'{delete}' => $lang_pm['Delete button'],
-    	// 		'{go_back}' => $lang_common['Go back'],
-    	// 		'{csrf_token}' => generate_csrf_token(),
-    	// 	);
-        //
-    	// 	echo str_replace(array_keys($search), array_values($search), $pm_tpl);
-    	// 	require PANTHER_ROOT.'footer.php';
-    	// }
+    	else
+    	{
+            $this->feather->template
+                ->setPageInfo(array(
+                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inboxes[$fid]['name']),
+                    'active_page' => 'navextra1',
+                    'admin_console' => true,
+                    'inboxes' => $inboxes,
+                    'current_inbox_id' => $fid,
+                    'paging_links' => $paging_links,
+                    'conversations' => $this->model->getConversations($fid, $uid, $this->feather->user['disp_topics'], $start_from)
+                )
+            )
+            ->addTemplate('menu.php')
+            ->addTemplate('delete.php')->display();
+
+    		$page_title = array(panther_htmlspecialchars($this->feather->forum_settings['o_board_title']), $lang_common['PM'], $lang_pm['PM Inbox']);
+    		define('PANTHER_ACTIVE_PAGE', 'pm');
+    		require PANTHER_ROOT.'header.php';
+
+    		$pm_tpl = panther_template('delete_messages.tpl');
+    		$search = array(
+    			'{index_link}' => panther_link($panther_url['index']),
+    			'{index}' => $lang_common['Index'],
+    			'{inbox_link}' => panther_link($panther_url['inbox']),
+    			'{inbox}' => $lang_common['PM'],
+    			'{my_messages}' => $lang_pm['My messages'],
+    			'{send_message_link}' => panther_link($panther_url['send_message']),
+    			'{send_message}' => $lang_pm['Send message'],
+    			'{pm_menu}' => generate_pm_menu(),
+    			'{form_action}' => panther_link($panther_url['inbox']),
+    			'{topics}' => implode(',', $topics),
+    			'{delete_messages_comply}' => $lang_pm['Delete messages comply'],
+    			'{delete}' => $lang_pm['Delete button'],
+    			'{go_back}' => $lang_common['Go back'],
+    			'{csrf_token}' => generate_csrf_token(),
+    		);
+
+    		echo str_replace(array_keys($search), array_values($search), $pm_tpl);
+    		require PANTHER_ROOT.'footer.php';
+    	}
     }
 
     public function update($fid = 2, $page = 1)
