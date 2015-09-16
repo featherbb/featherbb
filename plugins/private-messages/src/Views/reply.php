@@ -21,30 +21,48 @@ if (!isset($feather)) {
     		<ul class="crumbs">
     			<li><a href="#">Index</a></li>
     			<li><span>»&#160;</span><a href="#">PMS</a></li>
-    			<li><span>»&#160;</span><strong>Send message</strong></li>
+    			<li><span>»&#160;</span><strong>Reply to conversation</strong></li>
+                <li><span>»&#160;</span><strong><?= (isset($conv['subject']) ? $conv['subject'] : '')?></strong></li>
     		</ul>
     		<div class="pagepost"></div>
     		<div class="clearer"></div>
     	</div>
     </div>
-<? if (isset($parsed_message)) : ?>
-    <div id="postpreview" class="blockpost">
-        <h2><span>Preview</span></h2>
-        <div class="box">
-            <div class="inbox">
-                <div class="postbody">
-                    <div class="postright">
-                        <div class="postmsg">
-                            <?= $parsed_message ?>
+<? if (!empty($msg_data)) {
+    $count = 1;
+    foreach ($msg_data as $msg) { ?>
+    <div class="block">
+        <div id="p<?=$msg['id']?>" class="blockpost<?=($count % 2 == 0) ? ' roweven' : ' rowodd'.(($count == 1) ? ' firstpost' : '').(($count == 1) ? ' blockpost1' : '')?>">
+            <h2><span><span class="conr">#<?=$count?></span> <a href="#"><?= $feather->utils->format_time($msg['sent'])?></a></span></h2>
+            <div class="box">
+                <div class="inbox">
+                    <div class="postbody">
+                        <div class="postleft">
+                            <dl>
+                                <dt><strong><a href="<?= $feather->urlFor('userProfile', ['id' => $msg['poster_id']]) ?>"><?= $msg['poster']?></strong></a></dt>
+                                <!-- <dd class="usertitle"><strong>{user_title}</strong></dd>
+                                {user_avatar}{group_image}{user_info} -->
+                            </dl>
                         </div>
+                        <div class="postright">
+                            <div class="postmsg">
+                                <?= Utils::escape($msg['message']) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="inbox">
+                    <div class="postfoot clearb">
+                        <!-- <div class="postfootleft"></div> -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<? endif; ?>
+    <? ++$count; }
+} ?>
 	<div id="postform" class="blockform">
-		<h2><span>Send a message</span></h2>
+		<h2><span>Reply to a conversation</span></h2>
 		<div class="box">
 			<form id="post" method="post" action="" onsubmit="return process_form(this)">
 				<div class="inform">
@@ -52,11 +70,6 @@ if (!isset($feather)) {
 						<legend>Compose your message</legend>
 						<div class="infldset txtarea">
 <? if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
-                            <label class="required"><strong>Send to <span><?= __('Required') ?></span></strong><br /></label>
-                            <input type="text" name="username" placeholder="Username" <?= (isset($username) ? 'value="'.$username.'"' : '')?> size="25" tabindex="1" required/><br />
-                            <div class="clearer"></div>
-                            <label class="required"><strong>Subject <span><?= __('Required') ?></span></strong><br /></label>
-                            <input class="longinput" type="text" name="subject" placeholder="Subject" <?= (isset($subject) ? 'value="'.$subject.'"' : '')?> size="80" maxlength="70" tabindex="2" required/><br />
                             <label class="required"><strong><?php _e('Message') ?> <span><?= __('Required') ?></span></strong><br /></label>
                             <textarea name="message" id="message" rows="20" cols="95" tabindex="2" required><?= (isset($message) ? $message : '')?></textarea><br />
                             <ul class="bblinks">

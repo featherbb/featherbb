@@ -35,20 +35,27 @@ class PrivateMessages extends BasePlugin
 
     public function run()
     {
+        $feather = $this->feather;
+
         $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
         $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+        $this->hooks->bind('model.print_posts.one', function ($cur_post) use ($feather) {
+            $cur_post['user_contacts'][] = '<span class="email"><a href="'.$feather->urlFor('Conversations.send', ['uid' => $cur_post['poster_id']]).'">PM</a></span>';
+            return $cur_post;
+        });
 
-        $feather = $this->feather;
         $this->feather->group('/conversations',
             function() use ($feather) {
                 if(!$feather->user->logged) throw new Error(__('No permission'), 403);
             }, function() use ($feather){
                 $feather->get('(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+'))->name('Conversations');
                 $feather->get('(/:id)/page/:page(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.page');
-                $feather->map('/send(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.send');
-                $feather->get('/reply(/:conv_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('conv_id' => '[0-9]+'))->name('Conversations.reply');
+                $feather->map('/send(/)(:uid)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('uid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.send');
+                $feather->map('/reply(/:conv_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('conv_id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.reply');
             }
         );
+
+        $this->feather->template->addAsset('css', 'plugins/private-messages/src/style/private-messages.css');
     }
 
     public function addNavlink($navlinks)
