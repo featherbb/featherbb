@@ -20,8 +20,8 @@ if (!isset($feather)) {
             <div class="inbox">
                 <ul class="crumbs">
                     <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations', ['id' => $current_inbox_id]) ?>"><?= Utils::escape($inboxes[$current_inbox_id]['name']) ?></a></li>
+                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
+                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $current_inbox_id]) ?>"><?= Utils::escape($inboxes[$current_inbox_id]['name']) ?></a></li>
                     <li><span>»&#160;</span><strong><?php _e('My conversations', 'private_messages') ?></strong></li>
                     <!-- <li class="postlink actions conr"><span><a href="<?= $feather->urlFor('Conversations.send') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li> -->
                 </ul>
@@ -39,7 +39,7 @@ if (!isset($feather)) {
                             <?php if(!empty($inboxes)):
                                 foreach ($inboxes as $iid => $data) { ?>
                                 <li<?= ($iid == $current_inbox_id) ? ' class="isactive"' : ''; ?>>
-                                    <a href="<?= $feather->urlFor('Conversations', ['id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
+                                    <a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
                                 </li>
                             <?php } endif; ?>
                         </ul>

@@ -256,7 +256,7 @@ class PrivateMessages
         return $result;
     }
 
-    public function getMessagesFromConversation($conv_id = null, $uid = null, $limit = 10)
+    public function getMessagesFromConversation($conv_id = null, $uid = null, $limit = 50, $start = 0)
     {
         $result = DB::for_table('pms_messages')
                     ->table_alias('m')

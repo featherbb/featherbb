@@ -57,7 +57,7 @@ class PrivateMessages
         $num_pages = ceil($inboxes[$fid]['nb_msg'] / $this->feather->user['disp_topics']);
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations', ['id' => $fid]).'/#');
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.home', array('inbox_id' => $fid)).'/#');
 
         $this->feather->template
             ->setPageInfo(array(
@@ -232,12 +232,12 @@ class PrivateMessages
                     );
                     if ($conv) {
                         if ($msg_id = $this->model->addMessage($msg_data, $conv_id)) {
-                            Url::redirect($this->feather->urlFor('Conversations'), 'You have successfully responded to the conversation '.$conv->subject.' !');
+                            Url::redirect($this->feather->urlFor('Conversations.home'), 'You have successfully responded to the conversation '.$conv->subject.' !');
                         }
                     } else {
                         // Add message in conversation + add receiver
                         if ($msg_id = $this->model->addMessage($msg_data, $conv_id, array($user->id, $this->feather->user->id))) {
-                            Url::redirect($this->feather->urlFor('Conversations'), 'Your PM has been sent to '.$user->username.' !');
+                            Url::redirect($this->feather->urlFor('Conversations.home'), 'Your PM has been sent to '.$user->username.' !');
                         }
                     }
                 } else {
