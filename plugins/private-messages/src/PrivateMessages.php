@@ -46,7 +46,7 @@ class PrivateMessages extends BasePlugin
 
         $this->feather->group('/conversations',
             function() use ($feather) {
-                if(!$feather->user->logged) throw new Error(__('No permission'), 403);
+                if($feather->user->is_guest) throw new Error(__('No permission'), 403);
             }, function() use ($feather){
                 $feather->map('/inbox(/:inbox_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.home');
                 $feather->map('(/inbox(/:inbox_id))(/page(/:page))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.home.page');
@@ -63,7 +63,9 @@ class PrivateMessages extends BasePlugin
 
     public function addNavlink($navlinks)
     {
-        $navlinks[] = '5 = <a href="'.$this->feather->urlFor('Conversations.home').'">PMS</a>';
+        if (!$this->feather->user->is_guest) {
+            $navlinks[] = '5 = <a href="'.$this->feather->urlFor('Conversations.home').'">PMS</a>';
+        }
         return $navlinks;
     }
 

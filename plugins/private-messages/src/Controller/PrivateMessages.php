@@ -327,9 +327,12 @@ class PrivateMessages
                 'current_inbox_id' => $conv['folder_id'],
                 'inboxes' => $this->model->getInboxes($this->feather->user->id),
                 'paging_links' => $paging_links,
+                'start_from' => $start_from,
+                'cur_conv' => $conv,
                 'messages' => $this->model->getMessages($conv['id'], $this->feather->user['disp_topics'], $start_from)
             )
         )
-        ->addTemplate('menu.php')->display();
+        ->addTemplate('menu.php')
+        ->addTemplate('show.php')->display();
     }
 }

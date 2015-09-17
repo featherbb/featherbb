@@ -277,11 +277,13 @@ class PrivateMessages
 
     public function getMessages($conv_id = null, $limit = 50, $start = 0)
     {
-        $select = array('m.id', 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id');
+        $select = array('m.id', 'username' => 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'u.title', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
         $result = DB::for_table('pms_messages')
                     ->select_many($select)
                     ->table_alias('m')
                     ->left_outer_join('users', array('u.id', '=', 'm.poster_id'), 'u')
+                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
                     ->where('m.conversation_id', $conv_id)
                     ->order_by_asc('m.sent')
                     ->find_array();
