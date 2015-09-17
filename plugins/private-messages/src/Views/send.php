@@ -27,7 +27,7 @@ if (!isset($feather)) {
     		<div class="clearer"></div>
     	</div>
     </div>
-<? if (isset($parsed_message)) : ?>
+<?php if (isset($parsed_message)) : ?>
     <div id="postpreview" class="blockpost">
         <h2><span>Preview</span></h2>
         <div class="box">
@@ -42,7 +42,7 @@ if (!isset($feather)) {
             </div>
         </div>
     </div>
-<? endif; ?>
+<?php endif; ?>
 	<div id="postform" class="blockform">
 		<h2><span>Send a message</span></h2>
 		<div class="box">
@@ -51,7 +51,7 @@ if (!isset($feather)) {
 					<fieldset>
 						<legend>Compose your message</legend>
 						<div class="infldset txtarea">
-<? if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
+<?php if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
                             <label class="required"><strong>Send to <span><?= __('Required') ?></span></strong><br /></label>
                             <input type="text" name="username" placeholder="Username" <?= (isset($username) ? 'value="'.$username.'"' : '')?> size="25" tabindex="1" required/><br />
                             <div class="clearer"></div>

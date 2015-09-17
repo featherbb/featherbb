@@ -28,7 +28,7 @@ if (!isset($feather)) {
     		<div class="clearer"></div>
     	</div>
     </div>
-<? if (!empty($msg_data)) {
+<?php if (!empty($msg_data)) {
     $count = 1;
     foreach ($msg_data as $msg) { ?>
     <div class="block">
@@ -59,7 +59,7 @@ if (!isset($feather)) {
             </div>
         </div>
     </div>
-    <? ++$count; }
+    <?php ++$count; }
 } ?>
 	<div id="postform" class="blockform">
 		<h2><span>Reply to a conversation</span></h2>
@@ -69,7 +69,7 @@ if (!isset($feather)) {
 					<fieldset>
 						<legend>Compose your message</legend>
 						<div class="infldset txtarea">
-<? if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
+<?php if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
                             <label class="required"><strong><?php _e('Message') ?> <span><?= __('Required') ?></span></strong><br /></label>
                             <textarea name="message" id="message" rows="20" cols="95" tabindex="2" required><?= (isset($message) ? $message : '')?></textarea><br />
                             <ul class="bblinks">
