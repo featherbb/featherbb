@@ -309,7 +309,9 @@ class PrivateMessages
             throw new Error('Wrong conversation ID', 400);
         }
         if (!$conv = $this->model->getConversation($conv_id, $this->feather->user->id)) {
-            throw new Error('Unknown conversation ID', 400);
+            throw new Error('Unknown conversation ID', 404);
+        } else if ($this->model->isDeleted($conv_id, $this->feather->user->id)) {
+            throw new Error('The conversation has been deleted', 404);
         }
         var_dump($this->model->getMessages($conv_id));
     }

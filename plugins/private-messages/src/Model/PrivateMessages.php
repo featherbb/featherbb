@@ -187,7 +187,7 @@ class PrivateMessages
     }
 
 
-    // Return false if the conv has been deleted, or if the uid has no rights to access it
+    // Return false if the conv doesn't exist or if the user has no rights to access it
     public function getConversation($conv_id = null, $uid = null)
     {
         $result = DB::for_table('pms_conversations')
@@ -260,6 +260,16 @@ class PrivateMessages
                     ->where_gt('id', 1)
                     ->find_one();
         return $result;
+    }
+
+    public function isDeleted($conv_id = null, $uid = null)
+    {
+        $result = DB::for_table('pms_data')
+                    ->where('conversation_id', $conv_id)
+                    ->where('user_id', $uid)
+                    ->where('deleted', 1)
+                    ->find_one();
+        return (bool) $result;
     }
 
     public function getUserByID($id = null)
