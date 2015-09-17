@@ -236,6 +236,19 @@ class PrivateMessages
         return ($add && $update && $notifs) ? $add->id() : false;
     }
 
+    public function getMessages($conv_id = null, $limit = 50, $start = 0)
+    {
+        $select = array('m.id', 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id');
+        $result = DB::for_table('pms_messages')
+                    ->select_many($select)
+                    ->table_alias('m')
+                    ->left_outer_join('users', array('u.id', '=', 'm.poster_id'), 'u')
+                    ->where('m.conversation_id', $conv_id)
+                    ->order_by_asc('m.sent')
+                    ->find_array();
+        return $result;
+    }
+
     public function isAllowed($username = null)
     {
         if (!$username) {

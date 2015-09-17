@@ -273,7 +273,7 @@ class PrivateMessages
         } else {
             if (!is_null($uid)) {
                 if ($uid < 2) {
-                    throw new Error('Wrong user id', 400);
+                    throw new Error('Wrong user ID', 400);
                 }
                 if ($user = $this->model->getUserByID($uid)) {
                     $this->feather->template->setPageInfo(array('username' => Utils::escape($user->username)));
@@ -300,5 +300,17 @@ class PrivateMessages
 
     public function reply($conv_id = null) {
         $this->send(null, $conv_id);
+    }
+
+    public function show($conv_id = null)
+    {
+        // First checks
+        if ($conv_id < 1) {
+            throw new Error('Wrong conversation ID', 400);
+        }
+        if (!$conv = $this->model->getConversation($conv_id, $this->feather->user->id)) {
+            throw new Error('Unknown conversation ID', 400);
+        }
+        var_dump($this->model->getMessages($conv_id));
     }
 }
