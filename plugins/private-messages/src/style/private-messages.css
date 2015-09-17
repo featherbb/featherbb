@@ -18,3 +18,8 @@ div#pm_bar_style {
     height: 10px;
     display:block;
 }
+
+.right {
+    text-align: right;
+    float: right;
+}

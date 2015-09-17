@@ -37,9 +37,9 @@ class PrivateMessages
         $uid = intval($this->feather->user->id);
 
         // // Display delete confirm form
-        // if ($this->request->post('delete')) {
-        //     $this->delete();
-        // }
+        if ($this->request->post('delete')) {
+            $this->delete();
+        }
 
         // Get all inboxes owned by the user and count messages in it
         if ($inboxes = $this->model->getUserFolders($uid)) {
@@ -90,58 +90,28 @@ class PrivateMessages
     	if (empty($topics))
     		throw new Error(__('Select more than one topic', 'private_messages'), 403);
 
+        $redirect_id = $this->request->post('inbox_id');
+
     	if ( $this->request->post('delete_comply') )
     	{
-            // TODO: replace with CSRF
-    		// confirm_referrer('pms_inbox.php');
-
             $uid = intval($this->feather->user->id);
             $this->model->delete($topics, $uid);
 
-            $redirect_id = $this->request->post('inbox_id');
-            Url::redirect($this->feather->urlFor('Conversations', ['id' => $redirect_id]), __('Conversations deleted', 'private_messages'));
+            Url::redirect($this->feather->urlFor('Conversations.home', ['id' => $redirect_id]), __('Conversations deleted', 'private_messages'));
     	}
     	else
     	{
+            // Display confirm delete form
             $this->feather->template
                 ->setPageInfo(array(
-                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inboxes[$fid]['name']),
+                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages')),
                     'active_page' => 'navextra1',
-                    'admin_console' => true,
-                    'inboxes' => $inboxes,
-                    'current_inbox_id' => $fid,
-                    'paging_links' => $paging_links,
-                    'conversations' => $this->model->getConversations($fid, $uid, $this->feather->user['disp_topics'], $start_from)
+                    'topics' => $topics,
                 )
             )
-            ->addTemplate('menu.php')
             ->addTemplate('delete.php')->display();
-
-    		$page_title = array(panther_htmlspecialchars($this->feather->forum_settings['o_board_title']), $lang_common['PM'], $lang_pm['PM Inbox']);
-    		define('PANTHER_ACTIVE_PAGE', 'pm');
-    		require PANTHER_ROOT.'header.php';
-
-    		$pm_tpl = panther_template('delete_messages.tpl');
-    		$search = array(
-    			'{index_link}' => panther_link($panther_url['index']),
-    			'{index}' => $lang_common['Index'],
-    			'{inbox_link}' => panther_link($panther_url['inbox']),
-    			'{inbox}' => $lang_common['PM'],
-    			'{my_messages}' => $lang_pm['My messages'],
-    			'{send_message_link}' => panther_link($panther_url['send_message']),
-    			'{send_message}' => $lang_pm['Send message'],
-    			'{pm_menu}' => generate_pm_menu(),
-    			'{form_action}' => panther_link($panther_url['inbox']),
-    			'{topics}' => implode(',', $topics),
-    			'{delete_messages_comply}' => $lang_pm['Delete messages comply'],
-    			'{delete}' => $lang_pm['Delete button'],
-    			'{go_back}' => $lang_common['Go back'],
-    			'{csrf_token}' => generate_csrf_token(),
-    		);
-
-    		echo str_replace(array_keys($search), array_values($search), $pm_tpl);
-    		require PANTHER_ROOT.'footer.php';
     	}
+        die();
     }
 
     public function update($fid = 2, $page = 1)

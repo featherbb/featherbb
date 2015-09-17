@@ -48,8 +48,10 @@ class PrivateMessages extends BasePlugin
             function() use ($feather) {
                 if(!$feather->user->logged) throw new Error(__('No permission'), 403);
             }, function() use ($feather){
-                $feather->get('(/inbox(/:inbox_id))(/)(/page(/:page))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.home');
-                $feather->get('(/thread(/:tid))(/)(/page(/:page))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:show')->conditions(array('tid' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.show');
+                $feather->map('/inbox(/:inbox_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.home');
+                $feather->map('(/inbox(/:inbox_id))(/page(/:page))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.home.page');
+                $feather->get('(/thread(/:tid))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:show')->conditions(array('tid' => '[0-9]+'))->name('Conversations.show');
+                $feather->get('(/thread(/:tid))(/page(/:page))(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:show')->conditions(array('tid' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.show.page');
                 $feather->map('/send(/)(:uid)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('uid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.send');
                 $feather->map('/reply/:tid(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.reply');
                 $feather->map('/quote/:mid(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('mid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.quote');

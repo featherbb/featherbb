@@ -23,7 +23,7 @@ if (!isset($feather)) {
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $current_inbox_id]) ?>"><?= Utils::escape($inboxes[$current_inbox_id]['name']) ?></a></li>
                     <li><span>»&#160;</span><strong><?php _e('My conversations', 'private_messages') ?></strong></li>
-                    <!-- <li class="postlink actions conr"><span><a href="<?= $feather->urlFor('Conversations.send') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li> -->
+                    <li class="right"><span><a href="<?= $feather->urlFor('Conversations.send') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li>
                 </ul>
                 <div class="pagepost"></div>
                 <div class="clearer"></div>

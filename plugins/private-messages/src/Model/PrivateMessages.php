@@ -24,7 +24,7 @@ class PrivateMessages
         $this->hooks = $this->feather->hooks;
 
         DB::configure('id_column_overrides', array(
-            'pms_data' => 'conversation_id',
+            'pms_data' => array('conversation_id', 'user_id'),
         ));
     }
 
@@ -139,21 +139,12 @@ class PrivateMessages
         $numPms = ($numReplies + $numConvers);
 
         // Soft delete messages
-        DB::configure('id_column_overrides', array(
-            'pms_data' => 'conversation_id'
-        ));
-        DB::for_table('pms_data')
+        $de = DB::for_table('pms_data')
             ->where('user_id', $uid)
-            ->where_id_in($convers)
+            ->where_in('conversation_id', $convers)
             ->find_result_set()
             ->set('deleted', 1)
             ->save();
-
-        // Decrement user PMs count
-        // DB::for_table('users')
-        //     ->where('id', $uid)
-        //     ->set_expr('num_pms', 'num_pms-'.$numPms);
-        //     ->save();
 
         // Now check if anyone left in the conversation has any of these topics undeleted. If so, then we leave them. Otherwise, actually delete them.
 		foreach ($convers as $cid)
