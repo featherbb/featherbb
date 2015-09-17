@@ -139,7 +139,7 @@ class PrivateMessages
         $numPms = ($numReplies + $numConvers);
 
         // Soft delete messages
-        $de = DB::for_table('pms_data')
+        DB::for_table('pms_data')
             ->where('user_id', $uid)
             ->where_in('conversation_id', $convers)
             ->find_result_set()
