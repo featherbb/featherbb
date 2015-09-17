@@ -27,6 +27,8 @@ class Censoring
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.censoring.display');
+
         // Add a censor word
         if ($this->request->post('add_word')) {
             $this->model->add_word();

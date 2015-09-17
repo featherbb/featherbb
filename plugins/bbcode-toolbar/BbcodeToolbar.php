@@ -16,9 +16,9 @@ class BbcodeToolbar extends BasePlugin
 
     public function run()
     {
-        $this->hooks->bind('post.create', [$this, 'addToolbar']);
-        $this->hooks->bind('post.edit', [$this, 'addToolbar']);
-        $this->hooks->bind('topic.display', [$this, 'addToolbar']);
+        $this->hooks->bind('controller.post.create', [$this, 'addToolbar']);
+        $this->hooks->bind('controller.post.edit', [$this, 'addToolbar']);
+        $this->hooks->bind('controller.topic.display', [$this, 'addToolbar']);
     }
 
     public function addToolbar()

@@ -36,7 +36,7 @@ class PrivateMessages extends BasePlugin
     public function run()
     {
         $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
-        $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+        $this->hooks->bind('view.header.navlinks', [$this, 'addNavlink']);
 
         $feather = $this->feather;
         $this->feather->group('/conversations',

@@ -33,6 +33,8 @@ class Bans
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.bans.display');
+
         // Display bans
         if ($this->request->get('find_ban')) {
             $ban_info = $this->model->find_ban();
@@ -68,6 +70,8 @@ class Bans
 
     public function add($id = null)
     {
+        $this->feather->hooks->fire('controller.admin.bans.add');
+
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }
@@ -85,12 +89,16 @@ class Bans
 
     public function delete($id)
     {
+        $this->feather->hooks->fire('controller.admin.bans.delete');
+
         // Remove the ban
         $this->model->remove_ban($id);
     }
 
     public function edit($id)
     {
+        $this->feather->hooks->fire('controller.admin.bans.edit');
+
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
         }

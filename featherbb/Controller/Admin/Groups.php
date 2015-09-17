@@ -28,6 +28,8 @@ class Groups
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.groups.display');
+
         $groups = $this->model->fetch_groups();
 
         // Set default group
@@ -49,6 +51,8 @@ class Groups
 
     public function delete($id)
     {
+        $this->feather->hooks->fire('controller.admin.groups.delete');
+
         if ($id < 5) {
             throw new Error(__('Bad request'), 403);
         }
@@ -94,6 +98,8 @@ class Groups
 
     public function addedit($id = '')
     {
+        $this->feather->hooks->fire('controller.admin.groups.addedit');
+
         $groups = $this->model->fetch_groups();
 
         // Add/edit a group (stage 2)

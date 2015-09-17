@@ -56,14 +56,14 @@ class Topic
     // Redirect to a post in particular
     public function redirect_to_post($post_id)
     {
-        $post_id = $this->hook->fire('model.redirect_to_post', $post_id);
+        $post_id = $this->hook->fire('model.topic.redirect_to_post', $post_id);
 
         $result['select'] = array('topic_id', 'posted');
 
         $result = DB::for_table('posts')
                       ->select_many($result['select'])
                       ->where('id', $post_id);
-        $result = $this->hook->fireDB('redirect_to_post_query', $result);
+        $result = $this->hook->fireDB('model.topic.redirect_to_post_query', $result);
         $result = $result->find_one();
 
         if (!$result) {
@@ -79,11 +79,11 @@ class Topic
                         ->where_lt('posted', $posted)
                         ->count('id');
 
-        $num_posts = $this->hook->fire('model.redirect_to_post_num', $num_posts);
+        $num_posts = $this->hook->fire('model.topic.redirect_to_post_num', $num_posts);
 
         $post['get_p'] = ceil(($num_posts + 1) / $this->user->disp_posts);
 
-        $post = $this->hook->fire('model.redirect_to_post', $post);
+        $post = $this->hook->fire('model.topic.redirect_to_post', $post);
 
         return $post;
     }
@@ -91,7 +91,7 @@ class Topic
     // Redirect to new posts or last post
     public function handle_actions($topic_id, $action)
     {
-        $action = $this->hook->fire('model.handle_actions_start', $action, $topic_id);
+        $action = $this->hook->fire('model.topic.handle_actions_start', $action, $topic_id);
 
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
@@ -105,7 +105,7 @@ class Topic
                                         ->where_gt('posted', $last_viewed)
                                         ->min('id');
 
-                $first_new_post_id = $this->hook->fire('model.handle_actions_first_new', $first_new_post_id);
+                $first_new_post_id = $this->hook->fire('model.topic.handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
                     Url::redirect($this->feather->urlFor('viewPost', ['pid' => $first_new_post_id]).'#p'.$first_new_post_id);
@@ -122,14 +122,14 @@ class Topic
                                 ->where('topic_id', $topic_id)
                                 ->max('id');
 
-            $last_post_id = $this->hook->fire('model.handle_actions_last_post', $last_post_id);
+            $last_post_id = $this->hook->fire('model.topic.handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
                 Url::redirect($this->feather->urlFor('viewPost', ['pid' => $last_post_id]).'#p'.$last_post_id);
             }
         }
 
-        $this->hook->fire('model.handle_actions', $action, $topic_id);
+        $this->hook->fire('model.topic.handle_actions', $action, $topic_id);
     }
 
     // Gets some info about the topic
@@ -169,14 +169,14 @@ class Topic
                             ->where_null('t.moved_to');
         }
 
-        $cur_topic = $this->hook->fireDB('get_info_topic_query', $cur_topic);
+        $cur_topic = $this->hook->fireDB('model.topic.get_info_topic_query', $cur_topic);
         $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
             throw new Error(__('Bad request'), 404);
         }
 
-        $cur_topic = $this->hook->fire('model.get_info_topic', $cur_topic);
+        $cur_topic = $this->hook->fire('model.topic.get_info_topic', $cur_topic);
 
         return $cur_topic;
     }
@@ -184,7 +184,7 @@ class Topic
     // Generates the post link
     public function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
     {
-        $closed = $this->hook->fire('model.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
+        $closed = $this->hook->fire('model.topic.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
 
         if ($closed == '0') {
             if (($post_replies == '' && $this->user->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
@@ -202,7 +202,7 @@ class Topic
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
         }
 
-        $post_link = $this->hook->fire('model.get_post_link_start', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
+        $post_link = $this->hook->fire('model.topic.get_post_link_start', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
 
         return $post_link;
     }
@@ -223,14 +223,14 @@ class Topic
             $quickpost = true;
         }
 
-        $quickpost = $this->hook->fire('model.is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
+        $quickpost = $this->hook->fire('model.topic.is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
 
         return $quickpost;
     }
 
     public function subscribe($topic_id)
     {
-        $topic_id = $this->hook->fire('model.subscribe_topic_start', $topic_id);
+        $topic_id = $this->hook->fire('model.topic.subscribe_topic_start', $topic_id);
 
         if ($this->config['o_topic_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
@@ -249,7 +249,7 @@ class Topic
                         ->where_any_is($authorized['where'])
                         ->where('t.id', $topic_id)
                         ->where_null('t.moved_to');
-        $authorized = $this->hook->fireDB('subscribe_topic_authorized_query', $authorized);
+        $authorized = $this->hook->fireDB('model.topic.subscribe_topic_authorized_query', $authorized);
         $authorized = $authorized->find_one();
 
         if (!$authorized) {
@@ -259,7 +259,7 @@ class Topic
         $is_subscribed = DB::for_table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $topic_id);
-        $is_subscribed = $this->hook->fireDB('subscribe_topic_is_subscribed_query', $is_subscribed);
+        $is_subscribed = $this->hook->fireDB('model.topic.subscribe_topic_is_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
 
         if ($is_subscribed) {
@@ -275,7 +275,7 @@ class Topic
         $subscription = DB::for_table('topic_subscriptions')
                                     ->create()
                                     ->set($subscription['insert']);
-        $subscription = $this->hook->fireDB('subscribe_topic_query', $subscription);
+        $subscription = $this->hook->fireDB('model.topic.subscribe_topic_query', $subscription);
         $subscription = $subscription->save();
 
         Url::redirect($this->feather->urlFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
@@ -283,7 +283,7 @@ class Topic
 
     public function unsubscribe($topic_id)
     {
-        $topic_id = $this->hook->fire('model.unsubscribe_topic_start', $topic_id);
+        $topic_id = $this->hook->fire('model.topic.unsubscribe_topic_start', $topic_id);
 
         if ($this->config['o_topic_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
@@ -292,7 +292,7 @@ class Topic
         $is_subscribed = DB::for_table('topic_subscriptions')
                             ->where('user_id', $this->user->id)
                             ->where('topic_id', $topic_id);
-        $is_subscribed = $this->hook->fireDB('unsubscribe_topic_subscribed_query', $is_subscribed);
+        $is_subscribed = $this->hook->fireDB('model.topic.unsubscribe_topic_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
 
         if (!$is_subscribed) {
@@ -303,7 +303,7 @@ class Topic
         $delete = DB::for_table('topic_subscriptions')
                     ->where('user_id', $this->user->id)
                     ->where('topic_id', $topic_id);
-        $delete = $this->hook->fireDB('unsubscribe_topic_query', $delete);
+        $delete = $this->hook->fireDB('model.topic.unsubscribe_topic_query', $delete);
         $delete = $delete->delete_many();
 
         Url::redirect($this->feather->urlFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
@@ -323,7 +323,7 @@ class Topic
             $subscraction = '';
         }
 
-        $subscraction = $this->hook->fire('model.get_subscraction', $subscraction, $is_subscribed, $topic_id);
+        $subscraction = $this->hook->fire('model.topic.get_subscraction', $subscraction, $is_subscribed, $topic_id);
 
         return $subscraction;
     }
@@ -333,7 +333,7 @@ class Topic
         $sticky = DB::for_table('topics')
                             ->find_one($id)
                             ->set('sticky', $value);
-        $sticky = $this->hook->fireDB('stick_topic', $sticky);
+        $sticky = $this->hook->fireDB('model.topic.stick_topic', $sticky);
         $sticky->save();
 
         return $sticky;
@@ -344,7 +344,7 @@ class Topic
         $closed = DB::for_table('topics')
                             ->find_one($id)
                             ->set('closed', $value);
-        $closed = $this->hook->fireDB('stick_topic', $closed);
+        $closed = $this->hook->fireDB('model.topic.stick_topic', $closed);
         $closed->save();
 
         return $closed;
@@ -352,7 +352,7 @@ class Topic
 
     public function check_move_possible()
     {
-        $this->hook->fire('model.check_move_possible_start');
+        $this->hook->fire('model.topic.check_move_possible_start');
 
         $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
         $result['where'] = array(
@@ -370,7 +370,7 @@ class Topic
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($result['order_by']);
-        $result = $this->hook->fireDB('check_move_possible', $result);
+        $result = $this->hook->fireDB('model.topic.check_move_possible', $result);
         $result = $result->find_many();
 
         if (count($result) < 2) {
@@ -399,7 +399,7 @@ class Topic
                     ->where_any_is($where_get_forum_list_move)
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_forum_list_move);
-        $result = $this->hook->fireDB('get_forum_list_move_query', $result);
+        $result = $this->hook->fireDB('model.topic.get_forum_list_move_query', $result);
         $result = $result->find_result_set();
 
         $cur_category = 0;
@@ -421,7 +421,7 @@ class Topic
             }
         }
 
-        $output = $this->hook->fire('model.get_forum_list_move', $output);
+        $output = $this->hook->fire('model.topic.get_forum_list_move', $output);
 
         return $output;
     }
@@ -446,7 +446,7 @@ class Topic
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_forum_list_split);
-        $result = $this->hook->fireDB('get_forum_list_split_query', $result);
+        $result = $this->hook->fireDB('model.topic.get_forum_list_split_query', $result);
         $result = $result->find_result_set();
 
         $cur_category = 0;
@@ -466,14 +466,14 @@ class Topic
             $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum->fid.'"'.($id == $cur_forum->fid ? ' selected="selected"' : '').'>'.Utils::escape($cur_forum->forum_name).'</option>'."\n";
         }
 
-        $output = $this->hook->fire('model.get_forum_list_split', $output);
+        $output = $this->hook->fire('model.topic.get_forum_list_split', $output);
 
         return $output;
     }
 
     public function move_to($fid, $new_fid, $tid = null)
     {
-        $this->hook->fire('model.move_to_start', $fid, $new_fid, $tid);
+        $this->hook->fire('model.topic.move_to_start', $fid, $new_fid, $tid);
 
         $topics = is_string($tid) ? [$tid] : $tid;
         $new_fid = intval($new_fid);
@@ -486,7 +486,7 @@ class Topic
         $result = DB::for_table('topics')
                     ->where_in('id', $topics)
                     ->where('forum_id', $fid);
-        $result = $this->hook->fireDB('move_to_topic_valid', $result);
+        $result = $this->hook->fireDB('model.topic.move_to_topic_valid', $result);
         $result = $result->find_many();
 
         if (count($result) != count($topics)) {
@@ -505,7 +505,7 @@ class Topic
                         ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                         ->where_any_is($authorized['where'])
                         ->where_null('f.redirect_url');
-        $authorized = $this->hook->fireDB('move_to_authorized', $authorized);
+        $authorized = $this->hook->fireDB('model.topic.move_to_authorized', $authorized);
         $authorized = $authorized->find_one();
 
         if (!$authorized) {
@@ -516,14 +516,14 @@ class Topic
         $delete_redirect = DB::for_table('topics')
                                 ->where('forum_id', $new_fid)
                                 ->where_in('moved_to', $topics);
-        $delete_redirect = $this->hook->fireDB('move_to_delete_redirect', $delete_redirect);
+        $delete_redirect = $this->hook->fireDB('model.topic.move_to_delete_redirect', $delete_redirect);
         $delete_redirect->delete_many();
 
         // Move the topic(s)
         $move_topics = DB::for_table('topics')->where_in('id', $topics)
                         ->find_result_set()
                         ->set('forum_id', $new_fid);
-        $move_topics = $this->hook->fireDB('move_to_query', $move_topics);
+        $move_topics = $this->hook->fireDB('model.topic.move_to_query', $move_topics);
         $move_topics->save();
 
         // Should we create redirect topics?
@@ -534,7 +534,7 @@ class Topic
 
                 $moved_to = DB::for_table('topics')->select_many($moved_to['select'])
                                 ->where('id', $cur_topic);
-                $moved_to = $this->hook->fireDB('move_to_fetch_redirect', $moved_to);
+                $moved_to = $this->hook->fireDB('model.topic.move_to_fetch_redirect', $moved_to);
                 $moved_to = $moved_to->find_one();
 
                 // Create the redirect topic
@@ -551,7 +551,7 @@ class Topic
                 $move_to = DB::for_table('topics')
                                     ->create()
                                     ->set($insert_move_to);
-                $move_to = $this->hook->fireDB('move_to_redirect', $move_to);
+                $move_to = $this->hook->fireDB('model.topic.move_to_redirect', $move_to);
                 $move_to = $move_to->save();
 
             }
@@ -564,7 +564,7 @@ class Topic
     public function delete_posts($tid, $fid)
     {
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
-        $posts = $this->hook->fire('model.delete_posts_start', $posts, $tid, $fid);
+        $posts = $this->hook->fire('model.topic.delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
             throw new Error(__('No posts selected'), 404);
@@ -586,7 +586,7 @@ class Topic
                 $result->where_not_in('poster_id', Utils::get_admin_ids());
             }
 
-            $result = $this->hook->fireDB('delete_posts_first_query', $result);
+            $result = $this->hook->fireDB('model.topic.delete_posts_first_query', $result);
             $result = $result->find_many();
 
             if (count($result) != substr_count($posts, ',') + 1) {
@@ -596,7 +596,7 @@ class Topic
             // Delete the posts
             $delete_posts = DB::for_table('posts')
                                 ->where_in('id', $posts_array);
-            $delete_posts = $this->hook->fireDB('delete_posts_query', $delete_posts);
+            $delete_posts = $this->hook->fireDB('model.topic.delete_posts_query', $delete_posts);
             $delete_posts = $delete_posts->delete_many();
 
             $search = new \FeatherBB\Core\Search();
@@ -608,7 +608,7 @@ class Topic
             $last_post = DB::for_table('posts')
                 ->select_many($last_post['select'])
                 ->where('topic_id', $tid);
-            $last_post = $this->hook->fireDB('delete_posts_last_post_query', $last_post);
+            $last_post = $this->hook->fireDB('model.topic.delete_posts_last_post_query', $last_post);
             $last_post = $last_post->find_one();
 
             // How many posts did we just delete?
@@ -625,14 +625,14 @@ class Topic
                 ->find_one()
                 ->set($update_topic['insert'])
                 ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted);
-            $update_topic = $this->hook->fireDB('delete_posts_update_topic_query', $update_topic);
+            $update_topic = $this->hook->fireDB('model.topic.delete_posts_update_topic_query', $update_topic);
             $update_topic = $update_topic->save();
 
             Forum::update($fid);
             Url::redirect($this->feather->urlFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
         }
 
-        $posts = $this->hook->fire('model.delete_posts', $posts);
+        $posts = $this->hook->fire('model.topic.delete_posts', $posts);
         return $posts;
     }
 
@@ -655,7 +655,7 @@ class Topic
             ->where('f.id', $fid)
             ->where('t.id', $tid)
             ->where_null('t.moved_to');
-        $cur_topic = $this->hook->fireDB('get_topic_info', $cur_topic);
+        $cur_topic = $this->hook->fireDB('model.topic.get_topic_info', $cur_topic);
         $cur_topic = $cur_topic->find_one();
 
         if (!$cur_topic) {
@@ -668,7 +668,7 @@ class Topic
     public function split_posts($tid, $fid, $p = null)
     {
         $posts = $this->request->post('posts') ? $this->request->post('posts') : array();
-        $posts = $this->hook->fire('model.split_posts_start', $posts, $tid, $fid);
+        $posts = $this->hook->fire('model.topic.split_posts_start', $posts, $tid, $fid);
         if (empty($posts)) {
             throw new Error(__('No posts selected'), 404);
         }
@@ -692,7 +692,7 @@ class Topic
             $result = DB::for_table('posts')
                 ->where_in('id', $posts_array)
                 ->where('topic_id', $tid);
-            $result = $this->hook->fireDB('split_posts_first_query', $result);
+            $result = $this->hook->fireDB('model.topic.split_posts_first_query', $result);
             $result = $result->find_many();
 
             if (count($result) != $num_posts_splitted) {
@@ -713,7 +713,7 @@ class Topic
                         ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
                         ->where_any_is($result['where'])
                         ->where_null('f.redirect_url');
-            $result = $this->hook->fireDB('split_posts_second_query', $result);
+            $result = $this->hook->fireDB('model.topic.split_posts_second_query', $result);
             $result = $result->find_one();
 
             if (!$result) {
@@ -750,7 +750,7 @@ class Topic
             $topic = DB::for_table('topics')
                 ->create()
                 ->set($topic['insert']);
-            $topic = $this->hook->fireDB('split_posts_topic_query', $topic);
+            $topic = $this->hook->fireDB('model.topic.split_posts_topic_query', $topic);
             $topic->save();
 
             $new_tid = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
@@ -759,7 +759,7 @@ class Topic
             $move_posts = DB::for_table('posts')->where_in('id', $posts_array)
                 ->find_result_set()
                 ->set('topic_id', $new_tid);
-            $move_posts = $this->hook->fireDB('split_posts_move_query', $move_posts);
+            $move_posts = $this->hook->fireDB('model.topic.split_posts_move_query', $move_posts);
             $move_posts->save();
 
             // Apply every subscription to both topics
@@ -772,7 +772,7 @@ class Topic
                 ->select_many($last_old_post_data['select'])
                 ->where('topic_id', $tid)
                 ->order_by_desc('id');
-            $last_old_post_data = $this->hook->fireDB('split_posts_last_old_post_data_query', $last_old_post_data);
+            $last_old_post_data = $this->hook->fireDB('model.topic.split_posts_last_old_post_data_query', $last_old_post_data);
             $last_old_post_data = $last_old_post_data->find_one();
 
             // Update the old topic
@@ -787,7 +787,7 @@ class Topic
                                 ->find_one()
                                 ->set($update_old_topic['insert'])
                                 ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted);
-            $update_old_topic = $this->hook->fireDB('split_posts_update_old_topic_query', $update_old_topic);
+            $update_old_topic = $this->hook->fireDB('model.topic.split_posts_update_old_topic_query', $update_old_topic);
             $update_old_topic->save();
 
             // Get last_post, last_post_id, and last_poster from the new topic and update it
@@ -797,7 +797,7 @@ class Topic
                                     ->select_many($last_new_post_data['select'])
                                     ->where('topic_id', $new_tid)
                                     ->order_by_desc('id');
-            $last_new_post_data = $this->hook->fireDB('split_posts_last_new_post_query', $last_new_post_data);
+            $last_new_post_data = $this->hook->fireDB('model.topic.split_posts_last_new_post_query', $last_new_post_data);
             $last_new_post_data = $last_new_post_data->find_one();
 
             // Update the new topic
@@ -812,7 +812,7 @@ class Topic
                 ->find_one()
                 ->set($update_new_topic['insert'])
                 ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted-1);
-            $update_new_topic = $this->hook->fireDB('split_posts_update_new_topic_query', $update_new_topic);
+            $update_new_topic = $this->hook->fireDB('model.topic.split_posts_update_new_topic_query', $update_new_topic);
             $update_new_topic = $update_new_topic->save();
 
             Forum::update($fid);
@@ -821,7 +821,7 @@ class Topic
             Url::redirect($this->feather->urlFor('Topic', array('id' => $new_tid)), __('Split posts redirect'));
         }
 
-        $posts = $this->hook->fire('model.split_posts', $posts);
+        $posts = $this->hook->fire('model.topic.split_posts', $posts);
         return $posts;
     }
 
@@ -830,7 +830,7 @@ class Topic
     {
         $post_data = array();
 
-        $post_data = $this->hook->fire('model.print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
+        $post_data = $this->hook->fire('model.topic.print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
 
         $post_count = 0; // Keep track of post numbers
 
@@ -841,7 +841,7 @@ class Topic
                     ->order_by('id')
                     ->limit($this->user->disp_topics)
                     ->offset($start_from);
-        $result = $this->hook->fireDB('print_posts_ids_query', $result);
+        $result = $this->hook->fireDB('model.topic.print_posts_ids_query', $result);
         $result = $result->find_many();
 
         $post_ids = array();
@@ -864,7 +864,7 @@ class Topic
                     ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
-        $result = $this->hook->fireDB('print_posts_query', $result);
+        $result = $this->hook->fireDB('model.topic.print_posts_query', $result);
         $result = $result->find_array();
 
         foreach($result as $cur_post) {
@@ -1006,14 +1006,14 @@ class Topic
             $post_data[] = $cur_post;
         }
 
-        $post_data = $this->hook->fire('model.print_posts', $post_data);
+        $post_data = $this->hook->fire('model.topic.print_posts', $post_data);
 
         return $post_data;
     }
 
     public function display_posts_moderate($tid, $start_from)
     {
-        $this->hook->fire('model.display_posts_view_start', $tid, $start_from);
+        $this->hook->fire('model.topic.display_posts_view_start', $tid, $start_from);
 
         $post_data = array();
 
@@ -1025,7 +1025,7 @@ class Topic
             ->order_by('id')
             ->limit($this->user->disp_posts)
             ->offset($start_from);
-        $find_ids = $this->hook->fireDB('display_posts_view_find_ids', $find_ids);
+        $find_ids = $this->hook->fireDB('model.topic.display_posts_view_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
 
         foreach ($find_ids as $id) {
@@ -1042,7 +1042,7 @@ class Topic
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
-        $result = $this->hook->fireDB('display_posts_view_query', $result);
+        $result = $this->hook->fireDB('model.topic.display_posts_view_query', $result);
         $result = $result->find_many();
 
         foreach($result as $cur_post) {
@@ -1076,7 +1076,7 @@ class Topic
             $post_data[] = $cur_post;
         }
 
-        $post_data = $this->hook->fire('model.display_posts_view', $post_data);
+        $post_data = $this->hook->fire('model.topic.display_posts_view', $post_data);
 
         return $post_data;
     }
@@ -1088,7 +1088,7 @@ class Topic
                         ->where('id', $id)
                         ->find_one()
                         ->set_expr('num_views', 'num_views+1');
-            $query = $this->hook->fire('model.increment_views', $query);
+            $query = $this->hook->fire('model.topic.increment_views', $query);
             $query = $query->save();
         }
     }

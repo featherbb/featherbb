@@ -30,13 +30,13 @@ class Groups
     public function fetch_groups()
     {
         $result = DB::for_table('groups')->order_by('g_id')->find_many();
-        $this->hook->fireDB('fetch_groups_query', $result);
+        $this->hook->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = array();
         foreach ($result as $cur_group) {
             $groups[$cur_group['g_id']] = $cur_group;
         }
 
-        $groups = $this->hook->fire('model.fetch_groups', $groups);
+        $groups = $this->hook->fire('model.admin.groups.fetch_groups', $groups);
 
         return $groups;
     }
@@ -47,7 +47,7 @@ class Groups
 
         if ($this->request->post('add_group')) {
             $group['base_group'] = intval($this->request->post('base_group'));
-            $group['base_group'] = $this->hook->fire('model.add_user_group', $group['base_group']);
+            $group['base_group'] = $this->hook->fire('model.admin.groups.add_user_group', $group['base_group']);
             $group['info'] = $groups[$group['base_group']];
 
             $group['mode'] = 'add';
@@ -57,14 +57,14 @@ class Groups
                 throw new Error(__('Bad request'), 404);
             }
 
-            $groups[$id] = $this->hook->fire('model.update_user_group', $groups[$id]);
+            $groups[$id] = $this->hook->fire('model.admin.groups.update_user_group', $groups[$id]);
 
             $group['info'] = $groups[$id];
 
             $group['mode'] = 'edit';
         }
 
-        $group = $this->hook->fire('model.info_add_group', $group);
+        $group = $this->hook->fire('model.admin.groups.info_add_group', $group);
         return $group;
     }
 
@@ -82,20 +82,20 @@ class Groups
             }
         }
 
-        $output = $this->hook->fire('model.get_group_list', $output);
+        $output = $this->hook->fire('model.admin.groups.get_group_list', $output);
         return $output;
     }
 
     public function get_group_list_delete($group_id)
     {
-        $group_id = $this->hook->fire('model.get_group_list_delete_start', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.get_group_list_delete_start', $group_id);
 
         $select_get_group_list_delete = array('g_id', 'g_title');
         $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
                         ->where_not_equal('g_id', $this->feather->forum_env['FEATHER_GUEST'])
                         ->where_not_equal('g_id', $group_id)
                         ->order_by('g_title');
-        $result = $this->hook->fireDB('get_group_list_delete', $result);
+        $result = $this->hook->fireDB('model.admin.groups.get_group_list_delete', $result);
         $result = $result->find_many();
 
         $output = '';
@@ -109,7 +109,7 @@ class Groups
             }
         }
 
-        $output = $this->hook->fire('model.get_group_list.output', $output);
+        $output = $this->hook->fire('model.admin.groups.get_group_list.output', $output);
         return $output;
     }
 
@@ -121,7 +121,7 @@ class Groups
             $group_id = 0;
         }
 
-        $group_id = $this->hook->fire('model.add_edit_group_start', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.add_edit_group_start', $group_id);
 
         // Is this the admin group? (special rules apply)
         $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == $this->feather->forum_env['FEATHER_ADMIN']) ? true : false;
@@ -131,11 +131,11 @@ class Groups
         if ($title == '') {
             throw new Error(__('Must enter title message'), 400);
         }
-        $title = $this->hook->fire('model.add_edit_group_set_title', $title);
+        $title = $this->hook->fire('model.admin.groups.add_edit_group_set_title', $title);
         // Set user title
         $user_title = Utils::trim($this->request->post('user_title'));
         $user_title = ($user_title != '') ? $user_title : 'NULL';
-        $user_title = $this->hook->fire('model.add_edit_group_set_user_title', $user_title);
+        $user_title = $this->hook->fire('model.admin.groups.add_edit_group_set_user_title', $user_title);
 
         $promote_min_posts = $this->request->post('promote_min_posts') ? intval($this->request->post('promote_min_posts')) : '0';
         if ($this->request->post('promote_next_group') &&
@@ -199,7 +199,7 @@ class Groups
             'g_report_flood'        =>  $report_flood,
         );
 
-        $insert_update_group = $this->hook->fire('model.add_edit_group_data', $insert_update_group);
+        $insert_update_group = $this->hook->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
 
         if ($this->request->post('mode') == 'add') {
             // Creating a new group
@@ -213,13 +213,13 @@ class Groups
                 ->set($insert_update_group)
                 ->save();
             $new_group_id = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'groups');
-            $new_group_id = $this->hook->fire('model.add_edit_group.new_group_id', $new_group_id);
+            $new_group_id = $this->hook->fire('model.admin.groups.add_edit_group.new_group_id', $new_group_id);
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
             $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', $this->request->post('base_group'));
-            $result = $this->hook->fireDB('add_edit_group.select_forum_perms_query', $result);
+            $result = $this->hook->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
             $result = $result->find_many();
 
             foreach ($result as $cur_forum_perm) {
@@ -256,7 +256,7 @@ class Groups
         }
 
         $group_id = $this->request->post('mode') == 'add' ? $new_group_id : $this->request->post('group_id');
-        $group_id = $this->hook->fire('model.add_edit_group.group_id', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.add_edit_group.group_id', $group_id);
 
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', Cache::get_quickjump());
@@ -271,7 +271,7 @@ class Groups
     public function set_default_group($groups)
     {
         $group_id = intval($this->request->post('default_group'));
-        $group_id = $this->hook->fire('model.set_default_group.group_id', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.set_default_group.group_id', $group_id);
 
         // Make sure it's not the admin or guest groups
         if ($group_id == $this->feather->forum_env['FEATHER_ADMIN'] || $group_id == $this->feather->forum_env['FEATHER_GUEST']) {
@@ -294,7 +294,7 @@ class Groups
 
     public function check_members($group_id)
     {
-        $group_id = $this->hook->fire('model.check_members_start', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.check_members_start', $group_id);
 
         $is_member = DB::for_table('groups')->table_alias('g')
             ->select('g.g_title')
@@ -303,7 +303,7 @@ class Groups
             ->where('g.g_id', $group_id)
             ->group_by('g.g_id')
             ->group_by('g_title');
-        $is_member = $this->hook->fireDB('check_members', $is_member);
+        $is_member = $this->hook->fireDB('model.admin.groups.check_members', $is_member);
         $is_member = $is_member->find_one();
 
         return (bool) $is_member;
@@ -311,11 +311,11 @@ class Groups
 
     public function delete_group($group_id)
     {
-        $group_id = $this->hook->fire('model.delete_group.group_id', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.delete_group.group_id', $group_id);
 
         if ($this->request->post('del_group')) {
             $move_to_group = intval($this->request->post('move_to_group'));
-            $move_to_group = $this->hook->fire('model.delete_group.move_to_group', $move_to_group);
+            $move_to_group = $this->hook->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
             DB::for_table('users')->where('group_id', $group_id)
                                                       ->update_many('group_id', $move_to_group);
         }
@@ -337,10 +337,10 @@ class Groups
 
     public function get_group_title($group_id)
     {
-        $group_id = $this->hook->fireDB('get_group_title.group_id', $group_id);
+        $group_id = $this->hook->fireDB('model.admin.groups.get_group_title.group_id', $group_id);
 
         $group_title = DB::for_table('groups')->where('g_id', $group_id);
-        $group_title = $this->hook->fireDB('get_group_title.query', $group_title);
+        $group_title = $this->hook->fireDB('model.admin.groups.get_group_title.query', $group_title);
         $group_title = $group_title->find_one_col('g_title');
 
         return $group_title;
@@ -348,7 +348,7 @@ class Groups
 
     public function get_title_members($group_id)
     {
-        $group_id = $this->hook->fire('model.get_title_members.group_id', $group_id);
+        $group_id = $this->hook->fire('model.admin.groups.get_title_members.group_id', $group_id);
 
         $group = DB::for_table('groups')->table_alias('g')
                     ->select('g.g_title')
@@ -357,13 +357,13 @@ class Groups
                     ->where('g.g_id', $group_id)
                     ->group_by('g.g_id')
                     ->group_by('g_title');
-        $group = $this->hook->fireDB('get_title_members.query', $group);
+        $group = $this->hook->fireDB('model.admin.groups.get_title_members.query', $group);
         $group = $group->find_one();
 
         $group_info['title'] = $group['g_title'];
         $group_info['members'] = $group['members'];
 
-        $group_info = $this->hook->fire('model.get_title_members.group_info', $group_info);
+        $group_info = $this->hook->fire('model.admin.groups.get_title_members.group_info', $group_info);
         return $group_info;
     }
 }

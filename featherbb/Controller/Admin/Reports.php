@@ -28,11 +28,12 @@ class Reports
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.reports.display');
+
         // Zap a report
         if ($this->feather->request->isPost()) {
             $zap_id = intval(key($this->request->post('zap_id')));
-            $user_id = $this->user->id;
-            $this->model->zap_report($zap_id, $user_id);
+            $this->model->zap_report($zap_id);
             Url::redirect($this->feather->urlFor('adminReports'), __('Report zapped redirect'));
         }
 

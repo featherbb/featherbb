@@ -27,12 +27,10 @@ class Forums
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/forums.mo');
     }
 
-    //
-    // CRUD
-    //
-
-    public function add_forum()
+    public function add()
     {
+        $this->feather->hooks->fire('controller.admin.forums.add');
+
         $cat_id = (int) $this->request->post('cat');
 
         if ($cat_id < 1) {
@@ -49,8 +47,10 @@ class Forums
         }
     }
 
-    public function edit_forum($forum_id)
+    public function edit($forum_id)
     {
+        $this->feather->hooks->fire('controller.admin.forums.edit');
+
         if($this->request->isPost()) {
             if ($this->request->post('save') && $this->request->post('read_forum_old')) {
 
@@ -128,8 +128,10 @@ class Forums
         }
     }
 
-    public function delete_forum($forum_id)
+    public function delete($forum_id)
     {
+        $this->feather->hooks->fire('controller.admin.forums.delete');
+
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
@@ -151,10 +153,10 @@ class Forums
         }
     }
 
-    // -- //
-
     public function edit_positions()
     {
+        $this->feather->hooks->fire('controller.admin.forums.edit_positions');
+
         foreach ($this->request->post('position') as $forum_id => $position) {
             $position = (int) Utils::trim($position);
             $this->model->update_positions($forum_id, $position);
@@ -168,6 +170,8 @@ class Forums
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.forums.display');
+
         if ($this->request->post('update_positions')) {
             $this->edit_positions();
         }

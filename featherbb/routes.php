@@ -166,9 +166,9 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     // Admin categories
     $feather->group('/categories', $isAdmin, function() use ($feather) {
         $feather->get('(/)', '\FeatherBB\Controller\Admin\Categories:display')->name('adminCategories');
-        $feather->post('/add(/)', '\FeatherBB\Controller\Admin\Categories:add_category')->name('addCategory');
-        $feather->post('/edit(/)', '\FeatherBB\Controller\Admin\Categories:edit_categories')->name('editCategory');
-        $feather->post('/delete(/)', '\FeatherBB\Controller\Admin\Categories:delete_category')->name('deleteCategory');
+        $feather->post('/add(/)', '\FeatherBB\Controller\Admin\Categories:add')->name('addCategory');
+        $feather->post('/edit(/)', '\FeatherBB\Controller\Admin\Categories:edit')->name('editCategory');
+        $feather->post('/delete(/)', '\FeatherBB\Controller\Admin\Categories:delete')->name('deleteCategory');
     });
 
     // Admin censoring
@@ -187,9 +187,9 @@ $feather->group('/admin', $isAdmmod, function() use ($feather) {
     // Admin forums
     $feather->group('/forums', $isAdmin, function() use ($feather) {
         $feather->map('(/)', '\FeatherBB\Controller\Admin\Forums:display')->via('GET', 'POST')->name('adminForums');
-        $feather->post('/add(/)', '\FeatherBB\Controller\Admin\Forums:add_forum')->name('addForum');
-        $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Admin\Forums:edit_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editForum');
-        $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Admin\Forums:delete_forum')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deleteForum');
+        $feather->post('/add(/)', '\FeatherBB\Controller\Admin\Forums:add')->name('addForum');
+        $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Admin\Forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editForum');
+        $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Admin\Forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deleteForum');
     });
 
     // Admin groups

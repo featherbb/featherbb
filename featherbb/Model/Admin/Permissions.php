@@ -28,7 +28,7 @@ class Permissions
     public function update_permissions()
     {
         $form = array_map('intval', $this->request->post('form'));
-        $form = $this->hook->fire('model.permissions.update_permissions.form', $form);
+        $form = $this->hook->fire('model.admin.permissions.update_permissions.form', $form);
 
         foreach ($form as $key => $input) {
             // Make sure the input is never a negative value

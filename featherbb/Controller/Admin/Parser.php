@@ -31,6 +31,8 @@ class Parser
     {
         global $lang_admin_parser;
 
+        $this->feather->hooks->fire('controller.admin.parser.display');
+
         // Legacy
         require $this->feather->forum_env['FEATHER_ROOT'] . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
 

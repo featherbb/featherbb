@@ -28,6 +28,8 @@ class Statistics
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.statistics.display');
+
         AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->get_total_size();
@@ -48,6 +50,8 @@ class Statistics
 
     public function phpinfo()
     {
+        $this->feather->hooks->fire('controller.admin.statistics.phpinfo');
+
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
         if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {

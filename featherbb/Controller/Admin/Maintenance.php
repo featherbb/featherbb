@@ -23,6 +23,8 @@ class Maintenance
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.maintenance.display');
+
         $action = '';
         if ($this->feather->request->post('action')) {
             $action = $this->feather->request->post('action');

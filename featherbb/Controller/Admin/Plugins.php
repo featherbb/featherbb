@@ -28,6 +28,8 @@ class Plugins
 
     public function index()
     {
+        $this->feather->hooks->fire('controller.admin.plugins.index');
+
         $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
         $availablePlugins = Lister::getPlugins();
@@ -49,7 +51,12 @@ class Plugins
 
     public function activate($plugin = null)
     {
-        if (!$plugin) throw new Error(__('Bad request'), 400);
+        $this->feather->hooks->fire('controller.admin.plugins.activate');
+
+        if (!$plugin) {
+            throw new Error(__('Bad request'), 400);
+        }
+
         $this->model->activate($plugin);
         // Plugin has been activated, confirm and redirect
         Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin activated!');
@@ -57,7 +64,12 @@ class Plugins
 
     public function deactivate($plugin = null)
     {
-        if (!$plugin) throw new Error(__('Bad request'), 400);
+        $this->feather->hooks->fire('controller.admin.plugins.deactivate');
+
+        if (!$plugin) {
+            throw new Error(__('Bad request'), 400);
+        }
+
         $this->model->deactivate($plugin);
         // // Plugin has been deactivated, confirm and redirect
         Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
@@ -65,7 +77,12 @@ class Plugins
 
     public function uninstall($plugin = null)
     {
-        if (!$plugin) throw new Error(__('Bad request'), 400);
+        $this->feather->hooks->fire('controller.admin.plugins.uninstall');
+
+        if (!$plugin) {
+            throw new Error(__('Bad request'), 400);
+        }
+
         $this->model->uninstall($plugin);
         // // Plugin has been deactivated, confirm and redirect
         Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
@@ -73,12 +90,11 @@ class Plugins
 
     public function info($pluginName = null)
     {
-        if (!$pluginName) throw new Error(__('Bad request'), 400);
+        $this->feather->hooks->fire('controller.admin.plugins.info');
 
-        // $manager = new PluginManager();
-        // $plugin = $manager->displayInfos($pluginName);
-        // echo $plugin->name;
-
+        if (!$pluginName) {
+            throw new Error(__('Bad request'), 400);
+        }
 
         AdminUtils::generateAdminMenu($pluginName);
 
@@ -92,7 +108,5 @@ class Plugins
             )
         )->addTemplate('admin/plugins.php')->display();
     }
-
-
 
 }
