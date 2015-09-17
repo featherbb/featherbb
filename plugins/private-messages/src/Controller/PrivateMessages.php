@@ -36,9 +36,14 @@ class PrivateMessages
         $fid = !empty($fid) ? intval($fid) : 2;
         $uid = intval($this->feather->user->id);
 
-        // // Display delete confirm form
+        // Display delete confirm form
         if ($this->request->post('delete')) {
             $this->delete();
+        }
+
+        // Display move form
+        if ($this->request->post('move')) {
+            $this->move();
         }
 
         // Get all inboxes owned by the user and count messages in it
@@ -74,12 +79,6 @@ class PrivateMessages
         ->addTemplate('index.php')->display();
     }
 
-    public function move($fid = 2, $page = 1)
-    {
-        echo $fid."ok";
-        return;
-    }
-
     public function delete()
     {
         if (!$this->request->post('topics'))
@@ -111,6 +110,47 @@ class PrivateMessages
             )
             ->addTemplate('delete.php')->display();
     	}
+        die();
+    }
+
+    public function move()
+    {
+        if (!$this->request->post('topics'))
+    		throw new Error(__('Select more than one topic', 'private_messages'), 403);
+
+    	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
+
+    	if (empty($topics))
+    		throw new Error(__('Select more than one topic', 'private_messages'), 403);
+
+        $uid = intval($this->feather->user->id);
+
+    	if ( $this->request->post('move_comply') )
+    	{
+            $move_to = $this->request->post('move_to') ? intval($this->request->post('move_to')) : 2;
+
+            if ( $this->model->move($topics, $move_to, $uid) ) {
+                Url::redirect($this->feather->urlFor('Conversations.home', ['id' => $move_to]), __('Conversations moved', 'private_messages'));
+            } else {
+                throw new Error(__('Error while moving conversations', 'private_messages'), 403);
+            }
+    	}
+
+        // Display move form
+        if ($inboxes = $this->model->getUserFolders($uid)) {
+            $this->feather->template
+                ->setPageInfo(array(
+                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages')),
+                    'active_page' => 'navextra1',
+                    'topics' => $topics,
+                    'inboxes' => $inboxes,
+                )
+            )
+            ->addTemplate('move.php')->display();
+        } else {
+            throw new Error('No inboxes', 404);
+        }
+
         die();
     }
 

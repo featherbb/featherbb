@@ -164,6 +164,19 @@ class PrivateMessages
 		}
     }
 
+    public function move($convers, $move_to, $uid)
+    {
+        if (!$this->checkFolderOwner($move_to, $uid)) {
+            throw new Error(__('Wrong folder owner', 'private_messages'), 403);
+        }
+        return DB::for_table('pms_data')
+            ->where('user_id', $uid)
+            ->where_in('conversation_id', $convers)
+            ->find_result_set()
+            ->set('folder_id', $move_to)
+            ->save();
+    }
+
     public function addConversation(array $data = array())
     {
         $result = DB::for_table('pms_conversations')

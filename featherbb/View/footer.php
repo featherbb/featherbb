@@ -16,11 +16,11 @@ if (!isset($feather)) {
 }
 
 ?>
-    </div>
+        </div>
 
-    <div id="brdfooter" class="block">
-        <h2><span><?php _e('Board footer') ?></span></h2>
-        <div class="box">
+        <div id="brdfooter" class="block">
+            <h2><span><?php _e('Board footer') ?></span></h2>
+            <div class="box">
 <?php
 
 if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && $feather->user->is_admmod) {
@@ -72,21 +72,21 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
 // Display the "Jump to" drop list
 if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 			<div class="conl">
-			<form id="qjump" method="get" action="">
-				<div><label><span><?php _e('Jump to') ?><br /></span></label>
-					<select name="id" onchange="window.location=('<?= Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
-<?php
-		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
-			echo "\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
-			foreach ($cat_data['cat_forums'] as $forum) {
-				echo "\t\t\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.$feather->url->url_friendly($forum['forum_name']).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
-			}
-			echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
-		} ?>
-					</select>
-					<noscript><input type="submit" value="<?php _e('Go') ?>" accesskey="g" /></noscript>
-				</div>
-			</form>
+    			<form id="qjump" method="get" action="">
+    				<div><label><span><?php _e('Jump to') ?><br /></span></label>
+    					<select name="id" onchange="window.location=('<?= Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
+    <?php
+    		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
+    			echo "\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
+    			foreach ($cat_data['cat_forums'] as $forum) {
+    				echo "\t\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.$feather->url->url_friendly($forum['forum_name']).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+    			}
+    			echo "\t\t\t\t\t\t".'</optgroup>'."\n";
+    		} ?>
+    					</select>
+    					<noscript><input type="submit" value="<?php _e('Go') ?>" accesskey="g" /></noscript>
+    				</div>
+    			</form>
 			</div>
 <?php } ?>
 
@@ -114,25 +114,25 @@ if ($active_page == 'index') {
 }
 
 ?>
-				<p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather->forum_settings['o_show_version'] == '1') ? ' '.$feather->forum_settings['o_cur_version'] : '')) ?></p>
-			</div>
-			<div class="clearer"></div>
-		</div>
-	</div>
-</div>
+    				<p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather->forum_settings['o_show_version'] == '1') ? ' '.$feather->forum_settings['o_cur_version'] : '')) ?></p>
+    			</div>
+    			<div class="clearer"></div>
+    		</div>
+    	</div>
+    </div>
 <?php
 
 // Display debug info (if enabled/defined)
 if (!empty($exec_info)) { ?>
-	<p id="debugtime">[ <?= sprintf(__('Querytime'), round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.sprintf(__('Memory usage'), $exec_info['mem_usage']).' '.sprintf(__('Peak usage'), $exec_info['mem_peak_usage'])?> ]</p>
+    <p id="debugtime">[ <?= sprintf(__('Querytime'), round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.sprintf(__('Memory usage'), $exec_info['mem_usage']).' '.sprintf(__('Peak usage'), $exec_info['mem_peak_usage'])?> ]</p>
 <?php }
 if (!empty($queries_info)) { ?>
-	<div id="debug" class="blocktable">
-		<h2><span><?php _e('Debug table') ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<table>
-					<thead>
+    <div id="debug" class="blocktable">
+        <h2><span><?php _e('Debug table') ?></span></h2>
+        <div class="box">
+            	<div class="inbox">
+            	<table>
+            		<thead>
 						<tr>
 							<th class="tcl" scope="col"><?php _e('Query times') ?></th>
 							<th class="tcr" scope="col"><?php _e('Query') ?></th>
