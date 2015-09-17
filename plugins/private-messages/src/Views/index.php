@@ -44,7 +44,7 @@ if (!isset($feather)) {
                                                 <div class="icon <?= (!$conv['viewed'] ? 'icon-new' : '')?>"><div class="nosize">1</div></div>
                                                 <div class="tclcon">
                                                     <div>
-                                                        <strong><a href="<?= $feather->urlFor('Conversations.show', ['tid' => 1])?>"><?= Utils::escape($conv['subject'])?></a></strong> <? ($conv['viewed'] ? '<span class="newtext">[ <a href="#" title="Go to the first new post in this topic.">New posts</a> ]</span>' : '')?>
+                                                        <strong><a href="<?= $feather->urlFor('Conversations.show', ['tid' => $conv['id']])?>"><?= Utils::escape($conv['subject'])?></a></strong> <? ($conv['viewed'] ? '<span class="newtext">[ <a href="#" title="Go to the first new post in this topic.">New posts</a> ]</span>' : '')?>
                                                     </div>
                                                 </div>
                                             </td>

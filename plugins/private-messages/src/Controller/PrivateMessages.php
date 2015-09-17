@@ -29,7 +29,6 @@ class PrivateMessages
         $this->feather->template->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5);
     }
 
-
     public function index($fid = 2, $page = 1)
     {
         // Set default page to "Inbox" folder
@@ -46,18 +45,11 @@ class PrivateMessages
             $this->move();
         }
 
-        // Get all inboxes owned by the user and count messages in it
-        if ($inboxes = $this->model->getUserFolders($uid)) {
+        if ($inboxes = $this->model->getInboxes($this->feather->user->id)) {
             if (!in_array($fid, array_keys($inboxes))) {
                 throw new Error(__('Wrong folder owner', 'private_messages'), 403);
             }
-            foreach ($inboxes as $iid => $data) {
-                $inboxes[$iid]['nb_msg'] = $this->model->countMessages($iid, $uid);
-            }
-        } else {
-            throw new Error('No inbox', 404);
         }
-
         // Page data
         $num_pages = ceil($inboxes[$fid]['nb_msg'] / $this->feather->user['disp_topics']);
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
@@ -298,11 +290,12 @@ class PrivateMessages
         }
     }
 
-    public function reply($conv_id = null) {
+    public function reply($conv_id = null)
+    {
         $this->send(null, $conv_id);
     }
 
-    public function show($conv_id = null)
+    public function show($conv_id = null, $page = null)
     {
         // First checks
         if ($conv_id < 1) {
@@ -313,6 +306,30 @@ class PrivateMessages
         } else if ($this->model->isDeleted($conv_id, $this->feather->user->id)) {
             throw new Error('The conversation has been deleted', 404);
         }
-        var_dump($this->model->getMessages($conv_id));
+
+        // Set conversation as viewed
+        if ($conv['viewed'] = 0) {
+            if (!$this->model->updateConversation($conv_id, ['viewed' => 1])) {
+                throw new Error('Unable to set conversation as viewed', 500);
+            }
+        }
+
+        $num_pages = ceil($conv['num_replies'] / $this->feather->user['disp_topics']);
+        $p = (!is_null($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $start_from = $this->feather->user['disp_topics'] * ($p - 1);
+        $paging_links = Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.show', ['tid' => $conv_id]).'/#');
+
+        $this->feather->template
+            ->setPageInfo(array(
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $this->model->getUserFolders($this->feather->user->id)[$conv['folder_id']]['name'], Utils::escape($conv['subject'])),
+                'active_page' => 'navextra1',
+                'admin_console' => true,
+                'current_inbox_id' => $conv['folder_id'],
+                'inboxes' => $this->model->getInboxes($this->feather->user->id),
+                'paging_links' => $paging_links,
+                'messages' => $this->model->getMessages($conv['id'], $this->feather->user['disp_topics'], $start_from)
+            )
+        )
+        ->addTemplate('menu.php')->display();
     }
 }

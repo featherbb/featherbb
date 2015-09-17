@@ -28,20 +28,6 @@ class PrivateMessages
         ));
     }
 
-    // Check if current user owns the folder
-    public function checkFolderOwner($fid, $uid)
-    {
-        return DB::for_table('pms_folders')
-            ->select('name')
-            ->select('id')
-            ->where_any_is([
-                ['user_id' => $uid],
-                ['user_id' => 1]
-            ])
-            ->where('id' , $fid)
-            ->find_one();
-    }
-
     // Get all inboxes owned by a user
     public function getUserFolders($uid)
     {
@@ -59,6 +45,32 @@ class PrivateMessages
             $output[(int) $inbox['id']] = array('name' => $inbox['name']);
         }
         return $output;
+    }
+
+    public function getInboxes($uid)
+    {
+        if ($inboxes = $this->getUserFolders($uid)) {
+            foreach ($inboxes as $iid => $data) {
+                $inboxes[$iid]['nb_msg'] = $this->countMessages($iid, $uid);
+            }
+        } else {
+            throw new Error('No inbox', 404);
+        }
+        return $inboxes;
+    }
+
+    // Check if current user owns the folder
+    public function checkFolderOwner($fid, $uid)
+    {
+        return DB::for_table('pms_folders')
+            ->select('name')
+            ->select('id')
+            ->where_any_is([
+                ['user_id' => $uid],
+                ['user_id' => 1]
+            ])
+            ->where('id' , $fid)
+            ->find_one();
     }
 
     // Get messages count from context
@@ -87,16 +99,23 @@ class PrivateMessages
         }
 
         $select = array(
-            'c.id', 'c.subject', 'c.poster', 'c.poster_id', 'c.num_replies', 'c.last_post', 'c.last_poster', 'c.last_post_id',
-            'd.viewed',
+            'c.id',
+            'c.subject',
+            'c.poster',
+            'c.poster_id',
             'poster_gid' => 'u.group_id', 'u.email',
-            'last_poster_id' => 'u2.id', 'last_poster_gid' => 'u2.group_id'
+            'c.num_replies',
+            'd.viewed',
+            'c.last_post',
+            'c.last_poster',
+            'last_poster_id' => 'u2.id',
+            'last_poster_gid' => 'u2.group_id',
+            'c.last_post_id',
         );
         $result = DB::for_table('pms_conversations')
             ->select_many($select)
             ->table_alias('c')
             ->inner_join('pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
-            // ->left_outer_join('pms_messages', array('m.poster_id', '=', 'c.last_post_id'), 'm')
             ->left_outer_join('users', array('u.id', '=', 'c.poster_id'), 'u')
             ->left_outer_join('users', array('u2.username', '=', 'c.last_poster'), 'u2', true)
             ->where('d.user_id', $uid)
@@ -190,13 +209,33 @@ class PrivateMessages
     // Return false if the conv doesn't exist or if the user has no rights to access it
     public function getConversation($conv_id = null, $uid = null)
     {
+        $select = array(
+            'c.id',
+            'c.subject',
+            'c.poster',
+            'c.poster_id',
+            'poster_gid' => 'u.group_id', 'u.email',
+            'c.num_replies',
+            'd.viewed',
+            'c.last_post',
+            'c.last_poster',
+            'last_poster_id' => 'u2.id',
+            'last_poster_gid' => 'u2.group_id',
+            'c.last_post_id',
+            'd.folder_id'
+        );
+
         $result = DB::for_table('pms_conversations')
-                    ->table_alias('c')
-                    ->inner_join('pms_data', array('d.conversation_id', '=', 'c.id'), 'd')
-                    ->where_any_is(array(array('c.poster_id' => $uid),
-                                         array('d.user_id' => $uid)))
-                    ->where('c.id', $conv_id)
-                    ->find_one();
+            ->select_many($select)
+            ->table_alias('c')
+            ->inner_join('pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
+            ->left_outer_join('users', array('u.id', '=', 'c.poster_id'), 'u')
+            ->left_outer_join('users', array('u2.username', '=', 'c.last_poster'), 'u2', true)
+            ->where_any_is(array(array('c.poster_id' => $uid),
+                                 array('d.user_id' => $uid)))
+            ->where('c.id', $conv_id)
+            ->find_one();
+
         return $result;
     }
 
