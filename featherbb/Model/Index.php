@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model;
 
-use DB;
+use FeatherBB\Core\DB;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;

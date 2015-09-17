@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model;
 
-use DB;
+use FeatherBB\Core\DB;
 
 class Auth
 {
