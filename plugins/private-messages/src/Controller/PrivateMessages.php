@@ -174,14 +174,16 @@ class PrivateMessages
                 }
             }
 
+            // Preview message
             if ($this->feather->request->post('preview')) {
+                $this->feather->hooks->fire('conversationsPlugin.send.preview');
                 $msg = $this->feather->parser->parse_message($data['message'], $data['smilies']);
                 $this->feather->template->setPageInfo(array(
                     'parsed_message' => $msg,
                     'username' => Utils::escape($data['username']),
                     'subject' => Utils::escape($data['subject']),
                     'message' => Utils::escape($data['message'])
-                    ))->addTemplate('send.php')->display();
+                ))->addTemplate('send.php')->display();
             } else {
                 // Prevent flood
                 if (!is_null($data['preview']) && $this->feather->user['last_post'] != '' && ($this->feather->now - $this->feather->user['last_post']) < $this->feather->user['g_post_flood']) {
@@ -264,6 +266,7 @@ class PrivateMessages
                 }
             }
         } else {
+            // New conversation
             if (!is_null($uid)) {
                 if ($uid < 2) {
                     throw new Error('Wrong user ID', 400);
@@ -274,6 +277,7 @@ class PrivateMessages
                     throw new Error('Unable to find user', 400);
                 }
             }
+            // Reply
             if (!is_null($conv_id)) {
                 if ($conv_id < 1) {
                     throw new Error('Wrong conversation ID', 400);
@@ -282,11 +286,12 @@ class PrivateMessages
                     $this->feather->template->setPageInfo(array(
                         'conv' => $conv,
                         'msg_data' => $this->model->getMessagesFromConversation($conv_id, $this->feather->user->id)
-                        ))->addTemplate('reply.php')->display();
-                    } else {
-                        throw new Error('Unknown conversation ID', 400);
-                    }
+                    ))->addTemplate('reply.php')->display();
+                } else {
+                    throw new Error('Unknown conversation ID', 400);
+                }
             }
+            $this->feather->hooks->fire('conversationsPlugin.send.display');
             $this->feather->template->addTemplate('send.php')->display();
         }
     }
@@ -330,6 +335,7 @@ class PrivateMessages
                 'paging_links' => $paging_links,
                 'start_from' => $start_from,
                 'cur_conv' => $conv,
+                'rightLink' => ['link' => $this->feather->urlFor('Conversations.reply', ['tid' => $conv['id']]), 'text' => __('Reply', 'private_messages')],
                 'messages' => $this->model->getMessages($conv['id'], $this->feather->user['disp_topics'], $start_from)
             )
         )

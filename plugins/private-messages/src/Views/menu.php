@@ -22,8 +22,10 @@ if (!isset($feather)) {
                     <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $current_inbox_id]) ?>"><?= Utils::escape($inboxes[$current_inbox_id]['name']) ?></a></li>
-                    <li><span>»&#160;</span><strong><?php _e('My conversations', 'private_messages') ?></strong></li>
-                    <li class="right"><span><a href="<?= $feather->urlFor('Conversations.send') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li>
+                    <li><span>»&#160;</span><strong><?= (isset($cur_conv) && isset($cur_conv['subject']) ? $cur_conv['subject'] : _e('My conversations', 'private_messages'))?></strong></li>
+                    <?php if (isset($rightLink) && !empty($rightLink)) { ?>
+                        <li class="right"><span><a href="<?= $rightLink['link'] ?>"><?= $rightLink['text'] ?></a></span></li>
+                    <?php }  ?>
                 </ul>
                 <div class="pagepost"></div>
                 <div class="clearer"></div>

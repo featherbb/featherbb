@@ -14,7 +14,7 @@
             			<div class="postbody">
             				<div class="postleft">
             					<dl>
-            						<dt><strong><?= $message['username'] ?></strong></dt>
+            						<dt><strong><a href="<?= $feather->urlFor('userProfile', ['id' => $message['poster_id']]) ?>"><span><?= $feather->utils->escape($message['username'])?></span></a></strong></dt>
                                     <dd class="usertitle"><strong><?= $feather->utils->get_title($message) ?></strong></dd>
             					</dl>
             				</div>
