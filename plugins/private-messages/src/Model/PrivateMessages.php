@@ -284,9 +284,12 @@ class PrivateMessages
         if (!empty($uid)) $update_data['first_post_id'] = $add->id();
         $update = DB::for_table('pms_conversations')
                     ->find_one($conv_id)
-                    ->set($update_data)
-                    ->save();
+                    ->set($update_data);
+        // Increment replies count
+        if(empty($uid)) $update->set_expr('num_replies', 'num_replies+1');
+        $update = $update->save();
         if (!empty($uid)) {
+            // New conversation
             foreach ($uid as $user) {
                 $notifs = DB::for_table('pms_data')
                         ->create()
@@ -297,6 +300,7 @@ class PrivateMessages
                         ->save();
             }
         } else {
+            // Reply
             $notifs = DB::for_table('pms_data')
                     ->where('conversation_id', $conv_id)
                     ->where_not_equal('user_id', $this->feather->user->id)
