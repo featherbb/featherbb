@@ -41,8 +41,14 @@ msgstr "You don't own this inbox"
 msgid "Send"
 msgstr "New conversation"
 
+msgid "Send success"
+msgstr "Your PM has been sent to %s !"
+
 msgid "Reply"
 msgstr "Reply to conversation"
+
+msgid "Reply success"
+msgstr "You have successfully replied to the conversation %s !"
 
 msgid "No conv selected"
 msgstr "Select more than one conversations"

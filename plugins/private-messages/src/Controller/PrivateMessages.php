@@ -255,12 +255,12 @@ class PrivateMessages
                     if ($conv) {
                         // Reply to an existing conversation
                         if ($msg_id = $this->model->addMessage($msg_data, $conv_id)) {
-                            Url::redirect($this->feather->urlFor('Conversations.home'), 'You have successfully responded to the conversation '.$conv->subject.' !');
+                            Url::redirect($this->feather->urlFor('Conversations.home'), sprintf(__('Reply success', 'private_messages'), $conv->subject));
                         }
                     } else {
                         // Add message in conversation + add receiver (create new conversation)
                         if ($msg_id = $this->model->addMessage($msg_data, $conv_id, array($user->id, $this->feather->user->id))) {
-                            Url::redirect($this->feather->urlFor('Conversations.home'), 'Your PM has been sent to '.$user->username.' !');
+                            Url::redirect($this->feather->urlFor('Conversations.home'), sprintf(__('Send success', 'private_messages'), $user->username));
                         }
                     }
                 } else {
