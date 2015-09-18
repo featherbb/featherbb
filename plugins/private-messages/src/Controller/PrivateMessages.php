@@ -64,6 +64,7 @@ class PrivateMessages
                 'inboxes' => $inboxes,
                 'current_inbox_id' => $fid,
                 'paging_links' => $paging_links,
+                'rightLink' => ['link' => $this->feather->urlFor('Conversations.send'), 'text' => __('Send', 'private_messages')],
                 'conversations' => $this->model->getConversations($fid, $uid, $this->feather->user['disp_topics'], $start_from)
             )
         )

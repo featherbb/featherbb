@@ -76,18 +76,18 @@ class PrivateMessages
     // Get messages count from context
     public function countMessages($fid, $uid)
     {
-        $where[] = ['cd.folder_id' => $fid];
-        // if ($fid == 1) {
-        //     $where[] = ['cd.viewed' => 0];
-        // }
-        return DB::for_table('pms_conversations')
+        $where[]['d.folder_id'] = $fid;
+        if ($fid == 1)
+            $where[]['d.viewed'] = '0';
+        // var_dump($where);
+        $result = DB::for_table('pms_conversations')
             ->select('id')
             ->table_alias('c')
-            ->inner_join('pms_data', array('c.id', '=', 'cd.conversation_id'), 'cd')
-            ->where('cd.user_id', $uid)
-            ->where('cd.deleted', 0)
-            ->where_any_is($where)
-            ->count();
+            ->inner_join('pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
+            ->where('d.user_id', $uid)
+            ->where('d.deleted', 0)
+            ->where_any_is($where);
+        return $result->count();
     }
 
     public function getConversations($inboxes = null, $uid = null, $limit = 50, $start = 0)
@@ -96,6 +96,7 @@ class PrivateMessages
         $where = array();
         foreach($inboxes as $id => $inbox_id) {
             $where[]['d.folder_id'] = (int) $inbox_id;
+            if ($inbox_id == 1) $where[]['d.viewed'] = '0';
         }
 
         $select = array(
