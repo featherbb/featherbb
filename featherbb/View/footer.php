@@ -157,7 +157,10 @@ if (!empty($queries_info)) { ?>
 </section>
 </body>
 <!-- JS -->
-
+<script>
+    var baseUrl = '<?= Utils::escape(Url::base(true)); ?>',
+        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
+</script>
 <?php foreach ($assets['js'] as $script) {
     echo '<script ';
     foreach ($script['params'] as $key => $value) {

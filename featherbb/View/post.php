@@ -77,12 +77,6 @@ if (!empty($errors)) {
 
 $cur_index = 1;
 ?>
-<!-- Init BBcode editor toolbar -->
-<script>
-    var baseUrl = '<?= Utils::escape(Url::base(true)); ?>',
-        langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
-</script>
-
 <div id="postform" class="blockform">
 	<h2><span><?= $action ?></span></h2>
 	<div class="box">
