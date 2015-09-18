@@ -27,12 +27,14 @@ if (!empty($conversations)) { ?>
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th class="tcl" scope="col">Messages</th>
-                                            <th class="tc2" scope="col">Sender</th>
-                                            <th class="tc2" scope="col">Receiver</th>
-                                            <th class="tc2" scope="col">Replies</th>
-                                            <th class="tcr" scope="col">Last Post</th>
-                                            <th class="tcmod" scope="col"><input type="checkbox" onclick="#" /></th>
+                                            <th class="tcl" scope="col"><?= _e('Title') ?></th>
+                                            <th class="tc2" scope="col"><?php _e('Sender', 'private_messages') ?></th>
+                                            <th class="tc2" scope="col"><?php _e('Receiver', 'private_messages') ?></th>
+                                            <th class="tc2" scope="col"><?php _e('Replies') ?></th>
+                                            <th class="tcr" scope="col"><?php _e('Last post') ?></th>
+                                            <th class="tcmod" scope="col">
+                                                <a href="#" onclick="return select_checkboxes('topics', this, '<input type=\'checkbox\' checked />')"><input type="checkbox" /></a>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -47,7 +49,7 @@ if (!empty($conversations)) { ?>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="tcl"><a href="<?= $feather->urlFor('userProfile', ['id' => $conv['poster_id']]) ?>"><span><?= Utils::escape($conv['poster'])?></span></a></td>
+                                            <td class="tc2"><a href="<?= $feather->urlFor('userProfile', ['id' => $conv['poster_id']]) ?>"><span><?= Utils::escape($conv['poster'])?></span></a></td>
                                             <td class="tc2"><?php if (isset($conv['receivers']) && is_array($conv['receivers'])) {
                                                 foreach ($conv['receivers'] as $uid => $name) { ?>
                                                     <a href="<?= $feather->urlFor('userProfile', ['id' => $uid]) ?>"><span><?= Utils::escape($name)?></span></a>
@@ -77,7 +79,7 @@ if (!empty($conversations)) { ?>
             	<h2><span><?php _e('Info') ?></span></h2>
             	<div class="box">
             		<div class="inbox info">
-                        <p>You have no conversations in this inbox.</p>
+                        <p><?php _e('Empty inbox', 'private_messages') ?></p>
                     </div>
             	</div>
             </div>

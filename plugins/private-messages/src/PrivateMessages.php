@@ -16,23 +16,6 @@ use DB;
 class PrivateMessages extends BasePlugin
 {
 
-    public static function generateMenu($page = '')
-    {
-        $feather = \Slim\Slim::getInstance();
-
-        $is_admin = ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']) ? true : false;
-
-        // See if there are any plugins that want to display in the menu
-        $plugins = self::adminPluginsMenu($is_admin);
-
-        $feather->template->setPageInfo(array(
-            'page'    =>    $page,
-            'is_admin'    =>    $is_admin,
-            'plugins'    =>    $plugins,
-            ), 1
-        )->addTemplate('admin/menu.php');
-    }
-
     public function run()
     {
         $feather = $this->feather;
@@ -63,8 +46,6 @@ class PrivateMessages extends BasePlugin
 
     public function addNavlink($navlinks)
     {
-        // Make a call to languages available in next requests
-        load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->user->language.'/private-messages.mo');
         if (!$this->feather->user->is_guest) {
             $nbUnread = Model\PrivateMessages::countUnread($this->feather->user->id);
             $count = ($nbUnread > 0) ? ' ('.$nbUnread.')' : '';
@@ -77,23 +58,6 @@ class PrivateMessages extends BasePlugin
             }
         }
         return $navlinks;
-    }
-
-    public function addToplist($toplists)
-    {
-        if (!$this->feather->user->is_guest) {
-            $nbUnread = Model\PrivateMessages::countUnread($this->feather->user->id);
-            $count = ($nbUnread > 0) ? ' ('.$nbUnread.')' : '';
-            if ($nbUnread > 0) {
-                $message = __('Unread message', 'private_messages');
-            }
-            if ($nbUnread > 1) {
-                $message = sprintf(__('Unread messages', 'private_messages'), self::forum_number_format($p));
-            }
-            $page_title[0] .= ' ('.sprintf(__('Page'), self::forum_number_format($p)).')';
-            $toplists[] = '<li class="reportlink"><span><strong><a href="'.$feather->urlFor('Conversations.home', ['tid' => 1]).'">'.__('New reports').'</a></strong></span></li>';
-        }
-        return $toplists;
     }
 
     public function install()

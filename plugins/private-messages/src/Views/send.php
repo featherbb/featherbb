@@ -19,9 +19,9 @@ if (!isset($feather)) {
     <div class="linkst">
     	<div class="inbox crumbsplus">
     		<ul class="crumbs">
-    			<li><a href="#">Index</a></li>
-    			<li><span>»&#160;</span><a href="#">PMS</a></li>
-    			<li><span>»&#160;</span><strong>Send message</strong></li>
+                <li><a href="<?= $feather->urlFor('home') ?>"><?php _e('Index') ?></a></li>
+    			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?php _e('PMS', 'private_messages') ?></a></li>
+    			<li><span>»&#160;</span><strong><?= __('Send', 'private_messages') ?></strong></li>
     		</ul>
     		<div class="pagepost"></div>
     		<div class="clearer"></div>
@@ -44,12 +44,12 @@ if (!isset($feather)) {
     </div>
 <?php endif; ?>
 	<div id="postform" class="blockform">
-		<h2><span>Send a message</span></h2>
+		<h2><span><?= __('Send', 'private_messages') ?></span></h2>
 		<div class="box">
 			<form id="post" method="post" action="" onsubmit="return process_form(this)">
 				<div class="inform">
 					<fieldset>
-						<legend>Compose your message</legend>
+						<legend><?= __('Write message legend') ?></legend>
 						<div class="infldset txtarea">
 <?php if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
                             <label class="required"><strong>Send to <span><?= __('Required') ?></span></strong><br /></label>
@@ -73,7 +73,7 @@ if (!isset($feather)) {
 						<legend><?php _e('Options') ?></legend>
 						<div class="infldset">
 							<div class="rbox">
-								<label><input type="checkbox" name="smilies" value="1" tabindex="3" />Hide smilies<br /></label>
+								<label><input type="checkbox" name="smilies" value="1" tabindex="3" /><?= __('Hide smilies') ?><br /></label>
 							</div>
 						</div>
 					</fieldset>

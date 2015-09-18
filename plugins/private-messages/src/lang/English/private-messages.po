@@ -17,6 +17,9 @@ msgstr ""
 msgid "Folders"
 msgstr "Folders"
 
+msgid "PMS"
+msgstr "PMS"
+
 msgid "New"
 msgstr "Unread"
 
@@ -31,3 +34,48 @@ msgstr "Storage"
 
 msgid "Options"
 msgstr "Options"
+
+msgid "Wrong folder owner"
+msgstr "You don't own this inbox"
+
+msgid "Send"
+msgstr "New conversation"
+
+msgid "Reply"
+msgstr "Reply to conversation"
+
+msgid "No conv selected"
+msgstr "Select more than one conversations"
+
+msgid "Conversations deleted"
+msgstr "Conversations deleted"
+
+msgid "Conversations moved"
+msgstr "Conversations moved"
+
+msgid "Error move"
+msgstr "Error while moving conversations"
+
+msgid "Unread messages"
+msgstr "You have unread private messages"
+
+msgid "Confirm delete"
+msgstr "Are you sure you want to delete these conversations ? This operation cannot be undone."
+
+msgid "My conversations"
+msgstr "My conversations"
+
+msgid "Move conversations"
+msgstr "Move conversations"
+
+msgid "Select move destination"
+msgstr "Select the folder you want to move conversations to."
+
+msgid "Empty inbox"
+msgstr "You have no conversations in this inbox."
+
+msgid "Bloqued Users"
+msgstr "Bloqued Users"
+
+msgid "My Folders"
+msgstr "My Folders"

@@ -2,7 +2,7 @@
 use FeatherBB\Core\Utils;
 ?>
         <div id="msg" class="block info">
-            <h2><span><?php _e('Move conversations') ?></span></h2>
+            <h2><span><?php _e('Move conversations', 'private_messages') ?></span></h2>
             <div class="box">
                 <div class="inbox">
                     <form method="post" action="<?= $feather->request()->getPath(); ?>">
@@ -11,7 +11,7 @@ use FeatherBB\Core\Utils;
                         <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                         <div class="inform">
         					<div class="infldset">
-        						<p><?php _e('Select the folder you want to move conversations to.', 'private_messages'); ?></p>
+        						<p><?php _e('Select move destination', 'private_messages'); ?></p>
         						<br />
         						<select name="move_to">
                                     <?php foreach ($inboxes as $key => $inbox) { ?>

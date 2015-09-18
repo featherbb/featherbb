@@ -20,7 +20,7 @@ if (!isset($feather)) {
             <div class="inbox">
                 <ul class="crumbs">
                     <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
+                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?= _e('PMS', 'private_messages') ?></a></li>
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $current_inbox_id]) ?>"><?= Utils::escape($inboxes[$current_inbox_id]['name']) ?></a></li>
                     <li><span>»&#160;</span><strong><?= (isset($cur_conv) && isset($cur_conv['subject']) ? $cur_conv['subject'] : _e('My conversations', 'private_messages'))?></strong></li>
                     <?php if (isset($rightLink) && !empty($rightLink)) { ?>
@@ -62,8 +62,8 @@ if (!isset($feather)) {
                 <div class="box">
                     <div class="inbox">
                         <ul>
-                            <li><a href="#">Blocked Users</a></li>
-                            <li><a href="#">My Folders</a></li>
+                            <li><a href="#"><?php _e('Bloqued Users', 'private_messages') ?></a></li>
+                            <li><a href="#"><?php _e('My Folders', 'private_messages') ?></a></li>
                         </ul>
                     </div>
                 </div>

@@ -25,6 +25,7 @@ class PrivateMessages
         $this->feather = \Slim\Slim::getInstance();
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Plugins\Model\PrivateMessages();
+        load_textdomain('private_messages', dirname(dirname(__FILE__)).'/lang/'.$this->feather->user->language.'/private-messages.mo');
         $this->feather->template->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5);
     }
 
@@ -55,6 +56,7 @@ class PrivateMessages
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
         $paging_links = Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.home', ['id' => $fid]).'/#');
 
+        $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
         $this->feather->template
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inboxes[$fid]['name']),
@@ -74,12 +76,12 @@ class PrivateMessages
     public function delete()
     {
         if (!$this->request->post('topics'))
-    		throw new Error(__('Select more than one topic', 'private_messages'), 403);
+    		throw new Error(__('No conv selected', 'private_messages'), 403);
 
     	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
 
     	if (empty($topics))
-    		throw new Error(__('Select more than one topic', 'private_messages'), 403);
+    		throw new Error(__('No conv selected', 'private_messages'), 403);
 
         $redirect_id = $this->request->post('inbox_id');
 
@@ -108,12 +110,12 @@ class PrivateMessages
     public function move()
     {
         if (!$this->request->post('topics'))
-    		throw new Error(__('Select more than one topic', 'private_messages'), 403);
+    		throw new Error(__('No conv selected', 'private_messages'), 403);
 
     	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
 
     	if (empty($topics))
-    		throw new Error(__('Select more than one topic', 'private_messages'), 403);
+    		throw new Error(__('No conv selected', 'private_messages'), 403);
 
         $uid = intval($this->feather->user->id);
 
@@ -124,7 +126,7 @@ class PrivateMessages
             if ( $this->model->move($topics, $move_to, $uid) ) {
                 Url::redirect($this->feather->urlFor('Conversations.home', ['id' => $move_to]), __('Conversations moved', 'private_messages'));
             } else {
-                throw new Error(__('Error while moving conversations', 'private_messages'), 403);
+                throw new Error(__('Error Move', 'private_messages'), 403);
             }
     	}
 
@@ -177,12 +179,12 @@ class PrivateMessages
             // Preview message
             if ($this->feather->request->post('preview')) {
                 $this->feather->hooks->fire('conversationsPlugin.send.preview');
-                $msg = $this->feather->parser->parse_message($data['message'], $data['smilies']);
+                $msg = $this->feather->parser->parse_message($data['req_message'], $data['smilies']);
                 $this->feather->template->setPageInfo(array(
                     'parsed_message' => $msg,
                     'username' => Utils::escape($data['username']),
                     'subject' => Utils::escape($data['subject']),
-                    'message' => Utils::escape($data['message'])
+                    'message' => Utils::escape($data['req_message'])
                 ))->addTemplate('send.php')->display();
             } else {
                 // Prevent flood
@@ -217,10 +219,10 @@ class PrivateMessages
 
                 // Validate message
                 if ($this->feather->forum_settings['o_censoring'] == '1')
-                $data['message'] = Utils::trim(Utils::censor($data['message']));
-                if (empty($data['message'])) {
+                $data['req_message'] = Utils::trim(Utils::censor($data['req_message']));
+                if (empty($data['req_message'])) {
                     throw new Error('No message or censored message', 400);
-                } else if (Utils::strlen($data['message']) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
+                } else if (Utils::strlen($data['req_message']) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
                     throw new Error('Too long message', 400);
                 } else if ($this->feather->forum_settings['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($data['subject']) && !$this->feather->user->is_admmod) {
                     throw new Error('All caps message forbidden', 400);
@@ -246,7 +248,7 @@ class PrivateMessages
                         'poster'	=>	$this->feather->user->username,
                         'poster_id'	=>	$this->feather->user->id,
                         'poster_ip'	=>	$this->feather->request->getIp(),
-                        'message'	=>	$data['message'],
+                        'message'	=>	$data['req_message'],
                         'hide_smilies'	=>	$data['smilies'],
                         'sent'	=>	$this->feather->now,
                     );
