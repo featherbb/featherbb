@@ -25,7 +25,6 @@ class PrivateMessages
         $this->feather = \Slim\Slim::getInstance();
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Plugins\Model\PrivateMessages();
-        load_textdomain('private_messages', dirname(dirname(__FILE__)).'/lang/'.$this->feather->user->language.'/private-messages.mo');
         $this->feather->template->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5);
     }
 

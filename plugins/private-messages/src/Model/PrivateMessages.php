@@ -79,7 +79,6 @@ class PrivateMessages
         $where[]['d.folder_id'] = $fid;
         if ($fid == 1)
             $where[]['d.viewed'] = '0';
-        // var_dump($where);
         $result = DB::for_table('pms_conversations')
             ->select('id')
             ->table_alias('c')
@@ -87,6 +86,16 @@ class PrivateMessages
             ->where('d.user_id', $uid)
             ->where('d.deleted', 0)
             ->where_any_is($where);
+        return $result->count();
+    }
+
+    // Get unread messages count for navbar
+    public static function countUnread($uid)
+    {
+        $result = DB::for_table('pms_data')
+            ->select('id')
+            ->where('user_id', $uid)
+            ->where('viewed', 0);
         return $result->count();
     }
 

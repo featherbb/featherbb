@@ -63,10 +63,37 @@ class PrivateMessages extends BasePlugin
 
     public function addNavlink($navlinks)
     {
+        // Make a call to languages available in next requests
+        load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->user->language.'/private-messages.mo');
         if (!$this->feather->user->is_guest) {
-            $navlinks[] = '5 = <a href="'.$this->feather->urlFor('Conversations.home').'">PMS</a>';
+            $nbUnread = Model\PrivateMessages::countUnread($this->feather->user->id);
+            $count = ($nbUnread > 0) ? ' ('.$nbUnread.')' : '';
+            $navlinks[] = '5 = <a href="'.$this->feather->urlFor('Conversations.home').'">PMS'.$count.'</a>';
+            if ($nbUnread > 0) {
+                $this->hooks->bind('header.toplist', function($toplists) {
+                    $toplists[] = '<li class="reportlink"><span><strong><a href="'.$this->feather->urlFor('Conversations.home', ['inbox_id' => 1]).'">'.__('Unread messages', 'private_messages').'</a></strong></span></li>';
+                    return $toplists;
+                });
+            }
         }
         return $navlinks;
+    }
+
+    public function addToplist($toplists)
+    {
+        if (!$this->feather->user->is_guest) {
+            $nbUnread = Model\PrivateMessages::countUnread($this->feather->user->id);
+            $count = ($nbUnread > 0) ? ' ('.$nbUnread.')' : '';
+            if ($nbUnread > 0) {
+                $message = __('Unread message', 'private_messages');
+            }
+            if ($nbUnread > 1) {
+                $message = sprintf(__('Unread messages', 'private_messages'), self::forum_number_format($p));
+            }
+            $page_title[0] .= ' ('.sprintf(__('Page'), self::forum_number_format($p)).')';
+            $toplists[] = '<li class="reportlink"><span><strong><a href="'.$feather->urlFor('Conversations.home', ['tid' => 1]).'">'.__('New reports').'</a></strong></span></li>';
+        }
+        return $toplists;
     }
 
     public function install()
