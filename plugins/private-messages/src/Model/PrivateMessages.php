@@ -196,6 +196,27 @@ class PrivateMessages
             ->save();
     }
 
+    // Mark a conversation as (un)read (default to true)
+    public function setViewed($conv_id, $uid, $viewed = 1)
+    {
+        return DB::for_table('pms_data')
+            ->where('conversation_id', $conv_id)
+            ->where('user_id', $uid)
+            ->find_one()
+            ->set('viewed', $viewed)
+            ->save();
+    }
+
+    // public function updateConversation($conv_id, $uid, array $data)
+    // {
+    //     return DB::for_table('pms_data')
+    //         ->where('user_id', $uid)
+    //         ->where_in('conversation_id', $convers)
+    //         ->find_one()
+    //         ->set('folder_id', $move_to)
+    //         ->save();
+    // }
+
     public function addConversation(array $data = array())
     {
         $result = DB::for_table('pms_conversations')
@@ -222,6 +243,7 @@ class PrivateMessages
             'last_poster_id' => 'u2.id',
             'last_poster_gid' => 'u2.group_id',
             'c.last_post_id',
+            'c.first_post_id',
             'd.folder_id'
         );
 
@@ -246,12 +268,13 @@ class PrivateMessages
                     ->set($data)
                     ->set('conversation_id', $conv_id);
         $add->save();
+
+        $update_data = ['last_post_id'	=>	$add->id()];
+        // If it is a new conversation:
+        if (!empty($uid)) $update_data['first_post_id'] = $add->id();
         $update = DB::for_table('pms_conversations')
                     ->find_one($conv_id)
-                    ->set(array(
-                        'first_post_id'	=>	$add->id(),
-                        'last_post_id'	=>	$add->id(),
-                    ))
+                    ->set($update_data)
                     ->save();
         if (!empty($uid)) {
             foreach ($uid as $user) {
@@ -279,8 +302,8 @@ class PrivateMessages
     {
         $select = array('m.id', 'username' => 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'u.title', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
         $result = DB::for_table('pms_messages')
-                    ->select_many($select)
                     ->table_alias('m')
+                    ->select_many($select)
                     ->left_outer_join('users', array('u.id', '=', 'm.poster_id'), 'u')
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')

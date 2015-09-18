@@ -249,11 +249,12 @@ class PrivateMessages
                         'sent'	=>	$this->feather->now,
                     );
                     if ($conv) {
+                        // Reply to an existing conversation
                         if ($msg_id = $this->model->addMessage($msg_data, $conv_id)) {
                             Url::redirect($this->feather->urlFor('Conversations.home'), 'You have successfully responded to the conversation '.$conv->subject.' !');
                         }
                     } else {
-                        // Add message in conversation + add receiver
+                        // Add message in conversation + add receiver (create new conversation)
                         if ($msg_id = $this->model->addMessage($msg_data, $conv_id, array($user->id, $this->feather->user->id))) {
                             Url::redirect($this->feather->urlFor('Conversations.home'), 'Your PM has been sent to '.$user->username.' !');
                         }
@@ -308,8 +309,8 @@ class PrivateMessages
         }
 
         // Set conversation as viewed
-        if ($conv['viewed'] = 0) {
-            if (!$this->model->updateConversation($conv_id, ['viewed' => 1])) {
+        if ($conv['viewed'] == 0) {
+            if (!$this->model->setViewed($conv_id, $this->feather->user->id)) {
                 throw new Error('Unable to set conversation as viewed', 500);
             }
         }
