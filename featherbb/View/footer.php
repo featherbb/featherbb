@@ -16,11 +16,12 @@ if (!isset($feather)) {
 }
 
 ?>
-        </div>
 
-        <div id="brdfooter" class="block">
-            <h2><span><?php _e('Board footer') ?></span></h2>
-            <div class="box">
+    </div>
+
+    <div id="brdfooter" class="block">
+        <h2><span><?php _e('Board footer') ?></span></h2>
+        <div class="box">
 <?php
 
 if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && $feather->user->is_admmod) {

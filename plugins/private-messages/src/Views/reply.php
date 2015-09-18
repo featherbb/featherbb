@@ -13,7 +13,6 @@ use FeatherBB\Core\Utils;
 if (!isset($feather)) {
     exit;
 }
-
 ?>
 
         <div class="linkst">
@@ -21,6 +20,7 @@ if (!isset($feather)) {
                 <ul class="crumbs">
                     <li><a href="<?= $feather->urlFor('home') ?>"><?php _e('Index') ?></a></li>
                     <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?php _e('PMS', 'private_messages') ?></a></li>
+                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $current_inbox->id]) ?>"><?= Utils::escape($current_inbox->name) ?></a></li>
                     <li><span>»&#160;</span><strong><?php _e('Reply', 'private_messages') ?></strong></li>
                     <li><span>»&#160;</span><strong><?= (isset($conv['subject']) ? $conv['subject'] : '')?></strong></li>
                 </ul>
@@ -64,36 +64,34 @@ if (!isset($feather)) {
             </div>
         </div>
 
-<?php if (!empty($msg_data)) {
+<?php if (!empty($msg_data)): ?>
+        <div id="postreview">
+        	<h2><span><?php _e('Conv review', 'private_messages') ?></span></h2>
+<?php
     $count = 1;
-    foreach ($msg_data as $msg) { ?>
-        <div class="block">
-            <div id="p<?=$msg['id']?>" class="blockpost<?=($count % 2 == 0) ? ' roweven' : ' rowodd'.(($count == 1) ? ' firstpost' : '').(($count == 1) ? ' blockpost1' : '')?>">
-                <h2><span><span class="conr">#<?=$count?></span> <a href="#"><?= $feather->utils->format_time($msg['sent'])?></a></span></h2>
-                <div class="box">
-                    <div class="inbox">
-                        <div class="postbody">
-                            <div class="postleft">
-                                <dl>
-                                    <dt><strong><a href="<?= $feather->urlFor('userProfile', ['id' => $msg['poster_id']]) ?>"><?= $msg['poster']?></strong></a></dt>
-                                    <!-- <dd class="usertitle"><strong>{user_title}</strong></dd>
-                                    {user_avatar}{group_image}{user_info} -->
-                                </dl>
-                            </div>
-                            <div class="postright">
-                                <div class="postmsg">
-                                    <?= Utils::escape($msg['message']) ?>
+    foreach ($msg_data as $msg): ?>
+
+                <div id="p<?=$msg['id']?>" class="blockpost<?= ($count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
+                    <div class="box roweven">
+                        <div class="inbox">
+                            <div class="postbody">
+                                <div class="postleft">
+                                    <dl>
+                                        <dt><strong><?= $msg['poster']?></strong></dt>
+                                        <dd><span><?= $feather->utils->format_time($msg['sent'])?></span></dd>
+                                    </dl>
+                                </div>
+                                <div class="postright">
+                                    <div class="postmsg">
+                                        <p><?= Utils::escape($msg['message']) ?></p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="inbox">
-                        <div class="postfoot clearb">
-                            <!-- <div class="postfootleft"></div> -->
+                            <div class="clearer"></div>
                         </div>
                     </div>
                 </div>
-            </div>
+        <?php ++$count; endforeach; ?>
+
         </div>
-        <?php ++$count; }
-    } ?>
+        <?php endif; ?>

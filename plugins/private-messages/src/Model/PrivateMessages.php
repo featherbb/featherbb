@@ -362,7 +362,7 @@ class PrivateMessages
         $result = DB::for_table('pms_messages')
                     ->table_alias('m')
                     ->where('m.conversation_id', $conv_id)
-                    ->order_by_asc('sent')
+                    ->order_by_desc('sent')
                     ->limit($limit)
                     ->find_many();
         return $result;

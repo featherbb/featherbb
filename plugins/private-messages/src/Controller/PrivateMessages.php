@@ -285,10 +285,13 @@ class PrivateMessages
                     throw new Error('Wrong conversation ID', 400);
                 }
                 if ($conv = $this->model->getConversation($conv_id, $this->feather->user->id)) {
+                    $inbox = DB::for_table('pms_folders')->find_one($conv->folder_id);
                     $this->feather->template->setPageInfo(array(
+                        'current_inbox' => $inbox,
                         'conv' => $conv,
-                        'msg_data' => $this->model->getMessagesFromConversation($conv_id, $this->feather->user->id)
+                        'msg_data' => $this->model->getMessagesFromConversation($conv_id, $this->feather->user->id, 5)
                     ))->addTemplate('reply.php')->display();
+                    die();
                 } else {
                     throw new Error('Unknown conversation ID', 400);
                 }

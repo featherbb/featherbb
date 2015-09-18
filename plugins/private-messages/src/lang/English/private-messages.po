@@ -79,3 +79,6 @@ msgstr "Bloqued Users"
 
 msgid "My Folders"
 msgstr "My Folders"
+
+msgid "Conv review"
+msgstr "Conversation review (newest first)"
