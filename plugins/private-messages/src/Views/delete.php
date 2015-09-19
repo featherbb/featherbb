@@ -5,6 +5,7 @@
                     <form method="post" action="<?= $feather->request()->getPath(); ?>">
                         <input type="hidden" name="topics" value="<?= implode(",",$topics); ?>" />
                         <input name="delete_comply" value="1" type="hidden" />
+                        <input name="action" value="delete" type="hidden" />
                         <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                         <div class="inform ">
                             <div class="forminfo">

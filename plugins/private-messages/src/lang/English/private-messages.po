@@ -88,3 +88,12 @@ msgstr "My Folders"
 
 msgid "Conv review"
 msgstr "Conversation review (newest first)"
+
+msgid "Mark read"
+msgstr "Mark as read"
+
+msgid "Mark unread"
+msgstr "Mark as unread"
+
+msgid "Select action"
+msgstr "Select an action"

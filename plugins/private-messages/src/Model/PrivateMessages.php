@@ -217,15 +217,16 @@ class PrivateMessages
             ->save();
     }
 
-    // public function updateConversation($conv_id, $uid, array $data)
-    // {
-    //     return DB::for_table('pms_data')
-    //         ->where('user_id', $uid)
-    //         ->where_in('conversation_id', $convers)
-    //         ->find_one()
-    //         ->set('folder_id', $move_to)
-    //         ->save();
-    // }
+    public function updateConversation($conv_ids, $uid, array $data)
+    {
+        $conv_ids = (array) $conv_ids;
+        return DB::for_table('pms_data')
+            ->where('user_id', $uid)
+            ->where_in('conversation_id', $conv_ids)
+            ->find_result_set()
+            ->set($data)
+            ->save();
+    }
 
     public function addConversation(array $data = array())
     {

@@ -27,7 +27,7 @@ if (!empty($conversations)) { ?>
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th class="tcl" scope="col"><?= _e('Title') ?></th>
+                                            <th class="tcl" scope="col"><?php _e('Title') ?></th>
                                             <th class="tc2" scope="col"><?php _e('Sender', 'private_messages') ?></th>
                                             <th class="tc2" scope="col"><?php _e('Receiver', 'private_messages') ?></th>
                                             <th class="tc2" scope="col"><?php _e('Replies') ?></th>
@@ -67,9 +67,22 @@ if (!empty($conversations)) { ?>
                             </div>
                         </div>
                     </div>
-                    <div class="pagepost">
-                        <p class="pagelink conl"><span class="pages-label"><?php _e('Pages'); ?></span><?= $paging_links; ?></p>
-                        <p class="conr"><input type="submit" name="move" value="Move" />&#160;<input type="submit" name="delete" value="Delete" /></p>
+                    <div class="postlinksb">
+                        <div class="inbox crumbsplus">
+                            <div class="pagepost">
+                                <p class="pagelink conl"><span class="pages-label"><?php _e('Pages'); ?></span><?= $paging_links; ?></p>
+                                <p class="postlink conr">
+                                    <select class="" name="action">
+                                        <option value="-1" selected><?php _e('Select action', 'private_messages') ?></option>
+                                        <option value="move"><?php _e('Move') ?></option>
+                                        <option value="delete"><?php _e('Delete') ?></option>
+                                        <option value="read"><?php _e('Mark read', 'private_messages') ?></option>
+                                        <option value="unread"><?php _e('Mark unread', 'private_messages') ?></option>
+                                    </select>
+                                    <input type="submit" name="submit" value="<?php _e('Submit') ?>" />
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

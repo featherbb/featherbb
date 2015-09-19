@@ -35,14 +35,24 @@ class PrivateMessages
         $fid = !empty($fid) ? intval($fid) : 2;
         $uid = intval($this->feather->user->id);
 
-        // Display delete confirm form
-        if ($this->request->post('delete')) {
-            $this->delete();
-        }
-
-        // Display move form
-        if ($this->request->post('move')) {
-            $this->move();
+        if ($action = $this->request->post('action')) {
+            switch ($action) {
+                case 'move':
+                    $this->move();
+                    break;
+                case 'delete':
+                    $this->delete();
+                    break;
+                case 'read':
+                    $this->markRead();
+                    break;
+                case 'unread':
+                    $this->markRead(0);
+                    break;
+                default:
+                    Url::redirect($this->feather->urlFor('Conversations.home', ['id' => $this->request->post('inbox_id')]));
+                    break;
+            }
         }
 
         if ($inboxes = $this->model->getInboxes($this->feather->user->id)) {
@@ -146,6 +156,23 @@ class PrivateMessages
         }
 
         die();
+    }
+
+    public function markRead($read = true)
+    {
+        $viewed = ($read == true) ? '1' : '0';
+
+        if (!$this->request->post('topics'))
+    		throw new Error(__('No conv selected', 'private_messages'), 403);
+
+    	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
+
+    	if (empty($topics))
+    		throw new Error(__('No conv selected', 'private_messages'), 403);
+
+        $this->model->updateConversation($topics, $this->feather->user->id, ['viewed' => $viewed]);
+
+        Url::redirect($this->feather->urlFor('Conversations.home', ['id' => $this->request->post('inbox_id')]));
     }
 
     public function update($fid = 2, $page = 1)
