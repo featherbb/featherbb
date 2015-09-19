@@ -362,6 +362,15 @@ class PrivateMessages
         return $result;
     }
 
+    public function getUserByName($username)
+    {
+        $user = DB::for_table('users')
+            ->select_many(['group_id', 'id'])
+            ->where('username', $username)
+            ->find_one();
+        return $user;
+    }
+
     public function getMessagesFromConversation($conv_id = null, $uid = null, $limit = 50, $start = 0)
     {
         $result = DB::for_table('pms_messages')
@@ -369,6 +378,29 @@ class PrivateMessages
                     ->where('m.conversation_id', $conv_id)
                     ->order_by_desc('sent')
                     ->limit($limit)
+                    ->find_many();
+        return $result;
+    }
+
+    // Option routes
+    public function getBlocked($user_id)
+    {
+        $result = DB::for_table('pms_blocks')
+                    ->table_alias('b')
+                    ->select_many(['b.id', 'b.block_id', 'u.username', 'u.group_id'])
+                    ->inner_join('users', array('b.block_id', '=', 'u.id'), 'u')
+                    ->where('b.user_id', $user_id)
+                    ->find_many();
+        return $result;
+    }
+
+    public function checkBlock($user_id)
+    {
+        $result = DB::for_table('pms_blocks')
+                    ->table_alias('b')
+                    ->select_many(['b.id', 'b.block_id', 'u.username', 'u.group_id'])
+                    ->inner_join('users', array('b.block_id', '=', 'u.id'), 'u')
+                    ->where('b.user_id', $user_id)
                     ->find_many();
         return $result;
     }
