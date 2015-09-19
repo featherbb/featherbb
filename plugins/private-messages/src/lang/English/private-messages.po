@@ -80,11 +80,20 @@ msgstr "Select the folder you want to move conversations to."
 msgid "Empty inbox"
 msgstr "You have no conversations in this inbox."
 
-msgid "Bloqued Users"
-msgstr "Bloqued Users"
+msgid "Blocked Users"
+msgstr "Blocked Users"
+
+msgid "Add block"
+msgstr "Add block"
+
+msgid "Add block legend"
+msgstr "Block a user"
 
 msgid "My Folders"
 msgstr "My Folders"
+
+msgid "Add folder"
+msgstr "Add folder"
 
 msgid "Conv review"
 msgstr "Conversation review (newest first)"
@@ -97,3 +106,15 @@ msgstr "Mark as unread"
 
 msgid "Select action"
 msgstr "Select an action"
+
+msgid "No block self"
+msgstr "You cannot block yourself!"
+
+msgid "No user name message"
+msgstr "The user %s does not exist."
+
+msgid "User is admin message"
+msgstr "The user %s is an administrator and can't be blocked."
+
+msgid "User is mod message"
+msgstr "The user %s is a moderator and can't be blocked."

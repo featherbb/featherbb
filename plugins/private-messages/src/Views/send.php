@@ -14,20 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-?>
-
-        <div class="linkst">
-            <div class="inbox crumbsplus">
-                <ul class="crumbs">
-                    <li><a href="<?= $feather->urlFor('home') ?>"><?php _e('Index') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?php _e('PMS', 'private_messages') ?></a></li>
-                    <li><span>»&#160;</span><strong><?= __('Send', 'private_messages') ?></strong></li>
-                </ul>
-                <div class="pagepost"></div>
-                <div class="clearer"></div>
-            </div>
-        </div>
-<?php if (isset($parsed_message)) : ?>
+if (isset($parsed_message)) : ?>
         <div id="postpreview" class="blockpost">
             <h2><span>Preview</span></h2>
             <div class="box">

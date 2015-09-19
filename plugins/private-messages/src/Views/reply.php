@@ -15,20 +15,6 @@ if (!isset($feather)) {
 }
 ?>
 
-        <div class="linkst">
-            <div class="inbox crumbsplus">
-                <ul class="crumbs">
-                    <li><a href="<?= $feather->urlFor('home') ?>"><?php _e('Index') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home') ?>"><?php _e('PMS', 'private_messages') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $current_inbox->id]) ?>"><?= Utils::escape($current_inbox->name) ?></a></li>
-                    <li><span>»&#160;</span><strong><?php _e('Reply', 'private_messages') ?></strong></li>
-                    <li><span>»&#160;</span><strong><?= (isset($conv['subject']) ? $conv['subject'] : '')?></strong></li>
-                </ul>
-                <div class="pagepost"></div>
-                <div class="clearer"></div>
-            </div>
-        </div>
-
         <div id="postform" class="blockform">
             <h2><span><?php _e('Reply', 'private_messages') ?><?= (isset($conv['subject']) ? ' "'.$conv['subject'].'"' : '')?></span></h2>
             <div class="box">

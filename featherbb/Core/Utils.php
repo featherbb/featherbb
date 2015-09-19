@@ -212,6 +212,23 @@ class Utils
         return $crumbs;
     }
 
+    /**
+     * Generate breadcrumbs on top of page
+     * @var $crumbs: array('optionnal/url' => 'Text displayed')
+     * @var $rightCrumb: array('link' => 'url/of/action', 'text' => 'Text displayed')
+     *
+     * @return text
+     */
+    public static function generateBreadcrumbs(array $crumbs = array(), array $rightCrumb = array())
+    {
+        $feather = \Slim\Slim::getInstance();
+        $feather->template->setPageInfo(array(
+            'rightCrumb'    =>    $rightCrumb,
+            'crumbs'    =>    $crumbs,
+            ), 1
+        )->addTemplate('breadcrumbs.php');
+    }
+
     //
     // Determines the correct title for $user
     // $user must contain the elements 'username', 'title', 'posts', 'g_id' and 'g_user_title'
