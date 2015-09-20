@@ -122,6 +122,27 @@ msgstr "My Folders"
 msgid "Add folder"
 msgstr "Add folder"
 
+msgid "Folder name"
+msgstr "Folder name"
+
+msgid "No folder name"
+msgstr "Please provide a valid name for your folder"
+
+msgid "Folder too short"
+msgstr "The name of a folder should contain at least 2 characters"
+
+msgid "Folder too long"
+msgstr "The name of a folder should contain at most 30 characters"
+
+msgid "No folder after censoring"
+msgstr "The folder name contains censored words"
+
+msgid "Folder limit"
+msgstr "You cannot create other folders"
+
+msgid "Folder added"
+msgstr "Folder added"
+
 msgid "Conv review"
 msgstr "Conversation review (newest first)"
 

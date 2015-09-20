@@ -40,7 +40,7 @@ if (isset($parsed_message)) : ?>
                             <div class="infldset txtarea">
                                 <?php if ($csrf_key) echo "\t\t\t\t\t\t\t".'<input type="hidden" name="'.$csrf_key.'" value="'.$csrf_token.'"/>'."\n" ?>
                                 <label class="required"><strong>Send to <span><?= __('Required') ?></span></strong><br /></label>
-                                <input type="text" name="username" placeholder="Username" <?= (isset($username) ? 'value="'.$username.'"' : '')?> size="25" tabindex="1" required/><br />
+                                <input type="text" name="username" placeholder="Username" <?= (isset($username) ? 'value="'.$username.'"' : '')?> size="25" tabindex="1" required autofocus/><br />
                                 <div class="clearer"></div>
                                 <label class="required"><strong>Subject <span><?= __('Required') ?></span></strong><br /></label>
                                 <input class="longinput" type="text" name="subject" placeholder="Subject" <?= (isset($subject) ? 'value="'.$subject.'"' : '')?> size="80" maxlength="70" tabindex="2" required/><br />
