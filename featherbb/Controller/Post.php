@@ -215,7 +215,7 @@ class Post
 
     public function delete($id)
     {
-        $id = $this->feather->hooks->fire('controller.post.delete', $id);
+        $this->feather->hooks->fire('controller.post.delete');
 
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($id);
@@ -260,7 +260,7 @@ class Post
 
     public function editpost($id)
     {
-        $id = $this->feather->hooks->fire('controller.post.edit', $id);
+        $this->feather->hooks->fire('controller.post.edit');
 
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_edit($id);

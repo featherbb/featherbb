@@ -27,6 +27,8 @@ class Options
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.options.display');
+
         if ($this->feather->request->isPost()) {
             $this->model->update_options();
         }

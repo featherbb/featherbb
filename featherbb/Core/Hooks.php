@@ -39,7 +39,7 @@ class Hooks extends \Slim\Slim
 
         if (!isset($this->hooks[$name])) {
             //$this->hooks[$name] = array(array());
-            if (isset ($args[0])) {
+            if (isset($args[0])) {
                 return $args[0];
             }
             else {

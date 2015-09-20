@@ -28,8 +28,10 @@ class Categories
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/categories.mo');
     }
 
-    public function add_category()
+    public function add()
     {
+        $this->feather->hooks->fire('controller.admin.categories.add');
+
         $cat_name = Utils::trim($this->request->post('cat_name'));
         if ($cat_name == '') {
             Url::redirect($this->feather->urlFor('adminCategories'), __('Must enter name message'));
@@ -42,8 +44,10 @@ class Categories
         }
     }
 
-    public function edit_categories()
+    public function edit()
     {
+        $this->feather->hooks->fire('controller.admin.categories.edit');
+
         if (empty($this->request->post('cat'))) {
             throw new Error(__('Bad request'), '400');
         }
@@ -65,8 +69,10 @@ class Categories
 
     }
 
-    public function delete_category()
+    public function delete()
     {
+        $this->feather->hooks->fire('controller.admin.categories.delete');
+
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
@@ -86,6 +92,8 @@ class Categories
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.categories.display');
+
         AdminUtils::generateAdminMenu('categories');
 
         $this->feather->template->setPageInfo(array(

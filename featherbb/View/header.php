@@ -137,7 +137,7 @@ if ($feather->user->is_guest) {
 }
 
 // Are there any additional navlinks we should insert into the array before imploding it?
-$hooksLinks = $feather->hooks->fire('header.navlinks', []);
+$hooksLinks = $feather->hooks->fire('view.header.navlinks', []);
 $extraLinks = $feather->forum_settings['o_additional_navlinks']."\n".implode("\n", $hooksLinks);
 if ($feather->user->g_read_board == '1' && ($extraLinks != '')) {
     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {

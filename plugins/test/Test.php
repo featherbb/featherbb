@@ -16,8 +16,8 @@ class Test extends BasePlugin
 {
     public function run()
     {
-        $this->hooks->bind('model.get_forum_actions', [$this, 'addMarkRead']);
-        $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+        $this->hooks->bind('model.forum.get_forum_actions', [$this, 'addMarkRead']);
+        $this->hooks->bind('view.header.navlinks', [$this, 'addNavlink']);
 
         $feather = $this->feather;
         $this->feather->get('/test-plugin(/)', function() use ($feather) {

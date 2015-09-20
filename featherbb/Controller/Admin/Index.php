@@ -28,6 +28,8 @@ class Index
 
     public function display($action = null)
     {
+        $this->feather->hooks->fire('controller.admin.index.display');
+
         // Check for upgrade
         if ($action == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {

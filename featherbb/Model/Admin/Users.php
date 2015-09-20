@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
@@ -31,7 +31,7 @@ class Users
     public function get_num_ip($ip_stats)
     {
         $num_ips = DB::for_table('posts')->where('poster_id', $ip_stats)->group_by('poster_ip');
-        $num_ips = $this->hook->fireDB('model.users.get_num_ip', $num_ips);
+        $num_ips = $this->hook->fireDB('model.admin.model.admin.users.get_num_ip', $num_ips);
         $num_ips = $num_ips->count('poster_ip');
 
         return $num_ips;
@@ -50,7 +50,7 @@ class Users
                     ->order_by_desc('last_used')
                     ->offset($start_from)
                     ->limit(50);
-        $result = $this->hook->fireDB('model.users.get_ip_stats.query', $result);
+        $result = $this->hook->fireDB('model.admin.model.admin.users.get_ip_stats.query', $result);
         $result = $result->find_many();
 
         if ($result) {
@@ -59,14 +59,14 @@ class Users
             }
         }
 
-        $ip_data = $this->hook->fire('model.model.users.get_ip_stats.ip_data', $ip_data);
+        $ip_data = $this->hook->fire('model.admin.model.users.get_ip_stats.ip_data', $ip_data);
         return $ip_data;
     }
 
     public function get_num_users_ip($ip)
     {
         $num_users = DB::for_table('posts')->where('poster_ip', $ip)->distinct();
-        $num_users = $this->hook->fireDB('model.users.get_num_users_ip.query', $num_users);
+        $num_users = $this->hook->fireDB('model.admin.model.admin.users.get_num_users_ip.query', $num_users);
         $num_users = $num_users->count('poster_id');
 
         return $num_users;
@@ -74,12 +74,12 @@ class Users
 
     public function get_num_users_search($conditions)
     {
-        $conditions = $this->hook->fire('model.model.users.get_num_users_search.conditions', $conditions);
+        $conditions = $this->hook->fire('model.admin.model.users.get_num_users_search.conditions', $conditions);
 
         $num_users = DB::for_table('users')->table_alias('u')
                         ->left_outer_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                         ->where_raw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''));
-        $num_users = $this->hook->fireDB('model.users.get_num_users_search.query', $num_users);
+        $num_users = $this->hook->fireDB('model.admin.model.admin.users.get_num_users_search.query', $num_users);
         $num_users = $num_users->count('id');
 
         return $num_users;
@@ -87,7 +87,7 @@ class Users
 
     public function get_info_poster($ip, $start_from)
     {
-        $ip = $this->hook->fire('model.model.users.get_info_poster.ip', $ip);
+        $ip = $this->hook->fire('model.admin.model.users.get_info_poster.ip', $ip);
 
         $info = array();
 
@@ -99,7 +99,7 @@ class Users
                         ->order_by_asc('poster')
                         ->offset($start_from)
                         ->limit(50);
-        $result = $this->hook->fireDB('model.users.get_info_poster.select_info_get_info_poster', $result);
+        $result = $this->hook->fireDB('model.admin.model.admin.users.get_info_poster.select_info_get_info_poster', $result);
         $result = $result->find_many();
 
         $info['num_posts'] = count($result);
@@ -118,7 +118,7 @@ class Users
                 ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                 ->where_gt('u.id', 1)
                 ->where_in('u.id', $poster_ids);
-            $result = $this->hook->fireDB('model.users.get_info_poster.select_get_info_poster', $result);
+            $result = $this->hook->fireDB('model.admin.model.admin.users.get_info_poster.select_get_info_poster', $result);
             $result = $result->find_many();
 
             foreach ($result as $cur_user) {
@@ -126,7 +126,7 @@ class Users
             }
         }
 
-        $info = $this->hook->fire('model.model.users.get_info_poster.info', $info);
+        $info = $this->hook->fire('model.admin.model.users.get_info_poster.info', $info);
         return $info;
     }
 
@@ -144,7 +144,7 @@ class Users
             $move['user_ids'] = array();
         }
 
-        $move['user_ids'] = $this->hook->fire('model.model.users.move_users.user_ids', $move['user_ids']);
+        $move['user_ids'] = $this->hook->fire('model.admin.model.users.move_users.user_ids', $move['user_ids']);
 
         if (empty($move['user_ids'])) {
             throw new Error(__('No users selected'), 404);
@@ -165,7 +165,7 @@ class Users
         $result = DB::for_table('groups')->select_many($select_user_groups)
             ->where_not_in('g_id', $where_not_in)
             ->order_by_asc('g_title');
-        $result = $this->hook->fireDB('model.users.move_users.all_user_groups_query', $result);
+        $result = $this->hook->fireDB('model.admin.model.admin.users.move_users.all_user_groups_query', $result);
         $result = $result->find_many();
 
         foreach ($result as $row) {
@@ -178,7 +178,7 @@ class Users
             } else {
                 throw new Error(__('Invalid group message'), 400);
             }
-            $new_group = $this->hook->fire('model.model.users.move_users.new_group', $new_group);
+            $new_group = $this->hook->fire('model.admin.model.users.move_users.new_group', $new_group);
 
             // Is the new group a moderator group?
             $new_group_mod = DB::for_table('groups')->where('g_id', $new_group)
@@ -189,7 +189,7 @@ class Users
             $select_fetch_user_groups = array('id', 'group_id');
             $result = DB::for_table('users')->select_many($select_fetch_user_groups)
                 ->where_in('id', $move['user_ids']);
-            $result = $this->hook->fireDB('model.users.move_users.user_groups_query', $result);
+            $result = $this->hook->fireDB('model.admin.model.admin.users.move_users.user_groups_query', $result);
             $result = $result->find_many();
 
             foreach($result as $cur_user) {
@@ -212,7 +212,7 @@ class Users
                 }
             }
 
-            $user_groups = $this->hook->fire('model.model.users.move_users.user_groups', $user_groups);
+            $user_groups = $this->hook->fire('model.admin.model.users.move_users.user_groups', $user_groups);
 
             if (!empty($user_groups) && $new_group != $this->feather->forum_env['FEATHER_ADMIN'] && $new_group_mod != '1') {
                 // Fetch forum list and clean up their moderator list
@@ -249,7 +249,7 @@ class Users
             Url::redirect($this->feather->urlFor('adminUsers'), __('Users move redirect'));
         }
 
-        $move = $this->hook->fire('model.model.users.move_users.move', $move);
+        $move = $this->hook->fire('model.admin.model.users.move_users.move', $move);
         return $move;
     }
 
@@ -265,7 +265,7 @@ class Users
             $user_ids = array();
         }
 
-        $user_ids = $this->hook->fire('model.model.users.delete_users.user_ids', $user_ids);
+        $user_ids = $this->hook->fire('model.admin.model.users.delete_users.user_ids', $user_ids);
 
         if (empty($user_ids)) {
             throw new Error(__('No users selected'), 404);
@@ -286,7 +286,7 @@ class Users
             $result = DB::for_table('users')
                         ->select_many($result['select'])
                         ->where_in('id', $user_ids);
-            $result = $this->hook->fireDB('model.users.delete_users.user_groups_query', $result);
+            $result = $this->hook->fireDB('model.admin.model.admin.users.delete_users.user_groups_query', $result);
             $result = $result->find_many();
 
             foreach($result as $cur_user) {
@@ -310,7 +310,7 @@ class Users
                 }
             }
 
-            $user_groups = $this->hook->fire('model.model.users.delete_users.user_groups', $user_groups);
+            $user_groups = $this->hook->fire('model.admin.model.users.delete_users.user_groups', $user_groups);
 
             // Fetch forum list and clean up their moderator list
             $select_mods = array('id', 'moderators');
@@ -365,7 +365,7 @@ class Users
                     ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                     ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                     ->where('p.poster_id', $user_ids);
-                $result = $this->hook->fireDB('model.users.delete_users.user_posts_query', $result);
+                $result = $this->hook->fireDB('model.admin.model.admin.users.delete_users.user_posts_query', $result);
                 $result = $result->find_many();
 
                 if ($result) {
@@ -429,7 +429,7 @@ class Users
             $user_ids = array();
         }
 
-        $user_ids = $this->hook->fire('model.model.users.ban_users.user_ids', $user_ids);
+        $user_ids = $this->hook->fire('model.admin.model.users.ban_users.user_ids', $user_ids);
 
         if (empty($user_ids)) {
             throw new Error(__('No users selected'), 404);
@@ -458,7 +458,7 @@ class Users
             $ban_expire = Utils::trim($this->request->post('ban_expire'));
             $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
 
-            $this->hook->fire('model.model.users.ban_users.comply', $ban_message, $ban_expire, $ban_the_ip);
+            $this->hook->fire('model.admin.model.users.ban_users.comply', $ban_message, $ban_expire, $ban_the_ip);
 
             if ($ban_expire != '' && $ban_expire != 'Never') {
                 $ban_expire = strtotime($ban_expire . ' GMT');
@@ -484,7 +484,7 @@ class Users
             $select_fetch_user_information = array('id', 'username', 'email', 'registration_ip');
             $result = DB::for_table('users')->select_many($select_fetch_user_information)
                 ->where_in('id', $user_ids);
-            $result = $this->hook->fireDB('model.users.ban_users.user_info_query', $result);
+            $result = $this->hook->fireDB('model.admin.model.admin.users.ban_users.user_info_query', $result);
             $result = $result->find_many();
 
             foreach ($result as $cur_user) {
@@ -499,7 +499,7 @@ class Users
                 }
             }
 
-            $user_info = $this->hook->fire('model.model.users.ban_users.user_info', $user_info);
+            $user_info = $this->hook->fire('model.admin.model.users.ban_users.user_info', $user_info);
 
             // And insert the bans!
             foreach ($user_ids as $user_id) {
@@ -516,7 +516,7 @@ class Users
                     'ban_creator' => $this->user->id,
                 );
 
-                $insert_update_ban = $this->hook->fire('model.model.users.ban_users.ban_data', $insert_update_ban);
+                $insert_update_ban = $this->hook->fire('model.admin.model.users.ban_users.ban_data', $insert_update_ban);
 
                 if ($this->request->post('mode') == 'add') {
                     $insert_update_ban['ban_creator'] = $this->user->id;
@@ -539,7 +539,7 @@ class Users
     public function get_user_search()
     {
         $form = $this->request->get('form') ? $this->request->get('form') : array();
-        $form = $this->hook->fire('model.model.users.get_user_search.form', $form);
+        $form = $this->hook->fire('model.admin.model.users.get_user_search.form', $form);
 
         $search = array();
 
@@ -651,7 +651,7 @@ class Users
             $search['conditions'][] = 'u.group_id='.$user_group;
         }
 
-        $search = $this->hook->fire('model.model.users.get_user_search.search', $search);
+        $search = $this->hook->fire('model.admin.model.users.get_user_search.search', $search);
         return $search;
     }
 
@@ -667,7 +667,7 @@ class Users
             ->offset($start_from)
             ->limit(50)
             ->order_by($order_by, $direction);
-        $result = $this->hook->fireDB('model.users.print_users.query', $result);
+        $result = $this->hook->fireDB('model.admin.model.admin.users.print_users.query', $result);
         $result = $result->find_many();
 
         if ($result) {
@@ -683,7 +683,7 @@ class Users
             }
         }
 
-        $user_data = $this->hook->fire('model.model.users.print_users.user_data', $user_data);
+        $user_data = $this->hook->fire('model.admin.model.users.print_users.user_data', $user_data);
         return $user_data;
     }
 
@@ -700,7 +700,7 @@ class Users
             $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         }
 
-        $output = $this->hook->fire('model.model.users.get_group_list.output', $output);
+        $output = $this->hook->fire('model.admin.model.users.get_group_list.output', $output);
         return $output;
     }
 }

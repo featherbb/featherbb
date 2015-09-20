@@ -16,6 +16,7 @@ class BbcodeToolbar extends BasePlugin
 
     public function run()
     {
+<<<<<<< HEAD
         // Add language files into javascript footer block
         $this->feather->hooks->bind('view.alter_data', [$this, 'addLanguage']);
         // Support default actions
@@ -50,6 +51,11 @@ class BbcodeToolbar extends BasePlugin
         );
         $data['jsVars']['bbcodeToolbar'] = json_encode($lang_bbeditor);
         return $data;
+=======
+        $this->hooks->bind('controller.post.create', [$this, 'addToolbar']);
+        $this->hooks->bind('controller.post.edit', [$this, 'addToolbar']);
+        $this->hooks->bind('controller.topic.display', [$this, 'addToolbar']);
+>>>>>>> development
     }
 
     public function addToolbar()

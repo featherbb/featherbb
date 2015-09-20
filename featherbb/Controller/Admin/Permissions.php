@@ -27,6 +27,8 @@ class Permissions
 
     public function display()
     {
+        $this->feather->hooks->fire('controller.admin.permissions.display');
+
         // Update permissions
         if ($this->feather->request->isPost()) {
             $this->model->update_permissions();

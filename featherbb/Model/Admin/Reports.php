@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\DB;
 
 class Reports
 {
@@ -19,16 +19,16 @@ class Reports
         $this->hook = $this->feather->hooks;
     }
 
-    public function zap_report($zap_id, $user_id)
+    public function zap_report($zap_id)
     {
-        $zap_id = $this->hook->fire('model.reports.zap_report.zap_id', $zap_id);
+        $zap_id = $this->hook->fire('model.admin.reports.zap_report.zap_id', $zap_id);
 
         $result = DB::for_table('reports')->where('id', $zap_id);
-        $result = $this->hook->fireDB('reports.zap_report.query', $result);
+        $result = $this->hook->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(), 'zapped_by' => $user_id);
-        $set_zap_report = $this->hook->fire('model.reports.zap_report.set_zap_report', $set_zap_report);
+        $set_zap_report = array('zapped' => time(), 'zapped_by' => $this->feather->user->id);
+        $set_zap_report = $this->hook->fire('model.admin.reports.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped
         if (!$result) {
@@ -81,10 +81,10 @@ class Reports
             ->left_outer_join('users', array('r.reported_by', '=', 'u.id'), 'u')
             ->where_null('r.zapped')
             ->order_by_desc('created');
-        $reports = $this->hook->fireDB('reports.get_reports.query', $reports);
+        $reports = $this->hook->fireDB('model.admin.reports.get_reports.query', $reports);
         $reports = $reports->find_array();
 
-        $reports = $this->hook->fire('model.reports.get_reports', $reports);
+        $reports = $this->hook->fire('model.admin.reports.get_reports', $reports);
         return $reports;
     }
 
@@ -103,10 +103,10 @@ class Reports
             ->where_not_null('r.zapped')
             ->order_by_desc('zapped')
             ->limit(10);
-        $zapped_reports = $this->hook->fireDB('reports.get_zapped_reports.query', $zapped_reports);
+        $zapped_reports = $this->hook->fireDB('model.admin.reports.get_zapped_reports.query', $zapped_reports);
         $zapped_reports = $zapped_reports->find_array();
 
-        $zapped_reports = $this->hook->fire('model.reports.get_zapped_reports', $zapped_reports);
+        $zapped_reports = $this->hook->fire('model.admin.reports.get_zapped_reports', $zapped_reports);
         return $zapped_reports;
     }
 }
