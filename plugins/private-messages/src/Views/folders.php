@@ -59,7 +59,7 @@ if (!empty($folders)): ?>
 <?php foreach ($folders as $fid => $folder): ?>
                                             <tr>
                             					<td class="tcl"><input type="text" name="folder[<?= $fid ?>]" value="<?= Utils::escape($folder['name']) ?>" size="24" maxlength="30" /></td>
-                            					<td><input type="submit" name="update[<?= $fid ?>]" value="Update" />&#160;<input type="submit" name="remove[<?= $fid ?>]" value="Remove" /></td>
+                            					<td><input type="submit" name="update_folder[<?= $fid ?>]" value="Update" />&#160;<input type="submit" name="remove_folder[<?= $fid ?>]" value="Remove" /></td>
                             				</tr>
 <?php endforeach; ?>
                                         </tbody>

@@ -462,150 +462,6 @@ class PrivateMessages
 
     public function folders()
     {
-
-    	// else if (isset($_POST['update']))
-    	// {
-    	// 	$id = intval(key($_POST['update']));
-        //
-    	// 	$errors = array();
-    	// 	$folder = panther_trim($_POST['folder'][$id]);
-        //
-    	// 	if ($panther_config['o_censoring'] == '1')
-    	// 		$censored_folder = panther_trim(censor_words($folder));
-        //
-    	// 	if ($folder == '')
-    	// 		$errors[] = $lang_pm['No folder name'];
-    	// 	else if (panther_strlen($folder) < 4)
-    	// 		$errors[] = $lang_pm['Folder too short'];
-    	// 	else if (panther_strlen($folder) > 30)
-    	// 		$errors[] = $lang_pm['Folder too long'];
-    	// 	else if ($panther_config['o_censoring'] == '1' && $folder == '')
-    	// 		$errors[] = $lang_pm['No folder after censoring'];
-        //
-    	// 	if (empty($errors))
-    	// 	{
-    	// 		$update = array(
-    	// 			'name'	=>	$folder,
-    	// 		);
-        //
-    	// 		$data = array(
-    	// 			':id'	=>	$id,
-    	// 			':uid'	=>	$panther_user['id'],
-    	// 		);
-        //
-    	// 		$db->update('folders', $update, 'id=:id AND user_id=:uid', $data);
-    	// 		redirect(panther_link($panther_url['pms_folders']), $lang_pm['Folder edit redirect']);
-    	// 	}
-    	// }
-    	// else if (isset($_POST['remove']))
-    	// {
-    	// 	$id = intval(key($_POST['remove']));
-    	// 	$data = array(
-    	// 		':id'	=>	$id,
-    	// 		':uid'	=>	$panther_user['id'],
-    	// 	);
-        //
-    	// 	// Before we do anything, check we own this box
-    	// 	$ps = $db->select('folders', 1, $data, 'id=:id AND user_id=:uid');
-    	// 	if (!$ps->rowCount())
-    	// 		message($lang_common['No permission']);
-        //
-    	// 	$update = array(
-    	// 		'folder_id'	=>	2,	// Send all potential conversations in this box back to the inbox upon deletion
-    	// 	);
-        //
-    	// 	$update_data = array(
-    	// 		':id'	=>	$id,
-    	// 	);
-        //
-    	// 	$db->update('pms_data', $update, 'folder_id=:id', $update_data);
-    	// 	$db->delete('folders', 'id=:id AND user_id=:uid', $data);
-    	// 	redirect(panther_link($panther_url['pms_folders']), $lang_pm['Folder del redirect']);
-    	// }
-        //
-    	// $data = array(
-    	// 	':uid'	=>	$panther_user['id'],
-    	// );
-        //
-    	// $ps = $db->select('folders', 'name, id', $data, 'user_id=:uid');
-        //
-    	// $required_fields = array('req_folder' => $lang_pm['Folder']);
-    	// $focus_element = array('folder', 'req_folder');
-        //
-    	// $page_title = array(panther_htmlspecialchars($panther_config['o_board_title']), $lang_common['PM'], $lang_pm['My folders 2']);
-    	// define('PANTHER_ALLOW_INDEX', 1);
-    	// define('PANTHER_ACTIVE_PAGE', 'index');
-    	// require PANTHER_ROOT.'header.php';
-        //
-    	// echo generate_pm_menu('folders');
-        //
-    	// if (!empty($errors))
-    	// {
-    	// 	$form_errors = array();
-    	// 	foreach ($errors as $cur_error)
-    	// 		$form_errors[] = "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-        //
-    	// 	$error_tpl = panther_template('inline_errors.tpl');
-    	// 	$search = array(
-    	// 		'{errors}' => $lang_pm['Folder errors'],
-    	// 		'{errors_info}' => $lang_pm['Folder errors info'],
-    	// 		'{error_list}' => implode("\n", $form_errors),
-    	// 	);
-        //
-    	// 	$error_tpl = str_replace(array_keys($search), array_values($search), $error_tpl).'<br />'."\n";
-    	// }
-    	// else
-    	// 	$error_tpl = '';
-        //
-    	// if ($ps->rowCount())
-    	// {
-    	// 	$folder_rows = array();
-    	// 	$folder_row_tpl = panther_template('pm_folder_row.tpl');
-    	// 	foreach ($ps as $cur_folder)
-    	// 	{
-    	// 		$search = array(
-    	// 			'{name}' => panther_htmlspecialchars($cur_folder['name']),
-    	// 			'{id}' => $cur_folder['id'],
-    	// 			'{update}' => $lang_pm['Update'],
-    	// 			'{remove}' => $lang_pm['Remove'],
-    	// 		);
-        //
-    	// 		$folder_rows[] = str_replace(array_keys($search), array_values($search), $folder_row_tpl);
-    	// 	}
-        //
-    	// 	$folder_tpl = panther_template('folders_content.tpl');
-    	// 	$search = array(
-    	// 		'{folder_name}' => $lang_pm['Folder name'],
-    	// 		'{form_action}' => panther_link($panther_url['pms_folders']),
-    	// 		'{my_folders}' => $lang_pm['My folders'],
-    	// 		'{username}' => $lang_common['Username'],
-    	// 		'{actions}' => $lang_pm['Actions'],
-    	// 		'{folder_content}' => implode("\n", $folder_rows),
-    	// 	);
-        //
-    	// 	$folder_tpl = str_replace(array_keys($search), array_values($search), $folder_tpl);
-    	// }
-    	// else
-    	// 	$folder_tpl = '';
-        //
-    	// $pm_tpl = panther_template('pm_folders.tpl');
-    	// $search = array(
-    	// 	'{errors}' => $error_tpl,
-    	// 	'{my_folders}' => $lang_pm['My folders 2'],
-    	// 	'{form_action}' => panther_link($panther_url['pms_folders']),
-    	// 	'{add_folder}' => $lang_pm['Add folder'],
-    	// 	'{folder_name}' => $lang_pm['Folder name'],
-    	// 	'{folder_value}' => (isset($folder)) ? panther_htmlspecialchars($folder) : '',
-    	// 	'{folder_content}' => $folder_tpl,
-    	// 	'{add}' => $lang_pm['Add'],
-    	// );
-
-        /**
-         * Separator
-         */
-
-
-
         $errors = array();
 
         if ($this->request->post('add_folder'))
@@ -619,8 +475,9 @@ class PrivateMessages
     		else if (Utils::strlen($folder) > 30)
     			$errors[] = __('Folder too long', 'private_messages');
     		else if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($folder) == '')
-    			$errors[] = $lang_pm['No folder after censoring'];
+    			$errors[] = __('No folder after censoring', 'private_messages');
 
+            // TODO: Check perms when ready
     		// $data = array(
     		// 	':uid'	=>	$panther_user['id'],
     		// );
@@ -645,15 +502,46 @@ class PrivateMessages
                 Url::redirect($this->feather->urlFor('Conversations.folders'), __('Folder added', 'private_messages'));
     		}
         }
+        else if ($this->request->post('update_folder'))
+    	{
+    		$id = intval(key($this->request->post('update_folder')));
+            var_dump($id);
+
+    		$errors = array();
+    		$folder = Utils::trim($this->request->post('folder')[$id]);
+
+            if ($folder == '')
+    			$errors[] = __('No folder name', 'private_messages');
+    		else if (Utils::strlen($folder) < 4)
+    			$errors[] = __('Folder too short', 'private_messages');
+    		else if (Utils::strlen($folder) > 30)
+    			$errors[] = __('Folder too long', 'private_messages');
+    		else if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($folder) == '')
+    			$errors[] = __('No folder after censoring', 'private_messages');
+
+    		if (empty($errors))
+    		{
+    			$update = array(
+    				'name'	=>	$folder,
+    			);
+
+                if ($this->model->updateFolder($this->feather->user->id, $id, $update))
+                    Url::redirect($this->feather->urlFor('Conversations.folders'), __('Folder updated', 'private_messages'));
+                else
+                    throw new Error(__('Error'), 403);
+    		}
+    	}
         else if ($this->request->post('remove_folder'))
         {
-            $id = intval(key($this->request->post('remove_block')));
+            $id = intval(key($this->request->post('remove_folder')));
             // Before we do anything, check we blocked this user
-            if (!$this->model->checkBlock(intval($this->feather->user->id), $id))
+            if (!$this->model->checkFolderOwner($id, intval($this->feather->user->id)))
                 throw new Error(__('No permission'), 403);
 
-            $this->model->removeBlock(intval($this->feather->user->id), $id);
-            Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block removed', 'private_messages'));
+            if ($this->model->removeFolder($this->feather->user->id, $id))
+                Url::redirect($this->feather->urlFor('Conversations.folders'), __('Folder removed', 'private_messages'));
+            else
+                throw new Error(__('Error'), 403);
         }
 
         Utils::generateBreadcrumbs(array(
@@ -667,8 +555,7 @@ class PrivateMessages
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), __('Blocked Users', 'private_messages')),
                 'admin_console' => true,
-                'errors' => $errors,
-                'required_fields' => array('req_username' => __('Add block', 'private_messages'))
+                'errors' => $errors
             )
         )
         ->addTemplate('folders.php')->display();

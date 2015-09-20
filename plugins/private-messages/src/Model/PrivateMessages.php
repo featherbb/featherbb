@@ -423,8 +423,8 @@ class PrivateMessages
         $result = DB::for_table('pms_blocks')
                     ->where('user_id', $user_id)
                     ->where('block_id', $block_id)
-                    ->delete_many();
-        return $result;
+                    ->find_one();
+        return $result->delete();
     }
 
     /**
@@ -439,5 +439,23 @@ class PrivateMessages
                 ->set($data);
         $result->save();
         return $result->id();
+    }
+
+    public function updateFolder($user_id, $block_id, array $data)
+    {
+        $result = DB::for_table('pms_folders')
+                ->find_one($block_id)
+                ->where('user_id', $user_id)
+                ->set($data);
+        return $result->save();
+    }
+
+    public function removeFolder($user_id, $block_id)
+    {
+        $result = DB::for_table('pms_folders')
+                ->where('id', $block_id)
+                ->where('user_id', $user_id)
+                ->find_one();
+        return $result->delete();
     }
 }
