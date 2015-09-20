@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\DB;
 
 class Categories
 {

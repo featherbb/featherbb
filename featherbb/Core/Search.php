@@ -12,7 +12,7 @@
 
 namespace FeatherBB\Core;
 
-use DB;
+use FeatherBB\Core\DB;
 
 class Search
 {

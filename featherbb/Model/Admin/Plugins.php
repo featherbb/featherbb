@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\DB;
 use FeatherBB\Core\Plugin as PluginManager;
 
 class Plugins

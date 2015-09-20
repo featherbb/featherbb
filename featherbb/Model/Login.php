@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model;
 
-use DB;
+use FeatherBB\Core\DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;

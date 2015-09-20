@@ -13,7 +13,7 @@
 
 namespace FeatherBB\Middleware;
 
-use DB;
+use FeatherBB\Core\DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
@@ -103,7 +103,7 @@ class Auth extends \Slim\Middleware
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
-        $result = \DB::for_table('online')
+        $result = DB::for_table('online')
                     ->select_many($select_update_users_online)
                     ->where_lt('logged', $this->app->now-$this->app->forum_settings['o_timeout_online'])
                     ->find_many();
@@ -111,19 +111,19 @@ class Auth extends \Slim\Middleware
         foreach ($result as $cur_user) {
             // If the entry is a guest, delete it
             if ($cur_user['user_id'] == '1') {
-                \DB::for_table('online')->where('ident', $cur_user['ident'])
+                DB::for_table('online')->where('ident', $cur_user['ident'])
                     ->delete_many();
             } else {
                 // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
                 if ($cur_user['logged'] < ($this->app->now-$this->app->forum_settings['o_timeout_visit'])) {
-                    \DB::for_table('users')->where('id', $cur_user['user_id'])
+                    DB::for_table('users')->where('id', $cur_user['user_id'])
                         ->find_one()
                         ->set('last_visit', $cur_user['logged'])
                         ->save();
-                    \DB::for_table('online')->where('user_id', $cur_user['user_id'])
+                    DB::for_table('online')->where('user_id', $cur_user['user_id'])
                         ->delete_many();
                 } elseif ($cur_user['idle'] == '0') {
-                    \DB::for_table('online')->where('user_id', $cur_user['user_id'])
+                    DB::for_table('online')->where('user_id', $cur_user['user_id'])
                         ->update_many('idle', 1);
                 }
             }
@@ -150,7 +150,7 @@ class Auth extends \Slim\Middleware
         foreach ($feather_bans as $cur_ban) {
             // Has this ban expired?
             if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-                \DB::for_table('bans')->where('id', $cur_ban['id'])
+                DB::for_table('bans')->where('id', $cur_ban['id'])
                     ->delete_many();
                 $bans_altered = true;
                 continue;
@@ -180,7 +180,7 @@ class Auth extends \Slim\Middleware
             }
 
             if ($is_banned) {
-                \DB::for_table('online')
+                DB::for_table('online')
                     ->where('ident', $this->app->user->username)
                     ->delete_many();
                 throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
