@@ -22,12 +22,13 @@ if (!isset($feather)) {
                     <div class="box">
                         <div class="inbox">
                             <ul>
-                                <?php if(!empty($inboxes)):
-                                    foreach ($inboxes as $iid => $data) { ?>
+<?php if(!empty($inboxes)):
+    foreach ($inboxes as $iid => $data): ?>
                                     <li<?= ($iid == 'ok') ? ' class="isactive"' : ''; ?>>
                                         <a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
                                     </li>
-                                <?php } endif; ?>
+<?php endforeach;
+endif; ?>
                             </ul>
                         </div>
                     </div>

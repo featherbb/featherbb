@@ -89,6 +89,33 @@ msgstr "Add block"
 msgid "Add block legend"
 msgstr "Block a user"
 
+msgid "No block self"
+msgstr "You cannot block yourself!"
+
+msgid "No user name message"
+msgstr "The user %s does not exist."
+
+msgid "User is admin message"
+msgstr "The user %s is an administrator and can't be blocked."
+
+msgid "User is mod message"
+msgstr "The user %s is a moderator and can't be blocked."
+
+msgid "Already blocked"
+msgstr "You already blocked the user %s."
+
+msgid "Block added"
+msgstr "Block added."
+
+msgid "Block removed"
+msgstr "Block removed."
+
+msgid "Block errors"
+msgstr "Block errors."
+
+msgid "Block error info"
+msgstr "The following errors need to be corrected before the user can be blocked:"
+
 msgid "My Folders"
 msgstr "My Folders"
 
@@ -107,14 +134,5 @@ msgstr "Mark as unread"
 msgid "Select action"
 msgstr "Select an action"
 
-msgid "No block self"
-msgstr "You cannot block yourself!"
-
-msgid "No user name message"
-msgstr "The user %s does not exist."
-
-msgid "User is admin message"
-msgstr "The user %s is an administrator and can't be blocked."
-
-msgid "User is mod message"
-msgstr "The user %s is a moderator and can't be blocked."
+msgid "Actions"
+msgstr "Actions"

@@ -394,14 +394,32 @@ class PrivateMessages
         return $result;
     }
 
-    public function checkBlock($user_id)
+    public function checkBlock($user_id, $block_id)
+    {
+        // var_dump($user_id, $block_id);
+        $result = DB::for_table('pms_blocks')
+                    // ->select('id')
+                    ->where('user_id', $user_id)
+                    ->where('block_id', $block_id)
+                    ->count();
+        return $result;
+    }
+
+    public function addBlock(array $data = array())
     {
         $result = DB::for_table('pms_blocks')
-                    ->table_alias('b')
-                    ->select_many(['b.id', 'b.block_id', 'u.username', 'u.group_id'])
-                    ->inner_join('users', array('b.block_id', '=', 'u.id'), 'u')
-                    ->where('b.user_id', $user_id)
-                    ->find_many();
+                    ->create()
+                    ->set($data);
+        $result->save();
+        return $result->id();
+    }
+
+    public function removeBlock($user_id, $block_id)
+    {
+        $result = DB::for_table('pms_blocks')
+                    ->where('user_id', $user_id)
+                    ->where('block_id', $block_id)
+                    ->delete_many();
         return $result;
     }
 }

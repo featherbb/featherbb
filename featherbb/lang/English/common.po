@@ -82,6 +82,12 @@ msgstr "Yesterday"
 msgid "Info"
 msgstr "Info"
 
+msgid "Warning"
+msgstr "Warning"
+
+msgid "Error"
+msgstr "Error"
+
 msgid "Go back"
 msgstr "Go back"
 

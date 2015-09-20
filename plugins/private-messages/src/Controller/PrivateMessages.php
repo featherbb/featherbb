@@ -27,7 +27,7 @@ class PrivateMessages
         $this->model = new \FeatherBB\Plugins\Model\PrivateMessages();
         load_textdomain('private_messages', dirname(dirname(__FILE__)).'/lang/'.$this->feather->user->language.'/private-messages.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo');
-        $this->feather->template->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5);
+        $this->feather->template->addTemplatesDirectory(dirname(dirname(__FILE__)).'/Views', 5)->setPageInfo(['active_page' => 'navextra1']);
         $this->crumbs =array(
             $this->feather->urlFor('Conversations.home') => __('PMS', 'private_messages')
         );
@@ -472,11 +472,11 @@ class PrivateMessages
     	// 	'{add}' => $lang_pm['Add'],
     	// );
 
-        if ($this->request('add_block'))
-    	{
-    		$errors = array();
-    		$username = $this->request('req_username') ? Utils::trim($this->request('req_username')) : '';
+        $errors = array();
 
+        $username = $this->request->post('req_username') ? Utils::trim(Utils::escape($this->request->post('req_username'))) : '';
+        if ($this->request->post('add_block'))
+    	{
     		if ($username == $this->feather->user->username)
     			$errors[] = __('No block self', 'private_messages');
 
@@ -486,46 +486,36 @@ class PrivateMessages
     		if (empty($errors))
     		{
     			if ($user_infos->group_id == $this->feather->forum_env['FEATHER_ADMIN'])
-    				$errors[] = sprintf(__('User is admin', 'private_messages'), Utils::trim($username));
+    				$errors[] = sprintf(__('User is admin', 'private_messages'), Utils::escape($username));
     			elseif ($user_infos->group_id == $this->feather->forum_env['FEATHER_MOD'])
-    				$errors[] = sprintf(__('User is mod', 'private_messages'), Utils::trim($username));
+    				$errors[] = sprintf(__('User is mod', 'private_messages'), Utils::escape($username));
 
-    			$data = array(
-    				':id'	=>	$uid,
-    			);
-
-    			$ps = $db->select('blocks', 1, $data, 'block_id=:id');
-    			if ($ps->rowCount())
-    				$errors[] = $lang_pm['Already blocked'];
+    			if ($this->model->checkBlock($this->feather->user->id, $user_infos->id))
+    				$errors[] = sprintf(__('Already blocked', 'private_messages'), Utils::escape($username));
     		}
 
     		if (empty($errors))
     		{
     			$insert = array(
-    				'user_id'	=>	$panther_user['id'],
-    				'block_id'	=>	$uid,
+    				'user_id'	=>	$this->feather->user->id,
+    				'block_id'	=>	$user_infos->id,
     			);
 
-    			$db->insert('blocks', $insert);
-    			redirect(panther_link($panther_url['pms_blocked']), $lang_pm['Block added redirect']);
+    			$this->model->addBlock($insert);
+    			Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block added', 'private_messages'));
     		}
     	}
-    	// else if (isset($_POST['remove']))
-    	// {
-    	// 	$id = intval(key($_POST['remove']));
-    	// 	$data = array(
-    	// 		':id'	=>	$id,
-    	// 		':uid'	=>	$panther_user['id'],
-    	// 	);
-        //
-    	// 	// Before we do anything, check we blocked this user
-    	// 	$ps = $db->select('blocks', 1, $data, 'id=:id AND user_id=:uid');
-    	// 	if (!$ps->rowCount())
-    	// 		message($lang_common['No permission']);
-        //
-    	// 	$db->delete('blocks', 'id=:id AND user_id=:uid', $data);
-    	// 	redirect(panther_link($panther_url['pms_blocked']), $lang_pm['Block del redirect']);
-    	// }
+    	else if ($this->request->post('remove_block'))
+    	{
+            // var_dump($this->request->post('remove_block'));
+    		$id = intval(key($this->request->post('remove_block')));
+    		// Before we do anything, check we blocked this user
+    		if (!$this->model->checkBlock(intval($this->feather->user->id), $id))
+    			throw new Error(__('No permission'), 403);
+
+    		$this->model->removeBlock(intval($this->feather->user->id), $id);
+    		Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block removed', 'private_messages'));
+    	}
 
         Utils::generateBreadcrumbs(array(
             $this->feather->urlFor('Conversations.home') => __('PMS', 'private_messages'),
@@ -537,6 +527,8 @@ class PrivateMessages
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), __('Blocked Users', 'private_messages')),
                 'admin_console' => true,
+                'errors' => $errors,
+                'username' => $username,
                 'required_fields' => array('req_username' => __('Add block', 'private_messages')),
                 'blocks' => $this->model->getBlocked($this->feather->user->id),
                 'inboxes' => $this->model->getInboxes($this->feather->user->id)
@@ -561,7 +553,6 @@ class PrivateMessages
         $this->feather->template->setPageInfo(array(
             'page'    =>    $page,
             'crumbs'    =>    $crumbs,
-            'active_page' => 'navextra1',
             // 'is_admin'    =>    $is_admin,
             'inboxes'    =>    $inboxes,
             ), 1
