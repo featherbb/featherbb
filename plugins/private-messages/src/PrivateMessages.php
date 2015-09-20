@@ -21,15 +21,11 @@ class PrivateMessages extends BasePlugin
         $feather = $this->feather;
 
         $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
-<<<<<<< HEAD
-        $this->hooks->bind('header.navlinks', [$this, 'addNavlink']);
+        $this->hooks->bind('view.header.navlinks', [$this, 'addNavlink']);
         $this->hooks->bind('model.print_posts.one', function ($cur_post) use ($feather) {
             $cur_post['user_contacts'][] = '<span class="email"><a href="'.$feather->urlFor('Conversations.send', ['uid' => $cur_post['poster_id']]).'">PM</a></span>';
             return $cur_post;
         });
-=======
-        $this->hooks->bind('view.header.navlinks', [$this, 'addNavlink']);
->>>>>>> development
 
         $this->feather->group('/conversations',
             function() use ($feather) {
