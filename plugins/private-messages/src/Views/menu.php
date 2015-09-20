@@ -24,7 +24,7 @@ if (!isset($feather)) {
                             <ul>
 <?php if(!empty($inboxes)):
     foreach ($inboxes as $iid => $data): ?>
-                                    <li<?= ($iid == 'ok') ? ' class="isactive"' : ''; ?>>
+                                    <li<?= ($page == $data['name']) ? ' class="isactive"' : ''; ?>>
                                         <a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
                                     </li>
 <?php endforeach;
@@ -47,8 +47,8 @@ endif; ?>
                     <div class="box">
                         <div class="inbox">
                             <ul>
-                                <li><a href="<?= $feather->urlFor('Conversations.blocked') ?>"><?php _e('Blocked Users', 'private_messages') ?></a></li>
-                                <li><a href="<?= $feather->urlFor('Conversations.folders') ?>"><?php _e('My Folders', 'private_messages') ?></a></li>
+                                <li<?= ($page == 'blocked') ? ' class="isactive"' : ''; ?>><a href="<?= $feather->urlFor('Conversations.blocked') ?>"><?php _e('Blocked Users', 'private_messages') ?></a></li>
+                                <li<?= ($page == 'folders') ? ' class="isactive"' : ''; ?>><a href="<?= $feather->urlFor('Conversations.folders') ?>"><?php _e('My Folders', 'private_messages') ?></a></li>
                             </ul>
                         </div>
                     </div>

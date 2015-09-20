@@ -18,7 +18,7 @@ use FeatherBB\Core\DB;
 
 class PrivateMessages
 {
-    protected $feather, $request, $model, $crumbs;
+    protected $feather, $request, $model, $crumbs, $inboxes;
 
     public function __construct()
     {
@@ -59,38 +59,38 @@ class PrivateMessages
             }
         }
 
-        if ($inboxes = $this->model->getInboxes($this->feather->user->id)) {
-            if (!in_array($fid, array_keys($inboxes))) {
+        if ($this->inboxes = $this->model->getInboxes($this->feather->user->id)) {
+            if (!in_array($fid, array_keys($this->inboxes))) {
                 throw new Error(__('Wrong folder owner', 'private_messages'), 403);
             }
         }
         // Page data
-        $num_pages = ceil($inboxes[$fid]['nb_msg'] / $this->feather->user['disp_topics']);
+        $num_pages = ceil($this->inboxes[$fid]['nb_msg'] / $this->feather->user['disp_topics']);
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
         $paging_links = Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.home', ['id' => $fid]).'/#');
 
         // Make breadcrumbs
-        $this->crumbs[$this->feather->urlFor('Conversations.home', ['inbox_id' => $fid])] = $inboxes[$fid]['name'];
+        $this->crumbs[$this->feather->urlFor('Conversations.home', ['inbox_id' => $fid])] = $this->inboxes[$fid]['name'];
         $this->crumbs[] = __('My conversations', 'private_messages');
         Utils::generateBreadcrumbs($this->crumbs, array(
             'link' => $this->feather->urlFor('Conversations.send'),
             'text' => __('Send', 'private_messages')
         ));
 
+        $this->generateMenu($this->inboxes[$fid]['name']);
         $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
         $this->feather->template
             ->setPageInfo(array(
-                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $inboxes[$fid]['name']),
+                'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $this->inboxes[$fid]['name']),
                 'admin_console' => true,
-                'inboxes' => $inboxes,
+                'inboxes' => $this->inboxes,
                 'current_inbox_id' => $fid,
                 'paging_links' => $paging_links,
                 'rightLink' => ['link' => $this->feather->urlFor('Conversations.send'), 'text' => __('Send', 'private_messages')],
                 'conversations' => $this->model->getConversations($fid, $uid, $this->feather->user['disp_topics'], $start_from)
             )
         )
-        ->addTemplate('menu.php')
         ->addTemplate('index.php')->display();
     }
 
@@ -370,22 +370,20 @@ class PrivateMessages
         $start_from = $this->feather->user['disp_topics'] * ($p - 1);
         $paging_links = Url::paginate($num_pages, $p, $this->feather->urlFor('Conversations.show', ['tid' => $conv_id]).'/#');
 
-        $inboxes = $this->model->getInboxes($this->feather->user->id);
+        $this->inboxes = $this->model->getInboxes($this->feather->user->id);
 
-        $this->crumbs[$this->feather->urlFor('Conversations.home', ['inbox_id' => $conv['folder_id']])] = $inboxes[$conv['folder_id']]['name'];
+        $this->crumbs[$this->feather->urlFor('Conversations.home', ['inbox_id' => $conv['folder_id']])] = $this->inboxes[$conv['folder_id']]['name'];
         $this->crumbs[] = __('My conversations', 'private_messages');
         $this->crumbs[] = $conv['subject'];
         Utils::generateBreadcrumbs($this->crumbs, array(
             'link' => $this->feather->urlFor('Conversations.reply', ['tid' => $conv['id']]),
             'text' => __('Reply', 'private_messages')
         ));
-
+        $this->generateMenu($this->inboxes[$conv['folder_id']]['name']);
         $this->feather->template
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), $this->model->getUserFolders($this->feather->user->id)[$conv['folder_id']]['name'], Utils::escape($conv['subject'])),
                 'admin_console' => true,
-                'current_inbox_id' => $conv['folder_id'],
-                'inboxes' => $inboxes,
                 'paging_links' => $paging_links,
                 'start_from' => $start_from,
                 'cur_conv' => $conv,
@@ -393,85 +391,11 @@ class PrivateMessages
                 'messages' => $this->model->getMessages($conv['id'], $this->feather->user['disp_topics'], $start_from)
             )
         )
-        ->addTemplate('menu.php')
         ->addTemplate('show.php')->display();
     }
 
     public function blocked()
     {
-    	// $required_fields = array('req_username' => $lang_common['Username']);
-    	// $focus_element = array('block', 'req_username');
-
-    	// $page_title = array(panther_htmlspecialchars($panther_config['o_board_title']), $lang_common['PM'], $lang_pm['My blocked']);
-    	// define('PANTHER_ACTIVE_PAGE', 'index');
-    	// require PANTHER_ROOT.'header.php';
-    	//
-    	// echo generate_pm_menu('blocked');
-
-    	// If there are errors, we display them
-    	// if (!empty($errors))
-    	// {
-    	// 	$form_errors = array();
-    	// 	foreach ($errors as $cur_error)
-    	// 		$form_errors[] = "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-        //
-    	// 	$error_tpl = panther_template('inline_errors.tpl');
-    	// 	$search = array(
-    	// 		'{errors}' => $lang_pm['Block errors'],
-    	// 		'{errors_info}' => $lang_pm['Block errors info'],
-    	// 		'{error_list}' => implode("\n", $form_errors),
-    	// 	);
-    	//
-    	// 	$error_tpl = str_replace(array_keys($search), array_values($search), $error_tpl).'<br />'."\n";
-    	// }
-    	// else
-    	// 	$error_tpl = '';
-
-    	// if ($ps->rowCount())
-    	// {
-    	// 	$blocked_rows = array();
-    	// 	$blocked_row_tpl = panther_template('pm_blocked_row.tpl');
-    	// 	foreach ($ps as $cur_block)
-    	// 	{
-    	// 		$data = array(
-    	// 			':id'	=>	$cur_block['block_id'],
-    	// 		);
-    	//
-    	// 		$search = array(
-    	// 			'{name}' => colourize_group($cur_block['username'], $cur_block['group_id'], $cur_block['block_id']),
-    	// 			'{id}' => $cur_block['id'],
-    	// 			'{remove}' => $lang_pm['Remove'],
-    	// 		);
-    	//
-    	// 		$blocked_rows[] = str_replace(array_keys($search), array_values($search), $blocked_row_tpl);
-    	// 	}
-        //
-    	// 	$blocked_tpl = panther_template('blocked_content.tpl');
-    	// 	$search = array(
-    	// 		'{form_action}' => panther_link($panther_url['pms_blocked']),
-    	// 		'{my_folders}' => $lang_pm['My blocked'],
-    	// 		'{username}' => $lang_common['Username'],
-    	// 		'{actions}' => $lang_pm['Actions'],
-    	// 		'{blocked_content}' => implode("\n", $blocked_rows),
-    	// 	);
-        //
-    	// 	$blocked_tpl = str_replace(array_keys($search), array_values($search), $blocked_tpl);
-    	// }
-    	// else
-    	// 	$blocked_tpl = '';
-        //
-    	// $pm_tpl = panther_template('pm_blocked.tpl');
-    	// $search = array(
-    	// 	'{errors}' => $error_tpl,
-    	// 	'{my_blocked}' => $lang_pm['My blocked'],
-    	// 	'{form_action}' => panther_link($panther_url['pms_blocked']),
-    	// 	'{add_block}' => $lang_pm['Add block'],
-    	// 	'{username}' => $lang_common['Username'],
-    	// 	'{username_value}' => (isset($username)) ? panther_htmlspecialchars($username) : '',
-    	// 	'{blocked_users}' => $blocked_tpl,
-    	// 	'{add}' => $lang_pm['Add'],
-    	// );
-
         $errors = array();
 
         $username = $this->request->post('req_username') ? Utils::trim(Utils::escape($this->request->post('req_username'))) : '';
@@ -507,7 +431,6 @@ class PrivateMessages
     	}
     	else if ($this->request->post('remove_block'))
     	{
-            // var_dump($this->request->post('remove_block'));
     		$id = intval(key($this->request->post('remove_block')));
     		// Before we do anything, check we blocked this user
     		if (!$this->model->checkBlock(intval($this->feather->user->id), $id))
@@ -523,6 +446,7 @@ class PrivateMessages
             __('Blocked Users', 'private_messages')
         ));
 
+        $this->generateMenu('blocked');
         $this->feather->template
             ->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('PMS', 'private_messages'), __('Blocked Users', 'private_messages')),
@@ -531,10 +455,8 @@ class PrivateMessages
                 'username' => $username,
                 'required_fields' => array('req_username' => __('Add block', 'private_messages')),
                 'blocks' => $this->model->getBlocked($this->feather->user->id),
-                'inboxes' => $this->model->getInboxes($this->feather->user->id)
             )
         )
-        ->addTemplate('menu.php')
         ->addTemplate('blocked.php')->display();
     }
 
@@ -545,18 +467,15 @@ class PrivateMessages
 
     public function generateMenu($page = '')
     {
-        $inboxes = $this->model->getInboxes($this->feather->user->id);
-        $crumbs = [
-                __('PMS', 'private_messages')
-            ];
+        if (!isset($this->inboxes))
+            $this->inboxes = $this->model->getInboxes($this->feather->user->id);
 
         $this->feather->template->setPageInfo(array(
             'page'    =>    $page,
-            'crumbs'    =>    $crumbs,
-            // 'is_admin'    =>    $is_admin,
-            'inboxes'    =>    $inboxes,
+            'inboxes'    =>    $this->inboxes,
             ), 1
-        )->addTemplate('blocked.php');
+        )->addTemplate('menu.php');
+        return $this->inboxes;
     }
 
 }
