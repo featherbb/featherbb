@@ -17,6 +17,9 @@ msgstr ""
 msgid "Folders"
 msgstr "Folders"
 
+msgid "PMS"
+msgstr "PMS"
+
 msgid "New"
 msgstr "Unread"
 
@@ -31,3 +34,105 @@ msgstr "Storage"
 
 msgid "Options"
 msgstr "Options"
+
+msgid "Wrong folder owner"
+msgstr "You don't own this inbox"
+
+msgid "Send"
+msgstr "New conversation"
+
+msgid "Send success"
+msgstr "Your PM has been sent to %s !"
+
+msgid "Reply"
+msgstr "Reply to conversation"
+
+msgid "Reply success"
+msgstr "You have successfully replied to the conversation %s !"
+
+msgid "No conv selected"
+msgstr "Select more than one conversations"
+
+msgid "Conversations deleted"
+msgstr "Conversations deleted"
+
+msgid "Conversations moved"
+msgstr "Conversations moved"
+
+msgid "Error move"
+msgstr "Error while moving conversations"
+
+msgid "Unread messages"
+msgstr "You have unread private messages"
+
+msgid "Confirm delete"
+msgstr "Are you sure you want to delete these conversations ? This operation cannot be undone."
+
+msgid "My conversations"
+msgstr "My conversations"
+
+msgid "Move conversations"
+msgstr "Move conversations"
+
+msgid "Select move destination"
+msgstr "Select the folder you want to move conversations to."
+
+msgid "Empty inbox"
+msgstr "You have no conversations in this inbox."
+
+msgid "Blocked Users"
+msgstr "Blocked Users"
+
+msgid "Add block"
+msgstr "Add block"
+
+msgid "Add block legend"
+msgstr "Block a user"
+
+msgid "No block self"
+msgstr "You cannot block yourself!"
+
+msgid "No user name message"
+msgstr "The user %s does not exist."
+
+msgid "User is admin message"
+msgstr "The user %s is an administrator and can't be blocked."
+
+msgid "User is mod message"
+msgstr "The user %s is a moderator and can't be blocked."
+
+msgid "Already blocked"
+msgstr "You already blocked the user %s."
+
+msgid "Block added"
+msgstr "Block added."
+
+msgid "Block removed"
+msgstr "Block removed."
+
+msgid "Block errors"
+msgstr "Block errors."
+
+msgid "Block error info"
+msgstr "The following errors need to be corrected before the user can be blocked:"
+
+msgid "My Folders"
+msgstr "My Folders"
+
+msgid "Add folder"
+msgstr "Add folder"
+
+msgid "Conv review"
+msgstr "Conversation review (newest first)"
+
+msgid "Mark read"
+msgstr "Mark as read"
+
+msgid "Mark unread"
+msgstr "Mark as unread"
+
+msgid "Select action"
+msgstr "Select an action"
+
+msgid "Actions"
+msgstr "Actions"

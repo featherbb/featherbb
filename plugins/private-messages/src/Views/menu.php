@@ -16,52 +16,40 @@ if (!isset($feather)) {
 
 ?>
 
-        <div class="linkst">
-            <div class="inbox">
-                <ul class="crumbs">
-                    <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations') ?>"><?= _e('PMs', 'private_messages') ?></a></li>
-                    <li><span>»&#160;</span><a href="<?= $feather->urlFor('Conversations', ['id' => $inbox->id]) ?>"><?= Utils::escape($inbox->name) ?></a></li>
-                    <li><span>»&#160;</span><strong><?php _e('My conversations', 'private_messages') ?></strong></li>
-                    <li class="postlink actions conr"><span><a href="<?= $feather->urlFor('newConversation') ?>"><?php _e('Send message', 'private_messages') ?></a></span></li>
-                </ul>
-                <div class="pagepost"></div>
-                <div class="clearer"></div>
-            </div>
-        </div>
-
-        <div id="adminconsole" class="block2col">
-            <div id="adminmenu" class="blockmenu">
-                <h2><span><?php _e('Folders', 'private_messages') ?></span></h2>
-                <div class="box">
-                    <div class="inbox">
-                        <ul>
-                            <?php if(!empty($folders)):
-                            foreach ($folders as $folder) { ?>
-                                <li class="isactive"><a href="<?= $feather->urlFor('Conversations', ['id' => $folder->id]) ?>"><?= Utils::escape($folder->name) ?> (1)</a></li>
-                            <?php } endif; ?>
-                            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Index') ?></a></li>
-                        </ul>
+            <div id="adminconsole" class="block2col">
+                <div id="adminmenu" class="blockmenu">
+                    <h2><span><?php _e('Folders', 'private_messages') ?></span></h2>
+                    <div class="box">
+                        <div class="inbox">
+                            <ul>
+<?php if(!empty($inboxes)):
+    foreach ($inboxes as $iid => $data): ?>
+                                    <li<?= ($iid == 'ok') ? ' class="isactive"' : ''; ?>>
+                                        <a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
+                                    </li>
+<?php endforeach;
+endif; ?>
+                            </ul>
+                        </div>
+                    </div>
+                    <h2><span><?php _e('Storage', 'private_messages') ?></span></h2>
+                    <div class="box">
+                        <div class="inbox">
+                            <ul>
+                                <li class="big">Inbox: 0% full</li>
+                                <li><div id="pm_bar_style" style="width:0px;"></div></li>
+                                <li class="big">Quota: 0 / &infin;</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <br />
+                    <h2><span><?php _e('Options', 'private_messages') ?></span></h2>
+                    <div class="box">
+                        <div class="inbox">
+                            <ul>
+                                <li><a href="<?= $feather->urlFor('Conversations.blocked') ?>"><?php _e('Blocked Users', 'private_messages') ?></a></li>
+                                <li><a href="<?= $feather->urlFor('Conversations.folders') ?>"><?php _e('My Folders', 'private_messages') ?></a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <h2><span><?php _e('Storage', 'private_messages') ?></span></h2>
-                <div class="box">
-                    <div class="inbox">
-                        <ul>
-                            <li>Inbox: 0% full</li>
-                            <li><div id="pm_bar_style" style="width:0px;"></div></li>
-                            <li>Quota: 0 / &infin;</li>
-                        </ul>
-                    </div>
-                </div>
-                <br />
-                <h2><span><?php _e('Options', 'private_messages') ?></span></h2>
-                <div class="box">
-                    <div class="inbox">
-                        <ul>
-                            <li><a href="http://localhost/panther/pms_misc.php?action=blocked">Blocked Users</a></li>
-                            <li><a href="http://localhost/panther/pms_misc.php?action=folders">My Folders</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>

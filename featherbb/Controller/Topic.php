@@ -23,7 +23,6 @@ class Topic
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/topic.mo');
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo'); // To be removed
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/post.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/bbeditor.mo');
     }
 
     public function display($id = null, $name = null, $page = null, $pid = null)
@@ -70,25 +69,6 @@ class Topic
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
         $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $id);
 
-        $lang_bbeditor = array(
-            'btnBold' => __('btnBold'),
-            'btnItalic' => __('btnItalic'),
-            'btnUnderline' => __('btnUnderline'),
-            'btnColor' => __('btnColor'),
-            'btnLeft' => __('btnLeft'),
-            'btnRight' => __('btnRight'),
-            'btnJustify' => __('btnJustify'),
-            'btnCenter' => __('btnCenter'),
-            'btnLink' => __('btnLink'),
-            'btnPicture' => __('btnPicture'),
-            'btnList' => __('btnList'),
-            'btnQuote' => __('btnQuote'),
-            'btnCode' => __('btnCode'),
-            'promptImage' => __('promptImage'),
-            'promptUrl' => __('promptUrl'),
-            'promptQuote' => __('promptQuote')
-        );
-
         $this->feather->template->addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
@@ -124,7 +104,6 @@ class Topic
             'quickpost'        =>    $quickpost,
             'index_questions'        =>    $index_questions,
             'lang_antispam_questions'        =>    $lang_antispam_questions,
-            'lang_bbeditor'    =>    $lang_bbeditor,
             'url_forum'        =>    $url_forum,
             'url_topic'        =>    $url_topic,
         ))->addTemplate('topic.php')->display();

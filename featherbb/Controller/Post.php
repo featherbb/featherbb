@@ -189,25 +189,6 @@ class Post
             $post_data = '';
         }
 
-        $lang_bbeditor = array(
-            'btnBold' => __('btnBold'),
-            'btnItalic' => __('btnItalic'),
-            'btnUnderline' => __('btnUnderline'),
-            'btnColor' => __('btnColor'),
-            'btnLeft' => __('btnLeft'),
-            'btnRight' => __('btnRight'),
-            'btnJustify' => __('btnJustify'),
-            'btnCenter' => __('btnCenter'),
-            'btnLink' => __('btnLink'),
-            'btnPicture' => __('btnPicture'),
-            'btnList' => __('btnList'),
-            'btnQuote' => __('btnQuote'),
-            'btnCode' => __('btnCode'),
-            'promptImage' => __('promptImage'),
-            'promptUrl' => __('promptUrl'),
-            'promptQuote' => __('promptQuote')
-        );
-
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
                 'required_fields' => $required_fields,
@@ -219,7 +200,6 @@ class Post
                 'cur_posting' => $cur_posting,
                 'lang_antispam' => $lang_antispam,
                 'lang_antispam_questions' => $lang_antispam_questions,
-                'lang_bbeditor'    =>    $lang_bbeditor,
                 'index_questions' => $index_questions,
                 'checkboxes' => $checkboxes,
                 'action' => $action,
@@ -336,25 +316,6 @@ class Post
             $preview_message = '';
         }
 
-        $lang_bbeditor = array(
-            'btnBold' => __('btnBold'),
-            'btnItalic' => __('btnItalic'),
-            'btnUnderline' => __('btnUnderline'),
-            'btnColor' => __('btnColor'),
-            'btnLeft' => __('btnLeft'),
-            'btnRight' => __('btnRight'),
-            'btnJustify' => __('btnJustify'),
-            'btnCenter' => __('btnCenter'),
-            'btnLink' => __('btnLink'),
-            'btnPicture' => __('btnPicture'),
-            'btnList' => __('btnList'),
-            'btnQuote' => __('btnQuote'),
-            'btnCode' => __('btnCode'),
-            'promptImage' => __('promptImage'),
-            'promptUrl' => __('promptUrl'),
-            'promptQuote' => __('promptQuote')
-        );
-
         $this->feather->template->setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Edit post')),
                 'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
@@ -365,7 +326,6 @@ class Post
                 'id' => $id,
                 'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                 'can_edit_subject' => $can_edit_subject,
-                'lang_bbeditor'    =>    $lang_bbeditor,
                 'post' => $post,
             )
         )->addTemplate('edit.php')->display();

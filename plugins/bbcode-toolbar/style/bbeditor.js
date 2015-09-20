@@ -7,7 +7,6 @@
 
 /*****************************************/
 // Inspired by :
-
 // Name: Javascript Textarea BBCode Markup Editor
 // Version: 1.3
 // Author: Balakrishnan
@@ -24,7 +23,9 @@ var textarea,
 target.insertAdjacentHTML( 'beforeBegin', toolbar );
 
 function postEditorToolbar(obj) {
-	var output = '';
+	// Get translations from js block in footer
+	var langBbeditor = JSON.parse(phpVars.bbcodeToolbar),
+		output = '';
 	// Toolbar buttons
 	output += "<div class=\"toolbar\">";
 		output += "<img class=\"toolbar-icon\" src=\""+baseUrl+"/style/img/bbeditor/bold.png\" name=\"btnBold\" title=\""+langBbeditor.btnBold+"\" onClick=\"doAddTags('[b]','[/b]','" + obj + "')\">";

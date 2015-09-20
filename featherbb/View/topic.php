@@ -60,7 +60,7 @@ foreach ($post_data as $post) {
 }
     ?>
 <?php if (count($post['user_contacts'])) {
-    echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' ', $post['user_contacts']).'</dd>'."\n";
+    echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' | ', $post['user_contacts']).'</dd>'."\n";
 }
     ?>
 					</dl>
@@ -156,12 +156,6 @@ if ($quickpost) {
     }
 
     ?>
-<!-- Init BBcode editor toolbar -->
-<script>
-    var baseUrl = '<?= Utils::escape(Url::base(true)); ?>',
-        langBbeditor = <?= json_encode($lang_bbeditor, JSON_PRETTY_PRINT); ?>;
-</script>
-
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
 							<li><span><a href="<?= $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off');

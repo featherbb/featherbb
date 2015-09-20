@@ -1002,7 +1002,7 @@ class Topic
                     $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
                 }
             }
-
+            $cur_post = $this->hook->fire('model.print_posts.one', $cur_post);
             $post_data[] = $cur_post;
         }
 

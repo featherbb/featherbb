@@ -16,48 +16,57 @@ use FeatherBB\Core\DB;
 class PrivateMessages extends BasePlugin
 {
 
-    public static function generateMenu($page = '')
-    {
-        $feather = \Slim\Slim::getInstance();
-
-        $is_admin = ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']) ? true : false;
-
-        // See if there are any plugins that want to display in the menu
-        $plugins = self::adminPluginsMenu($is_admin);
-
-        $feather->template->setPageInfo(array(
-            'page'    =>    $page,
-            'is_admin'    =>    $is_admin,
-            'plugins'    =>    $plugins,
-            ), 1
-        )->addTemplate('admin/menu.php');
-    }
-
     public function run()
     {
+        $feather = $this->feather;
+
         $this->hooks->bind('admin.plugin.menu', [$this, 'getName']);
         $this->hooks->bind('view.header.navlinks', [$this, 'addNavlink']);
+        $this->hooks->bind('model.print_posts.one', function ($cur_post) use ($feather) {
+            $cur_post['user_contacts'][] = '<span class="email"><a href="'.$feather->urlFor('Conversations.send', ['uid' => $cur_post['poster_id']]).'">PM</a></span>';
+            return $cur_post;
+        });
 
-        $feather = $this->feather;
         $this->feather->group('/conversations',
             function() use ($feather) {
-                if(!$feather->user->logged) throw new Error(__('No permission'), 403);
+                if($feather->user->is_guest) throw new Error(__('No permission'), 403);
             }, function() use ($feather){
-                $feather->get('(/:id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+'))->name('Conversations');
-                $feather->get('(/:id)/page/:page(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.page');
-                $feather->get('/send(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->name('newConversation');
+                $feather->map('/inbox(/:inbox_id)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.home');
+                $feather->map('/inbox(/:inbox_id)/page(/:page)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:index')->conditions(array('inbox_id' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.home.page');
+                $feather->get('/thread(/:tid)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:show')->conditions(array('tid' => '[0-9]+'))->name('Conversations.show');
+                $feather->get('/thread(/:tid)/page(/:page)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:show')->conditions(array('tid' => '[0-9]+', 'page' => '[0-9]+'))->name('Conversations.show.page');
+                $feather->map('/send(/:uid)(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:send')->conditions(array('uid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.send');
+                $feather->map('/reply/:tid(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.reply');
+                $feather->map('/quote/:mid(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:reply')->conditions(array('mid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.quote');
+                $feather->map('/options/blocked(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:blocked')->conditions(array('mid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.blocked');
+                $feather->map('/options/folders(/)', '\FeatherBB\Plugins\Controller\PrivateMessages:folders')->conditions(array('mid' => '[0-9]+'))->via('GET', 'POST')->name('Conversations.folders');
             }
         );
+
+        $this->feather->template->addAsset('css', 'plugins/private-messages/src/style/private-messages.css');
     }
 
     public function addNavlink($navlinks)
     {
-        $navlinks[] = '5 = <a href="'.$this->feather->urlFor('Conversations').'">PMS</a>';
+        load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->user->language.'/private-messages.mo');
+        if (!$this->feather->user->is_guest) {
+            $nbUnread = Model\PrivateMessages::countUnread($this->feather->user->id);
+            $count = ($nbUnread > 0) ? ' ('.$nbUnread.')' : '';
+            $navlinks[] = '4 = <a href="'.$this->feather->urlFor('Conversations.home').'">PMS'.$count.'</a>';
+            if ($nbUnread > 0) {
+                $this->hooks->bind('header.toplist', function($toplists) {
+                    $toplists[] = '<li class="reportlink"><span><strong><a href="'.$this->feather->urlFor('Conversations.home', ['inbox_id' => 1]).'">'.__('Unread messages', 'private_messages').'</a></strong></span></li>';
+                    return $toplists;
+                });
+            }
+        }
         return $navlinks;
     }
 
     public function install()
     {
+        load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->forum_settings['o_default_lang'].'/private-messages.mo');
+
         $database_scheme = array(
             'pms_data' => "CREATE TABLE IF NOT EXISTS %t% (
                 `conversation_id` int(10) unsigned NOT NULL,
@@ -67,14 +76,14 @@ class PrivateMessages extends BasePlugin
                 `folder_id` int(10) unsigned NOT NULL DEFAULT '2',
                 PRIMARY KEY (`conversation_id`, `user_id`),
                 KEY `folder_idx` (`folder_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
             'pms_folders' => "CREATE TABLE IF NOT EXISTS %t% (
                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(80) NOT NULL DEFAULT 'New Folder',
                 `user_id` int(10) unsigned NOT NULL DEFAULT '0',
                 PRIMARY KEY (`id`),
                 KEY `user_idx` (`user_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
             'pms_messages' => "CREATE TABLE IF NOT EXISTS %t% (
                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                 `poster` varchar(200) NOT NULL DEFAULT '',
@@ -88,7 +97,7 @@ class PrivateMessages extends BasePlugin
                 `conversation_id` int(10) unsigned NOT NULL DEFAULT '0',
                 PRIMARY KEY (`id`),
                 KEY `conversation_idx` (`conversation_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
             'pms_conversations' => "CREATE TABLE IF NOT EXISTS %t% (
                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                 `poster` varchar(200) NOT NULL DEFAULT '',
@@ -100,7 +109,13 @@ class PrivateMessages extends BasePlugin
                 `last_poster` varchar(200) DEFAULT NULL,
                 `num_replies` mediumint(8) unsigned NOT NULL DEFAULT '0',
                 PRIMARY KEY (`id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;"
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+            'pms_blocks' => "CREATE TABLE `%t%` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `user_id` int(10) NOT NULL DEFAULT '0',
+                `block_id` int(10) NOT NULL DEFAULT '0',
+                PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
 
         // Create tables
@@ -110,7 +125,6 @@ class PrivateMessages extends BasePlugin
         }
 
         // Create default inboxes
-        load_textdomain('private_messages', dirname(__FILE__).'/lang/'.$this->feather->forum_settings['o_default_lang'].'/private-messages.mo');
         $folders = array(
             __('New', 'private_messages'),
             __('Inbox', 'private_messages'),
@@ -130,7 +144,7 @@ class PrivateMessages extends BasePlugin
     public function remove()
     {
         $db = DB::get_db();
-        $tables = ['pms_data', 'pms_folders', 'pms_messages', 'pms_conversations'];
+        $tables = ['pms_data', 'pms_folders', 'pms_messages', 'pms_conversations', 'pms_blocks'];
         $req = 'DROP TABLE IF EXISTS '.implode(', ', $tables);
         return $db->exec($req);
     }
