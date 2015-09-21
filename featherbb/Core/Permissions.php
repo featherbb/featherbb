@@ -20,7 +20,7 @@ class Permissions
 
     }
 
-    public function load($uid = null)
+    public function getUserPermissions($uid = null)
     {
         $uid = (int) $uid;
         if ($uid > 0) {
@@ -84,6 +84,61 @@ class Permissions
         return (bool) $result;
     }
 
+    public function allowUser($uid = null, $permission = null)
+    {
+        $uid = (int) $uid;
+        $permission = (string) $permission;
+
+        if ($uid > 0) {
+            $user = DB::for_table('users')->find_one($uid);
+            if (!$user) {
+                throw new Error('Unknown user ID');
+            }
+        }
+
+        if (!in_array($permission, $this->permissions[$uid])) {
+            $result = DB::for_table('permissions')
+                        ->create()
+                        ->set(array(
+                            'permission_name' => $permission,
+                            'user' => $uid,
+                            'allow' => 1))
+                        ->save();
+            if ($result) {
+                if (empty($this->permissions[$uid])) {
+                    $this->getUserPermissions($uid);
+                }
+                return $this->permissions[(int) $uid][] = (string) $permission;
+            }
+        }
+        return true;
+    }
+
+    public function allowGroup($gid = null, $permission = null)
+    {
+        $gid = (int) $gid;
+        $permission = (string) $permission;
+
+        if ($gid > 0) {
+            $group = DB::for_table('groups')->find_one($gid);
+            if (!$group) {
+                throw new Error('Unknown user ID');
+            }
+        }
+
+        $result = DB::for_table('permissions')
+                    ->create()
+                    ->set(array(
+                        'permission_name' => $permission,
+                        'group' => $uid,
+                        'allow' => 1))
+                    ->save();
+        if ($result) {
+            $this->permissions = null;
+        }
+        return (bool) $result->id();
+    }
+
     public function install()
     {
         $database_scheme = array(
@@ -98,7 +153,7 @@ class Permissions
             ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;"
         );
         // + create "inherit" TINYTEXT in groups TABLE
-        
+
         $installer = new \FeatherBB\Model\Install();
         foreach ($database_scheme as $table => $sql) {
             $installer->create_table($this->feather->forum_settings['db_prefix'].$table, $sql);
