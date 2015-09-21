@@ -22,10 +22,14 @@ if (!isset($feather)) {
                     <div class="box">
                         <div class="inbox">
                             <ul>
-<?php if(!empty($inboxes)):
-    foreach ($inboxes as $iid => $data): ?>
-                                    <li<?= ($page == $data['name']) ? ' class="isactive"' : ''; ?>>
-                                        <a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($data['name']) ?><?= (intval($data['nb_msg']) > 0) ? ' ('.$data['nb_msg'].')' : ''; ?></a>
+<?php
+if(!empty($inboxes)):
+    $totalMsg = 0;
+    foreach ($inboxes as $iid => $inbox):
+        $totalMsg += $inbox['nb_msg'];
+?>
+                                    <li<?= ($page == $inbox['name']) ? ' class="isactive"' : ''; ?>>
+                                        <a href="<?= $feather->urlFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($inbox['name']) ?><?= (intval($inbox['nb_msg']) > 0) ? ' ('.$inbox['nb_msg'].')' : ''; ?></a>
                                     </li>
 <?php endforeach;
 endif; ?>
@@ -38,7 +42,7 @@ endif; ?>
                             <ul>
                                 <li class="big">Inbox: 0% full</li>
                                 <li><div id="pm_bar_style" style="width:0px;"></div></li>
-                                <li class="big">Quota: 0 / &infin;</li>
+                                <li class="big">Quota: <?= $totalMsg ?> / &infin;</li>
                             </ul>
                         </div>
                     </div>
