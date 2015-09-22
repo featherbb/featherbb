@@ -253,7 +253,7 @@ class Permissions
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($user);
         }
-        return (bool) isset($this->permissions[$gid][$uid][(string) $permission]);
+        return (bool) (isset($this->permissions[$gid][$uid][(string) $permission]) || isset($this->permissions[$gid][$uid]['*']));
     }
 
     public function install()
