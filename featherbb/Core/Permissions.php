@@ -13,7 +13,8 @@ use FeatherBB\Core\DB;
 
 class Permissions
 {
-    protected $permissions = array();
+    protected $permissions = array(),
+              $parents = array();
 
     public function __construct()
     {
@@ -43,8 +44,8 @@ class Permissions
         list($uid, $gid) = $this->getInfosFromUser($user);
 
         $where = array(
-            ['p.user' => (int) $uid],
-            ['p.group' => (int) $gid]);
+            ['p.user' => $uid],
+            ['p.group' => $gid]);
 
         if ($parents = $this->getParents($gid)) {
             foreach ($parents as $parent_id) {
@@ -74,28 +75,39 @@ class Permissions
     {
         $gid = (int) $gid;
         if ($gid > 0) {
-            $group = DB::for_table('groups')->find_one($gid);
-            if (!$group) {
-                throw new Error('Unknown group ID');
+            if (!isset($this->parents[$gid])) {
+                $this->parents[$gid] = array();
+
+                $group = DB::for_table('groups')->find_one($gid);
+                if (!$group) {
+                    throw new Error('Unknown group ID');
+                }
+
+                if (!empty($group['inherit'])) {
+                    $data = unserialize($group['inherit']);
+                    $this->parents[$gid] = $data;
+                }
             }
+            return $this->parents[$gid];
         }
-        if (!empty($group['inherit'])) {
-            return unserialize($group['inherit']);
-        }
-        return array();
+        return false;
     }
 
     public function addParent($gid = null, $new_parent = null)
     {
-        $parents = $this->getParents($gid);
-        if (!in_array($new_parent, $parents)) {
-            $parents[] = $new_parent;
+        if ($parents = $this->getParents($gid)) {
+            if (!in_array($new_parent, $parents)) {
+                $parents[] = $new_parent;
+                $this->parents[$gid][] = $new_parent;
+            }
+
+            $result = DB::for_table('groups')
+                        ->find_one($gid)
+                        ->set('inherit', serialize($parents))
+                        ->save();
+            return $this;
         }
-        $result = DB::for_table('groups')
-                    ->find_one($gid)
-                    ->set('inherit', serialize($parents))
-                    ->save();
-        return (bool) $result;
+        throw new \ErrorException('Invalid gid');
     }
 
     public function allowUser($user = null, $permission = null)
