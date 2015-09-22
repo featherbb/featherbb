@@ -55,19 +55,25 @@ class Permissions
 
         $result = DB::for_table('permissions')
             ->table_alias('p')
-            ->select('permission_name')
+            ->select_many('p.permission_name', 'p.allow', 'p.deny')
             ->inner_join('users', array('u.id', '=', $uid), 'u', true)
             ->where_any_is($where)
-            ->where_equal('p.allow', 1)
+            ->order_by_desc('p.group') // Read groups first to allow user override
             ->find_array();
 
         $this->permissions[$gid][$uid] = array();
-
         foreach ($result as $perm) {
             if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
-                $this->permissions[$gid][$uid][$perm['permission_name']] = true;
+                if ((bool) $perm['allow']) {
+                    $this->permissions[$gid][$uid][$perm['permission_name']] = true;
+                }
+            } else {
+                if ((bool) $perm['deny']) {
+                    unset($this->permissions[$gid][$uid][$perm['permission_name']]);
+                }
             }
         }
+
         return $this->permissions;
     }
 
@@ -121,6 +127,15 @@ class Permissions
 
         if (!in_array($permission, array_keys($this->permissions[$gid][$uid]))) {
             $result = DB::for_table('permissions')
+                        ->where('permission_name', $permission)
+                        ->where('user', $uid)
+                        ->where('deny', 1)
+                        ->find_one();
+
+            if ($result) {
+                $result->delete();
+            }
+            $result = DB::for_table('permissions')
                         ->create()
                         ->set(array(
                             'permission_name' => $permission,
@@ -132,6 +147,38 @@ class Permissions
             } else {
                 throw new \ErrorException('Unable to add new permission to user');
             }
+        }
+        return $this;
+    }
+
+    public function denyUser($user = null, $permission = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
+        $permission = (string) $permission;
+
+        if (!isset($this->permissions[$gid][$uid])) {
+            $this->getUserPermissions($uid);
+        }
+
+        if (in_array($permission, array_keys($this->permissions[$gid][$uid]))) {
+            $result = DB::for_table('permissions')
+                        ->where('permission_name', $permission)
+                        ->where('user', $uid)
+                        ->where('allow', 1)
+                        ->find_one();
+            if ($result) {
+                $result->delete();
+                unset($this->permissions[$gid][$uid][$permission]);
+            }
+
+            $result = DB::for_table('permissions')
+                        ->create()
+                        ->set(array(
+                            'permission_name' => $permission,
+                            'deny' => 1,
+                            'user' => $uid
+                        ))
+                        ->save();
         }
         return $this;
     }
@@ -149,16 +196,55 @@ class Permissions
         }
 
         $result = DB::for_table('permissions')
+                    ->where('permission_name', $permission)
+                    ->where('group', $gid)
+                    ->where('deny', 1)
+                    ->find_one();
+        if ($result) {
+            $result->delete();
+        }
+        $result = DB::for_table('permissions')
                     ->create()
                     ->set(array(
                         'permission_name' => $permission,
-                        'group' => $uid,
+                        'group' => $gid,
                         'allow' => 1))
                     ->save();
         if ($result) {
-            $this->permissions[$gid] = null;
+            $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
         }
-        return (bool) $result->id();
+        return $this;
+    }
+
+    public function denyGroup($gid = null, $permission = null)
+    {
+        $gid = (int) $gid;
+        $permission = (string) $permission;
+
+        if ($gid > 0) {
+            $group = DB::for_table('groups')->find_one($gid);
+            if (!$group) {
+                throw new Error('Unknown user ID');
+            }
+        }
+
+        $result = DB::for_table('permissions')
+                    ->where('permission_name', $permission)
+                    ->where('group', $gid)
+                    ->where('allow', 1)
+                    ->find_one();
+        if ($result) {
+            $result->delete();
+            $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
+        }
+        $result = DB::for_table('permissions')
+                    ->create()
+                    ->set(array(
+                        'permission_name' => $permission,
+                        'group' => $gid,
+                        'deny' => 1))
+                    ->save();
+        return $this;
     }
 
     public function can($user = null, $permission = null)
