@@ -20,21 +20,33 @@ class Permissions
 
     }
 
-    public function getUserPermissions($uid = null)
+    protected function getInfosFromUser($user = null)
     {
-        $uid = (int) $uid;
-        if ($uid > 0) {
-            $user = DB::for_table('users')->find_one($uid);
-            if (!$user) {
+        if (is_object($user)) {
+            $uid = $user->id;
+            $gid = $user->group_id;
+        } elseif ((int) $user > 0) {
+            $data = DB::for_table('users')->find_one((int) $user);
+            if (!$data) {
                 throw new Error('Unknown user ID');
             }
+            $uid = $data['id'];
+            $gid = $data['group_id'];
+        } else {
+            throw new \ErrorException('Internal error : wrong user object type');
         }
+        return array((int) $uid, (int) $gid);
+    }
+
+    public function getUserPermissions($user = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
 
         $where = array(
-            ['p.user' => (int) $user->id],
-            ['p.group' => (int) $user->group_id]);
+            ['p.user' => (int) $uid],
+            ['p.group' => (int) $gid]);
 
-        if ($parents = $this->getParents($user->group_id)) {
+        if ($parents = $this->getParents($gid)) {
             foreach ($parents as $parent_id) {
                 $where[] = ['p.group' => (int) $parent_id];
             }
@@ -43,14 +55,16 @@ class Permissions
         $result = DB::for_table('permissions')
             ->table_alias('p')
             ->select('permission_name')
-            ->inner_join('users', array('u.id', '=', $user->id), 'u', true)
+            ->inner_join('users', array('u.id', '=', $uid), 'u', true)
             ->where_any_is($where)
             ->where_equal('p.allow', 1)
             ->find_array();
 
+        $this->permissions[$uid] = array();
+
         foreach ($result as $perm) {
-            if (!isset($this->permissions[$user->id][$perm['permission_name']])) {
-                $this->permissions[$user->id][$perm['permission_name']] = true;
+            if (!isset($this->permissions[$uid][$perm['permission_name']])) {
+                $this->permissions[$uid][$perm['permission_name']] = true;
             }
         }
         return $this->permissions;
@@ -84,19 +98,16 @@ class Permissions
         return (bool) $result;
     }
 
-    public function allowUser($uid = null, $permission = null)
+    public function allowUser($user = null, $permission = null)
     {
-        $uid = (int) $uid;
+        list($uid, $gid) = $this->getInfosFromUser($user);
         $permission = (string) $permission;
 
-        if ($uid > 0) {
-            $user = DB::for_table('users')->find_one($uid);
-            if (!$user) {
-                throw new Error('Unknown user ID');
-            }
+        if (!isset($this->permissions[$uid])) {
+            $this->getUserPermissions($uid);
         }
 
-        if (!in_array($permission, $this->permissions[$uid])) {
+        if (!in_array($permission, array_keys($this->permissions[$uid]))) {
             $result = DB::for_table('permissions')
                         ->create()
                         ->set(array(
@@ -105,13 +116,12 @@ class Permissions
                             'allow' => 1))
                         ->save();
             if ($result) {
-                if (empty($this->permissions[$uid])) {
-                    $this->getUserPermissions($uid);
-                }
-                return $this->permissions[(int) $uid][] = (string) $permission;
+                $this->permissions[(int) $uid][(string) $permission] = true;
+            } else {
+                throw new \ErrorException('Unable to add new permission to user');
             }
         }
-        return true;
+        return $this;
     }
 
     public function allowGroup($gid = null, $permission = null)
@@ -139,6 +149,15 @@ class Permissions
         return (bool) $result->id();
     }
 
+    public function can($user = null, $permission = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
+        if (!isset($this->permissions[$uid])) {
+            $this->getPermissions();
+        }
+        return (bool) isset($this->permissions[$uid][(string) $permission]);
+    }
+
     public function install()
     {
         $database_scheme = array(
@@ -158,5 +177,10 @@ class Permissions
         foreach ($database_scheme as $table => $sql) {
             $installer->create_table($this->feather->forum_settings['db_prefix'].$table, $sql);
         }
+    }
+
+    public function getPermissions()
+    {
+        return var_dump($this->permissions);
     }
 }
