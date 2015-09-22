@@ -61,11 +61,11 @@ class Permissions
             ->where_equal('p.allow', 1)
             ->find_array();
 
-        $this->permissions[$uid] = array();
+        $this->permissions[$gid][$uid] = array();
 
         foreach ($result as $perm) {
-            if (!isset($this->permissions[$uid][$perm['permission_name']])) {
-                $this->permissions[$uid][$perm['permission_name']] = true;
+            if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
+                $this->permissions[$gid][$uid][$perm['permission_name']] = true;
             }
         }
         return $this->permissions;
@@ -115,11 +115,11 @@ class Permissions
         list($uid, $gid) = $this->getInfosFromUser($user);
         $permission = (string) $permission;
 
-        if (!isset($this->permissions[$uid])) {
+        if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
         }
 
-        if (!in_array($permission, array_keys($this->permissions[$uid]))) {
+        if (!in_array($permission, array_keys($this->permissions[$gid][$uid]))) {
             $result = DB::for_table('permissions')
                         ->create()
                         ->set(array(
@@ -128,7 +128,7 @@ class Permissions
                             'allow' => 1))
                         ->save();
             if ($result) {
-                $this->permissions[(int) $uid][(string) $permission] = true;
+                $this->permissions[$gid][$uid][$permission] = true;
             } else {
                 throw new \ErrorException('Unable to add new permission to user');
             }
@@ -156,7 +156,7 @@ class Permissions
                         'allow' => 1))
                     ->save();
         if ($result) {
-            $this->permissions = null;
+            $this->permissions[$gid] = null;
         }
         return (bool) $result->id();
     }
@@ -164,10 +164,10 @@ class Permissions
     public function can($user = null, $permission = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-        if (!isset($this->permissions[$uid])) {
-            $this->getPermissions();
+        if (!isset($this->permissions[$gid][$uid])) {
+            $this->getUserPermissions($user);
         }
-        return (bool) isset($this->permissions[$uid][(string) $permission]);
+        return (bool) isset($this->permissions[$gid][$uid][(string) $permission]);
     }
 
     public function install()
