@@ -14,29 +14,12 @@ use FeatherBB\Core\DB;
 class Permissions
 {
     protected $permissions = array(),
-              $parents = array();
+              $parents = array(),
+              $regexs = array();
 
     public function __construct()
     {
 
-    }
-
-    protected function getInfosFromUser($user = null)
-    {
-        if (is_object($user)) {
-            $uid = $user->id;
-            $gid = $user->group_id;
-        } elseif ((int) $user > 0) {
-            $data = DB::for_table('users')->find_one((int) $user);
-            if (!$data) {
-                throw new \ErrorException('Internal error : Unknown user ID', 500);
-            }
-            $uid = $data['id'];
-            $gid = $data['group_id'];
-        } else {
-            throw new \ErrorException('Internal error : wrong user object type', 500);
-        }
-        return array((int) $uid, (int) $gid);
     }
 
     public function getUserPermissions($user = null)
@@ -74,6 +57,7 @@ class Permissions
             }
         }
 
+        $this->buildRegex($uid, $gid);
         return $this->permissions;
     }
 
@@ -172,6 +156,7 @@ class Permissions
                         ->save();
             if ($result) {
                 $this->permissions[$gid][$uid][$permission] = true;
+                $this->buildRegex($uid, $gid);
             } else {
                 throw new \ErrorException('Internal error : Unable to add new permission to user', 500);
             }
@@ -197,6 +182,7 @@ class Permissions
             if ($result) {
                 $result->delete();
                 unset($this->permissions[$gid][$uid][$permission]);
+                $this->buildRegex($uid, $gid);
             }
 
             $result = DB::for_table('permissions')
@@ -278,10 +264,13 @@ class Permissions
     public function can($user = null, $permission = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-        if (!isset($this->permissions[$gid][$uid])) {
-            $this->getUserPermissions($user);
+        if (!isset($this->regexs[$gid][$uid])) {
+            if (!isset($this->permissions[$gid][$uid])) {
+                $this->getUserPermissions($user);
+            }
+            $this->buildRegex($uid, $gid);
         }
-        return (bool) (isset($this->permissions[$gid][$uid][(string) $permission]) || isset($this->permissions[$gid][$uid]['*']));
+        return (bool) preg_match($this->regexs[$gid][$uid], $permission);
     }
 
     public function install()
@@ -308,5 +297,32 @@ class Permissions
     public function getPermissions()
     {
         return var_dump($this->permissions);
+    }
+
+    protected function buildRegex($uid = null, $gid = null)
+    {
+        $perms = array_map(function ($value) {
+            $value = str_replace('.', '\.', $value);
+            return str_replace('*', '.*', $value);
+        }, array_keys($this->permissions[$gid][$uid]));
+        $this->regexs[$gid][$uid] = '/^(?:'.implode(' | ', $perms).')$/';
+    }
+
+    protected function getInfosFromUser($user = null)
+    {
+        if (is_object($user)) {
+            $uid = $user->id;
+            $gid = $user->group_id;
+        } elseif ((int) $user > 0) {
+            $data = DB::for_table('users')->find_one((int) $user);
+            if (!$data) {
+                throw new \ErrorException('Internal error : Unknown user ID', 500);
+            }
+            $uid = $data['id'];
+            $gid = $data['group_id'];
+        } else {
+            throw new \ErrorException('Internal error : wrong user object type', 500);
+        }
+        return array((int) $uid, (int) $gid);
     }
 }
