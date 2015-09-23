@@ -255,7 +255,7 @@ class View
         if ($nested) {
             require $this->getTemplatePathname('footer.php');
         }
-        return ob_get_clean();
+        return $this->app->hooks->fire('view.alter_html', ob_get_clean());
     }
 
     /********************************************************************************
