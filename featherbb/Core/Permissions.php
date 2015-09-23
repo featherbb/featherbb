@@ -131,7 +131,12 @@ class Permissions
     public function allowUser($user = null, $permission = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-        $permission = (string) $permission;
+        if (is_array($permission)) {
+            foreach ($permission as $id => $perm) {
+                $this->allowUser($user, $perm);
+            }
+            return $this;
+        }
 
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
@@ -155,7 +160,7 @@ class Permissions
                             'allow' => 1))
                         ->save();
             if ($result) {
-                $this->permissions[$gid][$uid][$permission] = true;
+                $this->permissions[$gid][$uid][(string) $permission] = true;
                 $this->buildRegex($uid, $gid);
             } else {
                 throw new \ErrorException('Internal error : Unable to add new permission to user', 500);
@@ -167,7 +172,12 @@ class Permissions
     public function denyUser($user = null, $permission = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-        $permission = (string) $permission;
+        if (is_array($permission)) {
+            foreach ($permission as $id => $perm) {
+                $this->denyUser($user, $perm);
+            }
+            return $this;
+        }
 
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
@@ -181,7 +191,7 @@ class Permissions
                         ->find_one();
             if ($result) {
                 $result->delete();
-                unset($this->permissions[$gid][$uid][$permission]);
+                unset($this->permissions[$gid][$uid][(string) $permission]);
                 $this->buildRegex($uid, $gid);
             }
 
@@ -200,7 +210,12 @@ class Permissions
     public function allowGroup($gid = null, $permission = null)
     {
         $gid = (int) $gid;
-        $permission = (string) $permission;
+        if (is_array($permission)) {
+            foreach ($permission as $id => $perm) {
+                $this->allowGroup($gid, $perm);
+            }
+            return $this;
+        }
 
         if ($gid > 0) {
             $group = DB::for_table('groups')->find_one($gid);
@@ -233,7 +248,12 @@ class Permissions
     public function denyGroup($gid = null, $permission = null)
     {
         $gid = (int) $gid;
-        $permission = (string) $permission;
+        if (is_array($permission)) {
+            foreach ($permission as $id => $perm) {
+                $this->denyGroup($gid, $perm);
+            }
+            return $this;
+        }
 
         if ($gid > 0) {
             $group = DB::for_table('groups')->find_one($gid);
