@@ -121,6 +121,29 @@ class Permissions
         return $this;
     }
 
+    public function delParent($gid = null, $parent = null)
+    {
+        $gid = (int) $gid;
+        $parent =  (int) $parent;
+
+        if ($gid == $parent) {
+            throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
+        }
+
+        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
+
+        if(($key = array_search($parent, $this->parents[$gid])) !== false) {
+            unset($this->parents[$gid][$key]);
+            $result = DB::for_table('groups')
+                        ->find_one($gid)
+                        ->set('inherit', serialize($this->parents[$gid]))
+                        ->save();
+        } else {
+            throw new \ErrorException('Internal error : Group '.$parent.' is not a parent of group '.$gid, 500);
+        }
+        return $this;
+    }
+
     public function allowUser($user = null, $permission = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
