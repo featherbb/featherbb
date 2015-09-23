@@ -28,6 +28,7 @@ if (!isset($feather)) {
     <meta name="robots" content="noindex, follow">
 <?php } ?>
     <title><?= Utils::generate_page_title($title, $page_number) ?></title>
+    <link rel="shortcut icon" href="<?= Url::base_static() ?>/style/img/favicon.ico" />
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= $style ?>/style.css">
 <?php
