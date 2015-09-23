@@ -382,7 +382,11 @@ class PrivateMessages
         return $result;
     }
 
-    // Option routes
+    /**
+     * Get blocked users for current user
+     * @param  (int) $user_id Current user id
+     * @return (object)       The database results
+     */
     public function getBlocked($user_id)
     {
         $result = DB::for_table('pms_blocks')
@@ -419,7 +423,39 @@ class PrivateMessages
         $result = DB::for_table('pms_blocks')
                     ->where('user_id', $user_id)
                     ->where('block_id', $block_id)
-                    ->delete_many();
-        return $result;
+                    ->find_one();
+        return $result->delete();
+    }
+
+    /**
+     * Add a custom folder
+     * @param  (array) $data  New folder name and owner ID
+     * @return (bool)         Creation success state
+     */
+    public function addFolder(array $data)
+    {
+        $result = DB::for_table('pms_folders')
+                ->create()
+                ->set($data);
+        $result->save();
+        return $result->id();
+    }
+
+    public function updateFolder($user_id, $block_id, array $data)
+    {
+        $result = DB::for_table('pms_folders')
+                ->find_one($block_id)
+                ->where('user_id', $user_id)
+                ->set($data);
+        return $result->save();
+    }
+
+    public function removeFolder($user_id, $block_id)
+    {
+        $result = DB::for_table('pms_folders')
+                ->where('id', $block_id)
+                ->where('user_id', $user_id)
+                ->find_one();
+        return $result->delete();
     }
 }
