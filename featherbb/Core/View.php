@@ -355,7 +355,7 @@ class View
     public function addMessage($msg, $type = 'info')
     {
         if (isset($this->app->environment['slim.flash'])) {
-            if (in_array($type, array('info', 'error'))) {
+            if (in_array($type, array('info', 'error', 'warning', 'success'))) {
                 $this->app->environment['slim.flash']->now($type, (string) $msg);
             }
         }
