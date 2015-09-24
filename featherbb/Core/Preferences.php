@@ -20,51 +20,37 @@ class Preferences
 
     }
 
-    protected function getInfosFromUser($user = null)
-    {
-        if (is_object($user)) {
-            $uid = $user->id;
-            $gid = $user->group_id;
-        } elseif ((int) $user > 0) {
-            $data = DB::for_table('users')->find_one($user);
-            if (!$data) {
-                throw new \ErrorException('Internal error : Unknown user ID', 500);
-            }
-            $uid = $data['id'];
-            $gid = $data['group_id'];
-        } else {
-            throw new \ErrorException('Internal error : wrong user object type', 500);
-        }
-        return array((int) $uid, (int) $gid);
-    }
-
     public function setUser($user = null, array $prefs)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
         foreach ($prefs as $pref_name => $pref_value) {
+            $pref_name = (string) $pref_name;
+            $pref_value = (string) $pref_value;
+
             if ((int) $pref_name > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
             $result = DB::for_table('preferences')
-                        ->where('preference_name', (string) $pref_name)
+                        ->where('preference_name', $pref_name)
                         ->where('user', $uid)
                         ->find_one();
             if ($result) {
                 DB::for_table('preferences')
                     ->find_one($result->id())
-                    ->set(['preference_value' => (string) $pref_value])
+                    ->set(['preference_value' => $pref_value])
                     ->save();
             } else {
                 DB::for_table('preferences')
                     ->create()
                     ->set(array(
-                        'preference_name' => (string) $pref_name,
-                        'preference_value' => (string) $pref_value,
+                        'preference_name' => $pref_name,
+                        'preference_value' => $pref_value,
                         'user' => $uid
                     ))
                     ->save();
             }
+            $this->preferences[$gid][$uid][$pref_name] = $pref_value;
         }
         return $this;
     }
@@ -98,11 +84,12 @@ class Preferences
                     ))
                     ->save();
             }
+            unset($this->preferences[$gid]);
         }
         return $this;
     }
 
-    public function set(array $prefs)
+    public function set(array $prefs) // Default
     {
         foreach ($prefs as $pref_name => $pref_value) {
             if ((int) $pref_name > 0) {
@@ -127,21 +114,58 @@ class Preferences
                     ))
                     ->save();
             }
+            unset($this->preferences);
         }
         return $this;
     }
 
-    // public function exists($uid = null, $gid = null, $pref_name)
-    // {
-    //     $result = DB::for_table('preferences')
-    //                 ->where('preference_name', (string) $pref_name);
-    //     if (!is_null($uid)) {
-    //         $result->where('user', $uid);
-    //     } elseif (!is_null($gid)) {
-    //         $result->where('group', $gid);
-    //     } else {
-    //         $result->where('default', 1);
-    //     }
-    //     return ($result->find_one()) ? $result : false;
-    // }
+    public function get($user = null, $pref = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
+
+        if (!isset($this->preferences[$gid][$uid])) {
+            $this->loadPrefs($user);
+        }
+        return (isset($this->preferences[$gid][$uid][(string) $pref])) ? $this->preferences[$gid][$uid][(string) $pref] : null;
+    }
+
+    protected function loadPrefs($user = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
+
+        $result = DB::for_table('preferences')
+                    ->table_alias('p')
+                    ->where_any_is(array(
+                        array('p.user' => $uid),
+                        array('p.group' => $gid),
+                        array('p.default' => 1),
+                    ))
+                    ->order_by_desc('p.default')
+                    ->order_by_asc('p.user')
+                    ->find_array();
+
+        $this->preferences[$gid][$uid] = array();
+        foreach ($result as $pref) {
+            $this->preferences[$gid][$uid][(string) $pref['preference_name']] = $pref['preference_value'];
+        }
+        return $this->preferences[$gid][$uid];
+    }
+
+    protected function getInfosFromUser($user = null)
+    {
+        if (is_object($user)) {
+            $uid = $user->id;
+            $gid = $user->group_id;
+        } elseif ((int) $user > 0) {
+            $data = DB::for_table('users')->find_one($user);
+            if (!$data) {
+                throw new \ErrorException('Internal error : Unknown user ID', 500);
+            }
+            $uid = $data['id'];
+            $gid = $data['group_id'];
+        } else {
+            throw new \ErrorException('Internal error : wrong user object type', 500);
+        }
+        return array((int) $uid, (int) $gid);
+    }
 }
