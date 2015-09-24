@@ -130,7 +130,6 @@ class Permissions
 
     public function allowUser($user = null, $permission = null)
     {
-        list($uid, $gid) = $this->getInfosFromUser($user);
         if (is_array($permission)) {
             foreach ($permission as $id => $perm) {
                 $this->allowUser($user, $perm);
@@ -138,11 +137,15 @@ class Permissions
             return $this;
         }
 
+        list($uid, $gid) = $this->getInfosFromUser($user);
+        $permission = (string) $permission;
+
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
+
         }
 
-        if (!in_array($permission, array_keys($this->permissions[$gid][$uid]))) {
+        if (!isset($this->permissions[$gid][$uid][$permission])) {
             $result = DB::for_table('permissions')
                         ->where('permission_name', $permission)
                         ->where('user', $uid)
@@ -160,7 +163,7 @@ class Permissions
                             'allow' => 1))
                         ->save();
             if ($result) {
-                $this->permissions[$gid][$uid][(string) $permission] = true;
+                $this->permissions[$gid][$uid][$permission] = true;
                 $this->buildRegex($uid, $gid);
             } else {
                 throw new \ErrorException('Internal error : Unable to add new permission to user', 500);
@@ -171,7 +174,6 @@ class Permissions
 
     public function denyUser($user = null, $permission = null)
     {
-        list($uid, $gid) = $this->getInfosFromUser($user);
         if (is_array($permission)) {
             foreach ($permission as $id => $perm) {
                 $this->denyUser($user, $perm);
@@ -179,11 +181,14 @@ class Permissions
             return $this;
         }
 
+        list($uid, $gid) = $this->getInfosFromUser($user);
+        $permission = (string) $permission;
+
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
         }
 
-        if (in_array($permission, array_keys($this->permissions[$gid][$uid]))) {
+        if (!isset($this->permissions[$gid][$uid][$permission])) {
             $result = DB::for_table('permissions')
                         ->where('permission_name', $permission)
                         ->where('user', $uid)
@@ -191,7 +196,7 @@ class Permissions
                         ->find_one();
             if ($result) {
                 $result->delete();
-                unset($this->permissions[$gid][$uid][(string) $permission]);
+                unset($this->permissions[$gid][$uid][$permission]);
                 $this->buildRegex($uid, $gid);
             }
 
@@ -299,8 +304,8 @@ class Permissions
             "permissions" => "CREATE TABLE `permissions` (
                 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                 `permission_name` varchar(255) DEFAULT NULL,
-                `allow` tinyint(2) DEFAULT NULL,
-                `deny` tinyint(2) DEFAULT NULL,
+                `allow` tinyint(1) DEFAULT NULL,
+                `deny` tinyint(1) DEFAULT NULL,
                 `user` int(11) DEFAULT NULL,
                 `group` int(11) DEFAULT NULL,
                 PRIMARY KEY (`id`)
