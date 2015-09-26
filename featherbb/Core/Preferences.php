@@ -20,6 +20,8 @@ class Preferences
 
     }
 
+    // Add / Update
+
     public function setUser($user = null, array $prefs)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
@@ -119,6 +121,83 @@ class Preferences
         return $this;
     }
 
+    // Delete
+
+    public function delUser($user = null, $prefs = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
+        $prefs = (array) $prefs;
+        foreach ($prefs as $pref_id => $pref_name) {
+            $pref_name = (string) $pref_name;
+
+            if ((int) $pref_name > 0) {
+                throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
+            }
+            $result = DB::for_table('preferences')
+                        ->where('preference_name', $pref_name)
+                        ->where('user', $uid)
+                        ->find_one();
+            if ($result) {
+                $result->delete();
+                unset($this->preferences[$gid][$uid][$pref_name]);
+            } else {
+                throw new \ErrorException('Internal error : Unknown preference name', 500);
+            }
+        }
+        return $this;
+    }
+
+    public function delGroup($gid = null, $prefs = null)
+    {
+        $gid = (int) $gid;
+        if ($gid < 1) {
+            throw new \ErrorException('Internal error : Unknown gid', 500);
+        }
+        $prefs = (array) $prefs;
+
+        foreach ($prefs as $pref_id => $pref_name) {
+            $pref_name = (string) $pref_name;
+
+            if ((int) $pref_name > 0) {
+                throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
+            }
+            $result = DB::for_table('preferences')
+                        ->where('preference_name', $pref_name)
+                        ->where('group', $gid)
+                        ->find_one();
+            if ($result) {
+                $result->delete();
+            } else {
+                throw new \ErrorException('Internal error : Unknown preference name', 500);
+            }
+        }
+        unset($this->preferences[$gid]);
+        return $this;
+    }
+
+    public function del($prefs = null) // Default
+    {
+        $prefs = (array) $prefs;
+        foreach ($prefs as $pref_id => $pref_name) {
+            if ((int) $pref_name > 0) {
+                throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
+            }
+            $result = DB::for_table('preferences')
+                        ->where('preference_name', (string) $pref_name)
+                        ->where('default', 1)
+                        ->find_one();
+            if ($result) {
+                $result->delete();
+            } else {
+                throw new \ErrorException('Internal error : Unknown preference name', 500);
+            }
+        }
+        unset($this->preferences);
+        return $this;
+    }
+
+    // Getters
+
     public function get($user = null, $pref = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
@@ -126,8 +205,13 @@ class Preferences
         if (!isset($this->preferences[$gid][$uid])) {
             $this->loadPrefs($user);
         }
+        if (empty($pref)) {
+            return $this->preferences[$gid][$uid];
+        }
         return (isset($this->preferences[$gid][$uid][(string) $pref])) ? $this->preferences[$gid][$uid][(string) $pref] : null;
     }
+
+    // Utils
 
     protected function loadPrefs($user = null)
     {
