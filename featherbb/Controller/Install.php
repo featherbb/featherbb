@@ -200,6 +200,24 @@ class Install
         $this->feather->perms->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
         $this->feather->perms->allowGroup(2, array('mod.*', 'board.title.set'));
         $this->feather->perms->allowGroup(1, array('board.*'));
+        $this->feather->prefs->set(array(
+            'post.min_interval' => 60,
+            'search.min_interval' => 30,
+            'email.min_interval' => 60,
+            'report.min_interval' => 60,
+            'core.timezone' => 0,
+            'core.time_format' => 'H:i:s',
+            'core.date_format' => 'Y-m-d',
+            'core.lang' => $data['default_lang'],
+            'core.style' => $data['default_style'],
+        ));
+        $this->feather->prefs->setGroup(2, array(
+            'post.min_interval' => 0,
+            'search.min_interval' => 0,
+            'email.min_interval' => 0,
+            'report.min_interval' => 0
+        ));
+
 
         // Populate user table with default values
         $this->model->add_data('users', $this->model->load_default_user());

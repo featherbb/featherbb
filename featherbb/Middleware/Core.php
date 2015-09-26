@@ -202,6 +202,10 @@ class Core extends \Slim\Middleware
         $this->app->container->singleton('perms', function () {
             return new \FeatherBB\Core\Permissions();
         });
+        // Load FeatherBB preferences
+        $this->app->container->singleton('prefs', function () {
+            return new \FeatherBB\Core\Preferences();
+        });
         // Load FeatherBB view
         $this->app->container->singleton('template', function() {
             return new View();
