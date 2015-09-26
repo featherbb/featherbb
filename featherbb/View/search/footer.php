@@ -14,29 +14,32 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.search.footer.start');
+
 if ($footer['show_as'] == 'topics') :
 ?>
-			</tbody>
-		</table>
-		</div>
-	</div>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+<?php endif; ?>
+
+<div class="postlinksb">
+    <div class="inbox crumbsplus">
+        <div class="pagepost">
+            <p class="pagelink"><?= $footer['paging_links'] ?></p>
+        </div>
+        <ul class="crumbs">
+            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= $feather->urlFor('search') ?>"><?= $footer['crumbs_text']['show_as'] ?></a></li>
+            <li><span>»&#160;</span><strong><?= $footer['crumbs_text']['search_type'] ?></strong></li>
+        </ul>
+<?php echo(!empty($footer['forum_actions']) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $footer['forum_actions']).'</p>'."\n" : '') ?>
+        <div class="clearer"></div>
+    </div>
 </div>
 
 <?php
-endif;
-?>
-
-<div class="postlinksb">
-	<div class="inbox crumbsplus">
-		<div class="pagepost">
-			<p class="pagelink"><?= $footer['paging_links'] ?></p>
-		</div>
-		<ul class="crumbs">
-			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?= $feather->urlFor('search') ?>"><?= $footer['crumbs_text']['show_as'] ?></a></li>
-			<li><span>»&#160;</span><strong><?= $footer['crumbs_text']['search_type'] ?></strong></li>
-		</ul>
-<?php echo(!empty($footer['forum_actions']) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $footer['forum_actions']).'</p>'."\n" : '') ?>
-		<div class="clearer"></div>
-	</div>
-</div>
+$feather->hooks->fire('view.search.footer.end');

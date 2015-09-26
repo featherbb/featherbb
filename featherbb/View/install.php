@@ -12,6 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.install.start');
 ?>
 <!doctype html>
 <html lang="en">
@@ -220,3 +221,5 @@ if (!isset($feather)) {
     </div>
 </body>
 </html>
+<?php
+$feather->hooks->fire('view.install.end');

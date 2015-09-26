@@ -7,13 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
     exit;
 }
+
+$feather->hooks->fire('view.search.topics.start');
 
 foreach ($display['cur_search'] as $search) {
     ?>
@@ -36,3 +37,5 @@ foreach ($display['cur_search'] as $search) {
 
     <?php
 }
+
+$feather->hooks->fire('view.search.topics.end');

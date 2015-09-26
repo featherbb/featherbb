@@ -15,20 +15,22 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.moderate.posts_view.start');
 ?>
+
 <div class="linkst">
-	<div class="inbox crumbsplus">
-		<ul class="crumbs">
-			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
-			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
-		</ul>
-		<div class="pagepost">
-			<p class="pagelink conl"><?= $paging_links ?></p>
-		</div>
-		<div class="clearer"></div>
-	</div>
+    <div class="inbox crumbsplus">
+        <ul class="crumbs">
+            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
+            <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
+        </ul>
+        <div class="pagepost">
+            <p class="pagelink conl"><?= $paging_links ?></p>
+        </div>
+        <div class="clearer"></div>
+    </div>
 </div>
 
 <form method="post" action="">
@@ -38,61 +40,64 @@ $post_count = 0; // Keep track of post numbers
 foreach ($post_data as $post) {
     $post_count++;
     ?>
-	<div id="p<?= $post['id'] ?>" class="blockpost<?php if ($post['id'] == $cur_topic['first_post_id']) {
+    <div id="p<?= $post['id'] ?>" class="blockpost<?php if ($post['id'] == $cur_topic['first_post_id']) {
     echo ' firstpost';
 }
     ?><?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) {
     echo ' blockpost1';
 }
     ?>">
-		<h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= $feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= $feather->utils->format_time($post['posted']) ?></a></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<div class="postbody">
-					<div class="postleft">
-						<dl>
-							<dt><strong><?= $post['poster_disp'] ?></strong></dt>
-							<dd class="usertitle"><strong><?= $post['user_title'] ?></strong></dd>
-						</dl>
-					</div>
-					<div class="postright">
-						<h3 class="nosize"><?php _e('Message') ?></h3>
-						<div class="postmsg">
-							<?= $post['message']."\n" ?>
-	<?php if ($post['edited'] != '') {
+        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= $feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= $feather->utils->format_time($post['posted']) ?></a></span></h2>
+        <div class="box">
+            <div class="inbox">
+                <div class="postbody">
+                    <div class="postleft">
+                        <dl>
+                            <dt><strong><?= $post['poster_disp'] ?></strong></dt>
+                            <dd class="usertitle"><strong><?= $post['user_title'] ?></strong></dd>
+                        </dl>
+                    </div>
+                    <div class="postright">
+                        <h3 class="nosize"><?php _e('Message') ?></h3>
+                        <div class="postmsg">
+                            <?= $post['message']."\n" ?>
+    <?php if ($post['edited'] != '') {
     echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.$feather->utils->format_time($post['edited']).')</em></p>'."\n";
 }
     ?>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="inbox">
-				<div class="postfoot clearb">
-					<div class="postfootright"><?php echo($post['id'] != $cur_topic['first_post_id']) ? '<p class="multidelete"><label><strong>'.__('Select').'</strong>&#160;<input type="checkbox" name="posts['.$post['id'].']" value="1" /></label></p>' : '<p>'.__('Cannot select first').'</p>' ?></div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="inbox">
+                <div class="postfoot clearb">
+                    <div class="postfootright"><?php echo($post['id'] != $cur_topic['first_post_id']) ? '<p class="multidelete"><label><strong>'.__('Select').'</strong>&#160;<input type="checkbox" name="posts['.$post['id'].']" value="1" /></label></p>' : '<p>'.__('Cannot select first').'</p>' ?></div>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php
 
 }
 ?>
 
 <div class="postlinksb">
-	<div class="inbox crumbsplus">
-		<div class="pagepost">
-			<p class="pagelink conl"><?= $paging_links ?></p>
-			<p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php _e('Split') ?>"<?= $button_status ?> /> <input type="submit" name="delete_posts" value="<?php _e('Delete') ?>"<?= $button_status ?> /></p>
-			<div class="clearer"></div>
-		</div>
-		<ul class="crumbs">
-			<li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
-			<li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
-		</ul>
-		<div class="clearer"></div>
-	</div>
+    <div class="inbox crumbsplus">
+        <div class="pagepost">
+            <p class="pagelink conl"><?= $paging_links ?></p>
+            <p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php _e('Split') ?>"<?= $button_status ?> /> <input type="submit" name="delete_posts" value="<?php _e('Delete') ?>"<?= $button_status ?> /></p>
+            <div class="clearer"></div>
+        </div>
+        <ul class="crumbs">
+            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
+            <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
+        </ul>
+        <div class="clearer"></div>
+    </div>
 </div>
 </form>
+
+<?php
+$feather->hooks->fire('view.moderate.posts_view.end');

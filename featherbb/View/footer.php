@@ -7,14 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.footer.start');
 ?>
         </div>
 
@@ -75,13 +75,13 @@ if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
                             <div><label><span><?php _e('Jump to') ?><br /></span></label>
                                 <select name="id" onchange="window.location=('<?= Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
 <?php
-    		foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
-    			echo "\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
-    			foreach ($cat_data['cat_forums'] as $forum) {
-    				echo "\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.$feather->url->url_friendly($forum['forum_name']).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
-    			}
-    			echo "\t\t\t\t\t".'</optgroup>'."\n";
-    		} ?>
+            foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
+                echo "\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
+                foreach ($cat_data['cat_forums'] as $forum) {
+                    echo "\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.$feather->url->url_friendly($forum['forum_name']).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+                }
+                echo "\t\t\t\t\t".'</optgroup>'."\n";
+            } ?>
                                 </select>
                                 <noscript><input type="submit" value="<?php _e('Go') ?>" accesskey="g" /></noscript>
                             </div>
@@ -128,35 +128,35 @@ if (!empty($queries_info)) { ?>
     <div id="debug" class="blocktable">
         <h2><span><?php _e('Debug table') ?></span></h2>
         <div class="box">
-            	<div class="inbox">
-            	<table>
-            		<thead>
-						<tr>
-							<th class="tcl" scope="col"><?php _e('Query times') ?></th>
-							<th class="tcr" scope="col"><?php _e('Query') ?></th>
-						</tr>
-					</thead>
-					<tbody>
+                <div class="inbox">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="tcl" scope="col"><?php _e('Query times') ?></th>
+                            <th class="tcr" scope="col"><?php _e('Query') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
 <?php foreach ($queries_info['raw'] as $time => $sql) {
-	echo "\t\t\t\t\t\t".'<tr>'."\n";
-	echo "\t\t\t\t\t\t\t".'<td class="tcl">'.Utils::escape(round($time, 8)).'</td>'."\n";
-	echo "\t\t\t\t\t\t\t".'<td class="tcr">'.Utils::escape($sql).'</td>'."\n";
-	echo "\t\t\t\t\t\t".'</tr>'."\n";
+    echo "\t\t\t\t\t\t".'<tr>'."\n";
+    echo "\t\t\t\t\t\t\t".'<td class="tcl">'.Utils::escape(round($time, 8)).'</td>'."\n";
+    echo "\t\t\t\t\t\t\t".'<td class="tcr">'.Utils::escape($sql).'</td>'."\n";
+    echo "\t\t\t\t\t\t".'</tr>'."\n";
 } ?>
-						<tr>
-							<td class="tcl" colspan="2"><?= sprintf(__('Total query time'), round($queries_info['total_time'], 7)).' s' ?></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+                        <tr>
+                            <td class="tcl" colspan="2"><?= sprintf(__('Total query time'), round($queries_info['total_time'], 7)).' s' ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 <?php } ?>
 </section>
 </body>
 <!-- JS -->
 <script>
-    var baseUrl = '<?= Utils::escape(Url::base(true)); ?>',
+    var baseUrl = '<?= Utils::escape(Url::base()); ?>',
         phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
 </script>
 <?php foreach ($assets['js'] as $script) {
@@ -167,3 +167,5 @@ if (!empty($queries_info)) { ?>
     echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
 } ?>
 </html>
+<?php
+$feather->hooks->fire('view.footer.end');

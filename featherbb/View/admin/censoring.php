@@ -7,60 +7,61 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
     exit;
 }
+
+$feather->hooks->fire('view.admin.censoring.start');
 ?>
 
-	<div class="blockform">
-		<h2><span><?php _e('Censoring head') ?></span></h2>
-		<div class="box">
-			<form id="censoring" method="post" action="<?= $feather->urlFor('adminCensoring') ?>">
-				<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
-				<div class="inform">
-					<fieldset>
-						<legend><?php _e('Add word subhead') ?></legend>
-						<div class="infldset">
-							<p><?php _e('Add word info').' '.($feather->forum_settings['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
-							<table>
-							<thead>
-								<tr>
-									<th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
-									<th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
-									<th class="hidehead" scope="col"><?php _e('Action label') ?></th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60" tabindex="1" /></td>
-									<td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60" tabindex="2" /></td>
-									<td><input type="submit" name="add_word" value="<?php _e('Add') ?>" tabindex="3" /></td>
-								</tr>
-							</tbody>
-							</table>
-						</div>
-					</fieldset>
-				</div>
-				<div class="inform">
-					<fieldset>
-						<legend><?php _e('Edit remove subhead') ?></legend>
-						<div class="infldset">
+    <div class="blockform">
+        <h2><span><?php _e('Censoring head') ?></span></h2>
+        <div class="box">
+            <form id="censoring" method="post" action="<?= $feather->urlFor('adminCensoring') ?>">
+                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <div class="inform">
+                    <fieldset>
+                        <legend><?php _e('Add word subhead') ?></legend>
+                        <div class="infldset">
+                            <p><?php _e('Add word info'); echo ($feather->forum_settings['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
+                                    <th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
+                                    <th class="hidehead" scope="col"><?php _e('Action label') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60" tabindex="1" /></td>
+                                    <td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60" tabindex="2" /></td>
+                                    <td><input type="submit" name="add_word" value="<?php _e('Add') ?>" tabindex="3" /></td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="inform">
+                    <fieldset>
+                        <legend><?php _e('Edit remove subhead') ?></legend>
+                        <div class="infldset">
 <?php
 if (!empty($word_data)) {
     ?>
-							<table>
-							<thead>
-								<tr>
-									<th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
-									<th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
-									<th class="hidehead" scope="col"><?php _e('Action label') ?></th>
-								</tr>
-							</thead>
-							<tbody>
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
+                                    <th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
+                                    <th class="hidehead" scope="col"><?php _e('Action label') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
 <?php
 
     foreach ($word_data as $word) {
@@ -68,8 +69,8 @@ if (!empty($word_data)) {
     }
 
     ?>
-							</tbody>
-							</table>
+                            </tbody>
+                            </table>
 <?php
 
 } else {
@@ -77,11 +78,14 @@ if (!empty($word_data)) {
 }
 
 ?>
-						</div>
-					</fieldset>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="clearer"></div>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearer"></div>
 </div>
+
+<?php
+$feather->hooks->fire('view.admin.censoring.end');

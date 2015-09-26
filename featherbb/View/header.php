@@ -16,6 +16,7 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.header.start');
 ?>
 <!doctype html>
 <html lang="<?php _e('lang_identifier') ?>">
@@ -247,3 +248,5 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
 
     <section class="container">
         <div id="brdmain">
+<?php
+$feather->hooks->fire('view.header.end');

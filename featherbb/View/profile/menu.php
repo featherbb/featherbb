@@ -7,51 +7,53 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;
-
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.profile.menu.start');
 ?>
 <div id="profile" class="block2col">
-	<div class="blockmenu">
-		<h2><span><?php _e('Profile menu') ?></span></h2>
-		<div class="box">
-			<div class="inbox">
-				<ul>
-					<li<?php if ($page == 'essentials') {
+    <div class="blockmenu">
+        <h2><span><?php _e('Profile menu') ?></span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+                    <li<?php if ($page == 'essentials') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'essentials']) ?>"><?php _e('Section essentials') ?></a></li>
-					<li<?php if ($page == 'personal') {
+                    <li<?php if ($page == 'personal') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'personal']) ?>"><?php _e('Section personal') ?></a></li>
-					<li<?php if ($page == 'messaging') {
+                    <li<?php if ($page == 'messaging') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'messaging']) ?>"><?php _e('Section messaging') ?></a></li>
-<?php if ($feather->forum_settings['o_avatars'] == '1' || $feather->forum_settings['o_signatures'] == '1'): ?>					<li<?php if ($page == 'personality') {
+<?php if ($feather->forum_settings['o_avatars'] == '1' || $feather->forum_settings['o_signatures'] == '1'): ?>                    <li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>"><?php _e('Section personality') ?></a></li>
 <?php endif;
-    ?>					<li<?php if ($page == 'display') {
+    ?>                    <li<?php if ($page == 'display') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'display']) ?>"><?php _e('Section display') ?></a></li>
-					<li<?php if ($page == 'privacy') {
+                    <li<?php if ($page == 'privacy') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>"><?php _e('Section privacy') ?></a></li>
-<?php if ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN'] || ($feather->user->g_moderator == '1' && $feather->user->g_mod_ban_users == '1')): ?>					<li<?php if ($page == 'admin') {
+<?php if ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN'] || ($feather->user->g_moderator == '1' && $feather->user->g_mod_ban_users == '1')): ?>                    <li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'admin']) ?>"><?php _e('Section admin') ?></a></li>
 <?php endif;
-    ?>				</ul>
-			</div>
-		</div>
-	</div>
+    ?>                </ul>
+            </div>
+        </div>
+    </div>
+
+<?php
+$feather->hooks->fire('view.profile.menu.end');

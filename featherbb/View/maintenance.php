@@ -12,15 +12,18 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.maintenance.start');
 ?>
 <div id="msg" class="block">
-	<h2><span><?= __('Maintenance') ?></span></h2>
-	<div class="box">
-		<div class="inbox">
-			<p><?= $msg ?></p>
+    <h2><span><?= __('Maintenance') ?></span></h2>
+    <div class="box">
+        <div class="inbox">
+            <p><?= $msg ?></p>
 <?php if ($backlink) {
     echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'._('Go back').'</a></p>';
 } ?>
         </div>
-	</div>
+    </div>
 </div>
+<?php
+$feather->hooks->fire('view.maintenance.end');

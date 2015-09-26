@@ -7,12 +7,12 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;
-
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
     exit;
 }
+
+$feather->hooks->fire('view.admin.plugins.start');
 ?>
 
 <div class="block">
@@ -56,5 +56,8 @@ if (!isset($feather)) {
     </div>
 </div>
 
-	<div class="clearer"></div>
+    <div class="clearer"></div>
 </div>
+
+<?php
+$feather->hooks->fire('view.admin.plugins.end');

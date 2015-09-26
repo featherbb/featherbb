@@ -7,13 +7,14 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
     exit;
 }
+
+$feather->hooks->fire('view.search.posts.start');
 
 
 foreach ($display['cur_search'] as $search) {
@@ -28,7 +29,7 @@ foreach ($display['cur_search'] as $search) {
         } ?>">
         <h2><span><span
                     class="conr">#<?php echo($search['post_count']) ?></span> <span><?php if ($search['pid'] != $search['first_post_id']) {
-                        _e('Re') . ' ';
+                        _e('Re'); echo  ' ';
                     } ?><?= $search['forum'] ?></span> <span>»&#160;<a
                         href="<?= $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
                         href="<?= $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= $feather->utils->format_time($search['pposted']) ?></a></span></span>
@@ -78,3 +79,5 @@ foreach ($display['cur_search'] as $search) {
     </div>
     <?php
 }
+
+$feather->hooks->fire('view.search.posts.end');

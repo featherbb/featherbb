@@ -12,15 +12,19 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.error.start');
 ?>
 <div id="msg" class="block error">
-	<h2><span><?= __('Error') ?></span></h2>
-	<div class="box">
-		<div class="inbox">
-			<p><?= $msg ?></p>
+    <h2><span><?= __('Error') ?></span></h2>
+    <div class="box">
+        <div class="inbox">
+            <p><?= $msg ?></p>
 <?php if ($backlink) {
     echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'.__('Go back').'</a></p>';
 } ?>
         </div>
-	</div>
+    </div>
 </div>
+<?php
+$feather->hooks->fire('view.error.end');
+

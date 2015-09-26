@@ -15,6 +15,8 @@ if (!isset($feather)) {
     exit;
 }
 
+$feather->hooks->fire('view.breadcrumbs.start');
+
 if(!empty($crumbs)): ?>
             <div class="linkst">
                 <div class="inbox">
@@ -31,4 +33,5 @@ if(!empty($crumbs)): ?>
                     <div class="clearer"></div>
                 </div>
             </div>
-<?php endif;  ?>
+<?php endif;
+$feather->hooks->fire('view.breadcrumbs.end');
