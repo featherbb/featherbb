@@ -12,8 +12,6 @@
 
 namespace FeatherBB\Core;
 
-use FeatherBB\Core\DB;
-
 class Search
 {
     public function __construct()
@@ -22,27 +20,27 @@ class Search
 
         // Make a regex that will match CJK or Hangul characters
         define('FEATHER_CJK_HANGUL_REGEX', '[' .
-            '\x{1100}-\x{11FF}' .        // Hangul Jamo							1100-11FF		(http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
-            '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo			3130-318F		(http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
-            '\x{AC00}-\x{D7AF}' .        // Hangul Syllables						AC00-D7AF		(http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)
+            '\x{1100}-\x{11FF}' .        // Hangul Jamo                            1100-11FF        (http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
+            '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo            3130-318F        (http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
+            '\x{AC00}-\x{D7AF}' .        // Hangul Syllables                        AC00-D7AF        (http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)
 
             // Hiragana
-            '\x{3040}-\x{309F}' .        // Hiragana								3040-309F		(http://www.fileformat.info/info/unicode/block/hiragana/index.htm)
+            '\x{3040}-\x{309F}' .        // Hiragana                                3040-309F        (http://www.fileformat.info/info/unicode/block/hiragana/index.htm)
 
             // Katakana
-            '\x{30A0}-\x{30FF}' .        // Katakana								30A0-30FF		(http://www.fileformat.info/info/unicode/block/katakana/index.htm)
-            '\x{31F0}-\x{31FF}' .        // Katakana Phonetic Extensions			31F0-31FF		(http://www.fileformat.info/info/unicode/block/katakana_phonetic_extensions/index.htm)
+            '\x{30A0}-\x{30FF}' .        // Katakana                                30A0-30FF        (http://www.fileformat.info/info/unicode/block/katakana/index.htm)
+            '\x{31F0}-\x{31FF}' .        // Katakana Phonetic Extensions            31F0-31FF        (http://www.fileformat.info/info/unicode/block/katakana_phonetic_extensions/index.htm)
 
-            // CJK Unified Ideographs	(http://en.wikipedia.org/wiki/CJK_Unified_Ideographs)
-            '\x{2E80}-\x{2EFF}' .        // CJK Radicals Supplement				2E80-2EFF		(http://www.fileformat.info/info/unicode/block/cjk_radicals_supplement/index.htm)
-            '\x{2F00}-\x{2FDF}' .        // Kangxi Radicals						2F00-2FDF		(http://www.fileformat.info/info/unicode/block/kangxi_radicals/index.htm)
-            '\x{2FF0}-\x{2FFF}' .        // Ideographic Description Characters	2FF0-2FFF		(http://www.fileformat.info/info/unicode/block/ideographic_description_characters/index.htm)
-            '\x{3000}-\x{303F}' .        // CJK Symbols and Punctuation			3000-303F		(http://www.fileformat.info/info/unicode/block/cjk_symbols_and_punctuation/index.htm)
-            '\x{31C0}-\x{31EF}' .        // CJK Strokes							31C0-31EF		(http://www.fileformat.info/info/unicode/block/cjk_strokes/index.htm)
-            '\x{3200}-\x{32FF}' .        // Enclosed CJK Letters and Months		3200-32FF		(http://www.fileformat.info/info/unicode/block/enclosed_cjk_letters_and_months/index.htm)
-            '\x{3400}-\x{4DBF}' .        // CJK Unified Ideographs Extension A	3400-4DBF		(http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_a/index.htm)
-            '\x{4E00}-\x{9FFF}' .        // CJK Unified Ideographs				4E00-9FFF		(http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm)
-            '\x{20000}-\x{2A6DF}' .        // CJK Unified Ideographs Extension B	20000-2A6DF		(http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm)
+            // CJK Unified Ideographs    (http://en.wikipedia.org/wiki/CJK_Unified_Ideographs)
+            '\x{2E80}-\x{2EFF}' .        // CJK Radicals Supplement                2E80-2EFF        (http://www.fileformat.info/info/unicode/block/cjk_radicals_supplement/index.htm)
+            '\x{2F00}-\x{2FDF}' .        // Kangxi Radicals                        2F00-2FDF        (http://www.fileformat.info/info/unicode/block/kangxi_radicals/index.htm)
+            '\x{2FF0}-\x{2FFF}' .        // Ideographic Description Characters    2FF0-2FFF        (http://www.fileformat.info/info/unicode/block/ideographic_description_characters/index.htm)
+            '\x{3000}-\x{303F}' .        // CJK Symbols and Punctuation            3000-303F        (http://www.fileformat.info/info/unicode/block/cjk_symbols_and_punctuation/index.htm)
+            '\x{31C0}-\x{31EF}' .        // CJK Strokes                            31C0-31EF        (http://www.fileformat.info/info/unicode/block/cjk_strokes/index.htm)
+            '\x{3200}-\x{32FF}' .        // Enclosed CJK Letters and Months        3200-32FF        (http://www.fileformat.info/info/unicode/block/enclosed_cjk_letters_and_months/index.htm)
+            '\x{3400}-\x{4DBF}' .        // CJK Unified Ideographs Extension A    3400-4DBF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_a/index.htm)
+            '\x{4E00}-\x{9FFF}' .        // CJK Unified Ideographs                4E00-9FFF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm)
+            '\x{20000}-\x{2A6DF}' .        // CJK Unified Ideographs Extension B    20000-2A6DF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm)
             ']');
     }
 

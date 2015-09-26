@@ -149,7 +149,7 @@ $                               # Anchor to end of string.
 )                               # End $1: non-whitespace before first [*] (or [/list]).
 (?<!\s)                         # Backtrack to exclude any trailing whitespace.
 (?=\s*\[(?:\*|/list)\])         # Done once we reach a [*] or [/list].
-								%ix',
+                                %ix',
     're_fixlist_2'            => '%# re_fixlist_2 Rev:20110220_1200
 # Match and repair invalid characters between [/*] and next [*] (or [/list]].
 \[/\*\]                         # Match [/*] close tag.
@@ -165,7 +165,7 @@ $                               # Anchor to end of string.
 )                               # End $1: non-whitespace before first [*] (or [/list]).
 (?<!\s)                         # Backtrack to exclude any trailing whitespace.
 (?=\s*\[(?:\*|/list)\])         # Done once we reach a [*] or [/list].
-								%ix',
+                                %ix',
     'smilies'                => array(),                // Array of Smilies, each an array with filename and html.
     'bbcd'                    => array(),                // Array of BBCode tag definitions.
 

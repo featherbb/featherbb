@@ -7,7 +7,6 @@
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
 */
 
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
@@ -89,12 +88,12 @@ if (!empty($conversations)) { ?>
 
 <?php } else { ?>
             <div class="block">
-            	<h2><span><?php _e('Info') ?></span></h2>
-            	<div class="box">
-            		<div class="inbox info">
+                <h2><span><?php _e('Info') ?></span></h2>
+                <div class="box">
+                    <div class="inbox info">
                         <p><?php _e('Empty inbox', 'private_messages') ?></p>
                     </div>
-            	</div>
+                </div>
             </div>
 <?php } ?>
             <div class="clearer"></div>

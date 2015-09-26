@@ -25,7 +25,7 @@ class Auth extends \Slim\Middleware
     protected $model;
 
     public function __construct()
-	{
+    {
         $this->model = new \FeatherBB\Model\Auth();
     }
 

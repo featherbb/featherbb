@@ -1,5 +1,6 @@
 <?php
 use FeatherBB\Core\Utils;
+
 ?>
         <div class="blockform">
             <h2><span><?php _e('Move conversations', 'private_messages') ?></span></h2>

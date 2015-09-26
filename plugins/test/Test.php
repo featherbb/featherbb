@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Plugins;
 
-use FeatherBB\Core\Plugin as BasePlugin;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Plugin as BasePlugin;
 
 class Test extends BasePlugin
 {

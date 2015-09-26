@@ -20,9 +20,9 @@ class Lister
         $feather = \Slim\Slim::getInstance();
 
         foreach (glob($feather->forum_env['FEATHER_ROOT'].'plugins/*/featherbb.json') as $plugin_file)
-		{
+        {
             $plugins[] =  json_decode(file_get_contents($plugin_file));
-		}
+        }
 
         return $plugins;
     }

@@ -17,59 +17,59 @@
  */
 function load_textdomain($domain, $mofile) {
 
-	global $l10n;
+    global $l10n;
 
-	if (!is_readable($mofile)) {
-		return false;
-	}
+    if (!is_readable($mofile)) {
+        return false;
+    }
 
-	$mo = new MO();
-	if (!$mo->import_from_file($mofile)) {
-		return false;
-	}
+    $mo = new MO();
+    if (!$mo->import_from_file($mofile)) {
+        return false;
+    }
 
-	if (isset($l10n[$domain])) {
-		$mo->merge_with($l10n[$domain]);
-	}
+    if (isset($l10n[$domain])) {
+        $mo->merge_with($l10n[$domain]);
+    }
 
-	$l10n[$domain] = &$mo;
+    $l10n[$domain] = &$mo;
 
-	return true;
+    return true;
 }
 
 function __($text, $domain = 'featherbb') {
 
-	return feather_translate($text, $domain);
+    return feather_translate($text, $domain);
 }
 
 function _e($text, $domain = 'featherbb') {
 
-	echo feather_translate($text, $domain);
+    echo feather_translate($text, $domain);
 }
 
 function _n($single, $plural, $number, $domain = 'featherbb') {
 
-	$translations = load_translations($domain);
-	$translation = $translations->translate_plural($single, $plural, $number);
+    $translations = load_translations($domain);
+    $translation = $translations->translate_plural($single, $plural, $number);
 
-	return $translation;
+    return $translation;
 }
 
 function feather_translate($text, $domain = 'featherbb') {
 
-	$translations = load_translations($domain);
-	$translations = $translations->translate($text);
+    $translations = load_translations($domain);
+    $translations = $translations->translate($text);
 
-	return $translations;
+    return $translations;
 }
 
 function load_translations($domain) {
 
-	global $l10n;
+    global $l10n;
 
-	if (!isset($l10n[$domain])) {
-		$l10n[$domain] = new NOOPTranslations;
-	}
+    if (!isset($l10n[$domain])) {
+        $l10n[$domain] = new NOOPTranslations;
+    }
 
-	return $l10n[$domain];
+    return $l10n[$domain];
 }

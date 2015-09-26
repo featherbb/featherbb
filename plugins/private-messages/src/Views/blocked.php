@@ -1,19 +1,18 @@
 <?php
 
-use \FeatherBB\Core\Utils;
-use \FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 if (!empty($errors)) { ?>
             <div id="msg" class="block error">
-            	<h3><?php _e('Block errors', 'private_messages') ?></h3>
-        		<div>
-        			<p><?php _e('Block error info', 'private_messages') ?></p>
-        			<ul class="error-list">
+                <h3><?php _e('Block errors', 'private_messages') ?></h3>
+                <div>
+                    <p><?php _e('Block error info', 'private_messages') ?></p>
+                    <ul class="error-list">
 <?php foreach ($errors as $error): ?>
-        				<li><strong><?= Utils::escape($error) ?></strong></li>
+                        <li><strong><?= Utils::escape($error) ?></strong></li>
 <?php endforeach; ?>
-        			</ul>
-        		</div>
+                    </ul>
+                </div>
             </div>
             <br />
 <?php } ?>
@@ -48,25 +47,25 @@ if (!empty($errors)) { ?>
                         <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                         <div class="inform">
                             <fieldset>
-        						<div class="infldset">
-        							<table cellspacing="0">
-            							<thead>
-            								<tr>
-            									<th class="tcl" scope="col"><?php _e('Username') ?></th>
-            									<th class="hidehead" scope="col"><?php _e('Actions', 'private_messages') ?></th>
-            								</tr>
-            							</thead>
-            							<tbody>
+                                <div class="infldset">
+                                    <table cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th class="tcl" scope="col"><?php _e('Username') ?></th>
+                                                <th class="hidehead" scope="col"><?php _e('Actions', 'private_messages') ?></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 <?php foreach ($blocks as $bid => $block): ?>
-                            				<tr>
-                            					<td class="tcl"><strong><?= $block->username ?></strong></td>
-                            					<td><input type="submit" name="remove_block[<?= $block->block_id ?>]" value="Remove" /></td>
-                            				</tr>
+                                            <tr>
+                                                <td class="tcl"><strong><?= $block->username ?></strong></td>
+                                                <td><input type="submit" name="remove_block[<?= $block->block_id ?>]" value="Remove" /></td>
+                                            </tr>
 <?php endforeach; ?>
                                         </tbody>
-        							</table>
-        						</div>
-        					</fieldset>
+                                    </table>
+                                </div>
+                            </fieldset>
                         </div>
                     </form>
                 </div>

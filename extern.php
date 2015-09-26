@@ -56,8 +56,8 @@
 -----------------------------------------------------------------------------*/
 
 namespace FeatherBB;
-use FeatherBB\Core\DB;
 use FeatherBB\Core\Cache;
+use FeatherBB\Core\DB;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 

@@ -14,6 +14,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
+
 // use FeatherBB\Model\Delete;
 
 class Users

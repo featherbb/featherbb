@@ -9,9 +9,9 @@
 
 namespace FeatherBB\Plugins;
 
-use FeatherBB\Core\Plugin as BasePlugin;
-use FeatherBB\Core\Error;
 use FeatherBB\Core\DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Plugin as BasePlugin;
 
 class PrivateMessages extends BasePlugin
 {
@@ -131,14 +131,14 @@ class PrivateMessages extends BasePlugin
             __('Archived', 'private_messages')
         );
 
-    	foreach ($folders as $folder)
-    	{
-    		$insert = array(
-    			'name'	=>	$folder,
-    			'user_id'	=>	1,
-    		);
-    		$installer->add_data('pms_folders', $insert);
-    	}
+        foreach ($folders as $folder)
+        {
+            $insert = array(
+                'name'    =>    $folder,
+                'user_id'    =>    1,
+            );
+            $installer->add_data('pms_folders', $insert);
+        }
     }
 
     public function remove()

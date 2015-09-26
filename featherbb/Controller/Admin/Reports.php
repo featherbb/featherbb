@@ -10,8 +10,8 @@
 namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 class Reports
 {

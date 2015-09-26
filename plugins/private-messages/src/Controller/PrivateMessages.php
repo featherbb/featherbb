@@ -10,11 +10,10 @@
 namespace FeatherBB\Plugins\Controller;
 
 
+use FeatherBB\Core\DB;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
-use FeatherBB\Core\Error;
-use FeatherBB\Core\Track;
-use FeatherBB\Core\DB;
 
 class PrivateMessages
 {
@@ -97,22 +96,22 @@ class PrivateMessages
     public function delete()
     {
         if (!$this->request->post('topics'))
-    		throw new Error(__('No conv selected', 'private_messages'), 403);
+            throw new Error(__('No conv selected', 'private_messages'), 403);
 
-    	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
+        $topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
 
-    	if (empty($topics))
-    		throw new Error(__('No conv selected', 'private_messages'), 403);
+        if (empty($topics))
+            throw new Error(__('No conv selected', 'private_messages'), 403);
 
-    	if ( $this->request->post('delete_comply') )
-    	{
+        if ( $this->request->post('delete_comply') )
+        {
             $uid = intval($this->feather->user->id);
             $this->model->delete($topics, $uid);
 
             Url::redirect($this->feather->urlFor('Conversations.home'), __('Conversations deleted', 'private_messages'));
-    	}
-    	else
-    	{
+        }
+        else
+        {
             // Display confirm delete form
             $this->feather->template
                 ->setPageInfo(array(
@@ -121,24 +120,24 @@ class PrivateMessages
                 )
             )
             ->addTemplate('delete.php')->display();
-    	}
+        }
         die();
     }
 
     public function move()
     {
         if (!$this->request->post('topics'))
-    		throw new Error(__('No conv selected', 'private_messages'), 403);
+            throw new Error(__('No conv selected', 'private_messages'), 403);
 
-    	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
+        $topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
 
-    	if (empty($topics))
-    		throw new Error(__('No conv selected', 'private_messages'), 403);
+        if (empty($topics))
+            throw new Error(__('No conv selected', 'private_messages'), 403);
 
         $uid = intval($this->feather->user->id);
 
-    	if ( $this->request->post('move_comply') )
-    	{
+        if ( $this->request->post('move_comply') )
+        {
             $move_to = $this->request->post('move_to') ? intval($this->request->post('move_to')) : 2;
 
             if ( $this->model->move($topics, $move_to, $uid) ) {
@@ -146,7 +145,7 @@ class PrivateMessages
             } else {
                 throw new Error(__('Error Move', 'private_messages'), 403);
             }
-    	}
+        }
 
         // Display move form
         if ($inboxes = $this->model->getUserFolders($uid)) {
@@ -170,12 +169,12 @@ class PrivateMessages
         $viewed = ($read == true) ? '1' : '0';
 
         if (!$this->request->post('topics'))
-    		throw new Error(__('No conv selected', 'private_messages'), 403);
+            throw new Error(__('No conv selected', 'private_messages'), 403);
 
-    	$topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
+        $topics = $this->request->post('topics') && is_array($this->request->post('topics')) ? array_map('intval', $this->request->post('topics')) : array_map('intval', explode(',', $this->request->post('topics')));
 
-    	if (empty($topics))
-    		throw new Error(__('No conv selected', 'private_messages'), 403);
+        if (empty($topics))
+            throw new Error(__('No conv selected', 'private_messages'), 403);
 
         $this->model->updateConversation($topics, $this->feather->user->id, ['viewed' => $viewed]);
 
@@ -269,22 +268,22 @@ class PrivateMessages
 
                 if (!$conv) {
                     $conv_data = array(
-                        'subject'	=>	$data['subject'],
-                        'poster'	=>	$this->feather->user->username,
-                        'poster_id'	=>	$this->feather->user->id,
-                        'num_replies'	=>	0,
-                        'last_post'	=>	$this->feather->now,
-                        'last_poster'	=>	$this->feather->user->username);
+                        'subject'    =>    $data['subject'],
+                        'poster'    =>    $this->feather->user->username,
+                        'poster_id'    =>    $this->feather->user->id,
+                        'num_replies'    =>    0,
+                        'last_post'    =>    $this->feather->now,
+                        'last_poster'    =>    $this->feather->user->username);
                     $conv_id = $this->model->addConversation($conv_data);
                 }
                 if ($conv_id) {
                     $msg_data = array(
-                        'poster'	=>	$this->feather->user->username,
-                        'poster_id'	=>	$this->feather->user->id,
-                        'poster_ip'	=>	$this->feather->request->getIp(),
-                        'message'	=>	$data['req_message'],
-                        'hide_smilies'	=>	$data['smilies'],
-                        'sent'	=>	$this->feather->now,
+                        'poster'    =>    $this->feather->user->username,
+                        'poster_id'    =>    $this->feather->user->id,
+                        'poster_ip'    =>    $this->feather->request->getIp(),
+                        'message'    =>    $data['req_message'],
+                        'hide_smilies'    =>    $data['smilies'],
+                        'sent'    =>    $this->feather->now,
                     );
                     if ($conv) {
                         // Reply to an existing conversation
@@ -400,45 +399,45 @@ class PrivateMessages
 
         $username = $this->request->post('req_username') ? Utils::trim(Utils::escape($this->request->post('req_username'))) : '';
         if ($this->request->post('add_block'))
-    	{
-    		if ($username == $this->feather->user->username)
-    			$errors[] = __('No block self', 'private_messages');
+        {
+            if ($username == $this->feather->user->username)
+                $errors[] = __('No block self', 'private_messages');
 
-    		if (!($user_infos = $this->model->getUserByName($username)) || $username == __('Guest'))
-    			$errors[] = sprintf(__('No user name message', 'private_messages'), Utils::escape($username));
+            if (!($user_infos = $this->model->getUserByName($username)) || $username == __('Guest'))
+                $errors[] = sprintf(__('No user name message', 'private_messages'), Utils::escape($username));
 
-    		if (empty($errors))
-    		{
-    			if ($user_infos->group_id == $this->feather->forum_env['FEATHER_ADMIN'])
-    				$errors[] = sprintf(__('User is admin', 'private_messages'), Utils::escape($username));
-    			elseif ($user_infos->group_id == $this->feather->forum_env['FEATHER_MOD'])
-    				$errors[] = sprintf(__('User is mod', 'private_messages'), Utils::escape($username));
+            if (empty($errors))
+            {
+                if ($user_infos->group_id == $this->feather->forum_env['FEATHER_ADMIN'])
+                    $errors[] = sprintf(__('User is admin', 'private_messages'), Utils::escape($username));
+                elseif ($user_infos->group_id == $this->feather->forum_env['FEATHER_MOD'])
+                    $errors[] = sprintf(__('User is mod', 'private_messages'), Utils::escape($username));
 
-    			if ($this->model->checkBlock($this->feather->user->id, $user_infos->id))
-    				$errors[] = sprintf(__('Already blocked', 'private_messages'), Utils::escape($username));
-    		}
+                if ($this->model->checkBlock($this->feather->user->id, $user_infos->id))
+                    $errors[] = sprintf(__('Already blocked', 'private_messages'), Utils::escape($username));
+            }
 
-    		if (empty($errors))
-    		{
-    			$insert = array(
-    				'user_id'	=>	$this->feather->user->id,
-    				'block_id'	=>	$user_infos->id,
-    			);
+            if (empty($errors))
+            {
+                $insert = array(
+                    'user_id'    =>    $this->feather->user->id,
+                    'block_id'    =>    $user_infos->id,
+                );
 
-    			$this->model->addBlock($insert);
-    			Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block added', 'private_messages'));
-    		}
-    	}
-    	else if ($this->request->post('remove_block'))
-    	{
-    		$id = intval(key($this->request->post('remove_block')));
-    		// Before we do anything, check we blocked this user
-    		if (!$this->model->checkBlock(intval($this->feather->user->id), $id))
-    			throw new Error(__('No permission'), 403);
+                $this->model->addBlock($insert);
+                Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block added', 'private_messages'));
+            }
+        }
+        else if ($this->request->post('remove_block'))
+        {
+            $id = intval(key($this->request->post('remove_block')));
+            // Before we do anything, check we blocked this user
+            if (!$this->model->checkBlock(intval($this->feather->user->id), $id))
+                throw new Error(__('No permission'), 403);
 
-    		$this->model->removeBlock(intval($this->feather->user->id), $id);
-    		Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block removed', 'private_messages'));
-    	}
+            $this->model->removeBlock(intval($this->feather->user->id), $id);
+            Url::redirect($this->feather->urlFor('Conversations.blocked'), __('Block removed', 'private_messages'));
+        }
 
         Utils::generateBreadcrumbs(array(
             $this->feather->urlFor('Conversations.home') => __('PMS', 'private_messages'),
@@ -466,71 +465,71 @@ class PrivateMessages
 
         if ($this->request->post('add_folder'))
         {
-    		$folder = $this->request->post('req_folder') ? Utils::trim(Utils::escape($this->request->post('req_folder'))) : '';
+            $folder = $this->request->post('req_folder') ? Utils::trim(Utils::escape($this->request->post('req_folder'))) : '';
 
-    		if ($folder == '')
-    			$errors[] = __('No folder name', 'private_messages');
-    		else if (Utils::strlen($folder) < 4)
-    			$errors[] = __('Folder too short', 'private_messages');
-    		else if (Utils::strlen($folder) > 30)
-    			$errors[] = __('Folder too long', 'private_messages');
-    		else if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($folder) == '')
-    			$errors[] = __('No folder after censoring', 'private_messages');
+            if ($folder == '')
+                $errors[] = __('No folder name', 'private_messages');
+            else if (Utils::strlen($folder) < 4)
+                $errors[] = __('Folder too short', 'private_messages');
+            else if (Utils::strlen($folder) > 30)
+                $errors[] = __('Folder too long', 'private_messages');
+            else if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($folder) == '')
+                $errors[] = __('No folder after censoring', 'private_messages');
 
             // TODO: Check perms when ready
-    		// $data = array(
-    		// 	':uid'	=>	$panther_user['id'],
-    		// );
+            // $data = array(
+            //     ':uid'    =>    $panther_user['id'],
+            // );
             //
-    		// if ($panther_user['g_pm_folder_limit'] != 0)
-    		// {
-    		// 	$ps = $db->select('folders', 'COUNT(id)', $data, 'user_id=:uid');
-    		// 	$num_folders = $ps->fetchColumn();
+            // if ($panther_user['g_pm_folder_limit'] != 0)
+            // {
+            //     $ps = $db->select('folders', 'COUNT(id)', $data, 'user_id=:uid');
+            //     $num_folders = $ps->fetchColumn();
             //
-    		// 	if ($num_folders >= $panther_user['g_pm_folder_limit'])
-    		// 		$errors[] = sprintf($lang_pm['Folder limit'], $panther_user['g_pm_folder_limit']);
-    		// }
+            //     if ($num_folders >= $panther_user['g_pm_folder_limit'])
+            //         $errors[] = sprintf($lang_pm['Folder limit'], $panther_user['g_pm_folder_limit']);
+            // }
 
-    		if (empty($errors))
-    		{
+            if (empty($errors))
+            {
                 $insert = array(
-                    'user_id'	=>	$this->feather->user->id,
-                    'name'	=>	$folder
+                    'user_id'    =>    $this->feather->user->id,
+                    'name'    =>    $folder
                 );
 
                 $this->model->addFolder($insert);
                 Url::redirect($this->feather->urlFor('Conversations.folders'), __('Folder added', 'private_messages'));
-    		}
+            }
         }
         else if ($this->request->post('update_folder'))
-    	{
-    		$id = intval(key($this->request->post('update_folder')));
+        {
+            $id = intval(key($this->request->post('update_folder')));
             var_dump($id);
 
-    		$errors = array();
-    		$folder = Utils::trim($this->request->post('folder')[$id]);
+            $errors = array();
+            $folder = Utils::trim($this->request->post('folder')[$id]);
 
             if ($folder == '')
-    			$errors[] = __('No folder name', 'private_messages');
-    		else if (Utils::strlen($folder) < 4)
-    			$errors[] = __('Folder too short', 'private_messages');
-    		else if (Utils::strlen($folder) > 30)
-    			$errors[] = __('Folder too long', 'private_messages');
-    		else if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($folder) == '')
-    			$errors[] = __('No folder after censoring', 'private_messages');
+                $errors[] = __('No folder name', 'private_messages');
+            else if (Utils::strlen($folder) < 4)
+                $errors[] = __('Folder too short', 'private_messages');
+            else if (Utils::strlen($folder) > 30)
+                $errors[] = __('Folder too long', 'private_messages');
+            else if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($folder) == '')
+                $errors[] = __('No folder after censoring', 'private_messages');
 
-    		if (empty($errors))
-    		{
-    			$update = array(
-    				'name'	=>	$folder,
-    			);
+            if (empty($errors))
+            {
+                $update = array(
+                    'name'    =>    $folder,
+                );
 
                 if ($this->model->updateFolder($this->feather->user->id, $id, $update))
                     Url::redirect($this->feather->urlFor('Conversations.folders'), __('Folder updated', 'private_messages'));
                 else
                     throw new Error(__('Error'), 403);
-    		}
-    	}
+            }
+        }
         else if ($this->request->post('remove_folder'))
         {
             $id = intval(key($this->request->post('remove_folder')));

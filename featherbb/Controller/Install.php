@@ -9,10 +9,10 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Url;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Lister;
 use FeatherBB\Core\Random;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 use FeatherBB\Middleware\Core;
 
 class Install

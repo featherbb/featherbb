@@ -804,21 +804,21 @@ class Url
     // e.g.
     // Given: "http://www.jmrware.com:80/articles?height=10&width=75#fragone"
     // Array(
-    //	  [scheme] => http
-    //	  [authority] => www.jmrware.com:80
-    //	  [userinfo] =>
-    //	  [host] => www.jmrware.com
-    //	  [IP_literal] =>
-    //	  [IPV6address] =>
-    //	  [ls32] =>
-    //	  [IPvFuture] =>
-    //	  [IPv4address] =>
-    //	  [regname] => www.jmrware.com
-    //	  [port] => 80
-    //	  [path_abempty] => /articles
-    //	  [query] => height=10&width=75
-    //	  [fragment] => fragone
-    //	  [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
+    //      [scheme] => http
+    //      [authority] => www.jmrware.com:80
+    //      [userinfo] =>
+    //      [host] => www.jmrware.com
+    //      [IP_literal] =>
+    //      [IPV6address] =>
+    //      [ls32] =>
+    //      [IPvFuture] =>
+    //      [IPv4address] =>
+    //      [regname] => www.jmrware.com
+    //      [port] => 80
+    //      [path_abempty] => /articles
+    //      [query] => height=10&width=75
+    //      [fragment] => fragone
+    //      [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
     // )
     public static function is_valid($url)
     {
@@ -829,45 +829,45 @@ class Url
             $url = 'ftp://'. $url;
         }
         if (!preg_match('/# Valid absolute URI having a non-empty, valid DNS host.
-		^
-		(?P<scheme>[A-Za-z][A-Za-z0-9+\-.]*):\/\/
-		(?P<authority>
-		  (?:(?P<userinfo>(?:[A-Za-z0-9\-._~!$&\'()*+,;=:]|%[0-9A-Fa-f]{2})*)@)?
-		  (?P<host>
-			(?P<IP_literal>
-			  \[
-			  (?:
-				(?P<IPV6address>
-				  (?:												 (?:[0-9A-Fa-f]{1,4}:){6}
-				  |												   ::(?:[0-9A-Fa-f]{1,4}:){5}
-				  | (?:							 [0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,1}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})?::	[0-9A-Fa-f]{1,4}:
-				  | (?:(?:[0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})?::
-				  )
-				  (?P<ls32>[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}
-				  | (?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-					   (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)
-				  )
-				|	(?:(?:[0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})?::	[0-9A-Fa-f]{1,4}
-				|	(?:(?:[0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})?::
-				)
-			  | (?P<IPvFuture>[Vv][0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&\'()*+,;=:]+)
-			  )
-			  \]
-			)
-		  | (?P<IPv4address>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-							   (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))
-		  | (?P<regname>(?:[A-Za-z0-9\-._~!$&\'()*+,;=]|%[0-9A-Fa-f]{2})+)
-		  )
-		  (?::(?P<port>[0-9]*))?
-		)
-		(?P<path_abempty>(?:\/(?:[A-Za-z0-9\-._~!$&\'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)
-		(?:\?(?P<query>		  (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
-		(?:\#(?P<fragment>	  (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
-		$
-		/mx', $url, $m)) {
+        ^
+        (?P<scheme>[A-Za-z][A-Za-z0-9+\-.]*):\/\/
+        (?P<authority>
+          (?:(?P<userinfo>(?:[A-Za-z0-9\-._~!$&\'()*+,;=:]|%[0-9A-Fa-f]{2})*)@)?
+          (?P<host>
+            (?P<IP_literal>
+              \[
+              (?:
+                (?P<IPV6address>
+                  (?:                                                 (?:[0-9A-Fa-f]{1,4}:){6}
+                  |                                                   ::(?:[0-9A-Fa-f]{1,4}:){5}
+                  | (?:                             [0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}
+                  | (?:(?:[0-9A-Fa-f]{1,4}:){0,1}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}
+                  | (?:(?:[0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}
+                  | (?:(?:[0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})?::    [0-9A-Fa-f]{1,4}:
+                  | (?:(?:[0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})?::
+                  )
+                  (?P<ls32>[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}
+                  | (?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+                       (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)
+                  )
+                |    (?:(?:[0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})?::    [0-9A-Fa-f]{1,4}
+                |    (?:(?:[0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})?::
+                )
+              | (?P<IPvFuture>[Vv][0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&\'()*+,;=:]+)
+              )
+              \]
+            )
+          | (?P<IPv4address>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+                               (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))
+          | (?P<regname>(?:[A-Za-z0-9\-._~!$&\'()*+,;=]|%[0-9A-Fa-f]{2})+)
+          )
+          (?::(?P<port>[0-9]*))?
+        )
+        (?P<path_abempty>(?:\/(?:[A-Za-z0-9\-._~!$&\'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)
+        (?:\?(?P<query>          (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
+        (?:\#(?P<fragment>      (?:[A-Za-z0-9\-._~!$&\'()*+,;=:@\\/?]|%[0-9A-Fa-f]{2})*))?
+        $
+        /mx', $url, $m)) {
             return false;
         }
         switch ($m['scheme']) {
@@ -888,21 +888,21 @@ class Url
             // If host regname specified, check for DNS conformance.
 
             if (!preg_match('/# HTTP DNS host name.
-			^					   # Anchor to beginning of string.
-			(?!.{256})			   # Overall host length is less than 256 chars.
-			(?:					   # Group dot separated host part alternatives.
-			  [0-9A-Za-z]\.		   # Either a single alphanum followed by dot
-			|					   # or... part has more than one char (63 chars max).
-			  [0-9A-Za-z]		   # Part first char is alphanum (no dash).
-			  [\-0-9A-Za-z]{0,61}  # Internal chars are alphanum plus dash.
-			  [0-9A-Za-z]		   # Part last char is alphanum (no dash).
-			  \.				   # Each part followed by literal dot.
-			)*					   # One or more parts before top level domain.
-			(?:					   # Top level domains
-			  [A-Za-z]{2,63}|	   # Country codes are exactly two alpha chars.
-			  xn--[0-9A-Za-z]{4,59})		   # Internationalized Domain Name (IDN)
-			$					   # Anchor to end of string.
-			/ix', $m['host'])) {
+            ^                       # Anchor to beginning of string.
+            (?!.{256})               # Overall host length is less than 256 chars.
+            (?:                       # Group dot separated host part alternatives.
+              [0-9A-Za-z]\.           # Either a single alphanum followed by dot
+            |                       # or... part has more than one char (63 chars max).
+              [0-9A-Za-z]           # Part first char is alphanum (no dash).
+              [\-0-9A-Za-z]{0,61}  # Internal chars are alphanum plus dash.
+              [0-9A-Za-z]           # Part last char is alphanum (no dash).
+              \.                   # Each part followed by literal dot.
+            )*                       # One or more parts before top level domain.
+            (?:                       # Top level domains
+              [A-Za-z]{2,63}|       # Country codes are exactly two alpha chars.
+              xn--[0-9A-Za-z]{4,59})           # Internationalized Domain Name (IDN)
+            $                       # Anchor to end of string.
+            /ix', $m['host'])) {
                 return false;
             }
         }

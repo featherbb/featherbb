@@ -83,7 +83,7 @@ class Parser
                     case 1: // case 1 similar to case 2 so fall through...
                     case 2: throw new Error($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
                     case 3: throw new Error($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
-                    //		case 4: break; // No error. Normal response when this form element left empty
+                    //        case 4: break; // No error. Normal response when this form element left empty
                     case 4: throw new Error($lang_admin_parser['upload_err_6'], 400);    // No filename.
                     case 6: throw new Error($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
                     case 7: throw new Error($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.

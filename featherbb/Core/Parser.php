@@ -163,14 +163,14 @@ class Parser
      * special error BBCode tag: ERR.
      *
      * @param array $matches
-     * 		Parameters: (See the BBcode regex to see how each of these parameters are captured.)
-     * 		$matches[0];					=  ([TAG=att]..content..[/TAG])	// The whole match.
-     * 		$matches[1];	$tagname		=  (TAG)				// The BBCode tag name.
-     * 		$matches[2];					=  (=)					// Attribute equals sign delimiter.
-     * 		$matches[3];	$attribute		= '(attribute)'			// Attribute within single quotes, or
-     * 		$matches[4];	$attribute		= "(attribute)"			// Attribute within double quotes or
-     * 		$matches[5];	$attribute		=  (attribute)			// Attribute within no or any quotes.
-     * 		$matches[6];	$contents		=  (tag contents)		// BBCode tag contents.
+     *         Parameters: (See the BBcode regex to see how each of these parameters are captured.)
+     *         $matches[0];                    =  ([TAG=att]..content..[/TAG])    // The whole match.
+     *         $matches[1];    $tagname        =  (TAG)                // The BBCode tag name.
+     *         $matches[2];                    =  (=)                    // Attribute equals sign delimiter.
+     *         $matches[3];    $attribute        = '(attribute)'            // Attribute within single quotes, or
+     *         $matches[4];    $attribute        = "(attribute)"            // Attribute within double quotes or
+     *         $matches[5];    $attribute        =  (attribute)            // Attribute within no or any quotes.
+     *         $matches[6];    $contents        =  (tag contents)        // BBCode tag contents.
      *
      * @return string
      */
@@ -183,7 +183,7 @@ class Parser
         $contents = &$matches[6]; // BBCode tag contents.
         $tag = &$this->pd['bbcd'][$tagname]; // alias to this tags array element of the BBCD database
         $parent = end($this->pd['tag_stack']); // Name of parent tag. ("_ROOT_" is base parent tag).
-        /*	$new_errors = array();	*/
+        /*    $new_errors = array();    */
         // BBCode tag error messages. (Create on error.)
 
 
@@ -550,14 +550,14 @@ class Parser
             case 'list': // Fixup lists within lists. In lists, everything must be in a [*] tag.
                 // Check if LIST contents well-formed.
                 if ($this->pd['ipass'] === 2 && !preg_match('% # Rev:20110220_1200
-				^\s*+  # This regex validates well-formed list content.
-				(?:
-				\[\*\]
-				[^[]*+(?:(?!\[/?\*\])\[[^[]*+)*+
-				\[/\*\]\s*+
-				)++
-				$
-				%x', $contents))
+                ^\s*+  # This regex validates well-formed list content.
+                (?:
+                \[\*\]
+                [^[]*+(?:(?!\[/?\*\])\[[^[]*+)*+
+                \[/\*\]\s*+
+                )++
+                $
+                %x', $contents))
                 { // Not well formed. Do fixup to ensure list contents are only * tags.
                     // First regex wraps invalid characters at start of LIST in a [*]...[/*] tag.
                     $contents = preg_replace($this->pd['re_fixlist_1'], '[*]$1[/*]', $contents);
@@ -910,13 +910,13 @@ class Parser
      * displayed. If 'atomic', then both the tags and contents are stripped.
      *
      * @param array $matches
-     * 			$matches[0];					=  ([TAG=att]..[/TAG])	// The whole match
-     * 			$matches[1];	$tagname		=  (TAG)				// The BBCode tag name.
-     * 			$matches[2];					=  (=)					// Attribute equals sign delimiter.
-     * 			$matches[3];	$attribute		= '(attribute)'			// Attribute within single quotes.
-     * 			$matches[4];	$attribute		= "(attribute)"			// Attribute within double quotes.
-     * 			$matches[5];	$attribute		=  (attribute)			// Attribute within no-or-any quotes.
-     * 			$matches[6];	$contents		=  (ontents)			// Tag contents.
+     *             $matches[0];                    =  ([TAG=att]..[/TAG])    // The whole match
+     *             $matches[1];    $tagname        =  (TAG)                // The BBCode tag name.
+     *             $matches[2];                    =  (=)                    // Attribute equals sign delimiter.
+     *             $matches[3];    $attribute        = '(attribute)'            // Attribute within single quotes.
+     *             $matches[4];    $attribute        = "(attribute)"            // Attribute within double quotes.
+     *             $matches[5];    $attribute        =  (attribute)            // Attribute within no-or-any quotes.
+     *             $matches[6];    $contents        =  (ontents)            // Tag contents.
      *
      * @return string
      */
@@ -1096,7 +1096,7 @@ class Parser
             case 'list': // Clean whitespace cruft bordering <li> tags.
             case 'table': // Clean whitespace cruft bordering <tr> tags.
             case 'tr': // Clean whitespace cruft bordering <td> tags.
-                //		$contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul)>)%S', '%(?<=</(?:li|ol|ul)>\x01)\s++%S'), '', $contents);
+                //        $contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul)>)%S', '%(?<=</(?:li|ol|ul)>\x01)\s++%S'), '', $contents);
                 $contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul|tr|td)>)%S', '%(?<=</(?:li|ol|ul|tr|td)>\x01)\s++%S'), '', $contents);
                 break;
 
@@ -1192,46 +1192,46 @@ class Parser
     protected function linkify($text)
     {
         return preg_replace_callback('/ # Rev:20110220_1200 github.com\/jmrware\/LinkifyURL
-	# Match http & ftp URL that is not already linkified.
-	  # Alternative 1: URL delimited by (parentheses).
-	  (\()					   # $1	 "(" start delimiter.
-	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
-	  (\))					   # $3: ")" end delimiter.
-	| # Alternative 2: URL delimited by [square brackets].
-	  (\[)					   # $4: "[" start delimiter.
-	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
-	  (\])					   # $6: "]" end delimiter.
-	| # Alternative 3: URL delimited by {curly braces}.
-	  (\{)					   # $7: "{" start delimiter.
-	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
-	  (\})					   # $9: "}" end delimiter.
-	| # Alternative 4: URL delimited by <angle brackets>.
-	  (<|&(?:lt|\#60|\#x3c);)  # $10: "<" start delimiter (or HTML entity).
-	  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
-	  (>|&(?:gt|\#62|\#x3e);)  # $12: ">" end delimiter (or HTML entity).
-	| # Alternative 5: URL not delimited by (), [], {} or <>.
-	  (						   # $13: Prefix proving URL not already linked.
-		(?: ^				   # Can be a beginning of line or string, or
-		| [^=\s\'"\]]		   # a non-"=", non-quote, non-"]", followed by
-		) \s*[\'"]?			   # optional whitespace and optional quote;
-	  | [^=\s]\s+			   # or... a non-equals sign followed by whitespace.
-	  )						   # End $13. Non-prelinkified-proof prefix.
-	  ( \b					   # $14: Other non-delimited URL.
-		(?:ht|f)tps?:\/\/	   # Required literal http, https, ftp or ftps prefix.
-		[a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]+ # All URI chars except "&" (normal*).
-		(?:					   # Either on a "&" or at the end of URI.
-		  (?!				   # Allow a "&" char only if not start of an...
-			&(?:gt|\#0*62|\#x0*3e);					 # HTML ">" entity, or
-		  | &(?:amp|apos|quot|\#0*3[49]|\#x0*2[27]); # a [&\'"] entity if
-			[.!&\',:?;]?		# followed by optional punctuation then
-			(?:[^a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]|$)	# a non-URI char or EOS.
-		  ) &				   # If neg-assertion true, match "&" (special).
-		  [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]* # More non-& URI chars (normal*).
-		)*					   # Unroll-the-loop (special normal*)*.
-		[a-z0-9\-_~$()*+=\/#[\]@%]	# Last char can\'t be [.!&\',;:?]
-	  )						   # End $14. Other non-delimited URL.
-	/imx', array($this, '_linkify_callback'), $text);
-//	  $url_replace = '$1$4$7$10$13[url]$2$5$8$11$14[/url]$3$6$9$12';
+    # Match http & ftp URL that is not already linkified.
+      # Alternative 1: URL delimited by (parentheses).
+      (\()                       # $1     "(" start delimiter.
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
+      (\))                       # $3: ")" end delimiter.
+    | # Alternative 2: URL delimited by [square brackets].
+      (\[)                       # $4: "[" start delimiter.
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
+      (\])                       # $6: "]" end delimiter.
+    | # Alternative 3: URL delimited by {curly braces}.
+      (\{)                       # $7: "{" start delimiter.
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
+      (\})                       # $9: "}" end delimiter.
+    | # Alternative 4: URL delimited by <angle brackets>.
+      (<|&(?:lt|\#60|\#x3c);)  # $10: "<" start delimiter (or HTML entity).
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
+      (>|&(?:gt|\#62|\#x3e);)  # $12: ">" end delimiter (or HTML entity).
+    | # Alternative 5: URL not delimited by (), [], {} or <>.
+      (                           # $13: Prefix proving URL not already linked.
+        (?: ^                   # Can be a beginning of line or string, or
+        | [^=\s\'"\]]           # a non-"=", non-quote, non-"]", followed by
+        ) \s*[\'"]?               # optional whitespace and optional quote;
+      | [^=\s]\s+               # or... a non-equals sign followed by whitespace.
+      )                           # End $13. Non-prelinkified-proof prefix.
+      ( \b                       # $14: Other non-delimited URL.
+        (?:ht|f)tps?:\/\/       # Required literal http, https, ftp or ftps prefix.
+        [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]+ # All URI chars except "&" (normal*).
+        (?:                       # Either on a "&" or at the end of URI.
+          (?!                   # Allow a "&" char only if not start of an...
+            &(?:gt|\#0*62|\#x0*3e);                     # HTML ">" entity, or
+          | &(?:amp|apos|quot|\#0*3[49]|\#x0*2[27]); # a [&\'"] entity if
+            [.!&\',:?;]?        # followed by optional punctuation then
+            (?:[^a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]|$)    # a non-URI char or EOS.
+          ) &                   # If neg-assertion true, match "&" (special).
+          [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]* # More non-& URI chars (normal*).
+        )*                       # Unroll-the-loop (special normal*)*.
+        [a-z0-9\-_~$()*+=\/#[\]@%]    # Last char can\'t be [.!&\',;:?]
+      )                           # End $14. Other non-delimited URL.
+    /imx', array($this, '_linkify_callback'), $text);
+//      $url_replace = '$1$4$7$10$13[url]$2$5$8$11$14[/url]$3$6$9$12';
     }
 
     private function _linkify_callback($m)

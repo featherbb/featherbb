@@ -10,8 +10,8 @@
 namespace FeatherBB\Plugins\Model;
 
 
-use FeatherBB\Core\Error;
 use FeatherBB\Core\DB;
+use FeatherBB\Core\Error;
 
 class PrivateMessages
 {
@@ -176,8 +176,8 @@ class PrivateMessages
             ->save();
 
         // Now check if anyone left in the conversation has any of these topics undeleted. If so, then we leave them. Otherwise, actually delete them.
-		foreach ($convers as $cid)
-		{
+        foreach ($convers as $cid)
+        {
             $left = DB::for_table('pms_data')
                 ->where('conversation_id', $cid)
                 ->where('deleted', 0);
@@ -190,7 +190,7 @@ class PrivateMessages
             DB::for_table('pms_messages')->where('conversation_id', $cid)->delete_many();
             DB::for_table('pms_conversations')->where('id', $cid)->delete_many();
 
-		}
+        }
     }
 
     public function move($convers, $move_to, $uid)
@@ -280,7 +280,7 @@ class PrivateMessages
                     ->set('conversation_id', $conv_id);
         $add->save();
 
-        $update_data = ['last_post_id'	=>	$add->id()];
+        $update_data = ['last_post_id'    =>    $add->id()];
         // If it is a new conversation:
         if (!empty($uid)) $update_data['first_post_id'] = $add->id();
         $update = DB::for_table('pms_conversations')
@@ -295,9 +295,9 @@ class PrivateMessages
                 $notifs = DB::for_table('pms_data')
                         ->create()
                         ->set(array(
-                                'conversation_id'	=>	$conv_id,
-                                'user_id'	=>	$user,
-                                'viewed'	=>	(($user == $this->feather->user->id) ? '1' : '0')))
+                                'conversation_id'    =>    $conv_id,
+                                'user_id'    =>    $user,
+                                'viewed'    =>    (($user == $this->feather->user->id) ? '1' : '0')))
                         ->save();
             }
         } else {

@@ -6,7 +6,6 @@
 * and Rickard Andersson (C) 2002-2008 PunBB
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher.
 */
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
@@ -52,7 +51,7 @@ if (!isset($feather)) {
 
 <?php if (!empty($msg_data)): ?>
         <div id="postreview">
-        	<h2><span><?php _e('Conv review', 'private_messages') ?></span></h2>
+            <h2><span><?php _e('Conv review', 'private_messages') ?></span></h2>
 <?php
     $count = 1;
     foreach ($msg_data as $msg): ?>

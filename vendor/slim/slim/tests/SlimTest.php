@@ -45,12 +45,12 @@ class EchoErrorLogger
 //Mock extending class
 class Derived extends \Slim\Slim
 {
-	public static function getDefaultSettings()
-	{
+    public static function getDefaultSettings()
+    {
         return array_merge(
             array("late-static-binding" => true)
         , parent::getDefaultSettings());
-	}
+    }
 }
 
 //Mock middleware
@@ -1630,7 +1630,7 @@ class SlimTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString($testArgA . $testArgB);
 
-	$app = new \Slim\Slim();
+    $app = new \Slim\Slim();
 
         $app->hook('test.hook.one', function ($argA, $argB) {
                 echo $argA . $argB;

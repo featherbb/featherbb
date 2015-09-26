@@ -13,15 +13,15 @@
 
 namespace FeatherBB\Middleware;
 
-use FeatherBB\Core\DB;
-use FeatherBB\Core\Utils;
-use FeatherBB\Core\Hooks;
-use FeatherBB\Core\Url;
-use FeatherBB\Core\Email;
-use FeatherBB\Core\Parser;
-use FeatherBB\Core\View;
 use FeatherBB\Controller\Install;
+use FeatherBB\Core\DB;
+use FeatherBB\Core\Email;
+use FeatherBB\Core\Hooks;
+use FeatherBB\Core\Parser;
 use FeatherBB\Core\Plugin as PluginManager;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
+use FeatherBB\Core\View;
 
 class Core extends \Slim\Middleware
 {
@@ -33,8 +33,8 @@ class Core extends \Slim\Middleware
         'Content-type' => 'text/html',
         'X-Frame-Options' => 'deny');
 
-	public function __construct(array $data)
-	{
+    public function __construct(array $data)
+    {
         // Handle empty values in data
         $data = array_merge(array('config_file' => 'featherbb/config.php',
                                   'cache_dir' => 'cache/',
@@ -55,7 +55,7 @@ class Core extends \Slim\Middleware
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
-	}
+    }
 
     public static function load_default_forum_env()
     {

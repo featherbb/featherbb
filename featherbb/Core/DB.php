@@ -38,14 +38,14 @@
  */
 
 namespace FeatherBB\Core;
-use FeatherBB\Core\Error;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Serializable;
 use PDO;
-{
+use Serializable;
+
+    {
 
     class DB implements ArrayAccess
     {
