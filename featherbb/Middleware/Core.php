@@ -14,7 +14,7 @@
 namespace FeatherBB\Middleware;
 
 use FeatherBB\Controller\Install;
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Email;
 use FeatherBB\Core\Hooks;
 use FeatherBB\Core\Parser;

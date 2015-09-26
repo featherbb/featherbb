@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;

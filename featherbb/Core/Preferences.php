@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Core;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 
 class Preferences
 {

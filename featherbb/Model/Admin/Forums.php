@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 
 class Forums
 {

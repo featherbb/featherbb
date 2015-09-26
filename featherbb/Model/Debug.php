@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model;
 
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Utils;
 
 class Debug

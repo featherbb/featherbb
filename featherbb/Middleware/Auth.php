@@ -13,7 +13,7 @@
 
 namespace FeatherBB\Middleware;
 
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;

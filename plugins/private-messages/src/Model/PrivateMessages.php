@@ -10,7 +10,7 @@
 namespace FeatherBB\Plugins\Model;
 
 
-use FeatherBB\Core\DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 
 class PrivateMessages
