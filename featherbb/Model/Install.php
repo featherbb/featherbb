@@ -72,7 +72,7 @@ class Install
             `cat_id` int(10) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'groups' => "CREATE TABLE IF NOT EXISTS %t% (
+        'groups' => "CREATE TABLE  IF NOT EXISTS %t% (
             `g_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `g_title` varchar(50) NOT NULL DEFAULT '',
             `g_user_title` varchar(50) DEFAULT NULL,
@@ -100,8 +100,9 @@ class Install
             `g_search_flood` smallint(6) NOT NULL DEFAULT '30',
             `g_email_flood` smallint(6) NOT NULL DEFAULT '60',
             `g_report_flood` smallint(6) NOT NULL DEFAULT '60',
+            `inherit` text,
             PRIMARY KEY (`g_id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;",
         'online' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '1',
             `ident` varchar(200) NOT NULL DEFAULT '',
@@ -113,6 +114,15 @@ class Install
             KEY `online_ident_idx` (`ident`(25)),
             KEY `online_logged_idx` (`logged`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'permissions' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `permission_name` varchar(255) DEFAULT NULL,
+            `allow` tinyint(1) DEFAULT NULL,
+            `deny` tinyint(1) DEFAULT NULL,
+            `user` int(11) DEFAULT NULL,
+            `group` int(11) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
         'plugins' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `name` varchar(200) NOT NULL DEFAULT '',
@@ -137,6 +147,15 @@ class Install
             KEY `posts_topic_id_idx` (`topic_id`),
             KEY `posts_multi_idx` (`poster_id`,`topic_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'preferences' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `preference_name` tinytext,
+            `preference_value` tinytext,
+            `user` int(11) DEFAULT NULL,
+            `group` int(11) DEFAULT NULL,
+            `default` tinyint(1) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;",
         'reports' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `post_id` int(10) unsigned NOT NULL DEFAULT '0',
