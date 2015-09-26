@@ -198,6 +198,10 @@ class Core extends \Slim\Middleware
                                                'path' => $path,
                                                'extension' => '.cache'));
         });
+        // Load FeatherBB permissions
+        $this->app->container->singleton('perms', function () {
+            return new \FeatherBB\Core\Permissions();
+        });
         // Load FeatherBB view
         $this->app->container->singleton('template', function() {
             return new View();
