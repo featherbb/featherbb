@@ -173,13 +173,12 @@ class Install
     {
         $this->feather->hooks->fire('controller.install.create_db');
 
-        Core::init_db($data);
-
-        // Load appropriate language
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
-
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
+        // Init DB
+        Core::init_db($data);
+        // Load appropriate language
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
@@ -193,6 +192,33 @@ class Install
         foreach ($this->model->load_default_groups() as $group_name => $group_data) {
             $this->model->add_data('groups', $group_data);
         }
+
+        $this->feather->perms->addParent(1, 2);
+        $this->feather->perms->addParent(2, 4);
+        $this->feather->perms->addParent(4, 3);
+        $this->feather->perms->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
+        $this->feather->perms->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
+        $this->feather->perms->allowGroup(2, array('mod.*', 'board.title.set'));
+        $this->feather->perms->allowGroup(1, array('board.*'));
+        $this->feather->prefs->set(array(
+            'post.min_interval' => 60,
+            'search.min_interval' => 30,
+            'email.min_interval' => 60,
+            'report.min_interval' => 60,
+            'core.timezone' => 0,
+            'core.time_format' => 'H:i:s',
+            'core.date_format' => 'Y-m-d',
+            'core.lang' => $data['default_lang'],
+            'core.style' => $data['default_style'],
+        ));
+        $this->feather->prefs->setGroup(2, array(
+            'post.min_interval' => 0,
+            'search.min_interval' => 0,
+            'email.min_interval' => 0,
+            'report.min_interval' => 0
+        ));
+
+
         // Populate user table with default values
         $this->model->add_data('users', $this->model->load_default_user());
         $this->model->add_data('users', $this->model->load_admin_user($data));

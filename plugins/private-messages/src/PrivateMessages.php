@@ -110,7 +110,7 @@ class PrivateMessages extends BasePlugin
                 `num_replies` mediumint(8) unsigned NOT NULL DEFAULT '0',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-            'pms_blocks' => "CREATE TABLE `%t%` (
+            'pms_blocks' => "CREATE TABLE IF NOT EXISTS %t% (
                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                 `user_id` int(10) NOT NULL DEFAULT '0',
                 `block_id` int(10) NOT NULL DEFAULT '0',
