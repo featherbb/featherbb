@@ -193,7 +193,6 @@ class Groups
             'g_search'              =>  $search,
             'g_search_users'        =>  $search_users,
             'g_send_email'          =>  $send_email,
-            'g_post_flood'          =>  $post_flood,
             'g_search_flood'        =>  $search_flood,
             'g_email_flood'         =>  $email_flood,
             'g_report_flood'        =>  $report_flood,
@@ -208,12 +207,13 @@ class Groups
                 throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
 
-            DB::for_table('groups')
-                ->create()
-                ->set($insert_update_group)
-                ->save();
-            $new_group_id = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'groups');
-            $new_group_id = $this->hook->fire('model.admin.groups.add_edit_group.new_group_id', $new_group_id);
+            $add = DB::for_table('groups')
+                        ->create();
+            $add->set($insert_update_group)->save();
+            $new_group_id = $this->hook->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
+
+            // Set new preferences
+            $this->feather->prefs->setGroup($new_group_id, array('post.min_interval' => (int) $post_flood));
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
