@@ -92,6 +92,7 @@ $feather->hooks->fire('view.admin.bans.admin_bans.start');
                                         </select>
                                     </td>
                                 </tr>
+                                <?php $feather->hooks->fire('view.admin.bans.admin_bans.form'); ?>
                             </table>
                         </div>
                     </fieldset>

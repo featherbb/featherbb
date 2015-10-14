@@ -27,4 +27,3 @@ $feather->hooks->fire('view.error.start');
 </div>
 <?php
 $feather->hooks->fire('view.error.end');
-

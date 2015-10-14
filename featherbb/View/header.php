@@ -97,6 +97,8 @@ endif;
 if (!empty($page_head)) :
     echo implode("\n", $page_head)."\n";
 endif;
+
+$feather->hooks->fire('view.header.before.head.tag');
 ?>
 </head>
 
@@ -209,7 +211,10 @@ if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
     echo '<a href="'.$feather->urlFor('quickSearch', ['show' => 'unanswered']).'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
     echo '</li>'."\n";
     echo "\t\t\t".'</ul>'."\n";
-} ?>
+}
+
+$feather->hooks->fire('view.header.brdwelcome');
+?>
                     <div class="clearer"></div>
                     </div>
                 </div>

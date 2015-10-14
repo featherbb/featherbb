@@ -92,6 +92,7 @@ $feather->hooks->fire('view.admin.bans.add.start');
                     </div>
                 </fieldset>
             </div>
+            <?php $feather->hooks->fire('view.admin.bans.add.form'); ?>
             <p class="submitend"><input type="submit" name="add_edit_ban" value="<?php _e('Save') ?>" tabindex="6" /></p>
         </form>
     </div>

@@ -133,9 +133,7 @@ if (!empty($checkboxes)) {
                     </div>
                 </fieldset>
 <?php
-
 }
-
 ?>
             </div>
             <?php if ($feather->user->is_guest) : ?>

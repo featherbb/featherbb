@@ -109,6 +109,8 @@ endif;
                     echo "\t\t\t".'<div class="clearer"></div>'."\n";
                 }
             endif;
+
+            $feather->hooks->fire('view.index.brdstats');
             ?>
         </div>
     </div>

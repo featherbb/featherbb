@@ -183,6 +183,7 @@ $feather->hooks->fire('view.admin.permissions.start');
                         </div>
                     </fieldset>
                 </div>
+                <?php $feather->hooks->fire('view.admin.permissions.form'); ?>
                 <p class="submitend"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
             </form>
         </div>

@@ -302,7 +302,8 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                         <span><?php _e('Report flood help') ?></span>
                                     </td>
                                 </tr>
-<?php endif; endif; ?>                            </table>
+<?php endif; endif; ?>    </table>
+<?php $feather->hooks->fire('view.admin.groups.add_edit_group.form'); ?>
 <?php if ($group['info']['g_moderator'] == '1'): ?>                            <p class="warntext"><?php _e('Moderator info') ?></p>
 <?php endif; ?>                        </div>
                     </fieldset>
