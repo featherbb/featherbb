@@ -210,6 +210,8 @@ class Install
             'core.date_format' => 'Y-m-d',
             'core.lang' => $data['default_lang'],
             'core.style' => $data['default_style'],
+            'smilies.post.show' => 1,
+            'smilies.signature.show' => 1,
         ));
         $this->feather->prefs->setGroup(2, array(
             'post.min_interval' => 0,

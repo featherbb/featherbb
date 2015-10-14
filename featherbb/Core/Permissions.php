@@ -8,56 +8,13 @@
 */
 
 namespace FeatherBB\Core;
+use FeatherBB\Core\Database as DB;
 
 class Permissions
 {
     protected $permissions = array(),
               $parents = array(),
               $regexs = array();
-
-    public function __construct()
-    {
-
-    }
-
-    public function getUserPermissions($user = null)
-    {
-        list($uid, $gid) = $this->getInfosFromUser($user);
-
-        $where = array(
-            ['p.user' => $uid],
-            ['p.group' => $gid]);
-
-        if ($parents = $this->getParents($gid)) {
-            foreach ($parents as $parent_id) {
-                $where[] = ['p.group' => (int) $parent_id];
-            }
-        }
-
-        $result = DB::for_table('permissions')
-            ->table_alias('p')
-            ->select_many('p.permission_name', 'p.allow', 'p.deny')
-            ->inner_join('users', array('u.id', '=', $uid), 'u', true)
-            ->where_any_is($where)
-            ->order_by_desc('p.group') // Read groups first to allow user override
-            ->find_array();
-
-        $this->permissions[$gid][$uid] = array();
-        foreach ($result as $perm) {
-            if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
-                if ((bool) $perm['allow']) {
-                    $this->permissions[$gid][$uid][$perm['permission_name']] = true;
-                }
-            } else {
-                if ((bool) $perm['deny']) {
-                    unset($this->permissions[$gid][$uid][$perm['permission_name']]);
-                }
-            }
-        }
-
-        $this->buildRegex($uid, $gid);
-        return $this->permissions;
-    }
 
     public function getParents($gid = null)
     {
@@ -296,30 +253,9 @@ class Permissions
         return (bool) preg_match($this->regexs[$gid][$uid], $permission);
     }
 
-    public function install()
+    public function dump()
     {
-        $database_scheme = array(
-            "permissions" => "CREATE TABLE `permissions` (
-                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                `permission_name` varchar(255) DEFAULT NULL,
-                `allow` tinyint(1) DEFAULT NULL,
-                `deny` tinyint(1) DEFAULT NULL,
-                `user` int(11) DEFAULT NULL,
-                `group` int(11) DEFAULT NULL,
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;"
-        );
-        // + create "inherit" TINYTEXT in groups TABLE
-
-        $installer = new \FeatherBB\Model\Install();
-        foreach ($database_scheme as $table => $sql) {
-            $installer->create_table($this->feather->forum_settings['db_prefix'].$table, $sql);
-        }
-    }
-
-    public function getPermissions()
-    {
-        return var_dump($this->permissions);
+        return $this->permissions;
     }
 
     protected function buildRegex($uid = null, $gid = null)
@@ -329,6 +265,45 @@ class Permissions
             return str_replace('*', '.*', $value);
         }, array_keys($this->permissions[$gid][$uid]));
         $this->regexs[$gid][$uid] = '/^(?:'.implode(' | ', $perms).')$/';
+    }
+
+    protected function getUserPermissions($user = null)
+    {
+        list($uid, $gid) = $this->getInfosFromUser($user);
+
+        $where = array(
+            ['p.user' => $uid],
+            ['p.group' => $gid]);
+
+        if ($parents = $this->getParents($gid)) {
+            foreach ($parents as $parent_id) {
+                $where[] = ['p.group' => (int) $parent_id];
+            }
+        }
+
+        $result = DB::for_table('permissions')
+            ->table_alias('p')
+            ->select_many('p.permission_name', 'p.allow', 'p.deny')
+            ->inner_join('users', array('u.id', '=', $uid), 'u', true)
+            ->where_any_is($where)
+            ->order_by_desc('p.group') // Read groups first to allow user override
+            ->find_array();
+
+        $this->permissions[$gid][$uid] = array();
+        foreach ($result as $perm) {
+            if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
+                if ((bool) $perm['allow']) {
+                    $this->permissions[$gid][$uid][$perm['permission_name']] = true;
+                }
+            } else {
+                if ((bool) $perm['deny']) {
+                    unset($this->permissions[$gid][$uid][$perm['permission_name']]);
+                }
+            }
+        }
+
+        $this->buildRegex($uid, $gid);
+        return $this->permissions;
     }
 
     protected function getInfosFromUser($user = null)

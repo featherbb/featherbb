@@ -139,8 +139,8 @@ class Post
         }
 
         // Flood protection
-        if ($this->request->post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < $this->user->g_post_flood) {
-            $errors[] = sprintf(__('Flood start'), $this->user->g_post_flood, $this->user->g_post_flood - (time() - $this->user->last_post));
+        if ($this->request->post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < $this->feather->prefs->get($this->feather->user, 'post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), $this->feather->prefs->get($this->feather->user, 'post.min_interval'), $this->feather->prefs->get($this->feather->user, 'post.min_interval') - (time() - $this->user->last_post));
         }
 
         // If it's a new topic
