@@ -346,10 +346,10 @@ class Search
                     ->where_raw('id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
-
-                DB::for_table('search_matches')
-                    ->where_in('post_id', $post_ids_sql)
-                    ->delete_many();
         }
+
+        DB::for_table('search_matches')
+            ->where_in('post_id', $post_ids_sql)
+            ->delete_many();
     }
 }

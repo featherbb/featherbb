@@ -40,7 +40,7 @@ endif; ?>
                         <div class="inbox">
                             <ul>
                                 <li class="big">Inbox: 0% full</li>
-                                <li><div id="pm_bar_style" style="width:0px;"></div></li>
+                                <li><div id="pm_bar_style" style="width:0;"></div></li>
                                 <li class="big">Quota: <?= $totalMsg ?> / &infin;</li>
                             </ul>
                         </div>
