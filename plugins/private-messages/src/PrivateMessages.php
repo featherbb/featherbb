@@ -147,9 +147,8 @@ class PrivateMessages extends BasePlugin
         $tables = ['pms_data', 'pms_folders', 'pms_messages', 'pms_conversations', 'pms_blocks'];
         foreach ($tables as $i)
         {
-            $query = 'SHOW TABLES LIKE "'. $this->feather->forum_settings['db_prefix'].$i . '"';
-            $tableExists = DB::for_table($i)->raw_query($query)->find_one();
-            if (count($tableExists) != 0)
+            $tableExists = DB::for_table($i)->raw_query('SHOW TABLES LIKE "'. $this->feather->forum_settings['db_prefix'].$i . '"')->find_one();
+            if ($tableExists)
             {
                 $db->exec('DROP TABLE '.$this->feather->forum_settings['db_prefix'].$i);
             }
