@@ -96,7 +96,7 @@ class Plugin
     }
 
     /**
-     * Default empty install function to avoid erros when activating.
+     * Default empty install function to avoid errors when activating.
      * Daughter classes may override this method for custom install.
      */
     public function install()
