@@ -12,6 +12,8 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Database as DB;
+
 class Search
 {
     public function __construct()
