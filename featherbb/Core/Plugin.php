@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Database as DB;
+
 class Plugin
 {
     /**
