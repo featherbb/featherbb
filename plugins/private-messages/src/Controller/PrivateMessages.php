@@ -222,7 +222,7 @@ class PrivateMessages
             } else {
                 // Prevent flood
                 if (!is_null($data['preview']) && $this->feather->user['last_post'] != '' && ($this->feather->now - $this->feather->user['last_post']) < $this->feather->prefs->get($this->feather->user, 'post.min_interval')) {
-                    throw new Error(sprintf($lang_post['Flood start'], $this->feather->prefs->get($this->feather->user, 'post.min_interval'), $this->feather->prefs->get($this->feather->user, 'post.min_interval') - ($this->feather->now - $this->feather->user['last_post'])), 429);
+                    throw new Error(sprintf(__('Flood start'), $this->feather->prefs->get($this->feather->user, 'post.min_interval'), $this->feather->prefs->get($this->feather->user, 'post.min_interval') - ($this->feather->now - $this->feather->user['last_post'])), 429);
                 }
 
                 if (!$conv) {
