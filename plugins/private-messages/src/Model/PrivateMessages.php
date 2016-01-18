@@ -22,10 +22,6 @@ class PrivateMessages
         $this->user = $this->feather->user;
         $this->request = $this->feather->request;
         $this->hooks = $this->feather->hooks;
-
-        DB::configure('id_column_overrides', array(
-            'pms_data' => array('conversation_id', 'user_id'),
-        ));
     }
 
     // Get all inboxes owned by a user
@@ -138,11 +134,11 @@ class PrivateMessages
 
         foreach($result as $key => $conversation) {
             $receivers = DB::for_table('pms_data')
-                            ->table_alias('d')
-                            ->select(array('d.user_id', 'u.username'))
-                            ->left_outer_join('users', array('u.id', '=', 'd.user_id'), 'u')
-                            ->where('d.conversation_id', $conversation['id'])
-                            ->find_array();
+                ->table_alias('d')
+                ->select(array('d.user_id', 'u.username'))
+                ->left_outer_join('users', array('u.id', '=', 'd.user_id'), 'u')
+                ->where('d.conversation_id', $conversation['id'])
+                ->find_array();
             if (is_array($receivers)) {
                 foreach ($receivers as $receiver) {
                     $result[$key]['receivers'][$receiver['user_id']] = $receiver['username'];
@@ -168,6 +164,7 @@ class PrivateMessages
         $numPms = ($numReplies + $numConvers);
 
         // Soft delete messages
+        DB::configure('id_column', array('conversation_id', 'user_id'));
         DB::for_table('pms_data')
             ->where('user_id', $uid)
             ->where_in('conversation_id', $convers)
@@ -198,6 +195,9 @@ class PrivateMessages
         if (!$this->checkFolderOwner($move_to, $uid)) {
             throw new Error(__('Wrong folder owner', 'private_messages'), 403);
         }
+
+        DB::configure('id_column', array('conversation_id', 'user_id'));
+
         return DB::for_table('pms_data')
             ->where('user_id', $uid)
             ->where_in('conversation_id', $convers)
@@ -209,6 +209,8 @@ class PrivateMessages
     // Mark a conversation as (un)read (default to true)
     public function setViewed($conv_id, $uid, $viewed = 1)
     {
+        DB::configure('id_column', array('conversation_id', 'user_id'));
+
         return DB::for_table('pms_data')
             ->where('conversation_id', $conv_id)
             ->where('user_id', $uid)
@@ -219,6 +221,8 @@ class PrivateMessages
 
     public function updateConversation($conv_ids, $uid, array $data)
     {
+        DB::configure('id_column', array('conversation_id', 'user_id'));
+
         $conv_ids = (array) $conv_ids;
         return DB::for_table('pms_data')
             ->where('user_id', $uid)
@@ -231,8 +235,8 @@ class PrivateMessages
     public function addConversation(array $data = array())
     {
         $result = DB::for_table('pms_conversations')
-                    ->create()
-                    ->set($data);
+            ->create()
+            ->set($data);
         $result->save();
         return $result->id();
     }
@@ -265,7 +269,7 @@ class PrivateMessages
             ->left_outer_join('users', array('u.id', '=', 'c.poster_id'), 'u')
             ->left_outer_join('users', array('u2.username', '=', 'c.last_poster'), 'u2', true)
             ->where_any_is(array(array('c.poster_id' => $uid),
-                                 array('d.user_id' => $uid)))
+                array('d.user_id' => $uid)))
             ->where('c.id', $conv_id)
             ->find_one();
 
@@ -275,39 +279,42 @@ class PrivateMessages
     public function addMessage(array $data = array(), $conv_id = null, array $uid = array())
     {
         $add = DB::for_table('pms_messages')
-                    ->create()
-                    ->set($data)
-                    ->set('conversation_id', $conv_id);
+            ->create()
+            ->set($data)
+            ->set('conversation_id', $conv_id);
         $add->save();
 
         $update_data = ['last_post_id'    =>    $add->id()];
         // If it is a new conversation:
         if (!empty($uid)) $update_data['first_post_id'] = $add->id();
         $update = DB::for_table('pms_conversations')
-                    ->find_one($conv_id)
-                    ->set($update_data);
+            ->find_one($conv_id)
+            ->set($update_data);
         // Increment replies count
         if(empty($uid)) $update->set_expr('num_replies', 'num_replies+1');
         $update = $update->save();
+
+        DB::configure('id_column', array('conversation_id', 'user_id'));
+
         if (!empty($uid)) {
             // New conversation
             foreach ($uid as $user) {
                 $notifs = DB::for_table('pms_data')
-                        ->create()
-                        ->set(array(
-                                'conversation_id'    =>    $conv_id,
-                                'user_id'    =>    $user,
-                                'viewed'    =>    (($user == $this->feather->user->id) ? '1' : '0')))
-                        ->save();
+                    ->create()
+                    ->set(array(
+                        'conversation_id'    =>    $conv_id,
+                        'user_id'    =>    $user,
+                        'viewed'    =>    (($user == $this->feather->user->id) ? '1' : '0')))
+                    ->save();
             }
         } else {
             // Reply
             $notifs = DB::for_table('pms_data')
-                    ->where('conversation_id', $conv_id)
-                    ->where_not_equal('user_id', $this->feather->user->id)
-                    ->find_result_set();
+                ->where('conversation_id', $conv_id)
+                ->where_not_equal('user_id', $this->feather->user->id)
+                ->find_result_set();
             $notifs->set('viewed', 0)
-                    ->save();
+                ->save();
         }
 
         return ($add && $update && $notifs) ? $add->id() : false;
@@ -317,14 +324,14 @@ class PrivateMessages
     {
         $select = array('m.id', 'username' => 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'u.title', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
         $result = DB::for_table('pms_messages')
-                    ->table_alias('m')
-                    ->select_many($select)
-                    ->left_outer_join('users', array('u.id', '=', 'm.poster_id'), 'u')
-                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                    ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
-                    ->where('m.conversation_id', $conv_id)
-                    ->order_by_asc('m.sent')
-                    ->find_array();
+            ->table_alias('m')
+            ->select_many($select)
+            ->left_outer_join('users', array('u.id', '=', 'm.poster_id'), 'u')
+            ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->raw_join('LEFT OUTER JOIN '.$this->feather->forum_settings['db_prefix'].'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
+            ->where('m.conversation_id', $conv_id)
+            ->order_by_asc('m.sent')
+            ->find_array();
         return $result;
     }
 
@@ -335,19 +342,19 @@ class PrivateMessages
         }
 
         $result = DB::for_table('users')
-                    ->where('username', $username)
-                    ->where_gt('id', 1)
-                    ->find_one();
+            ->where('username', $username)
+            ->where_gt('id', 1)
+            ->find_one();
         return $result;
     }
 
     public function isDeleted($conv_id = null, $uid = null)
     {
         $result = DB::for_table('pms_data')
-                    ->where('conversation_id', $conv_id)
-                    ->where('user_id', $uid)
-                    ->where('deleted', 1)
-                    ->find_one();
+            ->where('conversation_id', $conv_id)
+            ->where('user_id', $uid)
+            ->where('deleted', 1)
+            ->find_one();
         return (bool) $result;
     }
 
@@ -357,8 +364,8 @@ class PrivateMessages
             return false;
         }
         $result = DB::for_table('users')
-                    ->where('id', $id)
-                    ->find_one();
+            ->where('id', $id)
+            ->find_one();
         return $result;
     }
 
@@ -374,11 +381,11 @@ class PrivateMessages
     public function getMessagesFromConversation($conv_id = null, $uid = null, $limit = 50, $start = 0)
     {
         $result = DB::for_table('pms_messages')
-                    ->table_alias('m')
-                    ->where('m.conversation_id', $conv_id)
-                    ->order_by_desc('sent')
-                    ->limit($limit)
-                    ->find_many();
+            ->table_alias('m')
+            ->where('m.conversation_id', $conv_id)
+            ->order_by_desc('sent')
+            ->limit($limit)
+            ->find_many();
         return $result;
     }
 
@@ -390,11 +397,11 @@ class PrivateMessages
     public function getBlocked($user_id)
     {
         $result = DB::for_table('pms_blocks')
-                    ->table_alias('b')
-                    ->select_many(['b.id', 'b.block_id', 'u.username', 'u.group_id'])
-                    ->inner_join('users', array('b.block_id', '=', 'u.id'), 'u')
-                    ->where('b.user_id', $user_id)
-                    ->find_many();
+            ->table_alias('b')
+            ->select_many(['b.id', 'b.block_id', 'u.username', 'u.group_id'])
+            ->inner_join('users', array('b.block_id', '=', 'u.id'), 'u')
+            ->where('b.user_id', $user_id)
+            ->find_many();
         return $result;
     }
 
@@ -402,18 +409,18 @@ class PrivateMessages
     {
         // var_dump($user_id, $block_id);
         $result = DB::for_table('pms_blocks')
-                    // ->select('id')
-                    ->where('user_id', $user_id)
-                    ->where('block_id', $block_id)
-                    ->count();
+            // ->select('id')
+            ->where('user_id', $user_id)
+            ->where('block_id', $block_id)
+            ->count();
         return $result;
     }
 
     public function addBlock(array $data = array())
     {
         $result = DB::for_table('pms_blocks')
-                    ->create()
-                    ->set($data);
+            ->create()
+            ->set($data);
         $result->save();
         return $result->id();
     }
@@ -421,9 +428,9 @@ class PrivateMessages
     public function removeBlock($user_id, $block_id)
     {
         $result = DB::for_table('pms_blocks')
-                    ->where('user_id', $user_id)
-                    ->where('block_id', $block_id)
-                    ->find_one();
+            ->where('user_id', $user_id)
+            ->where('block_id', $block_id)
+            ->find_one();
         return $result->delete();
     }
 
@@ -435,8 +442,8 @@ class PrivateMessages
     public function addFolder(array $data)
     {
         $result = DB::for_table('pms_folders')
-                ->create()
-                ->set($data);
+            ->create()
+            ->set($data);
         $result->save();
         return $result->id();
     }
@@ -444,18 +451,18 @@ class PrivateMessages
     public function updateFolder($user_id, $block_id, array $data)
     {
         $result = DB::for_table('pms_folders')
-                ->find_one($block_id)
-                ->where('user_id', $user_id)
-                ->set($data);
+            ->find_one($block_id)
+            ->where('user_id', $user_id)
+            ->set($data);
         return $result->save();
     }
 
     public function removeFolder($user_id, $block_id)
     {
         $result = DB::for_table('pms_folders')
-                ->where('id', $block_id)
-                ->where('user_id', $user_id)
-                ->find_one();
+            ->where('id', $block_id)
+            ->where('user_id', $user_id)
+            ->find_one();
         return $result->delete();
     }
 }
