@@ -93,9 +93,14 @@ class Plugins
 
         // Check if plugin is disabled, for security
         if (!in_array($name, $activePlugins)) {
-            $plugin = DB::for_table('plugins')->where('name', $name)->find_one()->delete();
+            $plugin = DB::for_table('plugins')->where('name', $name)->find_one();
 
-            // Allow additionnal uninstalling functions
+            if ($plugin)
+            {
+                $plugin->delete();
+            }
+
+            // Allow additional uninstalling functions
             $this->manager->uninstall($name);
 
             $this->manager->setActivePlugins();
