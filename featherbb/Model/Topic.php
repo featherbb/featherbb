@@ -978,7 +978,7 @@ class Topic
                     }
 
                     if (($cur_topic['post_replies'] == '' && $this->user->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
-                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.$this->feather->urlFor('newQuoteReply', ['tid' => $topic_id, 'quote' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
+                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.$this->feather->urlFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
                     }
                 }
             } else {
@@ -987,7 +987,7 @@ class Topic
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.$this->feather->urlFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.$this->feather->urlFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                 }
-                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.$this->feather->urlFor('newQuoteReply', ['tid' => $topic_id, 'quote' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.$this->feather->urlFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
