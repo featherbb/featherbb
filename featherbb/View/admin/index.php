@@ -48,7 +48,7 @@ $feather->hooks->fire('view.admin.index.start');
                     </dd>
                     <dt><?php _e('Support label') ?></dt>
                     <dd>
-                        <a href="http://featherbb.org/forums/index.php"><?php _e('Forum label') ?></a> - <a href="http://gitter.im/featherbb/featherbb"><?php _e('IRC label') ?></a>
+                        <a href="http://forums.featherbb.org"><?php _e('Forum label') ?></a> - <a href="http://gitter.im/featherbb/featherbb"><?php _e('IRC label') ?></a>
                     </dd>
                 </dl>
             </div>

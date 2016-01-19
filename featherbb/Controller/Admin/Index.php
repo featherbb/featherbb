@@ -36,7 +36,7 @@ class Index
                 throw new Error(__('fopen disabled message'), 500);
             }
 
-            $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version'));
+            $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version.html'));
             if (empty($latest_version)) {
                 throw new Error(__('Upgrade check failed message'), 500);
             }
