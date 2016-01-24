@@ -41,7 +41,7 @@ class Install
     {
         $this->feather->hooks->fire('controller.install.run_install');
 
-        if (!empty($this->feather->request->post('choose_lang'))) {
+        if ($this->feather->request->post('choose_lang')) {
             if (in_array(Utils::trim($this->feather->request->post('install_lang')), $this->available_langs)) {
                 $this->install_lang = $this->feather->request->post('install_lang');
             }
