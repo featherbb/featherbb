@@ -193,9 +193,6 @@ class Install
             $this->model->add_data('groups', $group_data);
         }
 
-        $this->feather->perms->addParent(1, 2);
-        $this->feather->perms->addParent(2, 4);
-        $this->feather->perms->addParent(4, 3);
         $this->feather->perms->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
         $this->feather->perms->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
         $this->feather->perms->allowGroup(2, array('mod.*', 'board.title.set'));

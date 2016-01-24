@@ -328,7 +328,8 @@ class Install
             'g_post_flood' => 0,
             'g_search_flood' => 0,
             'g_email_flood' => 0,
-            'g_report_flood' => 0);
+            'g_report_flood' => 0,
+            'inherit' => 'a:1:{i:0;i:2;}');
         $groups['Moderators'] = array(
             'g_id' => 2,
             'g_title' => __('Moderators'),
@@ -352,7 +353,8 @@ class Install
             'g_post_flood' => 0,
             'g_search_flood' => 0,
             'g_email_flood' => 0,
-            'g_report_flood' => 0);
+            'g_report_flood' => 0,
+            'inherit' => 'a:1:{i:0;i:4;}');
         $groups['Guests'] = array(
             'g_id' => 3,
             'g_title' => __('Guests'),
@@ -400,7 +402,8 @@ class Install
             'g_post_flood' => 60,
             'g_search_flood' => 30,
             'g_email_flood' => 60,
-            'g_report_flood' => 60);
+            'g_report_flood' => 60,
+            'inherit' => 'a:1:{i:0;i:3;}');
 
         return $groups;
     }
