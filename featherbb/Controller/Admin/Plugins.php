@@ -14,6 +14,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Lister;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use ZipArchive;
 
 class Plugins
 {
@@ -26,6 +27,52 @@ class Plugins
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/plugins.mo');
     }
 
+    /**
+     * Download a plugin, unzip it and rename it
+     */
+    public function download($name, $version)
+    {
+        $zipFile = $this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip';
+        $zipResource = fopen($zipFile, "w");
+
+        // Get the zip file straight from GitHub
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $name . '/zip/'.$version);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER,true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_FILE, $zipResource);
+        $page = curl_exec($ch);
+        curl_close($ch);
+        fclose($zipResource);
+
+        if (!$page) {
+            unlink($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
+            throw new Error(__('Bad request'), 400);
+        }
+
+        $zip = new ZipArchive;
+
+        if($zip->open($zipFile) != true){
+            throw new Error(__('Bad request'), 400);
+        }
+
+        $zip->extractTo($this->feather->forum_env['FEATHER_ROOT'].'plugins');
+        $zip->close();
+
+        if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
+            AdminUtils::delete_folder($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+        }
+        rename($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version, $this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+        unlink($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
+        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin downloaded!');
+    }
+
     public function index()
     {
         $this->feather->hooks->fire('controller.admin.plugins.index');
@@ -34,8 +81,8 @@ class Plugins
 
         $availablePlugins = Lister::getPlugins();
         $activePlugins = $this->feather->cache->isCached('activePlugins') ? $this->feather->cache->retrieve('activePlugins') : array();
-        // var_dump($availablePlugins, $activePlugins);
-        // $this->feather->cache->delete('activePlugins');
+
+        $officialPlugins = Lister::getOfficialPlugins();
 
         AdminUtils::generateAdminMenu('plugins');
 
@@ -44,6 +91,7 @@ class Plugins
             'active_page' => 'admin',
             'availablePlugins'    =>    $availablePlugins,
             'activePlugins'    =>    $activePlugins,
+            'officialPlugins'    =>    $officialPlugins,
             'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
             )
         )->addTemplate('admin/plugins.php')->display();
@@ -84,8 +132,8 @@ class Plugins
         }
 
         $this->model->uninstall($plugin);
-        // // Plugin has been deactivated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
+        // Plugin has been deactivated, confirm and redirect
+        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
     }
 
     public function info($pluginName = null)

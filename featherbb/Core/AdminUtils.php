@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Core;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 class AdminUtils
 {
     protected static $feather;
@@ -59,6 +62,23 @@ class AdminUtils
         return implode(' » ', $tmp);
     }
 
+    /**
+     * Delete a folder and all its content
+     */
+    public static function delete_folder($dirPath) {
+        $it = new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($it,
+            RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($files as $file) {
+            if ($file->isDir()){
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+        rmdir($dirPath);
+    }
+
 
     /**
      * Fetch admin IDs
@@ -72,5 +92,27 @@ class AdminUtils
         }
 
         return self::$feather->cache->retrieve('admin_ids');
+    }
+
+    /**
+     * Wrapper for cURL
+     */
+    public static function get_content($url)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, "FeatherBB Marketplace");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HTTPGET, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+        $content = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $content;
     }
 }

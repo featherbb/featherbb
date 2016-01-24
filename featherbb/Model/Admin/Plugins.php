@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Plugin as PluginManager;
 
@@ -95,13 +96,16 @@ class Plugins
         if (!in_array($name, $activePlugins)) {
             $plugin = DB::for_table('plugins')->where('name', $name)->find_one();
 
-            if ($plugin)
-            {
+            if ($plugin) {
                 $plugin->delete();
             }
 
             // Allow additional uninstalling functions
             $this->manager->uninstall($name);
+
+            if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
+                AdminUtils::delete_folder($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+            }
 
             $this->manager->setActivePlugins();
         }

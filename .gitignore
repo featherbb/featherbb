@@ -6,3 +6,6 @@ lang/French
 composer.lock
 cache/*.php
 cache/*.cache
+plugins/bbcode-toolbar
+plugins/private-messages
+plugins/*.zip

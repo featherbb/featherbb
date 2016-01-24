@@ -53,6 +53,36 @@ $feather->hooks->fire('view.admin.plugins.start');
             </table>
             <p style="text-align:right"><?= count($availablePlugins) ?> éléments</p>
         </div>
+        <div class="inbox">
+            <table class="table">
+                <caption><?php _e('Available plugins') ?></caption>
+                <thead>
+                <tr>
+                    <th><?php _e('Extension') ?></th>
+                    <th><?php _e('Description') ?></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($officialPlugins as $plugin) : ?>
+                    <tr>
+                        <td>
+                            <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
+                            <div class="plugin-actions">
+                                <a href="<?= $feather->urlFor('downloadPlugin', ['name' => $plugin->name, 'version' => $plugin->version]) ?>">Download</a>
+                            </div>
+                        </td>
+                        <td>
+                            <?= $plugin->description; ?>
+                            <div class="plugin-details">
+                                By <?= $plugin->author->name; ?>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <p style="text-align:right"><?= count($officialPlugins) ?> éléments</p>
+        </div>
     </div>
 </div>
 

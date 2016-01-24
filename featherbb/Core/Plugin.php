@@ -151,7 +151,7 @@ class Plugin
         return str_replace (" ", "", str_replace ("/", "\\", ucwords (str_replace ('-', ' ', str_replace ('/ ', '/', ucwords (str_replace ('/', '/ ', $path)))))));
     }
 
-    // For plugins that don't need to provide a Composer auoloader, check if it can be loaded
+    // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
     protected function checkSimple($plugin)
     {
         return $this->feather->forum_env['FEATHER_ROOT'].'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
