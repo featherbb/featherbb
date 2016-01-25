@@ -136,25 +136,23 @@ class Plugins
         Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
     }
 
+    /**
+     * Load plugin info if it exists
+     * @param null $pluginName
+     * @throws Error
+     */
     public function info($pluginName = null)
     {
-        $this->feather->hooks->fire('controller.admin.plugins.info');
-
-        if (!$pluginName) {
+        $pluginName =  str_replace('-', '', $pluginName);
+        $new = "\FeatherBB\Plugins\Controller\\".$pluginName;
+        if (class_exists($new)) {
+            $plugin = new $new;
+            $plugin->info();
+        }
+        else {
             throw new Error(__('Bad request'), 400);
         }
 
-        AdminUtils::generateAdminMenu($pluginName);
-
-        $this->feather->template->setPageInfo(array(
-                'admin_console' => true,
-                'active_page' => 'admin',
-                'availablePlugins'    =>    [],
-                'activePlugins'    =>    [],
-                'page' => $pluginName,
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension'), Utils::escape($pluginName)),
-            )
-        )->addTemplate('admin/plugins.php')->display();
     }
 
 }
