@@ -147,7 +147,12 @@ class Plugins
         $new = "\FeatherBB\Plugins\Controller\\".$pluginName;
         if (class_exists($new)) {
             $plugin = new $new;
-            $plugin->info();
+            if (method_exists($plugin, 'info')) {
+                $plugin->info();
+            }
+            else {
+                throw new Error(__('Bad request'), 400);
+            }
         }
         else {
             throw new Error(__('Bad request'), 400);
