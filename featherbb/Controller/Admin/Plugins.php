@@ -143,11 +143,12 @@ class Plugins
      */
     public function info($pluginName = null)
     {
-        $pluginName =  str_replace('-', '', $pluginName);
-        $new = "\FeatherBB\Plugins\Controller\\".$pluginName;
+        $formattedPluginName =  str_replace('-', '', $pluginName);
+        $new = "\FeatherBB\Plugins\Controller\\".$formattedPluginName;
         if (class_exists($new)) {
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {
+                AdminUtils::generateAdminMenu($pluginName);
                 $plugin->info();
             }
             else {
