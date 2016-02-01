@@ -34,7 +34,7 @@ class Groups
 
         // Set default group
         if ($this->feather->request->isPost()) {
-            $this->model->set_default_group($groups, $this->feather);
+            $this->model->set_default_group($groups);
         }
 
         AdminUtils::generateAdminMenu('groups');
@@ -43,7 +43,7 @@ class Groups
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'groups' => $this->model->fetch_groups(),
+                'groups' => $groups,
                 'cur_index' => 5,
             )
         )->addTemplate('admin/groups/admin_groups.php')->display();
@@ -104,7 +104,7 @@ class Groups
 
         // Add/edit a group (stage 2)
         if ($this->request->post('add_edit_group')) {
-            $this->model->add_edit_group($groups, $this->feather);
+            $this->model->add_edit_group($groups);
         }
 
         // Add/edit a group (stage 1)
