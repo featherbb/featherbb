@@ -23,7 +23,7 @@ class Forums
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Forums();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/forums.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/forums.mo');
     }
 
     public function add()

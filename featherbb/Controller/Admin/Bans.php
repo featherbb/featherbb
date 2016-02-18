@@ -24,9 +24,9 @@ class Bans
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Bans();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
 
-        if ($this->user->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+        if ($this->user->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
             throw new Error(__('No permission'), '403');
         }
     }

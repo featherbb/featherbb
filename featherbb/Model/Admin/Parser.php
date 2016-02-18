@@ -19,7 +19,7 @@ class Parser
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
+        Container::get('hooks') = $this->feather->hooks;
     }
 
     // Helper public function returns array of smiley image files
@@ -27,14 +27,14 @@ class Parser
     public function get_smiley_files()
     {
         $imgfiles = array();
-        $filelist = scandir(Container::get('forum_env')['FEATHER_ROOT'].'style/img/smilies');
-        $filelist = $this->hook->fire('model.admin.parser.get_smiley_files.filelist', $filelist);
+        $filelist = scandir(Config::get('forum_env')['FEATHER_ROOT'].'style/img/smilies');
+        $filelist = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.filelist', $filelist);
         foreach ($filelist as $file) {
             if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {
                 $imgfiles[] = $file;
             }
         }
-        $imgfiles = $this->hook->fire('model.admin.parser.get_smiley_files.imgfiles', $imgfiles);
+        $imgfiles = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.imgfiles', $imgfiles);
         return $imgfiles;
     }
 }

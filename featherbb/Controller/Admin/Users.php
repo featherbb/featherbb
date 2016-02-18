@@ -24,7 +24,7 @@ class Users
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Users();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/users.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/users.mo');
     }
 
     public function display()
@@ -33,7 +33,7 @@ class Users
 
         // Move multiple users to other user groups
         if ($this->request->post('move_users') || $this->request->post('move_users_comply')) {
-            if ($this->user->g_id > Container::get('forum_env')['FEATHER_ADMIN']) {
+            if ($this->user->g_id > Config::get('forum_env')['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -51,7 +51,7 @@ class Users
 
         // Delete multiple users
         if ($this->request->post('delete_users') || $this->request->post('delete_users_comply')) {
-            if ($this->user->g_id > Container::get('forum_env')['FEATHER_ADMIN']) {
+            if ($this->user->g_id > Config::get('forum_env')['FEATHER_ADMIN']) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -69,7 +69,7 @@ class Users
 
         // Ban multiple users
         if ($this->request->post('ban_users') || $this->request->post('ban_users_comply')) {
-            if ($this->user->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            if ($this->user->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -104,8 +104,8 @@ class Users
             $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
-            $can_delete = $can_move = $this->user->g_id == Container::get('forum_env')['FEATHER_ADMIN'];
-            $can_ban = $this->user->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
+            $can_delete = $can_move = $this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN'];
+            $can_ban = $this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
             View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 

@@ -24,7 +24,7 @@ class Plugins
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->model = new \FeatherBB\Model\Admin\Plugins();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/plugins.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/plugins.mo');
     }
 
     /**
@@ -32,7 +32,7 @@ class Plugins
      */
     public function download($name, $version)
     {
-        $zipFile = Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip';
+        $zipFile = Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip';
         $zipResource = fopen($zipFile, "w");
 
         // Get the zip file straight from GitHub
@@ -52,7 +52,7 @@ class Plugins
         fclose($zipResource);
 
         if (!$page) {
-            unlink(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
+            unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
             throw new Error(__('Bad request'), 400);
         }
 
@@ -62,14 +62,14 @@ class Plugins
             throw new Error(__('Bad request'), 400);
         }
 
-        $zip->extractTo(Container::get('forum_env')['FEATHER_ROOT'].'plugins');
+        $zip->extractTo(Config::get('forum_env')['FEATHER_ROOT'].'plugins');
         $zip->close();
 
-        if (file_exists(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
-            AdminUtils::delete_folder(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+        if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
+            AdminUtils::delete_folder(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
         }
-        rename(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version, Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
-        unlink(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
+        rename(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version, Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+        unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
         Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
     }
 

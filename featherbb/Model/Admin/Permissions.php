@@ -22,13 +22,13 @@ class Permissions
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
+        Container::get('hooks') = $this->feather->hooks;
     }
 
     public function update_permissions()
     {
         $form = array_map('intval', $this->request->post('form'));
-        $form = $this->hook->fire('model.admin.permissions.update_permissions.form', $form);
+        $form = Container::get('hooks')->fire('model.admin.permissions.update_permissions.form', $form);
 
         foreach ($form as $key => $input) {
             // Make sure the input is never a negative value

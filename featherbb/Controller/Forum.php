@@ -19,8 +19,8 @@ class Forum
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Forum();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/forum.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/forum.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
     }
 
     public function display($fid, $name = null, $page = null)
@@ -36,7 +36,7 @@ class Forum
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
-        $is_admmod = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
@@ -100,7 +100,7 @@ class Forum
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
+        if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -171,7 +171,7 @@ class Forum
         $moderators = $this->model->get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
+        if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 

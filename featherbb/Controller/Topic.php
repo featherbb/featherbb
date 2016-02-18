@@ -20,9 +20,9 @@ class Topic
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Topic();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/topic.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo'); // To be removed
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/post.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/topic.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo'); // To be removed
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/post.mo');
     }
 
     public function display($id = null, $name = null, $page = null, $pid = null)
@@ -30,7 +30,7 @@ class Topic
         Container::get('hooks')->fire('controller.topic.display', $id, $name, $page, $pid);
 
         // Antispam feature
-        require Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Fetch some informations about the topic
@@ -38,7 +38,7 @@ class Topic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         // Can we or can we not post replies?
         $post_link = $this->model->get_post_link($id, $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
@@ -201,7 +201,7 @@ class Topic
         $moderators = $forumModel->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
+        if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 

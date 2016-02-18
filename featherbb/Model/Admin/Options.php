@@ -24,7 +24,7 @@ class Options
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
+        Container::get('hooks') = $this->feather->hooks;
         $this->email = $this->feather->email;
     }
 
@@ -92,7 +92,7 @@ class Options
             'maintenance_message'    => Utils::trim($this->request->post('form_maintenance_message')),
         );
 
-        $form = $this->hook->fire('model.admin.options.update_options.form', $form);
+        $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
 
         if ($form['board_title'] == '') {
             throw new Error(__('Must enter title message'), 400);
@@ -239,16 +239,16 @@ class Options
 
     public function clear_feed_cache()
     {
-        $d = dir(Container::get('forum_env')['FORUM_CACHE_DIR']);
-        $d = $this->hook->fire('model.admin.options.clear_feed_cache.directory', $d);
+        $d = dir(Config::get('forum_env')['FORUM_CACHE_DIR']);
+        $d = Container::get('hooks')->fire('model.admin.options.clear_feed_cache.directory', $d);
         while (($entry = $d->read()) !== false) {
             if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
-                @unlink(Container::get('forum_env')['FORUM_CACHE_DIR'].$entry);
+                @unlink(Config::get('forum_env')['FORUM_CACHE_DIR'].$entry);
             }
             if (function_exists('opcache_invalidate')) {
-                opcache_invalidate(Container::get('forum_env')['FORUM_CACHE_DIR'].$entry, true);
+                opcache_invalidate(Config::get('forum_env')['FORUM_CACHE_DIR'].$entry, true);
             } elseif (function_exists('apc_delete_file')) {
-                @apc_delete_file(Container::get('forum_env')['FORUM_CACHE_DIR'].$entry);
+                @apc_delete_file(Config::get('forum_env')['FORUM_CACHE_DIR'].$entry);
             }
         }
         $d->close();
@@ -257,7 +257,7 @@ class Options
     public function get_styles()
     {
         $styles = \FeatherBB\Core\Lister::getStyles();
-        $styles = $this->hook->fire('model.admin.options.get_styles.styles', $styles);
+        $styles = Container::get('hooks')->fire('model.admin.options.get_styles.styles', $styles);
 
         $output = '';
 
@@ -269,14 +269,14 @@ class Options
             }
         }
 
-        $output = $this->hook->fire('model.admin.options.get_styles.output', $output);
+        $output = Container::get('hooks')->fire('model.admin.options.get_styles.output', $output);
         return $output;
     }
 
     public function get_langs()
     {
         $langs = \FeatherBB\Core\Lister::getLangs();
-        $langs = $this->hook->fire('model.admin.options.get_langs.langs', $langs);
+        $langs = Container::get('hooks')->fire('model.admin.options.get_langs.langs', $langs);
 
         $output = '';
 
@@ -288,14 +288,14 @@ class Options
             }
         }
 
-        $output = $this->hook->fire('model.admin.options.get_langs.output', $output);
+        $output = Container::get('hooks')->fire('model.admin.options.get_langs.output', $output);
         return $output;
     }
 
     public function get_times()
     {
         $times = array(5, 15, 30, 60);
-        $times = $this->hook->fire('model.admin.options.get_times.times', $times);
+        $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);
 
         $output = '';
 
@@ -303,7 +303,7 @@ class Options
             $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.($this->config['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
 
-        $output = $this->hook->fire('model.admin.options.get_times.output', $output);
+        $output = Container::get('hooks')->fire('model.admin.options.get_times.output', $output);
         return $output;
     }
 }

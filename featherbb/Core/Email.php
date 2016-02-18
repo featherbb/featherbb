@@ -15,7 +15,7 @@ class Email
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->config = $this->feather->config;
-        require Container::get('forum_env')['FEATHER_ROOT'] . 'featherbb/Helpers/utf8/utils/ascii.php';
+        require Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/Helpers/utf8/utils/ascii.php';
     }
 
     //

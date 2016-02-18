@@ -24,7 +24,7 @@ class Search
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
+        Container::get('hooks') = $this->feather->hooks;
         $this->search = new \FeatherBB\Core\Search();
     }
 
@@ -32,7 +32,7 @@ class Search
     {
         $search = array();
 
-        $search = $this->hook->fire('model.search.get_search_results_start', $search);
+        $search = Container::get('hooks')->fire('model.search.get_search_results_start', $search);
 
         $action = ($this->request->get('action')) ? $this->request->get('action') : null;
         $forums = $this->request->get('forums') ? (is_array($this->request->get('forums')) ? $this->request->get('forums') : array_filter(explode(',', $this->request->get('forums')))) : ($this->request->get('forums') ? array($this->request->get('forums')) : array());
@@ -59,7 +59,7 @@ class Search
             $keywords = ($this->request->get('keywords')) ? utf8_strtolower(Utils::trim($this->request->get('keywords'))) : null;
             $author = ($this->request->get('author')) ? utf8_strtolower(Utils::trim($this->request->get('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < Container::get('forum_env')['FEATHER_SEARCH_MIN_WORD'] && !$this->search->is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < Config::get('forum_env')['FEATHER_SEARCH_MIN_WORD'] && !$this->search->is_cjk($keywords))) {
                 $keywords = '';
             }
 
@@ -108,12 +108,12 @@ class Search
             $search_data = DB::for_table('search_cache')
                                 ->where('id', $search_id)
                                 ->where('ident', $ident);
-            $search_data = $this->hook->fireDB('model.search.get_search_results_search_data_query', $search_data);
+            $search_data = Container::get('hooks')->fireDB('model.search.get_search_results_search_data_query', $search_data);
             $search_data = $search_data->find_one_col('search_data');
 
             if ($search_data) {
                 $temp = unserialize($search_data);
-                $temp = $this->hook->fire('model.search.get_search_results_temp', $temp);
+                $temp = Container::get('hooks')->fire('model.search.get_search_results_temp', $temp);
 
                 $search_ids = unserialize($temp['search_ids']);
                 $num_hits = $temp['num_hits'];
@@ -145,7 +145,7 @@ class Search
                     $update_last_search = DB::for_table('online')
                                             ->where('ident', $this->request->getIp());
                 }
-                $update_last_search = $this->hook->fireDB('model.search.get_search_results_update_last_search', $update_last_search);
+                $update_last_search = Container::get('hooks')->fireDB('model.search.get_search_results_update_last_search', $update_last_search);
                 $update_last_search = $update_last_search->update_many('last_search', time());
 
                 switch ($sort_by) {
@@ -175,13 +175,13 @@ class Search
                         break;
                 }
 
-                $sort_by = $this->hook->fire('model.search.get_search_results_sort_by', $sort_by);
+                $sort_by = Container::get('hooks')->fire('model.search.get_search_results_sort_by', $sort_by);
 
                 // If it's a search for keywords
                 if ($keywords) {
                     // split the keywords into words
                     $keywords_array = $this->search->split_words($keywords, false);
-                    $keywords_array = $this->hook->fire('model.search.get_search_results_keywords_array', $keywords_array);
+                    $keywords_array = Container::get('hooks')->fire('model.search.get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
                         throw new Error(__('No hits'), 400);
@@ -189,7 +189,7 @@ class Search
 
                     // Should we search in message body or topic subject specifically?
                     $search_in_cond = ($search_in) ? (($search_in > 0) ? ' AND m.subject_match = 0' : ' AND m.subject_match = 1') : '';
-                    $search_in_cond = $this->hook->fire('model.search.get_search_results_search_cond', $search_in_cond);
+                    $search_in_cond = Container::get('hooks')->fire('model.search.get_search_results_search_cond', $search_in_cond);
 
                     $word_count = 0;
                     $match_type = 'and';
@@ -214,7 +214,7 @@ class Search
                                     $result = DB::for_table('posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$this->feather->forum_settings['db_prefix'].'search_words AS w INNER JOIN '.$this->feather->forum_settings['db_prefix'].'search_matches AS m ON m.word_id = w.id INNER JOIN '.$this->feather->forum_settings['db_prefix'].'posts AS p ON p.id=m.post_id INNER JOIN '.$this->feather->forum_settings['db_prefix'].'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->feather->forum_settings['db_prefix'].'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => str_replace('*', '%', $cur_word)));
                                 }
 
-                                $result = $this->hook->fireDB('model.search.get_search_results_search_first_query', $result);
+                                $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_first_query', $result);
                                 $result = $result->find_many();
 
                                 $row = array();
@@ -251,7 +251,7 @@ class Search
                         }
                     }
 
-                    $keyword_results = $this->hook->fire('model.search.get_search_results_search_keyword_results', $keyword_results);
+                    $keyword_results = Container::get('hooks')->fire('model.search.get_search_results_search_keyword_results', $keyword_results);
                     // Sort the results - annoyingly array_multisort re-indexes arrays with numeric keys, so we need to split the keys out into a separate array then combine them again after
                     $post_ids = array_keys($keyword_results);
                     $topic_ids = array_values($keyword_results);
@@ -269,7 +269,7 @@ class Search
                     $username_exists = DB::for_table('users')
                                         ->select('id')
                                         ->where_like('username', $author);
-                    $username_exists = $this->hook->fireDB('model.search.get_search_results_username_exists', $username_exists);
+                    $username_exists = Container::get('hooks')->fireDB('model.search.get_search_results_username_exists', $username_exists);
                     $username_exists = $username_exists->find_many();
 
                     if ($username_exists) {
@@ -279,7 +279,7 @@ class Search
                         }
 
                         $result = DB::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.$this->feather->forum_settings['db_prefix'].'posts AS p INNER JOIN '.$this->feather->forum_settings['db_prefix'].'topics AS t ON t.id=p.topic_id LEFT JOIN '.$this->feather->forum_settings['db_prefix'].'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$this->user->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir);
-                        $result = $this->hook->fireDB('model.search.get_search_results_search_second_query', $result);
+                        $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_second_query', $result);
                         $result = $result->find_many();
 
                         foreach($result as $temp) {
@@ -303,8 +303,8 @@ class Search
                     $search_type = array('author', Utils::trim($this->request->get('author')), implode(',', $forums), $search_in);
                 }
 
-                $search_ids = $this->hook->fire('model.search.get_search_results_search_ids', $search_ids);
-                $search_type = $this->hook->fire('model.search.get_search_results_search_type', $search_type);
+                $search_ids = Container::get('hooks')->fire('model.search.get_search_results_search_ids', $search_ids);
+                $search_type = Container::get('hooks')->fire('model.search.get_search_results_search_type', $search_type);
 
                 unset($keyword_results, $author_results);
 
@@ -316,8 +316,8 @@ class Search
 
                 $search_ids = array_unique($search_ids);
 
-                $search_ids = $this->hook->fire('model.search.get_search_results_search_ids', $search_ids);
-                $search_type = $this->hook->fire('model.search.get_search_results_search_type', $search_type);
+                $search_ids = Container::get('hooks')->fire('model.search.get_search_results_search_ids', $search_ids);
+                $search_type = Container::get('hooks')->fire('model.search.get_search_results_search_type', $search_type);
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
@@ -356,7 +356,7 @@ class Search
                         $result = $result->where('t.forum_id', intval($this->request->get('fid')));
                     }
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_topic_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -381,7 +381,7 @@ class Search
                         $result = $result->where('t.forum_id', intval($this->request->get('fid')));
                     }
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_topic_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -406,7 +406,7 @@ class Search
                         $result = $result->group_by('t.last_post');
                     }
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_topic_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -429,7 +429,7 @@ class Search
                                 ->where('p.poster_id', $user_id)
                                 ->order_by_desc('p.posted');
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_post_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_post_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -453,7 +453,7 @@ class Search
                                 ->where('p.poster_id', $user_id)
                                 ->order_by_desc('t.last_post');
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_topic_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -481,7 +481,7 @@ class Search
                                 ->where_any_is($result['where'])
                                 ->order_by_desc('t.last_post');
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_topic_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -505,7 +505,7 @@ class Search
                                 ->where_any_is($result['where'])
                                 ->order_by_desc('t.last_post');
 
-                    $result = $this->hook->fireDB('model.search.get_search_results_topic_query', $result);
+                    $result = Container::get('hooks')->fireDB('model.search.get_search_results_topic_query', $result);
                     $result = $result->find_many();
 
                     $num_hits = count($result);
@@ -531,7 +531,7 @@ class Search
             $old_searches = array();
             $result = DB::for_table('online')
                         ->select('ident');
-            $result = $this->hook->fireDB('model.search.get_search_results_prune_search', $result);
+            $result = Container::get('hooks')->fireDB('model.search.get_search_results_prune_search', $result);
             $result = $result->find_many();
 
             if ($result) {
@@ -541,7 +541,7 @@ class Search
 
                 $delete_cache = DB::for_table('search_cache')
                                     ->where_not_in('ident', $old_searches);
-                $delete_cache = $this->hook->fireDB('model.search.get_search_results_delete_cache', $delete_cache);
+                $delete_cache = Container::get('hooks')->fireDB('model.search.get_search_results_delete_cache', $delete_cache);
                 $delete_cache = $delete_cache->delete_many();
             }
 
@@ -567,7 +567,7 @@ class Search
             $cache = DB::for_table('search_cache')
                         ->create()
                         ->set($cache['insert']);
-            $cache = $this->hook->fireDB('model.search.get_search_results_update_cache', $cache);
+            $cache = Container::get('hooks')->fireDB('model.search.get_search_results_update_cache', $cache);
             $cache = $cache->save();
         }
 
@@ -624,7 +624,7 @@ class Search
                                 ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                                 ->where_in('p.id', $search_ids)
                                 ->order_by($sort_by_sql, $sort_dir);
-                $result = $this->hook->fireDB('model.search.get_search_results_select_posts_query', $result);
+                $result = Container::get('hooks')->fireDB('model.search.get_search_results_select_posts_query', $result);
             } else {
                 $result['select'] = array('tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name');
 
@@ -634,7 +634,7 @@ class Search
                                 ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                                 ->where_in('t.id', $search_ids)
                                 ->order_by($sort_by_sql, $sort_dir);
-                $result = $this->hook->fireDB('model.search.get_search_results_select_topics_query', $result);
+                $result = Container::get('hooks')->fireDB('model.search.get_search_results_select_topics_query', $result);
             }
             $result = $result->find_array();
             $search['search_set'] = array();
@@ -654,7 +654,7 @@ class Search
                     $subscriber_id = $search_type[2];
                     $subscriber_name = DB::for_table('users')
                                             ->where('id', $subscriber_id);
-                    $subscriber_name = $this->hook->fireDB('model.search.get_search_results_subscriber_name', $result);
+                    $subscriber_name = Container::get('hooks')->fireDB('model.search.get_search_results_subscriber_name', $result);
                     $subscriber_name = $subscriber_name->find_one_col('username');
 
                     if (!$subscriber_name) {
@@ -686,14 +686,14 @@ class Search
 
         $search['show_as'] = $show_as;
 
-        $search = $this->hook->fire('model.search.get_search_results', $search);
+        $search = Container::get('hooks')->fire('model.search.get_search_results', $search);
 
         return $search;
     }
 
     public function display_search_results($search)
     {
-        $search = $this->hook->fire('model.search.display_search_results_start', $search);
+        $search = Container::get('hooks')->fire('model.search.display_search_results_start', $search);
 
         // Get topic/forum tracking data
         if (!$this->user->is_guest) {
@@ -797,7 +797,7 @@ class Search
 
             $display['cur_search'][] = $cur_search;
         }
-        $display = $this->hook->fire('model.search.display_search_results', $display, $search);
+        $display = Container::get('hooks')->fire('model.search.display_search_results', $display, $search);
 
         return $display;
     }
@@ -806,7 +806,7 @@ class Search
     {
         $output = '';
 
-        $output = $this->hook->fire('model.search.get_list_forums_start', $output);
+        $output = Container::get('hooks')->fire('model.search.get_list_forums_start', $output);
 
         $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url');
         $result['where'] = array(
@@ -824,7 +824,7 @@ class Search
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($result['order_by']);
-        $result = $this->hook->fireDB('model.search.get_list_forums_query', $result);
+        $result = Container::get('hooks')->fireDB('model.search.get_list_forums_query', $result);
         $result = $result->find_many();
 
         // We either show a list of forums of which multiple can be selected
@@ -886,7 +886,7 @@ class Search
             $output .= "\t\t\t\t\t\t".'<br /></label>'."\n";
         }
 
-        $output = $this->hook->fire('model.search.get_list_forums', $output);
+        $output = Container::get('hooks')->fire('model.search.get_list_forums', $output);
 
         return $output;
     }

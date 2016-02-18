@@ -20,13 +20,13 @@ class Plugins
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        $this->hooks = $this->feather->hooks;
+        Container::get('hooks')s = $this->feather->hooks;
         $this->manager = new PluginManager();
     }
 
     public function activate($name)
     {
-        $name = $this->hooks->fire('model.plugin.activate.name', $name);
+        $name = Container::get('hooks')s->fire('model.plugin.activate.name', $name);
         $activePlugins = $this->manager->getActivePlugins();
 
         // Check if plugin is not yet activated...
@@ -44,7 +44,7 @@ class Plugins
 
             // ... Save in DB ...
             $plugin->set('installed', 1);
-            $plugin = $this->hooks->fireDB('model.plugin.activate', $plugin);
+            $plugin = Container::get('hooks')s->fireDB('model.plugin.activate', $plugin);
             $plugin->save();
 
             // ... And regenerate cache.
@@ -60,7 +60,7 @@ class Plugins
      */
     public function deactivate($name)
     {
-        $name = $this->hooks->fire('model.plugin.deactivate.name', $name);
+        $name = Container::get('hooks')s->fire('model.plugin.deactivate.name', $name);
         $activePlugins = $this->manager->getActivePlugins();
 
         // Check if plugin is actually activated
@@ -74,7 +74,7 @@ class Plugins
             // Allow additionnal deactivate functions
             $this->manager->deactivate($name);
 
-            $plugin = $this->hooks->fireDB('model.plugin.deactivate', $plugin);
+            $plugin = Container::get('hooks')s->fireDB('model.plugin.deactivate', $plugin);
             $plugin->save();
 
             $this->manager->setActivePlugins();
@@ -89,7 +89,7 @@ class Plugins
      */
     public function uninstall($name)
     {
-        $name = $this->hooks->fire('model.plugin.uninstall.name', $name);
+        $name = Container::get('hooks')s->fire('model.plugin.uninstall.name', $name);
         $activePlugins = $this->manager->getActivePlugins();
 
         // Check if plugin is disabled, for security
@@ -103,8 +103,8 @@ class Plugins
             // Allow additional uninstalling functions
             $this->manager->uninstall($name);
 
-            if (file_exists(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
-                AdminUtils::delete_folder(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
+                AdminUtils::delete_folder(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
             }
 
             $this->manager->setActivePlugins();

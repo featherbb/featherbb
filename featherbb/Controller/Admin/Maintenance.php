@@ -18,7 +18,7 @@ class Maintenance
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/maintenance.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/maintenance.mo');
     }
 
     public function display()

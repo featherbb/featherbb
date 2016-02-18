@@ -19,13 +19,13 @@ class Post
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Post();
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/delete.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/post.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.mo');
-        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/bbeditor.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/delete.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/post.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/bbeditor.mo');
     }
 
     public function newreply($fid = null, $tid = null, $qid = null)
@@ -40,7 +40,7 @@ class Post
         Container::get('hooks')->fire('controller.post.create', $fid, $tid, $qid);
 
         // Antispam feature
-        require Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
@@ -60,7 +60,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
         if ((($tid && (($cur_posting['post_replies'] == '' && Container::get('user')->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
@@ -226,7 +226,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
@@ -239,7 +239,7 @@ class Post
             throw new Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -267,7 +267,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $id == $cur_post['first_post_id'];
 
@@ -281,7 +281,7 @@ class Post
             throw new Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             throw new Error(__('No permission'), 403);
         }
 

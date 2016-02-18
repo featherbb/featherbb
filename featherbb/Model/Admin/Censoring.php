@@ -24,7 +24,7 @@ class Censoring
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
+        Container::get('hooks') = $this->feather->hooks;
     }
 
     public function add_word()
@@ -39,7 +39,7 @@ class Censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        $set_search_word = $this->hook->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
+        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
 
         $result = DB::for_table('censoring')
             ->create()
@@ -67,7 +67,7 @@ class Censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        $set_search_word = $this->hook->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
+        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
 
         $result = DB::for_table('censoring')
             ->find_one($id)
@@ -84,10 +84,10 @@ class Censoring
     public function remove_word()
     {
         $id = intval(key($this->request->post('remove')));
-        $id = $this->hook->fire('model.admin.censoring.remove_censoring_word_start', $id);
+        $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
 
         $result = DB::for_table('censoring')->find_one($id);
-        $result = $this->hook->fireDB('model.admin.censoring.remove_censoring_word', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.censoring.remove_censoring_word', $result);
         $result = $result->delete();
 
         // Regenerate the censoring cache
@@ -103,7 +103,7 @@ class Censoring
 
         $word_data = DB::for_table('censoring')
                         ->order_by_asc('id');
-        $word_data = $this->hook->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);
+        $word_data = Container::get('hooks')->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);
         $word_data = $word_data->find_array();
 
         return $word_data;
