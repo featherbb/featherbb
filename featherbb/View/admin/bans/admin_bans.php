@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.bans.admin_bans.start');
     <div class="blockform">
         <h2><span><?php _e('New ban head') ?></span></h2>
         <div class="box">
-            <form id="bans" method="post" action="<?= $feather->urlFor('addBan') ?>">
+            <form id="bans" method="post" action="<?= Router::pathFor('addBan') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
                     <fieldset>
@@ -41,7 +41,7 @@ Container::get('hooks')->fire('view.admin.bans.admin_bans.start');
 
         <h2 class="block2"><span><?php _e('Ban search head') ?></span></h2>
         <div class="box">
-            <form id="find_bans" method="get" action="<?= $feather->urlFor('addBan') ?>">
+            <form id="find_bans" method="get" action="<?= Router::pathFor('addBan') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <p class="submittop"><input type="submit" name="find_ban" value="<?php _e('Submit search') ?>" tabindex="3" /></p>
                 <div class="inform">

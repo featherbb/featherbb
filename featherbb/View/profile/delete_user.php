@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.profile.delete_user.start');
 <div class="blockform">
     <h2><span><?php _e('Confirm delete user') ?></span></h2>
     <div class="box">
-        <form id="confirm_del_user" method="post" action="<?= $feather->urlFor('userProfile', ['id' => $id]) ?>">
+        <form id="confirm_del_user" method="post" action="<?= Router::pathFor('userProfile', ['id' => $id]) ?>">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <fieldset>

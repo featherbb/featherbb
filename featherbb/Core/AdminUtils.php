@@ -20,7 +20,7 @@ class AdminUtils
     {
         self::$feather = \Slim\Slim::getInstance();
 
-        $is_admin = (self::$feather->user->g_id == self::$feather->forum_env['FEATHER_ADMIN']) ? true : false;
+        $is_admin = (self::Container::get('user')->g_id == self::$feather->forum_env['FEATHER_ADMIN']) ? true : false;
 
         // See if there are any plugins that want to display in the menu
         $plugins = self::adminPluginsMenu($is_admin);

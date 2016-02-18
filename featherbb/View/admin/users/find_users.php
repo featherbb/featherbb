@@ -20,8 +20,8 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
 </div>
 
 
-<form id="search-users-form" action="<?= $feather->urlFor('adminUsers') ?>" method="post">
+<form id="search-users-form" action="<?= Router::pathFor('adminUsers') ?>" method="post">
 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <div id="users2" class="blocktable">
     <h2><span><?php _e('Results head') ?></span></h2>
@@ -58,12 +58,12 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
         foreach ($user_data as $user) {
             ?>
                 <tr>
-                    <td class="tcl"><?= '<a href="'.$feather->urlFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
+                    <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
                     <td class="tc2"><a href="mailto:<?= Utils::escape($user['email']) ?>"><?= Utils::escape($user['email']) ?></a></td>
                     <td class="tc3"><?= $user['user_title'] ?></td>
                     <td class="tc4"><?= Utils::forum_number_format($user['num_posts']) ?></td>
                     <td class="tc5"><?php echo($user['admin_note'] != '') ? Utils::escape($user['admin_note']) : '&#160;' ?></td>
-                    <td class="tcr"><?= '<a href="'.$feather->urlFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.$feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
+                    <td class="tcr"><?= '<a href="'.Router::pathFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
 <?php if ($can_action): ?>                    <td class="tcmod"><input type="checkbox" name="users[<?= $user['id'] ?>]" value="1" /></td>
 <?php endif;
             ?>
@@ -94,8 +94,8 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
     ?>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
         <div class="clearer"></div>

@@ -26,10 +26,10 @@ Container::get('hooks')->fire('view.admin.statistics.start');
                     <dd>
                         <?php printf(__('Server load data')."\n", $server_load, $num_online) ?>
                     </dd>
-<?php if ($feather->user->g_id == $feather->forum_env['FEATHER_ADMIN']): ?>                    <dt><?php _e('Environment label') ?></dt>
+<?php if (Container::get('user')->g_id == $feather->forum_env['FEATHER_ADMIN']): ?>                    <dt><?php _e('Environment label') ?></dt>
                     <dd>
                         <?php printf(__('Environment data OS'), PHP_OS) ?><br />
-                        <?php printf(__('Environment data version'), phpversion(), '<a href="'.$feather->urlFor('phpInfo').'">'.__('Show info').'</a>') ?><br />
+                        <?php printf(__('Environment data version'), phpversion(), '<a href="'.Router::pathFor('phpInfo').'">'.__('Show info').'</a>') ?><br />
                         <?php printf(__('Environment data acc')."\n", $php_accelerator) ?>
                     </dd>
                     <dt><?php _e('Database label') ?></dt>

@@ -43,7 +43,7 @@ class Auth
                 $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == Config::get('forum_env')['FEATHER_UNVERIFIED']) {
-                        ModelAuth::update_group($user->id, $this->feather->forum_settings['o_default_user_group']);
+                        ModelAuth::update_group($user->id, Config::get('forum_settings')['o_default_user_group']);
                         if (!$this->feather->cache->isCached('users_info')) {
                             $this->feather->cache->store('users_info', Cache::get_users_info());
                         }
@@ -53,18 +53,18 @@ class Auth
                     // Reset tracked topics
                     Track::set_tracked_topics(null);
 
-                    $expire = ($save_pass) ? $this->feather->now + 1209600 : $this->feather->now + $this->feather->forum_settings['o_timeout_visit'];
+                    $expire = ($save_pass) ? $this->feather->now + 1209600 : $this->feather->now + Config::get('forum_settings')['o_timeout_visit'];
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
                     ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
                     Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 }
             }
-            throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
+            throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             View::setPageInfo(array(
                                 'active_page' => 'login',
-                                'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Login')),
+                                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Login')),
                                 'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
                                 'focus_element' => array('login', 'req_username'),
                                 )
@@ -119,7 +119,7 @@ class Auth
 
                 // Do the generic replacements first (they apply to all emails sent out here)
                 $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
-                $mail_message = str_replace('<board_mailer>', $this->feather->forum_settings['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
 
                 $mail_message = Container::get('hooks')->fire('controller.mail_message_password_forgotten', $mail_message);
 
@@ -135,13 +135,13 @@ class Auth
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
-                $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
+                $cur_mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
                 $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
+                Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 200);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }
@@ -150,7 +150,7 @@ class Auth
         View::setPageInfo(array(
 //                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Request pass')),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Request pass')),
                 'required_fields' => array('req_email' => __('Email')),
                 'focus_element' => array('request_pass', 'req_email'),
             )

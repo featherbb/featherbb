@@ -59,7 +59,7 @@ class Utils
     //
     // Format a time string according to $time_format and time zones
     //
-    public function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
+    public static function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
     {
         global $forum_date_formats, $forum_time_formats;
 

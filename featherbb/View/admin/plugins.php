@@ -34,10 +34,10 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                 <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
                                 <div class="plugin-actions">
                                     <?php if (in_array($plugin->name, $activePlugins)) { ?>
-                                        <a href="<?= $feather->urlFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Deactivate') ?></a>
+                                        <a href="<?= Router::pathFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Deactivate') ?></a>
                                     <?php } else { ?>
-                                        <a href="<?= $feather->urlFor('activatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Activate') ?></a> <br>
-                                        <a href="<?= $feather->urlFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?php _e('Uninstall') ?></a>
+                                        <a href="<?= Router::pathFor('activatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Activate') ?></a> <br>
+                                        <a href="<?= Router::pathFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?php _e('Uninstall') ?></a>
                                     <?php } ?>
                                 </div>
                             </td>
@@ -68,7 +68,7 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                         <td>
                             <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
                             <div class="plugin-actions">
-                                <a href="<?= $feather->urlFor('downloadPlugin', ['name' => $plugin->name, 'version' => $plugin->version]) ?>">Download</a>
+                                <a href="<?= Router::pathFor('downloadPlugin', ['name' => $plugin->name, 'version' => $plugin->version]) ?>">Download</a>
                             </div>
                         </td>
                         <td>

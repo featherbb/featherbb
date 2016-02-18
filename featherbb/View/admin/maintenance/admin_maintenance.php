@@ -18,13 +18,13 @@ Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
     <div class="blockform">
         <h2><span><?php _e('Maintenance head') ?></span></h2>
         <div class="box">
-            <form method="get" action="<?= $feather->urlFor('adminMaintenance') ?>">
+            <form method="get" action="<?= Router::pathFor('adminMaintenance') ?>">
                 <div class="inform">
                     <input type="hidden" name="action" value="rebuild" />
                     <fieldset>
                         <legend><?php _e('Rebuild index subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php printf(__('Rebuild index info'), '<a href="'.$feather->urlFor('adminOptions').'#maintenance">'.__('Maintenance mode').'</a>') ?></p>
+                            <p><?php printf(__('Rebuild index info'), '<a href="'.Router::pathFor('adminOptions').'#maintenance">'.__('Maintenance mode').'</a>') ?></p>
                             <table class="aligntop">
                                 <tr>
                                     <th scope="row"><?php _e('Posts per cycle label') ?></th>
@@ -54,7 +54,7 @@ Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
                 </div>
             </form>
 
-            <form method="post" action="<?= $feather->urlFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
+            <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
                     <input type="hidden" name="action" value="prune" />
@@ -89,7 +89,7 @@ Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
                                     </td>
                                 </tr>
                             </table>
-                            <p class="topspace"><?php printf(__('Prune info'), '<a href="'.$feather->urlFor('adminOptions').'#maintenance">'.__('Maintenance mode').'</a>') ?></p>
+                            <p class="topspace"><?php printf(__('Prune info'), '<a href="'.Router::pathFor('adminOptions').'#maintenance">'.__('Maintenance mode').'</a>') ?></p>
                             <div class="fsetsubmit"><input type="submit" name="prune" value="<?php _e('Prune') ?>" tabindex="8" /></div>
                         </div>
                     </fieldset>

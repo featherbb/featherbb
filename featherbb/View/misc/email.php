@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.misc.email.start');
 <div id="emailform" class="blockform">
     <h2><span><?php _e('Send email to') ?> <?= Utils::escape($mail['recipient']) ?></span></h2>
     <div class="box">
-        <form id="email" method="post" action="<?= $feather->urlFor('email', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+        <form id="email" method="post" action="<?= Router::pathFor('email', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <fieldset>

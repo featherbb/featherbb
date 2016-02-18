@@ -62,31 +62,31 @@ class Topic
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'topic/'.$id.'/'.$url_topic.'/#');
 
-        if ($this->feather->forum_settings['o_censoring'] == '1') {
+        if (Config::get('forum_settings')['o_censoring'] == '1') {
             $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
         $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $id);
 
-        View::addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]));
+        View::addAsset('canonical', Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
-        if ($this->feather->forum_settings['o_feed_type'] == '1') {
+        if (Config::get('forum_settings')['o_feed_type'] == '1') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
-        } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
+        } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
             'active_page' => 'Topic',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

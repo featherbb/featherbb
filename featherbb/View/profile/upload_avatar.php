@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.profile.upload_avatar.start');
 <div class="blockform">
     <h2><span><?php _e('Upload avatar') ?></span></h2>
     <div class="box">
-        <form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?= $feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar2']) ?>" onsubmit="return process_form(this)">
+        <form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'upload_avatar2']) ?>" onsubmit="return process_form(this)">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <fieldset>

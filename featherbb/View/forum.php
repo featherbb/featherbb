@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.forum.start');
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><strong><a href="<?php $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+            <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
@@ -96,7 +96,7 @@ Container::get('hooks')->fire('view.forum.start');
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><strong><a href="<?php $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+            <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
         <div class="clearer"></div>

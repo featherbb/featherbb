@@ -20,13 +20,13 @@ Container::get('hooks')->fire('view.admin.censoring.start');
     <div class="blockform">
         <h2><span><?php _e('Censoring head') ?></span></h2>
         <div class="box">
-            <form id="censoring" method="post" action="<?= $feather->urlFor('adminCensoring') ?>">
+            <form id="censoring" method="post" action="<?= Router::pathFor('adminCensoring') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Add word subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php _e('Add word info'); echo (Config::get('forum_settings')['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
+                            <p><?php _e('Add word info'); echo (Config::get('forum_settings')['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
                             <table>
                             <thead>
                                 <tr>

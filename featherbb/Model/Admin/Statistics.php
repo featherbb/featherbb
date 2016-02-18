@@ -65,9 +65,9 @@ class Statistics
     {
         $total = array();
 
-        if ($this->feather->forum_settings['db_type'] == 'mysql' || $this->feather->forum_settings['db_type'] == 'mysqli' || $this->feather->forum_settings['db_type'] == 'mysql_innodb' || $this->feather->forum_settings['db_type'] == 'mysqli_innodb') {
+        if (Config::get('forum_settings')['db_type'] == 'mysql' || Config::get('forum_settings')['db_type'] == 'mysqli' || Config::get('forum_settings')['db_type'] == 'mysql_innodb' || Config::get('forum_settings')['db_type'] == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.$this->feather->forum_settings['db_prefix'].'%\'')->find_many();
+            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.Config::get('forum_settings')['db_prefix'].'%\'')->find_many();
             $result = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;
@@ -76,7 +76,7 @@ class Statistics
                 $total['size'] += $status['Data_length'] + $status['Index_length'];
             }
 
-            $total['size'] = $this->feather->utils->file_size($total['size']);
+            $total['size'] = Utils::file_size($total['size']);
         }
 
         $total = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.total', $total);

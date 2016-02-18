@@ -22,10 +22,10 @@ Container::get('hooks')->fire('view.post.start');
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $cur_posting['id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_posting['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_posting['id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_posting['forum_name']) ?></a></li>
 <?php if ($feather->request->post('req_subject')): ?>            <li><span>»&#160;</span><?= Utils::escape($feather->request->post('req_subject')) ?></li>
 <?php endif; ?>
-<?php if (isset($cur_posting['subject'])): ?>            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $tid, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_posting['subject']) ?></a></li>
+<?php if (isset($cur_posting['subject'])): ?>            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $tid, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_posting['subject']) ?></a></li>
 <?php endif; ?>            <li><span>»&#160;</span><strong><?= $action ?></strong></li>
         </ul>
     </div>
@@ -89,7 +89,7 @@ $cur_index = 1;
                         <input type="hidden" name="form_sent" value="1" />
                                                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <?php
-if ($feather->user->is_guest) {
+if (Container::get('user')->is_guest) {
     $email_label = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
     $email_form_name = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? 'req_email' : 'email';
     ?>
@@ -112,10 +112,10 @@ if ($fid): ?>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
                         <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
                         <ul class="bblinks">
-                            <li><span><a href="<?= $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Config::get('forum_settings')['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(Config::get('forum_settings')['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Config::get('forum_settings')['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(Config::get('forum_settings')['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
                         </ul>
                     </div>
                 </fieldset>
@@ -136,7 +136,7 @@ if (!empty($checkboxes)) {
 }
 ?>
             </div>
-            <?php if ($feather->user->is_guest) : ?>
+            <?php if (Container::get('user')->is_guest) : ?>
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Robot title') ?></legend>

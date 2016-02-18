@@ -167,13 +167,13 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
+                $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
                 $user_avatar = Utils::generate_avatar_markup($id);
                 if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
+                    $avatar_field .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
+                    $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user['signature'] != '') {
@@ -351,7 +351,7 @@ class Profile
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
             'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
             'focus_element' => array('email', 'req_subject'),

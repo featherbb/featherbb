@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.users.delete_users.start');
     <div class="blockform">
         <h2><span><?php _e('Delete users') ?></span></h2>
         <div class="box">
-            <form name="confirm_del_users" method="post" action="<?= $feather->urlFor('adminUsers') ?>">
+            <form name="confirm_del_users" method="post" action="<?= Router::pathFor('adminUsers') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <input type="hidden" name="users" value="<?= implode(',', $user_ids) ?>" />
                 <div class="inform">

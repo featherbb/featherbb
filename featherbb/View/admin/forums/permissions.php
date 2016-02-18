@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
     <div class="blockform">
         <h2><span><?php _e('Edit forum head') ?></span></h2>
         <div class="box">
-            <form id="edit_forum" method="post" action="<?= $feather->urlFor('editForum', ['id' => $cur_forum['id']]) ?>">
+            <form id="edit_forum" method="post" action="<?= Router::pathFor('editForum', ['id' => $cur_forum['id']]) ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="6" /></p>
                 <div class="inform">

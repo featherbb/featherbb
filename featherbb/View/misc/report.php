@@ -22,8 +22,8 @@ Container::get('hooks')->fire('view.misc.email.report');
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('viewPost', ['pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('viewPost', ['pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Report post') ?></strong></li>
         </ul>
     </div>
@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.misc.email.report');
 <div id="reportform" class="blockform">
     <h2><span><?php _e('Report post') ?></span></h2>
     <div class="box">
-        <form id="report" method="post" action="<?= $feather->urlFor('report', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+        <form id="report" method="post" action="<?= Router::pathFor('report', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <fieldset>

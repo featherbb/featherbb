@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.maintenance.prune.start');
     <div class="blockform">
         <h2><span><?php _e('Prune head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('adminMaintenance') ?>">
+            <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
                     <input type="hidden" name="action" value="prune" />

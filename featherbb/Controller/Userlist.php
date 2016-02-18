@@ -32,7 +32,7 @@ class Userlist
         }
 
         // Determine if we are allowed to view post counts
-        $show_post_count = ($this->feather->forum_settings['o_show_post_count'] == '1' || Container::get('user')->is_admmod) ? true : false;
+        $show_post_count = (Config::get('forum_settings')['o_show_post_count'] == '1' || Container::get('user')->is_admmod) ? true : false;
 
         $username = $this->feather->request->get('username') && Container::get('user')->g_search_users == '1' ? Utils::trim($this->feather->request->get('username')) : '';
         $show_group = $this->feather->request->get('show_group') ? intval($this->feather->request->get('show_group')) : -1;
@@ -58,7 +58,7 @@ class Userlist
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('User list')),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('User list')),
             'active_page' => 'userlist',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

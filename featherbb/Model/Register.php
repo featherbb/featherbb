@@ -24,7 +24,6 @@ class Register
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
         $this->email = $this->feather->email;
         $this->auth = new \FeatherBB\Model\Auth();
     }
@@ -167,7 +166,7 @@ class Register
         $user = Container::get('hooks')->fireDB('model.register.insert_user_query', $user);
         $user = $user->save();
 
-        $new_uid = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'users');
+        $new_uid = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'users');
 
 
         if ($this->config['o_regs_verify'] == '0') {
@@ -195,7 +194,7 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<email>', $user['email1'], $mail_message);
-                $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $new_uid]), $mail_message);
+                $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_banned_mail_message', $mail_message);
 
@@ -216,7 +215,7 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $new_uid]), $mail_message);
+                $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_message', $mail_message);
 
@@ -236,9 +235,9 @@ class Register
 
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<base_url>', $this->feather->urlFor('home'), $mail_message);
-                $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<admin_url>', $this->feather->urlFor('profileSection', ['id' => $new_uid, 'section' => 'admin']), $mail_message);
+                $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
+                $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
+                $mail_message = str_replace('<admin_url>', Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin']), $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_new_mail_message', $mail_message);
 
@@ -259,10 +258,10 @@ class Register
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_subject = str_replace('<board_title>', $this->config['o_board_title'], $mail_subject);
-            $mail_message = str_replace('<base_url>', $this->feather->urlFor('home'), $mail_message);
+            $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<password>', $user['password1'], $mail_message);
-            $mail_message = str_replace('<login_url>', $this->feather->urlFor('login'), $mail_message);
+            $mail_message = str_replace('<login_url>', Router::pathFor('login'), $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_message', $mail_message);
 

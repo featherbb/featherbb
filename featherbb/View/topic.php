@@ -22,8 +22,8 @@ Container::get('hooks')->fire('view.topic.start');
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $cur_topic['forum_id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><strong><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></strong></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_topic['forum_id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><strong><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
@@ -44,7 +44,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-    <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= $feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= $feather->utils->format_time($post['posted']) ?></a></span></h2>
+    <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= $feather->utils->format_time($post['posted']) ?></a></span></h2>
     <div class="box">
         <div class="inbox">
             <div class="postbody">
@@ -113,8 +113,8 @@ foreach ($post_data as $post) {
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $cur_topic['forum_id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><strong><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></strong></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_topic['forum_id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><strong><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></strong></li>
         </ul>
 <?= $subscraction ?>
         <div class="clearer"></div>
@@ -131,7 +131,7 @@ if ($quickpost) {
 <div id="quickpost" class="blockform">
     <h2><span><?php _e('Quick post') ?></span></h2>
     <div class="box">
-        <form id="quickpostform" method="post" action="<?= $feather->urlFor('newReply', ['tid' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+        <form id="quickpostform" method="post" action="<?= Router::pathFor('newReply', ['tid' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <fieldset>
@@ -140,10 +140,10 @@ if ($quickpost) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="pid" value="<?= Utils::escape($pid) ?>" />
                         <input type="hidden" name="page" value="<?= Utils::escape($page_number) ?>" />
-<?php if (Config::get('forum_settings')['o_topic_subscriptions'] == '1' && ($feather->user->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
+<?php if (Config::get('forum_settings')['o_topic_subscriptions'] == '1' && (Container::get('user')->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
-    if ($feather->user->is_guest) {
+    if (Container::get('user')->is_guest) {
         $email_label = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
         $email_form_name = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? 'req_email' : 'email';
         ?>
@@ -160,19 +160,19 @@ if ($quickpost) {
     ?>
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>"></textarea></label>
                         <ul class="bblinks">
-                            <li><span><a href="<?= $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1') ? __('on') : __('off');
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1') ? __('on') : __('off');
     ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off');
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off');
     ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Config::get('forum_settings')['p_message_img_tag'] == '1') ? __('on') : __('off');
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Config::get('forum_settings')['p_message_img_tag'] == '1') ? __('on') : __('off');
     ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(Config::get('forum_settings')['o_smilies'] == '1') ? __('on') : __('off');
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(Config::get('forum_settings')['o_smilies'] == '1') ? __('on') : __('off');
     ?></span></li>
                         </ul>
                     </div>
                 </fieldset>
             </div>
-            <?php if ($feather->user->is_guest) : ?>
+            <?php if (Container::get('user')->is_guest) : ?>
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Robot title') ?></legend>

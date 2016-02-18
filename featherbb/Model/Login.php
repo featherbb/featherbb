@@ -54,7 +54,7 @@ class Login
         $authorized = Container::get('hooks')->fire('model.login.authorized_login', $authorized);
 
         if (!$authorized) {
-            throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
+            throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         }
 
         // Update the status if this is the first time the user logged in
@@ -189,7 +189,7 @@ class Login
 
                         // Do the user specific replacements to the template
                         $cur_mail_message = str_replace('<username>', $cur_hit->username, $mail_message);
-                        $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['id' => $cur_hit->id, 'action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
+                        $cur_mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $cur_hit->id, 'action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                         $cur_mail_message = Container::get('hooks')->fire('model.login.cur_mail_message_password_forgotten', $cur_mail_message);
 
@@ -239,7 +239,7 @@ class Login
         }
 
         if (!isset($redirect_url)) {
-            $redirect_url = $this->feather->urlFor('userProfile', ['id' => $recipient_id]);
+            $redirect_url = Router::pathFor('userProfile', ['id' => $recipient_id]);
         } elseif (preg_match('%Topic\.php\?pid=(\d+)$%', $redirect_url, $matches)) {
             $redirect_url .= '#p'.$matches[1];
         }

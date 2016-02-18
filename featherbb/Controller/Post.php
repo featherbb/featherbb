@@ -105,7 +105,7 @@ class Post
                                 $new = $this->model->insert_reply($post, $tid, $cur_posting, $is_subscribed);
 
                                 // Should we send out notifications?
-                                if ($this->feather->forum_settings['o_topic_subscriptions'] == '1') {
+                                if (Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
                                     $this->model->send_notifications_reply($tid, $cur_posting, $new['pid'], $post);
                                 }
                         }
@@ -115,13 +115,13 @@ class Post
                                 $new = $this->model->insert_topic($post, $fid);
 
                                 // Should we send out notifications?
-                                if ($this->feather->forum_settings['o_forum_subscriptions'] == '1') {
+                                if (Config::get('forum_settings')['o_forum_subscriptions'] == '1') {
                                     $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
                                 }
                         }
 
                         // If we previously found out that the email was banned
-                        if (Container::get('user')->is_guest && isset($errors['banned_email']) && $this->feather->forum_settings['o_mailing_list'] != '') {
+                        if (Container::get('user')->is_guest && isset($errors['banned_email']) && Config::get('forum_settings')['o_mailing_list'] != '') {
                             $this->model->warn_banned_user($post, $new['pid']);
                         }
 
@@ -139,18 +139,18 @@ class Post
         // If a topic ID was specified in the url (it's a reply)
         if ($tid) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.$this->feather->urlFor('newReply', ['tid' => $tid]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.Router::pathFor('newReply', ['tid' => $tid]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
 
                 // If a quote ID was specified in the url
                 if (isset($qid)) {
                     $quote = $this->model->get_quote_message($qid, $tid);
-                    $form = '<form id="post" method="post" action="'.$this->feather->urlFor('newQuoteReply', ['pid' => $tid, 'qid' => $qid]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['pid' => $tid, 'qid' => $qid]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($fid) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.$this->feather->urlFor('newTopic', ['fid' => $fid]).'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.Router::pathFor('newTopic', ['fid' => $fid]).'" onsubmit="return process_form(this)">';
         } else {
             throw new Error(__('Bad request'), 404);
         }
@@ -183,14 +183,14 @@ class Post
         $checkboxes = $this->model->get_checkboxes($fid, $is_admmod, $is_subscribed);
 
         // Check to see if the topic review is to be displayed
-        if ($tid && $this->feather->forum_settings['o_topic_review'] != '0') {
+        if ($tid && Config::get('forum_settings')['o_topic_review'] != '0') {
             $post_data = $this->model->topic_review($tid);
         } else {
             $post_data = '';
         }
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), $action),
                 'required_fields' => $required_fields,
                 'focus_element' => $focus_element,
                 'active_page' => 'post',
@@ -220,7 +220,7 @@ class Post
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($id);
 
-        if ($this->feather->forum_settings['o_censoring'] == '1') {
+        if (Config::get('forum_settings')['o_censoring'] == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
@@ -250,7 +250,7 @@ class Post
         $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
             'id' => $id,
@@ -342,12 +342,12 @@ class Post
         // Fetch some info about the post, the topic and the forum
         $cur_post = $this->model->get_info_report($id);
 
-        if ($this->feather->forum_settings['o_censoring'] == '1') {
+        if (Config::get('forum_settings')['o_censoring'] == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Report post')),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),
             'focus_element' => array('report', 'req_reason'),

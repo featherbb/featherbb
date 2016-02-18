@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.profile.section_messaging.start');
 <div class="blockform">
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section messaging') ?></span></h2>
     <div class="box">
-        <form id="profile3" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'messaging']) ?>">
+        <form id="profile3" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'messaging']) ?>">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <fieldset>

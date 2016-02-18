@@ -148,14 +148,14 @@ class Post
             $subject = Utils::trim($this->request->post('req_subject'));
             $subject = Container::get('hooks')->fire('model.post.check_errors_before_new_topic_subject', $subject);
 
-            if ($this->config['o_censoring'] == '1') {
+            if (Config::get('forum_settings')['o_censoring'] == '1') {
                 $censored_subject = Utils::trim(Utils::censor($subject));
                 $censored_subject = Container::get('hooks')->fire('model.post.check_errors_before_censored', $censored_subject);
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
+            } elseif (Config::get('forum_settings')['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
@@ -209,7 +209,7 @@ class Post
             $errors = Container::get('hooks')->fire('model.post.check_errors_before_post_no_error', $errors);
             if ($message == '') {
                 $errors[] = __('No message');
-            } elseif ($this->config['o_censoring'] == '1') {
+            } elseif (Config::get('forum_settings')['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
                 $censored_message = Utils::trim(Utils::censor($message));
 
@@ -232,13 +232,13 @@ class Post
         if ($can_edit_subject) {
             $subject = Utils::trim($this->request->post('req_subject'));
 
-            if ($this->config['o_censoring'] == '1') {
+            if (Config::get('forum_settings')['o_censoring'] == '1') {
                 $censored_subject = Utils::trim(Utils::censor($subject));
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif ($this->config['o_censoring'] == '1' && $censored_subject == '') {
+            } elseif (Config::get('forum_settings')['o_censoring'] == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
@@ -265,7 +265,7 @@ class Post
         if (empty($errors)) {
             if ($message == '') {
                 $errors[] = __('No message');
-            } elseif ($this->config['o_censoring'] == '1') {
+            } elseif (Config::get('forum_settings')['o_censoring'] == '1') {
                 // Censor message to see if that causes problems
                 $censored_message = Utils::trim(Utils::censor($message));
 
@@ -615,7 +615,7 @@ class Post
                 $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
                 $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
                 $mail_message = str_replace('<username>', $this->user->username, $mail_message);
-                $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
+                $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
 
@@ -692,7 +692,7 @@ class Post
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_guest_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'posts');
+            $new['pid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'posts');
 
             // To subscribe or not to subscribe, that ...
             if ($this->config['o_topic_subscriptions'] == '1') {
@@ -743,7 +743,7 @@ class Post
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_member_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'posts');
+            $new['pid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'posts');
         }
 
         // Update topic
@@ -810,7 +810,7 @@ class Post
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
 
-            if ($this->config['o_censoring'] == '1') {
+            if (Config::get('forum_settings')['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
             } else {
                 $cleaned_message = $this->email->bbcode2email($post['message'], -1);
@@ -842,8 +842,8 @@ class Post
                         $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
                         $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $tid]), $mail_message);
+                        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                         $mail_message = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message', $mail_message);
 
@@ -851,8 +851,8 @@ class Post
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
+                        $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
 
@@ -905,7 +905,7 @@ class Post
         $topic = Container::get('hooks')->fireDB('model.post.insert_topic_create', $topic);
         $topic = $topic->save();
 
-        $new['tid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
+        $new['tid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'topics');
 
         if (!$this->user->is_guest) {
             // To subscribe or not to subscribe, that ...
@@ -962,7 +962,7 @@ class Post
             $query = Container::get('hooks')->fireDB('model.post.insert_topic_post_member', $query);
             $query = $query->save();
         }
-        $new['pid'] = DB::get_db()->lastInsertId($this->feather->forum_settings['db_prefix'].'topics');
+        $new['pid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'topics');
 
         // Update the topic with last_post_id
         unset($topic);
@@ -1019,7 +1019,7 @@ class Post
             $censored_message = Utils::trim(Utils::censor($post['message']));
             $censored_subject = Utils::trim(Utils::censor($post['subject']));
 
-            if ($this->config['o_censoring'] == '1') {
+            if (Config::get('forum_settings')['o_censoring'] == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
             } else {
                 $cleaned_message = $this->email->bbcode2email($post['message'], -1);
@@ -1047,21 +1047,21 @@ class Post
                         $mail_message_full = trim(substr($mail_tpl_full, $first_crlf));
 
                         $mail_subject = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject);
-                        $mail_message = str_replace('<topic_subject>', $this->config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message);
+                        $mail_message = str_replace('<topic_subject>', Config::get('forum_settings')['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message);
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<topic_url>', $this->feather->urlFor('Topic', ['id' => $new_tid]), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $cur_posting['id']]), $mail_message);
+                        $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid]), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id']]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                         $mail_message = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
-                        $mail_message_full = str_replace('<topic_subject>', $this->config['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message_full);
+                        $mail_message_full = str_replace('<topic_subject>', Config::get('forum_settings')['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<topic_url>', $this->feather->urlFor('Topic', ['id' => $new_tid]), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', $this->feather->urlFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
+                        $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid]), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message_full', $mail_message_full);
 
@@ -1104,7 +1104,7 @@ class Post
 
         $mail_message = str_replace('<username>', $post['username'], $mail_message);
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
-        $mail_message = str_replace('<post_url>', $this->feather->urlFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
+        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
         $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
         $mail_message = Container::get('hooks')->fire('model.post.warn_banned_user_mail_message', $mail_message);
 
@@ -1226,7 +1226,7 @@ class Post
             unset($inside);
         }
 
-        if ($this->config['o_censoring'] == '1') {
+        if (Config::get('forum_settings')['o_censoring'] == '1') {
             $quote['message'] = Utils::censor($quote['message']);
         }
 
@@ -1377,6 +1377,6 @@ class Post
 
         $ip = Container::get('hooks')->fire('model.post.display_ip_address_post', $ip);
 
-        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Router::pathFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 }

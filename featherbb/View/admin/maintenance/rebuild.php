@@ -17,9 +17,9 @@ Container::get('hooks')->fire('view.admin.maintenance.rebuild.start');
 
 <h1><?php _e('Rebuilding index info') ?></h1>
 
-<script type="text/javascript">window.location="<?= $feather->urlFor('adminMaintenance').$query_str ?>"</script>
+<script type="text/javascript">window.location="<?= Router::pathFor('adminMaintenance').$query_str ?>"</script>
 
-<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.$feather->urlFor('adminMaintenance').$query_str.'">'.__('Click here').'</a>')?></p>
+<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.Router::pathFor('adminMaintenance').$query_str.'">'.__('Click here').'</a>')?></p>
 
 <?php
 Container::get('hooks')->fire('view.admin.maintenance.prune.end');

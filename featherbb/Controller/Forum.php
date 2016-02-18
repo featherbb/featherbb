@@ -23,8 +23,9 @@ class Forum
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
     }
 
-    public function display($fid, $name = null, $page = null)
+    public function display($req, $res, $args)
     {
+        $fid = $args['id'];
         Container::get('hooks')->fire('controller.forum.display');
         // Fetch some informations about the forum
         $cur_forum = $this->model->get_forum_info($fid);
@@ -42,41 +43,41 @@ class Forum
 
         // Can we or can we not post new topics?
         if (($cur_forum['post_topics'] == '' && Container::get('user')->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.$this->feather->urlFor('newTopic', ['fid' => $fid]).'">'.__('Post topic').'</a></p>'."\n";
+            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $fid]).'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $post_link = '';
         }
 
-        // Determine the topic offset (based on $page)
+        // Determine the topic offset (based on $args['page'])
         $num_pages = ceil($cur_forum['num_topics'] / Container::get('user')->disp_topics);
 
-        $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
         $start_from = Container::get('user')->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$fid.'/'.$url_forum.'/#');
 
-        $forum_actions = $this->model->get_forum_actions($fid, $this->feather->forum_settings['o_forum_subscriptions'], $cur_forum['is_subscribed']);
+        $forum_actions = $this->model->get_forum_actions($fid, Config::get('forum_settings')['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
-        View::addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]));
+        View::addAsset('canonical', Router::pathFor('Forum', ['id' => $fid, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
-        if ($this->feather->forum_settings['o_feed_type'] == '1') {
+        if (Config::get('forum_settings')['o_feed_type'] == '1') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss', array('title' => __('RSS forum feed')));
-        } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
+        } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_forum['forum_name'])),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'Forum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

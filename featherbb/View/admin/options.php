@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.admin.options.start');
     <div class="blockform">
         <h2><span><?php _e('Options head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('adminOptions') ?>">
+            <form method="post" action="<?= Router::pathFor('adminOptions') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
                 <div class="inform">
@@ -215,7 +215,7 @@ Container::get('hooks')->fire('view.admin.options.start');
                 </div>
 <?php
 
-    $diff = ($feather->user->timezone + $feather->user->dst) * 3600;
+    $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
     $timestamp = time() + $diff;
 
 ?>
@@ -417,7 +417,7 @@ Container::get('hooks')->fire('view.admin.options.start');
                                         <label class="conl"><input type="radio" name="form_censoring" value="0"<?php if (Config::get('forum_settings')['o_censoring'] == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
-                                        <span class="clearb"><?php printf(__('Censor words help'), '<a href="'.$feather->urlFor('adminCensoring').'">'.__('Censoring').'</a>') ?></span>
+                                        <span class="clearb"><?php printf(__('Censor words help'), '<a href="'.Router::pathFor('adminCensoring').'">'.__('Censoring').'</a>') ?></span>
                                     </td>
                                 </tr>
                                 <tr>

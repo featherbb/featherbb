@@ -23,7 +23,6 @@ class Maintenance
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
         $this->search = new \FeatherBB\Core\Search();
     }
 
@@ -41,20 +40,20 @@ class Maintenance
 
         // If this is the first cycle of posts we empty the search index before we proceed
         if ($this->request->get('i_empty_index')) {
-            DB::for_table('search_words')->raw_execute('TRUNCATE '.$this->feather->forum_settings['db_prefix'].'search_words');
-            DB::for_table('search_matches')->raw_execute('TRUNCATE '.$this->feather->forum_settings['db_prefix'].'search_matches');
+            DB::for_table('search_words')->raw_execute('TRUNCATE '.Config::get('forum_settings')['db_prefix'].'search_words');
+            DB::for_table('search_matches')->raw_execute('TRUNCATE '.Config::get('forum_settings')['db_prefix'].'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
-            switch ($this->feather->forum_settings['db_type']) {
+            switch (Config::get('forum_settings')['db_type']) {
                 case 'mysql':
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    DB::for_table('search_words')->raw_execute('ALTER TABLE '.$this->feather->forum_settings['db_prefix'].'search_words auto_increment=1');
+                    DB::for_table('search_words')->raw_execute('ALTER TABLE '.Config::get('forum_settings')['db_prefix'].'search_words auto_increment=1');
                     break;
 
                 case 'pgsql';
-                    DB::for_table('search_words')->raw_execute('SELECT setval(\''.$this->feather->forum_settings['db_prefix'].'search_words_id_seq\', 1, false)');
+                    DB::for_table('search_words')->raw_execute('SELECT setval(\''.Config::get('forum_settings')['db_prefix'].'search_words_id_seq\', 1, false)');
             }
         }
     }

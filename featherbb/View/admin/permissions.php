@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.permissions.start');
     <div class="blockform">
         <h2><span><?php _e('Permissions head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('adminPermissions') ?>">
+            <form method="post" action="<?= Router::pathFor('adminPermissions') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
                 <div class="inform">

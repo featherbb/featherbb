@@ -22,7 +22,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
     </div>
 </div>
 
-<form method="post" action="<?= $feather->urlFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
+<form method="post" action="<?= Router::pathFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <input type="hidden" name="page" value="<?= Utils::escape($p) ?>" />
 <div id="vf" class="blocktable">
@@ -96,7 +96,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
         </ul>
         <div class="clearer"></div>

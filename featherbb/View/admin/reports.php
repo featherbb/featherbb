@@ -22,7 +22,7 @@ Container::get('hooks')->fire('view.admin.reports.start');
     <div class="blockform">
         <h2><span><?php _e('New reports head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('adminReports') ?>">
+            <form method="post" action="<?= Router::pathFor('adminReports') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
 <?php
 if (!empty($report_data)) {
@@ -34,12 +34,12 @@ if (!empty($report_data)) {
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
-                                    <th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->urlFor('userProfile', ['id' => $report['reported_by']]).'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
+                                    <th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['reported_by']]).'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
                                     <td class="location">
                                         <?= AdminUtils::breadcrumbs_admin(array(
-                                            $report['forum_name'] => $feather->urlFor('Forum', ['id' => $report['forum_id'], 'name' => Url::url_friendly($report['forum_name'])]),
-                                            $report['subject'] => $feather->urlFor('Forum', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject'])]),
-                                            sprintf(__('Post ID'), $report['pid']) => $feather->urlFor('viewPost', ['pid' => $report['pid']]).'#p'.$report['pid']
+                                            $report['forum_name'] => Router::pathFor('Forum', ['id' => $report['forum_id'], 'name' => Url::url_friendly($report['forum_name'])]),
+                                            $report['subject'] => Router::pathFor('Forum', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject'])]),
+                                            sprintf(__('Post ID'), $report['pid']) => Router::pathFor('viewPost', ['pid' => $report['pid']]).'#p'.$report['pid']
                                         )); ?>
                                     </td>
                                 </tr>
@@ -84,16 +84,16 @@ if (!empty($report_zapped_data)) {
         ?>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php printf(__('Zapped subhead'), $feather->utils->format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.$feather->urlFor('userProfile', ['id' => $report['zapped_by_id']]).'">'.Utils::escape($report['zapped_by']).'</a>' : __('NA')) ?></legend>
+                        <legend><?php printf(__('Zapped subhead'), $feather->utils->format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['zapped_by_id']]).'">'.Utils::escape($report['zapped_by']).'</a>' : __('NA')) ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
-                                    <th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.$feather->urlFor('userProfile', ['id' => $report['reported_by']]).'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
+                                    <th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['reported_by']]).'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
                                     <td class="location">
                                         <?= AdminUtils::breadcrumbs_admin(array(
-                                            $report['forum_name'] => $feather->urlFor('Forum', ['id' => $report['forum_id'], 'name' => Url::url_friendly($report['forum_name'])]),
-                                            $report['subject'] => $feather->urlFor('Forum', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject'])]),
-                                            sprintf(__('Post ID'), $report['pid']) => $feather->urlFor('viewPost', ['pid' => $report['pid']]).'#p'.$report['pid']
+                                            $report['forum_name'] => Router::pathFor('Forum', ['id' => $report['forum_id'], 'name' => Url::url_friendly($report['forum_name'])]),
+                                            $report['subject'] => Router::pathFor('Forum', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject'])]),
+                                            sprintf(__('Post ID'), $report['pid']) => Router::pathFor('viewPost', ['pid' => $report['pid']]).'#p'.$report['pid']
                                         )) ?>
                                     </td>
                                 </tr>

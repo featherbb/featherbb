@@ -20,10 +20,10 @@ Container::get('hooks')->fire('view.admin.groups.confirm_delete.start');
     <div class="blockform">
         <h2><span><?php _e('Group delete head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('deleteGroup', ['id' => $id]) ?>">
+            <form method="post" action="<?= Router::pathFor('deleteGroup', ['id' => $id]) ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
-                <input type="hidden" name="group_to_delete" value="<?= $feather->urlFor('deleteGroup', ['id' => $id]) ?>" />
+                <input type="hidden" name="group_to_delete" value="<?= Router::pathFor('deleteGroup', ['id' => $id]) ?>" />
                     <fieldset>
                         <legend><?php _e('Confirm delete subhead') ?></legend>
                         <div class="infldset">

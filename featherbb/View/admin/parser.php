@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
     <div class="blockform">
         <h2><span><?= $lang_admin_parser['Parser head'] ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('adminParser') ?>" enctype="multipart/form-data">
+            <form method="post" action="<?= Router::pathFor('adminParser') ?>" enctype="multipart/form-data">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <p class="submittop">
                     <input type="submit" name="save" value="<?php _e('Save changes') ?>" />

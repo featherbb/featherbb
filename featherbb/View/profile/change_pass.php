@@ -18,14 +18,14 @@ Container::get('hooks')->fire('view.profile.change_pass.start');
 <div class="blockform">
     <h2><span><?php _e('Change pass') ?></span></h2>
     <div class="box">
-        <form id="change_pass" method="post" action="<?= $feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>" onsubmit="return process_form(this)">
+        <form id="change_pass" method="post" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>" onsubmit="return process_form(this)">
             <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
             <div class="inform">
                 <input type="hidden" name="form_sent" value="1" />
                 <fieldset>
                     <legend><?php _e('Change pass legend') ?></legend>
                     <div class="infldset">
-<?php if (!$feather->user->is_admmod): ?>                        <label class="required"><strong><?php _e('Old pass') ?> <span><?php _e('Required') ?></span></strong><br />
+<?php if (!Container::get('user')->is_admmod): ?>                        <label class="required"><strong><?php _e('Old pass') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input type="password" name="req_old_password" size="16" /><br /></label>
 <?php endif; ?>                        <label class="conl required"><strong><?php _e('New pass') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input type="password" name="req_new_password1" size="16" /><br /></label>

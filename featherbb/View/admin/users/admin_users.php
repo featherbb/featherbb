@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.users.admin_users.start');
     <div class="blockform">
         <h2><span><?php _e('User search head') ?></span></h2>
         <div class="box">
-            <form id="find_user" method="get" action="<?= $feather->urlFor('adminUsers') ?>">
+            <form id="find_user" method="get" action="<?= Router::pathFor('adminUsers') ?>">
                 <p class="submittop"><input type="submit" name="find_user" value="<?php _e('Submit search') ?>" tabindex="1" /></p>
                 <div class="inform">
                     <fieldset>
@@ -153,7 +153,7 @@ Container::get('hooks')->fire('view.admin.users.admin_users.start');
 
         <h2 class="block2"><span><?php _e('IP search head') ?></span></h2>
         <div class="box">
-            <form method="get" action="<?= $feather->urlFor('adminUsers') ?>">
+            <form method="get" action="<?= Router::pathFor('adminUsers') ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('IP search subhead') ?></legend>

@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.categories.start');
     <div class="blockform">
         <h2><span><?php _e('Add categories head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('addCategory') ?>">
+            <form method="post" action="<?= Router::pathFor('addCategory') ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Add categories subhead') ?></legend>
@@ -31,7 +31,7 @@ Container::get('hooks')->fire('view.admin.categories.start');
                                     <td>
                                         <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                                         <input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
-                                        <span><?php printf(__('Add category help'), '<a href="'.$feather->urlFor('adminForums').'">'.__('Forums').'</a>') ?></span>
+                                        <span><?php printf(__('Add category help'), '<a href="'.Router::pathFor('adminForums').'">'.__('Forums').'</a>') ?></span>
                                     </td>
                                 </tr>
                             </table>
@@ -43,7 +43,7 @@ Container::get('hooks')->fire('view.admin.categories.start');
 
 <?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?php _e('Delete categories head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('deleteCategory') ?>">
+            <form method="post" action="<?= Router::pathFor('deleteCategory') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
                     <fieldset>
@@ -75,7 +75,7 @@ Container::get('hooks')->fire('view.admin.categories.start');
 
 <?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?php _e('Edit categories head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('editCategory') ?>">
+            <form method="post" action="<?= Router::pathFor('editCategory') ?>">
                 <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
                 <div class="inform">
                     <fieldset>

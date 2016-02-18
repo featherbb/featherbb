@@ -24,7 +24,6 @@ class Profile
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
         $this->email = $this->feather->email;
         $this->auth = new \FeatherBB\Model\Auth();
     }
@@ -228,7 +227,7 @@ class Profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
-                    $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $id]), $mail_message);
+                    $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_message', $mail_message);
 
@@ -265,7 +264,7 @@ class Profile
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
                     $mail_message = str_replace('<username>', $this->user->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                    $mail_message = str_replace('<profile_url>', $this->feather->urlFor('userProfile', ['id' => $id]), $mail_message);
+                    $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_message', $mail_message);
 
@@ -302,7 +301,7 @@ class Profile
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', $this->user->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
-            $mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
+            $mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
             $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
             $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_activate_message', $mail_message);
 
@@ -1133,20 +1132,20 @@ class Profile
 
         $user_title_field = Utils::get_title($user);
         $user_info['personal'][] = '<dt>'.__('Title').'</dt>';
-        $user_info['personal'][] = '<dd>'.(($this->config['o_censoring'] == '1') ? Utils::censor($user_title_field) : $user_title_field).'</dd>';
+        $user_info['personal'][] = '<dd>'.((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user_title_field) : $user_title_field).'</dd>';
 
         if ($user['realname'] != '') {
             $user_info['personal'][] = '<dt>'.__('Realname').'</dt>';
-            $user_info['personal'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
+            $user_info['personal'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
             $user_info['personal'][] = '<dt>'.__('Location').'</dt>';
-            $user_info['personal'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['location']) : $user['location']).'</dd>';
+            $user_info['personal'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
-            $user['url'] = Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['url']) : $user['url']);
+            $user['url'] = Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['url']) : $user['url']);
             $user_info['personal'][] = '<dt>'.__('Website').'</dt>';
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
@@ -1154,7 +1153,7 @@ class Profile
         if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
         } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
-            $user['email_field'] = '<a href="'.$this->feather->urlFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
+            $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
         }
@@ -1165,7 +1164,7 @@ class Profile
 
         if ($user['jabber'] != '') {
             $user_info['messaging'][] = '<dt>'.__('Jabber').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['jabber']) : $user['jabber']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['jabber']) : $user['jabber']).'</dd>';
         }
 
         if ($user['icq'] != '') {
@@ -1175,17 +1174,17 @@ class Profile
 
         if ($user['msn'] != '') {
             $user_info['messaging'][] = '<dt>'.__('MSN').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['msn']) : $user['msn']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['msn']) : $user['msn']).'</dd>';
         }
 
         if ($user['aim'] != '') {
             $user_info['messaging'][] = '<dt>'.__('AOL IM').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['aim']) : $user['aim']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['aim']) : $user['aim']).'</dd>';
         }
 
         if ($user['yahoo'] != '') {
             $user_info['messaging'][] = '<dt>'.__('Yahoo').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape(($this->config['o_censoring'] == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
         if ($this->config['o_avatars'] == '1') {
@@ -1210,11 +1209,11 @@ class Profile
         if ($this->user->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
-                $quick_searches[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
-                $quick_searches[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
+                $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
+                $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
             if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
-                $quick_searches[] = '<a href="'.$this->feather->urlFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
+                $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
             if (!empty($quick_searches)) {
@@ -1228,11 +1227,11 @@ class Profile
 
         if ($user['num_posts'] > 0) {
             $user_info['activity'][] = '<dt>'.__('Last post').'</dt>';
-            $user_info['activity'][] = '<dd>'.$this->feather->utils->format_time($user['last_post']).'</dd>';
+            $user_info['activity'][] = '<dd>'.Utils::format_time($user['last_post']).'</dd>';
         }
 
         $user_info['activity'][] = '<dt>'.__('Registered').'</dt>';
-        $user_info['activity'][] = '<dd>'.$this->feather->utils->format_time($user['registered'], true).'</dd>';
+        $user_info['activity'][] = '<dd>'.Utils::format_time($user['registered'], true).'</dd>';
 
         $user_info = Container::get('hooks')->fire('model.profile.parse_user_info', $user_info);
 
@@ -1252,12 +1251,12 @@ class Profile
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.$this->feather->urlFor('email', ['id' => $id]).'">'.__('Send email').'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.Router::pathFor('email', ['id' => $id]).'">'.__('Send email').'</a></span></p>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
             if ($this->config['o_regs_verify'] == '1') {
-                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
+                $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
             }
@@ -1273,11 +1272,11 @@ class Profile
         }
 
         if ($this->user->g_search == '1' || $this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
-            $posts_actions[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
-            $posts_actions[] = '<a href="'.$this->feather->urlFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
+            $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
+            $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
             if ($this->config['o_topic_subscriptions'] == '1') {
-                $posts_actions[] = '<a href="'.$this->feather->urlFor('search').'?action=show_subscriptions&amp;user_id='.$id.'">'.__('Show subscriptions').'</a>';
+                $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$id.'">'.__('Show subscriptions').'</a>';
             }
         }
 
@@ -1392,14 +1391,14 @@ class Profile
         }
 
         // Check username for any censored words
-        if ($this->feather->forum_settings['o_censoring'] == '1' && Utils::censor($username) != $username) {
+        if (Config::get('forum_settings')['o_censoring'] == '1' && Utils::censor($username) != $username) {
             $errors[] = __('Username censor');
         }
 
         // Check that the username (or a too similar username) is not already registered
         $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-        $result = DB::for_table('online')->raw_query('SELECT username FROM '.$this->feather->forum_settings['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+        $result = DB::for_table('online')->raw_query('SELECT username FROM '.Config::get('forum_settings')['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
         if ($result) {
             $busy = $result['username'];
@@ -1497,6 +1496,6 @@ class Profile
     public function display_ip_info($ip)
     {
         $ip = Container::get('hooks')->fire('model.profile.display_ip_info', $ip);
-        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.$this->feather->urlFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
+        throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Router::pathFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 }

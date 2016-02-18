@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.register.rules.start');
 <div id="rules" class="blockform">
     <div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
     <div class="box">
-        <form method="get" action="<?= $feather->urlFor('register') ?>">
+        <form method="get" action="<?= Router::pathFor('register') ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Rules legend') ?></legend>
