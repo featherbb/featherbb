@@ -49,6 +49,7 @@ $feather_settings = array('config_file' => 'featherbb/config.php',
 Feather::add(new \FeatherBB\Middleware\Csrf);
 Feather::add(new \FeatherBB\Middleware\Auth);
 Feather::add(new \FeatherBB\Middleware\Core($feather_settings));
+Feather::add(new \RKA\Middleware\IpAddress);
 
 // Load the routes
 require 'featherbb/routes.php';

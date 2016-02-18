@@ -57,7 +57,8 @@ class SlimStatic
         $services = array(
             'Input' => 'request',
             'Request' => 'request',
-            'Response' => 'response'
+            'Response' => 'response',
+            'View' => 'template'
         );
 
         $container = $slim->getContainer();

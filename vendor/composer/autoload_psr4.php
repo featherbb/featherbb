@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Statical\\' => array($vendorDir . '/statical/statical/src'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
+    'RKA\\Middleware\\' => array($vendorDir . '/akrabat/rka-ip-address-middleware/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Plugins\\' => array($baseDir . '/plugins'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
