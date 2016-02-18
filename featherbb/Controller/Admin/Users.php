@@ -39,7 +39,7 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Move users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
@@ -57,7 +57,7 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Delete users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
@@ -75,7 +75,7 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Bans')),
                     'active_page' => 'moderate',
                     'focus_element' => array('bans2', 'ban_message'),
@@ -107,9 +107,9 @@ class Users
             $can_delete = $can_move = $this->user->g_id == Container::get('forum_env')['FEATHER_ADMIN'];
             $can_ban = $this->user->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
-            $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
+            View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                     'active_page' => 'admin',
                     'admin_console' => true,
@@ -127,7 +127,7 @@ class Users
         else {
             AdminUtils::generateAdminMenu('users');
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users')),
                     'active_page' => 'admin',
                     'admin_console' => true,
@@ -152,7 +152,7 @@ class Users
         $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
@@ -182,7 +182,7 @@ class Users
         $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
         $start_from = 50 * ($p - 1);
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,

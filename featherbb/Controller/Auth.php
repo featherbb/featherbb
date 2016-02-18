@@ -62,7 +62,7 @@ class Auth
             }
             throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         } else {
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                                 'active_page' => 'login',
                                 'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Login')),
                                 'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
@@ -147,7 +147,7 @@ class Auth
             }
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
 //                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
                 'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Request pass')),

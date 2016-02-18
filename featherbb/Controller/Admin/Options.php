@@ -35,7 +35,7 @@ class Options
 
         AdminUtils::generateAdminMenu('options');
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Options')),
                 'active_page' => 'admin',
                 'admin_console' => true,

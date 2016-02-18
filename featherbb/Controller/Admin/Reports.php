@@ -39,7 +39,7 @@ class Reports
 
         AdminUtils::generateAdminMenu('reports');
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Reports')),
                 'active_page' => 'admin',
                 'admin_console' => true,

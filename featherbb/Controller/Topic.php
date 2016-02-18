@@ -69,23 +69,23 @@ class Topic
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
         $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $id);
 
-        $this->feather->template->addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]));
+        View::addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->template->addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                $this->feather->template->addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $id, 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
         if ($this->feather->forum_settings['o_feed_type'] == '1') {
-            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=rss', array('title' => __('RSS forum feed')));
         } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
-            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$id.'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
             'active_page' => 'Topic',
             'page_number'  =>  $p,
@@ -182,7 +182,7 @@ class Topic
             throw new Error(__('Nowhere to move'), 403);
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                 'active_page' => 'moderate',
                 'action'    =>    'single',
@@ -218,7 +218,7 @@ class Topic
         if ($this->feather->request->post('delete_posts') || $this->feather->request->post('delete_posts_comply')) {
             $posts = $this->model->delete_posts($id, $fid);
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'posts' => $posts,
@@ -227,7 +227,7 @@ class Topic
         }
         if ($this->feather->request->post('split_posts') || $this->feather->request->post('split_posts_comply')) {
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'focus_element' => array('subject','new_subject'),
                     'page' => $p,
@@ -253,7 +253,7 @@ class Topic
             $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
                 'page' => $p,
                 'active_page' => 'moderate',

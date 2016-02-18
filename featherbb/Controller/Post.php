@@ -189,7 +189,7 @@ class Post
             $post_data = '';
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), $action),
                 'required_fields' => $required_fields,
                 'focus_element' => $focus_element,
@@ -249,7 +249,7 @@ class Post
 
         $cur_post['message'] = $this->feather->parser->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
@@ -316,7 +316,7 @@ class Post
             $preview_message = '';
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Edit post')),
                 'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                 'focus_element' => array('edit', 'req_message'),
@@ -346,7 +346,7 @@ class Post
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),

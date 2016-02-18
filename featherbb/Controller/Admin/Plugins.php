@@ -77,7 +77,7 @@ class Plugins
     {
         Container::get('hooks')->fire('controller.admin.plugins.index');
 
-        $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
+        View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
         $availablePlugins = Lister::getPlugins();
         $activePlugins = $this->feather->cache->isCached('activePlugins') ? $this->feather->cache->retrieve('activePlugins') : array();
@@ -86,7 +86,7 @@ class Plugins
 
         AdminUtils::generateAdminMenu('plugins');
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'admin_console' => true,
             'active_page' => 'admin',
             'availablePlugins'    =>    $availablePlugins,

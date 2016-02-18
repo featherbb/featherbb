@@ -39,7 +39,7 @@ class Groups
 
         AdminUtils::generateAdminMenu('groups');
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
@@ -72,7 +72,7 @@ class Groups
             } else {
                 AdminUtils::generateAdminMenu('groups');
 
-                $this->feather->template->setPageInfo(array(
+                View::setPageInfo(array(
                         'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                         'active_page' => 'admin',
                         'admin_console' => true,
@@ -85,7 +85,7 @@ class Groups
 
         AdminUtils::generateAdminMenu('groups');
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
@@ -114,7 +114,7 @@ class Groups
 
             $group = $this->model->info_add_group($groups, $id);
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('User groups')),
                     'active_page' => 'admin',
                     'admin_console' => true,

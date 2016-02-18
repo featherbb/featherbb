@@ -18,7 +18,6 @@ class Forums
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
@@ -115,7 +114,7 @@ class Forums
         } else {
             AdminUtils::generateAdminMenu('forums');
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
@@ -143,7 +142,7 @@ class Forums
 
             AdminUtils::generateAdminMenu('forums');
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
@@ -179,7 +178,7 @@ class Forums
         AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \FeatherBB\Model\Admin\Categories();
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Forums')),
                 'active_page' => 'admin',
                 'admin_console' => true,

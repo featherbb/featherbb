@@ -50,7 +50,7 @@ class Index
 
         AdminUtils::generateAdminMenu('index');
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Index')),
                 'active_page' => 'admin',
                 'admin_console' => true

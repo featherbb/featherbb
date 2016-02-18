@@ -46,7 +46,7 @@ class Search
             // We have results to display
             if (isset($search['is_result'])) {
 
-                $this->feather->template->setPageInfo(array(
+                View::setPageInfo(array(
                     'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
                     'active_page' => 'search',
                     'search' => $search,
@@ -55,21 +55,21 @@ class Search
 
                 $display = $this->model->display_search_results($search, $this->feather);
 
-                $this->feather->template->setPageInfo(array(
+                View::setPageInfo(array(
                         'display' => $display,
                     )
                 );
 
-                $this->feather->template->addTemplate('search/header.php', 1);
+                View::addTemplate('search/header.php', 1);
 
                 if ($search['show_as'] == 'posts') {
-                    $this->feather->template->addTemplate('search/posts.php', 5);
+                    View::addTemplate('search/posts.php', 5);
                 }
                 else {
-                    $this->feather->template->addTemplate('search/topics.php', 5);
+                    View::addTemplate('search/topics.php', 5);
                 }
 
-                $this->feather->template->addTemplate('search/footer.php', 10)->display();
+                View::addTemplate('search/footer.php', 10)->display();
 
             } else {
                 Router::redirect(Router::pathFor('search'), __('No hits'));
@@ -77,7 +77,7 @@ class Search
         }
         // Display the form
         else {
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                 'title' => array(Utils::escape($this->config['o_board_title']), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),

@@ -18,7 +18,6 @@ class Forum
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Forum();
         load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/forum.mo');
         load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
@@ -60,23 +59,23 @@ class Forum
 
         $forum_actions = $this->model->get_forum_actions($fid, $this->feather->forum_settings['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
-        $this->feather->template->addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]));
+        View::addAsset('canonical', $this->feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                $this->feather->template->addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                $this->feather->template->addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', $this->feather->urlFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
         if ($this->feather->forum_settings['o_feed_type'] == '1') {
-            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss', array('title' => __('RSS forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss', array('title' => __('RSS forum feed')));
         } elseif ($this->feather->forum_settings['o_feed_type'] == '2') {
-            $this->feather->template->addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom', array('title' => __('Atom forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'Forum',
             'page_number'  =>  $p,
@@ -122,7 +121,7 @@ class Forum
         $start_from = Container::get('user')->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
-        $this->feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'title' => array(Utils::escape($this->feather->config['o_board_title']), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'moderate',
             'page' => $p,
@@ -196,7 +195,7 @@ class Forum
                 throw new Error(__('Nowhere to move'), 403);
             }
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'action'    =>    'multi',
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
@@ -219,7 +218,7 @@ class Forum
                 throw new Error(__('Not enough topics selected'), 400);
             }
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $fid,
@@ -240,7 +239,7 @@ class Forum
                 Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Delete topics redirect'));
             }
 
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $fid,
