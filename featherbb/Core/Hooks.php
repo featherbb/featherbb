@@ -9,8 +9,20 @@
 
 namespace FeatherBB\Core;
 
-class Hooks extends \Slim\Slim
+class Hooks
 {
+
+    /**
+     * @var array
+     */
+    protected $hooks = array(
+        // 'slim.before' => array(array()),
+        // 'slim.before.router' => array(array()),
+        // 'slim.before.dispatch' => array(array()),
+        // 'slim.after.dispatch' => array(array()),
+        // 'slim.after.router' => array(array()),
+        // 'slim.after' => array(array())
+    );
     /**
      * Assign hook
      * @param  string   $name       The hook name
