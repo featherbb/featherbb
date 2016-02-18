@@ -77,7 +77,7 @@ Route::group('/topic', function() use ($feather) {
     Route::get('/open/{id:[0-9]+}[/{name:[\w\-]+}][/]', '\FeatherBB\Controller\Topic:open')->add($isAdmmod)->setName('openTopic');
     Route::get('/stick/{id:[0-9]+}[/{name:[\w\-]+}][/]', '\FeatherBB\Controller\Topic:stick')->add($isAdmmod)->setName('stickTopic');
     Route::get('/unstick/{id:[0-9]+}[/{name:[\w\-]+}][/]', '\FeatherBB\Controller\Topic:unstick')->add($isAdmmod)->setName('unstickTopic');
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/move/{id:[0-9]+}[/{name:[\w\-]+})/forum/{fid:[0-9]+}[/]', '\FeatherBB\Controller\Topic:move')->add($isAdmmod)->setName('moveTopic');
+    Route::map(['GET', 'POST'], '/move/{id:[0-9]+}[/{name:[\w\-]+})/forum/{fid:[0-9]+}[/]', '\FeatherBB\Controller\Topic:move')->add($isAdmmod)->setName('moveTopic');
     Route::map(['GET', 'POST'], '/moderate/{id:[0-9]+}/forum/{fid:[0-9]+}[/page/{page:[0-9]+}][/]', '\FeatherBB\Controller\Topic:moderate')->add($isAdmmod)->setName('moderateTopic');
     Route::get('/{id:[0-9]+}/action/{action}[/]', '\FeatherBB\Controller\Topic{action}')->setName('topicAction');
 })->add($canReadBoard);
@@ -106,35 +106,35 @@ Route::group('/auth', function() use ($feather) {
             $feather->redirect($feather->urlFor('login'));
         }
     });
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/login[/]', '\FeatherBB\Controller\Auth:login')->setName('login');
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/forget[/]', '\FeatherBB\Controller\Auth:forget')->setName('resetPassword');
+    Route::map(['GET', 'POST'], '/login[/]', '\FeatherBB\Controller\Auth:login')->setName('login');
+    Route::map(['GET', 'POST'], '/forget[/]', '\FeatherBB\Controller\Auth:forget')->setName('resetPassword');
     Route::get('/logout/token/{token}[/]', '\FeatherBB\Controller\Auth:logout')->setName('logout');
 });
 
 // Register routes
 Route::group('/register', function() use ($feather) {
     Route::get('[/]', '\FeatherBB\Controller\Register:rules')->setName('registerRules');
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/agree[/]', '\FeatherBB\Controller\Register:display')->setName('register');
+    Route::map(['GET', 'POST'], '/agree[/]', '\FeatherBB\Controller\Register:display')->setName('register');
     Route::get('/cancel[/]', '\FeatherBB\Controller\Register:cancel')->setName('registerCancel');
 });
 
 // Search routes
-Route::group('/search', $canReadBoard, function() use ($feather) {
+Route::group('/search', function() use ($feather) {
     Route::get('[/]', '\FeatherBB\Controller\Search:display')->setName('search');
     Route::get('/show/{show}[/]', '\FeatherBB\Controller\Search:quicksearches')->setName('quickSearch');
-});
+})->add($canReadBoard);
 
 // Help
-Route::get('/help[/]', $canReadBoard, '\FeatherBB\Controller\Help:display')->setName('help');
+Route::get('/help[/]', '\FeatherBB\Controller\Help:display')->add($canReadBoard)->setName('help');
 
 // Profile routes
-Route::group('/user', $isGuest, function() use ($feather) {
+Route::group('/user', function() use ($feather) {
     Route::get('/{id:[0-9]+}[/]', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/{id:[0-9]+}[/section/{section}[/]', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/{id:[0-9]+}[/action/{action}][/]', '\FeatherBB\Controller\Profile{action}')->setName('profileAction');
-    Route::map(['GET', 'POST'], ['GET', 'POST'], '/email/{id:[0-9]+}[/]', '\FeatherBB\Controller\Profile:email')->setName('email');
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}[/section/{section}[/]', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}[/action/{action}][/]', '\FeatherBB\Controller\Profile{action}')->setName('profileAction');
+    Route::map(['GET', 'POST'], '/email/{id:[0-9]+}[/]', '\FeatherBB\Controller\Profile:email')->setName('email');
     Route::get('/get-host/{ip}[/]', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
-});
+})->add($isGuest);
 
 // Admin routes
 Route::group('/admin', function() use ($feather) {
