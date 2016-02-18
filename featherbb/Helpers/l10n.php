@@ -10,7 +10,7 @@
  *
  * @param    string     $domain Text domain. Unique identifier for retrieving translated strings.
  * @param    string     $mofile Path to the .mo file.
- * 
+ *
  * @return   boolean    True on success, false on failure.
  *
  * Inspired from Luna <http://getluna.org>
@@ -68,6 +68,7 @@ function load_translations($domain) {
     global $l10n;
 
     if (!isset($l10n[$domain])) {
+        require_once dirname(__FILE__).'/../Core/pomo/translations/NOOPTranslations.php';
         $l10n[$domain] = new NOOPTranslations;
     }
 

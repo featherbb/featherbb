@@ -23,7 +23,7 @@ use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\View;
 
-class Core extends \Slim\Middleware
+class Core
 {
     protected $forum_env,
               $forum_settings;
@@ -167,7 +167,7 @@ class Core extends \Slim\Middleware
         $this->app->expires(0);
     }
 
-    public function call()
+    public function __invoke($req, $res, $next)
     {
         global $forum_time_formats, $forum_date_formats; // Legacy
 
@@ -275,6 +275,6 @@ class Core extends \Slim\Middleware
         $forum_date_formats = array($this->forum_settings['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
 
         // Call FeatherBBAuth middleware
-        $this->next->call();
+        return $next($req, $res);
     }
 }

@@ -20,7 +20,7 @@ use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
 
-class Auth extends \Slim\Middleware
+class Auth
 {
     protected $model;
 
@@ -210,11 +210,12 @@ class Auth extends \Slim\Middleware
         $this->app->stop();
     }
 
-    public function call()
+    public function __invoke($req, $res, $next)
     {
         global $feather_bans;
 
         if ($cookie = $this->get_cookie_data($this->app->forum_settings['cookie_name'], $this->app->forum_settings['cookie_seed'])) {
+            echo "string";
             $this->app->user = $this->model->load_user($cookie['user_id']);
             $expires = ($cookie['expires'] > $this->app->now + $this->app->forum_settings['o_timeout_visit']) ? $this->app->now + 1209600 : $this->app->now + $this->app->forum_settings['o_timeout_visit'];
             $this->app->user->is_guest = false;
@@ -234,6 +235,7 @@ class Auth extends \Slim\Middleware
             $this->model->feather_setcookie($this->app->user->id, $this->app->user->password, $expires);
             $this->update_online();
         } else {
+            echo "string";
             $this->app->user = $this->model->load_user(1);
 
             $this->app->user->disp_topics = $this->app->forum_settings['o_disp_topics_default'];
@@ -286,6 +288,6 @@ class Auth extends \Slim\Middleware
         // Update online list
         $this->update_users_online();
 
-        $this->next->call();
+        return $next($req, $res);
     }
 }

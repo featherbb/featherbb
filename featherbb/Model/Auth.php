@@ -13,20 +13,12 @@ use FeatherBB\Core\Database as DB;
 
 class Auth
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-    }
-
     public static function load_user($user_id)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $user_id = (int) $user_id;
         $result['select'] = array('u.*', 'g.*', 'o.logged', 'o.idle');
         $result['where'] = array('u.id' => $user_id);
-        $result['join'] = ($user_id == 1) ? $feather->request->getIp() : 'u.id';
+        $result['join'] = ($user_id == 1) ? Request::getAttribute('ip_address') : 'u.id';
         $escape = ($user_id == 1) ? true : false;
 
         $result = DB::for_table('users')
