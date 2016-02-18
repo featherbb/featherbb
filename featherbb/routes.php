@@ -9,31 +9,41 @@
 
 use FeatherBB\Core\Error;
 
+
 /**
  * Middleware to check if user is allowed to read the board.
  */
-$canReadBoard = function () use ($feather) {
+$canReadBoard = function ($request, $response, $next) use ($feather) {
+    $response = $next($request, $response);
     if (Container::get('user')->g_read_board == '0') {
         throw new Error(__('No view'), 403);
     }
+
+    return $response;
 };
 
 /**
  * Middleware to check if user is allowed to read the board.
  */
-$isGuest = function () use ($feather) {
+$isGuest = function ($request, $response, $next) use ($feather) {
+    $response = $next($request, $response);
     if (Container::get('user')->is_guest) {
         throw new Error(__('No permission'), 403);
     }
+
+    return $response;
 };
 
 /**
  * Middleware to check if user is allowed to moderate, if he's not redirect to homepage.
  */
-$isAdmmod = function() use ($feather) {
+$isAdmmod = function ($request, $response, $next) use ($feather) {
+    $response = $next($request, $response);
     // if(!Container::get('user')->is_admmod) {
     //     throw new Error(__('No permission'), 403);
     // }
+
+    return $response;
 };
 
 // Index
@@ -43,7 +53,7 @@ Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add($isGuest)-
 
 // Forum
 Route::group('/forum', function() use ($feather) {
-    $isGuest = function () use ($feather) {
+    $isGuest = function() use ($feather) {
         if (Container::get('user')->is_guest) {
             throw new Error(__('No permission'), 403);
         }
@@ -58,7 +68,7 @@ Route::group('/forum', function() use ($feather) {
 
 // Topic
 Route::group('/topic', function() use ($feather) {
-    $isGuest = function () use ($feather) {
+    $isGuest = function() use ($feather) {
         if (Container::get('user')->is_guest) {
             throw new Error(__('No permission'), 403);
         }
@@ -96,7 +106,7 @@ Route::get('/userlist', '\FeatherBB\Controller\Userlist:display')->add($canReadB
 
 // Auth routes
 Route::group('/auth', function() use ($feather) {
-    Route::get('', function () use ($feather) {
+    Route::get('', function() use ($feather) {
         if (!Container::get('user')->is_guest) {
             $feather->url->redirect($feather->urlFor('home'), 'Already logged');
         } else {
@@ -133,12 +143,15 @@ Route::group('/user', function() use ($feather) {
     Route::get('/get-host/{ip}', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
 })->add($isGuest);
 
+
 // Admin routes
+
 Route::group('/admin', function() use ($feather) {
 
     /**
      * Middleware to check if user is admin.
      */
+
     $isAdmin = function() use ($feather) {
         if(Container::get('user')->g_id != $feather->forum_env['FEATHER_ADMIN']) {
             $feather->url->redirect($feather->urlFor('home'), __('No permission'));
