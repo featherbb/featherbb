@@ -21,7 +21,7 @@ class Bans
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Bans();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
@@ -33,7 +33,7 @@ class Bans
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.bans.display');
+        Container::get('hooks')->fire('controller.admin.bans.display');
 
         // Display bans
         if ($this->request->get('find_ban')) {
@@ -70,7 +70,7 @@ class Bans
 
     public function add($id = null)
     {
-        $this->feather->hooks->fire('controller.admin.bans.add');
+        Container::get('hooks')->fire('controller.admin.bans.add');
 
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();
@@ -89,7 +89,7 @@ class Bans
 
     public function delete($id)
     {
-        $this->feather->hooks->fire('controller.admin.bans.delete');
+        Container::get('hooks')->fire('controller.admin.bans.delete');
 
         // Remove the ban
         $this->model->remove_ban($id);
@@ -97,7 +97,7 @@ class Bans
 
     public function edit($id)
     {
-        $this->feather->hooks->fire('controller.admin.bans.edit');
+        Container::get('hooks')->fire('controller.admin.bans.edit');
 
         if ($this->request->post('add_edit_ban')) {
             $this->model->insert_ban();

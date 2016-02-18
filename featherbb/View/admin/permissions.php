@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.permissions.start');
+Container::get('hooks')->fire('view.admin.permissions.start');
 ?>
 
     <div class="blockform">
@@ -183,7 +183,7 @@ $feather->hooks->fire('view.admin.permissions.start');
                         </div>
                     </fieldset>
                 </div>
-                <?php $feather->hooks->fire('view.admin.permissions.form'); ?>
+                <?php Container::get('hooks')->fire('view.admin.permissions.form'); ?>
                 <p class="submitend"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
             </form>
         </div>
@@ -192,4 +192,4 @@ $feather->hooks->fire('view.admin.permissions.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.permissions.end');
+Container::get('hooks')->fire('view.admin.permissions.end');

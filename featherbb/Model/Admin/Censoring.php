@@ -22,7 +22,7 @@ class Censoring
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
@@ -50,7 +50,7 @@ class Censoring
         $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
         $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Url::redirect($this->feather->urlFor('adminCensoring'), __('Word added redirect'));
+        Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
     }
 
     public function update_word()
@@ -78,7 +78,7 @@ class Censoring
         $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
         $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Url::redirect($this->feather->urlFor('adminCensoring'), __('Word updated redirect'));
+        Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
     }
 
     public function remove_word()
@@ -94,7 +94,7 @@ class Censoring
         $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
         $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Url::redirect($this->feather->urlFor('adminCensoring'),  __('Word removed redirect'));
+        Router::redirect(Router::pathFor('adminCensoring'),  __('Word removed redirect'));
     }
 
     public function get_words()

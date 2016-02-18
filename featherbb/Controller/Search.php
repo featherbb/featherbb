@@ -20,7 +20,7 @@ class Search
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Search();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/userlist.mo');
@@ -32,7 +32,7 @@ class Search
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.search.display');
+        Container::get('hooks')->fire('controller.search.display');
 
         if ($this->user->g_search == '0') {
             throw new Error(__('No search permission'), 403);
@@ -72,7 +72,7 @@ class Search
                 $this->feather->template->addTemplate('search/footer.php', 10)->display();
 
             } else {
-                Url::redirect($this->feather->urlFor('search'), __('No hits'));
+                Router::redirect(Router::pathFor('search'), __('No hits'));
             }
         }
         // Display the form
@@ -89,8 +89,8 @@ class Search
 
     public function quicksearches($show)
     {
-        $this->feather->hooks->fire('controller.search.quicksearches');
+        Container::get('hooks')->fire('controller.search.quicksearches');
 
-        Url::redirect($this->feather->urlFor('search').'?action=show_'.$show);
+        Router::redirect(Router::pathFor('search').'?action=show_'.$show);
     }
 }

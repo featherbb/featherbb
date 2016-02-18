@@ -22,7 +22,7 @@ class Plugins
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->model = new \FeatherBB\Model\Admin\Plugins();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/plugins.mo');
     }
@@ -70,12 +70,12 @@ class Plugins
         }
         rename($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version, $this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
         unlink($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
-        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin downloaded!');
+        Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
     }
 
     public function index()
     {
-        $this->feather->hooks->fire('controller.admin.plugins.index');
+        Container::get('hooks')->fire('controller.admin.plugins.index');
 
         $this->feather->template->addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
@@ -99,7 +99,7 @@ class Plugins
 
     public function activate($plugin = null)
     {
-        $this->feather->hooks->fire('controller.admin.plugins.activate');
+        Container::get('hooks')->fire('controller.admin.plugins.activate');
 
         if (!$plugin) {
             throw new Error(__('Bad request'), 400);
@@ -107,12 +107,12 @@ class Plugins
 
         $this->model->activate($plugin);
         // Plugin has been activated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), 'Plugin activated!');
+        Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
     }
 
     public function deactivate($plugin = null)
     {
-        $this->feather->hooks->fire('controller.admin.plugins.deactivate');
+        Container::get('hooks')->fire('controller.admin.plugins.deactivate');
 
         if (!$plugin) {
             throw new Error(__('Bad request'), 400);
@@ -120,12 +120,12 @@ class Plugins
 
         $this->model->deactivate($plugin);
         // // Plugin has been deactivated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
+        Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
 
     public function uninstall($plugin = null)
     {
-        $this->feather->hooks->fire('controller.admin.plugins.uninstall');
+        Container::get('hooks')->fire('controller.admin.plugins.uninstall');
 
         if (!$plugin) {
             throw new Error(__('Bad request'), 400);
@@ -133,7 +133,7 @@ class Plugins
 
         $this->model->uninstall($plugin);
         // Plugin has been deactivated, confirm and redirect
-        Url::redirect($this->feather->urlFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
+        Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
     }
 
     /**

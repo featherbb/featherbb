@@ -23,7 +23,7 @@ class Login
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
@@ -89,7 +89,7 @@ class Login
         $redirect_url = $this->request->post('redirect_url');
         $redirect_url = $this->hook->fire('model.login.redirect_url_login', $redirect_url);
 
-        Url::redirect(Utils::escape($redirect_url), __('Login redirect'));
+        Router::redirect(Utils::escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
@@ -97,7 +97,7 @@ class Login
         $token = $this->hook->fire('model.login.logout_start', $token, $id);
 
         if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash($this->request->getIp()))) {
-            Url::redirect($this->feather->urlFor('home'));
+            Router::redirect(Router::pathFor('home'));
         }
 
         // Remove user from "users online" list
@@ -118,7 +118,7 @@ class Login
 
         $this->auth->feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
 
-        Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
+        Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }
 
     public function password_forgotten()
@@ -126,7 +126,7 @@ class Login
         $this->hook->fire('model.login.password_forgotten_start');
 
         if (!$this->user->is_guest) {
-            Url::redirect($this->feather->urlFor('home'));
+            Router::redirect(Router::pathFor('home'));
         }
         // Start with a clean slate
         $errors = array();

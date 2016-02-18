@@ -24,7 +24,7 @@ class Users
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
@@ -247,7 +247,7 @@ class Users
             DB::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
-            Url::redirect($this->feather->urlFor('adminUsers'), __('Users move redirect'));
+            Router::redirect(Router::pathFor('adminUsers'), __('Users move redirect'));
         }
 
         $move = $this->hook->fire('model.admin.model.users.move_users.move', $move);
@@ -412,7 +412,7 @@ class Users
 
             $stats = $this->feather->cache->retrieve('users_info');
 
-            Url::redirect($this->feather->urlFor('adminUsers'), __('Users delete redirect'));
+            Router::redirect(Router::pathFor('adminUsers'), __('Users delete redirect'));
         }
 
         return $user_ids;
@@ -531,7 +531,7 @@ class Users
                 // Regenerate the bans cache
                 $this->feather->cache->store('bans', Cache::get_bans());
 
-                Url::redirect($this->feather->urlFor('adminUsers'), __('Users banned redirect'));
+                Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
             }
         }
         return $user_ids;

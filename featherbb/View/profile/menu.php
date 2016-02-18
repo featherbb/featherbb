@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.menu.start');
+Container::get('hooks')->fire('view.profile.menu.start');
 ?>
 <div id="profile" class="block2col">
     <div class="blockmenu">
@@ -56,4 +56,4 @@ $feather->hooks->fire('view.profile.menu.start');
     </div>
 
 <?php
-$feather->hooks->fire('view.profile.menu.end');
+Container::get('hooks')->fire('view.profile.menu.end');

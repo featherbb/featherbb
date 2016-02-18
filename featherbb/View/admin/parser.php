@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.parser.start');
+Container::get('hooks')->fire('view.admin.parser.start');
 ?>
 
     <div class="blockform">
@@ -303,4 +303,4 @@ foreach ($bbcd as $tagname => $tagdata) {
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.parser.end');
+Container::get('hooks')->fire('view.admin.parser.end');

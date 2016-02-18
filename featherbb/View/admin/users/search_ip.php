@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.users.search_ip.start');
+Container::get('hooks')->fire('view.admin.users.search_ip.start');
 ?>
 
 <div class="linkst">
@@ -83,4 +83,4 @@ $feather->hooks->fire('view.admin.users.search_ip.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.users.search_ip.end');
+Container::get('hooks')->fire('view.admin.users.search_ip.end');

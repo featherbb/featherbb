@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.change_mail.start');
+Container::get('hooks')->fire('view.profile.change_mail.start');
 ?>
 
 <div class="blockform">
@@ -37,4 +37,4 @@ $feather->hooks->fire('view.profile.change_mail.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.change_mail.end');
+Container::get('hooks')->fire('view.profile.change_mail.end');

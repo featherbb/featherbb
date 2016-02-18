@@ -263,11 +263,6 @@ class Install
             KEY `users_registered_idx` (`registered`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",);
 
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-    }
-
     public function create_table($table_name, $sql)
     {
         $db = DB::get_db();
@@ -419,7 +414,6 @@ class Install
 
     public static function load_admin_user(array $data)
     {
-        $feather = \Slim\Slim::getInstance();
         $now = time();
         return $user = array(
             'group_id' => 1,
@@ -431,20 +425,19 @@ class Install
             'num_posts' => 1,
             'last_post' => $now,
             'registered' => $now,
-            'registration_ip' => $feather->request->getIp(),
+            'registration_ip' => Request::getServerParams()['REMOTE_ADDR'],
             'last_visit' => $now);
     }
 
     public static function load_mock_forum_data(array $data)
     {
-        $feather = \Slim\Slim::getInstance();
         $cat_name = __('Test category');
         $subject = __('Test post');
         $message = __('Message');
         $forum_name = __('Test forum');
         $forum_desc = __('This is just a test forum');
         $now = time();
-        $ip = $feather->request->getIp();
+        $ip = Request::getServerParams()['REMOTE_ADDR'];
 
         return $mock_data = array(
             'categories' => array('cat_name' => $cat_name,

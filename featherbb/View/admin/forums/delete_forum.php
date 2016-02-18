@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.forums.delete.start');
+Container::get('hooks')->fire('view.admin.forums.delete.start');
 ?>
 
     <div class="blockform">
@@ -37,4 +37,4 @@ $feather->hooks->fire('view.admin.forums.delete.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.forums.admin_forums.end');
+Container::get('hooks')->fire('view.admin.forums.admin_forums.end');

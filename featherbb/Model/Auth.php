@@ -18,7 +18,7 @@ class Auth
         $user_id = (int) $user_id;
         $result['select'] = array('u.*', 'g.*', 'o.logged', 'o.idle');
         $result['where'] = array('u.id' => $user_id);
-        $result['join'] = ($user_id == 1) ? Request::getAttribute('ip_address') : 'u.id';
+        $result['join'] = ($user_id == 1) ? Request::getServerParams()['REMOTE_ADDR'] : 'u.id';
         $escape = ($user_id == 1) ? true : false;
 
         $result = DB::for_table('users')

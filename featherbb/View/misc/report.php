@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.misc.email.report');
+Container::get('hooks')->fire('view.misc.email.report');
 ?>
 
 <div class="linkst">
@@ -49,4 +49,4 @@ $feather->hooks->fire('view.misc.email.report');
 </div>
 
 <?php
-$feather->hooks->fire('view.misc.report.start');
+Container::get('hooks')->fire('view.misc.report.start');

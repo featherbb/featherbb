@@ -221,8 +221,8 @@ class View
 
     public function display($nested = true)
     {
-        if ($this->app->user) {
-            $this->setStyle($this->app->user->style);
+        if (Container::get('user')) {
+            $this->setStyle(Container::get('user')->style);
         }
         echo $this->fetch($nested);
     }
@@ -235,9 +235,9 @@ class View
             $this->data->set('flash', $this->app->environment['slim.flash']);
         }
         $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
-        $data['feather'] = \Slim\Slim::getInstance();
+        $data['feather'] = true;
         $data['assets'] = $this->getAssets();
-        $data = $this->app->hooks->fire('view.alter_data', $data);
+        $data = Container::get('hooks')->fire('view.alter_data', $data);
         return $this->render($data, $nested);
     }
 
@@ -254,7 +254,7 @@ class View
         if ($nested) {
             require $this->getTemplatePathname('footer.php');
         }
-        return $this->app->hooks->fire('view.alter_html', ob_get_clean());
+        return Container::get('hooks')->fire('view.alter_html', ob_get_clean());
     }
 
     /********************************************************************************
@@ -375,12 +375,12 @@ class View
     protected function getDefaultPageInfo()
     {
         // Check if config file exists to avoid error when installing forum
-        if (!$this->app->cache->isCached('quickjump') && is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
-            $this->app->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+        if (!Container::get('cache')->isCached('quickjump') && is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
+            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
         }
 
         $data = array(
-            'title' => Utils::escape($this->app->forum_settings['o_board_title']),
+            'title' => Utils::escape(Config::get('forum_settings')['o_board_title']),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,
@@ -390,13 +390,13 @@ class View
             'paging_links' => null,
             'required_fields' => null,
             'footer_style' => null,
-            'quickjump' => $this->app->cache->retrieve('quickjump'),
+            'quickjump' => Container::get('cache')->retrieve('quickjump'),
             'fid' => null,
             'pid' => null,
             'tid' => null,
         );
 
-        if (is_object($this->app->user) && $this->app->user->is_admmod) {
+        if (is_object(Container::get('user')) && Container::get('user')->is_admmod) {
             $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
         }
 

@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.groups.add_edit_group.start');
+Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
 ?>
 
     <div class="blockform">
@@ -303,7 +303,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                     </td>
                                 </tr>
 <?php endif; endif; ?>    </table>
-<?php $feather->hooks->fire('view.admin.groups.add_edit_group.form'); ?>
+<?php Container::get('hooks')->fire('view.admin.groups.add_edit_group.form'); ?>
 <?php if ($group['info']['g_moderator'] == '1'): ?>                            <p class="warntext"><?php _e('Moderator info') ?></p>
 <?php endif; ?>                        </div>
                     </fieldset>
@@ -316,4 +316,4 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.groups.add_edit_group.end');
+Container::get('hooks')->fire('view.admin.groups.add_edit_group.end');

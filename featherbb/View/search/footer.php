@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.footer.start');
+Container::get('hooks')->fire('view.search.footer.start');
 
 if ($footer['show_as'] == 'topics') :
 ?>
@@ -42,4 +42,4 @@ if ($footer['show_as'] == 'topics') :
 </div>
 
 <?php
-$feather->hooks->fire('view.search.footer.end');
+Container::get('hooks')->fire('view.search.footer.end');

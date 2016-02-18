@@ -20,7 +20,7 @@ class Register
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Register();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
@@ -30,10 +30,10 @@ class Register
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.register.display');
+        Container::get('hooks')->fire('controller.register.display');
 
         if (!$this->user->is_guest) {
-            Url::redirect($this->feather->urlFor('home'));
+            Router::redirect(Router::pathFor('home'));
         }
 
         // Antispam feature
@@ -77,18 +77,18 @@ class Register
 
     public function cancel()
     {
-        $this->feather->hooks->fire('controller.register.cancel');
+        Container::get('hooks')->fire('controller.register.cancel');
 
-        Url::redirect($this->feather->urlFor('home'));
+        Router::redirect(Router::pathFor('home'));
     }
 
     public function rules()
     {
-        $this->feather->hooks->fire('controller.register.rules');
+        Container::get('hooks')->fire('controller.register.rules');
 
         // If we are logged in, we shouldn't be here
         if (!$this->user->is_guest) {
-            Url::redirect($this->feather->urlFor('home'));
+            Router::redirect(Router::pathFor('home'));
         }
 
         // Display an error message if new registrations are disabled
@@ -97,7 +97,7 @@ class Register
         }
 
         if ($this->config['o_rules'] != '1') {
-            Url::redirect($this->feather->urlFor('register'));
+            Router::redirect(Router::pathFor('register'));
         }
 
         $this->feather->template->setPageInfo(array(

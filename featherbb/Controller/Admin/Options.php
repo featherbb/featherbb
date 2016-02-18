@@ -19,7 +19,7 @@ class Options
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Options();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
@@ -27,7 +27,7 @@ class Options
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.options.display');
+        Container::get('hooks')->fire('controller.admin.options.display');
 
         if ($this->feather->request->isPost()) {
             $this->model->update_options();

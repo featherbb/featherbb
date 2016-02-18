@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.register.form.start');
+Container::get('hooks')->fire('view.register.form.start');
 
 // If there are errors, we display them
 if (!empty($errors)) {
@@ -138,4 +138,4 @@ if (!empty($errors)) {
 </div>
 
 <?php
-$feather->hooks->fire('view.register.form.end');
+Container::get('hooks')->fire('view.register.form.end');

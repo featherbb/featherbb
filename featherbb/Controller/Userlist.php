@@ -19,22 +19,22 @@ class Userlist
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Userlist();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/userlist.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/search.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/userlist.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/search.mo');
     }
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.userlist.display');
+        Container::get('hooks')->fire('controller.userlist.display');
 
-        if ($this->feather->user->g_view_users == '0') {
+        if (Container::get('user')->g_view_users == '0') {
             throw new Error(__('No permission'), 403);
         }
 
         // Determine if we are allowed to view post counts
-        $show_post_count = ($this->feather->forum_settings['o_show_post_count'] == '1' || $this->feather->user->is_admmod) ? true : false;
+        $show_post_count = ($this->feather->forum_settings['o_show_post_count'] == '1' || Container::get('user')->is_admmod) ? true : false;
 
-        $username = $this->feather->request->get('username') && $this->feather->user->g_search_users == '1' ? Utils::trim($this->feather->request->get('username')) : '';
+        $username = $this->feather->request->get('username') && Container::get('user')->g_search_users == '1' ? Utils::trim($this->feather->request->get('username')) : '';
         $show_group = $this->feather->request->get('show_group') ? intval($this->feather->request->get('show_group')) : -1;
         $sort_by = $this->feather->request->get('sort_by') && (in_array($this->feather->request->get('sort_by'), array('username', 'registered')) || ($this->feather->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $this->feather->request->get('sort_by') : 'username';
         $sort_dir = $this->feather->request->get('sort_dir') && $this->feather->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
@@ -47,7 +47,7 @@ class Userlist
         $p = (!$this->feather->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        if ($this->feather->user->g_search_users == '1') {
+        if (Container::get('user')->g_search_users == '1') {
             $focus_element = array('userlist', 'username');
         }
         else {

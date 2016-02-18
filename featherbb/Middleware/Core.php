@@ -181,7 +181,7 @@ class Core
         }
 
         // Populate Slim object with forum_env vars
-        $this->hydrate('forum_env', $this->forum_env);
+        Config::set('forum_env', $this->forum_env);
         // Load FeatherBB utils class
         Container::set('utils', function ($container) {
             return new Utils();
@@ -227,18 +227,27 @@ class Core
         Container::set('parser', function ($container) {
             return new Parser();
         });
+        // Set cookies
+        Container::set('cookie', function ($container){
+            $request = $container->get('request');
+            return new \Slim\Http\Cookies($request->getCookieParams());
+        });
+        Container::set('flash', function($c) {
+            return new \Slim\Flash\Messages;
+        });
 
         // This is the very first hook fired
         Container::get('hooks')->fire('core.start');
 
-        if (!is_file($this->forum_env['FORUM_CONFIG_FILE'])) {
+        if (!is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
+            // return Router::redirect(Router::pathFor('install'));
             $installer = new Install();
-            $installer->run();
+            $installer->run($req, $res, []);
             return;
         }
 
         // Load config from disk
-        include $this->forum_env['FORUM_CONFIG_FILE'];
+        include Config::get('forum_env')['FORUM_CONFIG_FILE'];
         if (isset($featherbb_config) && is_array($featherbb_config)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $featherbb_config);
         } else {
@@ -247,7 +256,7 @@ class Core
         }
 
         // Init DB and configure Slim
-        self::init_db($this->forum_settings, $this->forum_env['FEATHER_SHOW_INFO']);
+        self::init_db($this->forum_settings, Config::get('forum_env')['FEATHER_SHOW_INFO']);
         Config::set('displayErrorDetails', true);
         // array('debug' => $this->forum_env['FEATHER_DEBUG'],
         //                          'cookies.encrypt' => true,

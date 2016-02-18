@@ -46,6 +46,8 @@ $isAdmmod = function ($request, $response, $next) use ($feather) {
     return $response;
 };
 
+Route::get('/install', '\FeatherBB\Controller\Install:run')->setName('install');
+
 // Index
 Route::get('/', '\FeatherBB\Controller\Index:display')->add($canReadBoard)->setName('home');
 Route::get('/rules', '\FeatherBB\Controller\Index:rules')->setName('rules');
@@ -246,13 +248,14 @@ Container::set('notFoundHandler', function ($c) {
     };
 });
 
-/*Container::set('errorHandler', function ($c) {
+Container::set('errorHandler', function ($c) {
     return function ($request, $response, $exception) use ($c) {
+        var_dump($exception);
         return $c['response']->withStatus(500)
                          ->withHeader('Content-Type', 'text/html')
                          ->write('Something went wrong!');
     };
-});*/
+});
 // $feather->error(function (\Exception $e) use ($feather) {
 //     $error = array(
 //         'code' => $e->getCode(),

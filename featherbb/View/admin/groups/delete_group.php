@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.groups.delete_group.start');
+Container::get('hooks')->fire('view.admin.groups.delete_group.start');
 ?>
 
     <div class="blockform">
@@ -43,4 +43,4 @@ $feather->hooks->fire('view.admin.groups.delete_group.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.groups.delete_group.end');
+Container::get('hooks')->fire('view.admin.groups.delete_group.end');

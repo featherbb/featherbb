@@ -20,7 +20,7 @@ class Groups
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Groups();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/groups.mo');
@@ -28,7 +28,7 @@ class Groups
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.groups.display');
+        Container::get('hooks')->fire('controller.admin.groups.display');
 
         $groups = $this->model->fetch_groups();
 
@@ -51,7 +51,7 @@ class Groups
 
     public function delete($id)
     {
-        $this->feather->hooks->fire('controller.admin.groups.delete');
+        Container::get('hooks')->fire('controller.admin.groups.delete');
 
         if ($id < 5) {
             throw new Error(__('Bad request'), 403);
@@ -98,7 +98,7 @@ class Groups
 
     public function addedit($id = '')
     {
-        $this->feather->hooks->fire('controller.admin.groups.addedit');
+        Container::get('hooks')->fire('controller.admin.groups.addedit');
 
         $groups = $this->model->fetch_groups();
 

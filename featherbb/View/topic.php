@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.topic.start');
+Container::get('hooks')->fire('view.topic.start');
 ?>
 
 <div class="linkst">
@@ -199,4 +199,4 @@ if ($quickpost) {
 <?php
 }
 
-$feather->hooks->fire('view.topic.end');
+Container::get('hooks')->fire('view.topic.end');

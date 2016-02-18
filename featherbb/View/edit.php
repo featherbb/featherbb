@@ -17,7 +17,7 @@ if (!isset($feather)) {
 
 $cur_index = 1;
 
-$feather->hooks->fire('view.edit.start');
+Container::get('hooks')->fire('view.edit.start');
 ?>
 
 <div class="linkst">
@@ -116,4 +116,4 @@ endif;
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.edit.end');
+Container::get('hooks')->fire('view.edit.end');

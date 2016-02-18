@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.post.start');
+Container::get('hooks')->fire('view.post.start');
 ?>
 
 <div class="linkst">
@@ -200,4 +200,4 @@ if ($tid && $feather->forum_settings['o_topic_review'] != '0') :
 
 </div>
 <?php endif;
-$feather->hooks->fire('view.post.end');
+Container::get('hooks')->fire('view.post.end');

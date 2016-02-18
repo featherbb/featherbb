@@ -21,7 +21,7 @@ class Profile
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Profile();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/profile.mo');
@@ -39,7 +39,7 @@ class Profile
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
-        $id = $this->feather->hooks->fire('controller.profile.display', $id);
+        $id = Container::get('hooks')->fire('controller.profile.display', $id);
 
         if ($this->request->post('update_group_membership')) {
             if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
@@ -249,7 +249,7 @@ class Profile
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
         require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
-        $id = $this->feather->hooks->fire('controller.profile.action', $id);
+        $id = Container::get('hooks')->fire('controller.profile.action', $id);
 
         if ($action != 'change_pass' || !$this->request->get('key')) {
             if ($this->user->g_read_board == '0') {
@@ -315,7 +315,7 @@ class Profile
 
             $this->model->delete_avatar($id);
 
-            Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
+            Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($action == 'promote') {
             if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);
@@ -329,9 +329,9 @@ class Profile
 
     public function email($id)
     {
-        $id = $this->feather->hooks->fire('controller.profile.email', $id);
+        $id = Container::get('hooks')->fire('controller.profile.email', $id);
 
-        if ($this->feather->user->g_send_email == '0') {
+        if (Container::get('user')->g_send_email == '0') {
             throw new Error(__('No permission'), 403);
         }
 
@@ -341,7 +341,7 @@ class Profile
 
         $mail = $this->model->get_info_mail($id);
 
-        if ($mail['email_setting'] == 2 && !$this->feather->user->is_admmod) {
+        if ($mail['email_setting'] == 2 && !Container::get('user')->is_admmod) {
             throw new Error(__('Form email disabled'), 403);
         }
 
@@ -362,7 +362,7 @@ class Profile
 
     public function gethostip($ip)
     {
-        $ip = $this->feather->hooks->fire('controller.profile.gethostip', $ip);
+        $ip = Container::get('hooks')->fire('controller.profile.gethostip', $ip);
 
         $this->model->display_ip_info($ip);
     }

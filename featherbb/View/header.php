@@ -16,7 +16,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.header.start');
+Container::get('hooks')->fire('view.header.start');
 ?>
 <!doctype html>
 <html lang="<?php _e('lang_identifier') ?>">
@@ -48,8 +48,8 @@ foreach($assets as $type => $items) {
     }
 }
 if ($admin_console) {
-    if (file_exists($feather->forum_env['FEATHER_ROOT'].'style/themes/'.$feather->user->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.$feather->user->style.'/base_admin.css" />'."\n";
+    if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.Container::get('user')->style.'/base_admin.css')) {
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.Container::get('user')->style.'/base_admin.css" />'."\n";
     } else {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
     }
@@ -98,7 +98,7 @@ if (!empty($page_head)) :
     echo implode("\n", $page_head)."\n";
 endif;
 
-$feather->hooks->fire('view.header.before.head.tag');
+Container::get('hooks')->fire('view.header.before.head.tag');
 ?>
 </head>
 
@@ -115,35 +115,35 @@ $feather->hooks->fire('view.header.before.head.tag');
 <?php
 $navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>';
 
-if ($feather->user->g_read_board == '1' && $feather->user->g_view_users == '1') {
-    $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('userList').'">'.__('User list').'</a></li>';
+if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_view_users == '1') {
+    $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userList').'">'.__('User list').'</a></li>';
 }
 
-if ($feather->forum_settings['o_rules'] == '1' && (!$feather->user->is_guest || $feather->user->g_read_board == '1' || $feather->forum_settings['o_regs_allow'] == '1')) {
-    $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('rules').'">'.__('Rules').'</a></li>';
+if (Config::get('forum_settings')['o_rules'] == '1' && (!Container::get('user')->is_guest || Container::get('user')->g_read_board == '1' || Config::get('forum_settings')['o_regs_allow'] == '1')) {
+    $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('rules').'">'.__('Rules').'</a></li>';
 }
 
-if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
-    $navlinks[] = '<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('search').'">'.__('Search').'</a></li>';
+if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_search == '1') {
+    $navlinks[] = '<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('search').'">'.__('Search').'</a></li>';
 }
 
-if ($feather->user->is_guest) {
-    $navlinks[] = '<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('register').'">'.__('Register').'</a></li>';
-    $navlinks[] = '<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('login').'">'.__('Login').'</a></li>';
+if (Container::get('user')->is_guest) {
+    $navlinks[] = '<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('register').'">'.__('Register').'</a></li>';
+    $navlinks[] = '<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('login').'">'.__('Login').'</a></li>';
 } else {
-    $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('userProfile', ['id' => $feather->user->id]).'">'.__('Profile').'</a></li>';
+    $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userProfile', ['id' => Container::get('user')->id]).'">'.__('Profile').'</a></li>';
 
-    if ($feather->user->is_admmod) {
-        $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.$feather->urlFor('adminIndex').'">'.__('Admin').'</a></li>';
+    if (Container::get('user')->is_admmod) {
+        $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('adminIndex').'">'.__('Admin').'</a></li>';
     }
 
-    $navlinks[] = '<li id="navlogout"><a href="'.$feather->urlFor('logout', ['token' => Random::hash($feather->user->id.Random::hash($feather->request->getIp()))]).'">'.__('Logout').'</a></li>';
+    $navlinks[] = '<li id="navlogout"><a href="'.Router::pathFor('logout', ['token' => Random::hash(Container::get('user')->id.Random::hash(Request::getServerParams()['REMOTE_ADDR']))]).'">'.__('Logout').'</a></li>';
 }
 
 // Are there any additional navlinks we should insert into the array before imploding it?
-$hooksLinks = $feather->hooks->fire('view.header.navlinks', []);
-$extraLinks = $feather->forum_settings['o_additional_navlinks']."\n".implode("\n", $hooksLinks);
-if ($feather->user->g_read_board == '1' && ($extraLinks != '')) {
+$hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
+$extraLinks = Config::get('forum_settings')['o_additional_navlinks']."\n".implode("\n", $hooksLinks);
+if (Container::get('user')->g_read_board == '1' && ($extraLinks != '')) {
     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {
         // Insert any additional links into the $links array (at the correct index)
         $num_links = count($results[1]);
@@ -158,7 +158,7 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
                         </ul>
                     </div>
                     <div class="navbar-right">
-                        <form method="get" action="<?= $feather->urlFor('search'); ?>" class="nav-search">
+                        <form method="get" action="<?= Router::pathFor('search'); ?>" class="nav-search">
                             <input type="hidden" name="action" value="search">
                             <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php _e('Search') ?>">
                         </form>
@@ -171,61 +171,61 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
             <div class="container-title-status">
                 <h1 class="title-site">
                     <a href="<?= Url::base() ?>" title="" class="site-name">
-                        <p><?= Utils::escape($feather->forum_settings['o_board_title']) ?></p>
+                        <p><?= Utils::escape(Config::get('forum_settings')['o_board_title']) ?></p>
                     </a>
-                    <div id="brddesc"><?= htmlspecialchars_decode($feather->forum_settings['o_board_desc']) ?></div>
+                    <div id="brddesc"><?= htmlspecialchars_decode(Config::get('forum_settings')['o_board_desc']) ?></div>
                 </h1>
                 <div class="status-avatar">
                     <div id="brdwelcome" class="inbox">
 <?php
-if ($feather->user->is_guest) { ?>
+if (Container::get('user')->is_guest) { ?>
                         <p class="conl"><?= __('Not logged in')?></p>
 <?php } else {
     echo "\t\t\t".'<ul class="conl">';
-    echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape($feather->user->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), $feather->utils->format_time($feather->user->last_visit)).'</span></li>'."\n";
+    echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(Container::get('user')->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(Container::get('user')->last_visit)).'</span></li>'."\n";
 
-    if ($feather->user->is_admmod) {
-        if ($feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2') {
+    if (Container::get('user')->is_admmod) {
+        if (Config::get('forum_settings')['o_report_method'] == '0' || Config::get('forum_settings')['o_report_method'] == '2') {
             if ($has_reports) {
-                echo "\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.$feather->urlFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
+                echo "\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
             }
         }
-        if ($feather->forum_settings['o_maintenance'] == '1') {
-            echo "\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.$feather->urlFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+        if (Config::get('forum_settings')['o_maintenance'] == '1') {
+            echo "\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
-    $headerToplist = $feather->hooks->fire('header.toplist', []);
+    $headerToplist = Container::get('hooks')->fire('header.toplist', []);
     echo implode("\t\t\t\t", $headerToplist);
     echo "\t\t\t".'</ul>'."\n";
 }
 
-if ($feather->user->g_read_board == '1' && $feather->user->g_search == '1') {
+if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_search == '1') {
     echo "\t\t\t".'<ul class="conr">'."\n";
     echo "\t\t\t\t".'<li><span>'.__('Topic searches').' ';
-    if (!$feather->user->is_guest) {
-        echo '<a href="'.$feather->urlFor('quickSearch', ['show' => 'replies']).'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
-        echo '<a href="'.$feather->urlFor('quickSearch', ['show' => 'new']).'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
+    if (!Container::get('user')->is_guest) {
+        echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'replies']).'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
+        echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'new']).'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
     }
-    echo '<a href="'.$feather->urlFor('quickSearch', ['show' => 'recent']).'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
-    echo '<a href="'.$feather->urlFor('quickSearch', ['show' => 'unanswered']).'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
+    echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'recent']).'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
+    echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'unanswered']).'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
     echo '</li>'."\n";
     echo "\t\t\t".'</ul>'."\n";
 }
 
-$feather->hooks->fire('view.header.brdwelcome');
+Container::get('hooks')->fire('view.header.brdwelcome');
 ?>
                     <div class="clearer"></div>
                     </div>
                 </div>
                 <div class="clear"></div>
             </div>
-<?php if ($feather->user->g_read_board == '1' && $feather->forum_settings['o_announcement'] == '1') : ?>
+<?php if (Container::get('user')->g_read_board == '1' && Config::get('forum_settings')['o_announcement'] == '1') : ?>
             <div id="announce" class="block">
                 <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
-                        <div class="usercontent"><?= $feather->forum_settings['o_announcement_message'] ?></div>
+                        <div class="usercontent"><?= Config::get('forum_settings')['o_announcement_message'] ?></div>
                     </div>
                 </div>
             </div>
@@ -254,4 +254,4 @@ $feather->hooks->fire('view.header.brdwelcome');
     <section class="container">
         <div id="brdmain">
 <?php
-$feather->hooks->fire('view.header.end');
+Container::get('hooks')->fire('view.header.end');

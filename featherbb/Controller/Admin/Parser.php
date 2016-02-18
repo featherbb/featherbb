@@ -21,7 +21,7 @@ class Parser
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Parser();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/parser.mo');
@@ -31,7 +31,7 @@ class Parser
     {
         global $lang_admin_parser;
 
-        $this->feather->hooks->fire('controller.admin.parser.display');
+        Container::get('hooks')->fire('controller.admin.parser.display');
 
         // Legacy
         require $this->feather->forum_env['FEATHER_ROOT'] . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
@@ -43,7 +43,7 @@ class Parser
         if ($this->request->post('reset') || !file_exists($cache_file)) {
             require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_source.php');
             require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_compile.php');
-            Url::redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['reset_success']);
+            Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['reset_success']);
         }
 
         // Load the current BBCode $pd array from featherbb/Core/parser/parser_data.inc.php.
@@ -66,7 +66,7 @@ class Parser
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
                                     if (move_uploaded_file($f['tmp_name'], $this->feather->forum_env['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
-                                        Url::redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['upload success']);
+                                        Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new Error($lang_admin_parser['upload_err_1'], 500);
                                     }
@@ -200,7 +200,7 @@ class Parser
             }
 
             require_once('featherbb/Core/parser/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
-            Url::redirect($this->feather->urlFor('adminParser'), $lang_admin_parser['save_success']);
+            Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['save_success']);
         }
 
         AdminUtils::generateAdminMenu('parser');

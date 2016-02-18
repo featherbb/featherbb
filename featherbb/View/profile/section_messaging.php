@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_messaging.start');
+Container::get('hooks')->fire('view.profile.section_messaging.start');
 ?>
 
 <div class="blockform">
@@ -43,5 +43,5 @@ $feather->hooks->fire('view.profile.section_messaging.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_messaging.start');
+Container::get('hooks')->fire('view.profile.section_messaging.start');
 

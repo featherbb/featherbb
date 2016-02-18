@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.forum.start');
+Container::get('hooks')->fire('view.forum.start');
 ?>
 <div class="linkst">
     <div class="inbox crumbsplus">
@@ -103,4 +103,4 @@ $feather->hooks->fire('view.forum.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.forum.end');
+Container::get('hooks')->fire('view.forum.end');

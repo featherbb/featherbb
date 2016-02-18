@@ -21,7 +21,7 @@ class Maintenance
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->search = new \FeatherBB\Core\Search();
@@ -214,7 +214,7 @@ class Maintenance
                     ->delete_many();
         }
 
-        Url::redirect($this->feather->urlFor('adminMaintenance'), __('Posts pruned redirect'));
+        Router::redirect(Router::pathFor('adminMaintenance'), __('Posts pruned redirect'));
     }
 
     public function get_info_prune($prune_sticky, $prune_from)

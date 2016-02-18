@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.forums.permissions.start');
+Container::get('hooks')->fire('view.admin.forums.permissions.start');
 ?>
 
     <div class="blockform">
@@ -141,4 +141,4 @@ $feather->hooks->fire('view.admin.forums.permissions.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.forums.permissions.start');
+Container::get('hooks')->fire('view.admin.forums.permissions.start');

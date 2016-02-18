@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.moderator_forum.start');
+Container::get('hooks')->fire('view.moderate.moderator_forum.start');
 ?>
 
 <div class="linkst">
@@ -105,4 +105,4 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
 </form>
 
 <?php
-$feather->hooks->fire('view.moderate.moderator_forum.end');
+Container::get('hooks')->fire('view.moderate.moderator_forum.end');

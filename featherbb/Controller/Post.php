@@ -19,28 +19,28 @@ class Post
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Post();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/delete.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/post.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/register.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/bbeditor.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/delete.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/post.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/bbeditor.mo');
     }
 
     public function newreply($fid = null, $tid = null, $qid = null)
     {
-        $this->feather->hooks->fire('controller.post.newreply');
+        Container::get('hooks')->fire('controller.post.newreply');
 
         $this->newpost('', $fid, $tid);
     }
 
     public function newpost($fid = null, $tid = null, $qid = null)
     {
-        $this->feather->hooks->fire('controller.post.create', $fid, $tid, $qid);
+        Container::get('hooks')->fire('controller.post.create', $fid, $tid, $qid);
 
         // Antispam feature
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/antispam.php';
+        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
@@ -60,11 +60,11 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($tid && (($cur_posting['post_replies'] == '' && $this->feather->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($fid && (($cur_posting['post_topics'] == '' && $this->feather->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($tid && (($cur_posting['post_replies'] == '' && Container::get('user')->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
+                ($fid && (($cur_posting['post_topics'] == '' && Container::get('user')->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
             throw new Error(__('No permission'), 403);
@@ -121,16 +121,16 @@ class Post
                         }
 
                         // If we previously found out that the email was banned
-                        if ($this->feather->user->is_guest && isset($errors['banned_email']) && $this->feather->forum_settings['o_mailing_list'] != '') {
+                        if (Container::get('user')->is_guest && isset($errors['banned_email']) && $this->feather->forum_settings['o_mailing_list'] != '') {
                             $this->model->warn_banned_user($post, $new['pid']);
                         }
 
                         // If the posting user is logged in, increment his/her post count
-                        if (!$this->feather->user->is_guest) {
+                        if (!Container::get('user')->is_guest) {
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    Url::redirect($this->feather->urlFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
+                    Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
                 }
         }
 
@@ -166,13 +166,13 @@ class Post
         }
 
         $required_fields = array('req_email' => __('Email'), 'req_subject' => __('Subject'), 'req_message' => __('Message'));
-        if ($this->feather->user->is_guest) {
+        if (Container::get('user')->is_guest) {
             $required_fields['captcha'] = __('Robot title');
         }
 
         // Set focus element (new post or new reply to an existing post ?)
         $focus_element[] = 'post';
-        if (!$this->feather->user->is_guest) {
+        if (!Container::get('user')->is_guest) {
             $focus_element[] = ($fid) ? 'req_subject' : 'req_message';
         } else {
             $required_fields['req_username'] = __('Guest name');
@@ -215,7 +215,7 @@ class Post
 
     public function delete($id)
     {
-        $this->feather->hooks->fire('controller.post.delete');
+        Container::get('hooks')->fire('controller.post.delete');
 
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($id);
@@ -226,20 +226,20 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($id == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if (($this->feather->user->g_delete_posts == '0' ||
-                ($this->feather->user->g_delete_topics == '0' && $is_topic_post) ||
-                $cur_post['poster_id'] != $this->feather->user->id ||
+        if ((Container::get('user')->g_delete_posts == '0' ||
+                (Container::get('user')->g_delete_topics == '0' && $is_topic_post) ||
+                $cur_post['poster_id'] != Container::get('user')->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
             throw new Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && $this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && Container::get('user')->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -260,14 +260,14 @@ class Post
 
     public function editpost($id)
     {
-        $this->feather->hooks->fire('controller.post.edit');
+        Container::get('hooks')->fire('controller.post.edit');
 
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_edit($id);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $id == $cur_post['first_post_id'];
 
@@ -277,11 +277,11 @@ class Post
         }
 
         // Do we have permission to edit this post?
-        if (($this->feather->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->feather->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
+        if ((Container::get('user')->g_edit_posts == '0' || $cur_post['poster_id'] != Container::get('user')->id || $cur_post['closed'] == '1') && !$is_admmod) {
             throw new Error(__('No permission'), 403);
         }
 
-        if ($is_admmod && $this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && Container::get('user')->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -289,7 +289,7 @@ class Post
         $errors = array();
 
         if ($this->feather->request()->isPost()) {
-            $this->feather->hooks->fire('controller.post.edit.submit', $id);
+            Container::get('hooks')->fire('controller.post.edit.submit', $id);
 
             // Let's see if everything went right
             $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
@@ -299,11 +299,11 @@ class Post
 
             // Did everything go according to plan?
             if (empty($errors) && !$this->feather->request->post('preview')) {
-                $this->feather->hooks->fire('controller.post.edit.valid', $id);
+                Container::get('hooks')->fire('controller.post.edit.valid', $id);
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                Url::redirect($this->feather->urlFor('viewPost', ['pid' => $id]).'#p'.$id, __('Post redirect'));
+                Router::redirect(Router::pathFor('viewPost', ['pid' => $id]).'#p'.$id, __('Post redirect'));
             }
         } else {
             $post = '';
@@ -311,7 +311,7 @@ class Post
 
         if ($this->feather->request->post('preview')) {
             $preview_message = $this->feather->parser->parse_message($post['message'], $post['hide_smilies']);
-            $preview_message = $this->feather->hooks->fire('controller.post.edit.preview', $preview_message);
+            $preview_message = Container::get('hooks')->fire('controller.post.edit.preview', $preview_message);
         } else {
             $preview_message = '';
         }
@@ -333,7 +333,7 @@ class Post
 
     public function report($id)
     {
-        $id = $this->feather->hooks->fire('controller.post.report', $id);
+        $id = Container::get('hooks')->fire('controller.post.report', $id);
 
         if ($this->feather->request()->isPost()) {
             $this->model->insert_report($id);
@@ -358,7 +358,7 @@ class Post
 
     public function gethost($pid)
     {
-        $pid = $this->feather->hooks->fire('controller.post.gethost', $pid);
+        $pid = Container::get('hooks')->fire('controller.post.gethost', $pid);
 
         $this->model->display_ip_address($pid);
     }

@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.bans.search.start');
+Container::get('hooks')->fire('view.admin.bans.search.start');
 ?>
 
 <div class="linkst">
@@ -91,4 +91,4 @@ $feather->hooks->fire('view.admin.bans.search.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.bans.search.end');
+Container::get('hooks')->fire('view.admin.bans.search.end');

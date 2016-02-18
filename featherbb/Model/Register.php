@@ -22,7 +22,7 @@ class Register
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
@@ -268,13 +268,13 @@ class Register
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-            Url::redirect($this->feather->urlFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
+            Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
         }
 
         $this->auth->feather_setcookie($new_uid, $password_hash, time() + $this->config['o_timeout_visit']);
 
         $this->hook->fire('model.register.insert_user');
 
-        Url::redirect($this->feather->urlFor('home'), __('Reg complete'));
+        Router::redirect(Router::pathFor('home'), __('Reg complete'));
     }
 }

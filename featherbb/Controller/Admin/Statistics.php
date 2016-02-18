@@ -20,7 +20,7 @@ class Statistics
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Statistics();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
@@ -28,7 +28,7 @@ class Statistics
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.statistics.display');
+        Container::get('hooks')->fire('controller.admin.statistics.display');
 
         AdminUtils::generateAdminMenu('index');
 
@@ -50,7 +50,7 @@ class Statistics
 
     public function phpinfo()
     {
-        $this->feather->hooks->fire('controller.admin.statistics.phpinfo');
+        Container::get('hooks')->fire('controller.admin.statistics.phpinfo');
 
         // Show phpinfo() output
         // Is phpinfo() a disabled function?

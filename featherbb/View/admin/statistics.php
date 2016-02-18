@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.statistics.start');
+Container::get('hooks')->fire('view.admin.statistics.start');
 ?>
 
     <div class="block">
@@ -46,4 +46,4 @@ $feather->hooks->fire('view.admin.statistics.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.statistics.end');
+Container::get('hooks')->fire('view.admin.statistics.end');

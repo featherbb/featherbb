@@ -21,14 +21,14 @@ class Index
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
     }
 
     public function display($action = null)
     {
-        $this->feather->hooks->fire('controller.admin.index.display');
+        Container::get('hooks')->fire('controller.admin.index.display');
 
         // Check for upgrade
         if ($action == 'check_upgrade') {
@@ -42,9 +42,9 @@ class Index
             }
 
             if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
-                Url::redirect($this->feather->urlFor('adminIndex'), __('Running latest version message'));
+                Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
             } else {
-                Url::redirect($this->feather->urlFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
+                Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
 

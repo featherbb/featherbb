@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.delete.start');
+Container::get('hooks')->fire('view.delete.start');
 ?>
 
 <div class="linkst">
@@ -68,4 +68,4 @@ $feather->hooks->fire('view.delete.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.delete.end');
+Container::get('hooks')->fire('view.delete.end');

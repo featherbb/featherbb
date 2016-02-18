@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.misc.email.start');
+Container::get('hooks')->fire('view.misc.email.start');
 ?>
 
 <div id="emailform" class="blockform">
@@ -41,4 +41,4 @@ $feather->hooks->fire('view.misc.email.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.misc.email.end');
+Container::get('hooks')->fire('view.misc.email.end');

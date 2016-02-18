@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.footer.start');
+Container::get('hooks')->fire('view.footer.start');
 ?>
         </div>
 
@@ -62,7 +62,7 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
         echo "\t\t\t".'</dl>'."\n";
     }
 
-    $feather->hooks->fire('view.footer.mod.actions');
+    Container::get('hooks')->fire('view.footer.mod.actions');
 
     echo "\t\t\t".'<div class="clearer"></div>'."\n\t\t".'</div>'."\n";
 }
@@ -113,7 +113,7 @@ if ($active_page == 'index') {
     }
 }
 
-$feather->hooks->fire('view.footer.feed.links');
+Container::get('hooks')->fire('view.footer.feed.links');
 
 ?>
                         <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather->forum_settings['o_show_version'] == '1') ? ' '.$feather->forum_settings['o_cur_version'] : '')) ?></p>
@@ -170,7 +170,7 @@ if (!empty($queries_info)) { ?>
     }
     echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
 } ?>
-<?php $feather->hooks->fire('view.footer.before.html.tag'); ?>
+<?php Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
 </html>
 <?php
-$feather->hooks->fire('view.footer.end');
+Container::get('hooks')->fire('view.footer.end');

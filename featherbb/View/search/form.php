@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.form.start');
+Container::get('hooks')->fire('view.search.form.start');
 ?>
 
 <div id="searchform" class="blockform">
@@ -81,4 +81,4 @@ $feather->hooks->fire('view.search.form.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.search.form.end');
+Container::get('hooks')->fire('view.search.form.end');

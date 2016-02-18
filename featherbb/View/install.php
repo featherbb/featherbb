@@ -12,14 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.install.start');
+Container::get('hooks')->fire('view.install.start');
 ?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title><?php _e('FeatherBB Installation') ?></title>
-    <link rel="stylesheet" type="text/css" href="style/themes/<?= $feather->forum_env['FORUM_NAME'] ?>/style.css" />
+    <link rel="stylesheet" type="text/css" href="style/themes/<?= Config::get('forum_env')['FORUM_NAME'] ?>/style.css" />
 </head>
 
 <body>
@@ -73,9 +73,11 @@ $feather->hooks->fire('view.install.start');
                         ?>
 
                         <div class="blockform">
-                            <h2><span><?= sprintf(__('Install'), $feather->forum_env['FORUM_VERSION']) ?></span></h2>
+                            <h2><span><?= sprintf(__('Install'), Config::get('forum_env')['FORUM_VERSION']) ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
+                                    <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                                    <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                                     <?php if (!empty($errors)): ?>
                                         <div class="inform">
                                             <div class="forminfo error-info">
@@ -121,7 +123,7 @@ $feather->hooks->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 3') ?></p>
                                                 <label class="required"><strong><?php _e('Database server hostname') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[db_host]" size="50" required />
+                                                <input type="text" name="install[db_host]" size="50" value="localhost" required />
                                             </div>
                                         </fieldset>
                                     </div>
@@ -132,7 +134,7 @@ $feather->hooks->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 4') ?></p>
                                                 <label class="required"><strong><?php _e('Database name') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[db_name]" size="30" required />
+                                                <input type="text" name="install[db_name]" size="30" required value="featherbb" />
                                             </div>
                                         </fieldset>
                                     </div>
@@ -143,9 +145,9 @@ $feather->hooks->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 5') ?></p>
                                                 <label class="conl"><?php _e('Database username') ?></label>
-                                                <input type="text" name="install[db_user]" size="30" />
+                                                <input type="text" name="install[db_user]" size="30" value="root" />
                                                 <label class="conl"><?php _e('Database password') ?></label>
-                                                <input type="password" name="install[db_pass]" size="30" />
+                                                <input type="password" name="install[db_pass]" size="30" value="root" />
                                                 <div class="clearer"></div>
                                             </div>
                                         </fieldset>
@@ -172,14 +174,14 @@ $feather->hooks->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 8') ?></p>
                                                 <label class="required"><strong><?php _e('Administrator username') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[username]" size="25" maxlength="25" required />
+                                                <input type="text" name="install[username]" size="25" maxlength="25" required value="blade" />
                                                 <label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="password" name="install[password]" size="16" required />
+                                                <input type="password" name="install[password]" size="16" required value="dedede" />
                                                 <label class="conl required"><strong><?php _e('Confirm password') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="password" name="install[password_conf]" size="16" required />
+                                                <input type="password" name="install[password_conf]" size="16" required value="dedede" />
                                                 <!-- <div class="clearer"></div> -->
                                                 <label class="required"><strong><?php _e('Administrator email') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[email]" size="50" maxlength="80" required />
+                                                <input type="text" name="install[email]" size="50" maxlength="80" required value="okok@ok.fr" />
                                             </div>
                                         </fieldset>
                                     </div>
@@ -222,4 +224,4 @@ $feather->hooks->fire('view.install.start');
 </body>
 </html>
 <?php
-$feather->hooks->fire('view.install.end');
+Container::get('hooks')->fire('view.install.end');

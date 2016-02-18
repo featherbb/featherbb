@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.delete_user.start');
+Container::get('hooks')->fire('view.profile.delete_user.start');
 ?>
 
 <div class="blockform">
@@ -40,4 +40,4 @@ $feather->hooks->fire('view.profile.delete_user.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.delete_user.end');
+Container::get('hooks')->fire('view.profile.delete_user.end');

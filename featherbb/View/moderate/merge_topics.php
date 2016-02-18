@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.merge_topics.start');
+Container::get('hooks')->fire('view.moderate.merge_topics.start');
 ?>
 
 <div class="blockform">
@@ -37,4 +37,4 @@ $feather->hooks->fire('view.moderate.merge_topics.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.moderate.merge_topics.end');
+Container::get('hooks')->fire('view.moderate.merge_topics.end');

@@ -22,17 +22,17 @@ class Auth
     public function __construct()
     {
         $this->feather = \Slim\Slim::getInstance();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/login.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/login.mo');
     }
 
     public function login()
     {
-        if (!$this->feather->user->is_guest) {
-            Url::redirect($this->feather->urlFor('home'), 'Already logged in');
+        if (!Container::get('user')->is_guest) {
+            Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
         if ($this->feather->request->isPost()) {
-            $this->feather->hooks->fire('controller.login');
+            Container::get('hooks')->fire('controller.login');
             $form_username = Utils::trim($this->feather->request->post('req_username'));
             $form_password = Utils::trim($this->feather->request->post('req_password'));
             $save_pass = (bool) $this->feather->request->post('save_pass');
@@ -54,10 +54,10 @@ class Auth
                     Track::set_tracked_topics(null);
 
                     $expire = ($save_pass) ? $this->feather->now + 1209600 : $this->feather->now + $this->feather->forum_settings['o_timeout_visit'];
-                    $expire = $this->feather->hooks->fire('controller.expire_login', $expire);
+                    $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
                     ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
-                    Url::redirect($this->feather->urlFor('home'), __('Login redirect'));
+                    Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 }
             }
             throw new Error(__('Wrong user/pass').' <a href="'.$this->feather->urlFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
@@ -74,29 +74,29 @@ class Auth
 
     public function logout($token)
     {
-        $token = $this->feather->hooks->fire('controller.logout', $token);
+        $token = Container::get('hooks')->fire('controller.logout', $token);
 
-        if ($this->feather->user->is_guest || !isset($token) || $token != Random::hash($this->feather->user->id.Random::hash($this->feather->request->getIp()))) {
-            Url::redirect($this->feather->urlFor('home'), 'Not logged in');
+        if (Container::get('user')->is_guest || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash($this->feather->request->getIp()))) {
+            Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
-        ModelAuth::delete_online_by_id($this->feather->user->id);
+        ModelAuth::delete_online_by_id(Container::get('user')->id);
 
         // Update last_visit (make sure there's something to update it with)
-        if (isset($this->feather->user->logged)) {
-            ModelAuth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
+        if (isset(Container::get('user')->logged)) {
+            ModelAuth::set_last_visit(Container::get('user')->id, Container::get('user')->logged);
         }
 
         ModelAuth::feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
-        $this->feather->hooks->fire('controller.logout_end');
+        Container::get('hooks')->fire('controller.logout_end');
 
-        Url::redirect($this->feather->urlFor('home'), __('Logout redirect'));
+        Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }
 
     public function forget()
     {
-        if (!$this->feather->user->is_guest) {
-            Url::redirect($this->feather->urlFor('home'), 'Already logged in');
+        if (!Container::get('user')->is_guest) {
+            Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
         if ($this->feather->request->isPost()) {
@@ -109,8 +109,8 @@ class Auth
 
             if ($user) {
                 // Load the "activate password" template
-                $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/mail_templates/activate_password.tpl'));
-                $mail_tpl = $this->feather->hooks->fire('controller.mail_tpl_password_forgotten', $mail_tpl);
+                $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_password.tpl'));
+                $mail_tpl = Container::get('hooks')->fire('controller.mail_tpl_password_forgotten', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
@@ -121,7 +121,7 @@ class Auth
                 $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
                 $mail_message = str_replace('<board_mailer>', $this->feather->forum_settings['o_board_title'], $mail_message);
 
-                $mail_message = $this->feather->hooks->fire('controller.mail_message_password_forgotten', $mail_message);
+                $mail_message = Container::get('hooks')->fire('controller.mail_message_password_forgotten', $mail_message);
 
                 if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 && (time() - $user->last_email_sent) >= 0) {
                     throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
@@ -137,11 +137,11 @@ class Auth
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
                 $cur_mail_message = str_replace('<activation_url>', $this->feather->urlFor('profileAction', ['action' => 'change_pass']).'?key='.$new_password_key, $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
-                $cur_mail_message = $this->feather->hooks->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
+                $cur_mail_message = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
                 $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                Url::redirect($this->feather->urlFor('home'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
+                Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'">'.$this->feather->utils->escape($this->feather->forum_settings['o_admin_email']).'</a>.', 200);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }

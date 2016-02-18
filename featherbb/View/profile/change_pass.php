@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.change_pass.start');
+Container::get('hooks')->fire('view.profile.change_pass.start');
 ?>
 
 <div class="blockform">
@@ -41,4 +41,4 @@ $feather->hooks->fire('view.profile.change_pass.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.change_pass.end');
+Container::get('hooks')->fire('view.profile.change_pass.end');

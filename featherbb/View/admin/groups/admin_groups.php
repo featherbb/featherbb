@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.groups.admin_groups.start');
+Container::get('hooks')->fire('view.admin.groups.admin_groups.start');
 ?>
 
     <div class="blockform">
@@ -114,4 +114,4 @@ foreach ($groups as $cur_group) {
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.groups.admin_groups.end');
+Container::get('hooks')->fire('view.admin.groups.admin_groups.end');

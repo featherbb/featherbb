@@ -22,7 +22,7 @@ class Search
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->search = new \FeatherBB\Core\Search();
@@ -362,7 +362,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('home'), __('No new posts'));
+                        Router::redirect(Router::pathFor('home'), __('No new posts'));
                     }
                 }
                 // If it's a search for recent posts (in a certain time interval)
@@ -387,7 +387,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('home'),__('No recent posts'));
+                        Router::redirect(Router::pathFor('home'),__('No recent posts'));
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -412,7 +412,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('home'),__('No user posts'));
+                        Router::redirect(Router::pathFor('home'),__('No user posts'));
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -435,7 +435,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('search'),__('No user posts'));
+                        Router::redirect(Router::pathFor('search'),__('No user posts'));
                     }
 
                     // Pass on the user ID so that we can later know whose posts we're searching for
@@ -459,7 +459,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('search'),__('No user topics'));
+                        Router::redirect(Router::pathFor('search'),__('No user topics'));
                     }
 
                     // Pass on the user ID so that we can later know whose topics we're searching for
@@ -487,7 +487,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('search'),__('No subscriptions'));
+                        Router::redirect(Router::pathFor('search'),__('No subscriptions'));
                     }
 
                     // Pass on user ID so that we can later know whose subscriptions we're searching for
@@ -511,7 +511,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        Url::redirect($this->feather->urlFor('home'),__('No unanswered'));
+                        Router::redirect(Router::pathFor('home'),__('No unanswered'));
                     }
                 }
 

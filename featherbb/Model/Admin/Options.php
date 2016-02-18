@@ -22,7 +22,7 @@ class Options
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
@@ -234,7 +234,7 @@ class Options
         $this->feather->cache->store('config', Cache::get_config());
         $this->clear_feed_cache();
 
-        Url::redirect($this->feather->urlFor('adminOptions'), __('Options updated redirect'));
+        Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }
 
     public function clear_feed_cache()

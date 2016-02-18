@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.login.form.start');
+Container::get('hooks')->fire('view.login.form.start');
 ?>
 
 <div class="blockform">
@@ -43,4 +43,4 @@ $feather->hooks->fire('view.login.form.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.login.form.end');
+Container::get('hooks')->fire('view.login.form.end');

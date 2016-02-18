@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.misc.rules.start');
+Container::get('hooks')->fire('view.misc.rules.start');
 ?>
 <div id="rules" class="block">
     <div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
@@ -24,4 +24,4 @@ $feather->hooks->fire('view.misc.rules.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.misc.rules.end');
+Container::get('hooks')->fire('view.misc.rules.end');

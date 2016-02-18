@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.maintenance.admin_maintenance.start');
+Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
 ?>
 
     <div class="blockform">
@@ -101,4 +101,4 @@ $feather->hooks->fire('view.admin.maintenance.admin_maintenance.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.maintenance.admin_maintenance.end');
+Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.end');

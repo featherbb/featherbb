@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.maintenance.rebuild.start');
+Container::get('hooks')->fire('view.admin.maintenance.rebuild.start');
 ?>
 
 <h1><?php _e('Rebuilding index info') ?></h1>
@@ -22,4 +22,4 @@ $feather->hooks->fire('view.admin.maintenance.rebuild.start');
 <p><?= sprintf(__('Javascript redirect failed'), '<a href="'.$feather->urlFor('adminMaintenance').$query_str.'">'.__('Click here').'</a>')?></p>
 
 <?php
-$feather->hooks->fire('view.admin.maintenance.prune.end');
+Container::get('hooks')->fire('view.admin.maintenance.prune.end');

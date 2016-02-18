@@ -18,12 +18,12 @@ class Maintenance
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/admin/maintenance.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/maintenance.mo');
     }
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.maintenance.display');
+        Container::get('hooks')->fire('controller.admin.maintenance.display');
 
         $action = '';
         if ($this->feather->request->post('action')) {

@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.split_posts.start');
+Container::get('hooks')->fire('view.moderate.split_posts.start');
 ?>
 
 <div class="blockform">
@@ -42,4 +42,4 @@ $feather->hooks->fire('view.moderate.split_posts.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.moderate.split_posts.end');
+Container::get('hooks')->fire('view.moderate.split_posts.end');

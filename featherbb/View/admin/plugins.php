@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.plugins.start');
+Container::get('hooks')->fire('view.admin.plugins.start');
 ?>
 
 <div class="block">
@@ -90,4 +90,4 @@ $feather->hooks->fire('view.admin.plugins.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.plugins.end');
+Container::get('hooks')->fire('view.admin.plugins.end');

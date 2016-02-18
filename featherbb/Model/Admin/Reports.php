@@ -27,7 +27,7 @@ class Reports
         $result = $this->hook->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(), 'zapped_by' => $this->feather->user->id);
+        $set_zap_report = array('zapped' => time(), 'zapped_by' => Container::get('user')->id);
         $set_zap_report = $this->hook->fire('model.admin.reports.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped

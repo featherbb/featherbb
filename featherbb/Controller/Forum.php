@@ -20,39 +20,39 @@ class Forum
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Forum();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/forum.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/forum.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
     }
 
     public function display($fid, $name = null, $page = null)
     {
-        $this->feather->hooks->fire('controller.forum.display');
+        Container::get('hooks')->fire('controller.forum.display');
         // Fetch some informations about the forum
         $cur_forum = $this->model->get_forum_info($fid);
 
         // Is this a redirect forum? In that case, redirect!
         if ($cur_forum['redirect_url'] != '') {
-            Url::redirect($this->feather->urlFor('Forum', ['id' => $cur_forum['redirect_url']]));
+            Router::redirect(Router::pathFor('Forum', ['id' => $cur_forum['redirect_url']]));
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
-        $is_admmod = ($this->feather->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->feather->user->g_moderator == '1' && array_key_exists($this->feather->user->username, $mods_array))) ? true : false;
+        $is_admmod = (Container::get('user')->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
 
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
         // Can we or can we not post new topics?
-        if (($cur_forum['post_topics'] == '' && $this->feather->user->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
+        if (($cur_forum['post_topics'] == '' && Container::get('user')->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
             $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.$this->feather->urlFor('newTopic', ['fid' => $fid]).'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $post_link = '';
         }
 
         // Determine the topic offset (based on $page)
-        $num_pages = ceil($cur_forum['num_topics'] / $this->feather->user->disp_topics);
+        $num_pages = ceil($cur_forum['num_topics'] / Container::get('user')->disp_topics);
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
-        $start_from = $this->feather->user->disp_topics * ($p - 1);
+        $start_from = Container::get('user')->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
@@ -95,13 +95,13 @@ class Forum
 
     public function moderate($id, $name = null, $page = null)
     {
-        $this->feather->hooks->fire('controller.forum.moderate');
+        Container::get('hooks')->fire('controller.forum.moderate');
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($id);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->feather->user->g_moderator == '0' || !array_key_exists($this->feather->user->username, $mods_array))) {
+        if (Container::get('user')->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -116,10 +116,10 @@ class Forum
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
         // Determine the topic offset (based on $_GET['p'])
-        $num_pages = ceil($cur_forum['num_topics'] / $this->feather->user->disp_topics);
+        $num_pages = ceil($cur_forum['num_topics'] / Container::get('user')->disp_topics);
 
         $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
-        $start_from = $this->feather->user->disp_topics * ($p - 1);
+        $start_from = Container::get('user')->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         $this->feather->template->setPageInfo(array(
@@ -139,40 +139,40 @@ class Forum
 
     public function markread($id)
     {
-        $this->feather->hooks->fire('controller.forum.markread');
+        Container::get('hooks')->fire('controller.forum.markread');
 
         $tracked_topics = Track::get_tracked_topics();
         $tracked_topics['forums'][$id] = time();
         Track::set_tracked_topics($tracked_topics);
 
-        Url::redirect($this->feather->urlFor('Forum', ['id' => $id]), __('Mark forum read redirect'));
+        Router::redirect(Router::pathFor('Forum', ['id' => $id]), __('Mark forum read redirect'));
     }
 
     public function subscribe($id)
     {
-        $this->feather->hooks->fire('controller.forum.subscribe');
+        Container::get('hooks')->fire('controller.forum.subscribe');
 
         $this->model->subscribe($id);
-        Url::redirect($this->feather->urlFor('Forum', ['id' => $id]), __('Subscribe redirect'));
+        Router::redirect(Router::pathFor('Forum', ['id' => $id]), __('Subscribe redirect'));
     }
 
     public function unsubscribe($id)
     {
-        $this->feather->hooks->fire('controller.forum.unsubscribe');
+        Container::get('hooks')->fire('controller.forum.unsubscribe');
 
         $this->model->unsubscribe($id);
-        Url::redirect($this->feather->urlFor('Forum', ['id' => $id]), __('Unsubscribe redirect'));
+        Router::redirect(Router::pathFor('Forum', ['id' => $id]), __('Unsubscribe redirect'));
     }
 
     public function dealposts($fid, $page)
     {
-        $this->feather->hooks->fire('controller.forum.dealposts');
+        Container::get('hooks')->fire('controller.forum.dealposts');
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if ($this->feather->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->feather->user->g_moderator == '0' || !array_key_exists($this->feather->user->username, $mods_array))) {
+        if (Container::get('user')->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -188,7 +188,7 @@ class Forum
             if ($new_fid = $this->feather->request->post('move_to_forum')) {
                 $topics = explode(',', $topics);
                 $topicModel->move_to($fid, $new_fid, $topics);
-                Url::redirect($this->feather->urlFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
+                Router::redirect(Router::pathFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
             }
 
             // Check if there are enough forums to move the topic
@@ -211,7 +211,7 @@ class Forum
         elseif ($this->feather->request->post('merge_topics') || $this->feather->request->post('merge_topics_comply')) {
             if ($this->feather->request->post('merge_topics_comply')) {
                 $this->model->merge_topics($fid);
-                Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Merge topics redirect'));
+                Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Merge topics redirect'));
             }
 
             $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
@@ -237,7 +237,7 @@ class Forum
 
             if ($this->feather->request->post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $fid);
-                Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Delete topics redirect'));
+                Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Delete topics redirect'));
             }
 
             $this->feather->template->setPageInfo(array(
@@ -264,7 +264,7 @@ class Forum
                 $this->model->close_multiple_topics($action, $topics);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-                Url::redirect($this->feather->urlFor('moderateForum', array('fid' => $fid, 'page' => $page)), $redirect_msg);
+                Router::redirect(Router::pathFor('moderateForum', array('fid' => $fid, 'page' => $page)), $redirect_msg);
             }
         }
     }

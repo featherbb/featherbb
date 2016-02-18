@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.upload_avatar.start');
+Container::get('hooks')->fire('view.profile.upload_avatar.start');
 ?>
 <div class="blockform">
     <h2><span><?php _e('Upload avatar') ?></span></h2>
@@ -38,4 +38,4 @@ $feather->hooks->fire('view.profile.upload_avatar.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.upload_avatar.end');
+Container::get('hooks')->fire('view.profile.upload_avatar.end');

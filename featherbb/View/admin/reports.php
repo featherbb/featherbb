@@ -16,7 +16,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.reports.start');
+Container::get('hooks')->fire('view.admin.reports.start');
 ?>
 
     <div class="blockform">
@@ -130,4 +130,4 @@ if (!empty($report_zapped_data)) {
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.reports.end');
+Container::get('hooks')->fire('view.admin.reports.end');

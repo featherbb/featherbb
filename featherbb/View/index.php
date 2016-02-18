@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.index.start');
+Container::get('hooks')->fire('view.index.start');
 
 if (empty($index_data)): ?>
     <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php _e('Empty board') ?></p></div></div></div>
@@ -110,10 +110,10 @@ endif;
                 }
             endif;
 
-            $feather->hooks->fire('view.index.brdstats');
+            Container::get('hooks')->fire('view.index.brdstats');
             ?>
         </div>
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.index.end');
+Container::get('hooks')->fire('view.index.end');

@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.maintenance.prune.start');
+Container::get('hooks')->fire('view.admin.maintenance.prune.start');
 ?>
 
     <div class="blockform">
@@ -43,4 +43,4 @@ $feather->hooks->fire('view.admin.maintenance.prune.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.maintenance.prune.end');
+Container::get('hooks')->fire('view.admin.maintenance.prune.end');

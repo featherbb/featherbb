@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.help.start');
+Container::get('hooks')->fire('view.help.start');
 ?>
 
 <h2><span><?php _e('BBCode') ?></span></h2>
@@ -143,4 +143,4 @@ foreach ($smiley_groups as $smiley_img => $smiley_texts) {
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.header.end');
+Container::get('hooks')->fire('view.header.end');

@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.userlist.start');
+Container::get('hooks')->fire('view.userlist.start');
 ?>
 
 <div class="blockform">
@@ -118,4 +118,4 @@ $feather->hooks->fire('view.userlist.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.userlist.end');
+Container::get('hooks')->fire('view.userlist.end');

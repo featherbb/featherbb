@@ -20,7 +20,7 @@ class Reports
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Reports();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/reports.mo');
@@ -28,13 +28,13 @@ class Reports
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.reports.display');
+        Container::get('hooks')->fire('controller.admin.reports.display');
 
         // Zap a report
         if ($this->feather->request->isPost()) {
             $zap_id = intval(key($this->request->post('zap_id')));
             $this->model->zap_report($zap_id);
-            Url::redirect($this->feather->urlFor('adminReports'), __('Report zapped redirect'));
+            Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));
         }
 
         AdminUtils::generateAdminMenu('reports');

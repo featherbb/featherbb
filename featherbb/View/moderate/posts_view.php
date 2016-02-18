@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.posts_view.start');
+Container::get('hooks')->fire('view.moderate.posts_view.start');
 ?>
 
 <div class="linkst">
@@ -100,4 +100,4 @@ foreach ($post_data as $post) {
 </form>
 
 <?php
-$feather->hooks->fire('view.moderate.posts_view.end');
+Container::get('hooks')->fire('view.moderate.posts_view.end');

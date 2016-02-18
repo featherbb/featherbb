@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.censoring.start');
+Container::get('hooks')->fire('view.admin.censoring.start');
 ?>
 
     <div class="blockform">
@@ -88,4 +88,4 @@ if (!empty($word_data)) {
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.censoring.end');
+Container::get('hooks')->fire('view.admin.censoring.end');

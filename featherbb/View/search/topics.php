@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.topics.start');
+Container::get('hooks')->fire('view.search.topics.start');
 
 foreach ($display['cur_search'] as $search) {
     ?>
@@ -38,4 +38,4 @@ foreach ($display['cur_search'] as $search) {
     <?php
 }
 
-$feather->hooks->fire('view.search.topics.end');
+Container::get('hooks')->fire('view.search.topics.end');

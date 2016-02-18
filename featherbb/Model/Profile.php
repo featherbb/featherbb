@@ -22,7 +22,7 @@ class Profile
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
@@ -40,7 +40,7 @@ class Profile
 
             // If the user is already logged in we shouldn't be here :)
             if (!$this->user->is_guest) {
-                Url::redirect($this->feather->urlFor('home'));
+                Router::redirect(Router::pathFor('home'));
             }
 
             $cur_user = DB::for_table('users')
@@ -60,7 +60,7 @@ class Profile
                 $query = $this->hook->fireDB('model.profile.change_pass_activate_query', $query);
                 $query = $query->save();
 
-                Url::redirect($this->feather->urlFor('home'), __('Pass updated'));
+                Router::redirect(Router::pathFor('home'), __('Pass updated'));
             }
         }
 
@@ -138,7 +138,7 @@ class Profile
             }
 
             $this->hook->fire('model.profile.change_pass');
-            Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
+            Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
         }
     }
 
@@ -195,7 +195,7 @@ class Profile
                 $update_mail = $this->hook->fireDB('model.profile.change_email_query', $update_mail);
                 $update_mail = $update_mail->save();
 
-                Url::redirect($this->feather->urlFor('home'), __('Email updated'));
+                Router::redirect(Router::pathFor('home'), __('Email updated'));
             }
         } elseif ($this->request->isPost()) {
             $this->hook->fire('model.profile.change_email_post');
@@ -404,7 +404,7 @@ class Profile
 
         $uploaded_file = $this->hook->fire('model.profile.upload_avatar', $uploaded_file);
 
-        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
+        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
     }
 
     //
@@ -486,7 +486,7 @@ class Profile
 
         $id = $this->hook->fire('model.profile.update_group_membership', $id);
 
-        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
+        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -556,7 +556,7 @@ class Profile
 
         $id = $this->hook->fire('model.profile.update_mod_forums', $id);
 
-        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
+        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
     }
 
     public function ban_user($id)
@@ -575,9 +575,9 @@ class Profile
         $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
-            Url::redirect($this->feather->urlFor('editBan', array('id' => $ban_id)), __('Ban redirect'));
+            Router::redirect(Router::pathFor('editBan', array('id' => $ban_id)), __('Ban redirect'));
         } else {
-            Url::redirect($this->feather->urlFor('addBan', array('id' => $id)), __('Ban redirect'));
+            Router::redirect(Router::pathFor('addBan', array('id' => $id)), __('Ban redirect'));
         }
     }
 
@@ -609,7 +609,7 @@ class Profile
 
         $pid = $this->hook->fire('model.profile.promote_user', $pid);
 
-        Url::redirect($this->feather->urlFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
+        Router::redirect(Router::pathFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -749,7 +749,7 @@ class Profile
 
             $this->hook->fire('model.profile.delete_user');
 
-            Url::redirect($this->feather->urlFor('home'), __('User delete redirect'));
+            Router::redirect(Router::pathFor('home'), __('User delete redirect'));
         }
     }
 
@@ -1100,7 +1100,7 @@ class Profile
 
         $section = $this->hook->fireDB('model.profile.update_profile', $section, $id);
 
-        Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => $section)), __('Profile redirect'));
+        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => $section)), __('Profile redirect'));
     }
 
     public function get_user_info($id)
@@ -1370,8 +1370,8 @@ class Profile
         // Include UTF-8 function
         require_once $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
 
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/register.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/prof_reg.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
+        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
 
         // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
         $username = preg_replace('%\s+%s', ' ', $username);
@@ -1491,7 +1491,7 @@ class Profile
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
         //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
 
-        Url::redirect($this->feather->urlFor('home'), __('Email sent redirect'));
+        Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
     }
 
     public function display_ip_info($ip)

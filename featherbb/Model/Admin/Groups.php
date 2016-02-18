@@ -22,7 +22,7 @@ class Groups
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
@@ -262,9 +262,9 @@ class Groups
         $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
-            Url::redirect($this->feather->urlFor('adminGroups'), __('Group edited redirect'));
+            Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
         } else {
-            Url::redirect($this->feather->urlFor('adminGroups'), __('Group added redirect'));
+            Router::redirect(Router::pathFor('adminGroups'), __('Group added redirect'));
         }
     }
 
@@ -289,7 +289,7 @@ class Groups
         // Regenerate the config cache
         $this->feather->cache->store('config', Cache::get_config());
 
-        Url::redirect($this->feather->urlFor('adminGroups'), __('Default group redirect'));
+        Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }
 
     public function check_members($group_id)
@@ -332,7 +332,7 @@ class Groups
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
-        Url::redirect($this->feather->urlFor('adminGroups'), __('Group removed redirect'));
+        Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
 
     public function get_group_title($group_id)

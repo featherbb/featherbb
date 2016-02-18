@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.register.rules.start');
+Container::get('hooks')->fire('view.register.rules.start');
 ?>
 
 <div id="rules" class="blockform">
@@ -33,4 +33,4 @@ $feather->hooks->fire('view.register.rules.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.register.rules.end');
+Container::get('hooks')->fire('view.register.rules.end');

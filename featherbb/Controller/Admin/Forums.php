@@ -21,7 +21,7 @@ class Forums
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Forums();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/forums.mo');
@@ -29,27 +29,27 @@ class Forums
 
     public function add()
     {
-        $this->feather->hooks->fire('controller.admin.forums.add');
+        Container::get('hooks')->fire('controller.admin.forums.add');
 
         $cat_id = (int) $this->request->post('cat');
 
         if ($cat_id < 1) {
-            Url::redirect($this->feather->urlFor('adminForums'), __('Must be valid category'));
+            Router::redirect(Router::pathFor('adminForums'), __('Must be valid category'));
         }
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
             $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
-            Url::redirect($this->feather->urlFor('editForum', array('id' => $fid)), __('Forum added redirect'));
+            Router::redirect(Router::pathFor('editForum', array('id' => $fid)), __('Forum added redirect'));
         } else {
-            Url::redirect($this->feather->urlFor('adminForums'), __('Unable to add forum'));
+            Router::redirect(Router::pathFor('adminForums'), __('Unable to add forum'));
         }
     }
 
     public function edit($forum_id)
     {
-        $this->feather->hooks->fire('controller.admin.forums.edit');
+        Container::get('hooks')->fire('controller.admin.forums.edit');
 
         if($this->request->isPost()) {
             if ($this->request->post('save') && $this->request->post('read_forum_old')) {
@@ -62,10 +62,10 @@ class Forums
                                     'redirect_url' => Url::is_valid($this->request->post('redirect_url')) ? Utils::escape($this->request->post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
-                    Url::redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Must enter name message'));
+                    Router::redirect(Router::pathFor('editForum', array('id' => $forum_id)), __('Must enter name message'));
                 }
                 if ($forum_data['cat_id'] < 1) {
-                    Url::redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Must be valid category'));
+                    Router::redirect(Router::pathFor('editForum', array('id' => $forum_id)), __('Must be valid category'));
                 }
 
                 $this->model->update_forum($forum_id, $forum_data);
@@ -101,7 +101,7 @@ class Forums
                 // Regenerate the quick jump cache
                 $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
-                Url::redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Forum updated redirect'));
+                Router::redirect(Router::pathFor('editForum', array('id' => $forum_id)), __('Forum updated redirect'));
 
             } elseif ($this->request->post('revert_perms')) {
                 $this->model->delete_permissions($forum_id);
@@ -109,7 +109,7 @@ class Forums
                 // Regenerate the quick jump cache
                 $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
-                Url::redirect($this->feather->urlFor('editForum', array('id' => $forum_id)), __('Perms reverted redirect'));
+                Router::redirect(Router::pathFor('editForum', array('id' => $forum_id)), __('Perms reverted redirect'));
             }
 
         } else {
@@ -130,14 +130,14 @@ class Forums
 
     public function delete($forum_id)
     {
-        $this->feather->hooks->fire('controller.admin.forums.delete');
+        Container::get('hooks')->fire('controller.admin.forums.delete');
 
         if($this->request->isPost()) {
             $this->model->delete_forum($forum_id);
             // Regenerate the quick jump cache
             $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
-            Url::redirect($this->feather->urlFor('adminForums'), __('Forum deleted redirect'));
+            Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
 
         } else { // If the user hasn't confirmed
 
@@ -155,7 +155,7 @@ class Forums
 
     public function edit_positions()
     {
-        $this->feather->hooks->fire('controller.admin.forums.edit_positions');
+        Container::get('hooks')->fire('controller.admin.forums.edit_positions');
 
         foreach ($this->request->post('position') as $forum_id => $position) {
             $position = (int) Utils::trim($position);
@@ -165,12 +165,12 @@ class Forums
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
-        Url::redirect($this->feather->urlFor('adminForums'), __('Forums updated redirect'));
+        Router::redirect(Router::pathFor('adminForums'), __('Forums updated redirect'));
     }
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.forums.display');
+        Container::get('hooks')->fire('controller.admin.forums.display');
 
         if ($this->request->post('update_positions')) {
             $this->edit_positions();

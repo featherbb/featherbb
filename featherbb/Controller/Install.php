@@ -31,28 +31,33 @@ class Install
 
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Install();
         $this->available_langs = Lister::getLangs();
-        $this->feather->template->setStyle('FeatherBB');
+        Container::set('user', null);
+        View::setStyle('FeatherBB');
     }
 
-    public function run()
+    public function run($req, $res, $args)
     {
-        $this->feather->hooks->fire('controller.install.run_install');
+        return 'ok';
+        Container::get('hooks')->fire('controller.install.run_install');
 
-        if ($this->feather->request->post('choose_lang')) {
-            if (in_array(Utils::trim($this->feather->request->post('install_lang')), $this->available_langs)) {
-                $this->install_lang = $this->feather->request->post('install_lang');
+        if (Input::getParsedBodyParam('choose_lang')) {
+            if (in_array(Utils::trim(Input::getParsedBodyParam('install_lang')), $this->available_langs)) {
+                $this->install_lang = Input::getParsedBodyParam('install_lang');
             }
         }
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->install_lang.'/install.mo');
 
-        if ($this->feather->request->isPost() && empty($this->feather->request->post('choose_lang'))) {
+        $csrf = new \FeatherBB\Middleware\Csrf();
+        $csrf->generateNewToken(Container::get('request'));
+
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->install_lang.'/install.mo');
+
+        if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = array();
             $data = array_map(function ($item) {
                 return Utils::escape(Utils::trim($item));
-            }, $this->feather->request->post('install'));
+            }, Input::getParsedBodyParam('install'));
 
             foreach ($data as $field => $value) {
                 // Handle empty fields
@@ -105,13 +110,13 @@ class Install
                 }
 
                 // Check if the cache directory is writable
-                if (!is_writable($this->feather->forum_env['FORUM_CACHE_DIR'])) {
-                    $this->errors[] = sprintf(__('Alert cache'), $this->feather->forum_env['FORUM_CACHE_DIR']);
+                if (!is_writable(Config::get('forum_env')['FORUM_CACHE_DIR'])) {
+                    $this->errors[] = sprintf(__('Alert cache'), Config::get('forum_env')['FORUM_CACHE_DIR']);
                 }
 
                 // Check if default avatar directory is writable
-                if (!is_writable($this->feather->forum_env['FEATHER_ROOT'].'style/img/avatars/')) {
-                    $this->errors[] = sprintf(__('Alert avatar'), $this->feather->forum_env['FEATHER_ROOT'].'style/img/avatars/');
+                if (!is_writable(Config::get('forum_env')['FEATHER_ROOT'].'style/img/avatars/')) {
+                    $this->errors[] = sprintf(__('Alert avatar'), Config::get('forum_env')['FEATHER_ROOT'].'style/img/avatars/');
                 }
 
                 // Validate db_prefix if existing
@@ -122,7 +127,7 @@ class Install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                $this->feather->template->setPageInfo(array(
+                View::setPageInfo(array(
                     'languages' => $this->available_langs,
                     'supported_dbs' => $this->supported_dbs,
                     'data' => $data,
@@ -134,12 +139,12 @@ class Install
                 $this->create_config($data);
             }
         } else {
-            $base_url = str_replace('index.php', '', $this->feather->request->getUrl().$this->feather->request->getRootUri());
+            $base_url = str_replace('index.php', '', Request::getUri()->getScheme().'://'.Request::getUri()->getHost().Request::getUri()->getBasePath());
             $data = array('title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,
                 'default_lang' => $this->install_lang);
-            $this->feather->template->setPageInfo(array(
+            View::setPageInfo(array(
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
                 'data' => $data,
@@ -150,7 +155,7 @@ class Install
 
     public function create_config(array $data)
     {
-        $this->feather->hooks->fire('controller.install.create_config');
+        Container::get('hooks')->fire('controller.install.create_config');
 
         // Generate config ...
         $config = array();
@@ -160,7 +165,7 @@ class Install
             }
         }
 
-        $config = array_merge($config, array('cookie_name' => mb_strtolower($this->feather->forum_env['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
+        $config = array_merge($config, array('cookie_name' => mb_strtolower(Config::get('forum_env')['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
             'cookie_seed' => Random::key(16, false, true)));
 
         // ... And write it on disk
@@ -171,14 +176,14 @@ class Install
 
     public function create_db(array $data)
     {
-        $this->feather->hooks->fire('controller.install.create_db');
+        Container::get('hooks')->fire('controller.install.create_db');
 
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
@@ -193,11 +198,11 @@ class Install
             $this->model->add_data('groups', $group_data);
         }
 
-        $this->feather->perms->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
-        $this->feather->perms->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
-        $this->feather->perms->allowGroup(2, array('mod.*', 'board.title.set'));
-        $this->feather->perms->allowGroup(1, array('board.*'));
-        $this->feather->prefs->set(array(
+        Container::get('perms')->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
+        Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
+        Container::get('perms')->allowGroup(2, array('mod.*', 'board.title.set'));
+        Container::get('perms')->allowGroup(1, array('board.*'));
+        Container::get('prefs')->set(array(
             'post.min_interval' => 60,
             'search.min_interval' => 30,
             'email.min_interval' => 60,
@@ -210,7 +215,7 @@ class Install
             'smilies.post.show' => 1,
             'smilies.signature.show' => 1,
         ));
-        $this->feather->prefs->setGroup(2, array(
+        Container::get('prefs')->setGroup(2, array(
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,
@@ -232,38 +237,38 @@ class Install
         }
 
         // Install success flash message
-        $flash = new \Slim\Middleware\Flash();
-        $flash->set('success', __('Message'));
-        $flash->save();
+        // $flash = new \Slim\Flash\Messages();
+        // $flash->addMessage('success', __('Message'));
+        // $flash->save();
 
         // Redirect to homepage
-        Url::redirect($this->feather->urlFor('home'));
+        Router::redirect(Router::pathFor('home'), ['success', __('Message')]);
     }
 
     public function write_config($array)
     {
-        $this->feather->hooks->fire('controller.install.write_config');
+        Container::get('hooks')->fire('controller.install.write_config');
 
-        return file_put_contents($this->feather->forum_env['FORUM_CONFIG_FILE'], '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
+        return file_put_contents(Config::get('forum_env')['FORUM_CONFIG_FILE'], '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
     }
 
     public function write_htaccess()
     {
-        $this->feather->hooks->fire('controller.install.write_htaccess');
+        Container::get('hooks')->fire('controller.install.write_htaccess');
 
-        $data = file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'.htaccess.dist');
-        return file_put_contents($this->feather->forum_env['FEATHER_ROOT'].'.htaccess', $data);
+        $data = file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'.htaccess.dist');
+        return file_put_contents(Config::get('forum_env')['FEATHER_ROOT'].'.htaccess', $data);
     }
 
     public function load_default_config(array $data)
     {
-        $this->feather->hooks->fire('controller.install.load_default_config');
+        Container::get('hooks')->fire('controller.install.load_default_config');
 
         return array(
-            'o_cur_version'                => $this->feather->forum_env['FORUM_VERSION'],
-            'o_database_revision'        => $this->feather->forum_env['FORUM_DB_REVISION'],
-            'o_searchindex_revision'    => $this->feather->forum_env['FORUM_SI_REVISION'],
-            'o_parser_revision'            => $this->feather->forum_env['FORUM_PARSER_REVISION'],
+            'o_cur_version'                => Config::get('forum_env')['FORUM_VERSION'],
+            'o_database_revision'        => Config::get('forum_env')['FORUM_DB_REVISION'],
+            'o_searchindex_revision'    => Config::get('forum_env')['FORUM_SI_REVISION'],
+            'o_parser_revision'            => Config::get('forum_env')['FORUM_PARSER_REVISION'],
             'o_board_title'                => $data['title'],
             'o_board_desc'                => $data['description'],
             'o_default_timezone'        => 0,

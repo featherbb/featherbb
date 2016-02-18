@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.forums.admin_forums.start');
+Container::get('hooks')->fire('view.admin.forums.admin_forums.start');
 ?>
 
     <div class="blockform">
@@ -116,4 +116,4 @@ if (!empty($forum_data)) {
 <?php
     }
 
-$feather->hooks->fire('view.admin.forums.admin_forums.end');
+Container::get('hooks')->fire('view.admin.forums.admin_forums.end');

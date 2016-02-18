@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.posts.start');
+Container::get('hooks')->fire('view.search.posts.start');
 
 
 foreach ($display['cur_search'] as $search) {
@@ -80,4 +80,4 @@ foreach ($display['cur_search'] as $search) {
     <?php
 }
 
-$feather->hooks->fire('view.search.posts.end');
+Container::get('hooks')->fire('view.search.posts.end');

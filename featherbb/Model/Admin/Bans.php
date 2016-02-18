@@ -22,7 +22,7 @@ class Bans
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
@@ -280,7 +280,7 @@ class Bans
         // Regenerate the bans cache
         $this->feather->cache->store('bans', Cache::get_bans());
 
-        Url::redirect($this->feather->urlFor('adminBans'), __('Ban edited redirect'));
+        Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
 
     public function remove_ban($ban_id)
@@ -295,7 +295,7 @@ class Bans
         // Regenerate the bans cache
         $this->feather->cache->store('bans', Cache::get_bans());
 
-        Url::redirect($this->feather->urlFor('adminBans'), __('Ban removed redirect'));
+        Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }
 
     public function find_ban($start_from = false)

@@ -22,7 +22,7 @@ class Categories
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Categories();
         load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/categories.mo');
@@ -30,23 +30,23 @@ class Categories
 
     public function add()
     {
-        $this->feather->hooks->fire('controller.admin.categories.add');
+        Container::get('hooks')->fire('controller.admin.categories.add');
 
         $cat_name = Utils::trim($this->request->post('cat_name'));
         if ($cat_name == '') {
-            Url::redirect($this->feather->urlFor('adminCategories'), __('Must enter name message'));
+            Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
         }
 
         if ($this->model->add_category($cat_name)) {
-            Url::redirect($this->feather->urlFor('adminCategories'), __('Category added redirect'));
+            Router::redirect(Router::pathFor('adminCategories'), __('Category added redirect'));
         } else { //TODO, add error message
-            Url::redirect($this->feather->urlFor('adminCategories'), __('Category added redirect'));
+            Router::redirect(Router::pathFor('adminCategories'), __('Category added redirect'));
         }
     }
 
     public function edit()
     {
-        $this->feather->hooks->fire('controller.admin.categories.edit');
+        Container::get('hooks')->fire('controller.admin.categories.edit');
 
         if (empty($this->request->post('cat'))) {
             throw new Error(__('Bad request'), '400');
@@ -57,7 +57,7 @@ class Categories
                               'name' => Utils::escape($properties['name']),
                               'order' => (int) $properties['order'], );
             if ($category['name'] == '') {
-                Url::redirect($this->feather->urlFor('adminCategories'), __('Must enter name message'));
+                Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
             }
             $this->model->update_category($category);
         }
@@ -65,13 +65,13 @@ class Categories
         // Regenerate the quick jump cache
         $this->feather->cache->store('quickjump', Cache::get_quickjump());
 
-        Url::redirect($this->feather->urlFor('adminCategories'), __('Categories updated redirect'));
+        Router::redirect(Router::pathFor('adminCategories'), __('Categories updated redirect'));
 
     }
 
     public function delete()
     {
-        $this->feather->hooks->fire('controller.admin.categories.delete');
+        Container::get('hooks')->fire('controller.admin.categories.delete');
 
         $cat_to_delete = (int) $this->request->post('cat_to_delete');
 
@@ -80,19 +80,19 @@ class Categories
         }
 
         if (intval($this->request->post('disclaimer')) != 1) {
-            Url::redirect($this->feather->urlFor('adminCategories'), __('Delete category not validated'));
+            Router::redirect(Router::pathFor('adminCategories'), __('Delete category not validated'));
         }
 
         if ($this->model->delete_category($cat_to_delete)) {
-            Url::redirect($this->feather->urlFor('adminCategories'), __('Category deleted redirect'));
+            Router::redirect(Router::pathFor('adminCategories'), __('Category deleted redirect'));
         } else {
-            Url::redirect($this->feather->urlFor('adminCategories'), __('Unable to delete category'));
+            Router::redirect(Router::pathFor('adminCategories'), __('Unable to delete category'));
         }
     }
 
     public function display()
     {
-        $this->feather->hooks->fire('controller.admin.categories.display');
+        Container::get('hooks')->fire('controller.admin.categories.display');
 
         AdminUtils::generateAdminMenu('categories');
 

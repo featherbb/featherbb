@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.users.admin_users.start');
+Container::get('hooks')->fire('view.admin.users.admin_users.start');
 ?>
 
     <div class="blockform">
@@ -142,7 +142,7 @@ $feather->hooks->fire('view.admin.users.admin_users.start');
                                         </select>
                                     </td>
                                 </tr>
-                                <?php $feather->hooks->fire('view.admin.users.admin_users.form'); ?>
+                                <?php Container::get('hooks')->fire('view.admin.users.admin_users.form'); ?>
                             </table>
                         </div>
                     </fieldset>
@@ -175,4 +175,4 @@ $feather->hooks->fire('view.admin.users.admin_users.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.users.admin_users.end');
+Container::get('hooks')->fire('view.admin.users.admin_users.end');

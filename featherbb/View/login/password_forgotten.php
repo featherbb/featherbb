@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.login.password_forgotten.start');
+Container::get('hooks')->fire('view.login.password_forgotten.start');
 
 // If there are errors, we display them
 if (!empty($errors)) {
@@ -59,4 +59,4 @@ if (!empty($errors)) {
 </div>
 
 <?php
-$feather->hooks->fire('view.login.password_forgotten.end');
+Container::get('hooks')->fire('view.login.password_forgotten.end');

@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_admin.start');
+Container::get('hooks')->fire('view.profile.section_admin.start');
 ?>
     <div class="blockform">
         <h2><span><?= Utils::escape($user['username']).' - '.__('Section admin') ?></span></h2>
@@ -90,4 +90,4 @@ $feather->hooks->fire('view.profile.section_admin.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_admin.end');
+Container::get('hooks')->fire('view.profile.section_admin.end');

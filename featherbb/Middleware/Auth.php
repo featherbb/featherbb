@@ -32,7 +32,7 @@ class Auth
     public function get_cookie_data($cookie_name, $cookie_seed)
     {
         // Get FeatherBB cookie
-        $cookie_raw = Request::getCookieParams()[$cookie_name];
+        $cookie_raw = Container::get('cookie')->get($cookie_name);
         // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
         if (isset($cookie_raw)) {
             $cookie = json_decode($cookie_raw, true);
@@ -141,7 +141,7 @@ class Auth
 
         // Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
         // 192.168.0.5 from matching e.g. 192.168.0.50
-        $user_ip = Request::getAttribute('ip_address'); // TODO: use $req instead of Request::
+        $user_ip = Request::getServerParams()['REMOTE_ADDR'];
         $user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
 
         $bans_altered = false;
@@ -215,28 +215,27 @@ class Auth
         global $feather_bans;
 
         if ($cookie = $this->get_cookie_data(Config::get('forum_settings')['cookie_name'], Config::get('forum_settings')['cookie_seed'])) {
-            echo "conn";
-            $this->app->user = $this->model->load_user($cookie['user_id']);
+            $user = $this->model->load_user($cookie['user_id']);
             $expires = ($cookie['expires'] > Container::get('now') + Config::get('forum_settings')['o_timeout_visit']) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
-            $this->app->user->is_guest = false;
-            $this->app->user->is_admmod = $this->app->user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || $this->app->user->g_moderator == '1';
-            if (!$this->app->user->disp_topics) {
-                $this->app->user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
+            $user->is_guest = false;
+            $user->is_admmod = $user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || $user->g_moderator == '1';
+            if (!$user->disp_topics) {
+                $user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
             }
-            if (!$this->app->user->disp_posts) {
-                $this->app->user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
+            if (!$user->disp_posts) {
+                $user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
             }
-            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language)) {
-                $this->app->user->language = Config::get('forum_settings')['o_default_lang'];
+            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language)) {
+                $user->language = Config::get('forum_settings')['o_default_lang'];
             }
-            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$this->app->user->style.'/style.css')) {
-                $this->app->user->style = Config::get('forum_settings')['o_default_style'];
+            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$user->style.'/style.css')) {
+                $user->style = Config::get('forum_settings')['o_default_style'];
             }
-            $this->model->feather_setcookie($this->app->user->id, $this->app->user->password, $expires);
+            $this->model->feather_setcookie($user->id, $user->password, $expires);
             $this->update_online();
         } else {
             $user = $this->model->load_user(1);
-
+// var_dump($user);
             $user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
             $user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
             $user->timezone = Config::get('forum_settings')['o_default_timezone'];
@@ -258,15 +257,15 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $req->getAttribute('ip_address'), ':logged' => $user->logged));
+                    DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $req->getAttribute('ip_address'), ':logged' => $user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
                         break;
                 }
             } else {
-                DB::for_table('online')->where('ident', $req->getAttribute('ip_address'))
+                DB::for_table('online')->where('ident', Request::getServerParams()['REMOTE_ADDR'])
                      ->update_many('logged', time());
             }
 

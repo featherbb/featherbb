@@ -20,7 +20,7 @@ class Permissions
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
     }
@@ -47,6 +47,6 @@ class Permissions
         $this->feather->cache->store('config', Cache::get_config());
         // $this->clear_feed_cache();
 
-        Url::redirect($this->feather->urlFor('adminPermissions'), __('Perms updated redirect'));
+        Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
     }
 }

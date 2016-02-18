@@ -22,7 +22,7 @@ class Post
         $this->feather = \Slim\Slim::getInstance();
         $this->start = $this->feather->start;
         $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
+        $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->hook = $this->feather->hooks;
         $this->email = $this->feather->email;
@@ -139,8 +139,8 @@ class Post
         }
 
         // Flood protection
-        if ($this->request->post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < $this->feather->prefs->get($this->feather->user, 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), $this->feather->prefs->get($this->feather->user, 'post.min_interval'), $this->feather->prefs->get($this->feather->user, 'post.min_interval') - (time() - $this->user->last_post));
+        if ($this->request->post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < $this->feather->prefs->get(Container::get('user'), 'post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), $this->feather->prefs->get(Container::get('user'), 'post.min_interval'), $this->feather->prefs->get(Container::get('user'), 'post.min_interval') - (time() - $this->user->last_post));
         }
 
         // If it's a new topic
@@ -398,7 +398,7 @@ class Post
             Topic::delete($tid);
             Forum::update($fid);
 
-            Url::redirect($this->feather->urlFor('Forum', array('id' => $fid)), __('Topic del redirect'));
+            Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Topic del redirect'));
         } else {
             $this->hook->fire('model.post.handle_deletion', $tid, $fid, $id);
 
@@ -417,7 +417,7 @@ class Post
 
             $post = $post->find_one();
 
-            Url::redirect($this->feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
+            Router::redirect(Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
         }
     }
 
@@ -631,7 +631,7 @@ class Post
         $last_report_sent = $this->hook->fireDB('model.post.insert_last_report_sent', $last_report_sent);
         $last_report_sent = $last_report_sent->save();
 
-        Url::redirect($this->feather->urlFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
+        Router::redirect(Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
     }
 
     public function get_info_report($post_id)

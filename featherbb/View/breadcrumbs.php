@@ -15,7 +15,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.breadcrumbs.start');
+Container::get('hooks')->fire('view.breadcrumbs.start');
 
 if(!empty($crumbs)): ?>
             <div class="linkst">
@@ -34,4 +34,4 @@ if(!empty($crumbs)): ?>
                 </div>
             </div>
 <?php endif;
-$feather->hooks->fire('view.breadcrumbs.end');
+Container::get('hooks')->fire('view.breadcrumbs.end');

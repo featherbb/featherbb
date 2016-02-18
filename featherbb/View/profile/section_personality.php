@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_personality.start');
+Container::get('hooks')->fire('view.profile.section_personality.start');
 ?>
 <div class="blockform">
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section personality') ?></span></h2>
@@ -59,4 +59,4 @@ $feather->hooks->fire('view.profile.section_personality.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_personality.end');
+Container::get('hooks')->fire('view.profile.section_personality.end');

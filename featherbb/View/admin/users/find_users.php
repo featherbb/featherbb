@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.users.find_users.start');
+Container::get('hooks')->fire('view.admin.users.find_users.start');
 ?>
 
 <div class="linkst">
@@ -104,4 +104,4 @@ $feather->hooks->fire('view.admin.users.find_users.start');
 </form>
 
 <?php
-$feather->hooks->fire('view.admin.users.find_users.end');
+Container::get('hooks')->fire('view.admin.users.find_users.end');
