@@ -242,8 +242,8 @@ class Core
         if (!is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
             // return Router::redirect(Router::pathFor('install'));
             $installer = new Install();
-            $installer->run($req, $res, []);
-            return;
+            return $installer->run($req, $res, []);
+            // return;
         }
 
         // Load config from disk
