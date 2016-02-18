@@ -193,7 +193,7 @@ class Index
 
             // If there is a last_post/last_poster
             if ($cur_forum->last_post != '') {
-                $cur_forum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['pid' => $cur_forum->last_post_id]).'#p'.$cur_forum->last_post_id.'">'.$this->feather->utils->format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
+                $cur_forum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['pid' => $cur_forum->last_post_id]).'#p'.$cur_forum->last_post_id.'">'.Container::get('utils')->format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
             } elseif ($cur_forum->redirect_url != '') {
                 $cur_forum->last_post_formatted = '- - -';
             } else {
@@ -232,11 +232,11 @@ class Index
         Container::get('hooks')->fire('model.index.collect_stats_start');
 
         // Collect some statistics from the database
-        if (!$this->feather->cache->isCached('users_info')) {
-            $this->feather->cache->store('users_info', Cache::get_users_info());
+        if (!Container::get('cache')->isCached('users_info')) {
+            Container::get('cache')->store('users_info', Cache::get_users_info());
         }
 
-        $stats = $this->feather->cache->retrieve('users_info');
+        $stats = Container::get('cache')->retrieve('users_info');
 
         $query = DB::for_table('forums')
             ->select_expr('SUM(num_topics)', 'total_topics')

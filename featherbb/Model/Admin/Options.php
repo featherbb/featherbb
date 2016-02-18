@@ -239,16 +239,16 @@ class Options
 
     public function clear_feed_cache()
     {
-        $d = dir($this->feather->forum_env['FORUM_CACHE_DIR']);
+        $d = dir(Container::get('forum_env')['FORUM_CACHE_DIR']);
         $d = $this->hook->fire('model.admin.options.clear_feed_cache.directory', $d);
         while (($entry = $d->read()) !== false) {
             if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
-                @unlink($this->feather->forum_env['FORUM_CACHE_DIR'].$entry);
+                @unlink(Container::get('forum_env')['FORUM_CACHE_DIR'].$entry);
             }
             if (function_exists('opcache_invalidate')) {
-                opcache_invalidate($this->feather->forum_env['FORUM_CACHE_DIR'].$entry, true);
+                opcache_invalidate(Container::get('forum_env')['FORUM_CACHE_DIR'].$entry, true);
             } elseif (function_exists('apc_delete_file')) {
-                @apc_delete_file($this->feather->forum_env['FORUM_CACHE_DIR'].$entry);
+                @apc_delete_file(Container::get('forum_env')['FORUM_CACHE_DIR'].$entry);
             }
         }
         $d->close();

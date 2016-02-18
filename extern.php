@@ -168,18 +168,18 @@ function set_default_user()
         $feather->user->logged = time();
 
         // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-        switch ($feather->forum_settings['db_type']) {
+        switch (Config::get('forum_settings')['db_type']) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-                \DB::for_table('online')->raw_execute('REPLACE INTO '.$feather->forum_settings['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                \DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
 
             default:
-                \DB::for_table('online')->raw_execute('INSERT INTO '.$feather->forum_settings['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$feather->forum_settings['db_prefix'].'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
+                \DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.Config::get('forum_settings')['db_prefix'].'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => $feather->user->logged));
                 break;
         }
     } else {
@@ -187,12 +187,12 @@ function set_default_user()
             ->update_many('logged', time());
     }
 
-    $feather->user->disp_topics = $feather->forum_settings['o_disp_topics_default'];
-    $feather->user->disp_posts = $feather->forum_settings['o_disp_posts_default'];
-    $feather->user->timezone = $feather->forum_settings['o_default_timezone'];
-    $feather->user->dst = $feather->forum_settings['o_default_dst'];
-    $feather->user->language = $feather->forum_settings['o_default_lang'];
-    $feather->user->style = $feather->forum_settings['o_default_style'];
+    $feather->user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
+    $feather->user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
+    $feather->user->timezone = Config::get('forum_settings')['o_default_timezone'];
+    $feather->user->dst = Config::get('forum_settings')['o_default_dst'];
+    $feather->user->language = Config::get('forum_settings')['o_default_lang'];
+    $feather->user->style = Config::get('forum_settings')['o_default_style'];
     $feather->user->is_guest = true;
     $feather->user->is_admmod = false;
 }
@@ -274,7 +274,7 @@ function http_authenticate_user()
         return;
     }
 
-    header('WWW-Authenticate: Basic realm="'.$feather->forum_settings['o_board_title'].' External Syndication"');
+    header('WWW-Authenticate: Basic realm="'.Config::get('forum_settings')['o_board_title'].' External Syndication"');
     header('HTTP/1.0 401 Unauthorized');
 }
 
@@ -299,8 +299,8 @@ function output_rss($feed)
     echo "\t\t".'<description><![CDATA['.escape_cdata($feed['description']).']]></description>'."\n";
     echo "\t\t".'<lastBuildDate>'.gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</lastBuildDate>'."\n";
 
-    if ($feather->forum_settings['o_show_version'] == '1') {
-        echo "\t\t".'<generator>FeatherBB '.$feather->forum_settings['o_cur_version'].'</generator>'."\n";
+    if (Config::get('forum_settings')['o_show_version'] == '1') {
+        echo "\t\t".'<generator>FeatherBB '.Config::get('forum_settings')['o_cur_version'].'</generator>'."\n";
     } else {
         echo "\t\t".'<generator>FeatherBB</generator>'."\n";
     }
@@ -343,8 +343,8 @@ function output_atom($feed)
 
     $feather = \Slim\Slim::getInstance();
 
-    if ($feather->forum_settings['o_show_version'] == '1') {
-        echo "\t".'<generator version="'.$feather->forum_settings['o_cur_version'].'">FeatherBB</generator>'."\n";
+    if (Config::get('forum_settings')['o_show_version'] == '1') {
+        echo "\t".'<generator version="'.Config::get('forum_settings')['o_cur_version'].'">FeatherBB</generator>'."\n";
     } else {
         echo "\t".'<generator>FeatherBB</generator>'."\n";
     }
@@ -484,13 +484,13 @@ if ($action == 'feed') {
             exit(__('Bad request'));
         }
 
-        if ($feather->forum_settings['o_censoring'] == '1') {
+        if (Config::get('forum_settings')['o_censoring'] == '1') {
             $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
         // Setup the feed
         $feed = array(
-            'title'        =>    $feather->forum_settings['o_board_title'].__('Title separator').$cur_topic['subject'],
+            'title'        =>    Config::get('forum_settings')['o_board_title'].__('Title separator').$cur_topic['subject'],
             'link'            =>    Url::get('topic/'.$tid.'/'.Url::url_friendly($cur_topic['subject']).'/'),
             'description'        =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
             'items'            =>    array(),
@@ -585,7 +585,7 @@ if ($action == 'feed') {
         }
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
-        if ($feather->forum_settings['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
+        if (Config::get('forum_settings')['o_feed_ttl'] > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
             $cache_id = 'feed'.sha1($feather->user->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
@@ -598,9 +598,9 @@ if ($action == 'feed') {
         if (!isset($feed) || $cache_expire < $now) {
             // Setup the feed
             $feed = array(
-                'title'        =>    $feather->forum_settings['o_board_title'].$forum_name,
+                'title'        =>    Config::get('forum_settings')['o_board_title'].$forum_name,
                 'link'            =>    '/index.php',
-                'description'    =>    sprintf(__('RSS description'), $feather->forum_settings['o_board_title']),
+                'description'    =>    sprintf(__('RSS description'), Config::get('forum_settings')['o_board_title']),
                 'items'            =>    array(),
                 'type'            =>    'topics'
             );
@@ -624,7 +624,7 @@ if ($action == 'feed') {
                         ->find_array();
 
             foreach ($result as $cur_topic) {
-                if ($feather->forum_settings['o_censoring'] == '1') {
+                if (Config::get('forum_settings')['o_censoring'] == '1') {
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
@@ -660,7 +660,7 @@ if ($action == 'feed') {
                     require FEATHER_ROOT.'featherbb/Helpers/cache.php';
                 }
 
-                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + ($feather->forum_settings['o_feed_ttl'] * 60)).';'."\n\n".'?>';
+                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + (Config::get('forum_settings')['o_feed_ttl'] * 60)).';'."\n\n".'?>';
                 featherbb_write_cache_file('cache_'.$cache_id.'.php', $content);
             }
         }

@@ -44,7 +44,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
                 <tr>
                     <th class="tcl" scope="col"><?php _e('Topic') ?></th>
                     <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
+<?php if (Config::get('forum_settings')['o_topic_views'] == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
 <?php endif; ?>                    <th class="tcr"><?php _e('Last post') ?></th>
                     <th class="tcmod" scope="col"><?php _e('Select') ?></th>
                 </tr>
@@ -67,7 +67,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
                         </div>
                     </td>
                     <td class="tc2"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
-<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+<?php if (Config::get('forum_settings')['o_topic_views'] == '1'): ?>                    <td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
 <?php endif;
                 ?>                    <td class="tcr"><?= $topic['last_post_disp'] ?></td>
                     <td class="tcmod"><input type="checkbox" name="topics[<?= $topic['id'] ?>]" value="1" /></td>
@@ -76,7 +76,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
 
             }
             if (empty($topic_data)):
-                $colspan = ($feather->forum_settings['o_topic_views'] == '1') ? 5 : 4;
+                $colspan = (Config::get('forum_settings')['o_topic_views'] == '1') ? 5 : 4;
                 $button_status = ' disabled="disabled"';
                 echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.__('Empty forum').'</td></tr>'."\n";
             endif;

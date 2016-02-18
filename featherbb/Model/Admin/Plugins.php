@@ -103,8 +103,8 @@ class Plugins
             // Allow additional uninstalling functions
             $this->manager->uninstall($name);
 
-            if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
-                AdminUtils::delete_folder($this->feather->forum_env['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+            if (file_exists(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
+                AdminUtils::delete_folder(Container::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
             }
 
             $this->manager->setActivePlugins();

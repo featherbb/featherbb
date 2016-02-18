@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.admin.censoring.start');
                     <fieldset>
                         <legend><?php _e('Add word subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php _e('Add word info'); echo ($feather->forum_settings['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
+                            <p><?php _e('Add word info'); echo (Config::get('forum_settings')['o_censoring'] == '1' ? sprintf(__('Censoring enabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.$feather->urlFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
                             <table>
                             <thead>
                                 <tr>

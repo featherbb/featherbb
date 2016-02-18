@@ -36,7 +36,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
 }
     ?>><a href="<?= $feather->urlFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
 <?php endif;
-    if ($is_admin || $feather->forum_settings['o_report_method'] == '0' || $feather->forum_settings['o_report_method'] == '2'): ?>                    <li<?php if ($page == 'reports') {
+    if ($is_admin || Config::get('forum_settings')['o_report_method'] == '0' || Config::get('forum_settings')['o_report_method'] == '2'): ?>                    <li<?php if ($page == 'reports') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= $feather->urlFor('adminReports') ?>"><?php _e('Reports') ?></a></li>

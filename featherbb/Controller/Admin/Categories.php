@@ -25,7 +25,7 @@ class Categories
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Categories();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/categories.mo');
+        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/categories.mo');
     }
 
     public function add()

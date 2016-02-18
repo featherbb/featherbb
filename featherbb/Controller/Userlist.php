@@ -19,8 +19,8 @@ class Userlist
     {
         $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Userlist();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/userlist.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/search.mo');
+        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/userlist.mo');
+        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/search.mo');
     }
 
     public function display()

@@ -230,7 +230,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                 </div>
             </div>
 <?php endif; ?>
-<?php if (!empty($flash->getMessages())) : ?>
+<?php if (!empty(Container::get('flash')->getMessages())) : ?>
             <script type="text/javascript">
                 window.onload = function() {
                     var flashMessage = document.getElementById('flashmsg');
@@ -241,7 +241,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                     return false;
                 }
             </script>
-<?php foreach ($flash->getMessages() as $type => $message) { ?>
+<?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
             <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
                 <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
                 <p><?= Utils::escape($message) ?></p>

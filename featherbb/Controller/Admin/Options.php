@@ -22,7 +22,7 @@ class Options
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Options();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
+        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
     }
 
     public function display()

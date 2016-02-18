@@ -23,7 +23,7 @@ Container::get('hooks')->fire('view.register.rules.start');
                 <fieldset>
                     <legend><?php _e('Rules legend') ?></legend>
                     <div class="infldset">
-                        <div class="usercontent"><?= $feather->forum_settings['o_rules_message'] ?></div>
+                        <div class="usercontent"><?= Config::get('forum_settings')['o_rules_message'] ?></div>
                     </div>
                 </fieldset>
             </div>

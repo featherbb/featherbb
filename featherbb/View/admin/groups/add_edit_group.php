@@ -58,7 +58,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                         <span><?php printf(__('Promote users help'), __('Disable promotion')) ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['mode'] != 'edit' || $feather->forum_settings['o_default_user_group'] != $group['info']['g_id']): ?>                                <tr>
+<?php if ($group['mode'] != 'edit' || Config::get('forum_settings')['o_default_user_group'] != $group['info']['g_id']): ?>                                <tr>
                                     <th scope="row"> <?php _e('Mod privileges label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="moderator" value="1"<?php if ($group['info']['g_moderator'] == '1') {

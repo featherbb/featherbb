@@ -73,7 +73,7 @@ class Groups
         $output = '';
 
         foreach ($groups as $cur_group) {
-            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != $this->feather->forum_env['FEATHER_ADMIN'] && $cur_group['g_id'] != $this->feather->forum_env['FEATHER_GUEST']) {
+            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != Container::get('forum_env')['FEATHER_ADMIN'] && $cur_group['g_id'] != Container::get('forum_env')['FEATHER_GUEST']) {
                 if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
                 } else {
@@ -92,7 +92,7 @@ class Groups
 
         $select_get_group_list_delete = array('g_id', 'g_title');
         $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
-                        ->where_not_equal('g_id', $this->feather->forum_env['FEATHER_GUEST'])
+                        ->where_not_equal('g_id', Container::get('forum_env')['FEATHER_GUEST'])
                         ->where_not_equal('g_id', $group_id)
                         ->order_by('g_title');
         $result = $this->hook->fireDB('model.admin.groups.get_group_list_delete', $result);
@@ -101,7 +101,7 @@ class Groups
         $output = '';
 
         foreach ($result as $cur_group) {
-            if ($cur_group['g_id'] == $this->feather->forum_env['FEATHER_MEMBER']) {
+            if ($cur_group['g_id'] == Container::get('forum_env')['FEATHER_MEMBER']) {
                 // Pre-select the pre-defined Members group
                 $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
@@ -124,7 +124,7 @@ class Groups
         $group_id = $this->hook->fire('model.admin.groups.add_edit_group_start', $group_id);
 
         // Is this the admin group? (special rules apply)
-        $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == $this->feather->forum_env['FEATHER_ADMIN']) ? true : false;
+        $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == Container::get('forum_env')['FEATHER_ADMIN']) ? true : false;
 
         // Set group title
         $title = Utils::trim($this->request->post('req_title'));
@@ -140,7 +140,7 @@ class Groups
         $promote_min_posts = $this->request->post('promote_min_posts') ? intval($this->request->post('promote_min_posts')) : '0';
         if ($this->request->post('promote_next_group') &&
                 isset($groups[$this->request->post('promote_next_group')]) &&
-                !in_array($this->request->post('promote_next_group'), array($this->feather->forum_env['FEATHER_ADMIN'], $this->feather->forum_env['FEATHER_GUEST'])) &&
+                !in_array($this->request->post('promote_next_group'), array(Container::get('forum_env')['FEATHER_ADMIN'], Container::get('forum_env')['FEATHER_GUEST'])) &&
                 ($this->request->post('group_id') || $this->request->post('promote_next_group') != $this->request->post('group_id'))) {
             $promote_next_group = $this->request->post('promote_next_group');
         } else {
@@ -274,7 +274,7 @@ class Groups
         $group_id = $this->hook->fire('model.admin.groups.set_default_group.group_id', $group_id);
 
         // Make sure it's not the admin or guest groups
-        if ($group_id == $this->feather->forum_env['FEATHER_ADMIN'] || $group_id == $this->feather->forum_env['FEATHER_GUEST']) {
+        if ($group_id == Container::get('forum_env')['FEATHER_ADMIN'] || $group_id == Container::get('forum_env')['FEATHER_GUEST']) {
             throw new Error(__('Bad request'), 404);
         }
 

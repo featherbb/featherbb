@@ -582,7 +582,7 @@ class Topic
                 ->where_in('id', $posts_array)
                 ->where('topic_id', $tid);
 
-            if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN']) {
+            if ($this->user->g_id != Container::get('forum_env')['FEATHER_ADMIN']) {
                 $result->where_not_in('poster_id', Utils::get_admin_ids());
             }
 
@@ -933,7 +933,7 @@ class Topic
                     }
                 }
 
-                if ($this->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || ($this->user->g_moderator == '1' && $this->user->g_mod_promote_users == '1')) {
+                if ($this->user->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || ($this->user->g_moderator == '1' && $this->user->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
                         $cur_post['user_info'][] = '<dd><span><a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
                     }
@@ -983,7 +983,7 @@ class Topic
                 }
             } else {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.$this->feather->urlFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
-                if ($this->user->g_id == $this->feather->forum_env['FEATHER_ADMIN'] || !in_array($cur_post['poster_id'], $admin_ids)) {
+                if ($this->user->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || !in_array($cur_post['poster_id'], $admin_ids)) {
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.$this->feather->urlFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.$this->feather->urlFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                 }

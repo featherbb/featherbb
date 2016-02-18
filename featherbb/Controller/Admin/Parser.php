@@ -24,7 +24,7 @@ class Parser
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Parser();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/parser.mo');
+        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/parser.mo');
     }
 
     public function display()
@@ -34,15 +34,15 @@ class Parser
         Container::get('hooks')->fire('controller.admin.parser.display');
 
         // Legacy
-        require $this->feather->forum_env['FEATHER_ROOT'] . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
+        require Container::get('forum_env')['FEATHER_ROOT'] . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
-        $cache_file = $this->feather->forum_env['FEATHER_ROOT'].'cache/cache_parser_data.php';
+        $cache_file = Container::get('forum_env')['FEATHER_ROOT'].'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
         if ($this->request->post('reset') || !file_exists($cache_file)) {
-            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_source.php');
-            require_once($this->feather->forum_env['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_compile.php');
+            require_once(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_source.php');
+            require_once(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_compile.php');
             Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['reset_success']);
         }
 
@@ -65,7 +65,7 @@ class Parser
                         if (preg_match('/^[\w\-.]++$/', $name)) {            // If we have a valid filename?
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
-                                    if (move_uploaded_file($f['tmp_name'], $this->feather->forum_env['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
+                                    if (move_uploaded_file($f['tmp_name'], Container::get('forum_env')['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
                                         Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new Error($lang_admin_parser['upload_err_1'], 500);

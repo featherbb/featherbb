@@ -535,7 +535,7 @@ class Forum
         }
 
         // Verify that the posts are not by admins
-        if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN']) {
+        if ($this->user->g_id != Container::get('forum_env')['FEATHER_ADMIN']) {
             $authorized = DB::for_table('posts')
                             ->where_in('topic_id', $topics_sql)
                             ->where('poster_id', Utils::get_admin_ids());

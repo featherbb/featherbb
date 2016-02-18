@@ -193,8 +193,8 @@ class Post
         $message = $this->hook->fire('model.post.check_errors_before_post_message', $message);
 
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
-        if (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
-            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format($this->feather->forum_env['FEATHER_MAX_POSTSIZE']));
+        if (strlen($message) > Container::get('forum_env')['FEATHER_MAX_POSTSIZE']) {
+            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(Container::get('forum_env')['FEATHER_MAX_POSTSIZE']));
         } elseif ($this->config['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = __('All caps message');
         }
@@ -251,8 +251,8 @@ class Post
         $message = Utils::linebreaks(Utils::trim($this->request->post('req_message')));
 
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
-        if (strlen($message) > $this->feather->forum_env['FEATHER_MAX_POSTSIZE']) {
-            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format($this->feather->forum_env['FEATHER_MAX_POSTSIZE']));
+        if (strlen($message) > Container::get('forum_env')['FEATHER_MAX_POSTSIZE']) {
+            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(Container::get('forum_env')['FEATHER_MAX_POSTSIZE']));
         } elseif ($this->config['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !$this->user->is_admmod) {
             $errors[] = __('All caps message');
         }
@@ -604,7 +604,7 @@ class Post
             // We send it to the complete mailing-list in one swoop
             if ($this->config['o_mailing_list'] != '') {
                 // Load the "new report" template
-                $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
+                $mail_tpl = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/new_report.tpl'));
                 $mail_tpl = $this->hook->fire('model.post.insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -820,13 +820,13 @@ class Post
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
+                    if (file_exists(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+                        $mail_tpl = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
                         $mail_tpl = $this->hook->fire('model.post.send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
                         $mail_tpl_full = $this->hook->fire('model.post.send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
@@ -1029,13 +1029,13 @@ class Post
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
+                    if (file_exists(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+                        $mail_tpl = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
                         $mail_tpl = $this->hook->fire('model.post.send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
@@ -1094,7 +1094,7 @@ class Post
         $this->hook->fire('model.post.warn_banned_user_start', $post, $new_pid);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_post.tpl'));
         $mail_tpl = $this->hook->fire('model.post.warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject

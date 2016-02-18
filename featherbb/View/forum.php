@@ -40,7 +40,7 @@ Container::get('hooks')->fire('view.forum.start');
                 <tr>
                     <th class="tcl" scope="col"><?php _e('Topic') ?></th>
                     <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
+<?php if (Config::get('forum_settings')['o_topic_views'] == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
 <?php endif; ?>                    <th class="tcr" scope="col"><?php _e('Last post') ?></th>
                 </tr>
             </thead>
@@ -60,7 +60,7 @@ Container::get('hooks')->fire('view.forum.start');
                             </div>
                         </td>
                         <td class="tc2"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
-    <?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+    <?php if (Config::get('forum_settings')['o_topic_views'] == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
     <?php endif;
                 ?>                    <td class="tcr"><?= $topic['last_post_formatted'] ?></td>
                     </tr>
@@ -70,7 +70,7 @@ Container::get('hooks')->fire('view.forum.start');
             if (empty($forum_data)):
             ?>
                     <tr class="rowodd inone">
-                        <td class="tcl" colspan="<?php echo($feather->forum_settings['o_topic_views'] == 1) ? 4 : 3 ?>">
+                        <td class="tcl" colspan="<?php echo(Config::get('forum_settings')['o_topic_views'] == 1) ? 4 : 3 ?>">
                             <div class="icon inone"><div class="nosize"><!-- --></div></div>
                             <div class="tclcon">
                                 <div>

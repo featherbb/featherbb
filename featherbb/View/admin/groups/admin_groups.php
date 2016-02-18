@@ -35,7 +35,7 @@ Container::get('hooks')->fire('view.admin.groups.admin_groups.start');
 
 foreach ($groups as $cur_group) {
     if ($cur_group['g_id'] != $feather->forum_env['FEATHER_ADMIN'] && $cur_group['g_id'] != $feather->forum_env['FEATHER_GUEST']) {
-        if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
+        if ($cur_group['g_id'] == Config::get('forum_settings')['o_default_user_group']) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
@@ -68,7 +68,7 @@ foreach ($groups as $cur_group) {
 
 foreach ($groups as $cur_group) {
     if ($cur_group['g_id'] > $feather->forum_env['FEATHER_GUEST'] && $cur_group['g_moderator'] == 0) {
-        if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
+        if ($cur_group['g_id'] == Config::get('forum_settings')['o_default_user_group']) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";

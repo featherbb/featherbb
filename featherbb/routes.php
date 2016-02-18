@@ -60,7 +60,8 @@ Route::group('/forum', function() use ($feather) {
             throw new Error(__('No permission'), 403);
         }
     };
-    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}[/page/{page:[0-9]+}]]', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Forum:display')->setName('Forum');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
     Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add($isGuest)->setName('markForumRead');
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add($isGuest)->setName('subscribeForum');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add($isGuest)->setName('unsubscribeForum');
@@ -80,7 +81,8 @@ Route::group('/topic', function() use ($feather) {
             throw new Error(__('No permission'), 403);
         }
     };
-    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}[/page/{page:[0-9]+}]]', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Topic:display')->setName('Topic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add($isGuest)->setName('subscribeTopic');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add($isGuest)->setName('unsubscribeTopic');
     Route::get('/close/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:close')->add($isAdmmod)->setName('closeTopic');
@@ -138,7 +140,7 @@ Route::get('/help', '\FeatherBB\Controller\Help:display')->add($canReadBoard)->s
 
 // Profile routes
 Route::group('/user', function() use ($feather) {
-    Route::get('/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('profile');
+    Route::get('/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
     Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
@@ -275,7 +277,7 @@ Container::set('errorHandler', function ($c) {
 //     $feather->response->setStatus($e->getCode());
 //     $feather->response->setBody(''); // Reset buffer
 //     $feather->template->setPageInfo(array(
-//         'title' => array(\FeatherBB\Core\Utils::escape($feather->forum_settings['o_board_title']), __('Error')),
+//         'title' => array(\FeatherBB\Core\Utils::escape(Config::get('forum_settings')['o_board_title']), __('Error')),
 //         'msg'    =>    $error['message'],
 //         'backlink'    => $error['back'],
 //     ))->addTemplate('error.php')->display();

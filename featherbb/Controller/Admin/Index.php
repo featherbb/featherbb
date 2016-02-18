@@ -23,7 +23,7 @@ class Index
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
+        load_textdomain('featherbb', Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
     }
 
     public function display($action = null)

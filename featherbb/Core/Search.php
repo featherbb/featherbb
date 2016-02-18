@@ -114,7 +114,7 @@ class Search
 
         // Check the word is within the min/max length
         $num_chars = Utils::strlen($word);
-        return $num_chars >= $this->feather->forum_env['FEATHER_SEARCH_MIN_WORD'] && $num_chars <= $this->feather->forum_env['FEATHER_SEARCH_MAX_WORD'];
+        return $num_chars >= Container::get('forum_env')['FEATHER_SEARCH_MIN_WORD'] && $num_chars <= Container::get('forum_env')['FEATHER_SEARCH_MAX_WORD'];
     }
 
 
@@ -230,7 +230,7 @@ class Search
             unset($unique_words);
 
             if (!empty($new_words)) {
-                switch ($feather->forum_settings['db_type']) {
+                switch (Config::get('forum_settings')['db_type']) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
@@ -238,7 +238,7 @@ class Search
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
                         DB::for_table('search_words')
-                            ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_words (word) VALUES ' . $placeholders, $new_words);
+                            ->raw_execute('INSERT INTO ' . Config::get('forum_settings')['db_prefix'] . 'search_words (word) VALUES ' . $placeholders, $new_words);
                         break;
 
                     default:
@@ -283,7 +283,7 @@ class Search
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
                 DB::for_table('search_words')
-                    ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . $feather->forum_settings['db_prefix'] . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                    ->raw_execute('INSERT INTO ' . Config::get('forum_settings')['db_prefix'] . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . Config::get('forum_settings')['db_prefix'] . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -305,7 +305,7 @@ class Search
             $post_ids_sql = $post_ids;
         }
 
-        switch ($feather->forum_settings['db_type']) {
+        switch (Config::get('forum_settings')['db_type']) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
@@ -343,7 +343,7 @@ class Search
 
             default:
                 DB::for_table('search_matches')
-                    ->where_raw('id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->where_raw('id IN(SELECT word_id FROM ' . Config::get('forum_settings')['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . Config::get('forum_settings')['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
         }

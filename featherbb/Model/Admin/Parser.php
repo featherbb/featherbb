@@ -27,7 +27,7 @@ class Parser
     public function get_smiley_files()
     {
         $imgfiles = array();
-        $filelist = scandir($this->feather->forum_env['FEATHER_ROOT'].'style/img/smilies');
+        $filelist = scandir(Container::get('forum_env')['FEATHER_ROOT'].'style/img/smilies');
         $filelist = $this->hook->fire('model.admin.parser.get_smiley_files.filelist', $filelist);
         foreach ($filelist as $file) {
             if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {

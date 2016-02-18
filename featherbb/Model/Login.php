@@ -58,7 +58,7 @@ class Login
         }
 
         // Update the status if this is the first time the user logged in
-        if ($user->group_id == $this->feather->forum_env['FEATHER_UNVERIFIED']) {
+        if ($user->group_id == Container::get('forum_env')['FEATHER_UNVERIFIED']) {
             $update_usergroup = DB::for_table('users')->where('id', $user->id)
                 ->find_one()
                 ->set('group_id', $this->config['o_default_user_group']);
@@ -150,7 +150,7 @@ class Login
 
                 if ($result) {
                     // Load the "activate password" template
-                    $mail_tpl = trim(file_get_contents($this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
+                    $mail_tpl = trim(file_get_contents(Container::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
                     $mail_tpl = $this->hook->fire('model.login.mail_tpl_password_forgotten', $mail_tpl);
 
                     // The first row contains the subject
