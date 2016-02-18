@@ -259,6 +259,7 @@ class Core
 
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
+        Config::set('forum_settings', $this->forum_settings);
 
         // Set default style and assets
         Container::get('template')->setStyle($this->forum_settings['o_default_style']);

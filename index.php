@@ -46,12 +46,12 @@ $feather_settings = array('config_file' => 'featherbb/config.php',
 // $feather->add($container->get('core'));
 
 
-App::add(new \FeatherBB\Middleware\Csrf);
-App::add(new \FeatherBB\Middleware\Auth);
-App::add(new \FeatherBB\Middleware\Core($feather_settings));
+Feather::add(new \FeatherBB\Middleware\Csrf);
+Feather::add(new \FeatherBB\Middleware\Auth);
+Feather::add(new \FeatherBB\Middleware\Core($feather_settings));
 
 // Load the routes
 require 'featherbb/routes.php';
 
 // Run it, baby!
-App::run();
+Feather::run();

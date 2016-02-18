@@ -34,8 +34,7 @@ class View
     */
     public function __construct()
     {
-        $this->data = $this->page = new \Slim\Helper\Set();
-        $this->app = \Slim\Slim::getInstance();
+        $this->data = $this->page = array();
         // Set default dir for view fallback
         $this->addTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'] . 'featherbb/View/', 10);
     }

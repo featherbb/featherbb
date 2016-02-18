@@ -1,6 +1,6 @@
 <?php
 namespace FeatherBB\Core\Interfaces;
 
-class App extends \Statical\BaseProxy
+class Feather extends \Statical\BaseProxy
 {
 }
