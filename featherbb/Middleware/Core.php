@@ -187,11 +187,11 @@ class Core
             return new Utils();
         });
         // Record start time
-        $this->app->start = Utils::get_microtime();
+        Container::set('start', Utils::get_microtime());
         // Define now var
-        $this->app->now = function () {
+        Container::set('now', function () {
             return time();
-        };
+        });
         // Load FeatherBB cache
         Container::set('cache', function ($container) {
             $path = $this->forum_env['FORUM_CACHE_DIR'];

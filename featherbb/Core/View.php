@@ -34,9 +34,9 @@ class View
     */
     public function __construct()
     {
-        $this->data = $this->page = array();
+        $this->data = $this->page = new \FeatherBB\Helpers\Set();
         // Set default dir for view fallback
-        $this->addTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'] . 'featherbb/View/', 10);
+        $this->addTemplatesDirectory(Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/View/', 10);
     }
 
     /********************************************************************************
@@ -263,11 +263,11 @@ class View
 
     public function setStyle($style)
     {
-        if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/')) {
+        if (!is_dir(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$style.'/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
-        $this->addTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view', 9);
+        $this->addTemplatesDirectory(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$style.'/view', 9);
         return $this;
     }
 
@@ -307,7 +307,7 @@ class View
         if (!in_array($type, array('js', 'css', 'feed', 'canonical', 'prev', 'next'))) {
             throw new \Exception('Invalid asset type : ' . $type);
         }
-        if (in_array($type, array('js', 'css')) && !is_file($this->app->forum_env['FEATHER_ROOT'].$asset)) {
+        if (in_array($type, array('js', 'css')) && !is_file(Config::get('forum_env')['FEATHER_ROOT'].$asset)) {
             throw new \Exception('The asset file ' . $asset . ' does not exist');
         }
 
@@ -375,7 +375,7 @@ class View
     protected function getDefaultPageInfo()
     {
         // Check if config file exists to avoid error when installing forum
-        if (!$this->app->cache->isCached('quickjump') && is_file($this->app->forum_env['FORUM_CONFIG_FILE'])) {
+        if (!$this->app->cache->isCached('quickjump') && is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
             $this->app->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
         }
 
@@ -400,9 +400,9 @@ class View
             $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
         }
 
-        if ($this->app->forum_env['FEATHER_SHOW_INFO']) {
+        if (Config::get('forum_env')['FEATHER_SHOW_INFO']) {
             $data['exec_info'] = \FeatherBB\Model\Debug::get_info();
-            if ($this->app->forum_env['FEATHER_SHOW_QUERIES']) {
+            if (Config::get('forum_env')['FEATHER_SHOW_QUERIES']) {
                 $data['queries_info'] = \FeatherBB\Model\Debug::get_queries();
             }
         }
