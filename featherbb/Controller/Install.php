@@ -39,7 +39,7 @@ class Install
 
     public function run($req, $res, $args)
     {
-        return 'ok';
+        // return $res;
         Container::get('hooks')->fire('controller.install.run_install');
 
         if (Input::getParsedBodyParam('choose_lang')) {
