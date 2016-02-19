@@ -153,7 +153,7 @@ class Forum
             }
 
             // Fetch list of topics to display on this page
-            if (Container::get('user')->is_guest || $this->config['o_show_dot'] == '0') {
+            if (Container::get('user')->is_guest || Config::get('forum_settings')['o_show_dot'] == '0') {
                 // Without "the dot"
                 $result['select'] = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
 
@@ -230,7 +230,7 @@ class Forum
                 $cur_topic['subject_formatted'] = implode(' ', $status_text).' '.$cur_topic['subject_formatted'];
 
                 // Should we display the dot or not? :)
-                if (!Container::get('user')->is_guest && $this->config['o_show_dot'] == '1') {
+                if (!Container::get('user')->is_guest && Config::get('forum_settings')['o_show_dot'] == '1') {
                     if ($cur_topic['has_posted'] == Container::get('user')->id) {
                         $cur_topic['subject_formatted'] = '<strong class="ipost">·&#160;</strong>'.$cur_topic['subject_formatted'];
                         $cur_topic['item_status'] .= ' iposted';
@@ -424,7 +424,7 @@ class Forum
     {
         $forum_id = Container::get('hooks')->fire('model.forum.unsubscribe_forum_start', $forum_id);
 
-        if ($this->config['o_forum_subscriptions'] != '1') {
+        if (Config::get('forum_settings')['o_forum_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
         }
 
@@ -450,7 +450,7 @@ class Forum
     {
         $forum_id = Container::get('hooks')->fire('model.forum.subscribe_forum_start', $forum_id);
 
-        if ($this->config['o_forum_subscriptions'] != '1') {
+        if (Config::get('forum_settings')['o_forum_subscriptions'] != '1') {
             throw new Error(__('No permission'), 403);
         }
 
@@ -588,11 +588,11 @@ class Forum
     {
         $fid = Container::get('hooks')->fire('model.forum.merge_topics_start', $fid);
 
-        if (@preg_match('%[^0-9,]%', $this->request->post('topics'))) {
+        if (@preg_match('%[^0-9,]%', Input::post('topics'))) {
             throw new Error(__('Bad request'), 404);
         }
 
-        $topics = explode(',', $this->request->post('topics'));
+        $topics = explode(',', Input::post('topics'));
         if (count($topics) < 2) {
             throw new Error(__('Not enough topics selected'), 400);
         }
@@ -620,7 +620,7 @@ class Forum
         $query = 'UPDATE '.Config::get('forum_settings')['db_prefix'].'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
 
         // Should we create redirect topics?
-        if ($this->request->post('with_redirect')) {
+        if (Input::post('with_redirect')) {
             $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
         }
 
@@ -666,7 +666,7 @@ class Forum
         }
 
         // Without redirection the old topics are removed
-        if ($this->request->post('with_redirect') == 0) {
+        if (Input::post('with_redirect') == 0) {
             $delete_topics = DB::for_table('topics')
                                 ->where_in('id', $topics)
                                 ->where_not_equal('id', $merge_to_tid);

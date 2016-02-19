@@ -17,13 +17,12 @@ class Userlist
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Userlist();
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/userlist.mo');
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/search.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.userlist.display');
 
@@ -34,17 +33,17 @@ class Userlist
         // Determine if we are allowed to view post counts
         $show_post_count = (Config::get('forum_settings')['o_show_post_count'] == '1' || Container::get('user')->is_admmod) ? true : false;
 
-        $username = $this->feather->request->get('username') && Container::get('user')->g_search_users == '1' ? Utils::trim($this->feather->request->get('username')) : '';
-        $show_group = $this->feather->request->get('show_group') ? intval($this->feather->request->get('show_group')) : -1;
-        $sort_by = $this->feather->request->get('sort_by') && (in_array($this->feather->request->get('sort_by'), array('username', 'registered')) || ($this->feather->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $this->feather->request->get('sort_by') : 'username';
-        $sort_dir = $this->feather->request->get('sort_dir') && $this->feather->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
+        $username = Input::query('username') && Container::get('user')->g_search_users == '1' ? Utils::trim(Input::query('username')) : '';
+        $show_group = Input::query('show_group') ? intval(Input::query('show_group')) : -1;
+        $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), array('username', 'registered')) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
+        $sort_dir = Input::query('sort_dir') && Input::query('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
 
         $num_users = $this->model->fetch_user_count($username, $show_group);
 
         // Determine the user offset (based on $page)
         $num_pages = ceil($num_users / 50);
 
-        $p = (!$this->feather->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $p = (!Input::query('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
         if (Container::get('user')->g_search_users == '1') {

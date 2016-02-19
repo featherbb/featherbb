@@ -96,7 +96,7 @@ Container::get('hooks')->fire('view.userlist.start');
     <?php if ($show_post_count): ?>                    <td class="tc3"><?= Utils::forum_number_format($user['num_posts']) ?></td>
     <?php endif;
                 ?>
-                        <td class="tcr"><?= $feather->utils->format_time($user['registered'], true) ?></td>
+                        <td class="tcr"><?= Utils::format_time($user['registered'], true) ?></td>
                     </tr>
             <?php
 

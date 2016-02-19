@@ -18,20 +18,15 @@ class Index
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/index.mo');
     }
 
-    public function display($action = null)
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.index.display');
 
         // Check for upgrade
-        if ($action == 'check_upgrade') {
+        if ($args['action'] == 'check_upgrade') {
             if (!ini_get('allow_url_fopen')) {
                 throw new Error(__('fopen disabled message'), 500);
             }
@@ -41,7 +36,7 @@ class Index
                 throw new Error(__('Upgrade check failed message'), 500);
             }
 
-            if (version_compare($this->config['o_cur_version'], $latest_version, '>=')) {
+            if (version_compare(Config::get('forum_settings')['o_cur_version'], $latest_version, '>=')) {
                 Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
             } else {
                 Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
@@ -51,7 +46,7 @@ class Index
         AdminUtils::generateAdminMenu('index');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Index')),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Index')),
                 'active_page' => 'admin',
                 'admin_console' => true
             )

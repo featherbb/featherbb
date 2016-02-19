@@ -13,12 +13,6 @@ use FeatherBB\Core\Database as DB;
 
 class Reports
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     public function zap_report($zap_id)
     {
         $zap_id = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zap_id);

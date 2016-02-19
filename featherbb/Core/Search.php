@@ -18,7 +18,7 @@ class Search
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
+
 
         // Make a regex that will match CJK or Hangul characters
         define('FEATHER_CJK_HANGUL_REGEX', '[' .

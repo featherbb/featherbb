@@ -182,7 +182,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                                 if ($user['time_format'] == $key) {
                                     echo ' selected="selected"';
                                 }
-                                echo '>'. $feather->utils->format_time(time(), false, null, $time_format, true, true);
+                                echo '>'. Utils::format_time(time(), false, null, $time_format, true, true);
                                 if ($key == 0) {
                                     echo ' ('.__('Default').')';
                                 }
@@ -200,7 +200,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                                 if ($user['date_format'] == $key) {
                                     echo ' selected="selected"';
                                 }
-                                echo '>'. $feather->utils->format_time(time(), true, $date_format, null, false, true);
+                                echo '>'. Utils::format_time(time(), true, $date_format, null, false, true);
                                 if ($key == 0) {
                                     echo ' ('.__('Default').')';
                                 }
@@ -244,9 +244,9 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                 <fieldset>
                     <legend><?php _e('User activity') ?></legend>
                     <div class="infldset">
-                        <p><?php printf(__('Registered info'), $feather->utils->format_time($user['registered'], true).((Container::get('user')->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
-                        <p><?php printf(__('Last post info'), $feather->utils->format_time($user['last_post'])) ?></p>
-                        <p><?php printf(__('Last visit info'), $feather->utils->format_time($user['last_visit'])) ?></p>
+                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((Container::get('user')->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
+                        <p><?php printf(__('Last post info'), Utils::format_time($user['last_post'])) ?></p>
+                        <p><?php printf(__('Last visit info'), Utils::format_time($user['last_visit'])) ?></p>
                         <?= $user_disp['posts_field'] ?>
 <?php if (Container::get('user')->is_admmod): ?>                            <label><?php _e('Admin note') ?><br />
                         <input id="admin_note" type="text" name="admin_note" value="<?= Utils::escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>

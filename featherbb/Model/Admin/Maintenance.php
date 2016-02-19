@@ -18,17 +18,12 @@ class Maintenance
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->search = new \FeatherBB\Core\Search();
     }
 
     public function rebuild()
     {
-        $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
+        $per_page = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
         $per_page = Container::get('hooks')->fire('model.admin.maintenance.rebuild.per_page', $per_page);
 
         // Check per page is > 0
@@ -39,7 +34,7 @@ class Maintenance
         @set_time_limit(0);
 
         // If this is the first cycle of posts we empty the search index before we proceed
-        if ($this->request->get('i_empty_index')) {
+        if (Input::query('i_empty_index')) {
             DB::for_table('search_words')->raw_execute('TRUNCATE '.Config::get('forum_settings')['db_prefix'].'search_words');
             DB::for_table('search_matches')->raw_execute('TRUNCATE '.Config::get('forum_settings')['db_prefix'].'search_matches');
 
@@ -62,9 +57,9 @@ class Maintenance
     {
         $query_str = '';
 
-        $per_page = $this->request->get('i_per_page') ? intval($this->request->get('i_per_page')) : 0;
+        $per_page = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
         $per_page = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.per_page', $per_page);
-        $start_at = $this->request->get('i_start_at') ? intval($this->request->get('i_start_at')) : 0;
+        $start_at = Input::query('i_start_at') ? intval(Input::query('i_start_at')) : 0;
         $start_at = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.start_at', $start_at);
 
         // Fetch posts to process this cycle
@@ -169,7 +164,7 @@ class Maintenance
 
     public function prune_comply($prune_from, $prune_sticky)
     {
-        $prune_days = intval($this->request->post('prune_days'));
+        $prune_days = intval(Input::post('prune_days'));
         $prune_days = Container::get('hooks')->fire('model.admin.maintenance.prune_comply.prune_days', $prune_days);
         $prune_date = ($prune_days) ? time() - ($prune_days * 86400) : -1;
 
@@ -220,7 +215,7 @@ class Maintenance
     {
         $prune = array();
 
-        $prune['days'] = Utils::trim($this->request->post('req_prune_days'));
+        $prune['days'] = Utils::trim(Input::post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
             throw new Error(__('Days must be integer message'), 400);
         }

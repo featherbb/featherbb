@@ -50,7 +50,7 @@ Container::get('hooks')->fire('view.admin.users.search_ip.start');
             ?>
                 <tr>
                     <td class="tcl"><a href="<?= Router::pathFor('getHostIp', ['ip' => Utils::escape($ip['poster_ip'])]) ?>"><?= Utils::escape($ip['poster_ip']) ?></a></td>
-                    <td class="tc2"><?= $feather->utils->format_time($ip['last_used']) ?></td>
+                    <td class="tc2"><?= Utils::format_time($ip['last_used']) ?></td>
                     <td class="tc3"><?= $ip['used_times'] ?></td>
                     <td class="tcr"><a href="<?= Router::pathFor('usersIpShow', ['id' => $ip['poster_ip']]) ?>"><?php _e('Results find more link') ?></a></td>
                 </tr>

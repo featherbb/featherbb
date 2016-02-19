@@ -14,18 +14,7 @@ use FeatherBB\Core\Utils;
 
 class Userlist
 {
-
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
-    // Counts the numeber of user for a specific query
+    // Counts the number of user for a specific query
     public function fetch_user_count($username, $show_group)
     {
         // Fetch user count

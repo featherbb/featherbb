@@ -16,20 +16,19 @@ class Maintenance
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/maintenance.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.maintenance.display');
 
         $action = '';
         if (Input::post('action')) {
             $action = Input::post('action');
-        } elseif ($this->feather->request->get('action')) {
-            $action = $this->feather->request->get('action');
+        } elseif (Input::query('action')) {
+            $action = Input::query('action');
         }
 
         if ($action == 'rebuild') {

@@ -16,16 +16,11 @@ class Permissions
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Permissions();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/permissions.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/permissions.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.permissions.display');
 
@@ -37,7 +32,7 @@ class Permissions
         AdminUtils::generateAdminMenu('permissions');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Permissions')),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Permissions')),
                 'active_page' => 'admin',
                 'admin_console' => true,
             )

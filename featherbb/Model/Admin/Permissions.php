@@ -15,19 +15,9 @@ use FeatherBB\Model\Cache;
 
 class Permissions
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     public function update_permissions()
     {
-        $form = array_map('intval', $this->request->post('form'));
+        $form = array_map('intval', Input::post('form'));
         $form = Container::get('hooks')->fire('model.admin.permissions.update_permissions.form', $form);
 
         foreach ($form as $key => $input) {
@@ -37,7 +27,7 @@ class Permissions
             }
 
             // Only update values that have changed
-            if (array_key_exists('p_'.$key, $this->config) && $this->config['p_'.$key] != $input) {
+            if (array_key_exists('p_'.$key, $this->config) && Config::get('forum_settings')['p_'.$key] != $input) {
                 DB::for_table('config')->where('conf_name', 'p_'.$key)
                                                            ->update_many('conf_value', $input);
             }

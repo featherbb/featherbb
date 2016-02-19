@@ -30,7 +30,7 @@ if (!empty($report_data)) {
         ?>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php printf(__('Report subhead'), $feather->utils->format_time($report['created'])) ?></legend>
+                        <legend><?php printf(__('Report subhead'), Utils::format_time($report['created'])) ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
@@ -84,7 +84,7 @@ if (!empty($report_zapped_data)) {
         ?>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php printf(__('Zapped subhead'), $feather->utils->format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['zapped_by_id']]).'">'.Utils::escape($report['zapped_by']).'</a>' : __('NA')) ?></legend>
+                        <legend><?php printf(__('Zapped subhead'), Utils::format_time($report['zapped']), ($report['zapped_by'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['zapped_by_id']]).'">'.Utils::escape($report['zapped_by']).'</a>' : __('NA')) ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>

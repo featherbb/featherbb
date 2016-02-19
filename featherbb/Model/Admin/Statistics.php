@@ -13,16 +13,6 @@ use FeatherBB\Core\Database as DB;
 
 class Statistics
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     public function get_server_load()
     {
         if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg')) {

@@ -19,12 +19,6 @@ class Profile
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        $this->email = Container::get('email');
         $this->auth = new \FeatherBB\Model\Auth();
     }
 
@@ -32,13 +26,13 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
 
-        if ($this->request->get('key')) {
+        if (Input::query('key')) {
 
-            $key = $this->request->get('key');
+            $key = Input::query('key');
             $key = Container::get('hooks')->fire('model.profile.change_pass_key', $key);
 
             // If the user is already logged in we shouldn't be here :)
-            if (!$this->user->is_guest) {
+            if (!Container::get('user')->is_guest) {
                 Router::redirect(Router::pathFor('home'));
             }
 
@@ -48,7 +42,7 @@ class Profile
             $cur_user = $cur_user->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
-                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', 400);
+                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 400);
             } else {
                 $query = DB::for_table('users')
                     ->where('id', $id)
@@ -64,12 +58,12 @@ class Profile
         }
 
         // Make sure we are allowed to change this user's password
-        if ($this->user->id != $id) {
+        if (Container::get('user')->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_pass_key_not_id', $id);
 
-            if (!$this->user->is_admmod) { // A regular user trying to change another user's password?
+            if (!Container::get('user')->is_admmod) { // A regular user trying to change another user's password?
                 throw new Error(__('No permission'), 403);
-            } elseif ($this->user->g_moderator == '1') {
+            } elseif (Container::get('user')->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
                 $user['select'] = array('u.group_id', 'g.g_moderator');
@@ -86,16 +80,16 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] || $user['g_moderator'] == '1') {
+                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] || $user['g_moderator'] == '1') {
                     throw new Error(__('No permission'), 403);
                 }
             }
         }
 
         if (Request::isPost()) {
-            $old_password = $this->request->post('req_old_password') ? Utils::trim($this->request->post('req_old_password')) : '';
-            $new_password1 = Utils::trim($this->request->post('req_new_password1'));
-            $new_password2 = Utils::trim($this->request->post('req_new_password2'));
+            $old_password = Input::post('req_old_password') ? Utils::trim(Input::post('req_old_password')) : '';
+            $new_password1 = Utils::trim(Input::post('req_new_password1'));
+            $new_password2 = Utils::trim(Input::post('req_new_password2'));
 
             if ($new_password1 != $new_password2) {
                 throw new Error(__('Pass not match'), 400);
@@ -114,7 +108,7 @@ class Profile
             if (!empty($cur_user['password'])) {
                 $old_password_hash = Random::hash($old_password);
 
-                if ($cur_user['password'] == $old_password_hash || $this->user->is_admmod) {
+                if ($cur_user['password'] == $old_password_hash || Container::get('user')->is_admmod) {
                     $authorized = true;
                 }
             }
@@ -132,8 +126,8 @@ class Profile
             $update_password = Container::get('hooks')->fireDB('model.profile.change_pass_query', $update_password);
             $update_password = $update_password->save();
 
-            if ($this->user->id == $id) {
-                $this->auth->feather_setcookie($this->user->id, $new_password_hash, time() + $this->config['o_timeout_visit']);
+            if (Container::get('user')->id == $id) {
+                $this->auth->feather_setcookie(Container::get('user')->id, $new_password_hash, time() + Config::get('forum_settings')['o_timeout_visit']);
             }
 
             Container::get('hooks')->fire('model.profile.change_pass');
@@ -146,12 +140,12 @@ class Profile
         $id = Container::get('hooks')->fire('model.profile.change_email_start', $id);
 
         // Make sure we are allowed to change this user's email
-        if ($this->user->id != $id) {
+        if (Container::get('user')->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_email_not_id', $id);
 
-            if (!$this->user->is_admmod) { // A regular user trying to change another user's email?
+            if (!Container::get('user')->is_admmod) { // A regular user trying to change another user's email?
                 throw new Error(__('No permission'), 403);
-            } elseif ($this->user->g_moderator == '1') {
+            } elseif (Container::get('user')->g_moderator == '1') {
                 // A moderator trying to change a user's email?
                 $user['select'] = array('u.group_id', 'g.g_moderator');
 
@@ -167,14 +161,14 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                if ($this->user->g_mod_edit_users == '0' || $this->user->g_mod_change_passwords == '0' || $user['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] || $user['g_moderator'] == '1') {
+                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] || $user['g_moderator'] == '1') {
                     throw new Error(__('No permission'), 403);
                 }
             }
         }
 
-        if ($this->request->get('key')) {
-            $key = $this->request->get('key');
+        if (Input::query('key')) {
+            $key = Input::query('key');
             $key = Container::get('hooks')->fire('model.profile.change_email_key', $key);
 
             $new_email_key = DB::for_table('users')
@@ -183,7 +177,7 @@ class Profile
             $new_email_key = $new_email_key->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
-                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', 400);
+                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 400);
             } else {
                 $update_mail = DB::for_table('users')
                     ->where('id', $id)
@@ -199,12 +193,12 @@ class Profile
         } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
 
-            if (Random::hash($this->request->post('req_password')) !== $this->user->password) {
+            if (Random::hash(Input::post('req_password')) !== Container::get('user')->password) {
                 throw new Error(__('Wrong pass'));
             }
 
             // Validate the email address
-            $new_email = strtolower(Utils::trim($this->request->post('req_new_email')));
+            $new_email = strtolower(Utils::trim(Input::post('req_new_email')));
             $new_email = Container::get('hooks')->fire('model.profile.change_email_new_email', $new_email);
             if (!$this->email->is_valid_email($new_email)) {
                 throw new Error(__('Invalid email'), 400);
@@ -212,11 +206,11 @@ class Profile
 
             // Check if it's a banned email address
             if ($this->email->is_banned_email($new_email)) {
-                if ($this->config['p_allow_banned_email'] == '0') {
+                if (Config::get('forum_settings')['p_allow_banned_email'] == '0') {
                     throw new Error(__('Banned email'), 403);
-                } elseif ($this->config['o_mailing_list'] != '') {
+                } elseif (Config::get('forum_settings')['o_mailing_list'] != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -225,13 +219,13 @@ class Profile
                     $mail_subject = Container::get('hooks')->fire('model.profile.change_email_mail_subject', $mail_subject);
 
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
-                    $mail_message = str_replace('<username>', $this->user->username, $mail_message);
+                    $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
                     $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
-                    $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_message', $mail_message);
 
-                    $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
@@ -245,15 +239,15 @@ class Profile
             $result = $result->find_many();
 
             if ($result) {
-                if ($this->config['p_allow_dupe_email'] == '0') {
+                if (Config::get('forum_settings')['p_allow_dupe_email'] == '0') {
                     throw new Error(__('Dupe email'), 400);
-                } elseif ($this->config['o_mailing_list'] != '') {
+                } elseif (Config::get('forum_settings')['o_mailing_list'] != '') {
                     foreach($result as $cur_dupe) {
                         $dupe_list[] = $cur_dupe['username'];
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/dupe_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -262,13 +256,13 @@ class Profile
                     $mail_subject = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_subject', $mail_subject);
 
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
-                    $mail_message = str_replace('<username>', $this->user->username, $mail_message);
+                    $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                     $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
-                    $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_message', $mail_message);
 
-                    $this->email->feather_mail($this->config['o_mailing_list'], $mail_subject, $mail_message);
+                    $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
                 }
             }
 
@@ -290,7 +284,7 @@ class Profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_email.tpl'));
             $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
@@ -299,17 +293,17 @@ class Profile
             $mail_subject = Container::get('hooks')->fire('model.profile.change_email_mail_activate_subject', $mail_subject);
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
-            $mail_message = str_replace('<username>', $this->user->username, $mail_message);
+            $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
             $mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
-            $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+            $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
             $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_activate_message', $mail_message);
 
             $this->email->feather_mail($new_email, $mail_subject, $mail_message);
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
-            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', true);
+            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', true);
         }
         Container::get('hooks')->fire('model.profile.change_email');
     }
@@ -363,16 +357,16 @@ class Profile
             }
 
             // Make sure the file isn't too big
-            if ($uploaded_file['size'] > $this->config['o_avatars_size']) {
-                throw new Error(__('Too large').' '.Utils::forum_number_format($this->config['o_avatars_size']).' '.__('bytes').'.');
+            if ($uploaded_file['size'] > Config::get('forum_settings')['o_avatars_size']) {
+                throw new Error(__('Too large').' '.Utils::forum_number_format(Config::get('forum_settings')['o_avatars_size']).' '.__('bytes').'.');
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-            if (!@move_uploaded_file($uploaded_file['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp')) {
-                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.');
+            if (!@move_uploaded_file($uploaded_file['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp')) {
+                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.');
             }
 
-            list($width, $height, $type, ) = @getimagesize(Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp');
+            list($width, $height, $type, ) = @getimagesize(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp');
 
             // Determine type
             if ($type == IMAGETYPE_GIF) {
@@ -383,20 +377,20 @@ class Profile
                 $extension = '.png';
             } else {
                 // Invalid type
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp');
+                @unlink(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp');
                 throw new Error(__('Bad type'));
             }
 
             // Now check the width/height
-            if (empty($width) || empty($height) || $width > $this->config['o_avatars_width'] || $height > $this->config['o_avatars_height']) {
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp');
-                throw new Error(__('Too wide or high').' '.$this->config['o_avatars_width'].'x'.$this->config['o_avatars_height'].' '.__('pixels').'.');
+            if (empty($width) || empty($height) || $width > Config::get('forum_settings')['o_avatars_width'] || $height > Config::get('forum_settings')['o_avatars_height']) {
+                @unlink(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp');
+                throw new Error(__('Too wide or high').' '.Config::get('forum_settings')['o_avatars_width'].'x'.Config::get('forum_settings')['o_avatars_height'].' '.__('pixels').'.');
             }
 
             // Delete any old avatars and put the new one in place
             $this->delete_avatar($id);
-            @rename(Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.'.tmp', Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension);
-            @chmod(Config::get('forum_env')['FEATHER_ROOT'].$this->config['o_avatars_dir'].'/'.$id.$extension, 0644);
+            @rename(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp', Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.$extension);
+            @chmod(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.$extension, 0644);
         } else {
             throw new Error(__('Unknown failure'));
         }
@@ -415,8 +409,8 @@ class Profile
 
         // Delete user avatar
         foreach ($filetypes as $cur_type) {
-            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].$this->feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].$this->feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
+                @unlink(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
             }
         }
     }
@@ -425,7 +419,7 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.update_group_membership_start', $id);
 
-        $new_group_id = intval($this->request->post('group_id'));
+        $new_group_id = intval(Input::post('group_id'));
 
         $old_group_id = DB::for_table('users')
             ->where('id', $id);
@@ -516,7 +510,7 @@ class Profile
     {
         $username = $this->get_username($id);
 
-        $moderator_in = ($this->request->post('moderator_in')) ? array_keys($this->request->post('moderator_in')) : array();
+        $moderator_in = (Input::post('moderator_in')) ? array_keys(Input::post('moderator_in')) : array();
 
         // Loop through all forums
         $result = $this->loop_mod_forums();
@@ -584,7 +578,7 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.promote_user_start', $id);
 
-        $pid = $this->request->get('pid') ? intval($this->request->get('pid')) : 0;
+        $pid = Input::query('pid') ? intval(Input::query('pid')) : 0;
 
         // Find the group ID to promote the user to
         $next_group_id = DB::for_table('groups')
@@ -631,7 +625,7 @@ class Profile
             throw new Error(__('No delete admin message'));
         }
 
-        if ($this->request->post('delete_user_comply')) {
+        if (Input::post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
             $group_mod = DB::for_table('groups')
                 ->where('g_id', $group_id);
@@ -682,7 +676,7 @@ class Profile
             $delete_online = $delete_online->delete_many();
 
             // Should we delete all posts made by this user?
-            if ($this->request->post('delete_posts')) {
+            if (Input::post('delete_posts')) {
                 // Hold on, this could take some time!
                 @set_time_limit(0);
 
@@ -786,27 +780,27 @@ class Profile
             case 'essentials':
             {
                 $form = array(
-                    'timezone'        => floatval($this->request->post('form_timezone')),
-                    'dst'            => $this->request->post('form_dst') ? '1' : '0',
-                    'time_format'    => intval($this->request->post('form_time_format')),
-                    'date_format'    => intval($this->request->post('form_date_format')),
+                    'timezone'        => floatval(Input::post('form_timezone')),
+                    'dst'            => Input::post('form_dst') ? '1' : '0',
+                    'time_format'    => intval(Input::post('form_time_format')),
+                    'date_format'    => intval(Input::post('form_date_format')),
                 );
 
                 // Make sure we got a valid language string
-                if ($this->request->post('form_language')) {
+                if (Input::post('form_language')) {
                     $languages = \FeatherBB\Core\Lister::getLangs();
-                    $form['language'] = Utils::trim($this->request->post('form_language'));
+                    $form['language'] = Utils::trim(Input::post('form_language'));
                     if (!in_array($form['language'], $languages)) {
                         throw new Error(__('Bad request'), 404);
                     }
                 }
 
-                if ($this->user->is_admmod) {
-                    $form['admin_note'] = Utils::trim($this->request->post('admin_note'));
+                if (Container::get('user')->is_admmod) {
+                    $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if ($this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || ($this->user->g_moderator == '1' && $this->user->g_mod_rename_users == '1')) {
-                        $form['username'] = Utils::trim($this->request->post('req_username'));
+                    if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_rename_users == '1')) {
+                        $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
                             $errors = '';
@@ -820,14 +814,14 @@ class Profile
                     }
 
                     // We only allow administrators to update the post count
-                    if ($this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
-                        $form['num_posts'] = intval($this->request->post('num_posts'));
+                    if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+                        $form['num_posts'] = intval(Input::post('num_posts'));
                     }
                 }
 
-                if ($this->config['o_regs_verify'] == '0' || $this->user->is_admmod) {
+                if (Config::get('forum_settings')['o_regs_verify'] == '0' || Container::get('user')->is_admmod) {
                     // Validate the email address
-                    $form['email'] = strtolower(Utils::trim($this->request->post('req_email')));
+                    $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
                     if (!$this->email->is_valid_email($form['email'])) {
                         throw new Error(__('Invalid email'));
                     }
@@ -839,13 +833,13 @@ class Profile
             case 'personal':
             {
                 $form = array(
-                    'realname'        => $this->request->post('form_realname') ? Utils::trim($this->request->post('form_realname')) : '',
-                    'url'            => $this->request->post('form_url') ? Utils::trim($this->request->post('form_url')) : '',
-                    'location'        => $this->request->post('form_location') ? Utils::trim($this->request->post('form_location')) : '',
+                    'realname'        => Input::post('form_realname') ? Utils::trim(Input::post('form_realname')) : '',
+                    'url'            => Input::post('form_url') ? Utils::trim(Input::post('form_url')) : '',
+                    'location'        => Input::post('form_location') ? Utils::trim(Input::post('form_location')) : '',
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-                if ($this->user->g_post_links == '1') {
+                if (Container::get('user')->g_post_links == '1') {
                     if ($form['url'] != '') {
                         $url = Url::is_valid($form['url']);
 
@@ -863,10 +857,10 @@ class Profile
                     $form['url'] = '';
                 }
 
-                if ($this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
-                    $form['title'] = Utils::trim($this->request->post('title'));
-                } elseif ($this->user->g_set_title == '1') {
-                    $form['title'] = Utils::trim($this->request->post('title'));
+                if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+                    $form['title'] = Utils::trim(Input::post('title'));
+                } elseif (Container::get('user')->g_set_title == '1') {
+                    $form['title'] = Utils::trim(Input::post('title'));
 
                     if ($form['title'] != '') {
                         // A list of words that the title may not contain
@@ -885,11 +879,11 @@ class Profile
             case 'messaging':
             {
                 $form = array(
-                    'jabber'        => Utils::trim($this->request->post('form_jabber')),
-                    'icq'            => Utils::trim($this->request->post('form_icq')),
-                    'msn'            => Utils::trim($this->request->post('form_msn')),
-                    'aim'            => Utils::trim($this->request->post('form_aim')),
-                    'yahoo'            => Utils::trim($this->request->post('form_yahoo')),
+                    'jabber'        => Utils::trim(Input::post('form_jabber')),
+                    'icq'            => Utils::trim(Input::post('form_icq')),
+                    'msn'            => Utils::trim(Input::post('form_msn')),
+                    'aim'            => Utils::trim(Input::post('form_aim')),
+                    'yahoo'            => Utils::trim(Input::post('form_yahoo')),
                 );
 
                 // If the ICQ UIN contains anything other than digits it's invalid
@@ -905,23 +899,23 @@ class Profile
                 $form = array();
 
                 // Clean up signature from POST
-                if ($this->config['o_signatures'] == '1') {
-                    $form['signature'] = Utils::linebreaks(Utils::trim($this->request->post('signature')));
+                if (Config::get('forum_settings')['o_signatures'] == '1') {
+                    $form['signature'] = Utils::linebreaks(Utils::trim(Input::post('signature')));
 
                     // Validate signature
-                    if (Utils::strlen($form['signature']) > $this->config['p_sig_length']) {
-                        throw new Error(sprintf(__('Sig too long'), $this->config['p_sig_length'], Utils::strlen($form['signature']) - $this->config['p_sig_length']));
-                    } elseif (substr_count($form['signature'], "\n") > ($this->config['p_sig_lines']-1)) {
-                        throw new Error(sprintf(__('Sig too many lines'), $this->config['p_sig_lines']));
-                    } elseif ($form['signature'] && $this->config['p_sig_all_caps'] == '0' && Utils::is_all_uppercase($form['signature']) && !$this->user->is_admmod) {
+                    if (Utils::strlen($form['signature']) > Config::get('forum_settings')['p_sig_length']) {
+                        throw new Error(sprintf(__('Sig too long'), Config::get('forum_settings')['p_sig_length'], Utils::strlen($form['signature']) - Config::get('forum_settings')['p_sig_length']));
+                    } elseif (substr_count($form['signature'], "\n") > (Config::get('forum_settings')['p_sig_lines']-1)) {
+                        throw new Error(sprintf(__('Sig too many lines'), Config::get('forum_settings')['p_sig_lines']));
+                    } elseif ($form['signature'] && Config::get('forum_settings')['p_sig_all_caps'] == '0' && Utils::is_all_uppercase($form['signature']) && !Container::get('user')->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
 
                     // Validate BBCode syntax
-                    if ($this->config['p_sig_bbcode'] == '1') {
+                    if (Config::get('forum_settings')['p_sig_bbcode'] == '1') {
                         $errors = array();
 
-                        $form['signature'] = $this->feather->parser->preparse_bbcode($form['signature'], $errors, true);
+                        $form['signature'] = Container::get('parser')->preparse_bbcode($form['signature'], $errors, true);
 
                         if (count($errors) > 0) {
                             throw new Error('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');
@@ -935,13 +929,13 @@ class Profile
             case 'display':
             {
                 $form = array(
-                    'disp_topics'        => Utils::trim($this->request->post('form_disp_topics')),
-                    'disp_posts'        => Utils::trim($this->request->post('form_disp_posts')),
-                    'show_smilies'        => $this->request->post('form_show_smilies') ? '1' : '0',
-                    'show_img'            => $this->request->post('form_show_img') ? '1' : '0',
-                    'show_img_sig'        => $this->request->post('form_show_img_sig') ? '1' : '0',
-                    'show_avatars'        => $this->request->post('form_show_avatars') ? '1' : '0',
-                    'show_sig'            => $this->request->post('form_show_sig') ? '1' : '0',
+                    'disp_topics'        => Utils::trim(Input::post('form_disp_topics')),
+                    'disp_posts'        => Utils::trim(Input::post('form_disp_posts')),
+                    'show_smilies'        => Input::post('form_show_smilies') ? '1' : '0',
+                    'show_img'            => Input::post('form_show_img') ? '1' : '0',
+                    'show_img_sig'        => Input::post('form_show_img_sig') ? '1' : '0',
+                    'show_avatars'        => Input::post('form_show_avatars') ? '1' : '0',
+                    'show_sig'            => Input::post('form_show_sig') ? '1' : '0',
                 );
 
                 if ($form['disp_topics'] != '') {
@@ -963,9 +957,9 @@ class Profile
                 }
 
                 // Make sure we got a valid style string
-                if ($this->request->post('form_style')) {
+                if (Input::post('form_style')) {
                     $styles = \FeatherBB\Core\Lister::getStyles();
-                    $form['style'] = Utils::trim($this->request->post('form_style'));
+                    $form['style'] = Utils::trim(Input::post('form_style'));
                     if (!in_array($form['style'], $styles)) {
                         throw new Error(__('Bad request'), 404);
                     }
@@ -977,13 +971,13 @@ class Profile
             case 'privacy':
             {
                 $form = array(
-                    'email_setting'            => intval($this->request->post('form_email_setting')),
-                    'notify_with_post'        => $this->request->post('form_notify_with_post') ? '1' : '0',
-                    'auto_notify'            => $this->request->post('form_auto_notify') ? '1' : '0',
+                    'email_setting'            => intval(Input::post('form_email_setting')),
+                    'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
+                    'auto_notify'            => Input::post('form_auto_notify') ? '1' : '0',
                 );
 
                 if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                    $form['email_setting'] = $this->config['o_default_email_setting'];
+                    $form['email_setting'] = Config::get('forum_settings')['o_default_email_setting'];
                 }
 
                 break;
@@ -1150,9 +1144,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !$this->user->is_guest && $this->user->g_send_email == '1') {
+        if ($user['email_setting'] == '0' && !Container::get('user')->is_guest && Container::get('user')->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !$this->user->is_guest && $this->user->g_send_email == '1') {
+        } elseif ($user['email_setting'] == '1' && !Container::get('user')->is_guest && Container::get('user')->g_send_email == '1') {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1187,7 +1181,7 @@ class Profile
             $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
-        if ($this->config['o_avatars'] == '1') {
+        if (Config::get('forum_settings')['o_avatars'] == '1') {
             $avatar_field = Utils::generate_avatar_markup($user['id']);
             if ($avatar_field != '') {
                 $user_info['personality'][] = '<dt>'.__('Avatar').'</dt>';
@@ -1195,7 +1189,7 @@ class Profile
             }
         }
 
-        if ($this->config['o_signatures'] == '1') {
+        if (Config::get('forum_settings')['o_signatures'] == '1') {
             if (isset($parsed_signature)) {
                 $user_info['personality'][] = '<dt>'.__('Signature').'</dt>';
                 $user_info['personality'][] = '<dd><div class="postsignature postmsg">'.$parsed_signature.'</div></dd>';
@@ -1203,16 +1197,16 @@ class Profile
         }
 
         $posts_field = '';
-        if ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
+        if (Config::get('forum_settings')['o_show_post_count'] == '1' || Container::get('user')->is_admmod) {
             $posts_field = Utils::forum_number_format($user['num_posts']);
         }
-        if ($this->user->g_search == '1') {
+        if (Container::get('user')->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
-            if ($this->user->is_admmod && $this->config['o_topic_subscriptions'] == '1') {
+            if (Container::get('user')->is_admmod && Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
@@ -1244,8 +1238,8 @@ class Profile
 
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
-        if ($this->user->is_admmod) {
-            if ($this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || $this->user->g_mod_rename_users == '1') {
+        if (Container::get('user')->is_admmod) {
+            if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || Container::get('user')->g_mod_rename_users == '1') {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
@@ -1255,7 +1249,7 @@ class Profile
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
-            if ($this->config['o_regs_verify'] == '1') {
+            if (Config::get('forum_settings')['o_regs_verify'] == '1') {
                 $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
@@ -1265,17 +1259,17 @@ class Profile
         $user_disp['posts_field'] = '';
         $posts_actions = array();
 
-        if ($this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+        if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif ($this->config['o_show_post_count'] == '1' || $this->user->is_admmod) {
+        } elseif (Config::get('forum_settings')['o_show_post_count'] == '1' || Container::get('user')->is_admmod) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
-        if ($this->user->g_search == '1' || $this->user->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+        if (Container::get('user')->g_search == '1' || Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
-            if ($this->config['o_topic_subscriptions'] == '1') {
+            if (Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
                 $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$id.'">'.__('Show subscriptions').'</a>';
             }
         }
@@ -1303,7 +1297,7 @@ class Profile
         $result = $result->find_many();
 
         foreach ($result as $cur_group) {
-            if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == $this->config['o_default_user_group'] && $user['g_id'] == '')) {
+            if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == Config::get('forum_settings')['o_default_user_group'] && $user['g_id'] == '')) {
                 $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
@@ -1445,8 +1439,8 @@ class Profile
         $mail = Container::get('hooks')->fire('model.profile.send_email_start', $mail);
 
         // Clean up message and subject from POST
-        $subject = Utils::trim($this->request->post('req_subject'));
-        $message = Utils::trim($this->request->post('req_message'));
+        $subject = Utils::trim(Input::post('req_subject'));
+        $message = Utils::trim(Input::post('req_message'));
 
         if ($subject == '') {
             throw new Error(__('No email subject'), 400);
@@ -1458,12 +1452,12 @@ class Profile
             throw new Error(__('Too long email message'), 400);
         }
 
-        if ($this->user->last_email_sent != '' && (time() - $this->user->last_email_sent) < $this->user->g_email_flood && (time() - $this->user->last_email_sent) >= 0) {
-            throw new Error(sprintf(__('Email flood'), $this->user->g_email_flood, $this->user->g_email_flood - (time() - $this->user->last_email_sent)), 429);
+        if (Container::get('user')->last_email_sent != '' && (time() - Container::get('user')->last_email_sent) < Container::get('user')->g_email_flood && (time() - Container::get('user')->last_email_sent) >= 0) {
+            throw new Error(sprintf(__('Email flood'), Container::get('user')->g_email_flood, Container::get('user')->g_email_flood - (time() - Container::get('user')->last_email_sent)), 429);
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/form_email.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1472,23 +1466,23 @@ class Profile
         $mail_message = Utils::trim(substr($mail_tpl, $first_crlf));
 
         $mail_subject = str_replace('<mail_subject>', $subject, $mail_subject);
-        $mail_message = str_replace('<sender>', $this->user->username, $mail_message);
-        $mail_message = str_replace('<board_title>', $this->config['o_board_title'], $mail_message);
+        $mail_message = str_replace('<sender>', Container::get('user')->username, $mail_message);
+        $mail_message = str_replace('<board_title>', Config::get('forum_settings')['o_board_title'], $mail_message);
         $mail_message = str_replace('<mail_message>', $message, $mail_message);
-        $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+        $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
 
         $mail_message = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mail_message);
 
-        $this->email->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, $this->user->email, $this->user->username);
+        $this->email->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, Container::get('user')->email, Container::get('user')->username);
 
-        $update_last_mail_sent = DB::for_table('users')->where('id', $this->user->id)
+        $update_last_mail_sent = DB::for_table('users')->where('id', Container::get('user')->id)
                                                   ->find_one()
                                                   ->set('last_email_sent', time());
         $update_last_mail_sent = Container::get('hooks')->fireDB('model.profile.send_email_update_last_mail_sent', $update_last_mail_sent);
         $update_last_mail_sent = $update_last_mail_sent->save();
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
-        //$redirect_url = validate_redirect($this->request->post('redirect_url'), 'index.php');
+        //$redirect_url = validate_redirect(Input::post('redirect_url'), 'index.php');
 
         Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
     }

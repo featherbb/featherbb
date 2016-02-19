@@ -16,38 +16,33 @@ class Censoring
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Censoring();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/censoring.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/censoring.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.censoring.display');
 
         // Add a censor word
-        if ($this->request->post('add_word')) {
+        if (Input::post('add_word')) {
             $this->model->add_word();
         }
 
         // Update a censor word
-        elseif ($this->request->post('update')) {
+        elseif (Input::post('update')) {
             $this->model->update_word();
         }
 
         // Remove a censor word
-        elseif ($this->request->post('remove')) {
+        elseif (Input::post('remove')) {
             $this->model->remove_word();
         }
 
         AdminUtils::generateAdminMenu('censoring');
 
         View::setPageInfo(array(
-                'title'    =>    array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Censoring')),
+                'title'    =>    array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Censoring')),
                 'focus_element'    =>    array('censoring', 'new_search_for'),
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,

@@ -18,7 +18,7 @@ class Help
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/help.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.help.start');
 

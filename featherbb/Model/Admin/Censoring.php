@@ -17,20 +17,10 @@ use FeatherBB\Model\Cache;
 
 class Censoring
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     public function add_word()
     {
-        $search_for = Utils::trim($this->request->post('new_search_for'));
-        $replace_with = Utils::trim($this->request->post('new_replace_with'));
+        $search_for = Utils::trim(Input::post('new_search_for'));
+        $replace_with = Utils::trim(Input::post('new_replace_with'));
 
         if ($search_for == '') {
             throw new Error(__('Must enter word message'), 400);
@@ -55,10 +45,10 @@ class Censoring
 
     public function update_word()
     {
-        $id = intval(key($this->request->post('update')));
+        $id = intval(key(Input::post('update')));
 
-        $search_for = Utils::trim($this->request->post('search_for')[$id]);
-        $replace_with = Utils::trim($this->request->post('replace_with')[$id]);
+        $search_for = Utils::trim(Input::post('search_for')[$id]);
+        $replace_with = Utils::trim(Input::post('replace_with')[$id]);
 
         if ($search_for == '') {
             throw new Error(__('Must enter word message'), 400);
@@ -83,7 +73,7 @@ class Censoring
 
     public function remove_word()
     {
-        $id = intval(key($this->request->post('remove')));
+        $id = intval(key(Input::post('remove')));
         $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
 
         $result = DB::for_table('censoring')->find_one($id);

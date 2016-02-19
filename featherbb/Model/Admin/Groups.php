@@ -17,16 +17,6 @@ use FeatherBB\Model\Cache;
 
 class Groups
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     public function fetch_groups()
     {
         $result = DB::for_table('groups')->order_by('g_id')->find_many();
@@ -45,8 +35,8 @@ class Groups
     {
         $group = array();
 
-        if ($this->request->post('add_group')) {
-            $group['base_group'] = intval($this->request->post('base_group'));
+        if (Input::post('add_group')) {
+            $group['base_group'] = intval(Input::post('base_group'));
             $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
             $group['info'] = $groups[$group['base_group']];
 
@@ -115,8 +105,8 @@ class Groups
 
     public function add_edit_group($groups)
     {
-        if ($this->request->post('group_id')) {
-            $group_id = $this->request->post('group_id');
+        if (Input::post('group_id')) {
+            $group_id = Input::post('group_id');
         } else {
             $group_id = 0;
         }
@@ -124,51 +114,51 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group_start', $group_id);
 
         // Is this the admin group? (special rules apply)
-        $is_admin_group = ($this->request->post('group_id') && $this->request->post('group_id') == Config::get('forum_env')['FEATHER_ADMIN']) ? true : false;
+        $is_admin_group = (Input::post('group_id') && Input::post('group_id') == Config::get('forum_env')['FEATHER_ADMIN']) ? true : false;
 
         // Set group title
-        $title = Utils::trim($this->request->post('req_title'));
+        $title = Utils::trim(Input::post('req_title'));
         if ($title == '') {
             throw new Error(__('Must enter title message'), 400);
         }
         $title = Container::get('hooks')->fire('model.admin.groups.add_edit_group_set_title', $title);
         // Set user title
-        $user_title = Utils::trim($this->request->post('user_title'));
+        $user_title = Utils::trim(Input::post('user_title'));
         $user_title = ($user_title != '') ? $user_title : 'NULL';
         $user_title = Container::get('hooks')->fire('model.admin.groups.add_edit_group_set_user_title', $user_title);
 
-        $promote_min_posts = $this->request->post('promote_min_posts') ? intval($this->request->post('promote_min_posts')) : '0';
-        if ($this->request->post('promote_next_group') &&
-                isset($groups[$this->request->post('promote_next_group')]) &&
-                !in_array($this->request->post('promote_next_group'), array(Config::get('forum_env')['FEATHER_ADMIN'], Config::get('forum_env')['FEATHER_GUEST'])) &&
-                ($this->request->post('group_id') || $this->request->post('promote_next_group') != $this->request->post('group_id'))) {
-            $promote_next_group = $this->request->post('promote_next_group');
+        $promote_min_posts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
+        if (Input::post('promote_next_group') &&
+                isset($groups[Input::post('promote_next_group')]) &&
+                !in_array(Input::post('promote_next_group'), array(Config::get('forum_env')['FEATHER_ADMIN'], Config::get('forum_env')['FEATHER_GUEST'])) &&
+                (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
+            $promote_next_group = Input::post('promote_next_group');
         } else {
             $promote_next_group = '0';
         }
 
-        $moderator = $this->request->post('moderator') && $this->request->post('moderator') == '1' ? '1' : '0';
-        $mod_edit_users = $moderator == '1' && $this->request->post('mod_edit_users') == '1' ? '1' : '0';
-        $mod_rename_users = $moderator == '1' && $this->request->post('mod_rename_users') == '1' ? '1' : '0';
-        $mod_change_passwords = $moderator == '1' && $this->request->post('mod_change_passwords') == '1' ? '1' : '0';
-        $mod_ban_users = $moderator == '1' && $this->request->post('mod_ban_users') == '1' ? '1' : '0';
-        $mod_promote_users = $moderator == '1' && $this->request->post('mod_promote_users') == '1' ? '1' : '0';
-        $read_board = ($this->request->post('read_board') == 0) ? $this->request->post('read_board') : '1';
-        $view_users = ($this->request->post('view_users') && $this->request->post('view_users') == '1') || $is_admin_group ? '1' : '0';
-        $post_replies = ($this->request->post('post_replies') == 0) ? $this->request->post('post_replies') : '1';
-        $post_topics = ($this->request->post('post_topics') == 0) ? $this->request->post('post_topics') : '1';
-        $edit_posts = ($this->request->post('edit_posts') == 0) ? $this->request->post('edit_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_posts = ($this->request->post('delete_posts') == 0) ? $this->request->post('delete_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_topics = ($this->request->post('delete_topics') == 0) ? $this->request->post('delete_topics') : ($is_admin_group) ? '1' : '0';
-        $post_links = ($this->request->post('post_links') == 0) ? $this->request->post('post_links') : '1';
-        $set_title = ($this->request->post('set_title') == 0) ? $this->request->post('set_title') : ($is_admin_group) ? '1' : '0';
-        $search = ($this->request->post('search') == 0) ? $this->request->post('search') : '1';
-        $search_users = ($this->request->post('search_users') == 0) ? $this->request->post('search_users') : '1';
-        $send_email = ($this->request->post('send_email') && $this->request->post('send_email') == '1') || $is_admin_group ? '1' : '0';
-        $post_flood = ($this->request->post('post_flood') && $this->request->post('post_flood') >= 0) ? $this->request->post('post_flood') : '0';
-        $search_flood = ($this->request->post('search_flood') && $this->request->post('search_flood') >= 0) ? $this->request->post('search_flood') : '0';
-        $email_flood = ($this->request->post('email_flood') && $this->request->post('email_flood') >= 0) ? $this->request->post('email_flood') : '0';
-        $report_flood = ($this->request->post('report_flood') >= 0) ? $this->request->post('report_flood') : '0';
+        $moderator = Input::post('moderator') && Input::post('moderator') == '1' ? '1' : '0';
+        $mod_edit_users = $moderator == '1' && Input::post('mod_edit_users') == '1' ? '1' : '0';
+        $mod_rename_users = $moderator == '1' && Input::post('mod_rename_users') == '1' ? '1' : '0';
+        $mod_change_passwords = $moderator == '1' && Input::post('mod_change_passwords') == '1' ? '1' : '0';
+        $mod_ban_users = $moderator == '1' && Input::post('mod_ban_users') == '1' ? '1' : '0';
+        $mod_promote_users = $moderator == '1' && Input::post('mod_promote_users') == '1' ? '1' : '0';
+        $read_board = (Input::post('read_board') == 0) ? Input::post('read_board') : '1';
+        $view_users = (Input::post('view_users') && Input::post('view_users') == '1') || $is_admin_group ? '1' : '0';
+        $post_replies = (Input::post('post_replies') == 0) ? Input::post('post_replies') : '1';
+        $post_topics = (Input::post('post_topics') == 0) ? Input::post('post_topics') : '1';
+        $edit_posts = (Input::post('edit_posts') == 0) ? Input::post('edit_posts') : ($is_admin_group) ? '1' : '0';
+        $delete_posts = (Input::post('delete_posts') == 0) ? Input::post('delete_posts') : ($is_admin_group) ? '1' : '0';
+        $delete_topics = (Input::post('delete_topics') == 0) ? Input::post('delete_topics') : ($is_admin_group) ? '1' : '0';
+        $post_links = (Input::post('post_links') == 0) ? Input::post('post_links') : '1';
+        $set_title = (Input::post('set_title') == 0) ? Input::post('set_title') : ($is_admin_group) ? '1' : '0';
+        $search = (Input::post('search') == 0) ? Input::post('search') : '1';
+        $search_users = (Input::post('search_users') == 0) ? Input::post('search_users') : '1';
+        $send_email = (Input::post('send_email') && Input::post('send_email') == '1') || $is_admin_group ? '1' : '0';
+        $post_flood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
+        $search_flood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
+        $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
+        $report_flood = (Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
 
         $insert_update_group = array(
             'g_title'               =>  $title,
@@ -200,7 +190,7 @@ class Groups
 
         $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
 
-        if ($this->request->post('mode') == 'add') {
+        if (Input::post('mode') == 'add') {
             // Creating a new group
             $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
             if ($title_exists) {
@@ -218,7 +208,7 @@ class Groups
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
             $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
-                            ->where('group_id', $this->request->post('base_group'));
+                            ->where('group_id', Input::post('base_group'));
             $result = Container::get('hooks')->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
             $result = $result->find_many();
 
@@ -238,30 +228,30 @@ class Groups
             }
         } else {
             // We are editing an existing group
-            $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', $this->request->post('group_id'))->find_one();
+            $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', Input::post('group_id'))->find_one();
             if ($title_exists) {
                 throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
             DB::for_table('groups')
-                    ->find_one($this->request->post('group_id'))
+                    ->find_one(Input::post('group_id'))
                     ->set($insert_update_group)
                     ->save();
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
-                DB::for_table('users')->where('group_id', $this->request->post('group_id'))
+                DB::for_table('users')->where('group_id', Input::post('group_id'))
                         ->where_gte('num_posts', $promote_min_posts)
                         ->update_many('group_id', $promote_next_group);
             }
         }
 
-        $group_id = $this->request->post('mode') == 'add' ? $new_group_id : $this->request->post('group_id');
+        $group_id = Input::post('mode') == 'add' ? $new_group_id : Input::post('group_id');
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $group_id);
 
         // Regenerate the quick jump cache
         Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-        if ($this->request->post('mode') == 'edit') {
+        if (Input::post('mode') == 'edit') {
             Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
         } else {
             Router::redirect(Router::pathFor('adminGroups'), __('Group added redirect'));
@@ -270,7 +260,7 @@ class Groups
 
     public function set_default_group($groups)
     {
-        $group_id = intval($this->request->post('default_group'));
+        $group_id = intval(Input::post('default_group'));
         $group_id = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $group_id);
 
         // Make sure it's not the admin or guest groups
@@ -313,8 +303,8 @@ class Groups
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.delete_group.group_id', $group_id);
 
-        if ($this->request->post('del_group')) {
-            $move_to_group = intval($this->request->post('move_to_group'));
+        if (Input::post('del_group')) {
+            $move_to_group = intval(Input::post('move_to_group'));
             $move_to_group = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
             DB::for_table('users')->where('group_id', $group_id)
                                                       ->update_many('group_id', $move_to_group);

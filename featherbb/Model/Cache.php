@@ -13,11 +13,6 @@ use FeatherBB\Core\Database as DB;
 
 class Cache
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-    }
-
     public static function get_config()
     {
         $result = DB::for_table('config')

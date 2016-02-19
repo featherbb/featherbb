@@ -19,15 +19,6 @@ use FeatherBB\Model\Cache;
 
 class Users
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-    }
-
     public function get_num_ip($ip_stats)
     {
         $num_ips = DB::for_table('posts')->where('poster_id', $ip_stats)->group_by('poster_ip');
@@ -134,8 +125,8 @@ class Users
     {
         $move = array();
 
-        if ($this->request->post('users')) {
-            $move['user_ids'] = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
+        if (Input::post('users')) {
+            $move['user_ids'] = is_array(Input::post('users')) ? array_keys(Input::post('users')) : explode(',', Input::post('users'));
             $move['user_ids'] = array_map('intval', $move['user_ids']);
 
             // Delete invalid IDs
@@ -172,9 +163,9 @@ class Users
             $move['all_groups'][$row['g_id']] = $row['g_title'];
         }
 
-        if ($this->request->post('move_users_comply')) {
-            if ( $this->request->post('new_group') && isset($move['all_groups'][$this->request->post('new_group')]) ) {
-                $new_group = $this->request->post('new_group');
+        if (Input::post('move_users_comply')) {
+            if ( Input::post('new_group') && isset($move['all_groups'][Input::post('new_group')]) ) {
+                $new_group = Input::post('new_group');
             } else {
                 throw new Error(__('Invalid group message'), 400);
             }
@@ -255,8 +246,8 @@ class Users
 
     public function delete_users()
     {
-        if ($this->request->post('users')) {
-            $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
+        if (Input::post('users')) {
+            $user_ids = is_array(Input::post('users')) ? array_keys(Input::post('users')) : explode(',', Input::post('users'));
             $user_ids = array_map('intval', $user_ids);
 
             // Delete invalid IDs
@@ -279,7 +270,7 @@ class Users
             throw new Error(__('No delete admins message'), 403);
         }
 
-        if ($this->request->post('delete_users_comply')) {
+        if (Input::post('delete_users_comply')) {
             // Fetch user groups
             $user_groups = array();
             $result['select'] = array('id', 'group_id');
@@ -353,7 +344,7 @@ class Users
                     ->delete_many();
 
             // Should we delete all posts made by these users?
-            if ($this->request->post('delete_posts')) {
+            if (Input::post('delete_posts')) {
                 @set_time_limit(0);
 
                 // Find all posts made by this user
@@ -419,8 +410,8 @@ class Users
 
     public function ban_users()
     {
-        if ($this->request->post('users')) {
-            $user_ids = is_array($this->request->post('users')) ? array_keys($this->request->post('users')) : explode(',', $this->request->post('users'));
+        if (Input::post('users')) {
+            $user_ids = is_array(Input::post('users')) ? array_keys(Input::post('users')) : explode(',', Input::post('users'));
             $user_ids = array_map('intval', $user_ids);
 
             // Delete invalid IDs
@@ -453,10 +444,10 @@ class Users
             throw new Error(__('No ban mods message'), 403);
         }
 
-        if ($this->request->post('ban_users_comply')) {
-            $ban_message = Utils::trim($this->request->post('ban_message'));
-            $ban_expire = Utils::trim($this->request->post('ban_expire'));
-            $ban_the_ip = $this->request->post('ban_the_ip') ? intval($this->request->post('ban_the_ip')) : 0;
+        if (Input::post('ban_users_comply')) {
+            $ban_message = Utils::trim(Input::post('ban_message'));
+            $ban_expire = Utils::trim(Input::post('ban_expire'));
+            $ban_the_ip = Input::post('ban_the_ip') ? intval(Input::post('ban_the_ip')) : 0;
 
             Container::get('hooks')->fire('model.admin.model.users.ban_users.comply', $ban_message, $ban_expire, $ban_the_ip);
 
@@ -467,7 +458,7 @@ class Users
                     throw new Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
 
-                $diff = ($this->user->timezone + $this->user->dst) * 3600;
+                $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
@@ -513,13 +504,13 @@ class Users
                     'email' => $ban_email,
                     'message' => $ban_message,
                     'expire' => $ban_expire,
-                    'ban_creator' => $this->user->id,
+                    'ban_creator' => Container::get('user')->id,
                 );
 
                 $insert_update_ban = Container::get('hooks')->fire('model.admin.model.users.ban_users.ban_data', $insert_update_ban);
 
-                if ($this->request->post('mode') == 'add') {
-                    $insert_update_ban['ban_creator'] = $this->user->id;
+                if (Input::post('mode') == 'add') {
+                    $insert_update_ban['ban_creator'] = Container::get('user')->id;
 
                     DB::for_table('bans')
                         ->create()
@@ -538,7 +529,7 @@ class Users
 
     public function get_user_search()
     {
-        $form = $this->request->get('form') ? $this->request->get('form') : array();
+        $form = Input::query('form') ? Input::query('form') : array();
         $form = Container::get('hooks')->fire('model.admin.model.users.get_user_search.form', $form);
 
         $search = array();
@@ -546,17 +537,17 @@ class Users
         // trim() all elements in $form
         $form = array_map('trim', $form);
 
-        $posts_greater = $this->request->get('posts_greater') ? Utils::trim($this->request->get('posts_greater')) : '';
-        $posts_less = $this->request->get('posts_less') ? Utils::trim($this->request->get('posts_less')) : '';
-        $last_post_after = $this->request->get('last_post_after') ? Utils::trim($this->request->get('last_post_after')) : '';
-        $last_post_before = $this->request->get('last_post_before') ? Utils::trim($this->request->get('last_post_before')) : '';
-        $last_visit_after = $this->request->get('last_visit_after') ? Utils::trim($this->request->get('last_visit_after')) : '';
-        $last_visit_before = $this->request->get('last_visit_before') ? Utils::trim($this->request->get('last_visit_before')) : '';
-        $registered_after = $this->request->get('registered_after') ? Utils::trim($this->request->get('registered_after')) : '';
-        $registered_before = $this->request->get('registered_before') ? Utils::trim($this->request->get('registered_before')) : '';
-        $order_by = $search['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? $this->request->get('order_by') : 'username';
-        $direction = $search['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
-        $user_group = $this->request->get('user_group') ? intval($this->request->get('user_group')) : -1;
+        $posts_greater = Input::query('posts_greater') ? Utils::trim(Input::query('posts_greater')) : '';
+        $posts_less = Input::query('posts_less') ? Utils::trim(Input::query('posts_less')) : '';
+        $last_post_after = Input::query('last_post_after') ? Utils::trim(Input::query('last_post_after')) : '';
+        $last_post_before = Input::query('last_post_before') ? Utils::trim(Input::query('last_post_before')) : '';
+        $last_visit_after = Input::query('last_visit_after') ? Utils::trim(Input::query('last_visit_after')) : '';
+        $last_visit_before = Input::query('last_visit_before') ? Utils::trim(Input::query('last_visit_before')) : '';
+        $registered_after = Input::query('registered_after') ? Utils::trim(Input::query('registered_after')) : '';
+        $registered_before = Input::query('registered_before') ? Utils::trim(Input::query('registered_before')) : '';
+        $order_by = $search['order_by'] = Input::query('order_by') && in_array(Input::query('order_by'), array('username', 'email', 'num_posts', 'last_post', 'last_visit', 'registered')) ? Input::query('order_by') : 'username';
+        $direction = $search['direction'] = Input::query('direction') && Input::query('direction') == 'DESC' ? 'DESC' : 'ASC';
+        $user_group = Input::query('user_group') ? intval(Input::query('user_group')) : -1;
 
         $search['query_str'][] = 'order_by='.$order_by;
         $search['query_str'][] = 'direction='.$direction;

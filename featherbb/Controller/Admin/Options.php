@@ -16,16 +16,11 @@ class Options
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Options();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/options.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/options.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.options.display');
 
@@ -36,7 +31,7 @@ class Options
         AdminUtils::generateAdminMenu('options');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Options')),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Options')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'languages' => $this->model->get_langs(),

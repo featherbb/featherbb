@@ -47,22 +47,22 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= $feather->utils->format_time($post['posted']) ?></a></span></h2>
+        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
         <div class="box">
             <div class="inbox">
                 <div class="postbody">
                     <div class="postleft">
                         <dl>
-                            <dt><strong><?= $post['poster_disp'] ?></strong></dt>
-                            <dd class="usertitle"><strong><?= $post['user_title'] ?></strong></dd>
+                            <dt><strong><?= Utils::escape($post['poster_disp']) ?></strong></dt>
+                            <dd class="usertitle"><strong><?= Utils::escape($post['user_title']) ?></strong></dd>
                         </dl>
                     </div>
                     <div class="postright">
                         <h3 class="nosize"><?php _e('Message') ?></h3>
                         <div class="postmsg">
-                            <?= $post['message']."\n" ?>
+                            <?= Utils::escape($post['message'])."\n" ?>
     <?php if ($post['edited'] != '') {
-    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.$feather->utils->format_time($post['edited']).')</em></p>'."\n";
+    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
 }
     ?>
                         </div>

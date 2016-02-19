@@ -13,16 +13,6 @@ use FeatherBB\Core\Database as DB;
 
 class Categories
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     public function add_category($cat_name)
     {
         $cat_name = Container::get('hooks')->fire('model.admin.categories.add_category', $cat_name);

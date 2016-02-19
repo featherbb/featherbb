@@ -57,8 +57,8 @@ if (!empty($errors)) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="username" value="" />
                         <input type="hidden" name="password" value="" />
-                        <label class="required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?php if ($feather->request->post('req_user')) {
-    echo Utils::escape($feather->request->post('req_user'));
+                        <label class="required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?php if (Input::post('req_user')) {
+    echo Utils::escape(Input::post('req_user'));
 } ?>" size="25" maxlength="25" /><br /></label>
                     </div>
                 </fieldset>
@@ -67,11 +67,11 @@ if (!empty($errors)) {
                 <fieldset>
                     <legend><?php _e('Pass legend') ?></legend>
                     <div class="infldset">
-                        <label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password1" value="<?php if ($feather->request->post('req_password1')) {
-    echo Utils::escape($feather->request->post('req_password1'));
+                        <label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password1" value="<?php if (Input::post('req_password1')) {
+    echo Utils::escape(Input::post('req_password1'));
 } ?>" size="16" /><br /></label>
-                        <label class="conl required"><strong><?php _e('Confirm pass') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password2" value="<?php if ($feather->request->post('req_password2')) {
-    echo Utils::escape($feather->request->post('req_password2'));
+                        <label class="conl required"><strong><?php _e('Confirm pass') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password2" value="<?php if (Input::post('req_password2')) {
+    echo Utils::escape(Input::post('req_password2'));
 } ?>" size="16" /><br /></label>
                         <p class="clearb"><?php _e('Pass info') ?></p>
                     </div>
@@ -83,12 +83,12 @@ if (!empty($errors)) {
                     <div class="infldset">
 <?php if (Config::get('forum_settings')['o_regs_verify'] == '1'): ?>                        <p><?php _e('Email info') ?></p>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input type="text" name="req_email1" value="<?php if ($feather->request->post('req_email1')) {
-    echo Utils::escape($feather->request->post('req_email1'));
+                        <input type="text" name="req_email1" value="<?php if (Input::post('req_email1')) {
+    echo Utils::escape(Input::post('req_email1'));
 } ?>" size="50" maxlength="80" /><br /></label>
 <?php if (Config::get('forum_settings')['o_regs_verify'] == '1'): ?>                        <label class="required"><strong><?php _e('Confirm email') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input type="text" name="req_email2" value="<?php if ($feather->request->post('req_email2')) {
-    echo Utils::escape($feather->request->post('req_email2'));
+                        <input type="text" name="req_email2" value="<?php if (Input::post('req_email2')) {
+    echo Utils::escape(Input::post('req_email2'));
 } ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>                    </div>
                 </fieldset>

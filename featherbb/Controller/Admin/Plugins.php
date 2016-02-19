@@ -20,24 +20,21 @@ class Plugins
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
         $this->model = new \FeatherBB\Model\Admin\Plugins();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/plugins.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/plugins.mo');
     }
 
     /**
      * Download a plugin, unzip it and rename it
      */
-    public function download($name, $version)
+    public function download($req, $res, $args)
     {
-        $zipFile = Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip';
+        $zipFile = Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip';
         $zipResource = fopen($zipFile, "w");
 
         // Get the zip file straight from GitHub
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $name . '/zip/'.$version);
+        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $args['name'] . '/zip/'.$args['version']);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -52,7 +49,7 @@ class Plugins
         fclose($zipResource);
 
         if (!$page) {
-            unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
+            unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip');
             throw new Error(__('Bad request'), 400);
         }
 
@@ -65,15 +62,15 @@ class Plugins
         $zip->extractTo(Config::get('forum_env')['FEATHER_ROOT'].'plugins');
         $zip->close();
 
-        if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name)) {
-            AdminUtils::delete_folder(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
+        if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
+            AdminUtils::delete_folder(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']);
         }
-        rename(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version, Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name);
-        unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$name."-".$version.'.zip');
+        rename(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'], Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']);
+        unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip');
         Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
     }
 
-    public function index()
+    public function index($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.index');
 
@@ -92,46 +89,46 @@ class Plugins
             'availablePlugins'    =>    $availablePlugins,
             'activePlugins'    =>    $activePlugins,
             'officialPlugins'    =>    $officialPlugins,
-            'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Extension')),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Extension')),
             )
         )->addTemplate('admin/plugins.php')->display();
     }
 
-    public function activate($plugin = null)
+    public function activate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.activate');
 
-        if (!$plugin) {
+        if (!$args['plugin']) {
             throw new Error(__('Bad request'), 400);
         }
 
-        $this->model->activate($plugin);
+        $this->model->activate($args['plugin']);
         // Plugin has been activated, confirm and redirect
         Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
     }
 
-    public function deactivate($plugin = null)
+    public function deactivate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.deactivate');
 
-        if (!$plugin) {
+        if (!$args['plugin']) {
             throw new Error(__('Bad request'), 400);
         }
 
-        $this->model->deactivate($plugin);
+        $this->model->deactivate($args['plugin']);
         // // Plugin has been deactivated, confirm and redirect
         Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
 
-    public function uninstall($plugin = null)
+    public function uninstall($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.uninstall');
 
-        if (!$plugin) {
+        if (!$args['plugin']) {
             throw new Error(__('Bad request'), 400);
         }
 
-        $this->model->uninstall($plugin);
+        $this->model->uninstall($args['plugin']);
         // Plugin has been deactivated, confirm and redirect
         Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
     }
@@ -141,14 +138,14 @@ class Plugins
      * @param null $pluginName
      * @throws Error
      */
-    public function info($pluginName = null)
+    public function info($req, $res, $args)
     {
-        $formattedPluginName =  str_replace('-', '', $pluginName);
+        $formattedPluginName =  str_replace('-', '', $args['plugin']);
         $new = "\FeatherBB\Plugins\Controller\\".$formattedPluginName;
         if (class_exists($new)) {
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {
-                AdminUtils::generateAdminMenu($pluginName);
+                AdminUtils::generateAdminMenu($args['plugin']);
                 $plugin->info();
             }
             else {

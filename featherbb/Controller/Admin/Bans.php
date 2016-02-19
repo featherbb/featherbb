@@ -18,31 +18,26 @@ class Bans
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Bans();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/bans.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/bans.mo');
 
-        if ($this->user->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+        if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_ban_users == '0')) {
             throw new Error(__('No permission'), '403');
         }
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.bans.display');
 
         // Display bans
-        if ($this->request->get('find_ban')) {
+        if (Input::query('find_ban')) {
             $ban_info = $this->model->find_ban();
 
             // Determine the ban offset (based on $_GET['p'])
             $num_pages = ceil($ban_info['num_bans'] / 50);
 
-            $p = (!$this->request->get('p') || $this->request->get('p') <= 1 || $this->request->get('p') > $num_pages) ? 1 : intval($this->request->get('p'));
+            $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
             $start_from = 50 * ($p - 1);
 
             $ban_data = $this->model->find_ban($start_from);
@@ -50,7 +45,7 @@ class Bans
             View::setPageInfo(array(
                     'admin_console' => true,
                     'page' => $p,
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
+                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Bans'), __('Results head')),
                     'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
                     'ban_data' => $ban_data['data'],
                 )
@@ -62,17 +57,17 @@ class Bans
             View::setPageInfo(array(
                     'admin_console' => true,
                     'focus_element' => array('bans', 'new_ban_user'),
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
+                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Bans')),
                 )
             )->addTemplate('admin/bans/admin_bans.php')->display();
         }
     }
 
-    public function add($id = null)
+    public function add($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.bans.add');
 
-        if ($this->request->post('add_edit_ban')) {
+        if (Input::post('add_edit_ban')) {
             $this->model->insert_ban();
         }
 
@@ -81,25 +76,25 @@ class Bans
         View::setPageInfo(array(
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
-                'ban' => $this->model->add_ban_info($id),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Bans')),
+                'ban' => $this->model->add_ban_info($req, $res, $args),
             )
         )->addTemplate('admin/bans/add_ban.php')->display();
     }
 
-    public function delete($id)
+    public function delete($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.bans.delete');
 
         // Remove the ban
-        $this->model->remove_ban($id);
+        $this->model->remove_ban($req, $res, $args);
     }
 
-    public function edit($id)
+    public function edit($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.bans.edit');
 
-        if ($this->request->post('add_edit_ban')) {
+        if (Input::post('add_edit_ban')) {
             $this->model->insert_ban();
         }
         AdminUtils::generateAdminMenu('bans');
@@ -107,8 +102,8 @@ class Bans
         View::setPageInfo(array(
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Bans')),
-                'ban' => $this->model->edit_ban_info($id),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Bans')),
+                'ban' => $this->model->edit_ban_info($req, $res, $args),
             )
         )->addTemplate('admin/bans/add_ban.php')->display();
     }

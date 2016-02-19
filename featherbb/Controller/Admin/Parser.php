@@ -18,29 +18,24 @@ class Parser
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Parser();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/parser.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/parser.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         global $lang_admin_parser;
 
         Container::get('hooks')->fire('controller.admin.parser.display');
 
         // Legacy
-        require Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/lang/' . $this->user->language . '/admin/parser.php';
+        require Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/lang/' . Container::get('user')->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
         $cache_file = Config::get('forum_env')['FEATHER_ROOT'].'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
-        if ($this->request->post('reset') || !file_exists($cache_file)) {
+        if (Input::post('reset') || !file_exists($cache_file)) {
             require_once(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_source.php');
             require_once(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Core/parser/bbcd_compile.php');
             Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['reset_success']);
@@ -53,10 +48,10 @@ class Parser
         $config = $pd['config'];            // Local scratch copy of $config.
         $count = count($bbcd);
 
-        if ($this->request->post('form_sent')) {
+        if (Input::post('form_sent')) {
 
             // Upload new smiley image to style/img/smilies
-            if ($this->request->post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
+            if (Input::post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
                 $f = $_FILES['new_smiley'];
                 switch ($f['error']) {
                     case 0: // 0: Successful upload.
@@ -64,7 +59,7 @@ class Parser
                         $name = preg_replace('/[^\w\-.]/S', '', $name);        // Weed out all unsavory filename chars.
                         if (preg_match('/^[\w\-.]++$/', $name)) {            // If we have a valid filename?
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
-                                if ($f['size'] > 0 && $f['size'] <= $this->config['o_avatars_size']) {
+                                if ($f['size'] > 0 && $f['size'] <= Config::get('forum_settings')['o_avatars_size']) {
                                     if (move_uploaded_file($f['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
                                         Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
@@ -92,8 +87,8 @@ class Parser
             }
 
             // Set new $config values:
-            if ($this->request->post('config')) {
-                $pcfg = $this->request->post('config');
+            if (Input::post('config')) {
+                $pcfg = Input::post('config');
 
                 if (isset($pcfg['textile'])) {
                     if ($pcfg['textile'] == '1') {
@@ -184,11 +179,11 @@ class Parser
             }
 
             // Set new $smilies values:
-            if ($this->request->post('smiley_text') && is_array($this->request->post('smiley_text')) &&
-                $this->request->post('smiley_file') && is_array($this->request->post('smiley_file')) &&
-                count($this->request->post('smiley_text')) === count($this->request->post('smiley_file'))) {
-                $stext = $this->request->post('smiley_text');
-                $sfile = $this->request->post('smiley_file');
+            if (Input::post('smiley_text') && is_array(Input::post('smiley_text')) &&
+                Input::post('smiley_file') && is_array(Input::post('smiley_file')) &&
+                count(Input::post('smiley_text')) === count(Input::post('smiley_file'))) {
+                $stext = Input::post('smiley_text');
+                $sfile = Input::post('smiley_file');
                 $len = count($stext);
                 $good = '';
                 $smilies = array();
@@ -206,7 +201,7 @@ class Parser
         AdminUtils::generateAdminMenu('parser');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Parser')),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Parser')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,

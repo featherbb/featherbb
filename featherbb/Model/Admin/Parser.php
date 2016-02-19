@@ -12,16 +12,6 @@ namespace FeatherBB\Model\Admin;
 
 class Parser
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-    }
-
     // Helper public function returns array of smiley image files
     //   stored in the style/img/smilies directory.
     public function get_smiley_files()

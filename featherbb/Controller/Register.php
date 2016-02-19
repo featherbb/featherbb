@@ -17,41 +17,36 @@ class Register
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Register();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/antispam.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.register.display');
 
-        if (!$this->user->is_guest) {
+        if (!Container::get('user')->is_guest) {
             Router::redirect(Router::pathFor('home'));
         }
 
         // Antispam feature
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/antispam.php';
+        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
-        if ($this->config['o_regs_allow'] == '0' || $this->request->post('username') || $this->request->post('password')) {
+        if (Config::get('forum_settings')['o_regs_allow'] == '0' || Input::post('username') || Input::post('password')) {
             throw new Error(__('No new regs'), 403);
         }
 
-        $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : $this->config['o_default_timezone'];
-        $user['dst'] = isset($user['dst']) ? $user['dst'] : $this->config['o_default_dst'];
-        $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : $this->config['o_default_email_setting'];
+        $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : Config::get('forum_settings')['o_default_timezone'];
+        $user['dst'] = isset($user['dst']) ? $user['dst'] : Config::get('forum_settings')['o_default_dst'];
+        $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : Config::get('forum_settings')['o_default_email_setting'];
         $user['errors'] = '';
 
-        if ($this->feather->request()->isPost()) {
+        if (Request::isPost()) {
             $user = $this->model->check_for_errors();
 
             // Did everything go according to plan? Insert the user
@@ -61,7 +56,7 @@ class Register
         }
 
             View::setPageInfo(array(
-                        'title' => array(Utils::escape($this->config['o_board_title']), __('Register')),
+                        'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Register')),
                         'focus_element' => array('register', 'req_user'),
                         'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
                         'active_page' => 'register',
@@ -75,33 +70,33 @@ class Register
                     )->addTemplate('register/form.php')->display();
     }
 
-    public function cancel()
+    public function cancel($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.register.cancel');
 
         Router::redirect(Router::pathFor('home'));
     }
 
-    public function rules()
+    public function rules($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.register.rules');
 
         // If we are logged in, we shouldn't be here
-        if (!$this->user->is_guest) {
+        if (!Container::get('user')->is_guest) {
             Router::redirect(Router::pathFor('home'));
         }
 
         // Display an error message if new registrations are disabled
-        if ($this->config['o_regs_allow'] == '0') {
+        if (Config::get('forum_settings')['o_regs_allow'] == '0') {
             throw new Error(__('No new regs'), 403);
         }
 
-        if ($this->config['o_rules'] != '1') {
+        if (Config::get('forum_settings')['o_rules'] != '1') {
             Router::redirect(Router::pathFor('register'));
         }
 
         View::setPageInfo(array(
-                            'title' => array(Utils::escape($this->config['o_board_title']), __('Register'), __('Forum rules')),
+                            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Register'), __('Forum rules')),
                             'active_page' => 'register',
                             )
                     )->addTemplate('register/rules.php')->display();

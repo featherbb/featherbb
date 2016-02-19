@@ -20,12 +20,6 @@ class Login
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
-        $this->email = Container::get('email');
         $this->auth = new \FeatherBB\Model\Auth();
     }
 
@@ -33,9 +27,9 @@ class Login
     {
         Container::get('hooks')->fire('model.login.login_start');
 
-        $form_username = Utils::trim($this->request->post('req_username'));
-        $form_password = Utils::trim($this->request->post('req_password'));
-        $save_pass = $this->request->post('save_pass');
+        $form_username = Utils::trim(Input::post('req_username'));
+        $form_password = Utils::trim(Input::post('req_password'));
+        $save_pass = Input::post('save_pass');
 
         $user = DB::for_table('users')->where('username', $form_username);
 
@@ -60,7 +54,7 @@ class Login
         if ($user->group_id == Config::get('forum_env')['FEATHER_UNVERIFIED']) {
             $update_usergroup = DB::for_table('users')->where('id', $user->id)
                 ->find_one()
-                ->set('group_id', $this->config['o_default_user_group']);
+                ->set('group_id', Config::get('forum_settings')['o_default_user_group']);
             $update_usergroup = Container::get('hooks')->fireDB('model.login.update_usergroup_login', $update_usergroup);
             $update_usergroup = $update_usergroup->save();
 
@@ -77,7 +71,7 @@ class Login
         $delete_online = Container::get('hooks')->fireDB('model.login.delete_online_login', $delete_online);
         $delete_online = $delete_online->delete_many();
 
-        $expire = ($save_pass == '1') ? time() + 1209600 : time() + $this->config['o_timeout_visit'];
+        $expire = ($save_pass == '1') ? time() + 1209600 : time() + Config::get('forum_settings')['o_timeout_visit'];
         $expire = Container::get('hooks')->fire('model.login.expire_login', $expire);
         $this->auth->feather_setcookie($user->id, $form_password_hash, $expire);
 
@@ -85,7 +79,7 @@ class Login
         Track:: set_tracked_topics(null);
 
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
-        $redirect_url = $this->request->post('redirect_url');
+        $redirect_url = Input::post('redirect_url');
         $redirect_url = Container::get('hooks')->fire('model.login.redirect_url_login', $redirect_url);
 
         Router::redirect(Utils::escape($redirect_url), __('Login redirect'));
@@ -95,20 +89,20 @@ class Login
     {
         $token = Container::get('hooks')->fire('model.login.logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash(Utils::getIp()))) {
+        if (Container::get('user')->is_guest || !isset($id) || $id != Container::get('user')->id || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))) {
             Router::redirect(Router::pathFor('home'));
         }
 
         // Remove user from "users online" list
-        $delete_online = DB::for_table('online')->where('user_id', $this->user->id);
+        $delete_online = DB::for_table('online')->where('user_id', Container::get('user')->id);
         $delete_online = Container::get('hooks')->fireDB('model.login.delete_online_logout', $delete_online);
         $delete_online = $delete_online->delete_many();
 
         // Update last_visit (make sure there's something to update it with)
-        if (isset($this->user->logged)) {
-            $update_last_visit = DB::for_table('users')->where('id', $this->user->id)
+        if (isset(Container::get('user')->logged)) {
+            $update_last_visit = DB::for_table('users')->where('id', Container::get('user')->id)
                 ->find_one()
-                ->set('last_visit', $this->user->logged);
+                ->set('last_visit', Container::get('user')->logged);
             $update_last_visit = Container::get('hooks')->fireDB('model.login.update_online_logout', $update_last_visit);
             $update_last_visit = $update_last_visit->save();
         }
@@ -124,15 +118,15 @@ class Login
     {
         Container::get('hooks')->fire('model.login.password_forgotten_start');
 
-        if (!$this->user->is_guest) {
+        if (!Container::get('user')->is_guest) {
             Router::redirect(Router::pathFor('home'));
         }
         // Start with a clean slate
         $errors = array();
 
-        if ($this->feather->request()->isPost()) {
+        if (Request::isPost()) {
             // Validate the email address
-            $email = strtolower(Utils::trim($this->request->post('req_email')));
+            $email = strtolower(Utils::trim(Input::post('req_email')));
             if (!$this->email->is_valid_email($email)) {
                 $errors[] = __('Invalid email');
             }
@@ -149,7 +143,7 @@ class Login
 
                 if ($result) {
                     // Load the "activate password" template
-                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/mail_templates/activate_password.tpl'));
+                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_password.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.login.mail_tpl_password_forgotten', $mail_tpl);
 
                     // The first row contains the subject
@@ -159,7 +153,7 @@ class Login
 
                     // Do the generic replacements first (they apply to all emails sent out here)
                     $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
-                    $mail_message = str_replace('<board_mailer>', $this->config['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
 
                     $mail_message = Container::get('hooks')->fire('model.login.mail_message_password_forgotten', $mail_message);
 
@@ -195,7 +189,7 @@ class Login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    throw new Error(__('Forget mail').' <a href="mailto:'.Utils::escape($this->config['o_admin_email']).'">'.Utils::escape($this->config['o_admin_email']).'</a>.', 400);
+                    throw new Error(__('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 400);
                 } else {
                     $errors[] = __('No email match').' '.Utils::escape($email).'.';
                 }

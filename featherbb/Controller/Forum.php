@@ -123,7 +123,7 @@ class Forum
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->config['o_board_title']), Utils::escape($cur_forum['forum_name'])),
+            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'moderate',
             'page' => $p,
             'id' => $args['id'],
@@ -198,7 +198,7 @@ class Forum
 
             View::setPageInfo(array(
                     'action'    =>    'multi',
-                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
@@ -220,7 +220,7 @@ class Forum
             }
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    $topics,
@@ -241,7 +241,7 @@ class Forum
             }
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    $topics,

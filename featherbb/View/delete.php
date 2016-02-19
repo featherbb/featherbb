@@ -36,7 +36,7 @@ Container::get('hooks')->fire('view.delete.start');
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <div class="forminfo">
-                    <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.$feather->utils->escape($cur_post['poster']).'</strong>', $feather->utils->format_time($cur_post['posted'])) ?></span></h3>
+                    <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.Utils::escape($cur_post['poster']).'</strong>', Utils::format_time($cur_post['posted'])) ?></span></h3>
                     <p><?= ($is_topic_post) ? '<strong>'.__('Topic warning').'</strong>' : '<strong>'.__('Warning').'</strong>' ?><br /><?php _e('Delete info') ?></p>
                 </div>
             </div>
@@ -53,7 +53,7 @@ Container::get('hooks')->fire('view.delete.start');
                     <div class="postleft">
                         <dl>
                             <dt><strong><?= Utils::escape($cur_post['poster']) ?></strong></dt>
-                            <dd><span><?= $feather->utils->format_time($cur_post['posted']) ?></span></dd>
+                            <dd><span><?= Utils::format_time($cur_post['posted']) ?></span></dd>
                         </dl>
                     </div>
                     <div class="postright">

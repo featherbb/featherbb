@@ -19,20 +19,15 @@ class Categories
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = Container::get('user');
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Categories();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/categories.mo');
+        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/admin/categories.mo');
     }
 
-    public function add()
+    public function add($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.categories.add');
 
-        $cat_name = Utils::trim($this->request->post('cat_name'));
+        $cat_name = Utils::trim(Input::post('cat_name'));
         if ($cat_name == '') {
             Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
         }
@@ -44,15 +39,15 @@ class Categories
         }
     }
 
-    public function edit()
+    public function edit($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.categories.edit');
 
-        if (empty($this->request->post('cat'))) {
+        if (empty(Input::post('cat'))) {
             throw new Error(__('Bad request'), '400');
         }
 
-        foreach ($this->request->post('cat') as $cat_id => $properties) {
+        foreach (Input::post('cat') as $cat_id => $properties) {
             $category = array('id' => (int) $cat_id,
                               'name' => Utils::escape($properties['name']),
                               'order' => (int) $properties['order'], );
@@ -69,17 +64,17 @@ class Categories
 
     }
 
-    public function delete()
+    public function delete($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.categories.delete');
 
-        $cat_to_delete = (int) $this->request->post('cat_to_delete');
+        $cat_to_delete = (int) Input::post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
             throw new Error(__('Bad request'), '400');
         }
 
-        if (intval($this->request->post('disclaimer')) != 1) {
+        if (intval(Input::post('disclaimer')) != 1) {
             Router::redirect(Router::pathFor('adminCategories'), __('Delete category not validated'));
         }
 
@@ -90,14 +85,14 @@ class Categories
         }
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.categories.display');
 
         AdminUtils::generateAdminMenu('categories');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Categories')),
+                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Categories')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),

@@ -16,15 +16,14 @@ use FeatherBB\Core\Utils;
 
 class Index
 {
-
     // Returns page head
     public function get_page_head()
     {
         Container::get('hooks')->fire('model.index.get_page_head_start');
 
-        if ($this->config['o_feed_type'] == '1') {
+        if (Config::get('forum_settings')['o_feed_type'] == '1') {
             $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
-        } elseif ($this->config['o_feed_type'] == '2') {
+        } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
             $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
         }
 

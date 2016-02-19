@@ -23,7 +23,7 @@ Container::get('hooks')->fire('view.post.start');
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_posting['id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_posting['forum_name']) ?></a></li>
-<?php if ($feather->request->post('req_subject')): ?>            <li><span>»&#160;</span><?= Utils::escape($feather->request->post('req_subject')) ?></li>
+<?php if (Input::post('req_subject')): ?>            <li><span>»&#160;</span><?= Utils::escape(Input::post('req_subject')) ?></li>
 <?php endif; ?>
 <?php if (isset($cur_posting['subject'])): ?>            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $tid, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_posting['subject']) ?></a></li>
 <?php endif; ?>            <li><span>»&#160;</span><strong><?= $action ?></strong></li>
@@ -55,7 +55,7 @@ if (!empty($errors)) {
 
 <?php
 
-} elseif ($feather->request->post('preview')) {
+} elseif (Input::post('preview')) {
     $preview_message = $feather->parser->parse_message($post['message'], $post['hide_smilies']);
 ?>
 <div id="postpreview" class="blockpost">
@@ -93,11 +93,11 @@ if (Container::get('user')->is_guest) {
     $email_label = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
     $email_form_name = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? 'req_email' : 'email';
     ?>
-                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php if ($feather->request->post('req_username')) {
+                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php if (Input::post('req_username')) {
     echo Utils::escape($post['username']);
 }
     ?>" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" /><br /></label>
-                        <label class="conl<?php echo(Config::get('forum_settings')['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" value="<?php if ($feather->request->post($email_form_name)) {
+                        <label class="conl<?php echo(Config::get('forum_settings')['p_force_guest_email'] == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" value="<?php if (Input::post($email_form_name)) {
     echo Utils::escape($post['email']);
 }
     ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" /><br /></label>
@@ -106,11 +106,11 @@ if (Container::get('user')->is_guest) {
 
 }
 if ($fid): ?>
-                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if ($feather->request->post('req_subject')) {
+                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (Input::post('req_subject')) {
     echo Utils::escape($post['subject']);
 } ?>" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" /><br /></label>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>"><?php echo($feather->request->post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape($feather->request->post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
+                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>"><?php echo(Input::post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape(Input::post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
                         <ul class="bblinks">
                             <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
                             <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo(Config::get('forum_settings')['p_message_bbcode'] == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
@@ -180,12 +180,12 @@ if ($tid && Config::get('forum_settings')['o_topic_review'] != '0') :
                 <div class="postleft">
                     <dl>
                         <dt><strong><?= Utils::escape($post['poster']) ?></strong></dt>
-                        <dd><span><?= $feather->utils->format_time($post['posted']) ?></span></dd>
+                        <dd><span><?= Utils::format_time($post['posted']) ?></span></dd>
                     </dl>
                 </div>
                 <div class="postright">
                     <div class="postmsg">
-                        <?= $post['message']."\n" ?>
+                        <?= Utils::escape($post['message'])."\n" ?>
                     </div>
                 </div>
             </div>

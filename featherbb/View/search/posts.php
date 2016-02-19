@@ -32,7 +32,7 @@ foreach ($display['cur_search'] as $search) {
                         _e('Re'); echo  ' ';
                     } ?><?= $search['forum'] ?></span> <span>»&#160;<a
                         href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
-                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= $feather->utils->format_time($search['pposted']) ?></a></span></span>
+                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::format_time($search['pposted']) ?></a></span></span>
         </h2>
 
         <div class="box">
