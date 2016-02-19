@@ -23,6 +23,10 @@ class Index
 
     public function display($req, $res, $args)
     {
+        if (!isset($args['action'])) {
+            $args['action'] = null;
+        }
+
         Container::get('hooks')->fire('controller.admin.index.display');
 
         // Check for upgrade

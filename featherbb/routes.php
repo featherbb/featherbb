@@ -55,10 +55,11 @@ Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add($isGuest)-
 
 // Forum
 Route::group('/forum', function() use ($feather) {
-    $isGuest = function() use ($feather) {
+    $isGuest = function($request, $response, $next) use ($feather) {
         if (Container::get('user')->is_guest) {
             throw new Error(__('No permission'), 403);
         }
+        return $response;
     };
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Forum:display')->setName('Forum');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
@@ -71,15 +72,17 @@ Route::group('/forum', function() use ($feather) {
 
 // Topic
 Route::group('/topic', function() use ($feather) {
-    $isGuest = function() use ($feather) {
+    $isGuest = function($request, $response, $next) use ($feather) {
         if (Container::get('user')->is_guest) {
             throw new Error(__('No permission'), 403);
         }
+        return $response;
     };
-    $isAdmmod = function() use ($feather) {
+    $isAdmmod = function($request, $response, $next) use ($feather) {
         if(!Container::get('user')->is_admmod) {
             throw new Error(__('No permission'), 403);
         }
+        return $response;
     };
     Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
@@ -112,12 +115,13 @@ Route::get('/userlist', '\FeatherBB\Controller\Userlist:display')->add($canReadB
 
 // Auth routes
 Route::group('/auth', function() use ($feather) {
-    Route::get('', function() use ($feather) {
+    Route::get('', function($request, $response, $next) use ($feather) {
         if (!Container::get('user')->is_guest) {
             Container::get('url')->redirect(Router::pathFor('home'), 'Already logged');
         } else {
-            $feather->redirect(Router::pathFor('login'));
+            return Router::redirect(Router::pathFor('login'));
         }
+        return $response;
     });
     Route::map(['GET', 'POST'], '/login', '\FeatherBB\Controller\Auth:login')->setName('login');
     Route::map(['GET', 'POST'], '/forget', '\FeatherBB\Controller\Auth:forget')->setName('resetPassword');
@@ -158,10 +162,11 @@ Route::group('/admin', function() use ($feather) {
      * Middleware to check if user is admin.
      */
 
-    $isAdmin = function() use ($feather) {
-        if(Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN']) {
+    $isAdmin = function($request, $response, $next) use ($feather) {
+        if(Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN']) {
             Container::get('url')->redirect(Router::pathFor('home'), __('No permission'));
         }
+        return $response;
     };
 
     // Admin index

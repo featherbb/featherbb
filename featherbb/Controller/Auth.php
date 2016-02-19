@@ -10,7 +10,6 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;

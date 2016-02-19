@@ -9,17 +9,14 @@
 
 namespace FeatherBB\Core;
 
-use FeatherBB\Core\Interfaces\Container;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class AdminUtils
 {
-    protected static $feather;
-
     public static function generateAdminMenu($page = '')
     {
-        $is_admin = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN']) ? true : false;
+        $is_admin = (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) ? true : false;
 
         // See if there are any plugins that want to display in the menu
         $plugins = self::adminPluginsMenu($is_admin);
