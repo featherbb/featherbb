@@ -14,13 +14,10 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Model\Auth as AuthModel;
 
 class Profile
 {
-    public function __construct()
-    {
-        $this->auth = new \FeatherBB\Model\Auth();
-    }
 
     public function change_pass($id)
     {
@@ -127,7 +124,9 @@ class Profile
             $update_password = $update_password->save();
 
             if (Container::get('user')->id == $id) {
-                $this->auth->feather_setcookie(Container::get('user')->id, $new_password_hash, time() + ForumSettings::get('o_timeout_visit'));
+                $expire = time() + ForumSettings::get('o_timeout_visit');
+                $jwt = AuthModel::generate_jwt(Container::get('user'), $expire);
+                AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
             }
 
             Container::get('hooks')->fire('model.profile.change_pass');

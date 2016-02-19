@@ -99,7 +99,7 @@ class Groups
 
         // Add/edit a group (stage 2)
         if (Input::post('add_edit_group')) {
-            $this->model->add_edit_group($groups);
+            return $this->model->add_edit_group($groups);
         }
 
         // Add/edit a group (stage 1)

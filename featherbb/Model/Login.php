@@ -15,14 +15,10 @@ use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Model\Auth as AuthModel;
 
 class Login
 {
-    public function __construct()
-    {
-        $this->auth = new \FeatherBB\Model\Auth();
-    }
-
     public function login()
     {
         Container::get('hooks')->fire('model.login.login_start');
@@ -73,7 +69,9 @@ class Login
 
         $expire = ($save_pass == '1') ? time() + 1209600 : time() + ForumSettings::get('o_timeout_visit');
         $expire = Container::get('hooks')->fire('model.login.expire_login', $expire);
-        $this->auth->feather_setcookie($user->id, $form_password_hash, $expire);
+
+        $jwt = AuthModel::generate_jwt($user, $expire);
+        AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
 
         // Reset tracked topics
         Track:: set_tracked_topics(null);
@@ -109,7 +107,7 @@ class Login
 
         Container::get('hooks')->fire('model.login.logout_end');
 
-        $this->auth->feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
+        AuthModel::feather_setcookie('Bearer ', time() + 31536000);
 
         return Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }

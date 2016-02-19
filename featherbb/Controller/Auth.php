@@ -57,7 +57,6 @@ class Auth
 
                     $jwt = ModelAuth::generate_jwt($user, $expire);
                     ModelAuth::feather_setcookie('Bearer '.$jwt, $expire);
-                    // ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
                     return Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 } else {

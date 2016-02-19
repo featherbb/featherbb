@@ -85,7 +85,7 @@ class Profile
                                     throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_profile($args['id'], $info, $args['section']);
+            return $this->model->update_profile($args['id'], $info, $args['section']);
         }
 
         $user = $this->model->get_user_info($args['id']);
@@ -255,7 +255,11 @@ class Profile
         }
 
         if ($args['action'] == 'change_pass') {
-            $this->model->change_pass($args['id']);
+            if (Request::isPost()) {
+                // TODO: Check if security "if (Container::get('user')->id != $id)" (l.58 of Model/Profile) isn't bypassed
+                // FOR ALL chained if below
+                return $this->model->change_pass($args['id']);
+            }
 
             View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')),
@@ -268,7 +272,9 @@ class Profile
             View::addTemplate('profile/change_pass.php')->display();
 
         } elseif ($args['action'] == 'change_email') {
-            $this->model->change_email($args['id']);
+            if (Request::isPost()) {
+                return $this->model->change_email($args['id']);
+            }
 
             View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')),
@@ -290,7 +296,7 @@ class Profile
             }
 
             if (Request::isPost()) {
-                $this->model->upload_avatar($args['id'], $_FILES);
+                return $this->model->upload_avatar($args['id'], $_FILES);
             }
 
             View::setPageInfo(array(
