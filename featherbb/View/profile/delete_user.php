@@ -21,7 +21,8 @@ Container::get('hooks')->fire('view.profile.delete_user.start');
     <h2><span><?php _e('Confirm delete user') ?></span></h2>
     <div class="box">
         <form id="confirm_del_user" method="post" action="<?= Router::pathFor('userProfile', ['id' => $id]) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Confirm delete legend') ?></legend>

@@ -20,7 +20,8 @@ Container::get('hooks')->fire('view.profile.section_personal.start');
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section personal') ?></span></h2>
     <div class="box">
         <form id="profile2" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personal']) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Personal details legend') ?></legend>

@@ -21,7 +21,8 @@ Container::get('hooks')->fire('view.admin.parser.start');
         <h2><span><?= $lang_admin_parser['Parser head'] ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminParser') ?>" enctype="multipart/form-data">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop">
                     <input type="submit" name="save" value="<?php _e('Save changes') ?>" />
                     <input type="submit" name="reset" value="<?= $lang_admin_parser['reset defaults'] ?>" />

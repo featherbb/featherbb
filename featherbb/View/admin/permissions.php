@@ -19,7 +19,8 @@ Container::get('hooks')->fire('view.admin.permissions.start');
         <h2><span><?php _e('Permissions head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminPermissions') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
                 <div class="inform">
                     <input type="hidden" name="form_sent" value="1" />

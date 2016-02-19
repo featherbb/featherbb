@@ -19,7 +19,8 @@ Container::get('hooks')->fire('view.login.form.start');
     <h2><span><?php _e('Login') ?></span></h2>
     <div class="box">
         <form id="login" method="post" action="<?= Router::pathFor('login') ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Login legend') ?></legend>

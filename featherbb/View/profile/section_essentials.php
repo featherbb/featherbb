@@ -20,7 +20,8 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section essentials') ?></span></h2>
     <div class="box">
         <form id="profile1" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'essentials']) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Username and pass legend') ?></legend>

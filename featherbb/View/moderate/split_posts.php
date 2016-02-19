@@ -19,7 +19,8 @@ Container::get('hooks')->fire('view.moderate.split_posts.start');
     <h2><span><?php _e('Split posts') ?></span></h2>
     <div class="box">
         <form id="subject" method="post" action="">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Confirm split legend') ?></legend>

@@ -42,7 +42,8 @@ if (!empty($errors)) {
     <h2><span><?php _e('Request pass') ?></span></h2>
     <div class="box">
         <form id="request_pass" method="post" action="<?= Router::pathFor('resetPassword') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Request pass legend') ?></legend>

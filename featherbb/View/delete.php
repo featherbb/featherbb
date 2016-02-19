@@ -33,7 +33,8 @@ Container::get('hooks')->fire('view.delete.start');
     <h2><span><?php _e('Delete post') ?></span></h2>
     <div class="box">
         <form method="post" action="<?= Router::pathFor('deletePost', array('id'=>$id)) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <div class="forminfo">
                     <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.$feather->utils->escape($cur_post['poster']).'</strong>', $feather->utils->format_time($cur_post['posted'])) ?></span></h3>

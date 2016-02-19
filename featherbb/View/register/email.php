@@ -21,7 +21,8 @@ Container::get('hooks')->fire('view.register.email.start');
     <h2><span><?php _e('Send email to') ?> <?= Utils::escape($recipient) ?></span></h2>
     <div class="box">
         <form id="email" method="post" action="misc.php?email=<?= $recipient_id ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Write email') ?></legend>

@@ -55,7 +55,8 @@ Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
             </form>
 
             <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <input type="hidden" name="action" value="prune" />
                     <fieldset>

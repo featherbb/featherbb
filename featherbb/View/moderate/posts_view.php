@@ -34,7 +34,8 @@ Container::get('hooks')->fire('view.moderate.posts_view.start');
 </div>
 
 <form method="post" action="">
-<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+<input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 $post_count = 0; // Keep track of post numbers
 foreach ($post_data as $post) {

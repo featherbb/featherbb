@@ -19,7 +19,8 @@ Container::get('hooks')->fire('view.admin.forums.delete.start');
         <h2><span><?php _e('Confirm delete head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Confirm delete subhead') ?></legend>

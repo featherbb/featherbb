@@ -33,7 +33,8 @@ Container::get('hooks')->fire('view.misc.email.report');
     <h2><span><?php _e('Report post') ?></span></h2>
     <div class="box">
         <form id="report" method="post" action="<?= Router::pathFor('report', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Reason desc') ?></legend>

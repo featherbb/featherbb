@@ -21,7 +21,8 @@ Container::get('hooks')->fire('view.admin.groups.delete_group.start');
         <h2><span><?php _e('Delete group head') ?></span></h2>
         <div class="box">
             <form id="groups" method="post" action="<?= Router::pathFor('deleteGroup', ['id' => $id]) ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Move users subhead') ?></legend>

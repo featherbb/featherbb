@@ -19,7 +19,8 @@ Container::get('hooks')->fire('view.admin.users.ban_users.start');
         <h2><span><?php _e('Ban users') ?></span></h2>
         <div class="box">
             <form id="bans2" name="confirm_ban_users" method="post" action="<?= Router::pathFor('adminUsers') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <input type="hidden" name="users" value="<?= implode(',', $user_ids) ?>" />
                 <div class="inform">
                     <fieldset>

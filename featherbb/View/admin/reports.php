@@ -23,7 +23,8 @@ Container::get('hooks')->fire('view.admin.reports.start');
         <h2><span><?php _e('New reports head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminReports') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 if (!empty($report_data)) {
     foreach ($report_data as $report) {

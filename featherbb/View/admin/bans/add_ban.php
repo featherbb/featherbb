@@ -22,7 +22,8 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
     <div class="box">
         <form id="bans2" method="post" action="">
             <div class="inform">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                  <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <input type="hidden" name="mode" value="<?= $ban['mode'] ?>" />
                 <?php if ($ban['mode'] == 'edit'): ?>                <input type="hidden" name="ban_id" value="<?= $ban['id'] ?>" />
                 <?php endif; ?>
