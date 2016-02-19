@@ -67,13 +67,8 @@ foreach ($groups as $cur_group) {
 <?php
 
 foreach ($groups as $cur_group) {
-<<<<<<< HEAD
-    if ($cur_group['g_id'] > Container::get('forum_env')['FEATHER_GUEST'] && $cur_group['g_moderator'] == 0) {
-        if ($cur_group['g_id'] == ForumSettings::get('o_default_user_group')) {
-=======
     if ($cur_group['g_id'] > ForumEnv::get('FEATHER_GUEST') && $cur_group['g_moderator'] == 0) {
-        if ($cur_group['g_id'] == Config::get('forum_settings')['o_default_user_group']) {
->>>>>>> origin/slim-v3
+        if ($cur_group['g_id'] == ForumSettings::get('o_default_user_group')) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
