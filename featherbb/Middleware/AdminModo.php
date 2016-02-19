@@ -13,6 +13,8 @@
 
 namespace FeatherBB\Middleware;
 
+use FeatherBB\Core\Error;
+
 /**
  * Middleware to check if user is logged and admin
  */

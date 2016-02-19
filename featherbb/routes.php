@@ -63,16 +63,8 @@ Route::group('/post', function() {
 Route::get('/userlist', '\FeatherBB\Controller\Userlist:display')->add(new CanReadBoard)->setName('userList');
 
 // Auth routes
-Route::group('/auth', function() use ($feather) {
-    Route::get('', function($request, $response, $next) use ($feather) {
-        if (!Container::get('user')->is_guest) {
-            Container::get('url')->redirect(Router::pathFor('home'), 'Already logged');
-        } else {
-            return Router::redirect(Router::pathFor('login'));
-        }
-        return $response;
-    });
-    Route::map(['GET', 'POST'], '/login', '\FeatherBB\Controller\Auth:login')->setName('login');
+Route::group('/auth', function() {
+    Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Auth:login')->setName('login');
     Route::map(['GET', 'POST'], '/forget', '\FeatherBB\Controller\Auth:forget')->setName('resetPassword');
     Route::get('/logout/token/{token}', '\FeatherBB\Controller\Auth:logout')->setName('logout');
 });
