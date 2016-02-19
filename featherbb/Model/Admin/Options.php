@@ -119,11 +119,11 @@ class Options
             $form['date_format'] = 'Y-m-d';
         }
 
-        if (!$this->email->is_valid_email($form['admin_email'])) {
+        if (!Container::get('email')->is_valid_email($form['admin_email'])) {
             throw new Error(__('Invalid e-mail message'), 400);
         }
 
-        if (!$this->email->is_valid_email($form['webmaster_email'])) {
+        if (!Container::get('email')->is_valid_email($form['webmaster_email'])) {
             throw new Error(__('Invalid webmaster e-mail message'), 400);
         }
 

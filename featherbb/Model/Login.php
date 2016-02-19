@@ -127,7 +127,7 @@ class Login
         if (Request::isPost()) {
             // Validate the email address
             $email = strtolower(Utils::trim(Input::post('req_email')));
-            if (!$this->email->is_valid_email($email)) {
+            if (!Container::get('email')->is_valid_email($email)) {
                 $errors[] = __('Invalid email');
             }
 
@@ -186,7 +186,7 @@ class Login
                         $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                         $cur_mail_message = Container::get('hooks')->fire('model.login.cur_mail_message_password_forgotten', $cur_mail_message);
 
-                        $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
+                        Container::get('email')->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
                     throw new Error(__('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);

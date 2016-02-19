@@ -200,12 +200,12 @@ class Profile
             // Validate the email address
             $new_email = strtolower(Utils::trim(Input::post('req_new_email')));
             $new_email = Container::get('hooks')->fire('model.profile.change_email_new_email', $new_email);
-            if (!$this->email->is_valid_email($new_email)) {
+            if (!Container::get('email')->is_valid_email($new_email)) {
                 throw new Error(__('Invalid email'), 400);
             }
 
             // Check if it's a banned email address
-            if ($this->email->is_banned_email($new_email)) {
+            if (Container::get('email')->is_banned_email($new_email)) {
                 if (ForumSettings::get('p_allow_banned_email') == '0') {
                     throw new Error(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
@@ -225,7 +225,7 @@ class Profile
                     $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_message', $mail_message);
 
-                    $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                    Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
                 }
             }
 
@@ -262,7 +262,7 @@ class Profile
                     $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_message', $mail_message);
 
-                    $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                    Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
                 }
             }
 
@@ -299,7 +299,7 @@ class Profile
             $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_activate_message', $mail_message);
 
-            $this->email->feather_mail($new_email, $mail_subject, $mail_message);
+            Container::get('email')->feather_mail($new_email, $mail_subject, $mail_message);
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
@@ -822,7 +822,7 @@ class Profile
                 if (ForumSettings::get('o_regs_verify') == '0' || Container::get('user')->is_admmod) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
-                    if (!$this->email->is_valid_email($form['email'])) {
+                    if (!Container::get('email')->is_valid_email($form['email'])) {
                         throw new Error(__('Invalid email'));
                     }
                 }
@@ -1473,7 +1473,7 @@ class Profile
 
         $mail_message = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mail_message);
 
-        $this->email->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, Container::get('user')->email, Container::get('user')->username);
+        Container::get('email')->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, Container::get('user')->email, Container::get('user')->username);
 
         $update_last_mail_sent = DB::for_table('users')->where('id', Container::get('user')->id)
                                                   ->find_one()

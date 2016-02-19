@@ -80,14 +80,14 @@ class Register
         }
 
         // Validate email
-        if (!$this->email->is_valid_email($user['email1'])) {
+        if (!Container::get('email')->is_valid_email($user['email1'])) {
             $user['errors'][] = __('Invalid email');
         } elseif (ForumSettings::get('o_regs_verify') == '1' && $user['email1'] != $email2) {
             $user['errors'][] = __('Email not match');
         }
 
         // Check if it's a banned email address
-        if ($this->email->is_banned_email($user['email1'])) {
+        if (Container::get('email')->is_banned_email($user['email1'])) {
             if (ForumSettings::get('p_allow_banned_email') == '0') {
                 $user['errors'][] = __('Banned email');
             }
@@ -192,7 +192,7 @@ class Register
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_banned_mail_message', $mail_message);
 
-                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
 
             // If we previously found out that the email was a dupe
@@ -213,7 +213,7 @@ class Register
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_message', $mail_message);
 
-                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
@@ -235,7 +235,7 @@ class Register
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_new_mail_message', $mail_message);
 
-                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
         }
 
@@ -259,7 +259,7 @@ class Register
             $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_message', $mail_message);
 
-            $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
+            Container::get('email')->feather_mail($user['email1'], $mail_subject, $mail_message);
 
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         }

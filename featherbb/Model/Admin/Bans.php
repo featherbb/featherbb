@@ -212,7 +212,7 @@ class Bans
             $ban_ip = implode(' ', $addresses);
         }
 
-        if ($ban_email != '' && !$this->email->is_valid_email($ban_email)) {
+        if ($ban_email != '' && !Container::get('email')->is_valid_email($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
                 throw new Error(__('Invalid e-mail message'), 400);
             }
