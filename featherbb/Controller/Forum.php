@@ -98,7 +98,7 @@ class Forum
         Container::get('hooks')->fire('controller.forum.moderate');
 
         // Make sure that only admmods allowed access this page
-        $moderators = $this->model->get_moderators($args['id']);
+        $moderators = $this->model->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
@@ -106,7 +106,7 @@ class Forum
         }
 
         // Fetch some info about the forum
-        $cur_forum = $this->model->get_forum_info($args['id']);
+        $cur_forum = $this->model->get_forum_info($args['fid']);
 
         // Is this a redirect forum? In that case, abort!
         if ($cur_forum['redirect_url'] != '') {
@@ -126,12 +126,12 @@ class Forum
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'moderate',
             'page' => $p,
-            'id' => $args['id'],
+            'id' => $args['fid'],
             'p' => $p,
             'url_forum' => $url_forum,
             'cur_forum' => $cur_forum,
-            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/forum/'.$args['id'].'/#'),
-            'topic_data' => $this->model->display_topics_moderate($args['id'], $sort_by, $start_from),
+            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/forum/'.$args['fid'].'/#'),
+            'topic_data' => $this->model->display_topics_moderate($args['fid'], $sort_by, $start_from),
             'start_from' => $start_from,
             )
         )->addTemplate('moderate/moderator_forum.php')->display();

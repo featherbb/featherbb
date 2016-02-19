@@ -16,7 +16,7 @@ class Input extends \Statical\BaseProxy
 		}
 		return $result;
 	}
-	public static function post($key, $default = null, $sanitize = true)
+	public static function post($key, $default = null, $sanitize = false)
 	{
 		$result = Request::getParsedBodyParam($key, $default);
 		if ($sanitize) {
