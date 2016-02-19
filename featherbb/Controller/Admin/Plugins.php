@@ -67,7 +67,7 @@ class Plugins
         }
         rename(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'], Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']);
         unlink(Config::get('forum_env')['FEATHER_ROOT'].'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip');
-        Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
+        return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
     }
 
     public function index($req, $res, $args)
@@ -104,7 +104,7 @@ class Plugins
 
         $this->model->activate($args['plugin']);
         // Plugin has been activated, confirm and redirect
-        Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
+        return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
     }
 
     public function deactivate($req, $res, $args)
@@ -117,7 +117,7 @@ class Plugins
 
         $this->model->deactivate($args['plugin']);
         // // Plugin has been deactivated, confirm and redirect
-        Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
+        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
 
     public function uninstall($req, $res, $args)
@@ -130,7 +130,7 @@ class Plugins
 
         $this->model->uninstall($args['plugin']);
         // Plugin has been deactivated, confirm and redirect
-        Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
+        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
     }
 
     /**

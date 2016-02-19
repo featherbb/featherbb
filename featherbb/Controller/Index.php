@@ -60,6 +60,6 @@ class Index
         Auth::set_last_visit(Container::get('user')->id, Container::get('user')->logged);
         // Reset tracked topics
         Track::set_tracked_topics(null);
-        Router::redirect(Router::pathFor('home'), __('Mark read redirect'));
+        return Router::redirect(Router::pathFor('home'), __('Mark read redirect'));
     }
 }

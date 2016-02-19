@@ -82,7 +82,7 @@ class Login
         $redirect_url = Input::post('redirect_url');
         $redirect_url = Container::get('hooks')->fire('model.login.redirect_url_login', $redirect_url);
 
-        Router::redirect(Utils::escape($redirect_url), __('Login redirect'));
+        return Router::redirect(Utils::escape($redirect_url), __('Login redirect'));
     }
 
     public function logout($id, $token)
@@ -90,7 +90,7 @@ class Login
         $token = Container::get('hooks')->fire('model.login.logout_start', $token, $id);
 
         if (Container::get('user')->is_guest || !isset($id) || $id != Container::get('user')->id || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))) {
-            Router::redirect(Router::pathFor('home'));
+            return Router::redirect(Router::pathFor('home'));
         }
 
         // Remove user from "users online" list
@@ -111,7 +111,7 @@ class Login
 
         $this->auth->feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
 
-        Router::redirect(Router::pathFor('home'), __('Logout redirect'));
+        return Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }
 
     public function password_forgotten()
@@ -119,7 +119,7 @@ class Login
         Container::get('hooks')->fire('model.login.password_forgotten_start');
 
         if (!Container::get('user')->is_guest) {
-            Router::redirect(Router::pathFor('home'));
+            return Router::redirect(Router::pathFor('home'));
         }
         // Start with a clean slate
         $errors = array();

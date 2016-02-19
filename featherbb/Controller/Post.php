@@ -36,6 +36,18 @@ class Post
 
     public function newpost($req, $res, $args)
     {
+        if (!isset($args['fid'])) {
+            $args['fid'] = null;
+        }
+
+        if (!isset($args['tid'])) {
+            $args['tid'] = null;
+        }
+
+        if (!isset($args['qid'])) {
+            $args['qid'] = null;
+        }
+
         Container::get('hooks')->fire('controller.post.create', $args['fid'], $args['tid'], $args['qid']);
 
         // Antispam feature
@@ -129,7 +141,7 @@ class Post
                             $this->model->increment_post_count($post, $new['tid']);
                         }
 
-                    Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
+                    return Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
                 }
         }
 
@@ -302,7 +314,7 @@ class Post
                 // Edit the post
                 $this->model->edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                Router::redirect(Router::pathFor('viewPost', ['pid' => $args['id']]).'#p'.$args['id'], __('Post redirect'));
+                return Router::redirect(Router::pathFor('viewPost', ['pid' => $args['id']]).'#p'.$args['id'], __('Post redirect'));
             }
         } else {
             $post = '';

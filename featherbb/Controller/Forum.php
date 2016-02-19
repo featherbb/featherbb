@@ -32,7 +32,7 @@ class Forum
 
         // Is this a redirect forum? In that case, redirect!
         if ($cur_forum['redirect_url'] != '') {
-            Router::redirect(Router::pathFor('Forum', ['id' => $cur_forum['redirect_url']]));
+            return Router::redirect(Router::pathFor('Forum', ['id' => $cur_forum['redirect_url']]));
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -145,7 +145,7 @@ class Forum
         $tracked_topics['forums'][$args['id']] = time();
         Track::set_tracked_topics($tracked_topics);
 
-        Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Mark forum read redirect'));
+        return Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Mark forum read redirect'));
     }
 
     public function subscribe($req, $res, $args)
@@ -153,7 +153,7 @@ class Forum
         Container::get('hooks')->fire('controller.forum.subscribe');
 
         $this->model->subscribe($args['id']);
-        Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Subscribe redirect'));
+        return Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Subscribe redirect'));
     }
 
     public function unsubscribe($req, $res, $args)
@@ -161,7 +161,7 @@ class Forum
         Container::get('hooks')->fire('controller.forum.unsubscribe');
 
         $this->model->unsubscribe($args['id']);
-        Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Unsubscribe redirect'));
+        return Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Unsubscribe redirect'));
     }
 
     public function dealposts($req, $res, $args)
@@ -188,7 +188,7 @@ class Forum
             if ($new_fid = Input::post('move_to_forum')) {
                 $topics = explode(',', $topics);
                 $topicModel->move_to($args['fid'], $new_fid, $topics);
-                Router::redirect(Router::pathFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
+                return Router::redirect(Router::pathFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
             }
 
             // Check if there are enough forums to move the topic
@@ -211,7 +211,7 @@ class Forum
         elseif (Input::post('merge_topics') || Input::post('merge_topics_comply')) {
             if (Input::post('merge_topics_comply')) {
                 $this->model->merge_topics($args['fid']);
-                Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Merge topics redirect'));
+                return Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Merge topics redirect'));
             }
 
             $topics = Input::post('topics') ? Input::post('topics') : array();
@@ -237,7 +237,7 @@ class Forum
 
             if (Input::post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $args['fid']);
-                Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Delete topics redirect'));
+                return Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Delete topics redirect'));
             }
 
             View::setPageInfo(array(
@@ -264,7 +264,7 @@ class Forum
                 $this->model->close_multiple_topics($action, $topics);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-                Router::redirect(Router::pathFor('moderateForum', array('fid' => $args['fid'], 'page' => $args['page'])), $redirect_msg);
+                return Router::redirect(Router::pathFor('moderateForum', array('fid' => $args['fid'], 'page' => $args['page'])), $redirect_msg);
             }
         }
     }

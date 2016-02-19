@@ -208,7 +208,7 @@ class Maintenance
                     ->delete_many();
         }
 
-        Router::redirect(Router::pathFor('adminMaintenance'), __('Posts pruned redirect'));
+        return Router::redirect(Router::pathFor('adminMaintenance'), __('Posts pruned redirect'));
     }
 
     public function get_info_prune($prune_sticky, $prune_from)

@@ -29,16 +29,16 @@ class Forums
         $cat_id = (int) Input::post('cat');
 
         if ($cat_id < 1) {
-            Router::redirect(Router::pathFor('adminForums'), __('Must be valid category'));
+            return Router::redirect(Router::pathFor('adminForums'), __('Must be valid category'));
         }
 
         if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-            Router::redirect(Router::pathFor('editForum', array('id' => $fid)), __('Forum added redirect'));
+            return Router::redirect(Router::pathFor('editForum', array('id' => $fid)), __('Forum added redirect'));
         } else {
-            Router::redirect(Router::pathFor('adminForums'), __('Unable to add forum'));
+            return Router::redirect(Router::pathFor('adminForums'), __('Unable to add forum'));
         }
     }
 
@@ -57,10 +57,10 @@ class Forums
                                     'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
-                    Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Must enter name message'));
+                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Must enter name message'));
                 }
                 if ($forum_data['cat_id'] < 1) {
-                    Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Must be valid category'));
+                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Must be valid category'));
                 }
 
                 $this->model->update_forum($args['forum_id'], $forum_data);
@@ -96,7 +96,7 @@ class Forums
                 // Regenerate the quick jump cache
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-                Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Forum updated redirect'));
+                return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Forum updated redirect'));
 
             } elseif (Input::post('revert_perms')) {
                 $this->model->delete_permissions($args['forum_id']);
@@ -104,7 +104,7 @@ class Forums
                 // Regenerate the quick jump cache
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-                Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Perms reverted redirect'));
+                return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Perms reverted redirect'));
             }
 
         } else {
@@ -132,7 +132,7 @@ class Forums
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-            Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
+            return Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
 
         } else { // If the user hasn't confirmed
 
@@ -160,7 +160,7 @@ class Forums
         // Regenerate the quick jump cache
         Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-        Router::redirect(Router::pathFor('adminForums'), __('Forums updated redirect'));
+        return Router::redirect(Router::pathFor('adminForums'), __('Forums updated redirect'));
     }
 
     public function display($req, $res, $args)

@@ -73,7 +73,7 @@ foreach ($post_data as $post) {
 }
     ?><?= Utils::escape($cur_topic['subject']) ?></h3>
                     <div class="postmsg">
-                        <?= Utils::escape($post['message'])."\n" ?>
+                        <?= $post['message']."\n" ?>
 <?php if ($post['edited'] != '') {
     echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
 }

@@ -66,7 +66,7 @@ class Search
                 View::addTemplate('search/footer.php', 10)->display();
 
             } else {
-                Router::redirect(Router::pathFor('search'), __('No hits'));
+                return Router::redirect(Router::pathFor('search'), __('No hits'));
             }
         }
         // Display the form

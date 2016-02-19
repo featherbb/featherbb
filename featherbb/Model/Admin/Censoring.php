@@ -40,7 +40,7 @@ class Censoring
         Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
         Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
     }
 
     public function update_word()
@@ -68,7 +68,7 @@ class Censoring
         Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
         Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
     }
 
     public function remove_word()
@@ -84,7 +84,7 @@ class Censoring
         Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
         Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Router::redirect(Router::pathFor('adminCensoring'),  __('Word removed redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'),  __('Word removed redirect'));
     }
 
     public function get_words()

@@ -29,7 +29,7 @@ class Reports
         if (Request::isPost()) {
             $zap_id = intval(key(Input::post('zap_id')));
             $this->model->zap_report($zap_id);
-            Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));
+            return Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));
         }
 
         AdminUtils::generateAdminMenu('reports');

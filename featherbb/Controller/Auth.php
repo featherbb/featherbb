@@ -101,7 +101,7 @@ class Auth
     public function forget($req, $res, $args)
     {
         if (!Container::get('user')->is_guest) {
-            Router::redirect(Router::pathFor('home'), 'Already logged in');
+            return Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
         if (Request::isPost()) {
@@ -146,7 +146,7 @@ class Auth
 
                 Container::get('email')->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 200);
+                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 200);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }

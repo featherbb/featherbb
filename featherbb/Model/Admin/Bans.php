@@ -269,7 +269,7 @@ class Bans
         // Regenerate the bans cache
         Container::get('cache')->store('bans', Cache::get_bans());
 
-        Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
+        return Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
 
     public function remove_ban($ban_id)
@@ -284,7 +284,7 @@ class Bans
         // Regenerate the bans cache
         Container::get('cache')->store('bans', Cache::get_bans());
 
-        Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
+        return Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }
 
     public function find_ban($start_from = false)

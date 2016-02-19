@@ -261,13 +261,13 @@ class Register
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-            Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.');
+            return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.');
         }
 
         $this->auth->feather_setcookie($new_uid, $password_hash, time() + Config::get('forum_settings')['o_timeout_visit']);
 
         Container::get('hooks')->fire('model.register.insert_user');
 
-        Router::redirect(Router::pathFor('home'), __('Reg complete'));
+        return Router::redirect(Router::pathFor('home'), __('Reg complete'));
     }
 }

@@ -37,6 +37,6 @@ class Permissions
         Container::get('cache')->store('config', Cache::get_config());
         // $this->clear_feed_cache();
 
-        Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
+        return Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
     }
 }

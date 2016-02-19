@@ -98,7 +98,7 @@ class Topic
                 $first_new_post_id = Container::get('hooks')->fire('model.topic.handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
-                    Router::redirect(Router::pathFor('viewPost', ['pid' => $first_new_post_id]).'#p'.$first_new_post_id);
+                    return Router::redirect(Router::pathFor('viewPost', ['pid' => $first_new_post_id]).'#p'.$first_new_post_id);
                 }
             }
 
@@ -115,7 +115,7 @@ class Topic
             $last_post_id = Container::get('hooks')->fire('model.topic.handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
-                Router::redirect(Router::pathFor('viewPost', ['pid' => $last_post_id]).'#p'.$last_post_id);
+                return Router::redirect(Router::pathFor('viewPost', ['pid' => $last_post_id]).'#p'.$last_post_id);
             }
         }
 
@@ -268,7 +268,7 @@ class Topic
         $subscription = Container::get('hooks')->fireDB('model.topic.subscribe_topic_query', $subscription);
         $subscription = $subscription->save();
 
-        Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
+        return Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
     }
 
     public function unsubscribe($topic_id)
@@ -296,7 +296,7 @@ class Topic
         $delete = Container::get('hooks')->fireDB('model.topic.unsubscribe_topic_query', $delete);
         $delete = $delete->delete_many();
 
-        Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
+        return Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
     }
 
     // Subscraction link
@@ -619,7 +619,7 @@ class Topic
             $update_topic = $update_topic->save();
 
             Forum::update($fid);
-            Router::redirect(Router::pathFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
         }
 
         $posts = Container::get('hooks')->fire('model.topic.delete_posts', $posts);
@@ -808,7 +808,7 @@ class Topic
             Forum::update($fid);
             Forum::update($move_to_forum);
 
-            Router::redirect(Router::pathFor('Topic', array('id' => $new_tid)), __('Split posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', array('id' => $new_tid)), __('Split posts redirect'));
         }
 
         $posts = Container::get('hooks')->fire('model.topic.split_posts', $posts);

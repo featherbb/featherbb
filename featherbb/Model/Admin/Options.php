@@ -223,7 +223,7 @@ class Options
         Container::get('cache')->store('config', Cache::get_config());
         $this->clear_feed_cache();
 
-        Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
+        return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }
 
     public function clear_feed_cache()

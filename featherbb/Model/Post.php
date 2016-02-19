@@ -391,7 +391,7 @@ class Post
             Topic::delete($tid);
             Forum::update($fid);
 
-            Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Topic del redirect'));
+            return Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Topic del redirect'));
         } else {
             Container::get('hooks')->fire('model.post.handle_deletion', $tid, $fid, $id);
 
@@ -410,7 +410,7 @@ class Post
 
             $post = $post->find_one();
 
-            Router::redirect(Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
+            return Router::redirect(Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
         }
     }
 
@@ -624,7 +624,7 @@ class Post
         $last_report_sent = Container::get('hooks')->fireDB('model.post.insert_last_report_sent', $last_report_sent);
         $last_report_sent = $last_report_sent->save();
 
-        Router::redirect(Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
+        return Router::redirect(Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
     }
 
     public function get_info_report($post_id)

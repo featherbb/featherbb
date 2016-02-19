@@ -310,7 +310,7 @@ class Profile
 
             $this->model->delete_avatar($args['id']);
 
-            Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
+            return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
             if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);

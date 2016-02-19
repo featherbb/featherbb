@@ -252,9 +252,9 @@ class Groups
         Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
         if (Input::post('mode') == 'edit') {
-            Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
+            return Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
         } else {
-            Router::redirect(Router::pathFor('adminGroups'), __('Group added redirect'));
+            return Router::redirect(Router::pathFor('adminGroups'), __('Group added redirect'));
         }
     }
 
@@ -279,7 +279,7 @@ class Groups
         // Regenerate the config cache
         Container::get('cache')->store('config', Cache::get_config());
 
-        Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
+        return Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }
 
     public function check_members($group_id)
@@ -322,7 +322,7 @@ class Groups
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
                                                    ->update_many('g_promote_next_group', 0);
 
-        Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
+        return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
 
     public function get_group_title($group_id)

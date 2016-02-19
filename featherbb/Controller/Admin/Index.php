@@ -37,9 +37,9 @@ class Index
             }
 
             if (version_compare(Config::get('forum_settings')['o_cur_version'], $latest_version, '>=')) {
-                Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
+                return Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
             } else {
-                Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
+                return Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
             }
         }
 

@@ -81,8 +81,9 @@ Route::group('/topic', function() use ($feather) {
             throw new Error(__('No permission'), 403);
         }
     };
-    Route::get('/{id:[0-9]+}/[{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
+    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
+    Route::get('/{id:[0-9]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add($isGuest)->setName('subscribeTopic');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add($isGuest)->setName('unsubscribeTopic');
     Route::get('/close/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:close')->add($isAdmmod)->setName('closeTopic');
@@ -98,7 +99,8 @@ Route::group('/topic', function() use ($feather) {
 Route::group('/post', function() use ($feather) {
     Route::get('/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
     Route::map(['GET', 'POST'], '/new-topic/{fid:[0-9]+}', '\FeatherBB\Controller\Post:newpost')->setName('newTopic');
-    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}[/quote/{qid:[0-9]+}]', '\FeatherBB\Controller\Post:newreply')->setName('newQuoteReply');
+    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newReply');
+    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}/quote/{qid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newQuoteReply');
     Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Post:delete')->setName('deletePost');
     Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Post:editpost')->setName('editPost');
     Route::map(['GET', 'POST'], '/report/{id:[0-9]+}', '\FeatherBB\Controller\Post:report')->setName('report');

@@ -237,7 +237,7 @@ class Users
             DB::for_table('users')->where_in('id', $move['user_ids'])
                                                       ->update_many('group_id', $new_group);
 
-            Router::redirect(Router::pathFor('adminUsers'), __('Users move redirect'));
+            return Router::redirect(Router::pathFor('adminUsers'), __('Users move redirect'));
         }
 
         $move = Container::get('hooks')->fire('model.admin.model.users.move_users.move', $move);
@@ -402,7 +402,7 @@ class Users
 
             $stats = Container::get('cache')->retrieve('users_info');
 
-            Router::redirect(Router::pathFor('adminUsers'), __('Users delete redirect'));
+            return Router::redirect(Router::pathFor('adminUsers'), __('Users delete redirect'));
         }
 
         return $user_ids;
@@ -521,7 +521,7 @@ class Users
                 // Regenerate the bans cache
                 Container::get('cache')->store('bans', Cache::get_bans());
 
-                Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
+                return Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
             }
         }
         return $user_ids;

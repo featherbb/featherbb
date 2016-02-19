@@ -26,8 +26,14 @@ class Topic
 
     public function display($req, $res, $args)
     {
-        $args['page'] = null;
-        $args['pid'] = null;
+        if (!isset($args['page'])) {
+            $args['page'] = null;
+        }
+
+        if (!isset($args['pid'])) {
+            $args['pid'] = null;
+        }
+
         Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature
@@ -141,7 +147,7 @@ class Topic
         $args['id'] = Container::get('hooks')->fire('controller.topic.close', $args['id']);
 
         $topic = $this->model->setClosed($args['id'], 1);
-        Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
+        return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
     }
 
     public function open($req, $res, $args)
@@ -149,7 +155,7 @@ class Topic
         $args['id'] = Container::get('hooks')->fire('controller.topic.open', $args['id']);
 
         $topic = $this->model->setClosed($args['id'], 0);
-        Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
+        return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
     }
 
     public function stick($req, $res, $args)
@@ -157,7 +163,7 @@ class Topic
         $args['id'] = Container::get('hooks')->fire('controller.topic.stick', $args['id']);
 
         $topic = $this->model->setSticky($args['id'], 1);
-        Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
+        return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
     }
 
     public function unstick($req, $res, $args)
@@ -165,7 +171,7 @@ class Topic
         $args['id'] = Container::get('hooks')->fire('controller.topic.unstick', $args['id']);
 
         $topic = $this->model->setSticky($args['id'], 0);
-        Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
+        return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
     }
 
     // Move a single topic
@@ -175,7 +181,7 @@ class Topic
 
         if ($new_fid = Input::post('move_to_forum')) {
             $this->model->move_to($args['fid'], $new_fid, $args['tid']);
-            Router::redirect(Router::pathFor('Topic', array('id' => $args['tid'], 'name' => $args['name'])), __('Move topic redirect'));
+            return Router::redirect(Router::pathFor('Topic', array('id' => $args['tid'], 'name' => $args['name'])), __('Move topic redirect'));
         }
 
         // Check if there are enough forums to move the topic

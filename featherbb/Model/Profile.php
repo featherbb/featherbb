@@ -33,7 +33,7 @@ class Profile
 
             // If the user is already logged in we shouldn't be here :)
             if (!Container::get('user')->is_guest) {
-                Router::redirect(Router::pathFor('home'));
+                return Router::redirect(Router::pathFor('home'));
             }
 
             $cur_user = DB::for_table('users')
@@ -53,7 +53,7 @@ class Profile
                 $query = Container::get('hooks')->fireDB('model.profile.change_pass_activate_query', $query);
                 $query = $query->save();
 
-                Router::redirect(Router::pathFor('home'), __('Pass updated'));
+                return Router::redirect(Router::pathFor('home'), __('Pass updated'));
             }
         }
 
@@ -131,7 +131,7 @@ class Profile
             }
 
             Container::get('hooks')->fire('model.profile.change_pass');
-            Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
+            return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
         }
     }
 
@@ -188,7 +188,7 @@ class Profile
                 $update_mail = Container::get('hooks')->fireDB('model.profile.change_email_query', $update_mail);
                 $update_mail = $update_mail->save();
 
-                Router::redirect(Router::pathFor('home'), __('Email updated'));
+                return Router::redirect(Router::pathFor('home'), __('Email updated'));
             }
         } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
@@ -397,7 +397,7 @@ class Profile
 
         $uploaded_file = Container::get('hooks')->fire('model.profile.upload_avatar', $uploaded_file);
 
-        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
+        return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar upload redirect'));
     }
 
     //
@@ -479,7 +479,7 @@ class Profile
 
         $id = Container::get('hooks')->fire('model.profile.update_group_membership', $id);
 
-        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
+        return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Group membership redirect'));
     }
 
     public function get_username($id)
@@ -549,7 +549,7 @@ class Profile
 
         $id = Container::get('hooks')->fire('model.profile.update_mod_forums', $id);
 
-        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
+        return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'admin')), __('Update forums redirect'));
     }
 
     public function ban_user($id)
@@ -568,9 +568,9 @@ class Profile
         $ban_id = $ban_id->find_one_col('id');
 
         if ($ban_id) {
-            Router::redirect(Router::pathFor('editBan', array('id' => $ban_id)), __('Ban redirect'));
+            return Router::redirect(Router::pathFor('editBan', array('id' => $ban_id)), __('Ban redirect'));
         } else {
-            Router::redirect(Router::pathFor('addBan', array('id' => $id)), __('Ban redirect'));
+            return Router::redirect(Router::pathFor('addBan', array('id' => $id)), __('Ban redirect'));
         }
     }
 
@@ -602,7 +602,7 @@ class Profile
 
         $pid = Container::get('hooks')->fire('model.profile.promote_user', $pid);
 
-        Router::redirect(Router::pathFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
+        return Router::redirect(Router::pathFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
     public function delete_user($id)
@@ -742,7 +742,7 @@ class Profile
 
             Container::get('hooks')->fire('model.profile.delete_user');
 
-            Router::redirect(Router::pathFor('home'), __('User delete redirect'));
+            return Router::redirect(Router::pathFor('home'), __('User delete redirect'));
         }
     }
 
@@ -1093,7 +1093,7 @@ class Profile
 
         $section = Container::get('hooks')->fireDB('model.profile.update_profile', $section, $id);
 
-        Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => $section)), __('Profile redirect'));
+        return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => $section)), __('Profile redirect'));
     }
 
     public function get_user_info($id)
@@ -1484,7 +1484,7 @@ class Profile
         // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
         //$redirect_url = validate_redirect(Input::post('redirect_url'), 'index.php');
 
-        Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
+        return Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
     }
 
     public function display_ip_info($ip)

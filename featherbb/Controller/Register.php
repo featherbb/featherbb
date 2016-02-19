@@ -28,7 +28,7 @@ class Register
         Container::get('hooks')->fire('controller.register.display');
 
         if (!Container::get('user')->is_guest) {
-            Router::redirect(Router::pathFor('home'));
+            return Router::redirect(Router::pathFor('home'));
         }
 
         // Antispam feature
@@ -74,7 +74,7 @@ class Register
     {
         Container::get('hooks')->fire('controller.register.cancel');
 
-        Router::redirect(Router::pathFor('home'));
+        return Router::redirect(Router::pathFor('home'));
     }
 
     public function rules($req, $res, $args)
@@ -83,7 +83,7 @@ class Register
 
         // If we are logged in, we shouldn't be here
         if (!Container::get('user')->is_guest) {
-            Router::redirect(Router::pathFor('home'));
+            return Router::redirect(Router::pathFor('home'));
         }
 
         // Display an error message if new registrations are disabled
@@ -92,7 +92,7 @@ class Register
         }
 
         if (Config::get('forum_settings')['o_rules'] != '1') {
-            Router::redirect(Router::pathFor('register'));
+            return Router::redirect(Router::pathFor('register'));
         }
 
         View::setPageInfo(array(
