@@ -54,18 +54,12 @@ Route::get('/rules', '\FeatherBB\Controller\Index:rules')->setName('rules');
 Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add($isGuest)->setName('markRead');
 
 // Forum
-Route::group('/forum', function() use ($feather) {
-    $isGuest = function($request, $response, $next) use ($feather) {
-        if (Container::get('user')->is_guest) {
-            throw new Error(__('No permission'), 403);
-        }
-        return $response;
-    };
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Forum:display')->setName('Forum');
+Route::group('/forum', function() {
+    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
-    Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add($isGuest)->setName('markForumRead');
-    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add($isGuest)->setName('subscribeForum');
-    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add($isGuest)->setName('unsubscribeForum');
+    Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add(new \FeatherBB\Middleware\Logged())->setName('markForumRead');
+    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add(new \FeatherBB\Middleware\Logged())->setName('subscribeForum');
+    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add(new \FeatherBB\Middleware\Logged())->setName('unsubscribeForum');
     Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
     Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
 })->add($canReadBoard);
