@@ -295,7 +295,6 @@ class Auth
             // AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
             // Add $user as guest to DIC
             Container::set('user', $user);
-            // AuthModel::feather_setcookie(1, Random::hash(uniqid(rand(), true)), Container::get('now') + 31536000);
         }
 
         load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language.'/common.mo');

@@ -133,30 +133,6 @@ class Core
         $manager->loadPlugins();
     }
 
-    // Getters / setters for Slim container (avoid magic get error)
-
-    public function set_forum_env($key, $value = null)
-    {
-        $tmp = (!is_array($key) && !is_null($value)) ? array($key, $value) : $key;
-        foreach ($tmp as $key => $value) {
-            $this->app->container->get('forum_env')[$key] = $value;
-        }
-
-    }
-
-    public function set_forum_settings($key, $value = null)
-    {
-        $tmp = (!is_array($key) && !is_null($value)) ? array($key, $value) : $key;
-        foreach ($tmp as $key => $value) {
-            $this->app->container->get('forum_settings')[$key] = $value;
-        }
-    }
-
-    public function hydrate($name, array $data)
-    {
-        $this->app->container[$name] = $data;
-    }
-
     // Headers
 
     public function set_headers($res)
@@ -165,7 +141,7 @@ class Core
             $res = $res->withHeader($label, $value);
         }
         $res = $res->withHeader('X-Powered-By', $this->forum_env['FORUM_NAME']);
-        // $this->app->expires(0);
+
         return $res;
     }
 
@@ -183,7 +159,6 @@ class Core
 
         // Populate Slim object with forum_env vars
         Container::set('forum_env', $this->forum_env);
-        Config::set('forum_env', $this->forum_env);
         // Load FeatherBB utils class
         Container::set('utils', function ($container) {
             return new Utils();
@@ -257,10 +232,7 @@ class Core
 
         // Init DB and configure Slim
         self::init_db($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
-        Config::set('displayErrorDetails', $this->forum_env['FEATHER_DEBUG']);
-        // array('debug' => $this->forum_env['FEATHER_DEBUG'],
-        //                          'cookies.encrypt' => true,
-        //                          'cookies.secret_key' => $this->forum_settings['jwt_token'])
+        Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         if (!Container::get('cache')->isCached('config')) {
             Container::get('cache')->store('config', \FeatherBB\Model\Cache::get_config());
@@ -269,23 +241,17 @@ class Core
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
-        Config::set('forum_settings', $this->forum_settings);
 
         // Set default style and assets
-        Container::get('template')->setStyle($this->forum_settings['o_default_style']);
+        Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
         Container::get('template')->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
-
-        // Populate FeatherBB Slim object with forum_settings vars
-        $this->hydrate('forum_settings', $this->forum_settings);
-        $this->app->config = $this->forum_settings; // Legacy
-        extract($this->forum_settings); // Legacy
 
         // Run activated plugins
         self::loadPlugins();
 
         // Define time formats
-        $forum_time_formats = array($this->forum_settings['o_time_format'], 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
-        $forum_date_formats = array($this->forum_settings['o_date_format'], 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
+        $forum_time_formats = array(ForumSettings::get('o_time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
+        $forum_date_formats = array(ForumSettings::get('o_date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
 
         // Call FeatherBBAuth middleware
         return $next($req, $res);

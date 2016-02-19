@@ -21,7 +21,7 @@ class AdminUtils
         // See if there are any plugins that want to display in the menu
         $plugins = self::adminPluginsMenu($is_admin);
 
-        View::setPageInfo(array(
+        \View::setPageInfo(array(
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
             'plugins'    =>    $plugins,
