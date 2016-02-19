@@ -291,12 +291,13 @@ class Auth
                 DB::for_table('online')->where('ident', Request::getServerParams()['REMOTE_ADDR'])
                      ->update_many('logged', time());
             }
-            $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);
-            AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
+            // $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);
+            // AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
             // Add $user as guest to DIC
             Container::set('user', $user);
             // AuthModel::feather_setcookie(1, Random::hash(uniqid(rand(), true)), Container::get('now') + 31536000);
         }
+        // var_dump(Container::get('user'));
 
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language.'/common.mo');
         // Load bans from cache

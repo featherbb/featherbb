@@ -28,9 +28,9 @@ class Auth
     public function login($req, $res, $args)
     {
         // var_dump(Container::get('user'));
-        if (!Container::get('user')->is_guest) {
-            return Router::redirect(Router::pathFor('home'), 'Already logged in');
-        }
+        // if (!Container::get('user')->is_guest) {
+        //     return Router::redirect(Router::pathFor('home'), 'Already logged in');
+        // }
 
         if (Request::isPost()) {
             Container::get('hooks')->fire('controller.login');
@@ -56,7 +56,10 @@ class Auth
 
                     $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
-                    ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
+
+                    $jwt = ModelAuth::generate_jwt($user, $expire);
+                    ModelAuth::feather_setcookie('Bearer '.$jwt, $expire);
+                    // ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
                     return Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 } else {
