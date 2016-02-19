@@ -36,97 +36,76 @@ class Auth
 
     public static function delete_online_by_ip($ip)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $delete_online = DB::for_table('online')->where('ident', $ip);
-        $delete_online = $feather->hooks->fireDB('delete_online_login', $delete_online);
+        $delete_online = Container::get('hooks')->fireDB('delete_online_login', $delete_online);
         return $delete_online->delete_many();
     }
 
     public static function delete_online_by_id($user_id)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         // Remove user from "users online" list
         $delete_online = DB::for_table('online')->where('user_id', $user_id);
-        $delete_online = $feather->hooks->fireDB('delete_online_logout', $delete_online);
+        $delete_online = Container::get('hooks')->fireDB('delete_online_logout', $delete_online);
         return $delete_online->delete_many();
     }
 
     public static function get_user_from_name($username)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $user = DB::for_table('users')->where('username', $username);
-        $user = $feather->hooks->fireDB('find_user_login', $user);
+        $user = Container::get('hooks')->fireDB('find_user_login', $user);
         return $user->find_one();
     }
 
     public static function get_user_from_email($email)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $result['select'] = array('id', 'username', 'last_email_sent');
         $result = DB::for_table('users')
             ->select_many($result['select'])
             ->where('email', $email);
-        $result = $feather->hooks->fireDB('password_forgotten_query', $result);
+        $result = Container::get('hooks')->fireDB('password_forgotten_query', $result);
         return $result->find_one();
     }
 
     public static function update_group($user_id, $group_id)
     {
-        self::$feather = \Slim\Slim::getInstance();
         $update_usergroup = DB::for_table('users')->where('id', $user_id)
             ->find_one()
             ->set('group_id', $group_id);
-        $update_usergroup = self::$feather->hooks->fireDB('update_usergroup_login', $update_usergroup);
+        $update_usergroup = Container::get('hooks')->fireDB('update_usergroup_login', $update_usergroup);
         return $update_usergroup->save();
     }
 
     public static function set_last_visit($user_id, $last_visit)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $update_last_visit = DB::for_table('users')->where('id', (int) $user_id)
             ->find_one()
             ->set('last_visit', (int) $last_visit);
-        $update_last_visit = $feather->hooks->fireDB('update_online_logout', $update_last_visit);
+        $update_last_visit = Container::get('hooks')->fireDB('update_online_logout', $update_last_visit);
         return $update_last_visit->save();
     }
 
     public static function set_new_password($pass, $key, $user_id)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $query['update'] = array(
             'activate_string' => hash($pass),
             'activate_key'    => $key,
-            'last_email_sent' => $feather->now
+            'last_email_sent' => time(),
         );
 
         $query = DB::for_table('users')
                     ->where('id', $user_id)
                     ->find_one()
                     ->set($query['update']);
-        $query = $feather->hooks->fireDB('password_forgotten_mail_query', $query);
+        $query = Container::get('hooks')->fireDB('password_forgotten_mail_query', $query);
         return $query->save();
     }
 
     public static function feather_setcookie($user_id, $password, $expires)
     {
-        // Get Slim current session
         $cookie_data = array('user_id' => $user_id,
             'password_hash' => hash_hmac('sha1', $password, Config::get('forum_settings')['cookie_seed'].'_password_hash'),
             'expires' => $expires,
             'checksum' => hash_hmac('sha1', $user_id.$expires, Config::get('forum_settings')['cookie_seed'].'_checksum'));
-        // $feather->setCookie(Config::get('forum_settings')['cookie_name'], json_encode($cookie_data), $expires);
         setcookie(Config::get('forum_settings')['cookie_name'], json_encode($cookie_data), $expires);
     }
 }

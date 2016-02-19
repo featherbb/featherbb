@@ -25,8 +25,7 @@ class Login
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        Container::get('hooks') = $this->feather->hooks;
-        $this->email = $this->feather->email;
+        $this->email = Container::get('email');
         $this->auth = new \FeatherBB\Model\Auth();
     }
 
@@ -74,7 +73,7 @@ class Login
         }
 
         // Remove this user's guest entry from the online list
-        $delete_online = DB::for_table('online')->where('ident', $this->request->getIp());
+        $delete_online = DB::for_table('online')->where('ident', Utils::getIp());
         $delete_online = Container::get('hooks')->fireDB('model.login.delete_online_login', $delete_online);
         $delete_online = $delete_online->delete_many();
 
@@ -96,7 +95,7 @@ class Login
     {
         $token = Container::get('hooks')->fire('model.login.logout_start', $token, $id);
 
-        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash($this->request->getIp()))) {
+        if ($this->user->is_guest || !isset($id) || $id != $this->user->id || !isset($token) || $token != Random::hash($this->user->id.Random::hash(Utils::getIp()))) {
             Router::redirect(Router::pathFor('home'));
         }
 

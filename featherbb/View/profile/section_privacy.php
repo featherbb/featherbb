@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section privacy') ?></span></h2>
     <div class="box">
         <form id="profile6" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Privacy options legend') ?></legend>

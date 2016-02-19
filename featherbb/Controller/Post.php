@@ -44,7 +44,7 @@ class Post
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
-        if ($this->feather->request->post('username')) {
+        if (Input::post('username')) {
             throw new Error(__('Bad request'), 400);
         }
 
@@ -79,14 +79,14 @@ class Post
         if ($this->feather->request()->isPost()) {
 
             // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
-            if ($this->feather->request->post('pid')) {
-                $pid = $this->feather->request->post('pid');
+            if (Input::post('pid')) {
+                $pid = Input::post('pid');
             } else {
                 $pid = '';
             }
 
-            if ($this->feather->request->post('page')) {
-                $page = $this->feather->request->post('page');
+            if (Input::post('page')) {
+                $page = Input::post('page');
             } else {
                 $page = '';
             }
@@ -98,7 +98,7 @@ class Post
                 $post = $this->model->setup_variables($errors, $is_admmod);
 
                 // Did everything go according to plan?
-                if (empty($errors) && !$this->feather->request->post('preview')) {
+                if (empty($errors) && !Input::post('preview')) {
                         // If it's a reply
                         if ($tid) {
                             // Insert the reply, get the new_pid
@@ -298,7 +298,7 @@ class Post
             $post = $this->model->setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors);
 
             // Did everything go according to plan?
-            if (empty($errors) && !$this->feather->request->post('preview')) {
+            if (empty($errors) && !Input::post('preview')) {
                 Container::get('hooks')->fire('controller.post.edit.valid', $id);
                 // Edit the post
                 $this->model->edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod);
@@ -309,7 +309,7 @@ class Post
             $post = '';
         }
 
-        if ($this->feather->request->post('preview')) {
+        if (Input::post('preview')) {
             $preview_message = $this->feather->parser->parse_message($post['message'], $post['hide_smilies']);
             $preview_message = Container::get('hooks')->fire('controller.post.edit.preview', $preview_message);
         } else {

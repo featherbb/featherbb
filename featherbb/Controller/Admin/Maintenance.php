@@ -26,8 +26,8 @@ class Maintenance
         Container::get('hooks')->fire('controller.admin.maintenance.display');
 
         $action = '';
-        if ($this->feather->request->post('action')) {
-            $action = $this->feather->request->post('action');
+        if (Input::post('action')) {
+            $action = Input::post('action');
         } elseif ($this->feather->request->get('action')) {
             $action = $this->feather->request->get('action');
         }
@@ -43,12 +43,12 @@ class Maintenance
         }
 
         if ($action == 'prune') {
-            $prune_from = Utils::trim($this->feather->request->post('prune_from'));
-            $prune_sticky = intval($this->feather->request->post('prune_sticky'));
+            $prune_from = Utils::trim(Input::post('prune_from'));
+            $prune_sticky = intval(Input::post('prune_sticky'));
 
             AdminUtils::generateAdminMenu('maintenance');
 
-            if ($this->feather->request->post('prune_comply')) {
+            if (Input::post('prune_comply')) {
                 $this->model->prune_comply($prune_from, $prune_sticky);
             }
 

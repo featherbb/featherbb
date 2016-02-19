@@ -112,7 +112,7 @@ Route::get('/userlist', '\FeatherBB\Controller\Userlist:display')->add($canReadB
 Route::group('/auth', function() use ($feather) {
     Route::get('', function() use ($feather) {
         if (!Container::get('user')->is_guest) {
-            $feather->url->redirect(Router::pathFor('home'), 'Already logged');
+            Container::get('url')->redirect(Router::pathFor('home'), 'Already logged');
         } else {
             $feather->redirect(Router::pathFor('login'));
         }
@@ -158,7 +158,7 @@ Route::group('/admin', function() use ($feather) {
 
     $isAdmin = function() use ($feather) {
         if(Container::get('user')->g_id != $feather->forum_env['FEATHER_ADMIN']) {
-            $feather->url->redirect(Router::pathFor('home'), __('No permission'));
+            Container::get('url')->redirect(Router::pathFor('home'), __('No permission'));
         }
     };
 

@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.moderate.delete_posts.start');
     <h2><span><?php _e('Delete posts') ?></span></h2>
     <div class="box">
         <form method="post" action="">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Confirm delete legend') ?></legend>

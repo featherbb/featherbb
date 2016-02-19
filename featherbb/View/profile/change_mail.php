@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.profile.change_mail.start');
     <h2><span><?php _e('Change email') ?></span></h2>
     <div class="box">
         <form id="change_email" method="post" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Email legend') ?></legend>

@@ -671,13 +671,13 @@ if ($action == 'feed') {
         }
 
         // Prepend the current base URL onto some links. Done after caching to handle http/https correctly
-        $feed['link'] = $feather->url->base(true).$feed['link'];
+        $feed['link'] = Container::get('url')->base(true).$feed['link'];
 
         foreach ($feed['items'] as $key => $item) {
-            $feed['items'][$key]['link'] = $feather->url->base(true).$item['link'];
+            $feed['items'][$key]['link'] = Container::get('url')->base(true).$item['link'];
 
             if (isset($item['author']['uri'])) {
-                $feed['items'][$key]['author']['uri'] = $feather->url->base(true).$item['author']['uri'];
+                $feed['items'][$key]['author']['uri'] = Container::get('url')->base(true).$item['author']['uri'];
             }
         }
 

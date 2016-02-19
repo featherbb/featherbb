@@ -103,7 +103,7 @@ class Search
 
         // If a valid search_id was supplied we attempt to fetch the search results from the db
         if (isset($search_id)) {
-            $ident = ($this->user->is_guest) ? $this->request->getIp() : $this->user->username;
+            $ident = ($this->user->is_guest) ? Utils::getIp() : $this->user->username;
 
             $search_data = DB::for_table('search_cache')
                                 ->where('id', $search_id)
@@ -143,7 +143,7 @@ class Search
                                             ->where('id', $this->user->id);
                 } else {
                     $update_last_search = DB::for_table('online')
-                                            ->where('ident', $this->request->getIp());
+                                            ->where('ident', Utils::getIp());
                 }
                 $update_last_search = Container::get('hooks')->fireDB('model.search.get_search_results_update_last_search', $update_last_search);
                 $update_last_search = $update_last_search->update_many('last_search', time());
@@ -556,7 +556,7 @@ class Search
             ));
             $search_id = mt_rand(1, 2147483647);
 
-            $ident = ($this->user->is_guest) ? $this->request->getIp() : $this->user->username;
+            $ident = ($this->user->is_guest) ? Utils::getIp() : $this->user->username;
 
             $cache['insert'] = array(
                 'id'   =>  $search_id,

@@ -24,7 +24,7 @@ class Profile
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->email = $this->feather->email;
+        $this->email = Container::get('email');
         $this->auth = new \FeatherBB\Model\Auth();
     }
 

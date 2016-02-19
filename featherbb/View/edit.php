@@ -75,7 +75,7 @@ endif;
     <h2><span><?php _e('Edit post') ?></span></h2>
     <div class="box">
         <form id="edit" method="post" action="<?= Router::pathFor('editPost', ['id' => $id]) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Edit post legend') ?></legend>

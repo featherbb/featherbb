@@ -13,8 +13,6 @@ class Email
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->config = $this->feather->config;
         require Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/Helpers/utf8/utils/ascii.php';
     }
 

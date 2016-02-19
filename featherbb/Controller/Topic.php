@@ -172,7 +172,7 @@ class Topic
     {
         $tid = Container::get('hooks')->fire('controller.topic.move', $tid);
 
-        if ($new_fid = $this->feather->request->post('move_to_forum')) {
+        if ($new_fid = Input::post('move_to_forum')) {
             $this->model->move_to($fid, $new_fid, $tid);
             Router::redirect(Router::pathFor('Topic', array('id' => $tid, 'name' => $name)), __('Move topic redirect'));
         }
@@ -215,7 +215,7 @@ class Topic
         $start_from = Container::get('user')->disp_posts * ($p - 1);
 
         // Delete one or more posts
-        if ($this->feather->request->post('delete_posts') || $this->feather->request->post('delete_posts_comply')) {
+        if (Input::post('delete_posts') || Input::post('delete_posts_comply')) {
             $posts = $this->model->delete_posts($id, $fid);
 
             View::setPageInfo(array(
@@ -225,7 +225,7 @@ class Topic
                 )
             )->addTemplate('moderate/delete_posts.php')->display();
         }
-        if ($this->feather->request->post('split_posts') || $this->feather->request->post('split_posts_comply')) {
+        if (Input::post('split_posts') || Input::post('split_posts_comply')) {
 
             View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),

@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.profile.section_personality.start');
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section personality') ?></span></h2>
     <div class="box">
         <form id="profile4" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div><input type="hidden" name="form_sent" value="1" /></div>
 <?php if (Config::get('forum_settings')['o_avatars'] == '1'): ?>                <div class="inform">
                 <fieldset id="profileavatar">

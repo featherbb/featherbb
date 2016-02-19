@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.profile.change_pass.start');
     <h2><span><?php _e('Change pass') ?></span></h2>
     <div class="box">
         <form id="change_pass" method="post" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <input type="hidden" name="form_sent" value="1" />
                 <fieldset>

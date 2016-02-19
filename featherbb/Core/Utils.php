@@ -313,11 +313,20 @@ class Utils
             $path = Container::get('config')['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
 
             if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].$path) && $img_size = getimagesize(Config::get('forum_env')['FEATHER_ROOT'].$path)) {
-                //$avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime(Config::get('forum_env')['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />'; TODO
+                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(Config::get('forum_env')['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';
                 break;
             }
         }
 
         return $avatar_markup;
+    }
+
+    //
+    // Get IP Address
+    //
+    public static function getIp()
+    {
+        // TODO: IP proxy
+        return Request::getServerParams()['REMOTE_ADDR'];
     }
 }

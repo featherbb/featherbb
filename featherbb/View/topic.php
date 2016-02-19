@@ -132,7 +132,7 @@ if ($quickpost) {
     <h2><span><?php _e('Quick post') ?></span></h2>
     <div class="box">
         <form id="quickpostform" method="post" action="<?= Router::pathFor('newReply', ['tid' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Write message legend') ?></legend>

@@ -32,9 +32,9 @@ class Auth
 
         if (Request::isPost()) {
             Container::get('hooks')->fire('controller.login');
-            $form_username = Utils::trim($this->feather->request->post('req_username'));
-            $form_password = Utils::trim($this->feather->request->post('req_password'));
-            $save_pass = (bool) $this->feather->request->post('save_pass');
+            $form_username = Utils::trim(Input::post('req_username'));
+            $form_password = Utils::trim(Input::post('req_password'));
+            $save_pass = (bool) Input::post('save_pass');
 
             $user = ModelAuth::get_user_from_name($form_username);
 
@@ -48,7 +48,7 @@ class Auth
                         }
                     }
 
-                    ModelAuth::delete_online_by_ip($this->feather->request->getIp());
+                    ModelAuth::delete_online_by_ip(Utils::getIp());
                     // Reset tracked topics
                     Track::set_tracked_topics(null);
 
@@ -75,7 +75,7 @@ class Auth
     {
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
-        if (Container::get('user')->is_guest || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash($this->feather->request->getIp()))) {
+        if (Container::get('user')->is_guest || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))) {
             Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
@@ -100,8 +100,8 @@ class Auth
 
         if (Request::isPost()) {
             // Validate the email address
-            $email = strtolower(Utils::trim($this->feather->request->post('req_email')));
-            if (!$this->feather->email->is_valid_email($email)) {
+            $email = strtolower(Utils::trim(Input::post('req_email')));
+            if (!Container::get('email')->is_valid_email($email)) {
                 throw new Error(__('Invalid email'), 400);
             }
             $user = ModelAuth::get_user_from_email($email);
@@ -138,7 +138,7 @@ class Auth
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
-                $this->feather->email->feather_mail($email, $mail_subject, $cur_mail_message);
+                Container::get('email')->feather_mail($email, $mail_subject, $cur_mail_message);
 
                 Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 200);
             } else {

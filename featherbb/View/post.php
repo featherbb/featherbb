@@ -87,7 +87,7 @@ $cur_index = 1;
                     <legend><?php _e('Write message legend') ?></legend>
                     <div class="infldset txtarea">
                         <input type="hidden" name="form_sent" value="1" />
-                                                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                                                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 if (Container::get('user')->is_guest) {
     $email_label = (Config::get('forum_settings')['p_force_guest_email'] == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');

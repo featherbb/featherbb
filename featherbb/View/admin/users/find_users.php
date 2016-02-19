@@ -33,7 +33,7 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
 
 
 <form id="search-users-form" action="<?= Router::pathFor('adminUsers') ?>" method="post">
-<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+<input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <div id="users2" class="blocktable">
     <h2><span><?php _e('Results head') ?></span></h2>
     <div class="box">

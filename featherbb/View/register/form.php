@@ -44,7 +44,7 @@ if (!empty($errors)) {
     <h2><span><?php _e('Register') ?></span></h2>
     <div class="box">
         <form id="register" method="post" action="" onsubmit="this.register.disabled=true;if(process_form(this)){return true;}else{this.register.disabled=false;return false;}">
-        <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <div class="forminfo">
                     <h3><?php _e('Important information') ?></h3>

@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.moderate.merge_topics.start');
     <h2><span><?php _e('Merge topics') ?></span></h2>
     <div class="box">
         <form method="post" action="">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <input type="hidden" name="topics" value="<?= implode(',', array_map('intval', array_keys($topics))) ?>" />
             <div class="inform">
                 <fieldset>

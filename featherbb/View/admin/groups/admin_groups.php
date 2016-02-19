@@ -23,7 +23,7 @@ Container::get('hooks')->fire('view.admin.groups.admin_groups.start');
                 <div class="inform">
                     <fieldset>
                         <form id="groups" method="post" action="<?= Router::pathFor('addGroup') ?>">
-                        <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                        <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                         <legend><?php _e('Add group subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
@@ -56,7 +56,7 @@ foreach ($groups as $cur_group) {
                 <div class="inform">
                     <fieldset>
                         <form id="groups" method="post" action="<?= Router::pathFor('adminGroups') ?>">
-                            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                         <legend><?php _e('Default group subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">

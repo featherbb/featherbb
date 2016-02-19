@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.admin.maintenance.prune.start');
         <h2><span><?php _e('Prune head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <input type="hidden" name="action" value="prune" />
                     <input type="hidden" name="prune_days" value="<?= $prune['days'] ?>" />

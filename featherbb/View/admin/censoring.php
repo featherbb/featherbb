@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.admin.censoring.start');
         <h2><span><?php _e('Censoring head') ?></span></h2>
         <div class="box">
             <form id="censoring" method="post" action="<?= Router::pathFor('adminCensoring') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Add word subhead') ?></legend>

@@ -25,7 +25,7 @@ class Post
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         Container::get('hooks') = $this->feather->hooks;
-        $this->email = $this->feather->email;
+        $this->email = Container::get('email');
         $this->search = new \FeatherBB\Core\Search();
     }
 
@@ -679,7 +679,7 @@ class Post
             $query['insert'] = array(
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
-                'poster_ip' => $this->request->getIp(),
+                'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -726,7 +726,7 @@ class Post
             // It's a guest. Insert the new post
             $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_ip' => $this->request->getIp(),
+                'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -928,7 +928,7 @@ class Post
             $query['insert'] = array(
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
-                'poster_ip' => $this->request->getIp(),
+                'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -945,7 +945,7 @@ class Post
             // Create the post ("topic post")
             $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_ip' => $this->request->getIp(),
+                'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
@@ -1143,7 +1143,7 @@ class Post
         } else {
             // Update the last_post field for guests
             $last_post = DB::for_table('online')
-                            ->where('ident', $this->request->getIp())
+                            ->where('ident', Utils::getIp())
                             ->find_one()
                             ->set('last_post', $post['time']);
             $last_post = Container::get('hooks')->fireDB('model.post.increment_post_count_last_post', $last_post);

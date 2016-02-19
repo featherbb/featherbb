@@ -24,7 +24,7 @@ class Register
         $this->config = $this->feather->config;
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
-        $this->email = $this->feather->email;
+        $this->email = Container::get('email');
         $this->auth = new \FeatherBB\Model\Auth();
     }
 
@@ -39,7 +39,7 @@ class Register
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
         $already_registered = DB::for_table('users')
-                                  ->where('registration_ip', $this->request->getIp())
+                                  ->where('registration_ip', Utils::getIp())
                                   ->where_gt('registered', time() - 3600);
         $already_registered = Container::get('hooks')->fireDB('model.register.check_for_errors_ip_query', $already_registered);
         $already_registered = $already_registered->find_one();
@@ -156,7 +156,7 @@ class Register
             'language'        => $user['language'],
             'style'           => $this->config['o_default_style'],
             'registered'      => $now,
-            'registration_ip' => $this->request->getIp(),
+            'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,
         );
 

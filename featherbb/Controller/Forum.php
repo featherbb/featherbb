@@ -179,13 +179,13 @@ class Forum
         $topicModel = new \FeatherBB\Model\Topic();
 
         // Move one or more topics
-        if ($this->feather->request->post('move_topics') || $this->feather->request->post('move_topics_to')) {
-            $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
+        if (Input::post('move_topics') || Input::post('move_topics_to')) {
+            $topics = Input::post('topics') ? Input::post('topics') : array();
             if (empty($topics)) {
                 throw new Error(__('No topics selected'), 400);
             }
 
-            if ($new_fid = $this->feather->request->post('move_to_forum')) {
+            if ($new_fid = Input::post('move_to_forum')) {
                 $topics = explode(',', $topics);
                 $topicModel->move_to($args['fid'], $new_fid, $topics);
                 Router::redirect(Router::pathFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
@@ -208,13 +208,13 @@ class Forum
         }
 
         // Merge two or more topics
-        elseif ($this->feather->request->post('merge_topics') || $this->feather->request->post('merge_topics_comply')) {
-            if ($this->feather->request->post('merge_topics_comply')) {
+        elseif (Input::post('merge_topics') || Input::post('merge_topics_comply')) {
+            if (Input::post('merge_topics_comply')) {
                 $this->model->merge_topics($args['fid']);
                 Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Merge topics redirect'));
             }
 
-            $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
+            $topics = Input::post('topics') ? Input::post('topics') : array();
             if (count($topics) < 2) {
                 throw new Error(__('Not enough topics selected'), 400);
             }
@@ -229,13 +229,13 @@ class Forum
         }
 
         // Delete one or more topics
-        elseif ($this->feather->request->post('delete_topics') || $this->feather->request->post('delete_topics_comply')) {
-            $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
+        elseif (Input::post('delete_topics') || Input::post('delete_topics_comply')) {
+            $topics = Input::post('topics') ? Input::post('topics') : array();
             if (empty($topics)) {
                 throw new Error(__('No topics selected'), 400);
             }
 
-            if ($this->feather->request->post('delete_topics_comply')) {
+            if (Input::post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $args['fid']);
                 Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Delete topics redirect'));
             }
@@ -251,12 +251,12 @@ class Forum
 
 
         // Open or close one or more topics
-        elseif ($this->feather->request->post('open') || $this->feather->request->post('close')) {
-            $action = ($this->feather->request->post('open')) ? 0 : 1;
+        elseif (Input::post('open') || Input::post('close')) {
+            $action = (Input::post('open')) ? 0 : 1;
 
             // There could be an array of topic IDs in $_POST
-            if ($this->feather->request->post('open') || $this->feather->request->post('close')) {
-                $topics = $this->feather->request->post('topics') ? @array_map('intval', @array_keys($this->feather->request->post('topics'))) : array();
+            if (Input::post('open') || Input::post('close')) {
+                $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : array();
                 if (empty($topics)) {
                     throw new Error(__('No topics selected'), 400);
                 }

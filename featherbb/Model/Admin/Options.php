@@ -25,7 +25,7 @@ class Options
         $this->user = Container::get('user');
         $this->request = $this->feather->request;
         Container::get('hooks') = $this->feather->hooks;
-        $this->email = $this->feather->email;
+        $this->email = Container::get('email');
     }
 
     public function update_options()

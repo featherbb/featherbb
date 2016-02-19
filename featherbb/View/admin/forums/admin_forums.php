@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.admin.forums.admin_forums.start');
         <h2><span><?php _e('Add forum head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('addForum') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 if (!empty($cat_list)) {
     ?>
@@ -70,7 +70,7 @@ if (!empty($forum_data)) {
         <h2 class="block2"><span><?php _e('Manage forums head') ?></span></h2>
         <div class="box">
             <form id="edforum" method="post" action="<?= Router::pathFor('adminForums') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop"><input type="submit" name="update_positions" value="<?php _e('Update positions') ?>" tabindex="3" /></p>
 <?php
     foreach ($forum_data as $cat_id => $cat_data) {
