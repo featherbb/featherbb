@@ -92,7 +92,7 @@ class Auth
             ModelAuth::set_last_visit(Container::get('user')->id, Container::get('user')->logged);
         }
 
-        ModelAuth::feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
+        ModelAuth::feather_setcookie('Bearer ', 1);
         Container::get('hooks')->fire('controller.logout_end');
 
         return Router::redirect(Router::pathFor('home'), __('Logout redirect'));

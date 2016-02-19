@@ -297,7 +297,6 @@ class Auth
             Container::set('user', $user);
             // AuthModel::feather_setcookie(1, Random::hash(uniqid(rand(), true)), Container::get('now') + 31536000);
         }
-        // var_dump(Container::get('user'));
 
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language.'/common.mo');
         // Load bans from cache
