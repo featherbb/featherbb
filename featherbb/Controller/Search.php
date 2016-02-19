@@ -85,6 +85,6 @@ class Search
     {
         Container::get('hooks')->fire('controller.search.quicksearches');
 
-        Router::redirect(Router::pathFor('search').'?action=show_'.$args['show']);
+        return Router::redirect(Router::pathFor('search').'?action=show_'.$args['show']);
     }
 }

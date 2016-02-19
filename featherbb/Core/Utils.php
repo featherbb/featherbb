@@ -326,14 +326,19 @@ class Utils
     //
     public static function getIp()
     {
-        $client  = Request::getServerParams()['HTTP_CLIENT_IP'];
-        $forward = Request::getServerParams()['HTTP_X_FORWARDED_FOR'];
-        $remote  = Request::getServerParams()['REMOTE_ADDR'];
+        if (isset(Request::getServerParams()['HTTP_CLIENT_IP'])) {
+            $client = Request::getServerParams()['HTTP_CLIENT_IP'];
+        }
+        if (isset(Request::getServerParams()['HTTP_X_FORWARDED_FOR'])) {
+            $forward = Request::getServerParams()['HTTP_X_FORWARDED_FOR'];
+        }
 
-        if (filter_var($client, FILTER_VALIDATE_IP)) {
+        $remote = Request::getServerParams()['REMOTE_ADDR'];
+
+        if (isset($client) && filter_var($client, FILTER_VALIDATE_IP)) {
             return $client;
         }
-        elseif(filter_var($forward, FILTER_VALIDATE_IP)) {
+        elseif(isset($forward) && filter_var($forward, FILTER_VALIDATE_IP)) {
             return $forward;
         }
 
