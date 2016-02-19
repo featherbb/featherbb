@@ -143,7 +143,7 @@ function set_default_user()
     // Get Slim current session
     $feather = \Slim\Slim::getInstance();
 
-    $remote_addr = $feather->request->getIp();
+    $remote_addr = Utils::getIp();
 
     // Fetch guest user
     $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
@@ -437,7 +437,7 @@ function output_html($feed)
 
     foreach ($feed['items'] as $item) {
         if (utf8_strlen($item['title']) > FORUM_EXTERN_MAX_SUBJECT_LENGTH) {
-            $subject_truncated = Utils::escape($feather->utils->trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
+            $subject_truncated = Utils::escape(Utils::trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
         } else {
             $subject_truncated = Utils::escape($item['title']);
         }
@@ -547,7 +547,7 @@ if ($action == 'feed') {
 
         // Were any forum IDs supplied?
         if (isset($_GET['fid']) && is_scalar($_GET['fid']) && $_GET['fid'] != '') {
-            $fids = explode(',', $feather->utils->trim($_GET['fid']));
+            $fids = explode(',', Utils::trim($_GET['fid']));
             $fids = array_map('intval', $fids);
 
             if (!empty($fids)) {
@@ -576,7 +576,7 @@ if ($action == 'feed') {
 
         // Any forum IDs to exclude?
         if (isset($_GET['nfid']) && is_scalar($_GET['nfid']) && $_GET['nfid'] != '') {
-            $nfids = explode(',', $feather->utils->trim($_GET['nfid']));
+            $nfids = explode(',', Utils::trim($_GET['nfid']));
             $nfids = array_map('intval', $nfids);
 
             if (!empty($nfids)) {
@@ -734,11 +734,11 @@ elseif ($action == 'online' || $action == 'online_full') {
 // Show board statistics
 elseif ($action == 'stats') {
 
-    if (!$feather->cache->isCached('users_info')) {
-        $feather->cache->store('users_info', Cache::get_users_info());
+    if (!Container::get('cache')->isCached('users_info')) {
+        Container::get('cache')->store('users_info', Cache::get_users_info());
     }
 
-    $stats = $feather->cache->retrieve('users_info');
+    $stats = Container::get('cache')->retrieve('users_info');
 
     $stats_query = \DB::for_table('forums')
                         ->select_expr('SUM(num_topics)', 'total_topics')

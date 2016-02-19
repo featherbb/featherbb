@@ -27,7 +27,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
                         <?= $user_disp['username_field'] ?>
-<?php if (Container::get('user')->id == $id || Container::get('user')->g_id == $feather->forum_env['FEATHER_ADMIN'] || ($user['g_moderator'] == '0' && Container::get('user')->g_mod_change_passwords == '1')): ?>                            <p class="actions"><span><a href="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
+<?php if (Container::get('user')->id == $id || Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || ($user['g_moderator'] == '0' && Container::get('user')->g_mod_change_passwords == '1')): ?>                            <p class="actions"><span><a href="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
 <?php endif; ?>                        </div>
                 </fieldset>
             </div>

@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
@@ -52,7 +53,7 @@ class Auth
                     // Reset tracked topics
                     Track::set_tracked_topics(null);
 
-                    $expire = ($save_pass) ? $this->feather->now + 1209600 : $this->feather->now + Config::get('forum_settings')['o_timeout_visit'];
+                    $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
                     ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 

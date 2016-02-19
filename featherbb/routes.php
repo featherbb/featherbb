@@ -157,7 +157,7 @@ Route::group('/admin', function() use ($feather) {
      */
 
     $isAdmin = function() use ($feather) {
-        if(Container::get('user')->g_id != $feather->forum_env['FEATHER_ADMIN']) {
+        if(Container::get('user')->g_id != Container::get('forum_env')['FEATHER_ADMIN']) {
             Container::get('url')->redirect(Router::pathFor('home'), __('No permission'));
         }
     };

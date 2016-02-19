@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Container;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -18,14 +19,12 @@ class AdminUtils
 
     public static function generateAdminMenu($page = '')
     {
-        self::$feather = \Slim\Slim::getInstance();
-
-        $is_admin = (self::Container::get('user')->g_id == self::$feather->forum_env['FEATHER_ADMIN']) ? true : false;
+        $is_admin = (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN']) ? true : false;
 
         // See if there are any plugins that want to display in the menu
         $plugins = self::adminPluginsMenu($is_admin);
 
-        self::$feather->template->setPageInfo(array(
+        View::setPageInfo(array(
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
             'plugins'    =>    $plugins,
@@ -38,10 +37,8 @@ class AdminUtils
      */
     public static function adminPluginsMenu($isAdmin = false)
     {
-        self::$feather = \Slim\Slim::getInstance();
-
         $menuItems = [];
-        $menuItems = self::$feather->hooks->fire('admin.plugin.menu', $menuItems);
+        $menuItems = Container::get('hooks')->fire('admin.plugin.menu', $menuItems);
 
         return $menuItems;
     }
@@ -85,13 +82,11 @@ class AdminUtils
      */
     public static function get_admin_ids()
     {
-        self::$feather = \Slim\Slim::getInstance();
-
-        if (!self::$feather->cache->isCached('admin_ids')) {
-            self::$feather->cache->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
+        if (!Container::get('cache')->isCached('admin_ids')) {
+            Container::get('cache')->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
         }
 
-        return self::$feather->cache->retrieve('admin_ids');
+        return Container::get('cache')->retrieve('admin_ids');
     }
 
     /**

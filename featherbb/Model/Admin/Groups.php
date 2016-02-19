@@ -203,7 +203,7 @@ class Groups
             $new_group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
 
             // Set new preferences
-            $this->feather->prefs->setGroup($new_group_id, array('post.min_interval' => (int) $post_flood));
+            Container::get('prefs')->setGroup($new_group_id, array('post.min_interval' => (int) $post_flood));
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');

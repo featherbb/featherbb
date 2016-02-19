@@ -132,8 +132,8 @@ class Post
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && Container::get('user')->last_post != '' && (time() - Container::get('user')->last_post) < $this->feather->prefs->get(Container::get('user'), 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), $this->feather->prefs->get(Container::get('user'), 'post.min_interval'), $this->feather->prefs->get(Container::get('user'), 'post.min_interval') - (time() - Container::get('user')->last_post));
+        if (Input::post('preview') != '' && Container::get('user')->last_post != '' && (time() - Container::get('user')->last_post) < Container::get('prefs')->get(Container::get('user'), 'post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get(Container::get('user'), 'post.min_interval'), Container::get('prefs')->get(Container::get('user'), 'post.min_interval') - (time() - Container::get('user')->last_post));
         }
 
         // If it's a new topic

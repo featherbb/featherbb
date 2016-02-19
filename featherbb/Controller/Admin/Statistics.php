@@ -54,6 +54,5 @@ class Statistics
         }
 
         phpinfo();
-        $this->feather->stop();
     }
 }
