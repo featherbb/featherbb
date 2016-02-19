@@ -37,9 +37,8 @@ class Install
         View::setStyle('FeatherBB');
     }
 
-    public function run($req, $res, $args)
+    public function run()
     {
-        // return $res;
         Container::get('hooks')->fire('controller.install.run_install');
 
         if (Input::getParsedBodyParam('choose_lang')) {
@@ -127,7 +126,7 @@ class Install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                View::setPageInfo(array(
+                return View::setPageInfo(array(
                     'languages' => $this->available_langs,
                     'supported_dbs' => $this->supported_dbs,
                     'data' => $data,
@@ -136,7 +135,7 @@ class Install
             } else {
                 $data['default_style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
-                $this->create_config($data);
+                return $this->create_config($data);
             }
         } else {
             $base_url = str_replace('index.php', '', Request::getUri()->getScheme().'://'.Request::getUri()->getHost().Request::getUri()->getBasePath());
@@ -144,7 +143,7 @@ class Install
                 'description' => __('Description'),
                 'base_url' => $base_url,
                 'default_lang' => $this->install_lang);
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
                 'data' => $data,
@@ -170,7 +169,10 @@ class Install
 
         // ... And write it on disk
         if ($this->write_config($config)) {
-            $this->create_db($data);
+            return $this->create_db($data);
+        } else {
+            // TODO: Translate
+            return Router::redirect(Router::pathFor('install'), ['error', 'Error while writing config file']);
         }
     }
 
@@ -236,13 +238,8 @@ class Install
             $this->write_htaccess();
         }
 
-        // Install success flash message
-        // $flash = new \Slim\Flash\Messages();
-        // $flash->addMessage('success', __('Message'));
-        // $flash->save();
-
-        // Redirect to homepage
-        Router::redirect(Router::pathFor('home'), ['success', __('Message')]);
+        // Redirect to homepage with success message
+        return Router::redirect(Router::pathFor('home'), ['success', __('Message')]);
     }
 
     public function write_config($array)

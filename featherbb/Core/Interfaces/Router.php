@@ -8,7 +8,7 @@ class Router extends SlimSugar
         return static::$slim->getContainer()['router']->pathFor($name, $data, $queryParams);
     }
 
-    public static function redirect($uri, $message = null, $status = 301)
+    public static function redirect($uri, $message = null, $status = 302)
     {
         if (is_string($message))
             $message = array('info', $message);

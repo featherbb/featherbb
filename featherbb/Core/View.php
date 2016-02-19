@@ -15,7 +15,6 @@ class View
     $templates,
     $app,
     $data,
-    $page,
     $assets,
     $validation = array(
         'page_number' => 'intval',
@@ -34,7 +33,7 @@ class View
     */
     public function __construct()
     {
-        $this->data = $this->page = new \FeatherBB\Helpers\Set();
+        $this->data = new \FeatherBB\Helpers\Set();
         // Set default dir for view fallback
         $this->addTemplatesDirectory(Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/View/', 10);
     }
@@ -84,15 +83,6 @@ class View
     }
 
     /**
-    * Return view data
-    * @return array
-    */
-    public function all()
-    {
-        return $this->data->all();
-    }
-
-    /**
     * Replace view data
     * @param  array  $data
     */
@@ -107,60 +97,6 @@ class View
     public function clear()
     {
         $this->data->clear();
-    }
-
-    /********************************************************************************
-    * Legacy data methods
-    *******************************************************************************/
-
-    /**
-    * DEPRECATION WARNING! This method will be removed in the next major point release
-    *
-    * Get data from view
-    */
-    public function getData($key = null)
-    {
-        if (!is_null($key)) {
-            return isset($this->data[$key]) ? $this->data[$key] : null;
-        }
-
-        return $this->data->all();
-    }
-
-    /**
-    * DEPRECATION WARNING! This method will be removed in the next major point release
-    *
-    * Set data for view
-    */
-    public function setData()
-    {
-        $args = func_get_args();
-        if (count($args) === 1 && is_array($args[0])) {
-            $this->data->replace($args[0]);
-        } elseif (count($args) === 2) {
-            // Ensure original behavior is maintained. DO NOT invoke stored Closures.
-            if (is_object($args[1]) && method_exists($args[1], '__invoke')) {
-                $this->data->set($args[0], $this->data->protect($args[1]));
-            } else {
-                $this->data->set($args[0], $args[1]);
-            }
-        } else {
-            throw new \InvalidArgumentException('Cannot set View data with provided arguments. Usage: `View::setData( $key, $value );` or `View::setData([ key => value, ... ]);`');
-        }
-    }
-
-    /**
-    * DEPRECATION WARNING! This method will be removed in the next major point release
-    *
-    * Append data to view
-    * @param  array $data
-    */
-    public function appendData($data)
-    {
-        if (!is_array($data)) {
-            throw new \InvalidArgumentException('Cannot append view data. Expected array argument.');
-        }
-        $this->data->replace($data);
     }
 
     /********************************************************************************
@@ -224,17 +160,13 @@ class View
         if (Container::get('user')) {
             $this->setStyle(Container::get('user')->style);
         }
-        echo $this->fetch($nested);
+        return $this->fetch($nested);
     }
 
     protected function fetch($nested = true)
     {
         $data = array();
-        // Force flash messages
-        if (isset($this->app->environment['slim.flash'])) {
-            $this->data->set('flash', $this->app->environment['slim.flash']);
-        }
-        $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
+        $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
         $data['feather'] = true;
         $data['assets'] = $this->getAssets();
         $data = Container::get('hooks')->fire('view.alter_data', $data);
@@ -245,16 +177,21 @@ class View
     {
         extract($data);
         ob_start();
+        // Include view files
         if ($nested) {
-            require $this->getTemplatePathname('header.php');
+            include $this->getTemplatePathname('header.php');
         }
         foreach ($this->getTemplates() as $tpl) {
-            require $tpl;
+            include $tpl;
         }
         if ($nested) {
-            require $this->getTemplatePathname('footer.php');
+            include $this->getTemplatePathname('footer.php');
         }
-        return Container::get('hooks')->fire('view.alter_html', ob_get_clean());
+
+        $output = ob_get_clean();
+        Response::getBody()->write($output);
+
+        return Container::get('response');
     }
 
     /********************************************************************************
@@ -280,14 +217,14 @@ class View
     {
         foreach ($data as $key => $value) {
             list($key, $value) = $this->validate($key, $value);
-            $this->page->set($key, $value);
+            $this->data->set($key, $value);
         }
         return $this;
     }
 
     public function getPageInfo()
     {
-        return $this->page->all();
+        return $this->data->all();
     }
 
     protected function validate($key, $value)
@@ -353,9 +290,9 @@ class View
 
     public function addMessage($msg, $type = 'info')
     {
-        if (isset($this->app->environment['slim.flash'])) {
+        if (Container::get('flash')) {
             if (in_array($type, array('info', 'error', 'warning', 'success'))) {
-                $this->app->environment['slim.flash']->now($type, (string) $msg);
+                Container::get('flash')->addMessage($type, (string) $msg);
             }
         }
     }
@@ -369,7 +306,7 @@ class View
             $args = null;
         }
         list($key, $value) = $this->validate($method, $args);
-        $this->page->set($key, $value);
+        $this->data->set($key, $value);
     }
 
     protected function getDefaultPageInfo()

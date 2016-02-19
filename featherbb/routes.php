@@ -13,7 +13,7 @@ use FeatherBB\Core\Error;
 /**
  * Middleware to check if user is allowed to read the board.
  */
-$canReadBoard = function ($request, $response, $next) use ($feather) {
+$canReadBoard = function ($request, $response, $next) {
     $response = $next($request, $response);
     if (Container::get('user')->g_read_board == '0') {
         throw new Error(__('No view'), 403);
@@ -25,7 +25,7 @@ $canReadBoard = function ($request, $response, $next) use ($feather) {
 /**
  * Middleware to check if user is allowed to read the board.
  */
-$isGuest = function ($request, $response, $next) use ($feather) {
+$isGuest = function ($request, $response, $next) {
     $response = $next($request, $response);
     if (Container::get('user')->is_guest) {
         throw new Error(__('No permission'), 403);
@@ -37,16 +37,16 @@ $isGuest = function ($request, $response, $next) use ($feather) {
 /**
  * Middleware to check if user is allowed to moderate, if he's not redirect to homepage.
  */
-$isAdmmod = function ($request, $response, $next) use ($feather) {
+$isAdmmod = function ($request, $response, $next) {
     $response = $next($request, $response);
-    // if(!Container::get('user')->is_admmod) {
-    //     throw new Error(__('No permission'), 403);
-    // }
+    if(!Container::get('user')->is_admmod) {
+        throw new Error(__('No permission'), 403);
+    }
 
     return $response;
 };
 
-Route::get('/install', '\FeatherBB\Controller\Install:run')->setName('install');
+Route::map(['GET', 'POST'], '/install', '\FeatherBB\Controller\Install:run')->setName('install');
 
 // Index
 Route::get('/', '\FeatherBB\Controller\Index:display')->add($canReadBoard)->setName('home');
@@ -66,7 +66,7 @@ Route::group('/forum', function() use ($feather) {
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add($isGuest)->setName('subscribeForum');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add($isGuest)->setName('unsubscribeForum');
     Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
-    $feather->post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
+    Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
 })->add($canReadBoard);
 
 // Topic
@@ -81,7 +81,7 @@ Route::group('/topic', function() use ($feather) {
             throw new Error(__('No permission'), 403);
         }
     };
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Topic:display')->setName('Topic');
+    Route::get('/{id:[0-9]+}/[{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add($isGuest)->setName('subscribeTopic');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add($isGuest)->setName('unsubscribeTopic');
@@ -180,9 +180,9 @@ Route::group('/admin', function() use ($feather) {
     // Admin categories
     Route::group('/categories', function() use ($feather) {
         Route::get('', '\FeatherBB\Controller\Admin\Categories:display')->setName('adminCategories');
-        $feather->post('/add', '\FeatherBB\Controller\Admin\Categories:add')->setName('addCategory');
-        $feather->post('/edit', '\FeatherBB\Controller\Admin\Categories:edit')->setName('editCategory');
-        $feather->post('/delete', '\FeatherBB\Controller\Admin\Categories:delete')->setName('deleteCategory');
+        Route::post('/add', '\FeatherBB\Controller\Admin\Categories:add')->setName('addCategory');
+        Route::post('/edit', '\FeatherBB\Controller\Admin\Categories:edit')->setName('editCategory');
+        Route::post('/delete', '\FeatherBB\Controller\Admin\Categories:delete')->setName('deleteCategory');
     })->add($isAdmin);
 
     // Admin censoring
@@ -201,7 +201,7 @@ Route::group('/admin', function() use ($feather) {
     // Admin forums
     Route::group('/forums', function() use ($feather) {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Forums:display')->setName('adminForums');
-        $feather->post('/add', '\FeatherBB\Controller\Admin\Forums:add')->setName('addForum');
+        Route::post('/add', '\FeatherBB\Controller\Admin\Forums:add')->setName('addForum');
         Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:edit')->setName('editForum');
         Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:delete')->setName('deleteForum');
     })->add($isAdmin);

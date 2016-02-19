@@ -240,10 +240,8 @@ class Core
         Container::get('hooks')->fire('core.start');
 
         if (!is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
-            // return Router::redirect(Router::pathFor('install'));
-            $installer = new Install();
-            return $installer->run($req, $res, []);
-            // return;
+            $installer = new \FeatherBB\Controller\Install();
+            return $response = $installer->run();
         }
 
         // Load config from disk

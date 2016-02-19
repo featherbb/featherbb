@@ -134,7 +134,7 @@ Container::get('hooks')->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 4') ?></p>
                                                 <label class="required"><strong><?php _e('Database name') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[db_name]" size="30" required value="featherbb" />
+                                                <input type="text" name="install[db_name]" size="30" required />
                                             </div>
                                         </fieldset>
                                     </div>
@@ -145,9 +145,9 @@ Container::get('hooks')->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 5') ?></p>
                                                 <label class="conl"><?php _e('Database username') ?></label>
-                                                <input type="text" name="install[db_user]" size="30" value="root" />
+                                                <input type="text" name="install[db_user]" size="30" />
                                                 <label class="conl"><?php _e('Database password') ?></label>
-                                                <input type="password" name="install[db_pass]" size="30" value="root" />
+                                                <input type="password" name="install[db_pass]" size="30" />
                                                 <div class="clearer"></div>
                                             </div>
                                         </fieldset>
@@ -174,14 +174,14 @@ Container::get('hooks')->fire('view.install.start');
                                             <div class="infldset">
                                                 <p><?php _e('Info 8') ?></p>
                                                 <label class="required"><strong><?php _e('Administrator username') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[username]" size="25" maxlength="25" required value="blade" />
+                                                <input type="text" name="install[username]" size="25" maxlength="25" required />
                                                 <label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="password" name="install[password]" size="16" required value="dedede" />
+                                                <input type="password" name="install[password]" size="16" required />
                                                 <label class="conl required"><strong><?php _e('Confirm password') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="password" name="install[password_conf]" size="16" required value="dedede" />
+                                                <input type="password" name="install[password_conf]" size="16" required />
                                                 <!-- <div class="clearer"></div> -->
                                                 <label class="required"><strong><?php _e('Administrator email') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[email]" size="50" maxlength="80" required value="okok@ok.fr" />
+                                                <input type="text" name="install[email]" size="50" maxlength="80" required />
                                             </div>
                                         </fieldset>
                                     </div>

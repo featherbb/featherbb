@@ -49,8 +49,8 @@ class Auth
         // Define this if you want this visit to affect the online list and the users last visit data
         if (!defined('FEATHER_QUIET_VISIT')) {
             // Update the online list
-            if (!$this->app->user->logged) {
-                $this->app->user->logged = Container::get('now');
+            if (!Container::get('user')->logged) {
+                Container::get('user')->logged = Container::get('now');
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
                 switch (Config::get('forum_settings')['db_type']) {
@@ -60,11 +60,11 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
                         break;
                 }
 
@@ -73,17 +73,17 @@ class Auth
 
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if ($this->app->user->logged < (Container::get('now')-Config::get('forum_settings')['o_timeout_visit'])) {
-                    DB::for_table('users')->where('id', $this->app->user->id)
+                if (Container::get('user')->logged < (Container::get('now')-Config::get('forum_settings')['o_timeout_visit'])) {
+                    DB::for_table('users')->where('id', Container::get('user')->id)
                         ->find_one()
-                        ->set('last_visit', $this->app->user->logged)
+                        ->set('last_visit', Container::get('user')->logged)
                         ->save();
-                    $this->app->user->last_visit = $this->app->user->logged;
+                    Container::get('user')->last_visit = Container::get('user')->logged;
                 }
 
-                $idle_sql = ($this->app->user->idle == '1') ? ', idle=0' : '';
+                $idle_sql = (Container::get('user')->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table('online')->raw_execute('UPDATE '.Config::get('forum_settings')['db_prefix'].'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
+                DB::for_table('online')->raw_execute('UPDATE '.Config::get('forum_settings')['db_prefix'].'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => Container::get('user')->id));
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = $this->app->getCookie(Config::get('forum_settings')['cookie_name'].'_track');
@@ -92,8 +92,8 @@ class Auth
                 }
             }
         } else {
-            if (!$this->app->user->logged) {
-                $this->app->user->logged = $this->app->user->last_visit;
+            if (!Container::get('user')->logged) {
+                Container::get('user')->logged = Container::get('user')->last_visit;
             }
         }
     }
@@ -235,7 +235,7 @@ class Auth
             $this->update_online();
         } else {
             $user = $this->model->load_user(1);
-// var_dump($user);
+
             $user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
             $user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
             $user->timezone = Config::get('forum_settings')['o_default_timezone'];
@@ -261,7 +261,7 @@ class Auth
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.Config::get('forum_settings')['db_prefix'].'online WHERE ident=:ident)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
                         break;
                 }
             } else {

@@ -50,12 +50,12 @@ Container::get('hooks')->fire('view.help.start');
         <p><code>[url=/help/]<?php _e('This help page') ?>[/url]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('help') ?>"><?php _e('This help page') ?></a></samp></p>
         <p><code>[email]myname@example.com[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
         <p><code>[email=myname@example.com]<?php _e('My email address') ?>[/email]</code> <?php _e('produces') ?> <samp><a href="mailto:myname@example.com"><?php _e('My email address') ?></a></samp></p>
-        <p><code>[topic=1]<?php _e('Test topic') ?>[/topic]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1']) ?>"><?php _e('Test topic') ?></a></samp></p>
-        <p><code>[topic]1[/topic]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1']) ?>"><?= Router::pathFor('Topic', ['id' => '1']) ?></a></samp></p>
+        <p><code>[topic=1]<?php _e('Test topic') ?>[/topic]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?>"><?php _e('Test topic') ?></a></samp></p>
+        <p><code>[topic]1[/topic]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?>"><?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?></a></samp></p>
         <p><code>[post=1]<?php _e('Test post') ?>[/post]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('viewPost', ['pid' => '1']).'#1' ?>"><?php _e('Test post') ?></a></samp></p>
         <p><code>[post]1[/post]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('viewPost', ['pid' => '1']).'#1' ?>"><?= Router::pathFor('viewPost', ['pid' => '1']).'#1' ?></a></samp></p>
-        <p><code>[forum=1]<?php _e('Test forum') ?>[/forum]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1']) ?>"><?php _e('Test forum') ?></a></samp></p>
-        <p><code>[forum]1[/forum]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Forum', ['id' => '1']) ?>"><?= Router::pathFor('Forum', ['id' => '1']) ?></a></samp></p>
+        <p><code>[forum=1]<?php _e('Test forum') ?>[/forum]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?>"><?php _e('Test forum') ?></a></samp></p>
+        <p><code>[forum]1[/forum]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('Forum', ['id' => '1', 'name' => 'test-name']) ?>"><?= Router::pathFor('Forum', ['id' => '1', 'name' => 'test-name']) ?></a></samp></p>
         <p><code>[user=2]<?php _e('Test user') ?>[/user]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('userProfile', ['id' => '2']) ?>"><?php _e('Test user') ?></a></samp></p>
         <p><code>[user]2[/user]</code> <?php _e('produces') ?> <samp><a href="<?= Router::pathFor('userProfile', ['id' => '2']) ?>"><?= Router::pathFor('userProfile', ['id' => '2']) ?></a></samp></p>
     </div>
@@ -131,12 +131,12 @@ Container::get('hooks')->fire('view.help.start');
 // Display the smiley set
 $smiley_groups = array();
 
-foreach ($feather->parser->pd['smilies'] as $smiley_text => $smiley_data) {
+foreach (Container::get('parser')->pd['smilies'] as $smiley_text => $smiley_data) {
     $smiley_groups[$smiley_data['file']][] = $smiley_text;
 }
 
 foreach ($smiley_groups as $smiley_img => $smiley_texts) {
-    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.$feather->parser->pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
+    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.Container::get('parser')->pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
 }
 
 ?>
