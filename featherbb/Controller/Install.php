@@ -164,8 +164,11 @@ class Install
             }
         }
 
-        $config = array_merge($config, array('cookie_name' => mb_strtolower(Config::get('forum_env')['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
-            'cookie_seed' => Random::key(16, false, true)));
+        $config = array_merge($config, array(
+            'cookie_name' => mb_strtolower(Config::get('forum_env')['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
+            'jwt_token' => base64_encode(Random::secure_random_bytes(64)),
+            'jwt_algorithm' => 'HS512'
+        ));
 
         // ... And write it on disk
         if ($this->write_config($config)) {

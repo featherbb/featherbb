@@ -19,29 +19,44 @@ use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
+use FeatherBB\Model\Auth as AuthModel;
+use Firebase\JWT\JWT;
 
 class Auth
 {
-    protected $model;
-
-    public function __construct()
+    protected function get_cookie_data($authCookie = null)
     {
-        $this->model = new \FeatherBB\Model\Auth();
-    }
+        if ($authCookie) {
+            /*
+             * Extract the jwt from the Bearer
+             */
+            list($jwt) = sscanf( $authCookie, 'Bearer %s');
 
-    public function get_cookie_data($cookie_name, $cookie_seed)
-    {
-        // Get FeatherBB cookie
-        $cookie_raw = Container::get('cookie')->get($cookie_name);
-        // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
-        if (isset($cookie_raw)) {
-            $cookie = json_decode($cookie_raw, true);
-            $checksum = hash_hmac('sha1', $cookie['user_id'].$cookie['expires'], $cookie_seed.'_checksum');
-            if ($cookie['user_id'] > 1 && $cookie['expires'] > Container::get('now') && $checksum == $cookie['checksum']) {
-                return $cookie;
+            if ($jwt) {
+                try {
+                    /*
+                    * decode the jwt using the key from config
+                    */
+                    $secretKey = base64_decode(Config::get('forum_settings')['jwt_token']);
+                    $token = JWT::decode($jwt, $secretKey, [Config::get('forum_settings')['jwt_algorithm']]);
+
+                    return $token;
+
+                } catch (\Firebase\JWT\ExpiredException $e) {
+                    // TODO: (Optionnal) add flash message to say token has expired
+                    return false;
+                } catch (\Firebase\JWT\SignatureInvalidException $e) {
+                    // If token secret has changed (config.php file removed then regenerated)
+                    return false;
+                }
+            } else {
+                // Token is not present (or invalid) in cookie
+                return false;
             }
+        } else {
+            // Auth cookie is not present in headers
+            return false;
         }
-        return false;
     }
 
     public function update_online()
@@ -86,7 +101,7 @@ class Auth
                 DB::for_table('online')->raw_execute('UPDATE '.Config::get('forum_settings')['db_prefix'].'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => Container::get('user')->id));
 
                 // Update tracked topics with the current expire time
-                $cookie_tracked_topics = $this->app->getCookie(Config::get('forum_settings')['cookie_name'].'_track');
+                $cookie_tracked_topics = Container::get('cookie')->get(Config::get('forum_settings')['cookie_name'].'_track');
                 if (isset($cookie_tracked_topics)) {
                     Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
                 }
@@ -200,7 +215,7 @@ class Auth
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, Config::get('forum_settings')['o_maintenance_message']);
 
-        $this->app->template->setPageInfo(array(
+        View::setPageInfo(array(
             'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Maintenance')),
             'msg'    =>    $message,
             'backlink'    =>   false,
@@ -212,11 +227,14 @@ class Auth
 
     public function __invoke($req, $res, $next)
     {
+        // setcookie(Config::get('forum_settings')['cookie_name'], '', 1, '/', '', false, true);
         global $feather_bans;
 
-        if ($cookie = $this->get_cookie_data(Config::get('forum_settings')['cookie_name'], Config::get('forum_settings')['cookie_seed'])) {
-            $user = $this->model->load_user($cookie['user_id']);
-            $expires = ($cookie['expires'] > Container::get('now') + Config::get('forum_settings')['o_timeout_visit']) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
+        $authCookie = Container::get('cookie')->get(Config::get('forum_settings')['cookie_name']);
+
+        if ($jwt = $this->get_cookie_data($authCookie)) {
+            $user = AuthModel::load_user($jwt->data->userId);
+            $expires = ($jwt->exp > Container::get('now') + Config::get('forum_settings')['o_timeout_visit']) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
             $user->is_guest = false;
             $user->is_admmod = $user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || $user->g_moderator == '1';
             if (!$user->disp_topics) {
@@ -231,10 +249,15 @@ class Auth
             if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$user->style.'/style.css')) {
                 $user->style = Config::get('forum_settings')['o_default_style'];
             }
-            $this->model->feather_setcookie($user->id, $user->password, $expires);
+
+            // Refresh cookie to avoid re-logging between idle
+            $jwt = AuthModel::generate_jwt($user, $expires);
+            AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
+            // Add ûser to DIC
+            Container::set('user', $user);
             $this->update_online();
         } else {
-            $user = $this->model->load_user(1);
+            $user = AuthModel::load_user(1);
 
             $user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
             $user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
@@ -268,10 +291,12 @@ class Auth
                 DB::for_table('online')->where('ident', Request::getServerParams()['REMOTE_ADDR'])
                      ->update_many('logged', time());
             }
-
-            $this->model->feather_setcookie(1, Random::hash(uniqid(rand(), true)), Container::get('now') + 31536000);
+            $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);
+            AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
+            // Add $user as guest to DIC
+            Container::set('user', $user);
+            // AuthModel::feather_setcookie(1, Random::hash(uniqid(rand(), true)), Container::get('now') + 31536000);
         }
-        Container::set('user', $user);
 
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language.'/common.mo');
         // Load bans from cache

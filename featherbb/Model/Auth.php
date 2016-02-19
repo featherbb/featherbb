@@ -10,6 +10,8 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Random;
+use Firebase\JWT\JWT;
 
 class Auth
 {
@@ -100,12 +102,56 @@ class Auth
         return $query->save();
     }
 
-    public static function feather_setcookie($user_id, $password, $expires)
+    public static function generate_jwt($user, $expire)
     {
-        $cookie_data = array('user_id' => $user_id,
-            'password_hash' => hash_hmac('sha1', $password, Config::get('forum_settings')['cookie_seed'].'_password_hash'),
-            'expires' => $expires,
-            'checksum' => hash_hmac('sha1', $user_id.$expires, Config::get('forum_settings')['cookie_seed'].'_checksum'));
-        setcookie(Config::get('forum_settings')['cookie_name'], json_encode($cookie_data), $expires);
+        $issuedAt   = time();
+        $tokenId    = base64_encode(Random::key(32));
+        $serverName = Config::get('serverName');
+
+        /*
+        * Create the token as an array
+        */
+        $data = [
+            'iat'  => $issuedAt,         // Issued at: time when the token was generated
+            'jti'  => $tokenId,          // Json Token Id: an unique identifier for the token
+            'iss'  => $serverName,       // Issuer
+            'exp'  => $expire,           // Expire after 30 minutes of idle or 14 days if "remember me"
+            'data' => [                  // Data related to the signer user
+                'userId'   => $user->id, // userid from the users table
+                'userName' => $user->username, // User name
+            ]
+        ];
+
+        /*
+        * Extract the key, which is coming from the config file.
+        *
+        * Generated with base64_encode(openssl_random_pseudo_bytes(64));
+        */
+        $secretKey = base64_decode(Config::get('forum_settings')['jwt_token']);
+
+        /*
+        * Extract the algorithm from the config file too
+        */
+        $algorithm = Config::get('forum_settings')['jwt_algorithm'];
+
+        /*
+        * Encode the array to a JWT string.
+        * Second parameter is the key to encode the token.
+        *
+        * The output string can be validated at http://jwt.io/
+        */
+        $jwt = JWT::encode(
+            $data,      //Data to be encoded in the JWT
+            $secretKey, // The signing key
+            $algorithm  // Algorithm used to sign the token, see https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40#section-3
+        );
+
+        return $jwt;
+    }
+
+    public static function feather_setcookie($jwt, $expire)
+    {
+        // Store cookie to client storage
+        setcookie(Config::get('forum_settings')['cookie_name'], $jwt, $expire, '/', '', false, true);
     }
 }

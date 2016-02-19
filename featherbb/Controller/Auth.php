@@ -27,14 +27,15 @@ class Auth
 
     public function login($req, $res, $args)
     {
+        // var_dump(Container::get('user'));
         if (!Container::get('user')->is_guest) {
-            Router::redirect(Router::pathFor('home'), 'Already logged in');
+            return Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
         if (Request::isPost()) {
             Container::get('hooks')->fire('controller.login');
-            $form_username = Utils::trim(Input::post('req_username'));
-            $form_password = Utils::trim(Input::post('req_password'));
+            $form_username = Input::post('req_username');
+            $form_password = Input::post('req_password');
             $save_pass = (bool) Input::post('save_pass');
 
             $user = ModelAuth::get_user_from_name($form_username);
@@ -57,10 +58,11 @@ class Auth
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
                     ModelAuth::feather_setcookie($user->id, $form_password_hash, $expire);
 
-                    Router::redirect(Router::pathFor('home'), __('Login redirect'));
+                    return Router::redirect(Router::pathFor('home'), __('Login redirect'));
+                } else {
+                    throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
                 }
             }
-            throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
         } else {
             View::setPageInfo(array(
                                 'active_page' => 'login',
@@ -77,7 +79,7 @@ class Auth
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
         if (Container::get('user')->is_guest || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))) {
-            Router::redirect(Router::pathFor('home'), 'Not logged in');
+            return Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
         ModelAuth::delete_online_by_id(Container::get('user')->id);
@@ -90,7 +92,7 @@ class Auth
         ModelAuth::feather_setcookie(1, Random::hash(uniqid(rand(), true)), time() + 31536000);
         Container::get('hooks')->fire('controller.logout_end');
 
-        Router::redirect(Router::pathFor('home'), __('Logout redirect'));
+        return Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }
 
     public function forget($req, $res, $args)

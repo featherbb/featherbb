@@ -95,7 +95,8 @@ class Core
                 'db_prefix' => '',
                 // Cookies
                 'cookie_name' => 'feather_cookie',
-                'cookie_seed' => 'changeme', // MUST BE CHANGED !!!
+                'jwt_token' => 'changeme', // MUST BE CHANGED !!!
+                'jwt_algorithm' => 'HS512'
                 );
     }
 
@@ -258,7 +259,7 @@ class Core
         Config::set('displayErrorDetails', $this->forum_env['FEATHER_DEBUG']);
         // array('debug' => $this->forum_env['FEATHER_DEBUG'],
         //                          'cookies.encrypt' => true,
-        //                          'cookies.secret_key' => $this->forum_settings['cookie_seed'])
+        //                          'cookies.secret_key' => $this->forum_settings['jwt_token'])
 
         if (!Container::get('cache')->isCached('config')) {
             Container::get('cache')->store('config', \FeatherBB\Model\Cache::get_config());
