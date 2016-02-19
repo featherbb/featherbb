@@ -21,17 +21,16 @@ class Auth
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/login.mo');
     }
 
-    public function login()
+    public function login($req, $res, $args)
     {
         if (!Container::get('user')->is_guest) {
             Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
-        if ($this->feather->request->isPost()) {
+        if (Request::isPost()) {
             Container::get('hooks')->fire('controller.login');
             $form_username = Utils::trim($this->feather->request->post('req_username'));
             $form_password = Utils::trim($this->feather->request->post('req_password'));
@@ -44,8 +43,8 @@ class Auth
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == Config::get('forum_env')['FEATHER_UNVERIFIED']) {
                         ModelAuth::update_group($user->id, Config::get('forum_settings')['o_default_user_group']);
-                        if (!$this->feather->cache->isCached('users_info')) {
-                            $this->feather->cache->store('users_info', Cache::get_users_info());
+                        if (!Container::get('cache')->isCached('users_info')) {
+                            Container::get('cache')->store('users_info', Cache::get_users_info());
                         }
                     }
 
@@ -72,9 +71,9 @@ class Auth
         }
     }
 
-    public function logout($token)
+    public function logout($req, $res, $args)
     {
-        $token = Container::get('hooks')->fire('controller.logout', $token);
+        $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
         if (Container::get('user')->is_guest || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash($this->feather->request->getIp()))) {
             Router::redirect(Router::pathFor('home'), 'Not logged in');
@@ -93,13 +92,13 @@ class Auth
         Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }
 
-    public function forget()
+    public function forget($req, $res, $args)
     {
         if (!Container::get('user')->is_guest) {
             Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
-        if ($this->feather->request->isPost()) {
+        if (Request::isPost()) {
             // Validate the email address
             $email = strtolower(Utils::trim($this->feather->request->post('req_email')));
             if (!$this->feather->email->is_valid_email($email)) {

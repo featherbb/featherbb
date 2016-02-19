@@ -92,7 +92,7 @@ class Profile
             }
         }
 
-        if ($this->request->isPost()) {
+        if (Request::isPost()) {
             $old_password = $this->request->post('req_old_password') ? Utils::trim($this->request->post('req_old_password')) : '';
             $new_password1 = Utils::trim($this->request->post('req_new_password1'));
             $new_password2 = Utils::trim($this->request->post('req_new_password2'));
@@ -196,7 +196,7 @@ class Profile
 
                 Router::redirect(Router::pathFor('home'), __('Email updated'));
             }
-        } elseif ($this->request->isPost()) {
+        } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
 
             if (Random::hash($this->request->post('req_password')) !== $this->user->password) {
@@ -440,14 +440,14 @@ class Profile
         $update_group = $update_group->save();
 
         // Regenerate the users info cache
-        if (!$this->feather->cache->isCached('users_info')) {
-            $this->feather->cache->store('users_info', Cache::get_users_info());
+        if (!Container::get('cache')->isCached('users_info')) {
+            Container::get('cache')->store('users_info', Cache::get_users_info());
         }
 
-        $stats = $this->feather->cache->retrieve('users_info');
+        $stats = Container::get('cache')->retrieve('users_info');
 
         if ($old_group_id == Config::get('forum_env')['FEATHER_ADMIN'] || $new_group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
-            $this->feather->cache->store('admin_ids', Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
         }
 
         $new_group_mod = DB::for_table('groups')
@@ -736,14 +736,14 @@ class Profile
             $this->delete_avatar($id);
 
             // Regenerate the users info cache
-            if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', Cache::get_users_info());
+            if (!Container::get('cache')->isCached('users_info')) {
+                Container::get('cache')->store('users_info', Cache::get_users_info());
             }
 
-            $stats = $this->feather->cache->retrieve('users_info');
+            $stats = Container::get('cache')->retrieve('users_info');
 
             if ($group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
-                $this->feather->cache->store('admin_ids', Cache::get_admin_ids());
+                Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
             }
 
             Container::get('hooks')->fire('model.profile.delete_user');
@@ -1085,15 +1085,15 @@ class Profile
             }
 
             // Regenerate the users info cache
-            if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', Cache::get_users_info());
+            if (!Container::get('cache')->isCached('users_info')) {
+                Container::get('cache')->store('users_info', Cache::get_users_info());
             }
 
-            $stats = $this->feather->cache->retrieve('users_info');
+            $stats = Container::get('cache')->retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bans_updated) {
-                $this->feather->cache->store('bans', Cache::get_bans());
+                Container::get('cache')->store('bans', Cache::get_bans());
             }
         }
 

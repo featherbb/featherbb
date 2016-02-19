@@ -1325,7 +1325,7 @@ class Post
         }
 
         if ($is_admmod) {
-            if ($this->request->isPost() && $this->request->post('silent') || $this->request->isPost() == '') {
+            if (Request::isPost() && $this->request->post('silent') || Request::isPost() == '') {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.__('Silent edit').'<br /></label>';
             } else {
                 $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.__('Silent edit').'<br /></label>';

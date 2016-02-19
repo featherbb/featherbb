@@ -47,8 +47,8 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
         Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
     }
@@ -75,8 +75,8 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
         Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
     }
@@ -91,8 +91,8 @@ class Censoring
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
         Router::redirect(Router::pathFor('adminCensoring'),  __('Word removed redirect'));
     }

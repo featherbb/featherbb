@@ -31,7 +31,7 @@ class Reports
         Container::get('hooks')->fire('controller.admin.reports.display');
 
         // Zap a report
-        if ($this->feather->request->isPost()) {
+        if (Request::isPost()) {
             $zap_id = intval(key($this->request->post('zap_id')));
             $this->model->zap_report($zap_id);
             Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));

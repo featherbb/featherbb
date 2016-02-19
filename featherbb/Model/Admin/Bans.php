@@ -278,7 +278,7 @@ class Bans
         }
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::get_bans());
 
         Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
@@ -293,7 +293,7 @@ class Bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::get_bans());
 
         Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }

@@ -66,11 +66,11 @@ class Login
             $update_usergroup = $update_usergroup->save();
 
             // Regenerate the users info cache
-            if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', Cache::get_users_info());
+            if (!Container::get('cache')->isCached('users_info')) {
+                Container::get('cache')->store('users_info', Cache::get_users_info());
             }
 
-            $stats = $this->feather->cache->retrieve('users_info');
+            $stats = Container::get('cache')->retrieve('users_info');
         }
 
         // Remove this user's guest entry from the online list

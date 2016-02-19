@@ -33,7 +33,7 @@ class Groups
         $groups = $this->model->fetch_groups();
 
         // Set default group
-        if ($this->feather->request->isPost()) {
+        if (Request::isPost()) {
             $this->model->set_default_group($groups);
         }
 

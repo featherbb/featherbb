@@ -259,7 +259,7 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $group_id);
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', Cache::get_quickjump());
+        Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
         if ($this->request->post('mode') == 'edit') {
             Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
@@ -287,7 +287,7 @@ class Groups
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', Cache::get_config());
+        Container::get('cache')->store('config', Cache::get_config());
 
         Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }

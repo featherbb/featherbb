@@ -93,10 +93,10 @@ class Search
         }
 
         if (!isset($stopwords)) {
-            if (!$this->feather->cache->isCached('stopwords')) {
-                $this->feather->cache->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
+            if (!Container::get('cache')->isCached('stopwords')) {
+                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
             }
-            $stopwords = $this->feather->cache->retrieve('stopwords');
+            $stopwords = Container::get('cache')->retrieve('stopwords');
         }
 
         // If it is a stopword it isn't valid

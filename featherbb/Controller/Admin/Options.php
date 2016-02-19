@@ -29,7 +29,7 @@ class Options
     {
         Container::get('hooks')->fire('controller.admin.options.display');
 
-        if ($this->feather->request->isPost()) {
+        if (Request::isPost()) {
             $this->model->update_options();
         }
 

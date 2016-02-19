@@ -44,7 +44,7 @@ class Permissions
         }
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', Cache::get_config());
+        Container::get('cache')->store('config', Cache::get_config());
         // $this->clear_feed_cache();
 
         Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));

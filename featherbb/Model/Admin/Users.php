@@ -405,11 +405,11 @@ class Users
             }
 
             // Regenerate the users info cache
-            if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', Cache::get_users_info());
+            if (!Container::get('cache')->isCached('users_info')) {
+                Container::get('cache')->store('users_info', Cache::get_users_info());
             }
 
-            $stats = $this->feather->cache->retrieve('users_info');
+            $stats = Container::get('cache')->retrieve('users_info');
 
             Router::redirect(Router::pathFor('adminUsers'), __('Users delete redirect'));
         }
@@ -528,7 +528,7 @@ class Users
                 }
 
                 // Regenerate the bans cache
-                $this->feather->cache->store('bans', Cache::get_bans());
+                Container::get('cache')->store('bans', Cache::get_bans());
 
                 Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
             }

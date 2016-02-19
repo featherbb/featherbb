@@ -171,11 +171,11 @@ class Register
 
         if ($this->config['o_regs_verify'] == '0') {
             // Regenerate the users info cache
-            if (!$this->feather->cache->isCached('users_info')) {
-                $this->feather->cache->store('users_info', Cache::get_users_info());
+            if (!Container::get('cache')->isCached('users_info')) {
+                Container::get('cache')->store('users_info', Cache::get_users_info());
             }
 
-            $stats = $this->feather->cache->retrieve('users_info');
+            $stats = Container::get('cache')->retrieve('users_info');
         }
 
         // If the mailing list isn't empty, we may need to send out some alerts

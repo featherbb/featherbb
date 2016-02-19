@@ -80,7 +80,7 @@ class Plugins
         View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
         $availablePlugins = Lister::getPlugins();
-        $activePlugins = $this->feather->cache->isCached('activePlugins') ? $this->feather->cache->retrieve('activePlugins') : array();
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
 
         $officialPlugins = Lister::getOfficialPlugins();
 

@@ -63,7 +63,7 @@ class Categories
         }
 
         // Regenerate the quick jump cache
-        $this->feather->cache->store('quickjump', Cache::get_quickjump());
+        Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
         Router::redirect(Router::pathFor('adminCategories'), __('Categories updated redirect'));
 

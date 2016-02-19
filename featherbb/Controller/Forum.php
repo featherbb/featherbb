@@ -25,10 +25,10 @@ class Forum
 
     public function display($req, $res, $args)
     {
-        $fid = $args['id'];
+        $args['fid'] = $args['id'];
         Container::get('hooks')->fire('controller.forum.display');
         // Fetch some informations about the forum
-        $cur_forum = $this->model->get_forum_info($fid);
+        $cur_forum = $this->model->get_forum_info($args['fid']);
 
         // Is this a redirect forum? In that case, redirect!
         if ($cur_forum['redirect_url'] != '') {
@@ -43,7 +43,7 @@ class Forum
 
         // Can we or can we not post new topics?
         if (($cur_forum['post_topics'] == '' && Container::get('user')->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $fid]).'">'.__('Post topic').'</a></p>'."\n";
+            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $args['fid']]).'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $post_link = '';
         }
@@ -56,24 +56,24 @@ class Forum
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$fid.'/'.$url_forum.'/#');
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['fid'].'/'.$url_forum.'/#');
 
-        $forum_actions = $this->model->get_forum_actions($fid, Config::get('forum_settings')['o_forum_subscriptions'], $cur_forum['is_subscribed']);
+        $forum_actions = $this->model->get_forum_actions($args['fid'], Config::get('forum_settings')['o_forum_subscriptions'], $cur_forum['is_subscribed']);
 
-        View::addAsset('canonical', Router::pathFor('Forum', ['id' => $fid, 'name' => $url_forum]));
+        View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $args['fid'], 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $fid, 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $args['fid'], 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
         if (Config::get('forum_settings')['o_feed_type'] == '1') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss', array('title' => __('RSS forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=rss', array('title' => __('RSS forum feed')));
         } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom', array('title' => __('Atom forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
         View::setPageInfo(array(
@@ -82,9 +82,9 @@ class Forum
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
             'is_indexed' => true,
-            'id' => $fid,
-            'fid' => $fid,
-            'forum_data' => $this->model->print_topics($fid, $sort_by, $start_from),
+            'id' => $args['fid'],
+            'fid' => $args['fid'],
+            'forum_data' => $this->model->print_topics($args['fid'], $sort_by, $start_from),
             'cur_forum' => $cur_forum,
             'post_link' => $post_link,
             'start_from' => $start_from,
@@ -92,13 +92,13 @@ class Forum
             'forum_actions' => $forum_actions,
         ))->addTemplate('forum.php')->display();
     }
-
-    public function moderate($id, $name = null, $page = null)
+    
+    public function moderate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.moderate');
 
         // Make sure that only admmods allowed access this page
-        $moderators = $this->model->get_moderators($id);
+        $moderators = $this->model->get_moderators($args['id']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
@@ -106,7 +106,7 @@ class Forum
         }
 
         // Fetch some info about the forum
-        $cur_forum = $this->model->get_forum_info($id);
+        $cur_forum = $this->model->get_forum_info($args['id']);
 
         // Is this a redirect forum? In that case, abort!
         if ($cur_forum['redirect_url'] != '') {
@@ -118,7 +118,7 @@ class Forum
         // Determine the topic offset (based on $_GET['p'])
         $num_pages = ceil($cur_forum['num_topics'] / Container::get('user')->disp_topics);
 
-        $p = (!isset($page) || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
         $start_from = Container::get('user')->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
@@ -126,50 +126,50 @@ class Forum
             'title' => array(Utils::escape($this->feather->config['o_board_title']), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'moderate',
             'page' => $p,
-            'id' => $id,
+            'id' => $args['id'],
             'p' => $p,
             'url_forum' => $url_forum,
             'cur_forum' => $cur_forum,
-            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/forum/'.$id.'/#'),
-            'topic_data' => $this->model->display_topics_moderate($id, $sort_by, $start_from),
+            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/forum/'.$args['id'].'/#'),
+            'topic_data' => $this->model->display_topics_moderate($args['id'], $sort_by, $start_from),
             'start_from' => $start_from,
             )
         )->addTemplate('moderate/moderator_forum.php')->display();
     }
 
-    public function markread($id)
+    public function markread($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.markread');
 
         $tracked_topics = Track::get_tracked_topics();
-        $tracked_topics['forums'][$id] = time();
+        $tracked_topics['forums'][$args['id']] = time();
         Track::set_tracked_topics($tracked_topics);
 
-        Router::redirect(Router::pathFor('Forum', ['id' => $id]), __('Mark forum read redirect'));
+        Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Mark forum read redirect'));
     }
 
-    public function subscribe($id)
+    public function subscribe($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.subscribe');
 
-        $this->model->subscribe($id);
-        Router::redirect(Router::pathFor('Forum', ['id' => $id]), __('Subscribe redirect'));
+        $this->model->subscribe($args['id']);
+        Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Subscribe redirect'));
     }
 
-    public function unsubscribe($id)
+    public function unsubscribe($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.unsubscribe');
 
-        $this->model->unsubscribe($id);
-        Router::redirect(Router::pathFor('Forum', ['id' => $id]), __('Unsubscribe redirect'));
+        $this->model->unsubscribe($args['id']);
+        Router::redirect(Router::pathFor('Forum', ['id' => $args['id']]), __('Unsubscribe redirect'));
     }
 
-    public function dealposts($fid, $page)
+    public function dealposts($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.dealposts');
 
         // Make sure that only admmods allowed access this page
-        $moderators = $this->model->get_moderators($fid);
+        $moderators = $this->model->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
@@ -187,7 +187,7 @@ class Forum
 
             if ($new_fid = $this->feather->request->post('move_to_forum')) {
                 $topics = explode(',', $topics);
-                $topicModel->move_to($fid, $new_fid, $topics);
+                $topicModel->move_to($args['fid'], $new_fid, $topics);
                 Router::redirect(Router::pathFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
             }
 
@@ -200,9 +200,9 @@ class Forum
                     'action'    =>    'multi',
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
-                    'id'    =>    $fid,
+                    'id'    =>    $args['fid'],
                     'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
-                    'list_forums'   => $topicModel->get_forum_list_move($fid),
+                    'list_forums'   => $topicModel->get_forum_list_move($args['fid']),
                 )
             )->addTemplate('moderate/move_topics.php')->display();
         }
@@ -210,8 +210,8 @@ class Forum
         // Merge two or more topics
         elseif ($this->feather->request->post('merge_topics') || $this->feather->request->post('merge_topics_comply')) {
             if ($this->feather->request->post('merge_topics_comply')) {
-                $this->model->merge_topics($fid);
-                Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Merge topics redirect'));
+                $this->model->merge_topics($args['fid']);
+                Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Merge topics redirect'));
             }
 
             $topics = $this->feather->request->post('topics') ? $this->feather->request->post('topics') : array();
@@ -222,7 +222,7 @@ class Forum
             View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
-                    'id'    =>    $fid,
+                    'id'    =>    $args['fid'],
                     'topics'    =>    $topics,
                 )
             )->addTemplate('moderate/merge_topics.php')->display();
@@ -236,14 +236,14 @@ class Forum
             }
 
             if ($this->feather->request->post('delete_topics_comply')) {
-                $this->model->delete_topics($topics, $fid);
-                Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Delete topics redirect'));
+                $this->model->delete_topics($topics, $args['fid']);
+                Router::redirect(Router::pathFor('Forum', array('id' => $args['fid'])), __('Delete topics redirect'));
             }
 
             View::setPageInfo(array(
                     'title' => array(Utils::escape($this->feather->config['o_board_title']), __('Moderate')),
                     'active_page' => 'moderate',
-                    'id'    =>    $fid,
+                    'id'    =>    $args['fid'],
                     'topics'    =>    $topics,
                 )
             )->addTemplate('moderate/delete_topics.php')->display();
@@ -264,7 +264,7 @@ class Forum
                 $this->model->close_multiple_topics($action, $topics);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-                Router::redirect(Router::pathFor('moderateForum', array('fid' => $fid, 'page' => $page)), $redirect_msg);
+                Router::redirect(Router::pathFor('moderateForum', array('fid' => $args['fid'], 'page' => $args['page'])), $redirect_msg);
             }
         }
     }

@@ -30,7 +30,7 @@ class Permissions
         Container::get('hooks')->fire('controller.admin.permissions.display');
 
         // Update permissions
-        if ($this->feather->request->isPost()) {
+        if (Request::isPost()) {
             $this->model->update_permissions();
         }
 
