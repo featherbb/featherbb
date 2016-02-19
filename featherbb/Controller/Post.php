@@ -367,10 +367,10 @@ class Post
             ))->addTemplate('misc/report.php')->display();
     }
 
-    public function gethost($pid)
+    public function gethost($req, $res, $args)
     {
-        $pid = Container::get('hooks')->fire('controller.post.gethost', $pid);
+        $args['pid'] = Container::get('hooks')->fire('controller.post.gethost', $args['pid']);
 
-        $this->model->display_ip_address($pid);
+        $this->model->display_ip_address($args['pid']);
     }
 }
