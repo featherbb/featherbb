@@ -20,7 +20,7 @@ class Userlist
         // Fetch user count
         $num_users = DB::for_table('users')->table_alias('u')
                         ->where_gt('u.id', 1)
-                        ->where_not_equal('u.group_id', Config::get('forum_env')['FEATHER_UNVERIFIED']);
+                        ->where_not_equal('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
 
         if ($username != '') {
             $num_users = $num_users->where_like('u.username', str_replace('*', '%', $username));
@@ -47,7 +47,7 @@ class Userlist
 
         $result = DB::for_table('groups')
                         ->select_many($result['select'])
-                        ->where_not_equal('g_id', Config::get('forum_env')['FEATHER_GUEST'])
+                        ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->order_by('g_id');
         $result = Container::get('hooks')->fireDB('model.userlist.generate_dropdown_menu_query', $result);
         $result = $result->find_many();
@@ -77,7 +77,7 @@ class Userlist
                     ->select('u.id')
                     ->table_alias('u')
                     ->where_gt('u.id', 1)
-                    ->where_not_equal('u.group_id', Config::get('forum_env')['FEATHER_UNVERIFIED']);
+                    ->where_not_equal('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
 
         if ($username != '') {
             $result = $result->where_like('u.username', str_replace('*', '%', $username));

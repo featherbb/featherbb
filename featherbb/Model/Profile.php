@@ -80,7 +80,7 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] || $user['g_moderator'] == '1') {
+                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
                     throw new Error(__('No permission'), 403);
                 }
             }
@@ -161,7 +161,7 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] || $user['g_moderator'] == '1') {
+                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
                     throw new Error(__('No permission'), 403);
                 }
             }
@@ -210,7 +210,7 @@ class Profile
                     throw new Error(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -247,7 +247,7 @@ class Profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/dupe_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -284,7 +284,7 @@ class Profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_email.tpl'));
             $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
@@ -362,11 +362,11 @@ class Profile
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-            if (!@move_uploaded_file($uploaded_file['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp')) {
+            if (!@move_uploaded_file($uploaded_file['tmp_name'], ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp')) {
                 throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
             }
 
-            list($width, $height, $type, ) = @getimagesize(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
+            list($width, $height, $type, ) = @getimagesize(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
 
             // Determine type
             if ($type == IMAGETYPE_GIF) {
@@ -377,20 +377,20 @@ class Profile
                 $extension = '.png';
             } else {
                 // Invalid type
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
+                @unlink(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 throw new Error(__('Bad type'));
             }
 
             // Now check the width/height
             if (empty($width) || empty($height) || $width > ForumSettings::get('o_avatars_width') || $height > ForumSettings::get('o_avatars_height')) {
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
+                @unlink(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 throw new Error(__('Too wide or high').' '.ForumSettings::get('o_avatars_width').'x'.ForumSettings::get('o_avatars_height').' '.__('pixels').'.');
             }
 
             // Delete any old avatars and put the new one in place
             $this->delete_avatar($id);
-            @rename(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp', Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
-            @chmod(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.$extension, 0644);
+            @rename(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp', ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
+            @chmod(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension, 0644);
         } else {
             throw new Error(__('Unknown failure'));
         }
@@ -409,8 +409,8 @@ class Profile
 
         // Delete user avatar
         foreach ($filetypes as $cur_type) {
-            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type)) {
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type);
+            if (file_exists(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type)) {
+                @unlink(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type);
             }
         }
     }
@@ -440,7 +440,7 @@ class Profile
 
         $stats = Container::get('cache')->retrieve('users_info');
 
-        if ($old_group_id == Config::get('forum_env')['FEATHER_ADMIN'] || $new_group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+        if ($old_group_id == ForumEnv::get('FEATHER_ADMIN') || $new_group_id == ForumEnv::get('FEATHER_ADMIN')) {
             Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
         }
 
@@ -450,7 +450,7 @@ class Profile
         $new_group_mod = $new_group_mod->find_one_col('g_moderator');
 
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-        if ($new_group_id != Config::get('forum_env')['FEATHER_ADMIN'] && $new_group_mod != '1') {
+        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod != '1') {
 
             // Loop through all forums
             $result = $this->loop_mod_forums();
@@ -621,7 +621,7 @@ class Profile
         $group_id = $result['group_id'];
         $username = $result['username'];
 
-        if ($group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+        if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
             throw new Error(__('No delete admin message'));
         }
 
@@ -632,7 +632,7 @@ class Profile
             $group_mod = Container::get('hooks')->fireDB('model.profile.delete_user_group_mod', $group_mod);
             $group_mod = $group_mod->find_one_col('g_moderator');
 
-            if ($group_id == Config::get('forum_env')['FEATHER_ADMIN'] || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -736,7 +736,7 @@ class Profile
 
             $stats = Container::get('cache')->retrieve('users_info');
 
-            if ($group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
                 Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
             }
 
@@ -799,7 +799,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_rename_users == '1')) {
+                    if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_rename_users == '1')) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -814,7 +814,7 @@ class Profile
                     }
 
                     // We only allow administrators to update the post count
-                    if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+                    if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
                         $form['num_posts'] = intval(Input::post('num_posts'));
                     }
                 }
@@ -857,7 +857,7 @@ class Profile
                     $form['url'] = '';
                 }
 
-                if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+                if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
                     $form['title'] = Utils::trim(Input::post('title'));
                 } elseif (Container::get('user')->g_set_title == '1') {
                     $form['title'] = Utils::trim(Input::post('title'));
@@ -1055,7 +1055,7 @@ class Profile
             $group_mod = Container::get('hooks')->fireDB('model.profile.update_profile_group_mod', $group_mod);
             $group_mod = $group_mod->find_one_col('g_moderator');
 
-            if ($group_id == Config::get('forum_env')['FEATHER_ADMIN'] || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -1239,7 +1239,7 @@ class Profile
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
         if (Container::get('user')->is_admmod) {
-            if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || Container::get('user')->g_mod_rename_users == '1') {
+            if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('user')->g_mod_rename_users == '1') {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
@@ -1259,13 +1259,13 @@ class Profile
         $user_disp['posts_field'] = '';
         $posts_actions = array();
 
-        if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+        if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
         } elseif (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
-        if (Container::get('user')->g_search == '1' || Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+        if (Container::get('user')->g_search == '1' || Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
@@ -1291,7 +1291,7 @@ class Profile
 
         $result = DB::for_table('groups')
             ->select_many($result['select'])
-            ->where_not_equal('g_id', Config::get('forum_env')['FEATHER_GUEST'])
+            ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
             ->order_by('g_title');
         $result = Container::get('hooks')->fireDB('model.profile.get_group_list_query', $result);
         $result = $result->find_many();
@@ -1361,10 +1361,10 @@ class Profile
         global $errors, $feather_bans;
 
         // Include UTF-8 function
-        require_once Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
+        require_once ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/register.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
 
         // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
         $username = preg_replace('%\s+%s', ' ', $username);
@@ -1448,7 +1448,7 @@ class Profile
             throw new Error(__('No email message'), 400);
         }
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
-        elseif (strlen($message) > Config::get('forum_env')['FEATHER_MAX_POSTSIZE']) {
+        elseif (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             throw new Error(__('Too long email message'), 400);
         }
 
@@ -1457,7 +1457,7 @@ class Profile
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/form_email.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject

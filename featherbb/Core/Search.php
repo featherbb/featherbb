@@ -114,7 +114,7 @@ class Search
 
         // Check the word is within the min/max length
         $num_chars = Utils::strlen($word);
-        return $num_chars >= Config::get('forum_env')['FEATHER_SEARCH_MIN_WORD'] && $num_chars <= Config::get('forum_env')['FEATHER_SEARCH_MAX_WORD'];
+        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
     }
 
 

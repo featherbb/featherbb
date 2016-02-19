@@ -44,10 +44,10 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                     <th scope="row"><?php _e('User title label') ?></th>
                                     <td>
                                         <input type="text" name="user_title" size="25" maxlength="50" value="<?= Utils::escape($group['info']['g_user_title']) ?>" tabindex="2" />
-                                        <span><?php printf(__('User title help'), ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_GUEST'] ? __('Member') : __('Guest'))) ?></span>
+                                        <span><?php printf(__('User title help'), ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST') ? __('Member') : __('Guest'))) ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_ADMIN']): if ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_ADMIN')): if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Promote users label') ?></th>
                                     <td>
                                         <select name="promote_next_group" tabindex="3">
@@ -178,7 +178,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                         <span class="clearb"><?php _e('Post topics help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Edit posts label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="edit_posts" value="1"<?php if ($group['info']['g_edit_posts'] == '1') {
@@ -226,7 +226,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                         <span class="clearb"><?php _e('Post links help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Set own title label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="set_title" value="1"<?php if ($group['info']['g_set_title'] == '1') {
@@ -262,7 +262,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                         <span class="clearb"><?php _e('User list search help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Send e-mails label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="send_email" value="1"<?php if ($group['info']['g_send_email'] == '1') {
@@ -288,7 +288,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                         <span><?php _e('Search flood help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != Config::get('forum_env')['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('E-mail flood label') ?></th>
                                     <td>
                                         <input type="text" name="email_flood" size="5" maxlength="4" value="<?= $group['info']['g_email_flood'] ?>" tabindex="43" />

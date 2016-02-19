@@ -143,7 +143,7 @@ class Users
 
         // Are we trying to batch move any admins?
         $is_admin = DB::for_table('users')->where_in('id', $move['user_ids'])
-                        ->where('group_id', Config::get('forum_env')['FEATHER_ADMIN'])
+                        ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
                         ->find_one();
         if ($is_admin) {
             throw new Error(__('No move admins message'), 403);
@@ -151,7 +151,7 @@ class Users
 
         // Fetch all user groups
         $select_user_groups = array('g_id', 'g_title');
-        $where_not_in = array(Config::get('forum_env')['FEATHER_GUEST'], Config::get('forum_env')['FEATHER_ADMIN']);
+        $where_not_in = array(ForumEnv::get('FEATHER_GUEST'), ForumEnv::get('FEATHER_ADMIN'));
 
         $result = DB::for_table('groups')->select_many($select_user_groups)
             ->where_not_in('g_id', $where_not_in)
@@ -205,7 +205,7 @@ class Users
 
             $user_groups = Container::get('hooks')->fire('model.admin.model.users.move_users.user_groups', $user_groups);
 
-            if (!empty($user_groups) && $new_group != Config::get('forum_env')['FEATHER_ADMIN'] && $new_group_mod != '1') {
+            if (!empty($user_groups) && $new_group != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod != '1') {
                 // Fetch forum list and clean up their moderator list
                 $select_mods = array('id', 'moderators');
                 $result = DB::for_table('forums')
@@ -264,7 +264,7 @@ class Users
 
         // Are we trying to delete any admins?
         $is_admin = DB::for_table('users')->where_in('id', $user_ids)
-            ->where('group_id', Config::get('forum_env')['FEATHER_ADMIN'])
+            ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
             ->find_one();
         if ($is_admin) {
             throw new Error(__('No delete admins message'), 403);
@@ -428,7 +428,7 @@ class Users
 
         // Are we trying to ban any admins?
         $is_admin = DB::for_table('users')->where_in('id', $user_ids)
-            ->where('group_id', Config::get('forum_env')['FEATHER_ADMIN'])
+            ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
             ->find_one();
         if ($is_admin) {
             throw new Error(__('No ban admins message'), 403);
@@ -666,7 +666,7 @@ class Users
                 $cur_user['user_title'] = Utils::get_title($cur_user);
 
                 // This script is a special case in that we want to display "Not verified" for non-verified users
-                if (($cur_user['g_id'] == '' || $cur_user['g_id'] == Config::get('forum_env')['FEATHER_UNVERIFIED']) && $cur_user['user_title'] != __('Banned')) {
+                if (($cur_user['g_id'] == '' || $cur_user['g_id'] == ForumEnv::get('FEATHER_UNVERIFIED')) && $cur_user['user_title'] != __('Banned')) {
                     $cur_user['user_title'] = '<span class="warntext">'.__('Not verified').'</span>';
                 }
 
@@ -684,7 +684,7 @@ class Users
 
         $select_get_group_list = array('g_id', 'g_title');
         $result = DB::for_table('groups')->select_many($select_get_group_list)
-                        ->where_not_equal('g_id', Config::get('forum_env')['FEATHER_GUEST'])
+                        ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->order_by('g_title');
 
         foreach ($result as $cur_group) {

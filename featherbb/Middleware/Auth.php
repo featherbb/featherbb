@@ -236,17 +236,17 @@ class Auth
             $user = AuthModel::load_user($jwt->data->userId);
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
             $user->is_guest = false;
-            $user->is_admmod = $user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || $user->g_moderator == '1';
+            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
             if (!$user->disp_posts) {
                 $user->disp_posts = ForumSettings::get('o_disp_posts_default');
             }
-            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language)) {
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language)) {
                 $user->language = ForumSettings::get('o_default_lang');
             }
-            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$user->style.'/style.css')) {
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->style.'/style.css')) {
                 $user->style = ForumSettings::get('o_default_style');
             }
 
@@ -298,7 +298,7 @@ class Auth
             // AuthModel::feather_setcookie(1, Random::hash(uniqid(rand(), true)), Container::get('now') + 31536000);
         }
 
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language.'/common.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language.'/common.mo');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());

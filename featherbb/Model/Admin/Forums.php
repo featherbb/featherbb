@@ -147,7 +147,7 @@ class Forums
                         ->table_alias('g')
                         ->select_many($select_permissions)
                         ->left_outer_join('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
-                        ->where_not_equal('g.g_id', Config::get('forum_env')['FEATHER_ADMIN'])
+                        ->where_not_equal('g.g_id', ForumEnv::get('FEATHER_ADMIN'))
                         ->order_by_asc('g.g_id');
         $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);
         $permissions = $permissions->find_many();
@@ -177,7 +177,7 @@ class Forums
                     ->select_many($select_get_default_group_permissions);
 
         if (!$fetch_admin) {
-            $result->where_not_equal('g_id', Config::get('forum_env')['FEATHER_ADMIN']);
+            $result->where_not_equal('g_id', ForumEnv::get('FEATHER_ADMIN'));
         }
 
         $result = $result->order_by_asc('g_id');

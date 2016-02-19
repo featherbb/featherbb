@@ -19,10 +19,10 @@ class Profile
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Profile();
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/profile.mo');
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/register.mo');
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/profile.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/register.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
     }
 
     public function display($req, $res, $args)
@@ -30,32 +30,32 @@ class Profile
         global $forum_time_formats, $forum_date_formats;
 
         // Include UTF-8 function
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/substr_replace.php';
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
         $args['id'] = Container::get('hooks')->fire('controller.profile.display', $args['id']);
 
         if (Input::post('update_group_membership')) {
-            if (Container::get('user')->g_id > Config::get('forum_env')['FEATHER_ADMIN']) {
+            if (Container::get('user')->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_group_membership($args['id']);
         } elseif (Input::post('update_forums')) {
-            if (Container::get('user')->g_id > Config::get('forum_env')['FEATHER_ADMIN']) {
+            if (Container::get('user')->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
             $this->model->update_mod_forums($args['id']);
         } elseif (Input::post('ban')) {
-            if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_ban_users == '0')) {
+            if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
             $this->model->ban_user($args['id']);
         } elseif (Input::post('delete_user') || Input::post('delete_user_comply')) {
-            if (Container::get('user')->g_id > Config::get('forum_env')['FEATHER_ADMIN']) {
+            if (Container::get('user')->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -78,9 +78,9 @@ class Profile
 
             if (Container::get('user')->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
                                     (!Container::get('user')->is_admmod ||                                      // and we are not an admin or mod
-                                    (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] &&                           // or we aren't an admin and ...
+                                    (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') &&                           // or we aren't an admin and ...
                                     (Container::get('user')->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
-                                    $info['group_id'] == Config::get('forum_env')['FEATHER_ADMIN'] ||                            // or the user is an admin
+                                    $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
                                     $info['is_moderator'])))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
             }
@@ -97,9 +97,9 @@ class Profile
         // View or edit?
         if (Container::get('user')->id != $args['id'] &&                                 // If we aren't the user (i.e. editing your own profile)
                 (!Container::get('user')->is_admmod ||                           // and we are not an admin or mod
-                (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] &&                // or we aren't an admin and ...
+                (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') &&                // or we aren't an admin and ...
                 (Container::get('user')->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
-                $user['g_id'] == Config::get('forum_env')['FEATHER_ADMIN'] ||                     // or the user is an admin
+                $user['g_id'] == ForumEnv::get('FEATHER_ADMIN') ||                     // or the user is an admin
                 $user['g_moderator'] == '1')))) {                     // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
 
@@ -240,9 +240,9 @@ class Profile
     public function action($req, $res, $args)
     {
         // Include UTF-8 function
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/substr_replace.php';
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
         $args['id'] = Container::get('hooks')->fire('controller.profile.action', $args['id']);
 
@@ -312,7 +312,7 @@ class Profile
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
-            if (Container::get('user')->g_id != Config::get('forum_env')['FEATHER_ADMIN'] && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_promote_users == '0')) {
+            if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 

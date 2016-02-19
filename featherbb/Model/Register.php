@@ -67,7 +67,7 @@ class Register
         }
 
         // Antispam feature
-        require Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
         $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
         $lang_antispam_questions_array = array();
@@ -116,7 +116,7 @@ class Register
         // Make sure we got a valid language string
         if (Input::post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', Input::post('language'));
-            if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user['language'].'/common.po')) {
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user['language'].'/common.po')) {
                 throw new Error(__('Bad request'), 500);
             }
         } else {
@@ -135,7 +135,7 @@ class Register
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
-        $intial_group_id = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : Config::get('forum_env')['FEATHER_UNVERIFIED'];
+        $intial_group_id = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
         $password_hash = Random::hash($user['password1']);
 
         // Add the user
@@ -177,7 +177,7 @@ class Register
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
-                $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_register.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_banned_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -198,7 +198,7 @@ class Register
             // If we previously found out that the email was a dupe
             if (!empty($dupe_list)) {
                 // Load the "dupe email register" template
-                $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/dupe_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/dupe_email_register.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -219,7 +219,7 @@ class Register
             // Should we alert people on the admin mailing list that a new user has registered?
             if (ForumSettings::get('o_regs_report') == '1') {
                 // Load the "new user" template
-                $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/new_user.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/new_user.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_new_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -242,7 +242,7 @@ class Register
         // Must the user verify the registration or do we log him/her in right now?
         if (ForumSettings::get('o_regs_verify') == '1') {
             // Load the "welcome" template
-            $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/welcome.tpl'));
+            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/welcome.tpl'));
             $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_tpl', $mail_tpl);
 
             // The first row contains the subject

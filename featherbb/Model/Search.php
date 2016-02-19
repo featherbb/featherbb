@@ -53,7 +53,7 @@ class Search
             $keywords = (Input::query('keywords')) ? utf8_strtolower(Utils::trim(Input::query('keywords'))) : null;
             $author = (Input::query('author')) ? utf8_strtolower(Utils::trim(Input::query('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < Config::get('forum_env')['FEATHER_SEARCH_MIN_WORD'] && !$this->search->is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(array('*', '%'), '', $keywords)) < ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && !$this->search->is_cjk($keywords))) {
                 $keywords = '';
             }
 

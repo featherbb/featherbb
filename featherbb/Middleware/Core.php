@@ -182,7 +182,7 @@ class Core
         }
 
         // Populate Slim object with forum_env vars
-        // Container::set('forum_env', $this->forum_env);
+        Container::set('forum_env', $this->forum_env);
         Config::set('forum_env', $this->forum_env);
         // Load FeatherBB utils class
         Container::set('utils', function ($container) {
@@ -241,13 +241,13 @@ class Core
         // This is the very first hook fired
         Container::get('hooks')->fire('core.start');
 
-        if (!is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
+        if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
             $installer = new \FeatherBB\Controller\Install();
             return $installer->run();
         }
 
         // Load config from disk
-        include Config::get('forum_env')['FORUM_CONFIG_FILE'];
+        include ForumEnv::get('FORUM_CONFIG_FILE');
         if (isset($featherbb_config) && is_array($featherbb_config)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $featherbb_config);
         } else {
@@ -256,7 +256,7 @@ class Core
         }
 
         // Init DB and configure Slim
-        self::init_db($this->forum_settings, Config::get('forum_env')['FEATHER_SHOW_INFO']);
+        self::init_db($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', $this->forum_env['FEATHER_DEBUG']);
         // array('debug' => $this->forum_env['FEATHER_DEBUG'],
         //                          'cookies.encrypt' => true,

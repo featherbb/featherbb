@@ -13,7 +13,7 @@ class Email
 {
     public function __construct()
     {
-        require Config::get('forum_env')['FEATHER_ROOT'] . 'featherbb/Helpers/utf8/utils/ascii.php';
+        require ForumEnv::get('FEATHER_ROOT') . 'featherbb/Helpers/utf8/utils/ascii.php';
     }
 
     //

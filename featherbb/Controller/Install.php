@@ -50,7 +50,7 @@ class Install
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$this->install_lang.'/install.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$this->install_lang.'/install.mo');
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = array();
@@ -109,13 +109,13 @@ class Install
                 }
 
                 // Check if the cache directory is writable
-                if (!is_writable(Config::get('forum_env')['FORUM_CACHE_DIR'])) {
-                    $this->errors[] = sprintf(__('Alert cache'), Config::get('forum_env')['FORUM_CACHE_DIR']);
+                if (!is_writable(ForumEnv::get('FORUM_CACHE_DIR'))) {
+                    $this->errors[] = sprintf(__('Alert cache'), ForumEnv::get('FORUM_CACHE_DIR'));
                 }
 
                 // Check if default avatar directory is writable
-                if (!is_writable(Config::get('forum_env')['FEATHER_ROOT'].'style/img/avatars/')) {
-                    $this->errors[] = sprintf(__('Alert avatar'), Config::get('forum_env')['FEATHER_ROOT'].'style/img/avatars/');
+                if (!is_writable(ForumEnv::get('FEATHER_ROOT').'style/img/avatars/')) {
+                    $this->errors[] = sprintf(__('Alert avatar'), ForumEnv::get('FEATHER_ROOT').'style/img/avatars/');
                 }
 
                 // Validate db_prefix if existing
@@ -165,7 +165,7 @@ class Install
         }
 
         $config = array_merge($config, array(
-            'cookie_name' => mb_strtolower(Config::get('forum_env')['FORUM_NAME']).'_cookie_'.Random::key(7, false, true),
+            'cookie_name' => mb_strtolower(ForumEnv::get('FORUM_NAME')).'_cookie_'.Random::key(7, false, true),
             'jwt_token' => base64_encode(Random::secure_random_bytes(64)),
             'jwt_algorithm' => 'HS512'
         ));
@@ -188,7 +188,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$data['default_lang'].'/install.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$data['default_lang'].'/install.mo');
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
@@ -249,15 +249,15 @@ class Install
     {
         Container::get('hooks')->fire('controller.install.write_config');
 
-        return file_put_contents(Config::get('forum_env')['FORUM_CONFIG_FILE'], '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
+        return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
     }
 
     public function write_htaccess()
     {
         Container::get('hooks')->fire('controller.install.write_htaccess');
 
-        $data = file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'.htaccess.dist');
-        return file_put_contents(Config::get('forum_env')['FEATHER_ROOT'].'.htaccess', $data);
+        $data = file_get_contents(ForumEnv::get('FEATHER_ROOT').'.htaccess.dist');
+        return file_put_contents(ForumEnv::get('FEATHER_ROOT').'.htaccess', $data);
     }
 
     public function load_default_config(array $data)
@@ -265,10 +265,10 @@ class Install
         Container::get('hooks')->fire('controller.install.load_default_config');
 
         return array(
-            'o_cur_version'                => Config::get('forum_env')['FORUM_VERSION'],
-            'o_database_revision'        => Config::get('forum_env')['FORUM_DB_REVISION'],
-            'o_searchindex_revision'    => Config::get('forum_env')['FORUM_SI_REVISION'],
-            'o_parser_revision'            => Config::get('forum_env')['FORUM_PARSER_REVISION'],
+            'o_cur_version'                => ForumEnv::get('FORUM_VERSION'),
+            'o_database_revision'        => ForumEnv::get('FORUM_DB_REVISION'),
+            'o_searchindex_revision'    => ForumEnv::get('FORUM_SI_REVISION'),
+            'o_parser_revision'            => ForumEnv::get('FORUM_PARSER_REVISION'),
             'o_board_title'                => $data['title'],
             'o_board_desc'                => $data['description'],
             'o_default_timezone'        => 0,

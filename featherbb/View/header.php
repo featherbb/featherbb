@@ -48,7 +48,7 @@ foreach($assets as $type => $items) {
     }
 }
 if ($admin_console) {
-    if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.Container::get('user')->style.'/base_admin.css')) {
+    if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.Container::get('user')->style.'/base_admin.css')) {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.Container::get('user')->style.'/base_admin.css" />'."\n";
     } else {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";

@@ -21,7 +21,7 @@ class Auth
 {
     public function __construct()
     {
-        load_textdomain('featherbb', Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/login.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/login.mo');
     }
 
     public function login($req, $res, $args)
@@ -41,7 +41,7 @@ class Auth
             if (!empty($user->password)) {
                 $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
-                    if ($user->group_id == Config::get('forum_env')['FEATHER_UNVERIFIED']) {
+                    if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
                         ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
                         if (!Container::get('cache')->isCached('users_info')) {
                             Container::get('cache')->store('users_info', Cache::get_users_info());
@@ -112,7 +112,7 @@ class Auth
 
             if ($user) {
                 // Load the "activate password" template
-                $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_password.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_password.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('controller.mail_tpl_password_forgotten', $mail_tpl);
 
                 // The first row contains the subject

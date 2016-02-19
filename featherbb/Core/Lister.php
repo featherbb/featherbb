@@ -18,7 +18,7 @@ class Lister
     {
         $plugins = array();
 
-        foreach (glob(Config::get('forum_env')['FEATHER_ROOT'].'plugins/*/featherbb.json') as $plugin_file)
+        foreach (glob(ForumEnv::get('FEATHER_ROOT').'plugins/*/featherbb.json') as $plugin_file)
         {
             $plugins[] =  json_decode(file_get_contents($plugin_file));
         }
@@ -55,7 +55,7 @@ class Lister
     {
         $styles = array();
 
-        $iterator = new \DirectoryIterator(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/');
+        $iterator = new \DirectoryIterator(ForumEnv::get('FEATHER_ROOT').'style/themes/');
         foreach ($iterator as $child) {
             if(!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {
                 // If the theme is well formed, add it to the list
@@ -74,7 +74,7 @@ class Lister
     {
         $langs = array();
 
-        $iterator = new \DirectoryIterator(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/');
+        $iterator = new \DirectoryIterator(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/');
         foreach ($iterator as $child) {
             if(!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
                 // If the lang pack is well formed, add it to the list

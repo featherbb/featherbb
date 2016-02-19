@@ -63,7 +63,7 @@ class Groups
         $output = '';
 
         foreach ($groups as $cur_group) {
-            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != Config::get('forum_env')['FEATHER_ADMIN'] && $cur_group['g_id'] != Config::get('forum_env')['FEATHER_GUEST']) {
+            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != ForumEnv::get('FEATHER_ADMIN') && $cur_group['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
                 if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
                 } else {
@@ -82,7 +82,7 @@ class Groups
 
         $select_get_group_list_delete = array('g_id', 'g_title');
         $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
-                        ->where_not_equal('g_id', Config::get('forum_env')['FEATHER_GUEST'])
+                        ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->where_not_equal('g_id', $group_id)
                         ->order_by('g_title');
         $result = Container::get('hooks')->fireDB('model.admin.groups.get_group_list_delete', $result);
@@ -91,7 +91,7 @@ class Groups
         $output = '';
 
         foreach ($result as $cur_group) {
-            if ($cur_group['g_id'] == Config::get('forum_env')['FEATHER_MEMBER']) {
+            if ($cur_group['g_id'] == ForumEnv::get('FEATHER_MEMBER')) {
                 // Pre-select the pre-defined Members group
                 $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
@@ -114,7 +114,7 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group_start', $group_id);
 
         // Is this the admin group? (special rules apply)
-        $is_admin_group = (Input::post('group_id') && Input::post('group_id') == Config::get('forum_env')['FEATHER_ADMIN']) ? true : false;
+        $is_admin_group = (Input::post('group_id') && Input::post('group_id') == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
 
         // Set group title
         $title = Utils::trim(Input::post('req_title'));
@@ -130,7 +130,7 @@ class Groups
         $promote_min_posts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
         if (Input::post('promote_next_group') &&
                 isset($groups[Input::post('promote_next_group')]) &&
-                !in_array(Input::post('promote_next_group'), array(Config::get('forum_env')['FEATHER_ADMIN'], Config::get('forum_env')['FEATHER_GUEST'])) &&
+                !in_array(Input::post('promote_next_group'), array(ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST'))) &&
                 (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
             $promote_next_group = Input::post('promote_next_group');
         } else {
@@ -264,7 +264,7 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $group_id);
 
         // Make sure it's not the admin or guest groups
-        if ($group_id == Config::get('forum_env')['FEATHER_ADMIN'] || $group_id == Config::get('forum_env')['FEATHER_GUEST']) {
+        if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_id == ForumEnv::get('FEATHER_GUEST')) {
             throw new Error(__('Bad request'), 404);
         }
 

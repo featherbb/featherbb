@@ -253,7 +253,7 @@ class Utils
             $user_title = self::escape($user['g_user_title']);
         }
         // If the user is a guest
-        elseif ($user['g_id'] == Config::get('forum_env')['FEATHER_GUEST']) {
+        elseif ($user['g_id'] == ForumEnv::get('FEATHER_GUEST')) {
             $user_title = __('Guest');
         }
         // If nothing else helps, we assign the default
@@ -312,8 +312,8 @@ class Utils
         foreach ($filetypes as $cur_type) {
             $path = ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type;
 
-            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].$path) && $img_size = getimagesize(Config::get('forum_env')['FEATHER_ROOT'].$path)) {
-                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(Config::get('forum_env')['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';
+            if (file_exists(ForumEnv::get('FEATHER_ROOT').$path) && $img_size = getimagesize(ForumEnv::get('FEATHER_ROOT').$path)) {
+                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(ForumEnv::get('FEATHER_ROOT').$path)).'" '.$img_size[3].' alt="" />';
                 break;
             }
         }

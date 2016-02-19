@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.install.start');
 <head>
     <meta charset="utf-8">
     <title><?php _e('FeatherBB Installation') ?></title>
-    <link rel="stylesheet" type="text/css" href="style/themes/<?= Config::get('forum_env')['FORUM_NAME'] ?>/style.css" />
+    <link rel="stylesheet" type="text/css" href="style/themes/<?= ForumEnv::get('FORUM_NAME') ?>/style.css" />
 </head>
 
 <body>
@@ -73,7 +73,7 @@ Container::get('hooks')->fire('view.install.start');
                         ?>
 
                         <div class="blockform">
-                            <h2><span><?= sprintf(__('Install'), Config::get('forum_env')['FORUM_VERSION']) ?></span></h2>
+                            <h2><span><?= sprintf(__('Install'), ForumEnv::get('FORUM_VERSION')) ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
                                     <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">

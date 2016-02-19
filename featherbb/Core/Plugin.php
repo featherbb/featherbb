@@ -110,7 +110,7 @@ class Plugin
     protected function load($plugin)
     {
         // "Complex" plugins which need to register namespace via bootstrap.php
-        if (file_exists($file = Config::get('forum_env')['FEATHER_ROOT'].'plugins/'.$plugin.'/bootstrap.php')) {
+        if (file_exists($file = ForumEnv::get('FEATHER_ROOT').'plugins/'.$plugin.'/bootstrap.php')) {
             $className = require $file;
             $class = new $className();
             return $class;
@@ -134,7 +134,7 @@ class Plugin
     // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
     protected function checkSimple($plugin)
     {
-        return Config::get('forum_env')['FEATHER_ROOT'].'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
+        return ForumEnv::get('FEATHER_ROOT').'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
 
 }

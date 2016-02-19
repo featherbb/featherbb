@@ -71,7 +71,7 @@ class Bans
 
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
-            if ($group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
@@ -160,7 +160,7 @@ class Bans
                             ->find_one_col('group_id');
 
             if ($group_id) {
-                if ($group_id == Config::get('forum_env')['FEATHER_ADMIN']) {
+                if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
                     throw new Error(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
