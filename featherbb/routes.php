@@ -8,7 +8,8 @@
  */
 
 use FeatherBB\Core\Error;
-
+use \FeatherBB\Middleware\Logged as LoggedMiddleware;
+use \FeatherBB\Middleware\Admin as IsAdminMiddleware;
 
 /**
  * Middleware to check if user is allowed to read the board.
@@ -17,18 +18,6 @@ $canReadBoard = function ($request, $response, $next) {
     $response = $next($request, $response);
     if (Container::get('user')->g_read_board == '0') {
         throw new Error(__('No view'), 403);
-    }
-
-    return $response;
-};
-
-/**
- * Middleware to check if user is allowed to read the board.
- */
-$isGuest = function ($request, $response, $next) {
-    $response = $next($request, $response);
-    if (Container::get('user')->is_guest) {
-        throw new Error(__('No permission'), 403);
     }
 
     return $response;
@@ -51,27 +40,21 @@ Route::map(['GET', 'POST'], '/install', '\FeatherBB\Controller\Install:run')->se
 // Index
 Route::get('/', '\FeatherBB\Controller\Index:display')->add($canReadBoard)->setName('home');
 Route::get('/rules', '\FeatherBB\Controller\Index:rules')->setName('rules');
-Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add($isGuest)->setName('markRead');
+Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add(new LoggedMiddleware)->setName('markRead');
 
 // Forum
 Route::group('/forum', function() {
     Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
-    Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add(new \FeatherBB\Middleware\Logged())->setName('markForumRead');
-    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add(new \FeatherBB\Middleware\Logged())->setName('subscribeForum');
-    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add(new \FeatherBB\Middleware\Logged())->setName('unsubscribeForum');
+    Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add(new LoggedMiddleware)->setName('markForumRead');
+    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add(new LoggedMiddleware)->setName('subscribeForum');
+    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add(new LoggedMiddleware)->setName('unsubscribeForum');
     Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
     Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
 })->add($canReadBoard);
 
 // Topic
 Route::group('/topic', function() use ($feather) {
-    $isGuest = function($request, $response, $next) use ($feather) {
-        if (Container::get('user')->is_guest) {
-            throw new Error(__('No permission'), 403);
-        }
-        return $response;
-    };
     $isAdmmod = function($request, $response, $next) use ($feather) {
         if(!Container::get('user')->is_admmod) {
             throw new Error(__('No permission'), 403);
@@ -81,8 +64,8 @@ Route::group('/topic', function() use ($feather) {
     Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
     Route::get('/{id:[0-9]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
-    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add($isGuest)->setName('subscribeTopic');
-    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add($isGuest)->setName('unsubscribeTopic');
+    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add(new LoggedMiddleware)->setName('subscribeTopic');
+    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add(new LoggedMiddleware)->setName('unsubscribeTopic');
     Route::get('/close/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:close')->add($isAdmmod)->setName('closeTopic');
     Route::get('/open/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:open')->add($isAdmmod)->setName('openTopic');
     Route::get('/stick/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:stick')->add($isAdmmod)->setName('stickTopic');
@@ -145,30 +128,19 @@ Route::group('/user', function() use ($feather) {
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
     Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
     Route::get('/get-host/{ip}', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
-})->add($isGuest);
+})->add(new LoggedMiddleware);
 
 
 // Admin routes
 
-Route::group('/admin', function() use ($feather) {
-
-    /**
-     * Middleware to check if user is admin.
-     */
-
-    $isAdmin = function($request, $response, $next) use ($feather) {
-        if(Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN')) {
-            Container::get('url')->redirect(Router::pathFor('home'), __('No permission'));
-        }
-        return $response;
-    };
+Route::group('/admin', function() {
 
     // Admin index
     Route::get('[/action/{action}]', '\FeatherBB\Controller\Admin\Index:display')->setName('adminAction');
     Route::get('/index', '\FeatherBB\Controller\Admin\Index:display')->setName('adminIndex');
 
     // Admin bans
-    Route::group('/bans', function() use ($feather) {
+    Route::group('/bans', function() {
         Route::get('', '\FeatherBB\Controller\Admin\Bans:display')->setName('adminBans');
         Route::get('/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Bans:delete')->setName('deleteBan');
         Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Bans:edit')->setName('editBan');
@@ -176,47 +148,47 @@ Route::group('/admin', function() use ($feather) {
     });
 
     // Admin options
-    Route::map(['GET', 'POST'], '/options', '\FeatherBB\Controller\Admin\Options:display')->add($isAdmin)->setName('adminOptions');
+    Route::map(['GET', 'POST'], '/options', '\FeatherBB\Controller\Admin\Options:display')->add(new IsAdminMiddleware)->setName('adminOptions');
 
     // Admin categories
-    Route::group('/categories', function() use ($feather) {
+    Route::group('/categories', function() {
         Route::get('', '\FeatherBB\Controller\Admin\Categories:display')->setName('adminCategories');
         Route::post('/add', '\FeatherBB\Controller\Admin\Categories:add')->setName('addCategory');
         Route::post('/edit', '\FeatherBB\Controller\Admin\Categories:edit')->setName('editCategory');
         Route::post('/delete', '\FeatherBB\Controller\Admin\Categories:delete')->setName('deleteCategory');
-    })->add($isAdmin);
+    })->add(new IsAdminMiddleware);
 
     // Admin censoring
-    Route::map(['GET', 'POST'], '/censoring', '\FeatherBB\Controller\Admin\Censoring:display')->add($isAdmin)->setName('adminCensoring');
+    Route::map(['GET', 'POST'], '/censoring', '\FeatherBB\Controller\Admin\Censoring:display')->add(new IsAdminMiddleware)->setName('adminCensoring');
 
     // Admin reports
     Route::map(['GET', 'POST'], '/reports', '\FeatherBB\Controller\Admin\Reports:display')->setName('adminReports');
 
     // Admin permissions
-    Route::map(['GET', 'POST'], '/permissions', '\FeatherBB\Controller\Admin\Permissions:display')->add($isAdmin)->setName('adminPermissions');
+    Route::map(['GET', 'POST'], '/permissions', '\FeatherBB\Controller\Admin\Permissions:display')->add(new IsAdminMiddleware)->setName('adminPermissions');
 
     // Admin statistics
     Route::get('/statistics', '\FeatherBB\Controller\Admin\Statistics:display')->setName('statistics');
     Route::get('/phpinfo', '\FeatherBB\Controller\Admin\Statistics:phpinfo')->setName('phpInfo');
 
     // Admin forums
-    Route::group('/forums', function() use ($feather) {
+    Route::group('/forums', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Forums:display')->setName('adminForums');
         Route::post('/add', '\FeatherBB\Controller\Admin\Forums:add')->setName('addForum');
         Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:edit')->setName('editForum');
         Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:delete')->setName('deleteForum');
-    })->add($isAdmin);
+    })->add(new IsAdminMiddleware);
 
     // Admin groups
-    Route::group('/groups', function() use ($feather) {
+    Route::group('/groups', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Groups:display')->setName('adminGroups');
         Route::map(['GET', 'POST'], '/add', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('addGroup');
         Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('editGroup');
         Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Groups:delete')->setName('deleteGroup');
-    })->add($isAdmin);
+    })->add(new IsAdminMiddleware);
 
     // Admin plugins
-    Route::group('/plugins', function() use ($feather) {
+    Route::group('/plugins', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Plugins:index')->setName('adminPlugins');
         Route::map(['GET', 'POST'], '/info/{name:[\w\-]+}', '\FeatherBB\Controller\Admin\Plugins:info')->setName('infoPlugin');
         Route::get('/activate/{name:[\w\-]+}', '\FeatherBB\Controller\Admin\Plugins:activate')->setName('activatePlugin');
@@ -226,13 +198,13 @@ Route::group('/admin', function() use ($feather) {
     });
 
     // Admin maintenance
-    Route::map(['GET', 'POST'], '/maintenance', '\FeatherBB\Controller\Admin\Maintenance:display')->add($isAdmin)->setName('adminMaintenance');
+    Route::map(['GET', 'POST'], '/maintenance', '\FeatherBB\Controller\Admin\Maintenance:display')->add(new IsAdminMiddleware)->setName('adminMaintenance');
 
     // Admin parser
-    Route::map(['GET', 'POST'], '/parser', '\FeatherBB\Controller\Admin\Parser:display')->add($isAdmin)->setName('adminParser');
+    Route::map(['GET', 'POST'], '/parser', '\FeatherBB\Controller\Admin\Parser:display')->add(new IsAdminMiddleware)->setName('adminParser');
 
     // Admin users
-    Route::group('/users', function() use ($feather) {
+    Route::group('/users', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Users:display')->setName('adminUsers');
         Route::get('/ip-stats/id/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
         Route::get('/show-users/ip/{ip}', '\FeatherBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
