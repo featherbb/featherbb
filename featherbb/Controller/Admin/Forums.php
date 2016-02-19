@@ -57,19 +57,19 @@ class Forums
                                     'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : NULL);
 
                 if ($forum_data['forum_name'] == '') {
-                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Must enter name message'));
+                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Must enter name message'));
                 }
                 if ($forum_data['cat_id'] < 1) {
-                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Must be valid category'));
+                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Must be valid category'));
                 }
 
-                $this->model->update_forum($args['forum_id'], $forum_data);
+                $this->model->update_forum($args['id'], $forum_data);
 
                 // Permissions
                 $permissions = $this->model->get_default_group_permissions(false);
                 foreach($permissions as $perm_group) {
                     $permissions_data = array('group_id' => $perm_group['g_id'],
-                                                'forum_id' => $args['forum_id']);
+                                                'forum_id' => $args['id']);
                     if ($perm_group['g_read_board'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
                         $permissions_data['read_forum'] = '1';
                     }
@@ -85,7 +85,7 @@ class Forums
                         $permissions_data['post_topics'] != Input::post('post_topics_old')[$perm_group['g_id']]) {
                             // If there is no group permissions override for this forum
                             if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['g_post_replies'] && $permissions_data['post_topics'] == $perm_group['g_post_topics']) {
-                                $this->model->delete_permissions($args['forum_id'], $perm_group['g_id']);
+                                $this->model->delete_permissions($args['id'], $perm_group['g_id']);
                             } else {
                             // Run an UPDATE and see if it affected a row, if not, INSERT
                                 $this->model->update_permissions($permissions_data);
@@ -96,15 +96,15 @@ class Forums
                 // Regenerate the quick jump cache
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-                return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Forum updated redirect'));
+                return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Forum updated redirect'));
 
             } elseif (Input::post('revert_perms')) {
-                $this->model->delete_permissions($args['forum_id']);
+                $this->model->delete_permissions($args['id']);
 
                 // Regenerate the quick jump cache
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-                return Router::redirect(Router::pathFor('editForum', array('id' => $args['forum_id'])), __('Perms reverted redirect'));
+                return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Perms reverted redirect'));
             }
 
         } else {
@@ -114,9 +114,9 @@ class Forums
                     'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
-                    'perm_data' => $this->model->get_permissions($args['forum_id']),
+                    'perm_data' => $this->model->get_permissions($args['id']),
                     'cur_index'     =>  7,
-                    'cur_forum' => $this->model->get_forum_info($args['forum_id']),
+                    'cur_forum' => $this->model->get_forum_info($args['id']),
                     'forum_data' => $this->model->get_forums(),
                 )
             )->addTemplate('admin/forums/permissions.php')->display();
