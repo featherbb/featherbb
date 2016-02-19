@@ -63,7 +63,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                 </div>
 <?php
 
-            if ($user['g_moderator'] == '1' || $user['g_id'] == Container::get('forum_env')['FEATHER_ADMIN']) {
+            if ($user['g_moderator'] == '1' || $user['g_id'] == Config::get('forum_env')['FEATHER_ADMIN']) {
                 ?>
                 <div class="inform">
                     <fieldset>

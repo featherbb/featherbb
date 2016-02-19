@@ -45,7 +45,7 @@ Container::get('hooks')->fire('view.profile.menu.start');
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>"><?php _e('Section privacy') ?></a></li>
-<?php if (Container::get('user')->g_id == Container::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_ban_users == '1')): ?>                    <li<?php if ($page == 'admin') {
+<?php if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_ban_users == '1')): ?>                    <li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'admin']) ?>"><?php _e('Section admin') ?></a></li>

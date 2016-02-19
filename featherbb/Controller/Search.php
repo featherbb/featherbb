@@ -47,7 +47,7 @@ class Search
                     'footer' => $search,
                 ));
 
-                $display = $this->model->display_search_results($search, $this->feather);
+                $display = $this->model->display_search_results($search);
 
                 View::setPageInfo(array(
                         'display' => $display,
