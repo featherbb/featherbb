@@ -35,7 +35,7 @@ class Maintenance
             $this->model->rebuild();
 
             View::setPageInfo(array(
-                    'page_title'    =>    array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Rebuilding search index')),
+                    'page_title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')),
                     'query_str' => $this->model->get_query_str()
                 )
             )->addTemplate('admin/maintenance/rebuild.php')->display();
@@ -52,7 +52,7 @@ class Maintenance
             }
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Prune')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Prune')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'prune_sticky'    =>    $prune_sticky,
@@ -65,7 +65,7 @@ class Maintenance
         AdminUtils::generateAdminMenu('maintenance');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Maintenance')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'first_id' => $this->model->get_first_id(),

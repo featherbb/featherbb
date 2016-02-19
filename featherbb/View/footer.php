@@ -71,7 +71,7 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
                 <div id="brdfooternav" class="inbox">
 <?php
 // Display the "Jump to" drop list
-if (Config::get('forum_settings')['o_quickjump'] == '1' && !empty($quickjump)) { ?>
+if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     <div class="conl">
                         <form id="qjump" method="get" action="">
                             <div><label><span><?php _e('Jump to') ?><br /></span></label>
@@ -94,21 +94,21 @@ if (Config::get('forum_settings')['o_quickjump'] == '1' && !empty($quickjump)) {
 <?php
 
 if ($active_page == 'index') {
-    if (Config::get('forum_settings')['o_feed_type'] == '1') {
+    if (ForumSettings::get('o_feed_type') == '1') {
         echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
-    } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
+    } elseif (ForumSettings::get('o_feed_type') == '2') {
         echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
 } elseif ($active_page == 'Forum') {
-    if (Config::get('forum_settings')['o_feed_type'] == '1') {
+    if (ForumSettings::get('o_feed_type') == '1') {
         echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
-    } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
+    } elseif (ForumSettings::get('o_feed_type') == '2') {
         echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
 } elseif ($active_page == 'Topic') {
-    if (Config::get('forum_settings')['o_feed_type'] == '1') {
+    if (ForumSettings::get('o_feed_type') == '1') {
         echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
-    } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
+    } elseif (ForumSettings::get('o_feed_type') == '2') {
         echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
     }
 }
@@ -116,7 +116,7 @@ if ($active_page == 'index') {
 Container::get('hooks')->fire('view.footer.feed.links');
 
 ?>
-                        <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.((Config::get('forum_settings')['o_show_version'] == '1') ? ' '.Config::get('forum_settings')['o_cur_version'] : '')) ?></p>
+                        <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.((ForumSettings::get('o_show_version') == '1') ? ' '.ForumSettings::get('o_cur_version') : '')) ?></p>
                     </div>
                 <div class="clearer"></div>
             </div>

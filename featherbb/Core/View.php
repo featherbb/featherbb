@@ -317,7 +317,7 @@ class View
         }
 
         $data = array(
-            'title' => Utils::escape(Config::get('forum_settings')['o_board_title']),
+            'title' => Utils::escape(ForumSettings::get('o_board_title')),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,

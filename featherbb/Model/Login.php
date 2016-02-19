@@ -54,7 +54,7 @@ class Login
         if ($user->group_id == Config::get('forum_env')['FEATHER_UNVERIFIED']) {
             $update_usergroup = DB::for_table('users')->where('id', $user->id)
                 ->find_one()
-                ->set('group_id', Config::get('forum_settings')['o_default_user_group']);
+                ->set('group_id', ForumSettings::get('o_default_user_group'));
             $update_usergroup = Container::get('hooks')->fireDB('model.login.update_usergroup_login', $update_usergroup);
             $update_usergroup = $update_usergroup->save();
 
@@ -71,7 +71,7 @@ class Login
         $delete_online = Container::get('hooks')->fireDB('model.login.delete_online_login', $delete_online);
         $delete_online = $delete_online->delete_many();
 
-        $expire = ($save_pass == '1') ? time() + 1209600 : time() + Config::get('forum_settings')['o_timeout_visit'];
+        $expire = ($save_pass == '1') ? time() + 1209600 : time() + ForumSettings::get('o_timeout_visit');
         $expire = Container::get('hooks')->fire('model.login.expire_login', $expire);
         $this->auth->feather_setcookie($user->id, $form_password_hash, $expire);
 
@@ -153,7 +153,7 @@ class Login
 
                     // Do the generic replacements first (they apply to all emails sent out here)
                     $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
-                    $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
                     $mail_message = Container::get('hooks')->fire('model.login.mail_message_password_forgotten', $mail_message);
 
@@ -189,7 +189,7 @@ class Login
                         $this->email->feather_mail($email, $mail_subject, $cur_mail_message);
                     }
 
-                    throw new Error(__('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 400);
+                    throw new Error(__('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
                 } else {
                     $errors[] = __('No email match').' '.Utils::escape($email).'.';
                 }

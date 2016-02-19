@@ -46,7 +46,7 @@ class Register
         $user['username'] = Utils::trim(Input::post('req_user'));
         $user['email1'] = strtolower(Utils::trim(Input::post('req_email1')));
 
-        if (Config::get('forum_settings')['o_regs_verify'] == '1') {
+        if (ForumSettings::get('o_regs_verify') == '1') {
             $email2 = strtolower(Utils::trim(Input::post('req_email2')));
 
             $user['password1'] = Random::pass(12);
@@ -82,13 +82,13 @@ class Register
         // Validate email
         if (!$this->email->is_valid_email($user['email1'])) {
             $user['errors'][] = __('Invalid email');
-        } elseif (Config::get('forum_settings')['o_regs_verify'] == '1' && $user['email1'] != $email2) {
+        } elseif (ForumSettings::get('o_regs_verify') == '1' && $user['email1'] != $email2) {
             $user['errors'][] = __('Email not match');
         }
 
         // Check if it's a banned email address
         if ($this->email->is_banned_email($user['email1'])) {
-            if (Config::get('forum_settings')['p_allow_banned_email'] == '0') {
+            if (ForumSettings::get('p_allow_banned_email') == '0') {
                 $user['errors'][] = __('Banned email');
             }
             $user['banned_email'] = 1; // Used later when we send an alert email
@@ -104,7 +104,7 @@ class Register
         $dupe_mail = $dupe_mail->find_many();
 
         if ($dupe_mail) {
-            if (Config::get('forum_settings')['p_allow_dupe_email'] == '0') {
+            if (ForumSettings::get('p_allow_dupe_email') == '0') {
                 $user['errors'][] = __('Dupe email');
             }
 
@@ -120,7 +120,7 @@ class Register
                 throw new Error(__('Bad request'), 500);
             }
         } else {
-            $user['language'] = Config::get('forum_settings')['o_default_lang'];
+            $user['language'] = ForumSettings::get('o_default_lang');
         }
 
         $user = Container::get('hooks')->fire('model.register.check_for_errors', $user);
@@ -135,7 +135,7 @@ class Register
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
-        $intial_group_id = (Config::get('forum_settings')['o_regs_verify'] == '0') ? Config::get('forum_settings')['o_default_user_group'] : Config::get('forum_env')['FEATHER_UNVERIFIED'];
+        $intial_group_id = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : Config::get('forum_env')['FEATHER_UNVERIFIED'];
         $password_hash = Random::hash($user['password1']);
 
         // Add the user
@@ -144,11 +144,11 @@ class Register
             'group_id'        => $intial_group_id,
             'password'        => $password_hash,
             'email'           => $user['email1'],
-            'email_setting'   => Config::get('forum_settings')['o_default_email_setting'],
-            'timezone'        => Config::get('forum_settings')['o_default_timezone'],
+            'email_setting'   => ForumSettings::get('o_default_email_setting'),
+            'timezone'        => ForumSettings::get('o_default_timezone'),
             'dst'             => 0,
             'language'        => $user['language'],
-            'style'           => Config::get('forum_settings')['o_default_style'],
+            'style'           => ForumSettings::get('o_default_style'),
             'registered'      => $now,
             'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,
@@ -160,10 +160,10 @@ class Register
         $user = Container::get('hooks')->fireDB('model.register.insert_user_query', $user);
         $user = $user->save();
 
-        $new_uid = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'users');
+        $new_uid = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
 
-        if (Config::get('forum_settings')['o_regs_verify'] == '0') {
+        if (ForumSettings::get('o_regs_verify') == '0') {
             // Regenerate the users info cache
             if (!Container::get('cache')->isCached('users_info')) {
                 Container::get('cache')->store('users_info', Cache::get_users_info());
@@ -173,7 +173,7 @@ class Register
         }
 
         // If the mailing list isn't empty, we may need to send out some alerts
-        if (Config::get('forum_settings')['o_mailing_list'] != '') {
+        if (ForumSettings::get('o_mailing_list') != '') {
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
@@ -189,10 +189,10 @@ class Register
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<email>', $user['email1'], $mail_message);
                 $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_banned_mail_message', $mail_message);
 
-                $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
 
             // If we previously found out that the email was a dupe
@@ -210,14 +210,14 @@ class Register
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                 $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_message', $mail_message);
 
-                $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
-            if (Config::get('forum_settings')['o_regs_report'] == '1') {
+            if (ForumSettings::get('o_regs_report') == '1') {
                 // Load the "new user" template
                 $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/new_user.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_new_mail_tpl', $mail_tpl);
@@ -232,15 +232,15 @@ class Register
                 $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
                 $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
                 $mail_message = str_replace('<admin_url>', Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin']), $mail_message);
-                $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_new_mail_message', $mail_message);
 
-                $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
         }
 
         // Must the user verify the registration or do we log him/her in right now?
-        if (Config::get('forum_settings')['o_regs_verify'] == '1') {
+        if (ForumSettings::get('o_regs_verify') == '1') {
             // Load the "welcome" template
             $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/welcome.tpl'));
             $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_tpl', $mail_tpl);
@@ -251,20 +251,20 @@ class Register
             $mail_subject = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_subject', $mail_subject);
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
-            $mail_subject = str_replace('<board_title>', Config::get('forum_settings')['o_board_title'], $mail_subject);
+            $mail_subject = str_replace('<board_title>', ForumSettings::get('o_board_title'), $mail_subject);
             $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
             $mail_message = str_replace('<username>', $user['username'], $mail_message);
             $mail_message = str_replace('<password>', $user['password1'], $mail_message);
             $mail_message = str_replace('<login_url>', Router::pathFor('login'), $mail_message);
-            $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+            $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_message', $mail_message);
 
             $this->email->feather_mail($user['email1'], $mail_subject, $mail_message);
 
-            return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.');
+            return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         }
 
-        $this->auth->feather_setcookie($new_uid, $password_hash, time() + Config::get('forum_settings')['o_timeout_visit']);
+        $this->auth->feather_setcookie($new_uid, $password_hash, time() + ForumSettings::get('o_timeout_visit'));
 
         Container::get('hooks')->fire('model.register.insert_user');
 

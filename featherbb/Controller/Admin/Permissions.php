@@ -32,7 +32,7 @@ class Permissions
         AdminUtils::generateAdminMenu('permissions');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Permissions')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Permissions')),
                 'active_page' => 'admin',
                 'admin_console' => true,
             )

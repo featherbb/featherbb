@@ -59,7 +59,7 @@ class Parser
                         $name = preg_replace('/[^\w\-.]/S', '', $name);        // Weed out all unsavory filename chars.
                         if (preg_match('/^[\w\-.]++$/', $name)) {            // If we have a valid filename?
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
-                                if ($f['size'] > 0 && $f['size'] <= Config::get('forum_settings')['o_avatars_size']) {
+                                if ($f['size'] > 0 && $f['size'] <= ForumSettings::get('o_avatars_size')) {
                                     if (move_uploaded_file($f['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'] .'style/img/smilies/'. $name)) {
                                         return Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['upload success']);
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
@@ -201,7 +201,7 @@ class Parser
         AdminUtils::generateAdminMenu('parser');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Parser')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,

@@ -58,7 +58,7 @@ class Forum
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['fid'].'/'.$url_forum.'/#');
 
-        $forum_actions = $this->model->get_forum_actions($args['fid'], Config::get('forum_settings')['o_forum_subscriptions'], $cur_forum['is_subscribed']);
+        $forum_actions = $this->model->get_forum_actions($args['fid'], ForumSettings::get('o_forum_subscriptions'), $cur_forum['is_subscribed']);
 
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum]));
         if ($num_pages > 1) {
@@ -70,14 +70,14 @@ class Forum
             }
         }
 
-        if (Config::get('forum_settings')['o_feed_type'] == '1') {
+        if (ForumSettings::get('o_feed_type') == '1') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=rss', array('title' => __('RSS forum feed')));
-        } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
+        } elseif (ForumSettings::get('o_feed_type') == '2') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_forum['forum_name'])),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'Forum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
@@ -92,7 +92,7 @@ class Forum
             'forum_actions' => $forum_actions,
         ))->addTemplate('forum.php')->display();
     }
-    
+
     public function moderate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.moderate');
@@ -123,7 +123,7 @@ class Forum
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_forum['forum_name'])),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'moderate',
             'page' => $p,
             'id' => $args['id'],
@@ -198,7 +198,7 @@ class Forum
 
             View::setPageInfo(array(
                     'action'    =>    'multi',
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
@@ -220,7 +220,7 @@ class Forum
             }
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    $topics,
@@ -241,7 +241,7 @@ class Forum
             }
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    $topics,

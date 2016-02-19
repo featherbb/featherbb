@@ -279,7 +279,7 @@ Container::set('errorHandler', function ($c) {
 //     $feather->response->setStatus($e->getCode());
 //     $feather->response->setBody(''); // Reset buffer
 //     $feather->template->setPageInfo(array(
-//         'title' => array(\FeatherBB\Core\Utils::escape(Config::get('forum_settings')['o_board_title']), __('Error')),
+//         'title' => array(\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
 //         'msg'    =>    $error['message'],
 //         'backlink'    => $error['back'],
 //     ))->addTemplate('error.php')->display();

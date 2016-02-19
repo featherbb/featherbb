@@ -62,7 +62,7 @@ class Parser
      */
     public function parse_bbcode(&$text, $hide_smilies = 0)
     {
-        if (Config::get('forum_settings')['o_censoring'] === '1')
+        if (ForumSettings::get('o_censoring') === '1')
         {
             $text = Utils::censor($text);
         }
@@ -70,18 +70,18 @@ class Parser
         $text = htmlspecialchars($text, ENT_NOQUOTES);
 
         // Parse BBCode if globally enabled.
-        if (Config::get('forum_settings')['p_message_bbcode'])
+        if (ForumSettings::get('p_message_bbcode'))
         {
             $text = preg_replace_callback($this->pd['re_bbcode'], array($this, '_parse_bbcode_callback'), $text);
         }
         // Set $smile_on flag depending on global flags and whether or not this is a signature.
         if ($this->pd['in_signature'])
         {
-            $smile_on = (Config::get('forum_settings')['o_smilies_sig'] && Container::get('user')['show_smilies'] && !$hide_smilies) ? 1 : 0;
+            $smile_on = (ForumSettings::get('o_smilies_sig') && Container::get('user')['show_smilies'] && !$hide_smilies) ? 1 : 0;
         }
         else
         {
-            $smile_on = (Config::get('forum_settings')['o_smilies'] && Container::get('user')['show_smilies'] && !$hide_smilies) ? 1 : 0;
+            $smile_on = (ForumSettings::get('o_smilies') && Container::get('user')['show_smilies'] && !$hide_smilies) ? 1 : 0;
         }
         // Split text into hidden and non-hidden chunks. Process the non-hidden content chunks.
         $parts = explode("\1", $text); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
@@ -132,7 +132,7 @@ class Parser
     {
         $this->pd['in_signature'] = false;
         // Disable images via the $bbcd['in_post'] flag if globally disabled.
-        if (Config::get('forum_settings')['p_message_img_tag'] !== '1' || Container::get('user')['show_img'] !== '1')
+        if (ForumSettings::get('p_message_img_tag') !== '1' || Container::get('user')['show_img'] !== '1')
             if (isset($this->pd['bbcd']['img']))
                 $this->pd['bbcd']['img']['in_post'] = false;
         return $this->parse_bbcode($text, $hide_smilies);
@@ -148,7 +148,7 @@ class Parser
     {
         $this->pd['in_signature'] = true;
         // Disable images via the $bbcd['in_sig'] flag if globally disabled.
-        if (Config::get('forum_settings')['p_sig_img_tag'] !== '1' || Container::get('user')['show_img_sig'] !== '1')
+        if (ForumSettings::get('p_sig_img_tag') !== '1' || Container::get('user')['show_img_sig'] !== '1')
             if (isset($this->pd['bbcd']['img']))
                 $this->pd['bbcd']['img']['in_sig'] = false;
         return $this->parse_bbcode($text);
@@ -756,7 +756,7 @@ class Parser
                 // Mark erroneous orphan tags.
                 $part = preg_replace_callback($this->pd['re_bbtag'], array($this, '_orphan_callback'), $part);
                 // Process do-clickeys if enabled.
-                if (Config::get('forum_settings')['o_make_links'])
+                if (ForumSettings::get('o_make_links'))
                     $part = $this->linkify($part);
 
                 // Process textile syntax tag shortcuts.

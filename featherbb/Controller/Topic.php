@@ -69,7 +69,7 @@ class Topic
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'topic/'.$args['id'].'/'.$url_topic.'/#');
 
-        if (Config::get('forum_settings')['o_censoring'] == '1') {
+        if (ForumSettings::get('o_censoring') == '1') {
             $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
@@ -86,14 +86,14 @@ class Topic
             }
         }
 
-        if (Config::get('forum_settings')['o_feed_type'] == '1') {
+        if (ForumSettings::get('o_feed_type') == '1') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=rss', array('title' => __('RSS forum feed')));
-        } elseif (Config::get('forum_settings')['o_feed_type'] == '2') {
+        } elseif (ForumSettings::get('o_feed_type') == '2') {
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
             'active_page' => 'Topic',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
@@ -121,6 +121,7 @@ class Topic
 
     public function viewpost($req, $res, $args)
     {
+        // var_dump($args['pid']);
         $args['pid'] = Container::get('hooks')->fire('controller.topic.viewpost', $args['pid']);
 
         $post = $this->model->redirect_to_post($args['pid']);
@@ -190,7 +191,7 @@ class Topic
         }
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                 'active_page' => 'moderate',
                 'action'    =>    'single',
                 'topics'    =>    $args['tid'],
@@ -226,7 +227,7 @@ class Topic
             $posts = $this->model->delete_posts($args['id'], $args['fid']);
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'active_page' => 'moderate',
                     'posts' => $posts,
                 )
@@ -235,7 +236,7 @@ class Topic
         if (Input::post('split_posts') || Input::post('split_posts_comply')) {
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Moderate')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'focus_element' => array('subject','new_subject'),
                     'page' => $p,
                     'active_page' => 'moderate',
@@ -256,12 +257,12 @@ class Topic
                 Container::get('user')->disp_posts = $cur_topic['num_replies'] + 1;
         }*/
 
-        if (Config::get('forum_settings')['o_censoring'] == '1') {
+        if (ForumSettings::get('o_censoring') == '1') {
             $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
         }
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
                 'page' => $p,
                 'active_page' => 'moderate',
                 'cur_topic' => $cur_topic,

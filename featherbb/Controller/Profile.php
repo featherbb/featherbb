@@ -62,7 +62,7 @@ class Profile
             $this->model->delete_user($args['id']);
 
             View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Confirm delete user')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
                 'active_page' => 'profile',
                 'username' => $this->model->get_username($args['id']),
                 'id' => $args['id'],
@@ -104,7 +104,7 @@ class Profile
                 $user_info = $this->model->parse_user_info($user);
 
             View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), sprintf(__('Users profile'), Utils::escape($user['username']))),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))),
                 'active_page' => 'profile',
                 'user_info' => $user_info,
                 'id' => $args['id']
@@ -116,7 +116,7 @@ class Profile
                 $user_disp = $this->model->edit_essentials($args['id'], $user);
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section essentials')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')),
                     'required_fields' => array('req_username' => __('Username'), 'req_email' => __('Email')),
                     'active_page' => 'profile',
                     'id' => $args['id'],
@@ -135,7 +135,7 @@ class Profile
                 }
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section personal')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personal')),
                     'active_page' => 'profile',
                     'id' => $args['id'],
                     'page' => 'personal',
@@ -148,7 +148,7 @@ class Profile
             } elseif ($args['section'] == 'messaging') {
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section messaging')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section messaging')),
                     'active_page' => 'profile',
                     'page' => 'messaging',
                     'user' => $user,
@@ -158,7 +158,7 @@ class Profile
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_messaging.php')->display();
 
             } elseif ($args['section'] == 'personality') {
-                if (Config::get('forum_settings')['o_avatars'] == '0' && Config::get('forum_settings')['o_signatures'] == '0') {
+                if (ForumSettings::get('o_avatars') == '0' && ForumSettings::get('o_signatures') == '0') {
                     throw new Error(__('Bad request'), 404);
                 }
 
@@ -178,7 +178,7 @@ class Profile
                 }
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section personality')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personality')),
                     'active_page' => 'profile',
                     'user_avatar' => $user_avatar,
                     'avatar_field' => $avatar_field,
@@ -193,7 +193,7 @@ class Profile
             } elseif ($args['section'] == 'display') {
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section display')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section display')),
                     'active_page' => 'profile',
                     'page' => 'display',
                     'user' => $user,
@@ -205,7 +205,7 @@ class Profile
             } elseif ($args['section'] == 'privacy') {
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section privacy')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section privacy')),
                     'active_page' => 'profile',
                     'page' => 'privacy',
                     'user' => $user,
@@ -221,7 +221,7 @@ class Profile
                 }
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Section admin')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section admin')),
                     'active_page' => 'profile',
                     'page' => 'admin',
                     'user' => $user,
@@ -258,7 +258,7 @@ class Profile
             $this->model->change_pass($args['id']);
 
             View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Change pass')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')),
                 'active_page' => 'profile',
                 'id' => $args['id'],
                 'required_fields' => array('req_old_password' => __('Old pass'), 'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')),
@@ -271,7 +271,7 @@ class Profile
             $this->model->change_email($args['id']);
 
             View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Change email')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')),
                 'active_page' => 'profile',
                 'required_fields' => array('req_new_email' => __('New email'), 'req_password' => __('Password')),
                 'focus_element' => array('change_email', 'req_new_email'),
@@ -281,7 +281,7 @@ class Profile
             View::addTemplate('profile/change_mail.php')->display();
 
         } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
-            if (Config::get('forum_settings')['o_avatars'] == '0') {
+            if (ForumSettings::get('o_avatars') == '0') {
                 throw new Error(__('Avatars disabled'), 400);
             }
 
@@ -294,7 +294,7 @@ class Profile
             }
 
             View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Profile'), __('Upload avatar')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Upload avatar')),
                 'active_page' => 'profile',
                 'required_fields' =>  array('req_file' => __('File')),
                 'focus_element' => array('upload_avatar', 'req_file'),
@@ -346,7 +346,7 @@ class Profile
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Send email to').' '.Utils::escape($mail['recipient'])),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
             'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
             'focus_element' => array('email', 'req_subject'),

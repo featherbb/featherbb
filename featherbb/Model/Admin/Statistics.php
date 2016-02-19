@@ -55,9 +55,9 @@ class Statistics
     {
         $total = array();
 
-        if (Config::get('forum_settings')['db_type'] == 'mysql' || Config::get('forum_settings')['db_type'] == 'mysqli' || Config::get('forum_settings')['db_type'] == 'mysql_innodb' || Config::get('forum_settings')['db_type'] == 'mysqli_innodb') {
+        if (ForumSettings::get('db_type') == 'mysql' || ForumSettings::get('db_type') == 'mysqli' || ForumSettings::get('db_type') == 'mysql_innodb' || ForumSettings::get('db_type') == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.Config::get('forum_settings')['db_prefix'].'%\'')->find_many();
+            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->find_many();
             $result = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;

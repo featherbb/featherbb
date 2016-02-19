@@ -40,7 +40,7 @@ Container::get('hooks')->fire('view.admin.index.start');
                 <dl>
                     <dt><?php _e('FeatherBB version label') ?></dt>
                     <dd>
-                        <?php printf(__('FeatherBB version data')."\n", Config::get('forum_settings')['o_cur_version'], '<a href="'.Router::pathFor('adminAction', ['action' => 'check_upgrade']).'">'.__('Check for upgrade').'</a>') ?>
+                        <?php printf(__('FeatherBB version data')."\n", ForumSettings::get('o_cur_version'), '<a href="'.Router::pathFor('adminAction', ['action' => 'check_upgrade']).'">'.__('Check for upgrade').'</a>') ?>
                     </dd>
                     <dt><?php _e('Server statistics label') ?></dt>
                     <dd>

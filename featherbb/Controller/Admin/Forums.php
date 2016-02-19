@@ -111,7 +111,7 @@ class Forums
             AdminUtils::generateAdminMenu('forums');
 
             View::setPageInfo(array(
-                    'title'    =>    array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Forums')),
+                    'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'perm_data' => $this->model->get_permissions($args['forum_id']),
@@ -139,7 +139,7 @@ class Forums
             AdminUtils::generateAdminMenu('forums');
 
             View::setPageInfo(array(
-                    'title'    =>    array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Forums')),
+                    'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'cur_forum' => $this->model->get_forum_info($args['forum_id']),
@@ -175,7 +175,7 @@ class Forums
 
         $categories_model = new \FeatherBB\Model\Admin\Categories();
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Forums')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $categories_model->get_cat_list(),

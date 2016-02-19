@@ -116,7 +116,7 @@ class Post
                                 $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
 
                                 // Should we send out notifications?
-                                if (Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
+                                if (ForumSettings::get('o_topic_subscriptions') == '1') {
                                     $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
                                 }
                         }
@@ -126,13 +126,13 @@ class Post
                                 $new = $this->model->insert_topic($post, $args['fid']);
 
                                 // Should we send out notifications?
-                                if (Config::get('forum_settings')['o_forum_subscriptions'] == '1') {
+                                if (ForumSettings::get('o_forum_subscriptions') == '1') {
                                     $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
                                 }
                         }
 
                         // If we previously found out that the email was banned
-                        if (Container::get('user')->is_guest && isset($errors['banned_email']) && Config::get('forum_settings')['o_mailing_list'] != '') {
+                        if (Container::get('user')->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
                             $this->model->warn_banned_user($post, $new['pid']);
                         }
 
@@ -194,14 +194,14 @@ class Post
         $checkboxes = $this->model->get_checkboxes($args['fid'], $is_admmod, $is_subscribed);
 
         // Check to see if the topic review is to be displayed
-        if ($args['tid'] && Config::get('forum_settings')['o_topic_review'] != '0') {
+        if ($args['tid'] && ForumSettings::get('o_topic_review') != '0') {
             $post_data = $this->model->topic_review($args['tid']);
         } else {
             $post_data = '';
         }
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), $action),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
                 'required_fields' => $required_fields,
                 'focus_element' => $focus_element,
                 'active_page' => 'post',
@@ -231,7 +231,7 @@ class Post
         // Fetch some informations about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($args['id']);
 
-        if (Config::get('forum_settings')['o_censoring'] == '1') {
+        if (ForumSettings::get('o_censoring') == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
@@ -261,7 +261,7 @@ class Post
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Delete post')),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
             'id' => $args['id'],
@@ -282,7 +282,7 @@ class Post
 
         $can_edit_subject = $args['id'] == $cur_post['first_post_id'];
 
-        if (Config::get('forum_settings')['o_censoring'] == '1') {
+        if (ForumSettings::get('o_censoring') == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
             $cur_post['message'] = Utils::censor($cur_post['message']);
         }
@@ -328,7 +328,7 @@ class Post
         }
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Edit post')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')),
                 'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                 'focus_element' => array('edit', 'req_message'),
                 'cur_post' => $cur_post,
@@ -353,12 +353,12 @@ class Post
         // Fetch some info about the post, the topic and the forum
         $cur_post = $this->model->get_info_report($args['id']);
 
-        if (Config::get('forum_settings')['o_censoring'] == '1') {
+        if (ForumSettings::get('o_censoring') == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Report post')),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
             'active_page' => 'report',
             'required_fields' => array('req_reason' => __('Reason')),
             'focus_element' => array('report', 'req_reason'),

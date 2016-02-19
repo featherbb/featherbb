@@ -43,7 +43,7 @@ Container::get('hooks')->fire('view.search.form.start');
                         </select>
                         <br /></label>
                         <p class="clearl"><?php _e('Search in info') ?></p>
-<?php echo(Config::get('forum_settings')['o_search_all_forums'] == '1' || Container::get('user')->is_admmod ? '<p>'.__('Search multiple forums info').'</p>' : '') ?>
+<?php echo(ForumSettings::get('o_search_all_forums') == '1' || Container::get('user')->is_admmod ? '<p>'.__('Search multiple forums info').'</p>' : '') ?>
                     </div>
                 </fieldset>
             </div>

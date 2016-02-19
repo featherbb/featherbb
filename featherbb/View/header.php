@@ -119,7 +119,7 @@ if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_vie
     $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userList').'">'.__('User list').'</a></li>';
 }
 
-if (Config::get('forum_settings')['o_rules'] == '1' && (!Container::get('user')->is_guest || Container::get('user')->g_read_board == '1' || Config::get('forum_settings')['o_regs_allow'] == '1')) {
+if (ForumSettings::get('o_rules') == '1' && (!Container::get('user')->is_guest || Container::get('user')->g_read_board == '1' || ForumSettings::get('o_regs_allow') == '1')) {
     $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('rules').'">'.__('Rules').'</a></li>';
 }
 
@@ -142,7 +142,7 @@ if (Container::get('user')->is_guest) {
 
 // Are there any additional navlinks we should insert into the array before imploding it?
 $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
-$extraLinks = Config::get('forum_settings')['o_additional_navlinks']."\n".implode("\n", $hooksLinks);
+$extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
 if (Container::get('user')->g_read_board == '1' && ($extraLinks != '')) {
     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {
         // Insert any additional links into the $links array (at the correct index)
@@ -171,9 +171,9 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
             <div class="container-title-status">
                 <h1 class="title-site">
                     <a href="<?= Url::base() ?>" title="" class="site-name">
-                        <p><?= Utils::escape(Config::get('forum_settings')['o_board_title']) ?></p>
+                        <p><?= Utils::escape(ForumSettings::get('o_board_title')) ?></p>
                     </a>
-                    <div id="brddesc"><?= htmlspecialchars_decode(Config::get('forum_settings')['o_board_desc']) ?></div>
+                    <div id="brddesc"><?= htmlspecialchars_decode(ForumSettings::get('o_board_desc')) ?></div>
                 </h1>
                 <div class="status-avatar">
                     <div id="brdwelcome" class="inbox">
@@ -186,12 +186,12 @@ if (Container::get('user')->is_guest) { ?>
     echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(Container::get('user')->last_visit)).'</span></li>'."\n";
 
     if (Container::get('user')->is_admmod) {
-        if (Config::get('forum_settings')['o_report_method'] == '0' || Config::get('forum_settings')['o_report_method'] == '2') {
+        if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
             if ($has_reports) {
                 echo "\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
             }
         }
-        if (Config::get('forum_settings')['o_maintenance'] == '1') {
+        if (ForumSettings::get('o_maintenance') == '1') {
             echo "\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
@@ -220,12 +220,12 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                 </div>
                 <div class="clear"></div>
             </div>
-<?php if (Container::get('user')->g_read_board == '1' && Config::get('forum_settings')['o_announcement'] == '1') : ?>
+<?php if (Container::get('user')->g_read_board == '1' && ForumSettings::get('o_announcement') == '1') : ?>
             <div id="announce" class="block">
                 <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
-                        <div class="usercontent"><?= Config::get('forum_settings')['o_announcement_message'] ?></div>
+                        <div class="usercontent"><?= ForumSettings::get('o_announcement_message') ?></div>
                     </div>
                 </div>
             </div>

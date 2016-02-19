@@ -124,7 +124,7 @@ class Search
             $keyword_results = $author_results = array();
 
             // Search a specific forum?
-            $forum_sql = (!empty($forums) || (empty($forums) && Config::get('forum_settings')['o_search_all_forums'] == '0' && !Container::get('user')->is_admmod)) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
+            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !Container::get('user')->is_admmod)) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
 
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
@@ -203,9 +203,9 @@ class Search
                                     $where_cond = str_replace('*', '%', $cur_word);
                                     $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = DB::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.Config::get('forum_settings')['db_prefix'].'posts AS p INNER JOIN '.Config::get('forum_settings')['db_prefix'].'topics AS t ON t.id=p.topic_id LEFT JOIN '.Config::get('forum_settings')['db_prefix'].'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.Container::get('user')->g_id.') WHERE ('.$where_cond_cjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => $where_cond));
+                                    $result = DB::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.Container::get('user')->g_id.') WHERE ('.$where_cond_cjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => $where_cond));
                                 } else {
-                                    $result = DB::for_table('posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.Config::get('forum_settings')['db_prefix'].'search_words AS w INNER JOIN '.Config::get('forum_settings')['db_prefix'].'search_matches AS m ON m.word_id = w.id INNER JOIN '.Config::get('forum_settings')['db_prefix'].'posts AS p ON p.id=m.post_id INNER JOIN '.Config::get('forum_settings')['db_prefix'].'topics AS t ON t.id=p.topic_id LEFT JOIN '.Config::get('forum_settings')['db_prefix'].'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.Container::get('user')->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => str_replace('*', '%', $cur_word)));
+                                    $result = DB::for_table('posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'search_words AS w INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m ON m.word_id = w.id INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p ON p.id=m.post_id INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.Container::get('user')->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, array(':where_cond' => str_replace('*', '%', $cur_word)));
                                 }
 
                                 $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_first_query', $result);
@@ -272,7 +272,7 @@ class Search
                             $user_ids[] = $row['id'];
                         }
 
-                        $result = DB::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.Config::get('forum_settings')['db_prefix'].'posts AS p INNER JOIN '.Config::get('forum_settings')['db_prefix'].'topics AS t ON t.id=p.topic_id LEFT JOIN '.Config::get('forum_settings')['db_prefix'].'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.Container::get('user')->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir);
+                        $result = DB::for_table('posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.Container::get('user')->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir);
                         $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_second_query', $result);
                         $result = $result->find_many();
 
@@ -396,7 +396,7 @@ class Search
                                 ->where('p.poster_id', Container::get('user')->id)
                                 ->group_by('t.id');
 
-                    if (Config::get('forum_settings')['db_type'] == 'pgsql') {
+                    if (ForumSettings::get('db_type') == 'pgsql') {
                         $result = $result->group_by('t.last_post');
                     }
 
@@ -703,7 +703,7 @@ class Search
             $forum = '<a href="'.Router::pathFor('Forum', ['id' => $cur_search['forum_id'], 'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
             $url_topic = Url::url_friendly($cur_search['subject']);
 
-            if (Config::get('forum_settings')['o_censoring'] == '1') {
+            if (ForumSettings::get('o_censoring') == '1') {
                 $cur_search['subject'] = Utils::censor($cur_search['subject']);
             }
 
@@ -720,7 +720,7 @@ class Search
                     $cur_search['icon_text'] = '<!-- -->';
                 }
 
-                if (Config::get('forum_settings')['o_censoring'] == '1') {
+                if (ForumSettings::get('o_censoring') == '1') {
                     $cur_search['message'] = Utils::censor($cur_search['message']);
                 }
 
@@ -822,7 +822,7 @@ class Search
         $result = $result->find_many();
 
         // We either show a list of forums of which multiple can be selected
-        if (Config::get('forum_settings')['o_search_all_forums'] == '1' || Container::get('user')->is_admmod) {
+        if (ForumSettings::get('o_search_all_forums') == '1' || Container::get('user')->is_admmod) {
             $output .= "\t\t\t\t\t\t".'<div class="conl multiselect">'.__('Forum search')."\n";
             $output .= "\t\t\t\t\t\t".'<br />'."\n";
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";

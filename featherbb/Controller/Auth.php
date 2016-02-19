@@ -27,10 +27,9 @@ class Auth
 
     public function login($req, $res, $args)
     {
-        // var_dump(Container::get('user'));
-        // if (!Container::get('user')->is_guest) {
-        //     return Router::redirect(Router::pathFor('home'), 'Already logged in');
-        // }
+        if (!Container::get('user')->is_guest) {
+            return Router::redirect(Router::pathFor('home'), 'Already logged in');
+        }
 
         if (Request::isPost()) {
             Container::get('hooks')->fire('controller.login');
@@ -44,7 +43,7 @@ class Auth
                 $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
                 if ($user->password == $form_password_hash) {
                     if ($user->group_id == Config::get('forum_env')['FEATHER_UNVERIFIED']) {
-                        ModelAuth::update_group($user->id, Config::get('forum_settings')['o_default_user_group']);
+                        ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
                         if (!Container::get('cache')->isCached('users_info')) {
                             Container::get('cache')->store('users_info', Cache::get_users_info());
                         }
@@ -54,7 +53,7 @@ class Auth
                     // Reset tracked topics
                     Track::set_tracked_topics(null);
 
-                    $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
+                    $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
 
                     $jwt = ModelAuth::generate_jwt($user, $expire);
@@ -69,7 +68,7 @@ class Auth
         } else {
             View::setPageInfo(array(
                                 'active_page' => 'login',
-                                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Login')),
+                                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Login')),
                                 'required_fields' => array('req_username' => __('Username'), 'req_password' => __('Password')),
                                 'focus_element' => array('login', 'req_username'),
                                 )
@@ -124,7 +123,7 @@ class Auth
 
                 // Do the generic replacements first (they apply to all emails sent out here)
                 $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
-                $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
                 $mail_message = Container::get('hooks')->fire('controller.mail_message_password_forgotten', $mail_message);
 
@@ -146,7 +145,7 @@ class Auth
 
                 Container::get('email')->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 200);
+                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }
@@ -155,7 +154,7 @@ class Auth
         View::setPageInfo(array(
 //                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Request pass')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')),
                 'required_fields' => array('req_email' => __('Email')),
                 'focus_element' => array('request_pass', 'req_email'),
             )

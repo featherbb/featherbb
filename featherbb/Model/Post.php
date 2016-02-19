@@ -141,18 +141,18 @@ class Post
             $subject = Utils::trim(Input::post('req_subject'));
             $subject = Container::get('hooks')->fire('model.post.check_errors_before_new_topic_subject', $subject);
 
-            if (Config::get('forum_settings')['o_censoring'] == '1') {
+            if (ForumSettings::get('o_censoring') == '1') {
                 $censored_subject = Utils::trim(Utils::censor($subject));
                 $censored_subject = Container::get('hooks')->fire('model.post.check_errors_before_censored', $censored_subject);
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif (Config::get('forum_settings')['o_censoring'] == '1' && $censored_subject == '') {
+            } elseif (ForumSettings::get('o_censoring') == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (Config::get('forum_settings')['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($subject) && !Container::get('user')->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !Container::get('user')->is_admmod) {
                 $errors[] = __('All caps subject');
             }
 
@@ -160,9 +160,9 @@ class Post
         }
 
         if (Container::get('user')->is_guest) {
-            $email = strtolower(Utils::trim((Config::get('forum_settings')['p_force_guest_email'] == '1') ? Input::post('req_email') : Input::post('email')));
+            $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
 
-            if (Config::get('forum_settings')['p_force_guest_email'] == '1' || $email != '') {
+            if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
                 $errors = Container::get('hooks')->fire('model.post.check_errors_before_post_email', $errors, $email);
 
                 if (!$this->email->is_valid_email($email)) {
@@ -172,7 +172,7 @@ class Post
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
                 if (Container::get('user')->is_guest && $this->email->is_banned_email($email)) {
-                    if (Config::get('forum_settings')['p_allow_banned_email'] == '0') {
+                    if (ForumSettings::get('p_allow_banned_email') == '0') {
                         $errors[] = __('Banned email');
                     }
 
@@ -188,12 +188,12 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > Config::get('forum_env')['FEATHER_MAX_POSTSIZE']) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(Config::get('forum_env')['FEATHER_MAX_POSTSIZE']));
-        } elseif (Config::get('forum_settings')['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !Container::get('user')->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !Container::get('user')->is_admmod) {
             $errors[] = __('All caps message');
         }
 
         // Validate BBCode syntax
-        if (Config::get('forum_settings')['p_message_bbcode'] == '1') {
+        if (ForumSettings::get('p_message_bbcode') == '1') {
             $message = Container::get('parser')->preparse_bbcode($message, $errors);
             $message = Container::get('hooks')->fire('model.post.check_errors_before_post_bbcode', $message);
         }
@@ -202,7 +202,7 @@ class Post
             $errors = Container::get('hooks')->fire('model.post.check_errors_before_post_no_error', $errors);
             if ($message == '') {
                 $errors[] = __('No message');
-            } elseif (Config::get('forum_settings')['o_censoring'] == '1') {
+            } elseif (ForumSettings::get('o_censoring') == '1') {
                 // Censor message to see if that causes problems
                 $censored_message = Utils::trim(Utils::censor($message));
 
@@ -225,17 +225,17 @@ class Post
         if ($can_edit_subject) {
             $subject = Utils::trim(Input::post('req_subject'));
 
-            if (Config::get('forum_settings')['o_censoring'] == '1') {
+            if (ForumSettings::get('o_censoring') == '1') {
                 $censored_subject = Utils::trim(Utils::censor($subject));
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif (Config::get('forum_settings')['o_censoring'] == '1' && $censored_subject == '') {
+            } elseif (ForumSettings::get('o_censoring') == '1' && $censored_subject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (Config::get('forum_settings')['p_subject_all_caps'] == '0' && Utils::is_all_uppercase($subject) && !Container::get('user')->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !Container::get('user')->is_admmod) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -246,19 +246,19 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > Config::get('forum_env')['FEATHER_MAX_POSTSIZE']) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(Config::get('forum_env')['FEATHER_MAX_POSTSIZE']));
-        } elseif (Config::get('forum_settings')['p_message_all_caps'] == '0' && Utils::is_all_uppercase($message) && !Container::get('user')->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !Container::get('user')->is_admmod) {
             $errors[] = __('All caps message');
         }
 
         // Validate BBCode syntax
-        if (Config::get('forum_settings')['p_message_bbcode'] == '1') {
+        if (ForumSettings::get('p_message_bbcode') == '1') {
             $message = Container::get('parser')->preparse_bbcode($message, $errors);
         }
 
         if (empty($errors)) {
             if ($message == '') {
                 $errors[] = __('No message');
-            } elseif (Config::get('forum_settings')['o_censoring'] == '1') {
+            } elseif (ForumSettings::get('o_censoring') == '1') {
                 // Censor message to see if that causes problems
                 $censored_message = Utils::trim(Utils::censor($message));
 
@@ -287,7 +287,7 @@ class Post
         // Otherwise it should be in $feather ($_POST)
         else {
             $post['username'] = Utils::trim(Input::post('req_username'));
-            $post['email'] = strtolower(Utils::trim((Config::get('forum_settings')['p_force_guest_email'] == '1') ? Input::post('req_email') : Input::post('email')));
+            $post['email'] = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
         }
 
         if (Input::post('req_subject')) {
@@ -301,7 +301,7 @@ class Post
         $post['message']  = Utils::linebreaks(Utils::trim(Input::post('req_message')));
 
         // Validate BBCode syntax
-        if (Config::get('forum_settings')['p_message_bbcode'] == '1') {
+        if (ForumSettings::get('p_message_bbcode') == '1') {
             $post['message']  = Container::get('parser')->preparse_bbcode($post['message'], $errors);
         }
 
@@ -332,7 +332,7 @@ class Post
         $post['message'] = Utils::linebreaks(Utils::trim(Input::post('req_message')));
 
         // Validate BBCode syntax
-        if (Config::get('forum_settings')['p_message_bbcode'] == '1') {
+        if (ForumSettings::get('p_message_bbcode') == '1') {
             $post['message'] = Container::get('parser')->preparse_bbcode($post['message'], $errors);
         }
 
@@ -574,7 +574,7 @@ class Post
         }
 
         // Should we use the internal report handling?
-        if (Config::get('forum_settings')['o_report_method'] == '0' || Config::get('forum_settings')['o_report_method'] == '2') {
+        if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
 
             // Insert the report
             $query['insert'] = array(
@@ -593,9 +593,9 @@ class Post
         }
 
         // Should we email the report?
-        if (Config::get('forum_settings')['o_report_method'] == '1' || Config::get('forum_settings')['o_report_method'] == '2') {
+        if (ForumSettings::get('o_report_method') == '1' || ForumSettings::get('o_report_method') == '2') {
             // We send it to the complete mailing-list in one swoop
-            if (Config::get('forum_settings')['o_mailing_list'] != '') {
+            if (ForumSettings::get('o_mailing_list') != '') {
                 // Load the "new report" template
                 $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/new_report.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.post.insert_report_mail_tpl', $mail_tpl);
@@ -610,11 +610,11 @@ class Post
                 $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
                 $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
-                $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
                 $mail_message = Container::get('hooks')->fire('model.post.insert_report_mail_message', $mail_message);
 
-                $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+                $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
         }
 
@@ -685,10 +685,10 @@ class Post
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_guest_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'posts');
+            $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'posts');
 
             // To subscribe or not to subscribe, that ...
-            if (Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
+            if (ForumSettings::get('o_topic_subscriptions') == '1') {
                 // ... is the question
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
@@ -726,7 +726,7 @@ class Post
                 'topic_id'  => $tid,
             );
 
-            if (Config::get('forum_settings')['p_force_guest_email'] == '1' || $post['email'] != '') {
+            if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['insert']['poster_email'] = $post['email'];
             }
 
@@ -736,7 +736,7 @@ class Post
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_member_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'posts');
+            $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'posts');
         }
 
         // Update topic
@@ -803,7 +803,7 @@ class Post
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
 
-            if (Config::get('forum_settings')['o_censoring'] == '1') {
+            if (ForumSettings::get('o_censoring') == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
             } else {
                 $cleaned_message = $this->email->bbcode2email($post['message'], -1);
@@ -837,7 +837,7 @@ class Post
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
                         $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
                         $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message);
-                        $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                         $mail_message = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject_full);
@@ -846,7 +846,7 @@ class Post
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
                         $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
                         $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
-                        $mail_message_full = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message_full);
+                        $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -898,11 +898,11 @@ class Post
         $topic = Container::get('hooks')->fireDB('model.post.insert_topic_create', $topic);
         $topic = $topic->save();
 
-        $new['tid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'topics');
+        $new['tid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
 
         if (!Container::get('user')->is_guest) {
             // To subscribe or not to subscribe, that ...
-            if (Config::get('forum_settings')['o_topic_subscriptions'] == '1' && $post['subscribe']) {
+            if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
 
                 $subscription['insert'] = array(
                     'user_id'   =>  Container::get('user')->id,
@@ -945,7 +945,7 @@ class Post
                 'topic_id'  => $new['tid'],
             );
 
-            if (Config::get('forum_settings')['p_force_guest_email'] == '1' || $post['email'] != '') {
+            if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['poster_email'] = $post['email'];
             }
 
@@ -955,7 +955,7 @@ class Post
             $query = Container::get('hooks')->fireDB('model.post.insert_topic_post_member', $query);
             $query = $query->save();
         }
-        $new['pid'] = DB::get_db()->lastInsertId(Config::get('forum_settings')['db_prefix'].'topics');
+        $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
 
         // Update the topic with last_post_id
         unset($topic);
@@ -1012,7 +1012,7 @@ class Post
             $censored_message = Utils::trim(Utils::censor($post['message']));
             $censored_subject = Utils::trim(Utils::censor($post['subject']));
 
-            if (Config::get('forum_settings')['o_censoring'] == '1') {
+            if (ForumSettings::get('o_censoring') == '1') {
                 $cleaned_message = $this->email->bbcode2email($censored_message, -1);
             } else {
                 $cleaned_message = $this->email->bbcode2email($post['message'], -1);
@@ -1040,22 +1040,22 @@ class Post
                         $mail_message_full = trim(substr($mail_tpl_full, $first_crlf));
 
                         $mail_subject = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject);
-                        $mail_message = str_replace('<topic_subject>', Config::get('forum_settings')['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message);
+                        $mail_message = str_replace('<topic_subject>', ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'], $mail_message);
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
                         $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid]), $mail_message);
                         $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id']]), $mail_message);
-                        $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                         $mail_message = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message', $mail_message);
 
                         $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
-                        $mail_message_full = str_replace('<topic_subject>', Config::get('forum_settings')['o_censoring'] == '1' ? $censored_subject : $post['subject'], $mail_message_full);
+                        $mail_message_full = str_replace('<topic_subject>', ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
                         $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid]), $mail_message_full);
                         $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
-                        $mail_message_full = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message_full);
+                        $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message_full', $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -1098,10 +1098,10 @@ class Post
         $mail_message = str_replace('<username>', $post['username'], $mail_message);
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
         $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
-        $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
         $mail_message = Container::get('hooks')->fire('model.post.warn_banned_user_mail_message', $mail_message);
 
-        $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+        $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
     }
 
     // Increment post count, change group if needed
@@ -1164,8 +1164,8 @@ class Post
             $result[1 - ($i % 2)][] = $parts[$i];
         }
 
-        if (Config::get('forum_settings')['o_indent_num_spaces'] != 8 && $retab) {
-            $spaces = str_repeat(' ', Config::get('forum_settings')['o_indent_num_spaces']);
+        if (ForumSettings::get('o_indent_num_spaces') != 8 && $retab) {
+            $spaces = str_repeat(' ', ForumSettings::get('o_indent_num_spaces'));
             $result[1] = str_replace("\t", $spaces, $result[1]);
         }
 
@@ -1219,13 +1219,13 @@ class Post
             unset($inside);
         }
 
-        if (Config::get('forum_settings')['o_censoring'] == '1') {
+        if (ForumSettings::get('o_censoring') == '1') {
             $quote['message'] = Utils::censor($quote['message']);
         }
 
         $quote['message'] = Utils::escape($quote['message']);
 
-        if (Config::get('forum_settings')['p_message_bbcode'] == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
+        if (ForumSettings::get('p_message_bbcode') == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
                 //   characters such as backslash \ square brackets [] and quotes '".
                 if (preg_match('/[[\]\'"]/S', $quote['poster'])) {
@@ -1264,11 +1264,11 @@ class Post
         }
 
         if (!Container::get('user')->is_guest) {
-            if (Config::get('forum_settings')['o_smilies'] == '1') {
+            if (ForumSettings::get('o_smilies') == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
             }
 
-            if (Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
+            if (ForumSettings::get('o_topic_subscriptions') == '1') {
                 $subscr_checked = false;
 
                 // If it's a preview
@@ -1286,7 +1286,7 @@ class Post
 
                 $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
             }
-        } elseif (Config::get('forum_settings')['o_smilies'] == '1') {
+        } elseif (ForumSettings::get('o_smilies') == '1') {
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
@@ -1309,7 +1309,7 @@ class Post
             }
         }
 
-        if (Config::get('forum_settings')['o_smilies'] == '1') {
+        if (ForumSettings::get('o_smilies') == '1') {
             if (Input::post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
             } else {

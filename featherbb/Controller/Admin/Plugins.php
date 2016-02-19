@@ -89,7 +89,7 @@ class Plugins
             'availablePlugins'    =>    $availablePlugins,
             'activePlugins'    =>    $activePlugins,
             'officialPlugins'    =>    $officialPlugins,
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Extension')),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')),
             )
         )->addTemplate('admin/plugins.php')->display();
     }

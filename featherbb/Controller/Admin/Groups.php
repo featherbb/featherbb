@@ -35,7 +35,7 @@ class Groups
         AdminUtils::generateAdminMenu('groups');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('User groups')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'groups' => $groups,
@@ -53,7 +53,7 @@ class Groups
         }
 
         // Make sure we don't remove the default group
-        if ($args['id'] == Config::get('forum_settings')['o_default_user_group']) {
+        if ($args['id'] == ForumSettings::get('o_default_user_group')) {
             throw new Error(__('Cannot remove default message'), 403);
         }
 
@@ -68,7 +68,7 @@ class Groups
                 AdminUtils::generateAdminMenu('groups');
 
                 View::setPageInfo(array(
-                        'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('User groups')),
+                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                         'active_page' => 'admin',
                         'admin_console' => true,
                         'group_title'      =>  $this->model->get_group_title($args['id']),
@@ -81,7 +81,7 @@ class Groups
         AdminUtils::generateAdminMenu('groups');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('User groups')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'id'    => $args['id'],
@@ -110,7 +110,7 @@ class Groups
             $group = $this->model->info_add_group($groups, $args['id']);
 
             View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('User groups')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'focus_element' => array('groups2', 'req_title'),

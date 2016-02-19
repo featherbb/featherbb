@@ -28,7 +28,7 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.index');
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title'])),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title'))),
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),
@@ -43,12 +43,12 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.rules');
 
-        if (Config::get('forum_settings')['o_rules'] == '0' || (Container::get('user')->is_guest && Container::get('user')->g_read_board == '0' && Config::get('forum_settings')['o_regs_allow'] == '0')) {
+        if (ForumSettings::get('o_rules') == '0' || (Container::get('user')->is_guest && Container::get('user')->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')) {
             throw new Error(__('Bad request'), 404);
         }
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Forum rules')),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')),
             'active_page' => 'rules'
             ))->addTemplate('misc/rules.php')->display();
     }

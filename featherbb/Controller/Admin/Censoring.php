@@ -42,7 +42,7 @@ class Censoring
         AdminUtils::generateAdminMenu('censoring');
 
         View::setPageInfo(array(
-                'title'    =>    array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Censoring')),
+                'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')),
                 'focus_element'    =>    array('censoring', 'new_search_for'),
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,

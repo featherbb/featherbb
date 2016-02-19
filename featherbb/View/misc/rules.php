@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.misc.rules.start');
     <div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
     <div class="box">
         <div id="rules-block" class="inbox">
-            <div class="usercontent"><?= Config::get('forum_settings')['o_rules_message'] ?></div>
+            <div class="usercontent"><?= ForumSettings::get('o_rules_message') ?></div>
         </div>
     </div>
 </div>

@@ -37,8 +37,8 @@ class Auth
                     /*
                     * decode the jwt using the key from config
                     */
-                    $secretKey = base64_decode(Config::get('forum_settings')['jwt_token']);
-                    $token = JWT::decode($jwt, $secretKey, [Config::get('forum_settings')['jwt_algorithm']]);
+                    $secretKey = base64_decode(ForumSettings::get('jwt_token'));
+                    $token = JWT::decode($jwt, $secretKey, [ForumSettings::get('jwt_algorithm')]);
 
                     return $token;
 
@@ -68,18 +68,18 @@ class Auth
                 Container::get('user')->logged = Container::get('now');
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch (Config::get('forum_settings')['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
                         break;
                 }
 
@@ -88,7 +88,7 @@ class Auth
 
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if (Container::get('user')->logged < (Container::get('now')-Config::get('forum_settings')['o_timeout_visit'])) {
+                if (Container::get('user')->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
                     DB::for_table('users')->where('id', Container::get('user')->id)
                         ->find_one()
                         ->set('last_visit', Container::get('user')->logged)
@@ -98,10 +98,10 @@ class Auth
 
                 $idle_sql = (Container::get('user')->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table('online')->raw_execute('UPDATE '.Config::get('forum_settings')['db_prefix'].'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => Container::get('user')->id));
+                DB::for_table('online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => Container::get('user')->id));
 
                 // Update tracked topics with the current expire time
-                $cookie_tracked_topics = Container::get('cookie')->get(Config::get('forum_settings')['cookie_name'].'_track');
+                $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
                 if (isset($cookie_tracked_topics)) {
                     Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
                 }
@@ -120,7 +120,7 @@ class Auth
 
         $result = DB::for_table('online')
                     ->select_many($select_update_users_online)
-                    ->where_lt('logged', Container::get('now')-Config::get('forum_settings')['o_timeout_online'])
+                    ->where_lt('logged', Container::get('now')-ForumSettings::get('o_timeout_online'))
                     ->find_many();
 
         foreach ($result as $cur_user) {
@@ -130,7 +130,7 @@ class Auth
                     ->delete_many();
             } else {
                 // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-                if ($cur_user['logged'] < (Container::get('now')-Config::get('forum_settings')['o_timeout_visit'])) {
+                if ($cur_user['logged'] < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
                     DB::for_table('users')->where('id', $cur_user['user_id'])
                         ->find_one()
                         ->set('last_visit', $cur_user['logged'])
@@ -198,7 +198,7 @@ class Auth
                 DB::for_table('online')
                     ->where('ident', Container::get('user')->username)
                     ->delete_many();
-                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 403);
+                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403);
             }
         }
 
@@ -213,10 +213,10 @@ class Auth
         // Deal with newlines, tabs and multiple spaces
         $pattern = array("\t", '  ', '  ');
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
-        $message = str_replace($pattern, $replace, Config::get('forum_settings')['o_maintenance_message']);
+        $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Maintenance')),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')),
             'msg'    =>    $message,
             'backlink'    =>   false,
         ))->addTemplate('maintenance.php')->display();
@@ -227,27 +227,27 @@ class Auth
 
     public function __invoke($req, $res, $next)
     {
-        // setcookie(Config::get('forum_settings')['cookie_name'], '', 1, '/', '', false, true);
+        // setcookie(ForumSettings::get('cookie_name'), '', 1, '/', '', false, true);
         global $feather_bans;
 
-        $authCookie = Container::get('cookie')->get(Config::get('forum_settings')['cookie_name']);
+        $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
         if ($jwt = $this->get_cookie_data($authCookie)) {
             $user = AuthModel::load_user($jwt->data->userId);
-            $expires = ($jwt->exp > Container::get('now') + Config::get('forum_settings')['o_timeout_visit']) ? Container::get('now') + 1209600 : Container::get('now') + Config::get('forum_settings')['o_timeout_visit'];
+            $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
             $user->is_guest = false;
             $user->is_admmod = $user->g_id == Config::get('forum_env')['FEATHER_ADMIN'] || $user->g_moderator == '1';
             if (!$user->disp_topics) {
-                $user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
+                $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
             if (!$user->disp_posts) {
-                $user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
+                $user->disp_posts = ForumSettings::get('o_disp_posts_default');
             }
             if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.$user->language)) {
-                $user->language = Config::get('forum_settings')['o_default_lang'];
+                $user->language = ForumSettings::get('o_default_lang');
             }
             if (!file_exists(Config::get('forum_env')['FEATHER_ROOT'].'style/themes/'.$user->style.'/style.css')) {
-                $user->style = Config::get('forum_settings')['o_default_style'];
+                $user->style = ForumSettings::get('o_default_style');
             }
 
             // Refresh cookie to avoid re-logging between idle
@@ -259,12 +259,12 @@ class Auth
         } else {
             $user = AuthModel::load_user(1);
 
-            $user->disp_topics = Config::get('forum_settings')['o_disp_topics_default'];
-            $user->disp_posts = Config::get('forum_settings')['o_disp_posts_default'];
-            $user->timezone = Config::get('forum_settings')['o_default_timezone'];
-            $user->dst = Config::get('forum_settings')['o_default_dst'];
-            $user->language = Config::get('forum_settings')['o_default_lang'];
-            $user->style = Config::get('forum_settings')['o_default_style'];
+            $user->disp_topics = ForumSettings::get('o_disp_topics_default');
+            $user->disp_posts = ForumSettings::get('o_disp_posts_default');
+            $user->timezone = ForumSettings::get('o_default_timezone');
+            $user->dst = ForumSettings::get('o_default_dst');
+            $user->language = ForumSettings::get('o_default_lang');
+            $user->style = ForumSettings::get('o_default_style');
             $user->is_guest = true;
             $user->is_admmod = false;
 
@@ -273,18 +273,18 @@ class Auth
                 $user->logged = time();
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch (Config::get('forum_settings')['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::for_table('online')->raw_execute('REPLACE INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
+                    DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.Config::get('forum_settings')['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.Config::get('forum_settings')['db_prefix'].'online WHERE ident=:ident)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
                         break;
                 }
             } else {

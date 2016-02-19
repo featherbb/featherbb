@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.profile.menu.start');
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'messaging']) ?>"><?php _e('Section messaging') ?></a></li>
-<?php if (Config::get('forum_settings')['o_avatars'] == '1' || Config::get('forum_settings')['o_signatures'] == '1'): ?>                    <li<?php if ($page == 'personality') {
+<?php if (ForumSettings::get('o_avatars') == '1' || ForumSettings::get('o_signatures') == '1'): ?>                    <li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>"><?php _e('Section personality') ?></a></li>

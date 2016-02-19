@@ -23,7 +23,7 @@ class Help
         Container::get('hooks')->fire('controller.help.start');
 
         View::setPageInfo(array(
-            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Help')),
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Help')),
             'active_page' => 'help',
         ))->addTemplate('help.php')->display();
     }

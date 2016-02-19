@@ -92,7 +92,7 @@ class Categories
         AdminUtils::generateAdminMenu('categories');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Categories')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),

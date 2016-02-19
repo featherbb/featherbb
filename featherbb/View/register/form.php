@@ -63,7 +63,7 @@ if (!empty($errors)) {
                     </div>
                 </fieldset>
             </div>
-<?php if (Config::get('forum_settings')['o_regs_verify'] == '0'): ?>            <div class="inform">
+<?php if (ForumSettings::get('o_regs_verify') == '0'): ?>            <div class="inform">
                 <fieldset>
                     <legend><?php _e('Pass legend') ?></legend>
                     <div class="infldset">
@@ -79,14 +79,14 @@ if (!empty($errors)) {
             </div>
 <?php endif; ?>            <div class="inform">
                 <fieldset>
-                    <legend><?php echo(Config::get('forum_settings')['o_regs_verify'] == '1') ? __('Email legend 2') : __('Email legend') ?></legend>
+                    <legend><?php echo(ForumSettings::get('o_regs_verify') == '1') ? __('Email legend 2') : __('Email legend') ?></legend>
                     <div class="infldset">
-<?php if (Config::get('forum_settings')['o_regs_verify'] == '1'): ?>                        <p><?php _e('Email info') ?></p>
+<?php if (ForumSettings::get('o_regs_verify') == '1'): ?>                        <p><?php _e('Email info') ?></p>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input type="text" name="req_email1" value="<?php if (Input::post('req_email1')) {
     echo Utils::escape(Input::post('req_email1'));
 } ?>" size="50" maxlength="80" /><br /></label>
-<?php if (Config::get('forum_settings')['o_regs_verify'] == '1'): ?>                        <label class="required"><strong><?php _e('Confirm email') ?> <span><?php _e('Required') ?></span></strong><br />
+<?php if (ForumSettings::get('o_regs_verify') == '1'): ?>                        <label class="required"><strong><?php _e('Confirm email') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input type="text" name="req_email2" value="<?php if (Input::post('req_email2')) {
     echo Utils::escape(Input::post('req_email2'));
 } ?>" size="50" maxlength="80" /><br /></label>
@@ -106,7 +106,7 @@ if (!empty($errors)) {
 <?php
 
             foreach ($languages as $temp) {
-                if (Config::get('forum_settings')['o_default_lang'] == $temp) {
+                if (ForumSettings::get('o_default_lang') == $temp) {
                     echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
                 } else {
                     echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";

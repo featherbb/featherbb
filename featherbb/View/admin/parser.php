@@ -212,7 +212,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?php echo($lang_admin_parser['smiley_upload']); ?></th>
  <?php if (ini_get('file_uploads')) {
     ?>
-                                    <td><input type="hidden" name="MAX_FILE_SIZE" value="<?= Config::get('forum_settings')['o_avatars_size'] ?>" />
+                                    <td><input type="hidden" name="MAX_FILE_SIZE" value="<?= ForumSettings::get('o_avatars_size') ?>" />
                                         <input type="file" name="new_smiley" id="upload_smiley" /></td>
                                     <td><input type="submit" name="upload" value="<?php echo($lang_admin_parser['upload_button']);
     ?>" /></td>

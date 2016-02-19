@@ -18,7 +18,7 @@ class SlimStatic
         $manager = new \Statical\Manager();
 
         // Add proxies that use the Slim instance
-        $aliases = array('Feather', 'Config', 'Route', 'Router');
+        $aliases = array('Feather', 'Config', 'Route', 'Router', 'ForumEnv', 'ForumSettings');
         static::addInstances($aliases, $manager, $slim);
 
         // Add special-case Slim container instance

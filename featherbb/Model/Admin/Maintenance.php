@@ -35,20 +35,20 @@ class Maintenance
 
         // If this is the first cycle of posts we empty the search index before we proceed
         if (Input::query('i_empty_index')) {
-            DB::for_table('search_words')->raw_execute('TRUNCATE '.Config::get('forum_settings')['db_prefix'].'search_words');
-            DB::for_table('search_matches')->raw_execute('TRUNCATE '.Config::get('forum_settings')['db_prefix'].'search_matches');
+            DB::for_table('search_words')->raw_execute('TRUNCATE '.ForumSettings::get('db_prefix').'search_words');
+            DB::for_table('search_matches')->raw_execute('TRUNCATE '.ForumSettings::get('db_prefix').'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
-            switch (Config::get('forum_settings')['db_type']) {
+            switch (ForumSettings::get('db_type')) {
                 case 'mysql':
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    DB::for_table('search_words')->raw_execute('ALTER TABLE '.Config::get('forum_settings')['db_prefix'].'search_words auto_increment=1');
+                    DB::for_table('search_words')->raw_execute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
                     break;
 
                 case 'pgsql';
-                    DB::for_table('search_words')->raw_execute('SELECT setval(\''.Config::get('forum_settings')['db_prefix'].'search_words_id_seq\', 1, false)');
+                    DB::for_table('search_words')->raw_execute('SELECT setval(\''.ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
             }
         }
     }

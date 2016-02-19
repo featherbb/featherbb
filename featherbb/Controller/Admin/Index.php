@@ -36,7 +36,7 @@ class Index
                 throw new Error(__('Upgrade check failed message'), 500);
             }
 
-            if (version_compare(Config::get('forum_settings')['o_cur_version'], $latest_version, '>=')) {
+            if (version_compare(ForumSettings::get('o_cur_version'), $latest_version, '>=')) {
                 return Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
             } else {
                 return Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
@@ -46,7 +46,7 @@ class Index
         AdminUtils::generateAdminMenu('index');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Index')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')),
                 'active_page' => 'admin',
                 'admin_console' => true
             )

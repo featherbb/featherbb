@@ -41,7 +41,7 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                     </div>
                 </fieldset>
             </div>
-<?php if (Config::get('forum_settings')['o_forum_subscriptions'] == '1' || Config::get('forum_settings')['o_topic_subscriptions'] == '1'): ?>                <div class="inform">
+<?php if (ForumSettings::get('o_forum_subscriptions') == '1' || ForumSettings::get('o_topic_subscriptions') == '1'): ?>                <div class="inform">
                 <fieldset>
                     <legend><?php _e('Subscription legend') ?></legend>
                     <div class="infldset">
@@ -49,7 +49,7 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                             <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user['notify_with_post'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Notify full') ?><br /></label>
-<?php if (Config::get('forum_settings')['o_topic_subscriptions'] == '1'): ?>                                <label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['auto_notify'] == '1') {
+<?php if (ForumSettings::get('o_topic_subscriptions') == '1'): ?>                                <label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['auto_notify'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Auto notify full') ?><br /></label>
 <?php endif; ?>

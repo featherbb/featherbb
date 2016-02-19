@@ -42,7 +42,7 @@ class Profile
             $cur_user = $cur_user->find_one();
 
             if ($key == '' || $key != $cur_user['activate_key']) {
-                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 400);
+                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
             } else {
                 $query = DB::for_table('users')
                     ->where('id', $id)
@@ -127,7 +127,7 @@ class Profile
             $update_password = $update_password->save();
 
             if (Container::get('user')->id == $id) {
-                $this->auth->feather_setcookie(Container::get('user')->id, $new_password_hash, time() + Config::get('forum_settings')['o_timeout_visit']);
+                $this->auth->feather_setcookie(Container::get('user')->id, $new_password_hash, time() + ForumSettings::get('o_timeout_visit'));
             }
 
             Container::get('hooks')->fire('model.profile.change_pass');
@@ -177,7 +177,7 @@ class Profile
             $new_email_key = $new_email_key->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
-                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', 400);
+                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
             } else {
                 $update_mail = DB::for_table('users')
                     ->where('id', $id)
@@ -206,9 +206,9 @@ class Profile
 
             // Check if it's a banned email address
             if ($this->email->is_banned_email($new_email)) {
-                if (Config::get('forum_settings')['p_allow_banned_email'] == '0') {
+                if (ForumSettings::get('p_allow_banned_email') == '0') {
                     throw new Error(__('Banned email'), 403);
-                } elseif (Config::get('forum_settings')['o_mailing_list'] != '') {
+                } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
                     $mail_tpl = trim(file_get_contents(Config::get('forum_env')['FEATHER_ROOT'].'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mail_tpl);
@@ -222,10 +222,10 @@ class Profile
                     $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
                     $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
-                    $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_message', $mail_message);
 
-                    $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+                    $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
                 }
             }
 
@@ -239,9 +239,9 @@ class Profile
             $result = $result->find_many();
 
             if ($result) {
-                if (Config::get('forum_settings')['p_allow_dupe_email'] == '0') {
+                if (ForumSettings::get('p_allow_dupe_email') == '0') {
                     throw new Error(__('Dupe email'), 400);
-                } elseif (Config::get('forum_settings')['o_mailing_list'] != '') {
+                } elseif (ForumSettings::get('o_mailing_list') != '') {
                     foreach($result as $cur_dupe) {
                         $dupe_list[] = $cur_dupe['username'];
                     }
@@ -259,10 +259,10 @@ class Profile
                     $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                     $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
-                    $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+                    $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                     $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_message', $mail_message);
 
-                    $this->email->feather_mail(Config::get('forum_settings')['o_mailing_list'], $mail_subject, $mail_message);
+                    $this->email->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
                 }
             }
 
@@ -296,14 +296,14 @@ class Profile
             $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
             $mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
-            $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+            $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_activate_message', $mail_message);
 
             $this->email->feather_mail($new_email, $mail_subject, $mail_message);
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
-            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.', true);
+            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', true);
         }
         Container::get('hooks')->fire('model.profile.change_email');
     }
@@ -357,16 +357,16 @@ class Profile
             }
 
             // Make sure the file isn't too big
-            if ($uploaded_file['size'] > Config::get('forum_settings')['o_avatars_size']) {
-                throw new Error(__('Too large').' '.Utils::forum_number_format(Config::get('forum_settings')['o_avatars_size']).' '.__('bytes').'.');
+            if ($uploaded_file['size'] > ForumSettings::get('o_avatars_size')) {
+                throw new Error(__('Too large').' '.Utils::forum_number_format(ForumSettings::get('o_avatars_size')).' '.__('bytes').'.');
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-            if (!@move_uploaded_file($uploaded_file['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp')) {
-                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'">'.Utils::escape(Config::get('forum_settings')['o_admin_email']).'</a>.');
+            if (!@move_uploaded_file($uploaded_file['tmp_name'], Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp')) {
+                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
             }
 
-            list($width, $height, $type, ) = @getimagesize(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp');
+            list($width, $height, $type, ) = @getimagesize(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
 
             // Determine type
             if ($type == IMAGETYPE_GIF) {
@@ -377,20 +377,20 @@ class Profile
                 $extension = '.png';
             } else {
                 // Invalid type
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp');
+                @unlink(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 throw new Error(__('Bad type'));
             }
 
             // Now check the width/height
-            if (empty($width) || empty($height) || $width > Config::get('forum_settings')['o_avatars_width'] || $height > Config::get('forum_settings')['o_avatars_height']) {
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp');
-                throw new Error(__('Too wide or high').' '.Config::get('forum_settings')['o_avatars_width'].'x'.Config::get('forum_settings')['o_avatars_height'].' '.__('pixels').'.');
+            if (empty($width) || empty($height) || $width > ForumSettings::get('o_avatars_width') || $height > ForumSettings::get('o_avatars_height')) {
+                @unlink(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
+                throw new Error(__('Too wide or high').' '.ForumSettings::get('o_avatars_width').'x'.ForumSettings::get('o_avatars_height').' '.__('pixels').'.');
             }
 
             // Delete any old avatars and put the new one in place
             $this->delete_avatar($id);
-            @rename(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.'.tmp', Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.$extension);
-            @chmod(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$id.$extension, 0644);
+            @rename(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp', Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
+            @chmod(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$id.$extension, 0644);
         } else {
             throw new Error(__('Unknown failure'));
         }
@@ -409,8 +409,8 @@ class Profile
 
         // Delete user avatar
         foreach ($filetypes as $cur_type) {
-            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$user_id.'.'.$cur_type)) {
-                @unlink(Config::get('forum_env')['FEATHER_ROOT'].Config::get('forum_settings')['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+            if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type)) {
+                @unlink(Config::get('forum_env')['FEATHER_ROOT'].ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type);
             }
         }
     }
@@ -819,7 +819,7 @@ class Profile
                     }
                 }
 
-                if (Config::get('forum_settings')['o_regs_verify'] == '0' || Container::get('user')->is_admmod) {
+                if (ForumSettings::get('o_regs_verify') == '0' || Container::get('user')->is_admmod) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
                     if (!$this->email->is_valid_email($form['email'])) {
@@ -899,20 +899,20 @@ class Profile
                 $form = array();
 
                 // Clean up signature from POST
-                if (Config::get('forum_settings')['o_signatures'] == '1') {
+                if (ForumSettings::get('o_signatures') == '1') {
                     $form['signature'] = Utils::linebreaks(Utils::trim(Input::post('signature')));
 
                     // Validate signature
-                    if (Utils::strlen($form['signature']) > Config::get('forum_settings')['p_sig_length']) {
-                        throw new Error(sprintf(__('Sig too long'), Config::get('forum_settings')['p_sig_length'], Utils::strlen($form['signature']) - Config::get('forum_settings')['p_sig_length']));
-                    } elseif (substr_count($form['signature'], "\n") > (Config::get('forum_settings')['p_sig_lines']-1)) {
-                        throw new Error(sprintf(__('Sig too many lines'), Config::get('forum_settings')['p_sig_lines']));
-                    } elseif ($form['signature'] && Config::get('forum_settings')['p_sig_all_caps'] == '0' && Utils::is_all_uppercase($form['signature']) && !Container::get('user')->is_admmod) {
+                    if (Utils::strlen($form['signature']) > ForumSettings::get('p_sig_length')) {
+                        throw new Error(sprintf(__('Sig too long'), ForumSettings::get('p_sig_length'), Utils::strlen($form['signature']) - ForumSettings::get('p_sig_length')));
+                    } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
+                        throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
+                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !Container::get('user')->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
 
                     // Validate BBCode syntax
-                    if (Config::get('forum_settings')['p_sig_bbcode'] == '1') {
+                    if (ForumSettings::get('p_sig_bbcode') == '1') {
                         $errors = array();
 
                         $form['signature'] = Container::get('parser')->preparse_bbcode($form['signature'], $errors, true);
@@ -977,7 +977,7 @@ class Profile
                 );
 
                 if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                    $form['email_setting'] = Config::get('forum_settings')['o_default_email_setting'];
+                    $form['email_setting'] = ForumSettings::get('o_default_email_setting');
                 }
 
                 break;
@@ -1126,20 +1126,20 @@ class Profile
 
         $user_title_field = Utils::get_title($user);
         $user_info['personal'][] = '<dt>'.__('Title').'</dt>';
-        $user_info['personal'][] = '<dd>'.((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user_title_field) : $user_title_field).'</dd>';
+        $user_info['personal'][] = '<dd>'.((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user_title_field) : $user_title_field).'</dd>';
 
         if ($user['realname'] != '') {
             $user_info['personal'][] = '<dt>'.__('Realname').'</dt>';
-            $user_info['personal'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
+            $user_info['personal'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
             $user_info['personal'][] = '<dt>'.__('Location').'</dt>';
-            $user_info['personal'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['location']) : $user['location']).'</dd>';
+            $user_info['personal'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
-            $user['url'] = Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['url']) : $user['url']);
+            $user['url'] = Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['url']) : $user['url']);
             $user_info['personal'][] = '<dt>'.__('Website').'</dt>';
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
@@ -1158,7 +1158,7 @@ class Profile
 
         if ($user['jabber'] != '') {
             $user_info['messaging'][] = '<dt>'.__('Jabber').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['jabber']) : $user['jabber']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['jabber']) : $user['jabber']).'</dd>';
         }
 
         if ($user['icq'] != '') {
@@ -1168,20 +1168,20 @@ class Profile
 
         if ($user['msn'] != '') {
             $user_info['messaging'][] = '<dt>'.__('MSN').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['msn']) : $user['msn']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['msn']) : $user['msn']).'</dd>';
         }
 
         if ($user['aim'] != '') {
             $user_info['messaging'][] = '<dt>'.__('AOL IM').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['aim']) : $user['aim']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['aim']) : $user['aim']).'</dd>';
         }
 
         if ($user['yahoo'] != '') {
             $user_info['messaging'][] = '<dt>'.__('Yahoo').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((Config::get('forum_settings')['o_censoring'] == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
+            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
-        if (Config::get('forum_settings')['o_avatars'] == '1') {
+        if (ForumSettings::get('o_avatars') == '1') {
             $avatar_field = Utils::generate_avatar_markup($user['id']);
             if ($avatar_field != '') {
                 $user_info['personality'][] = '<dt>'.__('Avatar').'</dt>';
@@ -1189,7 +1189,7 @@ class Profile
             }
         }
 
-        if (Config::get('forum_settings')['o_signatures'] == '1') {
+        if (ForumSettings::get('o_signatures') == '1') {
             if (isset($parsed_signature)) {
                 $user_info['personality'][] = '<dt>'.__('Signature').'</dt>';
                 $user_info['personality'][] = '<dd><div class="postsignature postmsg">'.$parsed_signature.'</div></dd>';
@@ -1197,7 +1197,7 @@ class Profile
         }
 
         $posts_field = '';
-        if (Config::get('forum_settings')['o_show_post_count'] == '1' || Container::get('user')->is_admmod) {
+        if (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) {
             $posts_field = Utils::forum_number_format($user['num_posts']);
         }
         if (Container::get('user')->g_search == '1') {
@@ -1206,7 +1206,7 @@ class Profile
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
-            if (Container::get('user')->is_admmod && Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
+            if (Container::get('user')->is_admmod && ForumSettings::get('o_topic_subscriptions') == '1') {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
@@ -1249,7 +1249,7 @@ class Profile
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
-            if (Config::get('forum_settings')['o_regs_verify'] == '1') {
+            if (ForumSettings::get('o_regs_verify') == '1') {
                 $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
@@ -1261,7 +1261,7 @@ class Profile
 
         if (Container::get('user')->g_id == Config::get('forum_env')['FEATHER_ADMIN']) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif (Config::get('forum_settings')['o_show_post_count'] == '1' || Container::get('user')->is_admmod) {
+        } elseif (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
@@ -1269,7 +1269,7 @@ class Profile
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
-            if (Config::get('forum_settings')['o_topic_subscriptions'] == '1') {
+            if (ForumSettings::get('o_topic_subscriptions') == '1') {
                 $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$id.'">'.__('Show subscriptions').'</a>';
             }
         }
@@ -1297,7 +1297,7 @@ class Profile
         $result = $result->find_many();
 
         foreach ($result as $cur_group) {
-            if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == Config::get('forum_settings')['o_default_user_group'] && $user['g_id'] == '')) {
+            if ($cur_group['g_id'] == $user['g_id'] || ($cur_group['g_id'] == ForumSettings::get('o_default_user_group') && $user['g_id'] == '')) {
                 $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
@@ -1385,14 +1385,14 @@ class Profile
         }
 
         // Check username for any censored words
-        if (Config::get('forum_settings')['o_censoring'] == '1' && Utils::censor($username) != $username) {
+        if (ForumSettings::get('o_censoring') == '1' && Utils::censor($username) != $username) {
             $errors[] = __('Username censor');
         }
 
         // Check that the username (or a too similar username) is not already registered
         $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-        $result = DB::for_table('online')->raw_query('SELECT username FROM '.Config::get('forum_settings')['db_prefix'].'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
+        $result = DB::for_table('online')->raw_query('SELECT username FROM '.ForumSettings::get('db_prefix').'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, array(':username1' => $username, ':username2' => Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)))->find_one();
 
         if ($result) {
             $busy = $result['username'];
@@ -1467,9 +1467,9 @@ class Profile
 
         $mail_subject = str_replace('<mail_subject>', $subject, $mail_subject);
         $mail_message = str_replace('<sender>', Container::get('user')->username, $mail_message);
-        $mail_message = str_replace('<board_title>', Config::get('forum_settings')['o_board_title'], $mail_message);
+        $mail_message = str_replace('<board_title>', ForumSettings::get('o_board_title'), $mail_message);
         $mail_message = str_replace('<mail_message>', $message, $mail_message);
-        $mail_message = str_replace('<board_mailer>', Config::get('forum_settings')['o_board_title'], $mail_message);
+        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
         $mail_message = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mail_message);
 

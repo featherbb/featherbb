@@ -182,6 +182,7 @@ class Core
         }
 
         // Populate Slim object with forum_env vars
+        // Container::set('forum_env', $this->forum_env);
         Config::set('forum_env', $this->forum_env);
         // Load FeatherBB utils class
         Container::set('utils', function ($container) {
@@ -242,7 +243,7 @@ class Core
 
         if (!is_file(Config::get('forum_env')['FORUM_CONFIG_FILE'])) {
             $installer = new \FeatherBB\Controller\Install();
-            return $response = $installer->run();
+            return $installer->run();
         }
 
         // Load config from disk
@@ -267,6 +268,7 @@ class Core
 
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
+        Container::set('forum_settings', $this->forum_settings);
         Config::set('forum_settings', $this->forum_settings);
 
         // Set default style and assets

@@ -30,7 +30,7 @@ class Statistics
         $total = $this->model->get_total_size();
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Admin'), __('Server statistics')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Server statistics')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),

@@ -36,7 +36,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
 }
     ?>><a href="<?= Router::pathFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
 <?php endif;
-    if ($is_admin || Config::get('forum_settings')['o_report_method'] == '0' || Config::get('forum_settings')['o_report_method'] == '2'): ?>                    <li<?php if ($page == 'reports') {
+    if ($is_admin || ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2'): ?>                    <li<?php if ($page == 'reports') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('adminReports') ?>"><?php _e('Reports') ?></a></li>

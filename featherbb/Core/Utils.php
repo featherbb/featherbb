@@ -310,7 +310,7 @@ class Utils
         $avatar_markup = '';
 
         foreach ($filetypes as $cur_type) {
-            $path = Config::get('forum_settings')['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
+            $path = ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type;
 
             if (file_exists(Config::get('forum_env')['FEATHER_ROOT'].$path) && $img_size = getimagesize(Config::get('forum_env')['FEATHER_ROOT'].$path)) {
                 $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(Config::get('forum_env')['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';

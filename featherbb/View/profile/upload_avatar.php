@@ -26,9 +26,9 @@ Container::get('hooks')->fire('view.profile.upload_avatar.start');
                     <legend><?php _e('Upload avatar legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <input type="hidden" name="MAX_FILE_SIZE" value="<?= Config::get('forum_settings')['o_avatars_size'] ?>" />
+                        <input type="hidden" name="MAX_FILE_SIZE" value="<?= ForumSettings::get('o_avatars_size') ?>" />
                         <label class="required"><strong><?php _e('File') ?> <span><?php _e('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-                        <p><?php _e('Avatar desc'); echo ' '.Config::get('forum_settings')['o_avatars_width'].' x '.Config::get('forum_settings')['o_avatars_height'].' '.__('pixels').' '.__('and').' '.Utils::forum_number_format(Config::get('forum_settings')['o_avatars_size']).' '.__('bytes').' ('.Utils::file_size(Config::get('forum_settings')['o_avatars_size']).').' ?></p>
+                        <p><?php _e('Avatar desc'); echo ' '.ForumSettings::get('o_avatars_width').' x '.ForumSettings::get('o_avatars_height').' '.__('pixels').' '.__('and').' '.Utils::forum_number_format(ForumSettings::get('o_avatars_size')).' '.__('bytes').' ('.Utils::file_size(ForumSettings::get('o_avatars_size')).').' ?></p>
                     </div>
                 </fieldset>
             </div>

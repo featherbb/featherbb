@@ -102,8 +102,8 @@ class Email
             }
         }
 
-        if (Config::get('forum_settings')['o_indent_num_spaces'] != 8 && $retab) {
-            $spaces = str_repeat(' ', Config::get('forum_settings')['o_indent_num_spaces']);
+        if (ForumSettings::get('o_indent_num_spaces') != 8 && $retab) {
+            $spaces = str_repeat(' ', ForumSettings::get('o_indent_num_spaces'));
             $text = str_replace("\t", $spaces, $text);
         }
 
@@ -256,12 +256,12 @@ class Email
         }
 
         // Use \r\n for SMTP servers, the system's line ending for local mailers
-        $smtp = Config::get('forum_settings')['o_smtp_host'] != '';
+        $smtp = ForumSettings::get('o_smtp_host') != '';
         $EOL = $smtp ? "\r\n" : FORUM_EOL;
 
         // Default sender/return address
-        $from_name = sprintf(__('Mailer'), Config::get('forum_settings')['o_board_title']);
-        $from_email = Config::get('forum_settings')['o_webmaster_email'];
+        $from_name = sprintf(__('Mailer'), ForumSettings::get('o_board_title'));
+        $from_email = ForumSettings::get('o_webmaster_email');
 
         // Do a little spring cleaning
         $to = Utils::trim(preg_replace('%[\n\r]+%s', '', $to));
@@ -331,19 +331,19 @@ class Email
         $message = (substr($message, 0, 1) == '.' ? '.' . $message : $message);
 
         // Are we using port 25 or a custom port?
-        if (strpos(Config::get('forum_settings')['o_smtp_host'], ':') !== false) {
-            list($smtp_host, $smtp_port) = explode(':', Config::get('forum_settings')['o_smtp_host']);
+        if (strpos(ForumSettings::get('o_smtp_host'), ':') !== false) {
+            list($smtp_host, $smtp_port) = explode(':', ForumSettings::get('o_smtp_host'));
         } else {
-            $smtp_host = Config::get('forum_settings')['o_smtp_host'];
+            $smtp_host = ForumSettings::get('o_smtp_host');
             $smtp_port = 25;
         }
 
-        if (Config::get('forum_settings')['o_smtp_ssl'] == '1') {
+        if (ForumSettings::get('o_smtp_ssl') == '1') {
             $smtp_host = 'ssl://' . $smtp_host;
         }
 
         if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-            throw new Error('Could not connect to smtp host "' . Config::get('forum_settings')['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
+            throw new Error('Could not connect to smtp host "' . ForumSettings::get('o_smtp_host') . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
         $this->server_parse($socket, '220');
@@ -361,24 +361,24 @@ class Email
             }
         }
 
-        if (Config::get('forum_settings')['o_smtp_user'] != '' && Config::get('forum_settings')['o_smtp_pass'] != '') {
+        if (ForumSettings::get('o_smtp_user') != '' && ForumSettings::get('o_smtp_pass') != '') {
             fwrite($socket, 'EHLO ' . $local_host . "\r\n");
             $this->server_parse($socket, '250');
 
             fwrite($socket, 'AUTH LOGIN' . "\r\n");
             $this->server_parse($socket, '334');
 
-            fwrite($socket, base64_encode(Config::get('forum_settings')['o_smtp_user']) . "\r\n");
+            fwrite($socket, base64_encode(ForumSettings::get('o_smtp_user')) . "\r\n");
             $this->server_parse($socket, '334');
 
-            fwrite($socket, base64_encode(Config::get('forum_settings')['o_smtp_pass']) . "\r\n");
+            fwrite($socket, base64_encode(ForumSettings::get('o_smtp_pass')) . "\r\n");
             $this->server_parse($socket, '235');
         } else {
             fwrite($socket, 'HELO ' . $local_host . "\r\n");
             $this->server_parse($socket, '250');
         }
 
-        fwrite($socket, 'MAIL FROM: <' . Config::get('forum_settings')['o_webmaster_email'] . '>' . "\r\n");
+        fwrite($socket, 'MAIL FROM: <' . ForumSettings::get('o_webmaster_email') . '>' . "\r\n");
         $this->server_parse($socket, '250');
 
         foreach ($recipients as $email) {

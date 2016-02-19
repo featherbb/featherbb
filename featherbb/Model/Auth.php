@@ -127,12 +127,12 @@ class Auth
         *
         * Generated with base64_encode(openssl_random_pseudo_bytes(64));
         */
-        $secretKey = base64_decode(Config::get('forum_settings')['jwt_token']);
+        $secretKey = base64_decode(ForumSettings::get('jwt_token'));
 
         /*
         * Extract the algorithm from the config file too
         */
-        $algorithm = Config::get('forum_settings')['jwt_algorithm'];
+        $algorithm = ForumSettings::get('jwt_algorithm');
 
         /*
         * Encode the array to a JWT string.
@@ -152,6 +152,6 @@ class Auth
     public static function feather_setcookie($jwt, $expire)
     {
         // Store cookie to client storage
-        setcookie(Config::get('forum_settings')['cookie_name'], $jwt, $expire, '/', '', false, true);
+        setcookie(ForumSettings::get('cookie_name'), $jwt, $expire, '/', '', false, true);
     }
 }

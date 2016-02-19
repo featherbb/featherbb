@@ -37,13 +37,13 @@ class Register
 
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
-        if (Config::get('forum_settings')['o_regs_allow'] == '0' || Input::post('username') || Input::post('password')) {
+        if (ForumSettings::get('o_regs_allow') == '0' || Input::post('username') || Input::post('password')) {
             throw new Error(__('No new regs'), 403);
         }
 
-        $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : Config::get('forum_settings')['o_default_timezone'];
-        $user['dst'] = isset($user['dst']) ? $user['dst'] : Config::get('forum_settings')['o_default_dst'];
-        $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : Config::get('forum_settings')['o_default_email_setting'];
+        $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : ForumSettings::get('o_default_timezone');
+        $user['dst'] = isset($user['dst']) ? $user['dst'] : ForumSettings::get('o_default_dst');
+        $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : ForumSettings::get('o_default_email_setting');
         $user['errors'] = '';
 
         if (Request::isPost()) {
@@ -56,7 +56,7 @@ class Register
         }
 
             View::setPageInfo(array(
-                        'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Register')),
+                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
                         'focus_element' => array('register', 'req_user'),
                         'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
                         'active_page' => 'register',
@@ -87,16 +87,16 @@ class Register
         }
 
         // Display an error message if new registrations are disabled
-        if (Config::get('forum_settings')['o_regs_allow'] == '0') {
+        if (ForumSettings::get('o_regs_allow') == '0') {
             throw new Error(__('No new regs'), 403);
         }
 
-        if (Config::get('forum_settings')['o_rules'] != '1') {
+        if (ForumSettings::get('o_rules') != '1') {
             return Router::redirect(Router::pathFor('register'));
         }
 
         View::setPageInfo(array(
-                            'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Register'), __('Forum rules')),
+                            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')),
                             'active_page' => 'register',
                             )
                     )->addTemplate('register/rules.php')->display();

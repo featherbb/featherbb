@@ -41,7 +41,7 @@ class Search
             if (isset($search['is_result'])) {
 
                 View::setPageInfo(array(
-                    'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Search results')),
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search results')),
                     'active_page' => 'search',
                     'search' => $search,
                     'footer' => $search,
@@ -72,7 +72,7 @@ class Search
         // Display the form
         else {
             View::setPageInfo(array(
-                'title' => array(Utils::escape(Config::get('forum_settings')['o_board_title']), __('Search')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,

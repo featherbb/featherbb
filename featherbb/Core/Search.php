@@ -227,7 +227,7 @@ class Search
             unset($unique_words);
 
             if (!empty($new_words)) {
-                switch (Config::get('forum_settings')['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
@@ -235,7 +235,7 @@ class Search
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
                         DB::for_table('search_words')
-                            ->raw_execute('INSERT INTO ' . Config::get('forum_settings')['db_prefix'] . 'search_words (word) VALUES ' . $placeholders, $new_words);
+                            ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $new_words);
                         break;
 
                     default:
@@ -280,7 +280,7 @@ class Search
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
                 DB::for_table('search_words')
-                    ->raw_execute('INSERT INTO ' . Config::get('forum_settings')['db_prefix'] . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . Config::get('forum_settings')['db_prefix'] . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                    ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -299,7 +299,7 @@ class Search
             $post_ids_sql = $post_ids;
         }
 
-        switch (Config::get('forum_settings')['db_type']) {
+        switch (ForumSettings::get('db_type')) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
@@ -337,7 +337,7 @@ class Search
 
             default:
                 DB::for_table('search_matches')
-                    ->where_raw('id IN(SELECT word_id FROM ' . Config::get('forum_settings')['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . Config::get('forum_settings')['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->where_raw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
         }

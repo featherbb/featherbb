@@ -251,7 +251,7 @@ class Options
         $output = '';
 
         foreach ($styles as $temp) {
-            if (Config::get('forum_settings')['o_default_style'] == $temp) {
+            if (ForumSettings::get('o_default_style') == $temp) {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
@@ -270,7 +270,7 @@ class Options
         $output = '';
 
         foreach ($langs as $temp) {
-            if (Config::get('forum_settings')['o_default_lang'] == $temp) {
+            if (ForumSettings::get('o_default_lang') == $temp) {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
@@ -289,7 +289,7 @@ class Options
         $output = '';
 
         foreach ($times as $time) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.(Config::get('forum_settings')['o_feed_ttl'] == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.(ForumSettings::get('o_feed_ttl') == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
 
         $output = Container::get('hooks')->fire('model.admin.options.get_times.output', $output);
