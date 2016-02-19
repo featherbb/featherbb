@@ -31,7 +31,7 @@ class Post
     {
         Container::get('hooks')->fire('controller.post.newreply');
 
-        $this->newpost('', $args['fid'], $args['tid']);
+        $this->newpost($req, $res, $args);
     }
 
     public function newpost($req, $res, $args)
@@ -155,7 +155,7 @@ class Post
                 // If a quote ID was specified in the url
                 if (isset($args['qid'])) {
                     $quote = $this->model->get_quote_message($args['qid'], $args['tid']);
-                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['pid' => $args['tid'], 'qid' => $args['qid']]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
