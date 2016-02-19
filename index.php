@@ -30,25 +30,21 @@ $feather_settings = array('config_file' => 'featherbb/config.php',
     'cache_dir' => 'cache/',
     'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 
-// $container = $feather->getContainer();
-// $container['csrf'] = function () {
-//     return new \FeatherBB\Middleware\Csrf;
-// };
-// $container['auth'] = function () {
-//     return new \FeatherBB\Middleware\Auth();
-// };
-// $container['core'] = function () use ($feather_settings) {
-//     return new \FeatherBB\Middleware\Core($feather_settings);
-// };
-
-// $feather->add($container->get('csrf'));
-// $feather->add($container->get('auth'));
-// $feather->add($container->get('core'));
-
-
 Feather::add(new \FeatherBB\Middleware\Csrf);
 Feather::add(new \FeatherBB\Middleware\Auth);
 Feather::add(new \FeatherBB\Middleware\Core($feather_settings));
+// Permanently redirect paths with a trailing slash
+// to their non-trailing counterpart
+Feather::add(function ($req, $res, $next) {
+    $uri = $req->getUri();
+    $path = $uri->getPath();
+    if ($path != '/' && substr($path, -1) == '/') {
+        $uri = $uri->withPath(substr($path, 0, -1));
+        return $res->withRedirect((string)$uri, 301);
+    }
+
+    return $next($req, $res);
+});
 
 // Load the routes
 require 'featherbb/routes.php';
