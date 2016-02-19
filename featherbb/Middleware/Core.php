@@ -255,7 +255,7 @@ class Core
 
         // Init DB and configure Slim
         self::init_db($this->forum_settings, Config::get('forum_env')['FEATHER_SHOW_INFO']);
-        Config::set('displayErrorDetails', true);
+        Config::set('displayErrorDetails', $this->forum_env['FEATHER_DEBUG']);
         // array('debug' => $this->forum_env['FEATHER_DEBUG'],
         //                          'cookies.encrypt' => true,
         //                          'cookies.secret_key' => $this->forum_settings['cookie_seed'])

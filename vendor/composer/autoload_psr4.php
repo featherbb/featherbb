@@ -12,6 +12,7 @@ return array(
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Plugins\\' => array($baseDir . '/plugins'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'FeatherBB\\' => array($baseDir . '/featherbb'),
     'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
 );
