@@ -161,9 +161,6 @@ class Search
     //
     public function update_search_index($mode, $post_id, $message, $subject = null)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
 
@@ -296,9 +293,6 @@ class Search
     //
     public function strip_search_index($post_ids)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         if (!is_array($post_ids)) {
             $post_ids_sql = explode(',', $post_ids);
         } else {

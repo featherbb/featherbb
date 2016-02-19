@@ -45,7 +45,6 @@ class Cache
 
     public static function get_users_info()
     {
-        $feather = \Slim\Slim::getInstance();
         $stats = array();
         $select_get_users_info = array('id', 'username');
         $stats['total_users'] = DB::for_table('users')
@@ -62,7 +61,6 @@ class Cache
 
     public static function get_admin_ids()
     {
-        $feather = \Slim\Slim::getInstance();
         return DB::for_table('users')
                 ->select('id')
                 ->where('group_id', Container::get('forum_env')['FEATHER_ADMIN'])

@@ -140,9 +140,6 @@ function get_current_url($max_length = 0)
 //
 function set_default_user()
 {
-    // Get Slim current session
-    $feather = \Slim\Slim::getInstance();
-
     $remote_addr = Utils::getIp();
 
     // Fetch guest user
@@ -340,8 +337,6 @@ function output_atom($feed)
     echo "\t".'<link rel="self" href="'.Utils::escape(get_current_url()).'"/>'."\n";
     echo "\t".'<link href="'.Utils::escape($feed['link']).'"/>'."\n";
     echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
-
-    $feather = \Slim\Slim::getInstance();
 
     if (Config::get('forum_settings')['o_show_version'] == '1') {
         echo "\t".'<generator version="'.Config::get('forum_settings')['o_cur_version'].'">FeatherBB</generator>'."\n";

@@ -17,7 +17,6 @@ class Lister
     public static function getPlugins()
     {
         $plugins = array();
-        $feather = \Slim\Slim::getInstance();
 
         foreach (glob(Config::get('forum_env')['FEATHER_ROOT'].'plugins/*/featherbb.json') as $plugin_file)
         {
