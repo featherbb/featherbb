@@ -38,7 +38,7 @@ class Search
             $search = $this->model->get_search_results();
 
             // We have results to display
-            if (isset($search['is_result'])) {
+            if (!is_object($search) && isset($search['is_result'])) {
 
                 View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search results')),

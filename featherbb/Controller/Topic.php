@@ -121,12 +121,14 @@ class Topic
 
     public function viewpost($req, $res, $args)
     {
-        // var_dump($args['pid']);
         $args['pid'] = Container::get('hooks')->fire('controller.topic.viewpost', $args['pid']);
 
         $post = $this->model->redirect_to_post($args['pid']);
 
-        return $this->display($post['topic_id'], null, $post['get_p'], $args['pid']);
+        $args['id'] = $post['topic_id'];
+        $args['page'] = $post['get_p'];
+
+        $this->display($req, $res, $args);
     }
 
     public function subscribe($req, $res, $args)
