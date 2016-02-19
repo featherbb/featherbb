@@ -26,6 +26,8 @@ class Topic
 
     public function display($req, $res, $args)
     {
+        $args['page'] = null;
+        $args['pid'] = null;
         Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature
