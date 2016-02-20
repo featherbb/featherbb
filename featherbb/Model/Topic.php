@@ -985,12 +985,12 @@ class Topic
 
             // Do signature parsing/caching
             if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && Container::get('user')->show_sig != '0') {
-                if (isset($avatar_cache[$cur_post['poster_id']])) {
-                    $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
-                } else {
+                // if (isset($avatar_cache[$cur_post['poster_id']])) {
+                //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
+                // } else {
                     $cur_post['signature_formatted'] = Container::get('parser')->parse_signature($cur_post['signature']);
-                    $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
-                }
+                //     $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
+                // }
             }
             $cur_post = Container::get('hooks')->fire('model.print_posts.one', $cur_post);
             $post_data[] = $cur_post;
