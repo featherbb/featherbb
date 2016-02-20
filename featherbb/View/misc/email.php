@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.misc.email.start');
+Container::get('hooks')->fire('view.misc.email.start');
 ?>
 
 <div id="emailform" class="blockform">
     <h2><span><?php _e('Send email to') ?> <?= Utils::escape($mail['recipient']) ?></span></h2>
     <div class="box">
-        <form id="email" method="post" action="<?= $feather->urlFor('email', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="email" method="post" action="<?= Router::pathFor('email', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Write email') ?></legend>
@@ -41,4 +41,4 @@ $feather->hooks->fire('view.misc.email.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.misc.email.end');
+Container::get('hooks')->fire('view.misc.email.end');

@@ -12,13 +12,13 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.users.admin_users.start');
+Container::get('hooks')->fire('view.admin.users.admin_users.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('User search head') ?></span></h2>
         <div class="box">
-            <form id="find_user" method="get" action="<?= $feather->urlFor('adminUsers') ?>">
+            <form id="find_user" method="get" action="<?= Router::pathFor('adminUsers') ?>">
                 <p class="submittop"><input type="submit" name="find_user" value="<?php _e('Submit search') ?>" tabindex="1" /></p>
                 <div class="inform">
                     <fieldset>
@@ -142,7 +142,7 @@ $feather->hooks->fire('view.admin.users.admin_users.start');
                                         </select>
                                     </td>
                                 </tr>
-                                <?php $feather->hooks->fire('view.admin.users.admin_users.form'); ?>
+                                <?php Container::get('hooks')->fire('view.admin.users.admin_users.form'); ?>
                             </table>
                         </div>
                     </fieldset>
@@ -153,7 +153,7 @@ $feather->hooks->fire('view.admin.users.admin_users.start');
 
         <h2 class="block2"><span><?php _e('IP search head') ?></span></h2>
         <div class="box">
-            <form method="get" action="<?= $feather->urlFor('adminUsers') ?>">
+            <form method="get" action="<?= Router::pathFor('usersIpShow') ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('IP search subhead') ?></legend>
@@ -161,7 +161,7 @@ $feather->hooks->fire('view.admin.users.admin_users.start');
                             <table class="aligntop">
                                 <tr>
                                     <th scope="row"><?php _e('IP address label') ?><div><input type="submit" value="<?php _e('Find IP address') ?>" tabindex="26" /></div></th>
-                                    <td><input type="text" name="show_users" size="18" maxlength="15" tabindex="24" />
+                                    <td><input type="text" name="ip" size="18" maxlength="15" tabindex="24" />
                                     <span><?php _e('IP address help') ?></span></td>
                                 </tr>
                             </table>
@@ -175,4 +175,4 @@ $feather->hooks->fire('view.admin.users.admin_users.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.users.admin_users.end');
+Container::get('hooks')->fire('view.admin.users.admin_users.end');

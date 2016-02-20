@@ -16,11 +16,6 @@ class Track
     //
     public static function set_tracked_topics($tracked_topics = null)
     {
-        global $cookie_name;
-
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         if (!empty($tracked_topics)) {
             // Sort the arrays (latest read first)
             arsort($tracked_topics['topics'], SORT_NUMERIC);
@@ -29,7 +24,7 @@ class Track
             $tracked_topics = array('topics' => array(), 'forums' => array());
         }
 
-        return $feather->setCookie($cookie_name . '_track', json_encode($tracked_topics), time() + $feather->config['o_timeout_visit']);
+        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($tracked_topics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
     }
 
 
@@ -38,12 +33,7 @@ class Track
     //
     public static function get_tracked_topics()
     {
-        global $cookie_name;
-
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
-        $cookie_raw = $feather->getCookie($cookie_name.'_track');
+        $cookie_raw = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
 
         if (isset($cookie_raw)) {
             $cookie_data = json_decode($cookie_raw, true);

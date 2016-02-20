@@ -13,11 +13,6 @@ use FeatherBB\Model\Cache;
 
 class Utils
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-    }
-
     //
     // Return current timestamp (with microseconds) as a float
     //
@@ -64,7 +59,7 @@ class Utils
     //
     // Format a time string according to $time_format and time zones
     //
-    public function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
+    public static function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
     {
         global $forum_date_formats, $forum_time_formats;
 
@@ -72,16 +67,16 @@ class Utils
             return __('Never');
         }
 
-        $diff = ($this->feather->user->timezone + $this->feather->user->dst) * 3600;
+        $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
         $timestamp += $diff;
         $now = time();
 
         if (is_null($date_format)) {
-            $date_format = $forum_date_formats[$this->feather->user->date_format];
+            $date_format = $forum_date_formats[Container::get('user')->date_format];
         }
 
         if (is_null($time_format)) {
-            $time_format = $forum_time_formats[$this->feather->user->time_format];
+            $time_format = $forum_time_formats[Container::get('user')->time_format];
         }
 
         $date = gmdate($date_format, $timestamp);
@@ -221,8 +216,7 @@ class Utils
      */
     public static function generateBreadcrumbs(array $crumbs = array(), array $rightCrumb = array())
     {
-        $feather = \Slim\Slim::getInstance();
-        $feather->template->setPageInfo(array(
+        \View::setPageInfo(array(
             'rightCrumb'    =>    $rightCrumb,
             'crumbs'    =>    $crumbs,
             ), 1
@@ -235,7 +229,6 @@ class Utils
     //
     public static function get_title($user)
     {
-        $feather = \Slim\Slim::getInstance();
         global $feather_bans;
         static $ban_list;
 
@@ -260,7 +253,7 @@ class Utils
             $user_title = self::escape($user['g_user_title']);
         }
         // If the user is a guest
-        elseif ($user['g_id'] == $feather->forum_env['FEATHER_GUEST']) {
+        elseif ($user['g_id'] == ForumEnv::get('FEATHER_GUEST')) {
             $user_title = __('Guest');
         }
         // If nothing else helps, we assign the default
@@ -278,17 +271,15 @@ class Utils
     {
         static $search_for, $replace_with;
 
-        $feather = \Slim\Slim::getInstance();
-
-        if (!$feather->cache->isCached('search_for')) {
-            $feather->cache->store('search_for', Cache::get_censoring('search_for'));
-            $search_for = $feather->cache->retrieve('search_for');
+        if (!Container::get('cache')->isCached('search_for')) {
+            Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
         }
+        $search_for = Container::get('cache')->retrieve('search_for');
 
-        if (!$feather->cache->isCached('replace_with')) {
-            $feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
-            $replace_with = $feather->cache->retrieve('replace_with');
+        if (!Container::get('cache')->isCached('replace_with')) {
+            Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
         }
+        $replace_with = Container::get('cache')->retrieve('replace_with');
 
         if (!empty($search_for) && !empty($replace_with)) {
             return substr(self::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
@@ -303,12 +294,11 @@ class Utils
     public static function get_admin_ids()
     {
         // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-        if (!$feather->cache->isCached('admin_ids')) {
-            $feather->cache->store('admin_ids', Cache::get_admin_ids());
+        if (!Container::get('cache')->isCached('admin_ids')) {
+            Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
         }
 
-        return $feather->cache->retrieve('admin_ids');
+        return Container::get('cache')->retrieve('admin_ids');
     }
 
     //
@@ -316,20 +306,42 @@ class Utils
     //
     public static function generate_avatar_markup($user_id)
     {
-        $feather = \Slim\Slim::getInstance();
-
         $filetypes = array('jpg', 'gif', 'png');
         $avatar_markup = '';
 
         foreach ($filetypes as $cur_type) {
-            $path = $feather->config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
+            $path = ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type;
 
-            if (file_exists($feather->forum_env['FEATHER_ROOT'].$path) && $img_size = getimagesize($feather->forum_env['FEATHER_ROOT'].$path)) {
-                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape($feather->url->base(true).'/'.$path.'?m='.filemtime($feather->forum_env['FEATHER_ROOT'].$path)).'" '.$img_size[3].' alt="" />';
+            if (file_exists(ForumEnv::get('FEATHER_ROOT').$path) && $img_size = getimagesize(ForumEnv::get('FEATHER_ROOT').$path)) {
+                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(ForumEnv::get('FEATHER_ROOT').$path)).'" '.$img_size[3].' alt="" />';
                 break;
             }
         }
 
         return $avatar_markup;
+    }
+
+    //
+    // Get IP Address
+    //
+    public static function getIp()
+    {
+        if (isset(Request::getServerParams()['HTTP_CLIENT_IP'])) {
+            $client = Request::getServerParams()['HTTP_CLIENT_IP'];
+        }
+        if (isset(Request::getServerParams()['HTTP_X_FORWARDED_FOR'])) {
+            $forward = Request::getServerParams()['HTTP_X_FORWARDED_FOR'];
+        }
+
+        $remote = Request::getServerParams()['REMOTE_ADDR'];
+
+        if (isset($client) && filter_var($client, FILTER_VALIDATE_IP)) {
+            return $client;
+        }
+        elseif(isset($forward) && filter_var($forward, FILTER_VALIDATE_IP)) {
+            return $forward;
+        }
+
+        return $remote;
     }
 }

@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.userlist.start');
+Container::get('hooks')->fire('view.userlist.start');
 ?>
 
 <div class="blockform">
@@ -25,7 +25,7 @@ $feather->hooks->fire('view.userlist.start');
                 <fieldset>
                     <legend><?php _e('User find legend') ?></legend>
                     <div class="infldset">
-<?php if ($feather->user->g_search_users == '1'): ?>                        <label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if (Container::get('user')->g_search_users == '1'): ?>                        <label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>                        <label class="conl"><?php _e('User group')."\n" ?>
                         <br /><select name="show_group">
                             <option value="-1"<?php if ($show_group == -1) {
@@ -57,7 +57,7 @@ $feather->hooks->fire('view.userlist.start');
 } ?>><?php _e('Descending') ?></option>
                         </select>
                         <br /></label>
-                        <p class="clearb"><?php echo($feather->user->g_search_users == '1' ? __('User search info').' ' : '').__('User sort info'); ?></p>
+                        <p class="clearb"><?php echo(Container::get('user')->g_search_users == '1' ? __('User search info').' ' : '').__('User sort info'); ?></p>
                     </div>
                 </fieldset>
             </div>
@@ -91,12 +91,12 @@ $feather->hooks->fire('view.userlist.start');
             foreach ($userlist_data as $user) {
                 ?>
                     <tr>
-                        <td class="tcl"><?= '<a href="'.$feather->urlFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
+                        <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
                         <td class="tc2"><?= Utils::get_title($user) ?></td>
     <?php if ($show_post_count): ?>                    <td class="tc3"><?= Utils::forum_number_format($user['num_posts']) ?></td>
     <?php endif;
                 ?>
-                        <td class="tcr"><?= $feather->utils->format_time($user['registered'], true) ?></td>
+                        <td class="tcr"><?= Utils::format_time($user['registered'], true) ?></td>
                     </tr>
             <?php
 
@@ -118,4 +118,4 @@ $feather->hooks->fire('view.userlist.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.userlist.end');
+Container::get('hooks')->fire('view.userlist.end');

@@ -12,13 +12,13 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.form.start');
+Container::get('hooks')->fire('view.search.form.start');
 ?>
 
 <div id="searchform" class="blockform">
     <h2><span><?php _e('Search') ?></span></h2>
     <div class="box">
-        <form id="search" method="get" action="<?= $feather->urlFor('search') ?>">
+        <form id="search" method="get" action="<?= Router::pathFor('search') ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Search criteria legend') ?></legend>
@@ -43,7 +43,7 @@ $feather->hooks->fire('view.search.form.start');
                         </select>
                         <br /></label>
                         <p class="clearl"><?php _e('Search in info') ?></p>
-<?php echo($feather->forum_settings['o_search_all_forums'] == '1' || $feather->user->is_admmod ? '<p>'.__('Search multiple forums info').'</p>' : '') ?>
+<?php echo(ForumSettings::get('o_search_all_forums') == '1' || Container::get('user')->is_admmod ? '<p>'.__('Search multiple forums info').'</p>' : '') ?>
                     </div>
                 </fieldset>
             </div>
@@ -81,4 +81,4 @@ $feather->hooks->fire('view.search.form.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.search.form.end');
+Container::get('hooks')->fire('view.search.form.end');

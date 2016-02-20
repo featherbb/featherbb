@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_display.start');
+Container::get('hooks')->fire('view.profile.section_display.start');
 ?>
 
 <div class="blockform">
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section display') ?></span></h2>
     <div class="box">
-        <form id="profile5" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'display']) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="profile5" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'display']) ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div><input type="hidden" name="form_sent" value="1" /></div>
 <?php
 
@@ -59,26 +59,26 @@ $feather->hooks->fire('view.profile.section_display.start');
     }
 
 ?>
-<?php if ($feather->forum_settings['o_smilies'] == '1' || $feather->forum_settings['o_smilies_sig'] == '1' || $feather->forum_settings['o_signatures'] == '1' || $feather->forum_settings['o_avatars'] == '1' || ($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1')): ?>
+<?php if (ForumSettings::get('o_smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1' || ForumSettings::get('o_signatures') == '1' || ForumSettings::get('o_avatars') == '1' || (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1')): ?>
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Post display legend') ?></legend>
                     <div class="infldset">
                         <p><?php _e('Post display info') ?></p>
                         <div class="rbox">
-<?php if ($feather->forum_settings['o_smilies'] == '1' || $feather->forum_settings['o_smilies_sig'] == '1'): ?>                                <label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
+<?php if (ForumSettings::get('o_smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1'): ?>                                <label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Show smilies') ?><br /></label>
-<?php endif; if ($feather->forum_settings['o_signatures'] == '1'): ?>                                <label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {
+<?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>                                <label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Show sigs') ?><br /></label>
-<?php endif; if ($feather->forum_settings['o_avatars'] == '1'): ?>                                <label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {
+<?php endif; if (ForumSettings::get('o_avatars') == '1'): ?>                                <label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Show avatars') ?><br /></label>
-<?php endif; if ($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1'): ?>                                <label><input type="checkbox" name="form_show_img" value="1"<?php if ($user['show_img'] == '1') {
+<?php endif; if (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1'): ?>                                <label><input type="checkbox" name="form_show_img" value="1"<?php if ($user['show_img'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Show images') ?><br /></label>
-<?php endif; if ($feather->forum_settings['o_signatures'] == '1' && $feather->forum_settings['p_sig_bbcode'] == '1' && $feather->forum_settings['p_sig_img_tag'] == '1'): ?>                                <label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user['show_img_sig'] == '1') {
+<?php endif; if (ForumSettings::get('o_signatures') == '1' && ForumSettings::get('p_sig_bbcode') == '1' && ForumSettings::get('p_sig_img_tag') == '1'): ?>                                <label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user['show_img_sig'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Show images sigs') ?><br /></label>
 <?php endif; ?>
@@ -105,4 +105,4 @@ $feather->hooks->fire('view.profile.section_display.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_display.end');
+Container::get('hooks')->fire('view.profile.section_display.end');

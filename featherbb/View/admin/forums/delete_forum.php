@@ -12,14 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.forums.delete.start');
+Container::get('hooks')->fire('view.admin.forums.delete.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('Confirm delete head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form method="post" action="<?= Router::pathFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Confirm delete subhead') ?></legend>
@@ -37,4 +37,4 @@ $feather->hooks->fire('view.admin.forums.delete.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.forums.admin_forums.end');
+Container::get('hooks')->fire('view.admin.forums.admin_forums.end');

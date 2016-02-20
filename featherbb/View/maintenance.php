@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.maintenance.start');
+Container::get('hooks')->fire('view.maintenance.start');
 ?>
 <div id="msg" class="block">
     <h2><span><?= __('Maintenance') ?></span></h2>
@@ -26,4 +26,4 @@ $feather->hooks->fire('view.maintenance.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.maintenance.end');
+Container::get('hooks')->fire('view.maintenance.end');

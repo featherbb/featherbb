@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.groups.admin_groups.start');
+Container::get('hooks')->fire('view.admin.groups.admin_groups.start');
 ?>
 
     <div class="blockform">
@@ -22,8 +22,8 @@ $feather->hooks->fire('view.admin.groups.admin_groups.start');
         <div class="box">
                 <div class="inform">
                     <fieldset>
-                        <form id="groups" method="post" action="<?= $feather->urlFor('addGroup') ?>">
-                        <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                        <form id="groups" method="post" action="<?= Router::pathFor('addGroup') ?>">
+                        <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                         <legend><?php _e('Add group subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
@@ -34,8 +34,8 @@ $feather->hooks->fire('view.admin.groups.admin_groups.start');
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] != $feather->forum_env['FEATHER_ADMIN'] && $cur_group['g_id'] != $feather->forum_env['FEATHER_GUEST']) {
-        if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
+    if ($cur_group['g_id'] != ForumEnv::get('FEATHER_ADMIN') && $cur_group['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
+        if ($cur_group['g_id'] == ForumSettings::get('o_default_user_group')) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
@@ -55,8 +55,8 @@ foreach ($groups as $cur_group) {
                 </div>
                 <div class="inform">
                     <fieldset>
-                        <form id="groups" method="post" action="<?= $feather->urlFor('adminGroups') ?>">
-                            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                        <form id="groups" method="post" action="<?= Router::pathFor('adminGroups') ?>">
+                            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                         <legend><?php _e('Default group subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
@@ -67,8 +67,8 @@ foreach ($groups as $cur_group) {
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] > $feather->forum_env['FEATHER_GUEST'] && $cur_group['g_moderator'] == 0) {
-        if ($cur_group['g_id'] == $feather->forum_settings['o_default_user_group']) {
+    if ($cur_group['g_id'] > ForumEnv::get('FEATHER_GUEST') && $cur_group['g_moderator'] == 0) {
+        if ($cur_group['g_id'] == ForumSettings::get('o_default_user_group')) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
@@ -99,7 +99,7 @@ foreach ($groups as $cur_group) {
                             <table>
 <?php
 foreach ($groups as $cur_group) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.$feather->urlFor('editGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > $feather->forum_env['FEATHER_MEMBER']) ? ' | <a href="'.$feather->urlFor('deleteGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
+    echo "\t\t\t\t\t\t\t\t".'<tr><th scope="row"><a href="'.Router::pathFor('editGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Edit link').'</a>'.(($cur_group['g_id'] > ForumEnv::get('FEATHER_MEMBER')) ? ' | <a href="'.Router::pathFor('deleteGroup', ['id' => $cur_group['g_id']]).'" tabindex="'.$cur_index++.'">'.__('Delete link').'</a>' : '').'</th><td>'.Utils::escape($cur_group['g_title']).'</td></tr>'."\n";
 }
 
 ?>
@@ -114,4 +114,4 @@ foreach ($groups as $cur_group) {
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.groups.admin_groups.end');
+Container::get('hooks')->fire('view.admin.groups.admin_groups.end');

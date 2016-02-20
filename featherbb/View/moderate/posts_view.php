@@ -15,15 +15,15 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.posts_view.start');
+Container::get('hooks')->fire('view.moderate.posts_view.start');
 ?>
 
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -34,7 +34,7 @@ $feather->hooks->fire('view.moderate.posts_view.start');
 </div>
 
 <form method="post" action="">
-<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+<input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 $post_count = 0; // Keep track of post numbers
 foreach ($post_data as $post) {
@@ -47,7 +47,7 @@ foreach ($post_data as $post) {
     echo ' blockpost1';
 }
     ?>">
-        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= $feather->urlFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= $feather->utils->format_time($post['posted']) ?></a></span></h2>
+        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
         <div class="box">
             <div class="inbox">
                 <div class="postbody">
@@ -62,7 +62,7 @@ foreach ($post_data as $post) {
                         <div class="postmsg">
                             <?= $post['message']."\n" ?>
     <?php if ($post['edited'] != '') {
-    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.$feather->utils->format_time($post['edited']).')</em></p>'."\n";
+    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
 }
     ?>
                         </div>
@@ -90,8 +90,8 @@ foreach ($post_data as $post) {
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
         </ul>
         <div class="clearer"></div>
@@ -100,4 +100,4 @@ foreach ($post_data as $post) {
 </form>
 
 <?php
-$feather->hooks->fire('view.moderate.posts_view.end');
+Container::get('hooks')->fire('view.moderate.posts_view.end');

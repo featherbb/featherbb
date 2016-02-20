@@ -14,15 +14,15 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_personality.start');
+Container::get('hooks')->fire('view.profile.section_personality.start');
 ?>
 <div class="blockform">
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section personality') ?></span></h2>
     <div class="box">
-        <form id="profile4" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="profile4" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div><input type="hidden" name="form_sent" value="1" /></div>
-<?php if ($feather->forum_settings['o_avatars'] == '1'): ?>                <div class="inform">
+<?php if (ForumSettings::get('o_avatars') == '1'): ?>                <div class="inform">
                 <fieldset id="profileavatar">
                     <legend><?php _e('Avatar legend') ?></legend>
                     <div class="infldset">
@@ -32,20 +32,20 @@ $feather->hooks->fire('view.profile.section_personality.start');
                     </div>
                 </fieldset>
             </div>
-<?php endif; if ($feather->forum_settings['o_signatures'] == '1'): ?>                <div class="inform">
+<?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>                <div class="inform">
                 <fieldset>
                     <legend><?php _e('Signature legend') ?></legend>
                     <div class="infldset">
                         <p><?php _e('Signature info') ?></p>
                         <div class="txtarea">
-                            <label><?php printf(__('Sig max size'), Utils::forum_number_format($feather->forum_settings['p_sig_length']), $feather->forum_settings['p_sig_lines']) ?><br />
+                            <label><?php printf(__('Sig max size'), Utils::forum_number_format(ForumSettings::get('p_sig_length')), ForumSettings::get('p_sig_lines')) ?><br />
                             <textarea name="signature" rows="4" cols="65"><?= Utils::escape($user['signature']) ?></textarea><br /></label>
                         </div>
                         <ul class="bblinks">
-                            <li><span><a href="<?= $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_sig_bbcode'] == '1' && $feather->forum_settings['p_sig_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies_sig'] == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1' && ForumSettings::get('p_sig_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies_sig') == '1') ? __('on') : __('off'); ?></span></li>
                         </ul>
                         <?= $signature_preview ?>
                     </div>
@@ -59,4 +59,4 @@ $feather->hooks->fire('view.profile.section_personality.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_personality.end');
+Container::get('hooks')->fire('view.profile.section_personality.end');

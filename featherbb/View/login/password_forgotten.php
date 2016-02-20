@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.login.password_forgotten.start');
+Container::get('hooks')->fire('view.login.password_forgotten.start');
 
 // If there are errors, we display them
 if (!empty($errors)) {
@@ -41,8 +41,8 @@ if (!empty($errors)) {
 <div class="blockform">
     <h2><span><?php _e('Request pass') ?></span></h2>
     <div class="box">
-        <form id="request_pass" method="post" action="<?= $feather->urlFor('resetPassword') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="request_pass" method="post" action="<?= Router::pathFor('resetPassword') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Request pass legend') ?></legend>
@@ -59,4 +59,4 @@ if (!empty($errors)) {
 </div>
 
 <?php
-$feather->hooks->fire('view.login.password_forgotten.end');
+Container::get('hooks')->fire('view.login.password_forgotten.end');

@@ -12,14 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.users.ban_users.start');
+Container::get('hooks')->fire('view.admin.users.ban_users.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('Ban users') ?></span></h2>
         <div class="box">
-            <form id="bans2" name="confirm_ban_users" method="post" action="<?= $feather->urlFor('adminUsers') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form id="bans2" name="confirm_ban_users" method="post" action="<?= Router::pathFor('adminUsers') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <input type="hidden" name="users" value="<?= implode(',', $user_ids) ?>" />
                 <div class="inform">
                     <fieldset>
@@ -60,4 +60,4 @@ $feather->hooks->fire('view.admin.users.ban_users.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.users.ban_users.end');
+Container::get('hooks')->fire('view.admin.users.ban_users.end');

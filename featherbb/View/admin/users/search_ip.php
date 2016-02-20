@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.users.search_ip.start');
+Container::get('hooks')->fire('view.admin.users.search_ip.start');
 ?>
 
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -49,10 +49,10 @@ $feather->hooks->fire('view.admin.users.search_ip.start');
         foreach ($ip_data as $ip) {
             ?>
                 <tr>
-                    <td class="tcl"><a href="<?= $feather->urlFor('getHostIp', ['ip' => Utils::escape($ip['poster_ip'])]) ?>"><?= Utils::escape($ip['poster_ip']) ?></a></td>
-                    <td class="tc2"><?= $feather->utils->format_time($ip['last_used']) ?></td>
+                    <td class="tcl"><a href="<?= Router::pathFor('getHostIp', ['ip' => Utils::escape($ip['poster_ip'])]) ?>"><?= Utils::escape($ip['poster_ip']) ?></a></td>
+                    <td class="tc2"><?= Utils::format_time($ip['last_used']) ?></td>
                     <td class="tc3"><?= $ip['used_times'] ?></td>
-                    <td class="tcr"><a href="<?= $feather->urlFor('usersIpShow', ['id' => $ip['poster_ip']]) ?>"><?php _e('Results find more link') ?></a></td>
+                    <td class="tcr"><a href="<?= Router::pathFor('usersIpShow', ['ip' => $ip['poster_ip']]) ?>"><?php _e('Results find more link') ?></a></td>
                 </tr>
 <?php
 
@@ -74,8 +74,8 @@ $feather->hooks->fire('view.admin.users.search_ip.start');
             <p class="pagelink"><?= $paging_links ?></p>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin').' '.__('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
         <div class="clearer"></div>
@@ -83,4 +83,4 @@ $feather->hooks->fire('view.admin.users.search_ip.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.users.search_ip.end');
+Container::get('hooks')->fire('view.admin.users.search_ip.end');

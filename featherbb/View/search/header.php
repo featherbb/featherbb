@@ -14,13 +14,13 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.header.start');
+Container::get('hooks')->fire('view.search.header.start');
 ?>
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('search') ?>"><?= $search['crumbs_text']['show_as'] ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('search') ?>"><?= $search['crumbs_text']['show_as'] ?></a></li>
             <li><span>»&#160;</span><strong><?= $search['crumbs_text']['search_type'] ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -50,4 +50,4 @@ if ($search['show_as'] == 'topics') :
 <?php
 endif;
 
-$feather->hooks->fire('view.search.header.end');
+Container::get('hooks')->fire('view.search.header.end');

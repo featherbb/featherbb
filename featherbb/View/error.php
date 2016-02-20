@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.error.start');
+Container::get('hooks')->fire('view.error.start');
 ?>
 <div id="msg" class="block error">
     <h2><span><?= __('Error') ?></span></h2>
@@ -26,4 +26,4 @@ $feather->hooks->fire('view.error.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.error.end');
+Container::get('hooks')->fire('view.error.end');

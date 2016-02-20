@@ -14,13 +14,13 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.categories.start');
+Container::get('hooks')->fire('view.admin.categories.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('Add categories head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('addCategory') ?>">
+            <form method="post" action="<?= Router::pathFor('addCategory') ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Add categories subhead') ?></legend>
@@ -29,9 +29,9 @@ $feather->hooks->fire('view.admin.categories.start');
                                 <tr>
                                     <th scope="row"><?php _e('Add category label') ?><div><input type="submit" value="<?php _e('Add new submit') ?>" tabindex="2" /></div></th>
                                     <td>
-                                        <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                                        <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                                         <input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
-                                        <span><?php printf(__('Add category help'), '<a href="'.$feather->urlFor('adminForums').'">'.__('Forums').'</a>') ?></span>
+                                        <span><?php printf(__('Add category help'), '<a href="'.Router::pathFor('adminForums').'">'.__('Forums').'</a>') ?></span>
                                     </td>
                                 </tr>
                             </table>
@@ -43,8 +43,8 @@ $feather->hooks->fire('view.admin.categories.start');
 
 <?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?php _e('Delete categories head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('deleteCategory') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form method="post" action="<?= Router::pathFor('deleteCategory') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Delete categories subhead') ?></legend>
@@ -75,8 +75,8 @@ $feather->hooks->fire('view.admin.categories.start');
 
 <?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?php _e('Edit categories head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('editCategory') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form method="post" action="<?= Router::pathFor('editCategory') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Edit categories subhead') ?></legend>
@@ -115,4 +115,4 @@ $feather->hooks->fire('view.admin.categories.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.categories.end');
+Container::get('hooks')->fire('view.admin.categories.end');

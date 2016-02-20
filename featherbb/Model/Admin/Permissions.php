@@ -15,20 +15,10 @@ use FeatherBB\Model\Cache;
 
 class Permissions
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
-    }
-
     public function update_permissions()
     {
-        $form = array_map('intval', $this->request->post('form'));
-        $form = $this->hook->fire('model.admin.permissions.update_permissions.form', $form);
+        $form = array_map('intval', Input::post('form'));
+        $form = Container::get('hooks')->fire('model.admin.permissions.update_permissions.form', $form);
 
         foreach ($form as $key => $input) {
             // Make sure the input is never a negative value
@@ -37,16 +27,16 @@ class Permissions
             }
 
             // Only update values that have changed
-            if (array_key_exists('p_'.$key, $this->config) && $this->config['p_'.$key] != $input) {
+            if (array_key_exists('p_'.$key, Container::get('forum_settings')) && ForumSettings::get('p_'.$key) != $input) {
                 DB::for_table('config')->where('conf_name', 'p_'.$key)
                                                            ->update_many('conf_value', $input);
             }
         }
 
         // Regenerate the config cache
-        $this->feather->cache->store('config', Cache::get_config());
+        Container::get('cache')->store('config', Cache::get_config());
         // $this->clear_feed_cache();
 
-        Url::redirect($this->feather->urlFor('adminPermissions'), __('Perms updated redirect'));
+        return Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
     }
 }

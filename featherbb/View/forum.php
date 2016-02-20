@@ -15,13 +15,13 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.forum.start');
+Container::get('hooks')->fire('view.forum.start');
 ?>
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><strong><a href="<?php $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+            <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
@@ -40,7 +40,7 @@ $feather->hooks->fire('view.forum.start');
                 <tr>
                     <th class="tcl" scope="col"><?php _e('Topic') ?></th>
                     <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
+<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
 <?php endif; ?>                    <th class="tcr" scope="col"><?php _e('Last post') ?></th>
                 </tr>
             </thead>
@@ -60,7 +60,7 @@ $feather->hooks->fire('view.forum.start');
                             </div>
                         </td>
                         <td class="tc2"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
-    <?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+    <?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
     <?php endif;
                 ?>                    <td class="tcr"><?= $topic['last_post_formatted'] ?></td>
                     </tr>
@@ -70,7 +70,7 @@ $feather->hooks->fire('view.forum.start');
             if (empty($forum_data)):
             ?>
                     <tr class="rowodd inone">
-                        <td class="tcl" colspan="<?php echo($feather->forum_settings['o_topic_views'] == 1) ? 4 : 3 ?>">
+                        <td class="tcl" colspan="<?php echo(ForumSettings::get('o_topic_views') == 1) ? 4 : 3 ?>">
                             <div class="icon inone"><div class="nosize"><!-- --></div></div>
                             <div class="tclcon">
                                 <div>
@@ -96,11 +96,11 @@ $feather->hooks->fire('view.forum.start');
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><strong><a href="<?php $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
+            <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>
         <div class="clearer"></div>
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.forum.end');
+Container::get('hooks')->fire('view.forum.end');

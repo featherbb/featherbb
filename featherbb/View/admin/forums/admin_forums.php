@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.forums.admin_forums.start');
+Container::get('hooks')->fire('view.admin.forums.admin_forums.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('Add forum head') ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('addForum') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form method="post" action="<?= Router::pathFor('addForum') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 if (!empty($cat_list)) {
     ?>
@@ -69,8 +69,8 @@ if (!empty($forum_data)) {
     ?>
         <h2 class="block2"><span><?php _e('Manage forums head') ?></span></h2>
         <div class="box">
-            <form id="edforum" method="post" action="<?= $feather->urlFor('adminForums') ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form id="edforum" method="post" action="<?= Router::pathFor('adminForums') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop"><input type="submit" name="update_positions" value="<?php _e('Update positions') ?>" tabindex="3" /></p>
 <?php
     foreach ($forum_data as $cat_id => $cat_data) {
@@ -92,7 +92,7 @@ if (!empty($forum_data)) {
     foreach ($cat_data['cat_forums'] as $forum) {
         ?>
                                 <tr>
-                                    <td class="tcl"><a href="<?= $feather->urlFor('editForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?php _e('Edit link') ?></a> | <a href="<?= $feather->urlFor('deleteForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?php _e('Delete link') ?></a></td>
+                                    <td class="tcl"><a href="<?= Router::pathFor('editForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?php _e('Edit link') ?></a> | <a href="<?= Router::pathFor('deleteForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?php _e('Delete link') ?></a></td>
                                     <td class="tc2"><input type="text" name="position[<?= $forum['forum_id'] ?>]" size="3" maxlength="3" value="<?= $forum['position'] ?>" tabindex="<?= $cur_index++ ?>" /></td>
                                     <td class="tcr"><strong><?= Utils::escape($forum['forum_name']) ?></strong></td>
                                 </tr>
@@ -116,4 +116,4 @@ if (!empty($forum_data)) {
 <?php
     }
 
-$feather->hooks->fire('view.admin.forums.admin_forums.end');
+Container::get('hooks')->fire('view.admin.forums.admin_forums.end');

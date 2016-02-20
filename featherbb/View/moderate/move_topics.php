@@ -12,14 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.move_topics.start');
+Container::get('hooks')->fire('view.moderate.move_topics.start');
 ?>
 
 <div class="blockform">
     <h2><span><?php echo($action == 'single') ? __('Move topic') : __('Move topics') ?></span></h2>
     <div class="box">
         <form method="post" action="">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <input type="hidden" name="topics" value="<?= $topics ?>" />
                 <fieldset>
@@ -45,4 +45,4 @@ $feather->hooks->fire('view.moderate.move_topics.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.moderate.move_topics.end');
+Container::get('hooks')->fire('view.moderate.move_topics.end');

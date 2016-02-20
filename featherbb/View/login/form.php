@@ -12,14 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.login.form.start');
+Container::get('hooks')->fire('view.login.form.start');
 ?>
 
 <div class="blockform">
     <h2><span><?php _e('Login') ?></span></h2>
     <div class="box">
-        <form id="login" method="post" action="<?= $feather->urlFor('login') ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="login" method="post" action="<?= Router::pathFor('login') ?>" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Login legend') ?></legend>
@@ -33,7 +33,7 @@ $feather->hooks->fire('view.login.form.start');
                         </div>
 
                         <p class="clearb"><?php _e('Login info') ?></p>
-                        <p class="actions"><span><a href="<?= $feather->urlFor('register') ?>" tabindex="5"><?php _e('Not registered') ?></a></span> <span><a href="<?= $feather->urlFor('resetPassword') ?>" tabindex="6"><?php _e('Forgotten pass') ?></a></span></p>
+                        <p class="actions"><span><a href="<?= Router::pathFor('register') ?>" tabindex="5"><?php _e('Not registered') ?></a></span> <span><a href="<?= Router::pathFor('resetPassword') ?>" tabindex="6"><?php _e('Forgotten pass') ?></a></span></p>
                     </div>
                 </fieldset>
             </div>
@@ -43,4 +43,4 @@ $feather->hooks->fire('view.login.form.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.login.form.end');
+Container::get('hooks')->fire('view.login.form.end');

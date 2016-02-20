@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.groups.delete_group.start');
+Container::get('hooks')->fire('view.admin.groups.delete_group.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('Delete group head') ?></span></h2>
         <div class="box">
-            <form id="groups" method="post" action="<?= $feather->urlFor('deleteGroup', ['id' => $id]) ?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form id="groups" method="post" action="<?= Router::pathFor('deleteGroup', ['id' => $id]) ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Move users subhead') ?></legend>
@@ -43,4 +43,4 @@ $feather->hooks->fire('view.admin.groups.delete_group.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.groups.delete_group.end');
+Container::get('hooks')->fire('view.admin.groups.delete_group.end');

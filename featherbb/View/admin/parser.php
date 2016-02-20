@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.parser.start');
+Container::get('hooks')->fire('view.admin.parser.start');
 ?>
 
     <div class="blockform">
         <h2><span><?= $lang_admin_parser['Parser head'] ?></span></h2>
         <div class="box">
-            <form method="post" action="<?= $feather->urlFor('adminParser') ?>" enctype="multipart/form-data">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form method="post" action="<?= Router::pathFor('adminParser') ?>" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop">
                     <input type="submit" name="save" value="<?php _e('Save changes') ?>" />
                     <input type="submit" name="reset" value="<?= $lang_admin_parser['reset defaults'] ?>" />
@@ -212,7 +212,7 @@ $feather->hooks->fire('view.admin.parser.start');
                                     <th scope="row"><?php echo($lang_admin_parser['smiley_upload']); ?></th>
  <?php if (ini_get('file_uploads')) {
     ?>
-                                    <td><input type="hidden" name="MAX_FILE_SIZE" value="<?= $feather->forum_settings['o_avatars_size'] ?>" />
+                                    <td><input type="hidden" name="MAX_FILE_SIZE" value="<?= ForumSettings::get('o_avatars_size') ?>" />
                                         <input type="file" name="new_smiley" id="upload_smiley" /></td>
                                     <td><input type="submit" name="upload" value="<?php echo($lang_admin_parser['upload_button']);
     ?>" /></td>
@@ -303,4 +303,4 @@ foreach ($bbcd as $tagname => $tagdata) {
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.parser.end');
+Container::get('hooks')->fire('view.admin.parser.end');

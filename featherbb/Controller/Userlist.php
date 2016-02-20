@@ -17,37 +17,36 @@ class Userlist
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Userlist();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/userlist.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/search.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/userlist.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/search.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
-        $this->feather->hooks->fire('controller.userlist.display');
+        Container::get('hooks')->fire('controller.userlist.display');
 
-        if ($this->feather->user->g_view_users == '0') {
+        if (Container::get('user')->g_view_users == '0') {
             throw new Error(__('No permission'), 403);
         }
 
         // Determine if we are allowed to view post counts
-        $show_post_count = ($this->feather->forum_settings['o_show_post_count'] == '1' || $this->feather->user->is_admmod) ? true : false;
+        $show_post_count = (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) ? true : false;
 
-        $username = $this->feather->request->get('username') && $this->feather->user->g_search_users == '1' ? Utils::trim($this->feather->request->get('username')) : '';
-        $show_group = $this->feather->request->get('show_group') ? intval($this->feather->request->get('show_group')) : -1;
-        $sort_by = $this->feather->request->get('sort_by') && (in_array($this->feather->request->get('sort_by'), array('username', 'registered')) || ($this->feather->request->get('sort_by') == 'num_posts' && $show_post_count)) ? $this->feather->request->get('sort_by') : 'username';
-        $sort_dir = $this->feather->request->get('sort_dir') && $this->feather->request->get('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
+        $username = Input::query('username') && Container::get('user')->g_search_users == '1' ? Utils::trim(Input::query('username')) : '';
+        $show_group = Input::query('show_group') ? intval(Input::query('show_group')) : -1;
+        $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), array('username', 'registered')) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
+        $sort_dir = Input::query('sort_dir') && Input::query('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
 
         $num_users = $this->model->fetch_user_count($username, $show_group);
 
         // Determine the user offset (based on $page)
         $num_pages = ceil($num_users / 50);
 
-        $p = (!$this->feather->request->get('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $p = (!Input::query('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        if ($this->feather->user->g_search_users == '1') {
+        if (Container::get('user')->g_search_users == '1') {
             $focus_element = array('userlist', 'username');
         }
         else {
@@ -57,8 +56,8 @@ class Userlist
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
-        $this->feather->template->setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('User list')),
+        View::setPageInfo(array(
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('User list')),
             'active_page' => 'userlist',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,

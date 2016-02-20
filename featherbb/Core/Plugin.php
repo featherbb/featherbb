@@ -13,29 +13,9 @@ use FeatherBB\Core\Database as DB;
 
 class Plugin
 {
-    /**
-     * @var object
-     */
-    protected $feather;
-
-    /**
-     * @var object
-     */
-    protected $hooks;
-
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->hooks = $this->feather->hooks;
-    }
-
     public function getActivePlugins()
     {
-        $activePlugins = $this->feather->cache->isCached('activePlugins') ? $this->feather->cache->retrieve('activePlugins') : array();
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
 
         return $activePlugins;
     }
@@ -47,7 +27,7 @@ class Plugin
         foreach ($results as $plugin) {
             $activePlugins[] = $plugin['name'];
         }
-        $this->feather->cache->store('activePlugins', $activePlugins);
+        Container::get('cache')->store('activePlugins', $activePlugins);
 
         return $activePlugins;
     }
@@ -130,7 +110,7 @@ class Plugin
     protected function load($plugin)
     {
         // "Complex" plugins which need to register namespace via bootstrap.php
-        if (file_exists($file = $this->feather->forum_env['FEATHER_ROOT'].'plugins/'.$plugin.'/bootstrap.php')) {
+        if (file_exists($file = ForumEnv::get('FEATHER_ROOT').'plugins/'.$plugin.'/bootstrap.php')) {
             $className = require $file;
             $class = new $className();
             return $class;
@@ -154,7 +134,7 @@ class Plugin
     // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
     protected function checkSimple($plugin)
     {
-        return $this->feather->forum_env['FEATHER_ROOT'].'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
+        return ForumEnv::get('FEATHER_ROOT').'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
 
 }

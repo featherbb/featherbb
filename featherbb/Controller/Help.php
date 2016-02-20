@@ -15,20 +15,15 @@ class Help
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/help.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/help.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
-        $this->feather->hooks->fire('controller.help.start');
+        Container::get('hooks')->fire('controller.help.start');
 
-        $this->feather->template->setPageInfo(array(
-            'title' => array(Utils::escape($this->config['o_board_title']), __('Help')),
+        View::setPageInfo(array(
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Help')),
             'active_page' => 'help',
         ))->addTemplate('help.php')->display();
     }

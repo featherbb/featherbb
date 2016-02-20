@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.index.start');
+Container::get('hooks')->fire('view.index.start');
 
 if (empty($index_data)): ?>
     <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?php _e('Empty board') ?></p></div></div></div>
@@ -96,13 +96,13 @@ endif;
             <dl class="conl">
                 <dt><strong><?php _e('User info') ?></strong></dt>
                 <dd><span><?php printf(__('Newest user'), $stats['newest_user']) ?></span></dd>
-                <?php if ($feather->forum_settings['o_users_online'] == 1) : ?>
+                <?php if (ForumSettings::get('o_users_online') == 1) : ?>
                 <dd><span><?php printf(__('Users online'), '<strong>'.Utils::forum_number_format($online['num_users']).'</strong>') ?></span></dd>
                 <dd><span><?php printf(__('Guests online'), '<strong>'.Utils::forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
                 <?php endif; ?>
             </dl>
             <?php
-            if ($feather->forum_settings['o_users_online'] == 1) :
+            if (ForumSettings::get('o_users_online') == 1) :
                 if ($online['num_users'] > 0) {
                     echo "\t\t\t".'<dl id="onlinelist" class="clearb">'."\n\t\t\t\t".'<dt><strong>'.__('Online').' </strong></dt>'."\t\t\t\t".implode(',</dd> ', $online['users']).'</dd>'."\n\t\t\t".'</dl>'."\n";
                 } else {
@@ -110,10 +110,10 @@ endif;
                 }
             endif;
 
-            $feather->hooks->fire('view.index.brdstats');
+            Container::get('hooks')->fire('view.index.brdstats');
             ?>
         </div>
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.index.end');
+Container::get('hooks')->fire('view.index.end');

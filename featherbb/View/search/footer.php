@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.footer.start');
+Container::get('hooks')->fire('view.search.footer.start');
 
 if ($footer['show_as'] == 'topics') :
 ?>
@@ -33,7 +33,7 @@ if ($footer['show_as'] == 'topics') :
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('search') ?>"><?= $footer['crumbs_text']['show_as'] ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('search') ?>"><?= $footer['crumbs_text']['show_as'] ?></a></li>
             <li><span>»&#160;</span><strong><?= $footer['crumbs_text']['search_type'] ?></strong></li>
         </ul>
 <?php echo(!empty($footer['forum_actions']) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $footer['forum_actions']).'</p>'."\n" : '') ?>
@@ -42,4 +42,4 @@ if ($footer['show_as'] == 'topics') :
 </div>
 
 <?php
-$feather->hooks->fire('view.search.footer.end');
+Container::get('hooks')->fire('view.search.footer.end');

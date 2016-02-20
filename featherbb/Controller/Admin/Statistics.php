@@ -17,25 +17,20 @@ class Statistics
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Admin\Statistics();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/admin/index.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/index.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
-        $this->feather->hooks->fire('controller.admin.statistics.display');
+        Container::get('hooks')->fire('controller.admin.statistics.display');
 
         AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->get_total_size();
 
-        $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Admin'), __('Server statistics')),
+        return View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Server statistics')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'server_load'    =>    $this->model->get_server_load(),
@@ -48,9 +43,9 @@ class Statistics
     }
 
 
-    public function phpinfo()
+    public function phpinfo($req, $res, $args)
     {
-        $this->feather->hooks->fire('controller.admin.statistics.phpinfo');
+        Container::get('hooks')->fire('controller.admin.statistics.phpinfo');
 
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
@@ -59,6 +54,5 @@ class Statistics
         }
 
         phpinfo();
-        $this->feather->stop();
     }
 }

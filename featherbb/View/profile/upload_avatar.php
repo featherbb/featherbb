@@ -14,21 +14,21 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.upload_avatar.start');
+Container::get('hooks')->fire('view.profile.upload_avatar.start');
 ?>
 <div class="blockform">
     <h2><span><?php _e('Upload avatar') ?></span></h2>
     <div class="box">
-        <form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?= $feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar2']) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="upload_avatar" method="post" enctype="multipart/form-data" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'upload_avatar2']) ?>" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Upload avatar legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <input type="hidden" name="MAX_FILE_SIZE" value="<?= $feather->forum_settings['o_avatars_size'] ?>" />
+                        <input type="hidden" name="MAX_FILE_SIZE" value="<?= ForumSettings::get('o_avatars_size') ?>" />
                         <label class="required"><strong><?php _e('File') ?> <span><?php _e('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
-                        <p><?php _e('Avatar desc'); echo ' '.$feather->forum_settings['o_avatars_width'].' x '.$feather->forum_settings['o_avatars_height'].' '.__('pixels').' '.__('and').' '.Utils::forum_number_format($feather->forum_settings['o_avatars_size']).' '.__('bytes').' ('.$feather->utils->file_size($feather->forum_settings['o_avatars_size']).').' ?></p>
+                        <p><?php _e('Avatar desc'); echo ' '.ForumSettings::get('o_avatars_width').' x '.ForumSettings::get('o_avatars_height').' '.__('pixels').' '.__('and').' '.Utils::forum_number_format(ForumSettings::get('o_avatars_size')).' '.__('bytes').' ('.Utils::file_size(ForumSettings::get('o_avatars_size')).').' ?></p>
                     </div>
                 </fieldset>
             </div>
@@ -38,4 +38,4 @@ $feather->hooks->fire('view.profile.upload_avatar.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.upload_avatar.end');
+Container::get('hooks')->fire('view.profile.upload_avatar.end');

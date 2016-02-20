@@ -13,22 +13,16 @@ use FeatherBB\Core\Database as DB;
 
 class Reports
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->hook = $this->feather->hooks;
-    }
-
     public function zap_report($zap_id)
     {
-        $zap_id = $this->hook->fire('model.admin.reports.zap_report.zap_id', $zap_id);
+        $zap_id = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zap_id);
 
         $result = DB::for_table('reports')->where('id', $zap_id);
-        $result = $this->hook->fireDB('model.admin.reports.zap_report.query', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(), 'zapped_by' => $this->feather->user->id);
-        $set_zap_report = $this->hook->fire('model.admin.reports.set_zap_report', $set_zap_report);
+        $set_zap_report = array('zapped' => time(), 'zapped_by' => Container::get('user')->id);
+        $set_zap_report = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped
         if (!$result) {
@@ -58,12 +52,10 @@ class Reports
 
     public static function has_reports()
     {
-        $feather = \Slim\Slim::getInstance();
-
-        $feather->hooks->fire('get_reports_start');
+        Container::get('hooks')->fire('get_reports_start');
 
         $result_header = DB::for_table('reports')->where_null('zapped');
-        $result_header = $feather->hooks->fireDB('get_reports_query', $result_header);
+        $result_header = Container::get('hooks')->fireDB('get_reports_query', $result_header);
 
         return (bool) $result_header->find_one();
     }
@@ -81,10 +73,10 @@ class Reports
             ->left_outer_join('users', array('r.reported_by', '=', 'u.id'), 'u')
             ->where_null('r.zapped')
             ->order_by_desc('created');
-        $reports = $this->hook->fireDB('model.admin.reports.get_reports.query', $reports);
+        $reports = Container::get('hooks')->fireDB('model.admin.reports.get_reports.query', $reports);
         $reports = $reports->find_array();
 
-        $reports = $this->hook->fire('model.admin.reports.get_reports', $reports);
+        $reports = Container::get('hooks')->fire('model.admin.reports.get_reports', $reports);
         return $reports;
     }
 
@@ -103,10 +95,10 @@ class Reports
             ->where_not_null('r.zapped')
             ->order_by_desc('zapped')
             ->limit(10);
-        $zapped_reports = $this->hook->fireDB('model.admin.reports.get_zapped_reports.query', $zapped_reports);
+        $zapped_reports = Container::get('hooks')->fireDB('model.admin.reports.get_zapped_reports.query', $zapped_reports);
         $zapped_reports = $zapped_reports->find_array();
 
-        $zapped_reports = $this->hook->fire('model.admin.reports.get_zapped_reports', $zapped_reports);
+        $zapped_reports = Container::get('hooks')->fire('model.admin.reports.get_zapped_reports', $zapped_reports);
         return $zapped_reports;
     }
 }

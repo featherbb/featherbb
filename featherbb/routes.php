@@ -7,251 +7,208 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Error;
+use \FeatherBB\Middleware\Logged as IsLogged;
+use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
+use \FeatherBB\Middleware\Admin as IsAdmin;
+use \FeatherBB\Middleware\AdminModo as IsAdmMod;
 
-/**
- * Middleware to check if user is allowed to read the board.
- */
-$canReadBoard = function () use ($feather) {
-    if ($feather->user->g_read_board == '0') {
-        throw new Error(__('No view'), 403);
-    }
-};
 
-/**
- * Middleware to check if user is allowed to read the board.
- */
-$isGuest = function () use ($feather) {
-    if ($feather->user->is_guest) {
-        throw new Error(__('No permission'), 403);
-    }
-};
-
-/**
- * Middleware to check if user is allowed to moderate, if he's not redirect to homepage.
- */
-$isAdmmod = function() use ($feather) {
-    if(!$feather->user->is_admmod) {
-        throw new Error(__('No permission'), 403);
-    }
-};
+Route::map(['GET', 'POST'], '/install', '\FeatherBB\Controller\Install:run')->setName('install');
 
 // Index
-$feather->get('/', $canReadBoard, '\FeatherBB\Controller\Index:display')->name('home');
-$feather->get('/rules(/)', '\FeatherBB\Controller\Index:rules')->name('rules');
-$feather->get('/mark-read(/)', $isGuest, '\FeatherBB\Controller\Index:markread')->name('markRead');
+Route::get('/', '\FeatherBB\Controller\Index:display')->add(new CanReadBoard)->setName('home');
+Route::get('/rules', '\FeatherBB\Controller\Index:rules')->setName('rules');
+Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add(new IsLogged)->setName('markRead');
 
 // Forum
-$feather->group('/forum', $canReadBoard, function() use ($feather) {
-    $isGuest = function () use ($feather) {
-        if ($feather->user->is_guest) {
-            throw new Error(__('No permission'), 403);
-        }
-    };
-    $feather->get('/:id(/:name)(/)', '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Forum');
-    $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Forum:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('ForumPaginate');
-    $feather->get('/mark-read/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Forum:markread')->conditions(array('id' => '[0-9]+'))->name('markForumRead');
-    $feather->get('/subscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Forum:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeForum');
-    $feather->get('/unsubscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Forum:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeForum');
-    $feather->get('/moderate/:fid/page/:page(/)', '\FeatherBB\Controller\Forum:moderate')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('moderateForum');
-    $feather->post('/moderate/:fid(/page/:page)(/)', '\FeatherBB\Controller\Forum:dealposts')->conditions(array('fid' => '[0-9]+', 'page' => '[0-9]+'))->name('dealPosts');
-});
+Route::group('/forum', function() {
+    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
+    Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
+    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
+    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
+    Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
+    Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
+})->add(new CanReadBoard);
 
 // Topic
-$feather->group('/topic', $canReadBoard, function() use ($feather) {
-    $isGuest = function () use ($feather) {
-        if ($feather->user->is_guest) {
-            throw new Error(__('No permission'), 403);
-        }
-    };
-    $isAdmmod = function() use ($feather) {
-        if(!$feather->user->is_admmod) {
-            throw new Error(__('No permission'), 403);
-        }
-    };
-    $feather->get('/:id(/:name)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('Topic');
-    $feather->get('/:id(/:name)(/page/:page)(/)', '\FeatherBB\Controller\Topic:display')->conditions(array('id' => '[0-9]+', 'page' => '[0-9]+'))->name('TopicPaginate');
-    $feather->get('/subscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Topic:subscribe')->conditions(array('id' => '[0-9]+'))->name('subscribeTopic');
-    $feather->get('/unsubscribe/:id(/:name)(/)', $isGuest, '\FeatherBB\Controller\Topic:unsubscribe')->conditions(array('id' => '[0-9]+'))->name('unsubscribeTopic');
-    $feather->get('/close/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:close')->conditions(array('id' => '[0-9]+'))->name('closeTopic');
-    $feather->get('/open/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:open')->conditions(array('id' => '[0-9]+'))->name('openTopic');
-    $feather->get('/stick/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:stick')->conditions(array('id' => '[0-9]+'))->name('stickTopic');
-    $feather->get('/unstick/:id(/:name)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:unstick')->conditions(array('id' => '[0-9]+'))->name('unstickTopic');
-    $feather->map('/move/:id(/:name)/forum/:fid(/)', $isAdmmod, '\FeatherBB\Controller\Topic:move')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+'))->via('GET', 'POST')->name('moveTopic');
-    $feather->map('/moderate/:id/forum/:fid(/page/:page)(/)', $isAdmmod, '\FeatherBB\Controller\Topic:moderate')->conditions(array('id' => '[0-9]+', 'fid' => '[0-9]+', 'page' => '[0-9]+'))->via('GET', 'POST')->name('moderateTopic');
-    $feather->get('/:id/action/:action(/)', '\FeatherBB\Controller\Topic:action')->conditions(array('id' => '[0-9]+'))->name('topicAction');
-});
+Route::group('/topic', function() {
+    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
+    Route::get('/{id:[0-9]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
+    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
+    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
+    Route::get('/close/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->setName('closeTopic');
+    Route::get('/open/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->setName('openTopic');
+    Route::get('/stick/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
+    Route::get('/unstick/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
+    Route::map(['GET', 'POST'], '/move/{id:[0-9]+}[/{name:[\w\-]+}/forum/{fid:[0-9]+}]', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->setName('moveTopic');
+    Route::map(['GET', 'POST'], '/moderate/{id:[0-9]+}/forum/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
+    Route::get('/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Topic{action}')->setName('topicAction');
+})->add(new CanReadBoard);
 
 // Post routes
-$feather->group('/post', $canReadBoard, function() use ($feather) {
-    $feather->get('/:pid(/)', '\FeatherBB\Controller\Topic:viewpost')->conditions(array('pid' => '[0-9]+'))->name('viewPost');
-    $feather->map('/new-topic/:fid(/)', '\FeatherBB\Controller\Post:newpost')->conditions(array('fid' => '[0-9]+'))->via('GET', 'POST')->name('newTopic');
-    $feather->map('/reply/:tid(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+'))->via('GET', 'POST')->name('newReply');
-    $feather->map('/reply/:tid(/quote/:qid)(/)', '\FeatherBB\Controller\Post:newreply')->conditions(array('tid' => '[0-9]+', 'qid' => '[0-9]+'))->via('GET', 'POST')->name('newQuoteReply');
-    $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Post:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deletePost');
-    $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Post:editpost')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editPost');
-    $feather->map('/report/:id(/)', '\FeatherBB\Controller\Post:report')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('report');
-    $feather->get('/get-host/:pid(/)', '\FeatherBB\Controller\Post:gethost')->conditions(array('pid' => '[0-9]+'))->name('getPostHost');
-});
+Route::group('/post', function() {
+    Route::get('/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
+    Route::map(['GET', 'POST'], '/new-topic/{fid:[0-9]+}', '\FeatherBB\Controller\Post:newpost')->setName('newTopic');
+    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newReply');
+    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}/quote/{qid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newQuoteReply');
+    Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Post:delete')->setName('deletePost');
+    Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Post:editpost')->setName('editPost');
+    Route::map(['GET', 'POST'], '/report/{id:[0-9]+}', '\FeatherBB\Controller\Post:report')->setName('report');
+    Route::get('/get-host/{pid:[0-9]+}', '\FeatherBB\Controller\Post:gethost')->setName('getPostHost');
+})->add(new CanReadBoard);
 
 // Userlist
-$feather->get('/userlist(/)', $canReadBoard, '\FeatherBB\Controller\Userlist:display')->name('userList');
+Route::get('/userlist', '\FeatherBB\Controller\Userlist:display')->add(new CanReadBoard)->setName('userList');
 
 // Auth routes
-$feather->group('/auth', function() use ($feather) {
-    $feather->get('(/)', function () use ($feather) {
-        if (!$feather->user->is_guest) {
-            $feather->url->redirect($feather->urlFor('home'), 'Already logged');
-        } else {
-            $feather->redirect($feather->urlFor('login'));
-        }
-    });
-    $feather->map('/login(/)', '\FeatherBB\Controller\Auth:login')->via('GET', 'POST')->name('login');
-    $feather->map('/forget(/)', '\FeatherBB\Controller\Auth:forget')->via('GET', 'POST')->name('resetPassword');
-    $feather->get('/logout/token/:token(/)', '\FeatherBB\Controller\Auth:logout')->name('logout');
+Route::group('/auth', function() {
+    Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Auth:login')->setName('login');
+    Route::map(['GET', 'POST'], '/forget', '\FeatherBB\Controller\Auth:forget')->setName('resetPassword');
+    Route::get('/logout/token/{token}', '\FeatherBB\Controller\Auth:logout')->setName('logout');
 });
 
 // Register routes
-$feather->group('/register', function() use ($feather) {
-    $feather->get('(/)', '\FeatherBB\Controller\Register:rules')->name('registerRules');
-    $feather->map('/agree(/)', '\FeatherBB\Controller\Register:display')->via('GET', 'POST')->name('register');
-    $feather->get('/cancel(/)', '\FeatherBB\Controller\Register:cancel')->name('registerCancel');
+Route::group('/register', function() {
+    Route::get('', '\FeatherBB\Controller\Register:rules')->setName('registerRules');
+    Route::map(['GET', 'POST'], '/agree', '\FeatherBB\Controller\Register:display')->setName('register');
+    Route::get('/cancel', '\FeatherBB\Controller\Register:cancel')->setName('registerCancel');
 });
 
 // Search routes
-$feather->group('/search', $canReadBoard, function() use ($feather) {
-    $feather->get('(/)', '\FeatherBB\Controller\Search:display')->name('search');
-    $feather->get('/show/:show(/)', '\FeatherBB\Controller\Search:quicksearches')->name('quickSearch');
-});
+Route::group('/search', function() {
+    Route::get('', '\FeatherBB\Controller\Search:display')->setName('search');
+    Route::get('/show/{show}', '\FeatherBB\Controller\Search:quicksearches')->setName('quickSearch');
+})->add(new CanReadBoard);
 
 // Help
-$feather->get('/help(/)', $canReadBoard, '\FeatherBB\Controller\Help:display')->name('help');
+Route::get('/help', '\FeatherBB\Controller\Help:display')->add(new CanReadBoard)->setName('help');
 
 // Profile routes
-$feather->group('/user', $isGuest, function() use ($feather) {
-    $feather->get('/:id(/)', '\FeatherBB\Controller\Profile:display')->conditions(array('id' => '[0-9]+'))->name('userProfile');
-    $feather->map('/:id(/section/:section)(/)', '\FeatherBB\Controller\Profile:display')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileSection');
-    $feather->map('/:id(/action/:action)(/)', '\FeatherBB\Controller\Profile:action')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('profileAction');
-    $feather->map('/email/:id(/)', '\FeatherBB\Controller\Profile:email')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('email');
-    $feather->get('/get-host/:ip(/)', '\FeatherBB\Controller\Profile:gethostip')->name('getHostIp');
-});
+Route::group('/user', function() {
+    Route::get('/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction'); // TODO: Move to another route for non-authed users
+    Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
+    Route::get('/get-host/{ip}', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
+})->add(new IsLogged);
+
 
 // Admin routes
-$feather->group('/admin', $isAdmmod, function() use ($feather) {
 
-    /**
-     * Middleware to check if user is admin.
-     */
-    $isAdmin = function() use ($feather) {
-        if($feather->user->g_id != $feather->forum_env['FEATHER_ADMIN']) {
-            $feather->url->redirect($feather->urlFor('home'), __('No permission'));
-        }
-    };
+Route::group('/admin', function() {
 
     // Admin index
-    $feather->get('(/action/:action)(/)', '\FeatherBB\Controller\Admin\Index:display')->name('adminAction');
-    $feather->get('/index(/)', '\FeatherBB\Controller\Admin\Index:display')->name('adminIndex');
+    Route::get('[/action/{action}]', '\FeatherBB\Controller\Admin\Index:display')->setName('adminAction');
+    Route::get('/index', '\FeatherBB\Controller\Admin\Index:display')->setName('adminIndex');
 
     // Admin bans
-    $feather->group('/bans', function() use ($feather) {
-        $feather->get('(/)', '\FeatherBB\Controller\Admin\Bans:display')->name('adminBans');
-        $feather->get('/delete/:id(/)', '\FeatherBB\Controller\Admin\Bans:delete')->conditions(array('id' => '[0-9]+'))->name('deleteBan');
-        $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Admin\Bans:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editBan');
-        $feather->map('/add(/:id)(/)', '\FeatherBB\Controller\Admin\Bans:add')->via('GET', 'POST')->name('addBan');
+    Route::group('/bans', function() {
+        Route::get('', '\FeatherBB\Controller\Admin\Bans:display')->setName('adminBans');
+        Route::get('/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Bans:delete')->setName('deleteBan');
+        Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Bans:edit')->setName('editBan');
+        Route::map(['GET', 'POST'], '/add[/{id:[0-9]+}]', '\FeatherBB\Controller\Admin\Bans:add')->setName('addBan');
     });
 
     // Admin options
-    $feather->map('/options(/)', $isAdmin, '\FeatherBB\Controller\Admin\Options:display')->via('GET', 'POST')->name('adminOptions');
+    Route::map(['GET', 'POST'], '/options', '\FeatherBB\Controller\Admin\Options:display')->add(new IsAdmin)->setName('adminOptions');
 
     // Admin categories
-    $feather->group('/categories', $isAdmin, function() use ($feather) {
-        $feather->get('(/)', '\FeatherBB\Controller\Admin\Categories:display')->name('adminCategories');
-        $feather->post('/add(/)', '\FeatherBB\Controller\Admin\Categories:add')->name('addCategory');
-        $feather->post('/edit(/)', '\FeatherBB\Controller\Admin\Categories:edit')->name('editCategory');
-        $feather->post('/delete(/)', '\FeatherBB\Controller\Admin\Categories:delete')->name('deleteCategory');
-    });
+    Route::group('/categories', function() {
+        Route::get('', '\FeatherBB\Controller\Admin\Categories:display')->setName('adminCategories');
+        Route::post('/add', '\FeatherBB\Controller\Admin\Categories:add')->setName('addCategory');
+        Route::post('/edit', '\FeatherBB\Controller\Admin\Categories:edit')->setName('editCategory');
+        Route::post('/delete', '\FeatherBB\Controller\Admin\Categories:delete')->setName('deleteCategory');
+    })->add(new IsAdmin);
 
     // Admin censoring
-    $feather->map('/censoring(/)', $isAdmin, '\FeatherBB\Controller\Admin\Censoring:display')->via('GET', 'POST')->name('adminCensoring');
+    Route::map(['GET', 'POST'], '/censoring', '\FeatherBB\Controller\Admin\Censoring:display')->add(new IsAdmin)->setName('adminCensoring');
 
     // Admin reports
-    $feather->map('/reports(/)', '\FeatherBB\Controller\Admin\Reports:display')->via('GET', 'POST')->name('adminReports');
+    Route::map(['GET', 'POST'], '/reports', '\FeatherBB\Controller\Admin\Reports:display')->setName('adminReports');
 
     // Admin permissions
-    $feather->map('/permissions(/)', $isAdmin, '\FeatherBB\Controller\Admin\Permissions:display')->via('GET', 'POST')->name('adminPermissions');
+    Route::map(['GET', 'POST'], '/permissions', '\FeatherBB\Controller\Admin\Permissions:display')->add(new IsAdmin)->setName('adminPermissions');
 
     // Admin statistics
-    $feather->get('/statistics(/)', '\FeatherBB\Controller\Admin\Statistics:display')->name('statistics');
-    $feather->get('/phpinfo(/)', '\FeatherBB\Controller\Admin\Statistics:phpinfo')->name('phpInfo');
+    Route::get('/statistics', '\FeatherBB\Controller\Admin\Statistics:display')->setName('statistics');
+    Route::get('/phpinfo', '\FeatherBB\Controller\Admin\Statistics:phpinfo')->setName('phpInfo');
 
     // Admin forums
-    $feather->group('/forums', $isAdmin, function() use ($feather) {
-        $feather->map('(/)', '\FeatherBB\Controller\Admin\Forums:display')->via('GET', 'POST')->name('adminForums');
-        $feather->post('/add(/)', '\FeatherBB\Controller\Admin\Forums:add')->name('addForum');
-        $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Admin\Forums:edit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editForum');
-        $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Admin\Forums:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deleteForum');
-    });
+    Route::group('/forums', function() {
+        Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Forums:display')->setName('adminForums');
+        Route::post('/add', '\FeatherBB\Controller\Admin\Forums:add')->setName('addForum');
+        Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:edit')->setName('editForum');
+        Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:delete')->setName('deleteForum');
+    })->add(new IsAdmin);
 
     // Admin groups
-    $feather->group('/groups', $isAdmin, function() use ($feather) {
-        $feather->map('(/)', '\FeatherBB\Controller\Admin\Groups:display')->via('GET', 'POST')->name('adminGroups');
-        $feather->map('/add(/)', '\FeatherBB\Controller\Admin\Groups:addedit')->via('GET', 'POST')->name('addGroup');
-        $feather->map('/edit/:id(/)', '\FeatherBB\Controller\Admin\Groups:addedit')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('editGroup');
-        $feather->map('/delete/:id(/)', '\FeatherBB\Controller\Admin\Groups:delete')->conditions(array('id' => '[0-9]+'))->via('GET', 'POST')->name('deleteGroup');
-    });
+    Route::group('/groups', function() {
+        Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Groups:display')->setName('adminGroups');
+        Route::map(['GET', 'POST'], '/add', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('addGroup');
+        Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('editGroup');
+        Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Groups:delete')->setName('deleteGroup');
+    })->add(new IsAdmin);
 
     // Admin plugins
-    $feather->group('/plugins', function() use ($feather) {
-        $feather->map('(/)', '\FeatherBB\Controller\Admin\Plugins:index')->via('GET', 'POST')->name('adminPlugins');
-        $feather->map('/info/:name(/)', '\FeatherBB\Controller\Admin\Plugins:info')->via('GET', 'POST')->conditions(array('name' => '[a-zA-Z\-]+'))->name('infoPlugin');
-        $feather->get('/activate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:activate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('activatePlugin');
-        $feather->get('/download/:name/:version(/)', '\FeatherBB\Controller\Admin\Plugins:download')->conditions(array('name' => '[a-zA-Z\-]+'))->name('downloadPlugin');
-        $feather->get('/deactivate/:name(/)', '\FeatherBB\Controller\Admin\Plugins:deactivate')->conditions(array('name' => '[a-zA-Z\-]+'))->name('deactivatePlugin');
-        $feather->get('/uninstall/:name(/)', '\FeatherBB\Controller\Admin\Plugins:uninstall')->conditions(array('name' => '[a-zA-Z\-]+'))->name('uninstallPlugin');
+    Route::group('/plugins', function() {
+        Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Plugins:index')->setName('adminPlugins');
+        Route::map(['GET', 'POST'], '/info/{name:[\w\-]+}', '\FeatherBB\Controller\Admin\Plugins:info')->setName('infoPlugin');
+        Route::get('/activate/{name:[\w\-]+}', '\FeatherBB\Controller\Admin\Plugins:activate')->setName('activatePlugin');
+        Route::get('/download/{name:[\w\-]+}/{version}', '\FeatherBB\Controller\Admin\Plugins:download')->setName('downloadPlugin');
+        Route::get('/deactivate/{name:[\w\-]+}', '\FeatherBB\Controller\Admin\Plugins:deactivate')->setName('deactivatePlugin');
+        Route::get('/uninstall/{name:[\w\-]+}', '\FeatherBB\Controller\Admin\Plugins:uninstall')->setName('uninstallPlugin');
     });
 
     // Admin maintenance
-    $feather->map('/maintenance(/)', $isAdmin, '\FeatherBB\Controller\Admin\Maintenance:display')->via('GET', 'POST')->name('adminMaintenance');
+    Route::map(['GET', 'POST'], '/maintenance', '\FeatherBB\Controller\Admin\Maintenance:display')->add(new IsAdmin)->setName('adminMaintenance');
 
     // Admin parser
-    $feather->map('/parser(/)', $isAdmin, '\FeatherBB\Controller\Admin\Parser:display')->via('GET', 'POST')->name('adminParser');
+    Route::map(['GET', 'POST'], '/parser', '\FeatherBB\Controller\Admin\Parser:display')->add(new IsAdmin)->setName('adminParser');
 
     // Admin users
-    $feather->group('/users', function() use ($feather) {
-        $feather->map('(/)', '\FeatherBB\Controller\Admin\Users:display')->via('GET', 'POST')->name('adminUsers');
-        $feather->get('/ip-stats/id/:id(/)', '\FeatherBB\Controller\Admin\Users:ipstats')->conditions(array('id' => '[0-9]+'))->name('usersIpStats');
-        $feather->get('/show-users/ip/:ip(/)', '\FeatherBB\Controller\Admin\Users:showusers')->name('usersIpShow');
+    Route::group('/users', function() {
+        Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Users:display')->setName('adminUsers');
+        Route::get('/ip-stats/id/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
+        Route::get('/show-users', '\FeatherBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
     });
 
+})->add(new IsAdmMod);
+
+// Override the default Not Found Handler
+Container::set('notFoundHandler', function ($c) {
+    return function ($request, $response) use ($c) {
+        // throw new Error('Page not found', 404); // TODO : translation
+        return $c['response']
+            ->withStatus(404)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Page not found');
+    };
 });
 
-// 404 not found
-$feather->notFound(function () use ($feather){
-    throw new Error('Page not found', 404); // TODO : translation
-});
+Container::set('errorHandler', function ($c) {
+    return function ($request, $response, $e) use ($c) {
+        // var_dump($exception);
+        $error = array(
+            'code' => $e->getCode(),
+            'message' => $e->getMessage(),
+            'back' => true,
+        );
 
-$feather->error(function (\Exception $e) use ($feather) {
-    $error = array(
-        'code' => $e->getCode(),
-        'message' => $e->getMessage(),
-        'back' => true,
-    );
+        // Hide internal mechanism
+        if (!in_array(get_class($e), array('FeatherBB\Core\Error'))) {
+            $error['message'] = 'There was an internal error'; // TODO : translation
+        }
 
-    // Hide internal mechanism
-    if (!in_array(get_class($e), array('FeatherBB\Core\Error'))) {
-        $error['message'] = 'There was an internal error'; // TODO : translation
-    }
+        if (method_exists($e, 'hasBacklink')) {
+            $error['back'] = $e->hasBacklink();
+        }
 
-    if (method_exists($e, 'hasBacklink')) {
-        $error['back'] = $e->hasBacklink();
-    }
-
-    $feather->response->setStatus($e->getCode());
-    $feather->response->setBody(''); // Reset buffer
-    $feather->template->setPageInfo(array(
-        'title' => array(\FeatherBB\Core\Utils::escape($feather->forum_settings['o_board_title']), __('Error')),
-        'msg'    =>    $error['message'],
-        'backlink'    => $error['back'],
-    ))->addTemplate('error.php')->display();
-    $feather->stop();
+        return View::setPageInfo(array(
+            'title' => array(\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
+            'msg'    =>    $error['message'],
+            'backlink'    => $error['back'],
+        ))->addTemplate('error.php')->display();
+    };
 });

@@ -19,18 +19,16 @@ class Index
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
         $this->model = new \FeatherBB\Model\Index();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/index.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->feather->user->language.'/misc.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/index.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
     }
 
-    public function display()
+    public function display($req, $res, $args)
     {
-        $this->feather->hooks->fire('controller.index.index');
-
-        $this->feather->template->setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title'])),
+        Container::get('hooks')->fire('controller.index.index');
+        View::setPageInfo(array(
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title'))),
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),
@@ -43,25 +41,25 @@ class Index
 
     public function rules()
     {
-        $this->feather->hooks->fire('controller.index.rules');
+        Container::get('hooks')->fire('controller.index.rules');
 
-        if ($this->feather->forum_settings['o_rules'] == '0' || ($this->feather->user->is_guest && $this->feather->user->g_read_board == '0' && $this->feather->forum_settings['o_regs_allow'] == '0')) {
+        if (ForumSettings::get('o_rules') == '0' || (Container::get('user')->is_guest && Container::get('user')->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')) {
             throw new Error(__('Bad request'), 404);
         }
 
-        $this->feather->template->setPageInfo(array(
-            'title' => array(Utils::escape($this->feather->forum_settings['o_board_title']), __('Forum rules')),
+        View::setPageInfo(array(
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')),
             'active_page' => 'rules'
             ))->addTemplate('misc/rules.php')->display();
     }
 
     public function markread()
     {
-        $this->feather->hooks->fire('controller.index.markread');
+        Container::get('hooks')->fire('controller.index.markread');
 
-        Auth::set_last_visit($this->feather->user->id, $this->feather->user->logged);
+        Auth::set_last_visit(Container::get('user')->id, Container::get('user')->logged);
         // Reset tracked topics
         Track::set_tracked_topics(null);
-        Url::redirect($this->feather->urlFor('home'), __('Mark read redirect'));
+        return Router::redirect(Router::pathFor('home'), __('Mark read redirect'));
     }
 }

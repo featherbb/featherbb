@@ -9,3 +9,5 @@ cache/*.cache
 plugins/bbcode-toolbar
 plugins/private-messages
 plugins/*.zip
+style/img/avatars/*
+!style/img/avatars/.gitkeep

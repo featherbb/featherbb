@@ -15,15 +15,15 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.delete.start');
+Container::get('hooks')->fire('view.delete.start');
 ?>
 
 <div class="linkst">
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('viewPost', ['pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('viewPost', ['pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Delete post') ?></strong></li>
         </ul>
     </div>
@@ -32,11 +32,11 @@ $feather->hooks->fire('view.delete.start');
 <div class="blockform">
     <h2><span><?php _e('Delete post') ?></span></h2>
     <div class="box">
-        <form method="post" action="<?= $feather->urlFor('deletePost', array('id'=>$id)) ?>">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form method="post" action="<?= Router::pathFor('deletePost', array('id'=>$id)) ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <div class="forminfo">
-                    <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.$feather->utils->escape($cur_post['poster']).'</strong>', $feather->utils->format_time($cur_post['posted'])) ?></span></h3>
+                    <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.Utils::escape($cur_post['poster']).'</strong>', Utils::format_time($cur_post['posted'])) ?></span></h3>
                     <p><?= ($is_topic_post) ? '<strong>'.__('Topic warning').'</strong>' : '<strong>'.__('Warning').'</strong>' ?><br /><?php _e('Delete info') ?></p>
                 </div>
             </div>
@@ -53,7 +53,7 @@ $feather->hooks->fire('view.delete.start');
                     <div class="postleft">
                         <dl>
                             <dt><strong><?= Utils::escape($cur_post['poster']) ?></strong></dt>
-                            <dd><span><?= $feather->utils->format_time($cur_post['posted']) ?></span></dd>
+                            <dd><span><?= Utils::format_time($cur_post['posted']) ?></span></dd>
                         </dl>
                     </div>
                     <div class="postright">
@@ -68,4 +68,4 @@ $feather->hooks->fire('view.delete.start');
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.delete.end');
+Container::get('hooks')->fire('view.delete.end');

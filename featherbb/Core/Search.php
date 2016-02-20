@@ -18,7 +18,7 @@ class Search
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
+
 
         // Make a regex that will match CJK or Hangul characters
         define('FEATHER_CJK_HANGUL_REGEX', '[' .
@@ -93,10 +93,10 @@ class Search
         }
 
         if (!isset($stopwords)) {
-            if (!$this->feather->cache->isCached('stopwords')) {
-                $this->feather->cache->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
+            if (!Container::get('cache')->isCached('stopwords')) {
+                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
             }
-            $stopwords = $this->feather->cache->retrieve('stopwords');
+            $stopwords = Container::get('cache')->retrieve('stopwords');
         }
 
         // If it is a stopword it isn't valid
@@ -114,7 +114,7 @@ class Search
 
         // Check the word is within the min/max length
         $num_chars = Utils::strlen($word);
-        return $num_chars >= $this->feather->forum_env['FEATHER_SEARCH_MIN_WORD'] && $num_chars <= $this->feather->forum_env['FEATHER_SEARCH_MAX_WORD'];
+        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
     }
 
 
@@ -161,9 +161,6 @@ class Search
     //
     public function update_search_index($mode, $post_id, $message, $subject = null)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
 
@@ -230,7 +227,7 @@ class Search
             unset($unique_words);
 
             if (!empty($new_words)) {
-                switch ($feather->forum_settings['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
@@ -238,7 +235,7 @@ class Search
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
                         DB::for_table('search_words')
-                            ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_words (word) VALUES ' . $placeholders, $new_words);
+                            ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $new_words);
                         break;
 
                     default:
@@ -283,7 +280,7 @@ class Search
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
                 DB::for_table('search_words')
-                    ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . $feather->forum_settings['db_prefix'] . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                    ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -296,16 +293,13 @@ class Search
     //
     public function strip_search_index($post_ids)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         if (!is_array($post_ids)) {
             $post_ids_sql = explode(',', $post_ids);
         } else {
             $post_ids_sql = $post_ids;
         }
 
-        switch ($feather->forum_settings['db_type']) {
+        switch (ForumSettings::get('db_type')) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
@@ -343,7 +337,7 @@ class Search
 
             default:
                 DB::for_table('search_matches')
-                    ->where_raw('id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->where_raw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
         }

@@ -17,15 +17,15 @@ if (!isset($feather)) {
 
 $cur_index = 1;
 
-$feather->hooks->fire('view.edit.start');
+Container::get('hooks')->fire('view.edit.start');
 ?>
 
 <div class="linkst">
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Topic', ['id' => $cur_post['tid'], 'name' => Url::url_friendly($cur_post['subject'])]) ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $cur_post['tid'], 'name' => Url::url_friendly($cur_post['subject'])]) ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Edit post') ?></strong></li>
         </ul>
     </div>
@@ -52,7 +52,7 @@ if (!empty($errors)) :
     </div>
 </div>
 <?php
-elseif ($feather->request->post('preview')):
+elseif (Input::post('preview')):
 ?>
 <div id="postpreview" class="blockpost">
     <h2><span><?php _e('Post preview') ?></span></h2>
@@ -74,23 +74,23 @@ endif;
 <div id="editform" class="blockform">
     <h2><span><?php _e('Edit post') ?></span></h2>
     <div class="box">
-        <form id="edit" method="post" action="<?= $feather->urlFor('editPost', ['id' => $id]) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="edit" method="post" action="<?= Router::pathFor('editPost', ['id' => $id]) ?>" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Edit post legend') ?></legend>
                     <input type="hidden" name="form_sent" value="1" />
                     <div class="infldset txtarea">
 <?php if ($can_edit_subject): ?>                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="<?= Utils::escape($feather->request->post('req_subject') ? $feather->request->post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
+                        <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="<?= Utils::escape(Input::post('req_subject') ? Input::post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
                         <script>postEditorToolbar('req_message');</script>
-                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>"><?= Utils::escape($feather->request->post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
+                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>"><?= Utils::escape(Input::post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
                         <ul class="bblinks">
-                            <li><span><a href="<?= $feather->urlFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->user->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo($feather->forum_settings['p_message_bbcode'] == '1' && $feather->forum_settings['p_message_img_tag'] == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= $feather->urlFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo($feather->forum_settings['o_smilies'] == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></span></li>
                         </ul>
                     </div>
                 </fieldset>
@@ -116,4 +116,4 @@ endif;
     </div>
 </div>
 <?php
-$feather->hooks->fire('view.edit.end');
+Container::get('hooks')->fire('view.edit.end');

@@ -12,14 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.delete_posts.start');
+Container::get('hooks')->fire('view.moderate.delete_posts.start');
 ?>
 
 <div class="blockform">
     <h2><span><?php _e('Delete posts') ?></span></h2>
     <div class="box">
         <form method="post" action="">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Confirm delete legend') ?></legend>
@@ -35,4 +35,4 @@ $feather->hooks->fire('view.moderate.delete_posts.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.moderate.delete_posts.end');
+Container::get('hooks')->fire('view.moderate.delete_posts.end');

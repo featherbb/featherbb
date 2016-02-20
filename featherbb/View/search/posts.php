@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.search.posts.start');
+Container::get('hooks')->fire('view.search.posts.start');
 
 
 foreach ($display['cur_search'] as $search) {
@@ -31,8 +31,8 @@ foreach ($display['cur_search'] as $search) {
                     class="conr">#<?php echo($search['post_count']) ?></span> <span><?php if ($search['pid'] != $search['first_post_id']) {
                         _e('Re'); echo  ' ';
                     } ?><?= $search['forum'] ?></span> <span>»&#160;<a
-                        href="<?= $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
-                        href="<?= $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= $feather->utils->format_time($search['pposted']) ?></a></span></span>
+                        href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
+                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::format_time($search['pposted']) ?></a></span></span>
         </h2>
 
         <div class="box">
@@ -66,10 +66,10 @@ foreach ($display['cur_search'] as $search) {
                     <div class="postfootright">
                         <ul>
                             <li><span><a
-                                        href="<?= $feather->urlFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php _e('Go to topic') ?></a></span>
+                                        href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php _e('Go to topic') ?></a></span>
                             </li>
                             <li><span><a
-                                        href="<?= $feather->urlFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
+                                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
                             </li>
                         </ul>
                     </div>
@@ -80,4 +80,4 @@ foreach ($display['cur_search'] as $search) {
     <?php
 }
 
-$feather->hooks->fire('view.search.posts.end');
+Container::get('hooks')->fire('view.search.posts.end');

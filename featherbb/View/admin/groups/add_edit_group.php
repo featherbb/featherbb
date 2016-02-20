@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.groups.add_edit_group.start');
+Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
 ?>
 
     <div class="blockform">
         <h2><span><?php _e('Group settings head') ?></span></h2>
         <div class="box">
             <form id="groups2" method="post" action="" onsubmit="return process_form(this)">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop"><input type="submit" name="add_edit_group" value="<?php _e('Save') ?>" /></p>
                 <div class="inform">
                     <input type="hidden" name="mode" value="<?= $group['mode'] ?>" />
@@ -44,10 +44,10 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                     <th scope="row"><?php _e('User title label') ?></th>
                                     <td>
                                         <input type="text" name="user_title" size="25" maxlength="50" value="<?= Utils::escape($group['info']['g_user_title']) ?>" tabindex="2" />
-                                        <span><?php printf(__('User title help'), ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST'] ? __('Member') : __('Guest'))) ?></span>
+                                        <span><?php printf(__('User title help'), ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST') ? __('Member') : __('Guest'))) ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != $feather->forum_env['FEATHER_ADMIN']): if ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_ADMIN')): if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Promote users label') ?></th>
                                     <td>
                                         <select name="promote_next_group" tabindex="3">
@@ -58,7 +58,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                         <span><?php printf(__('Promote users help'), __('Disable promotion')) ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['mode'] != 'edit' || $feather->forum_settings['o_default_user_group'] != $group['info']['g_id']): ?>                                <tr>
+<?php if ($group['mode'] != 'edit' || ForumSettings::get('o_default_user_group') != $group['info']['g_id']): ?>                                <tr>
                                     <th scope="row"> <?php _e('Mod privileges label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="moderator" value="1"<?php if ($group['info']['g_moderator'] == '1') {
@@ -178,7 +178,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                         <span class="clearb"><?php _e('Post topics help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Edit posts label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="edit_posts" value="1"<?php if ($group['info']['g_edit_posts'] == '1') {
@@ -226,7 +226,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                         <span class="clearb"><?php _e('Post links help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Set own title label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="set_title" value="1"<?php if ($group['info']['g_set_title'] == '1') {
@@ -262,7 +262,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                         <span class="clearb"><?php _e('User list search help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('Send e-mails label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="send_email" value="1"<?php if ($group['info']['g_send_email'] == '1') {
@@ -288,7 +288,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                         <span><?php _e('Search flood help') ?></span>
                                     </td>
                                 </tr>
-<?php if ($group['info']['g_id'] != $feather->forum_env['FEATHER_GUEST']): ?>                                <tr>
+<?php if ($group['info']['g_id'] != ForumEnv::get('FEATHER_GUEST')): ?>                                <tr>
                                     <th scope="row"><?php _e('E-mail flood label') ?></th>
                                     <td>
                                         <input type="text" name="email_flood" size="5" maxlength="4" value="<?= $group['info']['g_email_flood'] ?>" tabindex="43" />
@@ -303,7 +303,7 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
                                     </td>
                                 </tr>
 <?php endif; endif; ?>    </table>
-<?php $feather->hooks->fire('view.admin.groups.add_edit_group.form'); ?>
+<?php Container::get('hooks')->fire('view.admin.groups.add_edit_group.form'); ?>
 <?php if ($group['info']['g_moderator'] == '1'): ?>                            <p class="warntext"><?php _e('Moderator info') ?></p>
 <?php endif; ?>                        </div>
                     </fieldset>
@@ -316,4 +316,4 @@ $feather->hooks->fire('view.admin.groups.add_edit_group.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.groups.add_edit_group.end');
+Container::get('hooks')->fire('view.admin.groups.add_edit_group.end');

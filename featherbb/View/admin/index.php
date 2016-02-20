@@ -12,7 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.index.start');
+Container::get('hooks')->fire('view.admin.index.start');
 ?>
 
     <div class="block">
@@ -40,11 +40,11 @@ $feather->hooks->fire('view.admin.index.start');
                 <dl>
                     <dt><?php _e('FeatherBB version label') ?></dt>
                     <dd>
-                        <?php printf(__('FeatherBB version data')."\n", $feather->forum_settings['o_cur_version'], '<a href="'.$feather->urlFor('adminAction', ['action' => 'check_upgrade']).'">'.__('Check for upgrade').'</a>') ?>
+                        <?php printf(__('FeatherBB version data')."\n", ForumSettings::get('o_cur_version'), '<a href="'.Router::pathFor('adminAction', ['action' => 'check_upgrade']).'">'.__('Check for upgrade').'</a>') ?>
                     </dd>
                     <dt><?php _e('Server statistics label') ?></dt>
                     <dd>
-                        <a href="<?= $feather->urlFor('statistics') ?>"><?php _e('View server statistics') ?></a>
+                        <a href="<?= Router::pathFor('statistics') ?>"><?php _e('View server statistics') ?></a>
                     </dd>
                     <dt><?php _e('Support label') ?></dt>
                     <dd>
@@ -58,4 +58,4 @@ $feather->hooks->fire('view.admin.index.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.index.end');
+Container::get('hooks')->fire('view.admin.index.end');

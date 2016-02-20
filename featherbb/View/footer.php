@@ -14,7 +14,7 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.footer.start');
+Container::get('hooks')->fire('view.footer.start');
 ?>
         </div>
 
@@ -23,13 +23,13 @@ $feather->hooks->fire('view.footer.start');
             <div class="box">
 <?php
 
-if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && $feather->user->is_admmod) {
+if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && Container::get('user')->is_admmod) {
     echo "\t\t".'<div id="modcontrols" class="inbox">'."\n";
 
     if ($active_page == 'Forum') {
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateForum', ['fid' => $fid, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['fid' => $fid, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t".'</dl>'."\n";
     } elseif ($active_page == 'Topic') {
         if (isset($pid)) {
@@ -44,25 +44,25 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
         echo "\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
 
-        echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('moveTopic', ['id' => $tid, 'fid' => $fid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Move topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moveTopic', ['id' => $tid, 'fid' => $fid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Move topic').'</a></span></dd>'."\n";
 
         if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('openTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('openTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('closeTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('closeTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('unstickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('unstickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.$feather->urlFor('stickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('stickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
         }
 
         echo "\t\t\t".'</dl>'."\n";
     }
 
-    $feather->hooks->fire('view.footer.mod.actions');
+    Container::get('hooks')->fire('view.footer.mod.actions');
 
     echo "\t\t\t".'<div class="clearer"></div>'."\n\t\t".'</div>'."\n";
 }
@@ -71,21 +71,21 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
                 <div id="brdfooternav" class="inbox">
 <?php
 // Display the "Jump to" drop list
-if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
+if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     <div class="conl">
                         <form id="qjump" method="get" action="">
                             <div><label><span><?php _e('Jump to') ?><br /></span></label>
-                                <select name="id" onchange="window.location=('<?= Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
+                                <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
-            foreach ($quickjump[(int) $feather->user->g_id] as $cat_id => $cat_data) {
-                echo "\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
-                foreach ($cat_data['cat_forums'] as $forum) {
-                    echo "\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.$feather->url->url_friendly($forum['forum_name']).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+                foreach ($quickjump[(int) Container::get('user')->g_id] as $cat_id => $cat_data) {
+                    echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
+                    foreach ($cat_data['cat_forums'] as $forum) {
+                        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+                    }
+                    echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
-                echo "\t\t\t\t\t".'</optgroup>'."\n";
-            } ?>
+?>
                                 </select>
-                                <noscript><input type="submit" value="<?php _e('Go') ?>" accesskey="g" /></noscript>
                             </div>
                         </form>
                     </div>
@@ -94,29 +94,29 @@ if ($feather->forum_settings['o_quickjump'] == '1' && !empty($quickjump)) { ?>
 <?php
 
 if ($active_page == 'index') {
-    if ($feather->forum_settings['o_feed_type'] == '1') {
+    if (ForumSettings::get('o_feed_type') == '1') {
         echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
-    } elseif ($feather->forum_settings['o_feed_type'] == '2') {
+    } elseif (ForumSettings::get('o_feed_type') == '2') {
         echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
 } elseif ($active_page == 'Forum') {
-    if ($feather->forum_settings['o_feed_type'] == '1') {
+    if (ForumSettings::get('o_feed_type') == '1') {
         echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
-    } elseif ($feather->forum_settings['o_feed_type'] == '2') {
+    } elseif (ForumSettings::get('o_feed_type') == '2') {
         echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
 } elseif ($active_page == 'Topic') {
-    if ($feather->forum_settings['o_feed_type'] == '1') {
+    if (ForumSettings::get('o_feed_type') == '1') {
         echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
-    } elseif ($feather->forum_settings['o_feed_type'] == '2') {
+    } elseif (ForumSettings::get('o_feed_type') == '2') {
         echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
     }
 }
 
-$feather->hooks->fire('view.footer.feed.links');
+Container::get('hooks')->fire('view.footer.feed.links');
 
 ?>
-                        <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.(($feather->forum_settings['o_show_version'] == '1') ? ' '.$feather->forum_settings['o_cur_version'] : '')) ?></p>
+                        <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.((ForumSettings::get('o_show_version') == '1') ? ' '.ForumSettings::get('o_cur_version') : '')) ?></p>
                     </div>
                 <div class="clearer"></div>
             </div>
@@ -170,7 +170,7 @@ if (!empty($queries_info)) { ?>
     }
     echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
 } ?>
-<?php $feather->hooks->fire('view.footer.before.html.tag'); ?>
+<?php Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
 </html>
 <?php
-$feather->hooks->fire('view.footer.end');
+Container::get('hooks')->fire('view.footer.end');

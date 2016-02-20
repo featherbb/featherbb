@@ -14,14 +14,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.admin.bans.search.start');
+Container::get('hooks')->fire('view.admin.bans.search.start');
 ?>
 
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin'); echo ' ';  _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('addBan') ?>"><?php _e('Bans') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' ';  _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('addBan') ?>"><?php _e('Bans') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -57,10 +57,10 @@ $feather->hooks->fire('view.admin.bans.search.start');
                     <td class="tcl"><?= ($cur_ban['username'] != '') ? Utils::escape($cur_ban['username']) : '&#160;' ?></td>
                     <td class="tc2"><?= ($cur_ban['email'] != '') ? Utils::escape($cur_ban['email']) : '&#160;' ?></td>
                     <td class="tc3"><?= ($cur_ban['ip'] != '') ? Utils::escape($cur_ban['ip']) : '&#160;' ?></td>
-                    <td class="tc4"><?= $feather->utils->format_time($cur_ban['expire'], true) ?></td>
+                    <td class="tc4"><?= Utils::format_time($cur_ban['expire'], true) ?></td>
                     <td class="tc5"><?= ($cur_ban['message'] != '') ? Utils::escape($cur_ban['message']) : '&#160;' ?></td>
-                    <td class="tc6"><?= ($cur_ban['ban_creator_username'] != '') ? '<a href="'.$feather->urlFor('userProfile', ['id' => $cur_ban['ban_creator']]).'">'.Utils::escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
-                    <td class="tcr"><?= '<a href="'.$feather->urlFor('editBan', ['id' => $cur_ban['id']]).'">'.__('Edit').'</a> | <a href="'.$feather->urlFor('deleteBan', ['id' => $cur_ban['id']]).'">'.__('Remove').'</a>' ?></td>
+                    <td class="tc6"><?= ($cur_ban['ban_creator_username'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $cur_ban['ban_creator']]).'">'.Utils::escape($cur_ban['ban_creator_username']).'</a>' : __('Unknown') ?></td>
+                    <td class="tcr"><?= '<a href="'.Router::pathFor('editBan', ['id' => $cur_ban['id']]).'">'.__('Edit').'</a> | <a href="'.Router::pathFor('deleteBan', ['id' => $cur_ban['id']]).'">'.__('Remove').'</a>' ?></td>
                 </tr>
 <?php
 
@@ -82,8 +82,8 @@ $feather->hooks->fire('view.admin.bans.search.start');
             <p class="pagelink"><?= $paging_links ?></p>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= $feather->urlFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
         </ul>
         <div class="clearer"></div>
@@ -91,4 +91,4 @@ $feather->hooks->fire('view.admin.bans.search.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.admin.bans.search.end');
+Container::get('hooks')->fire('view.admin.bans.search.end');

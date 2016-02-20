@@ -15,14 +15,14 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.moderate.moderator_forum.start');
+Container::get('hooks')->fire('view.moderate.moderator_forum.start');
 ?>
 
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
         </ul>
         <div class="pagepost">
@@ -32,8 +32,8 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
     </div>
 </div>
 
-<form method="post" action="<?= $feather->urlFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
-<input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+<form method="post" action="<?= Router::pathFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
+<input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <input type="hidden" name="page" value="<?= Utils::escape($p) ?>" />
 <div id="vf" class="blocktable">
     <h2><span><?= Utils::escape($cur_forum['forum_name']) ?></span></h2>
@@ -44,7 +44,7 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
                 <tr>
                     <th class="tcl" scope="col"><?php _e('Topic') ?></th>
                     <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
+<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
 <?php endif; ?>                    <th class="tcr"><?php _e('Last post') ?></th>
                     <th class="tcmod" scope="col"><?php _e('Select') ?></th>
                 </tr>
@@ -67,7 +67,7 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
                         </div>
                     </td>
                     <td class="tc2"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
-<?php if ($feather->forum_settings['o_topic_views'] == '1'): ?>                    <td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
 <?php endif;
                 ?>                    <td class="tcr"><?= $topic['last_post_disp'] ?></td>
                     <td class="tcmod"><input type="checkbox" name="topics[<?= $topic['id'] ?>]" value="1" /></td>
@@ -76,7 +76,7 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
 
             }
             if (empty($topic_data)):
-                $colspan = ($feather->forum_settings['o_topic_views'] == '1') ? 5 : 4;
+                $colspan = (ForumSettings::get('o_topic_views') == '1') ? 5 : 4;
                 $button_status = ' disabled="disabled"';
                 echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.__('Empty forum').'</td></tr>'."\n";
             endif;
@@ -96,7 +96,7 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= $feather->urlFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
             <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
         </ul>
         <div class="clearer"></div>
@@ -105,4 +105,4 @@ $feather->hooks->fire('view.moderate.moderator_forum.start');
 </form>
 
 <?php
-$feather->hooks->fire('view.moderate.moderator_forum.end');
+Container::get('hooks')->fire('view.moderate.moderator_forum.end');

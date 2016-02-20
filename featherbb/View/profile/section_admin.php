@@ -14,19 +14,19 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_admin.start');
+Container::get('hooks')->fire('view.profile.section_admin.start');
 ?>
     <div class="blockform">
         <h2><span><?= Utils::escape($user['username']).' - '.__('Section admin') ?></span></h2>
         <div class="box">
-            <form id="profile7" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'admin'])?>">
-                <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+            <form id="profile7" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'admin'])?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                 <input type="hidden" name="form_sent" value="1" />
                     <fieldset>
 <?php
 
-        if ($feather->user->g_moderator == '1') {
+        if (Container::get('user')->g_moderator == '1') {
             ?>
                         <legend><?php _e('Delete ban legend') ?></legend>
                         <div class="infldset">
@@ -37,7 +37,7 @@ $feather->hooks->fire('view.profile.section_admin.start');
 <?php
 
         } else {
-            if ($feather->user->id != $id) {
+            if (Container::get('user')->id != $id) {
                 ?>
                         <legend><?php _e('Group membership legend') ?></legend>
                         <div class="infldset">
@@ -63,7 +63,7 @@ $feather->hooks->fire('view.profile.section_admin.start');
                 </div>
 <?php
 
-            if ($user['g_moderator'] == '1' || $user['g_id'] == $feather->forum_env['FEATHER_ADMIN']) {
+            if ($user['g_moderator'] == '1' || $user['g_id'] == ForumEnv::get('FEATHER_ADMIN')) {
                 ?>
                 <div class="inform">
                     <fieldset>
@@ -90,4 +90,4 @@ $feather->hooks->fire('view.profile.section_admin.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_admin.end');
+Container::get('hooks')->fire('view.profile.section_admin.end');

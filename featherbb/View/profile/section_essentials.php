@@ -14,20 +14,20 @@ if (!isset($feather)) {
     exit;
 }
 
-$feather->hooks->fire('view.profile.section_essentials.start');
+Container::get('hooks')->fire('view.profile.section_essentials.start');
 ?>
 <div class="blockform">
     <h2><span><?= Utils::escape($user['username']).' - '.__('Section essentials') ?></span></h2>
     <div class="box">
-        <form id="profile1" method="post" action="<?= $feather->urlFor('profileSection', ['id' => $id, 'section' => 'essentials']) ?>" onsubmit="return process_form(this)">
-            <input type="hidden" name="<?= $csrf_key; ?>" value="<?= $csrf_token; ?>">
+        <form id="profile1" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'essentials']) ?>" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Username and pass legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
                         <?= $user_disp['username_field'] ?>
-<?php if ($feather->user->id == $id || $feather->user->g_id == $feather->forum_env['FEATHER_ADMIN'] || ($user['g_moderator'] == '0' && $feather->user->g_mod_change_passwords == '1')): ?>                            <p class="actions"><span><a href="<?= $feather->urlFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
+<?php if (Container::get('user')->id == $id || Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || ($user['g_moderator'] == '0' && Container::get('user')->g_mod_change_passwords == '1')): ?>                            <p class="actions"><span><a href="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
 <?php endif; ?>                        </div>
                 </fieldset>
             </div>
@@ -182,7 +182,7 @@ $feather->hooks->fire('view.profile.section_essentials.start');
                                 if ($user['time_format'] == $key) {
                                     echo ' selected="selected"';
                                 }
-                                echo '>'. $feather->utils->format_time(time(), false, null, $time_format, true, true);
+                                echo '>'. Utils::format_time(time(), false, null, $time_format, true, true);
                                 if ($key == 0) {
                                     echo ' ('.__('Default').')';
                                 }
@@ -200,7 +200,7 @@ $feather->hooks->fire('view.profile.section_essentials.start');
                                 if ($user['date_format'] == $key) {
                                     echo ' selected="selected"';
                                 }
-                                echo '>'. $feather->utils->format_time(time(), true, $date_format, null, false, true);
+                                echo '>'. Utils::format_time(time(), true, $date_format, null, false, true);
                                 if ($key == 0) {
                                     echo ' ('.__('Default').')';
                                 }
@@ -244,11 +244,11 @@ $feather->hooks->fire('view.profile.section_essentials.start');
                 <fieldset>
                     <legend><?php _e('User activity') ?></legend>
                     <div class="infldset">
-                        <p><?php printf(__('Registered info'), $feather->utils->format_time($user['registered'], true).(($feather->user->is_admmod) ? ' (<a href="'.$feather->urlFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
-                        <p><?php printf(__('Last post info'), $feather->utils->format_time($user['last_post'])) ?></p>
-                        <p><?php printf(__('Last visit info'), $feather->utils->format_time($user['last_visit'])) ?></p>
+                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((Container::get('user')->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
+                        <p><?php printf(__('Last post info'), Utils::format_time($user['last_post'])) ?></p>
+                        <p><?php printf(__('Last visit info'), Utils::format_time($user['last_visit'])) ?></p>
                         <?= $user_disp['posts_field'] ?>
-<?php if ($feather->user->is_admmod): ?>                            <label><?php _e('Admin note') ?><br />
+<?php if (Container::get('user')->is_admmod): ?>                            <label><?php _e('Admin note') ?><br />
                         <input id="admin_note" type="text" name="admin_note" value="<?= Utils::escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
 <?php endif; ?>                        </div>
                 </fieldset>
@@ -261,4 +261,4 @@ $feather->hooks->fire('view.profile.section_essentials.start');
 </div>
 
 <?php
-$feather->hooks->fire('view.profile.section_essentials.end');
+Container::get('hooks')->fire('view.profile.section_essentials.end');
