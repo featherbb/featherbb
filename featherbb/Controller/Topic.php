@@ -111,7 +111,6 @@ class Topic
             'subscraction'    =>    $subscraction,
             'post_link' => $post_link,
             'start_from' => $start_from,
-            'lang_antispam' => $lang_antispam,
             'quickpost'        =>    $quickpost,
             'index_questions'        =>    $index_questions,
             'lang_antispam_questions'        =>    $lang_antispam_questions,
@@ -293,6 +292,6 @@ class Topic
     {
         Container::get('hooks')->fire('controller.topic.action');
 
-        $this->model->handle_actions($args['id'], $args['action']);
+        return $this->model->handle_actions($args['id'], $args['action']);
     }
 }
