@@ -15,7 +15,7 @@ class Test extends BasePlugin
 {
     public function run()
     {
-        Container::get('hooks')->bind('get_forum_actions', [$this, 'addMarkRead']);
+        Container::get('hooks')->bind('model.index.get_forum_actions', [$this, 'addMarkRead']);
     }
 
     public function addMarkRead($forum_actions)
