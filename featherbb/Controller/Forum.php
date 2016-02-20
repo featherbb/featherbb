@@ -58,7 +58,7 @@ class Forum
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['fid'].'/'.$url_forum.'/#');
 
-        $forum_actions = $this->model->get_forum_actions($args['fid'], ForumSettings::get('o_forum_subscriptions'), $cur_forum['is_subscribed']);
+        $forum_actions = $this->model->get_forum_actions($args['fid'], ForumSettings::get('o_forum_subscriptions'), ($cur_forum['is_subscribed'] == Container::get('user')->id));
 
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum]));
         if ($num_pages > 1) {

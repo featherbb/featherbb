@@ -78,7 +78,7 @@ class Topic
         }
 
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
-        $subscraction = $this->model->get_subscraction($cur_topic['is_subscribed'], $args['id']);
+        $subscraction = $this->model->get_subscraction(($cur_topic['is_subscribed'] == Container::get('user')->id), $args['id']);
 
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['id'], 'name' => $url_forum]));
         if ($num_pages > 1) {
