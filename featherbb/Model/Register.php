@@ -260,9 +260,11 @@ class Register
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         }
 
-        $user = (object) $user;
+        $user_object = new \stdClass();
+        $user_object->id = $new_uid;
+        $user_object->username = $user['username'];
         $expire = time() + ForumSettings::get('o_timeout_visit');
-        $jwt = AuthModel::generate_jwt($user, $expire);
+        $jwt = AuthModel::generate_jwt($user_object, $expire);
         AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
 
         Container::get('hooks')->fire('model.register.insert_user');
