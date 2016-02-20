@@ -273,13 +273,13 @@ class Utils
 
         if (!Container::get('cache')->isCached('search_for')) {
             Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
-            $search_for = Container::get('cache')->retrieve('search_for');
         }
+        $search_for = Container::get('cache')->retrieve('search_for');
 
         if (!Container::get('cache')->isCached('replace_with')) {
             Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
-            $replace_with = Container::get('cache')->retrieve('replace_with');
         }
+        $replace_with = Container::get('cache')->retrieve('replace_with');
 
         if (!empty($search_for) && !empty($replace_with)) {
             return substr(self::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
