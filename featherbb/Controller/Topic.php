@@ -280,7 +280,7 @@ class Topic
                     'url_forum' => Url::url_friendly($cur_topic['forum_name']),
                     'fid' => $args['fid'],
                     'id' => $args['id'],
-                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate($num_pages, $p, 'moderate/topic/' . $args['id'] . '/forum/' . $args['fid'] . '/action/moderate/#'),
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate($num_pages, $p, 'topic/moderate/' . $args['id'] . '/forum/' . $args['fid'] . '/#'),
                     'post_data' => $this->model->display_posts_moderate($args['id'], $start_from),
                     'button_status' => $button_status,
                     'start_from' => $start_from,
