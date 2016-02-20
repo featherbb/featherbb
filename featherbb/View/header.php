@@ -32,6 +32,29 @@ Container::get('hooks')->fire('view.header.start');
     <link rel="shortcut icon" href="<?= Url::base_static() ?>/style/img/favicon.ico" />
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= $style ?>/style.css">
+    <script type="text/javascript" src="style/imports/pjax-standalone.js"></script>
+    <script type='text/javascript'>
+        // Ensure console is defined
+        if(typeof console === 'undefined') console = {"log":function(m){}};
+        // PJAX links!
+        pjax.connect({
+            'container': 'container',
+            'success': function(event){
+                var url = (typeof event.data !== 'undefined') ? event.data.url : '';
+                console.log("Successfully loaded "+ url);
+            },
+            'error': function(event){
+                var url = (typeof event.data !== 'undefined') ? event.data.url : '';
+                console.log("Could not load "+ url);
+            },
+            'ready': function(){
+                console.log("PJAX loaded!");
+            }
+        });
+        // pjax.connect('content', 'pjaxer');
+        // pjax.connect('content');
+        // pjax.connect();
+    </script>
 <?php
 
 foreach($assets as $type => $items) {
@@ -167,7 +190,7 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
             </div>
         </nav>
 
-        <div class="container">
+        <div class="container" id="container">
             <div class="container-title-status">
                 <h1 class="title-site">
                     <a href="<?= Url::base() ?>" title="" class="site-name">
