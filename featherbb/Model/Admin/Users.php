@@ -529,7 +529,7 @@ class Users
 
     public function get_user_search()
     {
-        $form = Input::query('form') ? Input::query('form') : array();
+        $form = Input::query('form', [], false);
         $form = Container::get('hooks')->fire('model.admin.model.users.get_user_search.form', $form);
 
         $search = array();

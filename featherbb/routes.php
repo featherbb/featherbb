@@ -171,7 +171,7 @@ Route::group('/admin', function() {
     Route::group('/users', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Users:display')->setName('adminUsers');
         Route::get('/ip-stats/id/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
-        Route::get('/show-users/ip/{ip}', '\FeatherBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
+        Route::get('/show-users', '\FeatherBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
     });
 
 })->add(new IsAdmMod);
