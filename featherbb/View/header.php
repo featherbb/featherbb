@@ -137,7 +137,7 @@ if (Container::get('user')->is_guest) {
         $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('adminIndex').'">'.__('Admin').'</a></li>';
     }
 
-    $navlinks[] = '<li id="navlogout"><a href="'.Router::pathFor('logout', ['token' => Random::hash(Container::get('user')->id.Random::hash(Request::getServerParams()['REMOTE_ADDR']))]).'">'.__('Logout').'</a></li>';
+    $navlinks[] = '<li id="navlogout"><a href="'.Router::pathFor('logout', ['token' => Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))]).'">'.__('Logout').'</a></li>';
 }
 
 // Are there any additional navlinks we should insert into the array before imploding it?

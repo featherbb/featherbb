@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Random;
+use FeatherBB\Core\Utils;
 use Firebase\JWT\JWT;
 
 class Auth
@@ -20,7 +21,7 @@ class Auth
         $user_id = (int) $user_id;
         $result['select'] = array('u.*', 'g.*', 'o.logged', 'o.idle');
         $result['where'] = array('u.id' => $user_id);
-        $result['join'] = ($user_id == 1) ? Request::getServerParams()['REMOTE_ADDR'] : 'u.id';
+        $result['join'] = ($user_id == 1) ? Utils::getIp() : 'u.id';
         $escape = ($user_id == 1) ? true : false;
 
         $result = DB::for_table('users')

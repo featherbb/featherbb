@@ -156,7 +156,7 @@ class Auth
 
         // Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
         // 192.168.0.5 from matching e.g. 192.168.0.50
-        $user_ip = Request::getServerParams()['REMOTE_ADDR'];
+        $user_ip = Utils::getIp();
         $user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
 
         $bans_altered = false;
@@ -277,15 +277,15 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
+                    DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Utils::getIp(), ':logged' => $user->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => Request::getServerParams()['REMOTE_ADDR'], ':logged' => $user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => Utils::getIp(), ':logged' => $user->logged));
                         break;
                 }
             } else {
-                DB::for_table('online')->where('ident', Request::getServerParams()['REMOTE_ADDR'])
+                DB::for_table('online')->where('ident', Utils::getIp())
                      ->update_many('logged', time());
             }
             // $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);

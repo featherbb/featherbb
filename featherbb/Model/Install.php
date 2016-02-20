@@ -425,7 +425,7 @@ class Install
             'num_posts' => 1,
             'last_post' => $now,
             'registered' => $now,
-            'registration_ip' => Request::getServerParams()['REMOTE_ADDR'],
+            'registration_ip' => Utils::getIp(),
             'last_visit' => $now);
     }
 
@@ -437,7 +437,7 @@ class Install
         $forum_name = __('Test forum');
         $forum_desc = __('This is just a test forum');
         $now = time();
-        $ip = Request::getServerParams()['REMOTE_ADDR'];
+        $ip = Utils::getIp();
 
         return $mock_data = array(
             'categories' => array('cat_name' => $cat_name,
