@@ -621,9 +621,10 @@ class Topic
             Forum::update($fid);
             return Router::redirect(Router::pathFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
         }
-
-        $posts = Container::get('hooks')->fire('model.topic.delete_posts', $posts);
-        return $posts;
+        else {
+            $posts = Container::get('hooks')->fire('model.topic.delete_posts', $posts);
+            return $posts;
+        }
     }
 
     public function get_topic_info($fid, $tid)
