@@ -86,9 +86,9 @@ class Forums
         $result = DB::for_table('forums')
                     ->where('id', $forum_id);
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_forum_infos', $result);
-        $result = $result->find_array();
+        $result = $result->find_one();
 
-        return $result[0];
+        return $result;
     }
 
     public function get_forums()

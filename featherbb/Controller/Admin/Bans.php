@@ -68,7 +68,7 @@ class Bans
         Container::get('hooks')->fire('controller.admin.bans.add');
 
         if (Input::post('add_edit_ban')) {
-            $this->model->insert_ban();
+            return $this->model->insert_ban();
         }
 
         AdminUtils::generateAdminMenu('bans');
@@ -87,7 +87,7 @@ class Bans
         Container::get('hooks')->fire('controller.admin.bans.delete');
 
         // Remove the ban
-        $this->model->remove_ban($req, $res, $args);
+        return $this->model->remove_ban($req, $res, $args);
     }
 
     public function edit($req, $res, $args)
@@ -95,7 +95,7 @@ class Bans
         Container::get('hooks')->fire('controller.admin.bans.edit');
 
         if (Input::post('add_edit_ban')) {
-            $this->model->insert_ban();
+            return $this->model->insert_ban();
         }
         AdminUtils::generateAdminMenu('bans');
 

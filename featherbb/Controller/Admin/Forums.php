@@ -127,8 +127,13 @@ class Forums
     {
         Container::get('hooks')->fire('controller.admin.forums.delete');
 
+        if (!$cur_forum = $this->model->get_forum_info($args['id'])) {
+            $notFoundHandler = Container::get('notFoundHandler');
+            return $notFoundHandler($req, $res);
+        }
+
         if(Request::isPost()) {
-            $this->model->delete_forum($args['forum_id']);
+            $this->model->delete_forum($args['id']);
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
@@ -142,7 +147,7 @@ class Forums
                     'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
-                    'cur_forum' => $this->model->get_forum_info($args['forum_id']),
+                    'cur_forum' => $cur_forum
                 )
             )->addTemplate('admin/forums/delete_forum.php')->display();
         }

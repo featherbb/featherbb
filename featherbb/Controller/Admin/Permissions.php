@@ -26,12 +26,12 @@ class Permissions
 
         // Update permissions
         if (Request::isPost()) {
-            $this->model->update_permissions();
+            return $this->model->update_permissions();
         }
 
         AdminUtils::generateAdminMenu('permissions');
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Permissions')),
                 'active_page' => 'admin',
                 'admin_console' => true,

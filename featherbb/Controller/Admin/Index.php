@@ -49,7 +49,7 @@ class Index
 
         AdminUtils::generateAdminMenu('index');
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')),
                 'active_page' => 'admin',
                 'admin_console' => true

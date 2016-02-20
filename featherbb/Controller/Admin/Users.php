@@ -34,7 +34,7 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Move users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
@@ -52,7 +52,7 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Delete users')),
                     'active_page' => 'moderate',
                     'admin_console' => true,
@@ -70,7 +70,7 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Bans')),
                     'active_page' => 'moderate',
                     'focus_element' => array('bans2', 'ban_message'),
@@ -122,7 +122,7 @@ class Users
         else {
             AdminUtils::generateAdminMenu('users');
 
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users')),
                     'active_page' => 'admin',
                     'admin_console' => true,
@@ -147,7 +147,7 @@ class Users
         $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
         $start_from = 50 * ($p - 1);
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,
@@ -177,7 +177,7 @@ class Users
         $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
         $start_from = 50 * ($p - 1);
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')),
                 'active_page' => 'admin',
                 'admin_console' => true,

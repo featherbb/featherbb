@@ -163,18 +163,18 @@ class Parser
                     continue; // Skip last pseudo-tag
                 }
                 $tag =& $bbcd[$tagname];
-                if ($this->request->post($tagname.'_in_post') && $this->request->post($tagname.'_in_post') == '1') {
+                if (Input::post($tagname.'_in_post') && Input::post($tagname.'_in_post') == '1') {
                     $tag['in_post']    = true;
                 } else {
                     $tag['in_post']    = false;
                 }
-                if ($this->request->post($tagname.'_in_sig') && $this->request->post($tagname.'_in_sig') == '1') {
+                if (Input::post($tagname.'_in_sig') && Input::post($tagname.'_in_sig') == '1') {
                     $tag['in_sig']    = true;
                 } else {
                     $tag['in_sig']    = false;
                 }
-                if ($this->request->post($tagname.'_depth_max') && preg_match('/^\d++$/', $this->request->post($tagname.'_depth_max'))) {
-                    $tag['depth_max'] = (int)$this->request->post($tagname.'_depth_max');
+                if (Input::post($tagname.'_depth_max') && preg_match('/^\d++$/', Input::post($tagname.'_depth_max'))) {
+                    $tag['depth_max'] = (int)Input::post($tagname.'_depth_max');
                 }
             }
 
@@ -200,7 +200,7 @@ class Parser
 
         AdminUtils::generateAdminMenu('parser');
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')),
                 'active_page' => 'admin',
                 'admin_console' => true,

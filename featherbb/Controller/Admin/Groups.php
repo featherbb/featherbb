@@ -63,11 +63,11 @@ class Groups
         // If the group doesn't have any members or if we've already selected a group to move the members to
         if (!$is_member || Input::post('del_group')) {
             if (Input::post('del_group_comply') || Input::post('del_group')) {
-                $this->model->delete_group($args['id']);
+                return $this->model->delete_group($args['id']);
             } else {
                 AdminUtils::generateAdminMenu('groups');
 
-                View::setPageInfo(array(
+                return View::setPageInfo(array(
                         'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                         'active_page' => 'admin',
                         'admin_console' => true,
@@ -80,7 +80,7 @@ class Groups
 
         AdminUtils::generateAdminMenu('groups');
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                 'active_page' => 'admin',
                 'admin_console' => true,

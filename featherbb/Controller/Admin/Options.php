@@ -25,7 +25,7 @@ class Options
         Container::get('hooks')->fire('controller.admin.options.display');
 
         if (Request::isPost()) {
-            $this->model->update_options();
+            return $this->model->update_options();
         }
 
         AdminUtils::generateAdminMenu('options');

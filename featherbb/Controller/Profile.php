@@ -41,25 +41,25 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_group_membership($args['id']);
+            return $this->model->update_group_membership($args['id']);
         } elseif (Input::post('update_forums')) {
             if (Container::get('user')->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_mod_forums($args['id']);
+            return $this->model->update_mod_forums($args['id']);
         } elseif (Input::post('ban')) {
             if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') && (Container::get('user')->g_moderator != '1' || Container::get('user')->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->ban_user($args['id']);
+            return $this->model->ban_user($args['id']);
         } elseif (Input::post('delete_user') || Input::post('delete_user_comply')) {
             if (Container::get('user')->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->delete_user($args['id']);
+            return $this->model->delete_user($args['id']);
 
             View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
@@ -68,8 +68,7 @@ class Profile
                 'id' => $args['id'],
             ));
 
-            View::addTemplate('profile/delete_user.php');
-            View::display();
+            View::addTemplate('profile/delete_user.php')->display();
 
         } elseif (Input::post('form_sent')) {
 
@@ -230,7 +229,7 @@ class Profile
                     'id' => $args['id']
                 ));
 
-                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
+                return View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
             } else {
                 throw new Error(__('Bad request'), 404);
             }

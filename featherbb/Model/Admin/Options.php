@@ -208,7 +208,7 @@ class Options
 
         foreach ($form as $key => $input) {
             // Only update values that have changed
-            if (array_key_exists('o_'.$key, $this->config) && ForumSettings::get('o_'.$key) != $input) {
+            if (array_key_exists('o_'.$key, Container::get('forum_settings')) && ForumSettings::get('o_'.$key) != $input) {
                 if ($input != '' || is_int($input)) {
                     DB::for_table('config')->where('conf_name', 'o_'.$key)
                                                                ->update_many('conf_value', $input);

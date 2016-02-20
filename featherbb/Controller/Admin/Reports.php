@@ -34,7 +34,7 @@ class Reports
 
         AdminUtils::generateAdminMenu('reports');
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Reports')),
                 'active_page' => 'admin',
                 'admin_console' => true,
