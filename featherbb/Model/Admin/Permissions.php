@@ -27,7 +27,7 @@ class Permissions
             }
 
             // Only update values that have changed
-            if (array_key_exists('p_'.$key, ForumSettings::toArray()) && ForumSettings::get('p_'.$key) != $input) {
+            if (array_key_exists('p_'.$key, Container::get('forum_settings')) && ForumSettings::get('p_'.$key) != $input) {
                 DB::for_table('config')->where('conf_name', 'p_'.$key)
                                                            ->update_many('conf_value', $input);
             }
