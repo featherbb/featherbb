@@ -139,14 +139,14 @@ class Topic
     {
         $args['id'] = Container::get('hooks')->fire('controller.topic.subscribe', $args['id']);
 
-        $this->model->subscribe($args['id']);
+        return $this->model->subscribe($args['id']);
     }
 
     public function unsubscribe($req, $res, $args)
     {
         $args['id'] = Container::get('hooks')->fire('controller.topic.unsubscribe', $args['id']);
 
-        $this->model->unsubscribe($args['id']);
+        return $this->model->unsubscribe($args['id']);
     }
 
     public function close($req, $res, $args)
