@@ -87,7 +87,7 @@ class Bans
         Container::get('hooks')->fire('controller.admin.bans.delete');
 
         // Remove the ban
-        return $this->model->remove_ban($req, $res, $args);
+        return $this->model->remove_ban($args['id']);
     }
 
     public function edit($req, $res, $args)
@@ -103,7 +103,7 @@ class Bans
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
-                'ban' => $this->model->edit_ban_info($req, $res, $args),
+                'ban' => $this->model->edit_ban_info($args['id']),
             )
         )->addTemplate('admin/bans/add_ban.php')->display();
     }
