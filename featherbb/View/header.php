@@ -38,7 +38,7 @@ Container::get('hooks')->fire('view.header.start');
         if(typeof console === 'undefined') console = {"log":function(m){}};
         // PJAX links!
         pjax.connect({
-            'container': 'container',
+            'container': 'brdmain',
             'success': function(event){
                 var url = (typeof event.data !== 'undefined') ? event.data.url : '';
                 console.log("Successfully loaded "+ url);
@@ -190,7 +190,7 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
             </div>
         </nav>
 
-        <div class="container" id="container">
+        <div class="container">
             <div class="container-title-status">
                 <h1 class="title-site">
                     <a href="<?= Url::base() ?>" title="" class="site-name">
