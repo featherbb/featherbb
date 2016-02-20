@@ -29,7 +29,7 @@ class Groups
 
         // Set default group
         if (Request::isPost()) {
-            $this->model->set_default_group($groups);
+            return $this->model->set_default_group($groups);
         }
 
         AdminUtils::generateAdminMenu('groups');

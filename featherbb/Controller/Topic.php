@@ -229,18 +229,23 @@ class Topic
         $start_from = Container::get('user')->disp_posts * ($p - 1);
 
         // Delete one or more posts
-        if (Input::post('delete_posts') || Input::post('delete_posts_comply')) {
-            $posts = $this->model->delete_posts($args['id'], $args['fid']);
-
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
-                    'active_page' => 'moderate',
-                    'posts' => $posts,
-                )
-            )->addTemplate('moderate/delete_posts.php')->display();
+        if (Input::post('delete_posts_comply')) {
+            return $this->model->delete_posts($args['id'], $args['fid']);
         }
-        if (Input::post('split_posts') || Input::post('split_posts_comply')) {
+        else if (Input::post('delete_posts')) {
+                $posts = $this->model->delete_posts($args['id'], $args['fid']);
 
+                View::setPageInfo(array(
+                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+                        'active_page' => 'moderate',
+                        'posts' => $posts,
+                    )
+                )->addTemplate('moderate/delete_posts.php')->display();
+        }
+        else if (Input::post('split_posts_comply')) {
+            return $this->model->split_posts($args['id'], $args['fid'], $p);
+        }
+        else if (Input::post('split_posts')) {
             View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'focus_element' => array('subject','new_subject'),
@@ -251,37 +256,37 @@ class Topic
                     'list_forums' => $this->model->get_forum_list_split($args['fid']),
                 )
             )->addTemplate('moderate/split_posts.php')->display();
-
         }
+        else {
+            // Show the moderate posts view
 
-        // Show the moderate posts view
+            // Used to disable the Move and Delete buttons if there are no replies to this topic
+            $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
 
-        // Used to disable the Move and Delete buttons if there are no replies to this topic
-        $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
+            /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
+                    Container::get('user')->disp_posts = $cur_topic['num_replies'] + 1;
+            }*/
 
-        /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
-                Container::get('user')->disp_posts = $cur_topic['num_replies'] + 1;
-        }*/
+            if (ForumSettings::get('o_censoring') == '1') {
+                $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
+            }
 
-        if (ForumSettings::get('o_censoring') == '1') {
-            $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
+            View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+                    'page' => $p,
+                    'active_page' => 'moderate',
+                    'cur_topic' => $cur_topic,
+                    'url_topic' => Url::url_friendly($cur_topic['subject']),
+                    'url_forum' => Url::url_friendly($cur_topic['forum_name']),
+                    'fid' => $args['fid'],
+                    'id' => $args['id'],
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate($num_pages, $p, 'moderate/topic/' . $args['id'] . '/forum/' . $args['fid'] . '/action/moderate/#'),
+                    'post_data' => $this->model->display_posts_moderate($args['id'], $start_from),
+                    'button_status' => $button_status,
+                    'start_from' => $start_from,
+                )
+            )->addTemplate('moderate/posts_view.php')->display();
         }
-
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
-                'page' => $p,
-                'active_page' => 'moderate',
-                'cur_topic' => $cur_topic,
-                'url_topic' => Url::url_friendly($cur_topic['subject']),
-                'url_forum' => Url::url_friendly($cur_topic['forum_name']),
-                'fid' => $args['fid'],
-                'id' => $args['id'],
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'moderate/topic/'.$args['id'].'/forum/'.$args['fid'].'/action/moderate/#'),
-                'post_data' => $this->model->display_posts_moderate($args['id'], $start_from),
-                'button_status' => $button_status,
-                'start_from' => $start_from,
-            )
-        )->addTemplate('moderate/posts_view.php')->display();
     }
 
     public function action($req, $res, $args)

@@ -75,17 +75,17 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     <div class="conl">
                         <form id="qjump" method="get" action="">
                             <div><label><span><?php _e('Jump to') ?><br /></span></label>
-                                <select name="id" onchange="window.location=('<?= Url::get('forum/') ?>'+this.options[this.selectedIndex].value)">
+                                <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
-            foreach ($quickjump[(int) Container::get('user')->g_id] as $cat_id => $cat_data) {
-                echo "\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
-                foreach ($cat_data['cat_forums'] as $forum) {
-                    echo "\t\t\t\t\t\t".'<option value="'.$forum['forum_id'].'/'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => $forum['forum_name']]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+                foreach ($quickjump[(int) Container::get('user')->g_id] as $cat_id => $cat_data) {
+                    echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
+                    foreach ($cat_data['cat_forums'] as $forum) {
+                        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+                    }
+                    echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 }
-                echo "\t\t\t\t\t".'</optgroup>'."\n";
-            } ?>
+?>
                                 </select>
-                                <noscript><input type="submit" value="<?php _e('Go') ?>" accesskey="g" /></noscript>
                             </div>
                         </form>
                     </div>

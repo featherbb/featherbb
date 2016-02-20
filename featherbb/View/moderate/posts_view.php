@@ -53,14 +53,14 @@ foreach ($post_data as $post) {
                 <div class="postbody">
                     <div class="postleft">
                         <dl>
-                            <dt><strong><?= Utils::escape($post['poster_disp']) ?></strong></dt>
-                            <dd class="usertitle"><strong><?= Utils::escape($post['user_title']) ?></strong></dd>
+                            <dt><strong><?= $post['poster_disp'] ?></strong></dt>
+                            <dd class="usertitle"><strong><?= $post['user_title'] ?></strong></dd>
                         </dl>
                     </div>
                     <div class="postright">
                         <h3 class="nosize"><?php _e('Message') ?></h3>
                         <div class="postmsg">
-                            <?= Utils::escape($post['message'])."\n" ?>
+                            <?= $post['message']."\n" ?>
     <?php if ($post['edited'] != '') {
     echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
 }
