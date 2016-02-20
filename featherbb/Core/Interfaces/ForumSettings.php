@@ -8,6 +8,11 @@ class ForumSettings extends SlimSugar
 		return static::$slim->getContainer()['forum_settings'][$key];
 	}
 
+	public static function toArray()
+	{
+		return static::$slim->getContainer()['forum_settings'];
+	}
+
 	public static function set($key, $value)
 	{
 		return static::$slim->getContainer()['forum_settings'][$key] = $value;
