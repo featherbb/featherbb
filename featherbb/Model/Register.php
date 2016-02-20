@@ -14,14 +14,10 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Model\Auth as AuthModel;
 
 class Register
 {
-    public function __construct()
-    {
-        $this->auth = new \FeatherBB\Model\Auth();
-    }
-
     public function check_for_errors()
     {
         global $lang_antispam, $lang_antispam_questions;
@@ -264,7 +260,10 @@ class Register
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         }
 
-        $this->auth->feather_setcookie($new_uid, $password_hash, time() + ForumSettings::get('o_timeout_visit'));
+        $user = (object) $user;
+        $expire = time() + ForumSettings::get('o_timeout_visit');
+        $jwt = AuthModel::generate_jwt($user, $expire);
+        AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
 
         Container::get('hooks')->fire('model.register.insert_user');
 

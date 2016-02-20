@@ -34,6 +34,10 @@ class Topic
             $args['pid'] = null;
         }
 
+        if (!isset($args['name'])) {
+            $args['name'] = null;
+        }
+
         Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature

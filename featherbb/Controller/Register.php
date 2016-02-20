@@ -51,23 +51,23 @@ class Register
 
             // Did everything go according to plan? Insert the user
             if (empty($user['errors'])) {
-                $this->model->insert_user($user);
+                return $this->model->insert_user($user);
             }
         }
 
-            View::setPageInfo(array(
-                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
-                        'focus_element' => array('register', 'req_user'),
-                        'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
-                        'active_page' => 'register',
-                        'is_indexed' => true,
-                        'errors' => $user['errors'],
-                        'index_questions'    =>    $index_questions,
-                        'languages' => \FeatherBB\Core\Lister::getLangs(),
-                        'question' => array_keys($lang_antispam_questions),
-                        'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
-                            )
-                    )->addTemplate('register/form.php')->display();
+        View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
+                    'focus_element' => array('register', 'req_user'),
+                    'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
+                    'active_page' => 'register',
+                    'is_indexed' => true,
+                    'errors' => $user['errors'],
+                    'index_questions'    =>    $index_questions,
+                    'languages' => \FeatherBB\Core\Lister::getLangs(),
+                    'question' => array_keys($lang_antispam_questions),
+                    'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
+                )
+        )->addTemplate('register/form.php')->display();
     }
 
     public function cancel($req, $res, $args)
@@ -96,9 +96,9 @@ class Register
         }
 
         View::setPageInfo(array(
-                            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')),
-                            'active_page' => 'register',
-                            )
-                    )->addTemplate('register/rules.php')->display();
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')),
+                'active_page' => 'register',
+            )
+        )->addTemplate('register/rules.php')->display();
     }
 }

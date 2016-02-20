@@ -587,8 +587,6 @@ class Url
                                         "'"    =>    '-',
                             );
 
-    protected static $feather;
-
     //
     // Generate a string with numbered links (for multipage scripts)
     //
@@ -911,19 +909,4 @@ class Url
         return $m; // return TRUE == array of useful named $matches plus the valid $url.
     }
 
-
-    //
-    // Display $message and redirect user to $destination_url
-    //
-    // public static function redirect($destination_url, $message = null, $status = 302)
-    // {
-    //     // Set default type to info if not provided
-    //     if (is_string($message))
-    //         $message = array('info', $message);
-    //     // Add a flash message if needed
-    //     if (is_array($message))
-    //         self::$feather->flash($message[0], $message[1]);
-    //
-    //     self::$feather->redirect($destination_url);
-    // }
 }

@@ -215,14 +215,11 @@ class Auth
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')),
             'msg'    =>    $message,
             'backlink'    =>   false,
         ))->addTemplate('maintenance.php')->display();
-
-        // Don't display anything after a message
-        $this->app->stop();
     }
 
     public function __invoke($req, $res, $next)

@@ -31,7 +31,7 @@ class Post
     {
         Container::get('hooks')->fire('controller.post.newreply');
 
-        $this->newpost($req, $res, $args);
+        return $this->newpost($req, $res, $args);
     }
 
     public function newpost($req, $res, $args)
@@ -102,47 +102,47 @@ class Post
                 $page = '';
             }
 
-                // Let's see if everything went right
-                $errors = $this->model->check_errors_before_post($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
+            // Let's see if everything went right
+            $errors = $this->model->check_errors_before_post($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
 
-                // Setup some variables before post
-                $post = $this->model->setup_variables($errors, $is_admmod);
+            // Setup some variables before post
+            $post = $this->model->setup_variables($errors, $is_admmod);
 
-                // Did everything go according to plan?
-                if (empty($errors) && !Input::post('preview')) {
-                        // If it's a reply
-                        if ($args['tid']) {
-                            // Insert the reply, get the new_pid
-                                $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
+            // Did everything go according to plan?
+            if (empty($errors) && !Input::post('preview')) {
+                    // If it's a reply
+                    if ($args['tid']) {
+                        // Insert the reply, get the new_pid
+                            $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
 
-                                // Should we send out notifications?
-                                if (ForumSettings::get('o_topic_subscriptions') == '1') {
-                                    $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
-                                }
-                        }
-                        // If it's a new topic
-                        elseif ($args['fid']) {
-                            // Insert the topic, get the new_pid
-                                $new = $this->model->insert_topic($post, $args['fid']);
+                            // Should we send out notifications?
+                            if (ForumSettings::get('o_topic_subscriptions') == '1') {
+                                $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
+                            }
+                    }
+                    // If it's a new topic
+                    elseif ($args['fid']) {
+                        // Insert the topic, get the new_pid
+                            $new = $this->model->insert_topic($post, $args['fid']);
 
-                                // Should we send out notifications?
-                                if (ForumSettings::get('o_forum_subscriptions') == '1') {
-                                    $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
-                                }
-                        }
+                            // Should we send out notifications?
+                            if (ForumSettings::get('o_forum_subscriptions') == '1') {
+                                $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
+                            }
+                    }
 
-                        // If we previously found out that the email was banned
-                        if (Container::get('user')->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
-                            $this->model->warn_banned_user($post, $new['pid']);
-                        }
+                    // If we previously found out that the email was banned
+                    if (Container::get('user')->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
+                        $this->model->warn_banned_user($post, $new['pid']);
+                    }
 
-                        // If the posting user is logged in, increment his/her post count
-                        if (!Container::get('user')->is_guest) {
-                            $this->model->increment_post_count($post, $new['tid']);
-                        }
+                    // If the posting user is logged in, increment his/her post count
+                    if (!Container::get('user')->is_guest) {
+                        $this->model->increment_post_count($post, $new['tid']);
+                    }
 
-                    return Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
-                }
+                return Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
+            }
         }
 
         $quote = '';
@@ -200,7 +200,7 @@ class Post
             $post_data = '';
         }
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
                 'required_fields' => $required_fields,
                 'focus_element' => $focus_element,

@@ -24,7 +24,7 @@ class Track
             $tracked_topics = array('topics' => array(), 'forums' => array());
         }
 
-        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($tracked_topics), time() + ForumSettings::get('o_timeout_visit'));
+        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($tracked_topics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
     }
 
 
