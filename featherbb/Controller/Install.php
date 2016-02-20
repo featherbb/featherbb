@@ -138,7 +138,7 @@ class Install
                 return $this->create_config($data);
             }
         } else {
-            $base_url = str_replace('index.php', '', Request::getUri()->getScheme().'://'.Request::getUri()->getHost().Request::getUri()->getBasePath());
+            $base_url = str_replace('index.php', '', URL::base());
             $data = array('title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,

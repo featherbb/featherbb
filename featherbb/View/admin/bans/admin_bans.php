@@ -41,8 +41,7 @@ Container::get('hooks')->fire('view.admin.bans.admin_bans.start');
 
         <h2 class="block2"><span><?php _e('Ban search head') ?></span></h2>
         <div class="box">
-            <form id="find_bans" method="get" action="<?= Router::pathFor('addBan') ?>">
-                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+            <form id="find_bans" method="get" action="<?= Router::pathFor('adminBans') ?>">
                 <p class="submittop"><input type="submit" name="find_ban" value="<?php _e('Submit search') ?>" tabindex="3" /></p>
                 <div class="inform">
                     <fieldset>

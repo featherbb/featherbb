@@ -775,7 +775,8 @@ class Url
     //
     public static function base()
     {
-        return Request::getUri()->getBasePath();
+        return Request::getUri()->getScheme().'://'.Request::getUri()->getHost().Request::getUri()->getBasePath();
+        // return Request::getUri()->getBasePath();
     }
 
     //
