@@ -98,11 +98,11 @@ class Plugins
     {
         Container::get('hooks')->fire('controller.admin.plugins.activate');
 
-        if (!$args['plugin']) {
+        if (!$args['name']) {
             throw new Error(__('Bad request'), 400);
         }
 
-        $this->model->activate($args['plugin']);
+        $this->model->activate($args['name']);
         // Plugin has been activated, confirm and redirect
         return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
     }
@@ -111,11 +111,11 @@ class Plugins
     {
         Container::get('hooks')->fire('controller.admin.plugins.deactivate');
 
-        if (!$args['plugin']) {
+        if (!$args['name']) {
             throw new Error(__('Bad request'), 400);
         }
 
-        $this->model->deactivate($args['plugin']);
+        $this->model->deactivate($args['name']);
         // // Plugin has been deactivated, confirm and redirect
         return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
     }
@@ -124,11 +124,11 @@ class Plugins
     {
         Container::get('hooks')->fire('controller.admin.plugins.uninstall');
 
-        if (!$args['plugin']) {
+        if (!$args['name']) {
             throw new Error(__('Bad request'), 400);
         }
 
-        $this->model->uninstall($args['plugin']);
+        $this->model->uninstall($args['name']);
         // Plugin has been deactivated, confirm and redirect
         return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
     }
@@ -140,12 +140,12 @@ class Plugins
      */
     public function info($req, $res, $args)
     {
-        $formattedPluginName =  str_replace('-', '', $args['plugin']);
+        $formattedPluginName =  str_replace('-', '', $args['name']);
         $new = "\FeatherBB\Plugins\Controller\\".$formattedPluginName;
         if (class_exists($new)) {
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {
-                AdminUtils::generateAdminMenu($args['plugin']);
+                AdminUtils::generateAdminMenu($args['name']);
                 $plugin->info();
             }
             else {
