@@ -20,8 +20,6 @@ class Register
 {
     public function check_for_errors()
     {
-        global $lang_antispam, $lang_antispam_questions;
-
         $user = array();
         $user['errors'] = '';
 
@@ -63,7 +61,7 @@ class Register
         }
 
         // Antispam feature
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
         $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
         $lang_antispam_questions_array = array();

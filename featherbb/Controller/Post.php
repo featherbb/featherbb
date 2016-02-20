@@ -51,7 +51,7 @@ class Post
         Container::get('hooks')->fire('controller.post.create', $args['fid'], $args['tid'], $args['qid']);
 
         // Antispam feature
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
@@ -209,7 +209,6 @@ class Post
                 'tid' => $args['tid'],
                 'fid' => $args['fid'],
                 'cur_posting' => $cur_posting,
-                'lang_antispam' => $lang_antispam,
                 'lang_antispam_questions' => $lang_antispam_questions,
                 'index_questions' => $index_questions,
                 'checkboxes' => $checkboxes,

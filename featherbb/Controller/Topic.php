@@ -41,7 +41,7 @@ class Topic
         Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Fetch some informations about the topic

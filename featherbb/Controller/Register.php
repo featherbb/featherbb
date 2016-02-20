@@ -32,7 +32,7 @@ class Register
         }
 
         // Antispam feature
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled

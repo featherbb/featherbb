@@ -2,14 +2,7 @@
 // Language definitions used in register.php and post.php
 // Based on work by Otomatic
 
-$lang_antispam = array(
-  'Robot title'      => 'Are you human or robot?',
-  'Robot question'   => 'Please respond with a <b>number</b> to the question: <b>%s</b>',
-  'Robot info'       => 'Checking if this is requested by a real person and not an automated program.',
-  'Robot test fail'  => 'You answered incorrectly to the "Human or Robot" question.',
-);
-
-$lang_antispam_questions = array(
+return array(
   'What is two plus two?'     => '4',
   'What is four minus one?'   => '3',
   'What is three plus two?'   => '5',
