@@ -18,10 +18,10 @@ class Search
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Search();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/userlist.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/search.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/topic.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/forum.mo');
+        translate('userlist.mo');
+        translate('search.mo');
+        translate('topic.mo');
+        translate('forum.mo');
     }
 
     public function display($req, $res, $args)

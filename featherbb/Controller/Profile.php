@@ -19,10 +19,10 @@ class Profile
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Profile();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/profile.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/register.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/prof_reg.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/misc.mo');
+        translate('profile.mo');
+        translate('register.mo');
+        translate('prof_reg.mo');
+        translate('misc.mo');
     }
 
     public function display($req, $res, $args)

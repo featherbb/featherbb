@@ -18,7 +18,7 @@ class Groups
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Groups();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/admin/groups.mo');
+        translate('admin/groups.mo');
     }
 
     public function display($req, $res, $args)

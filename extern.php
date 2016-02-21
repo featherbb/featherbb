@@ -229,8 +229,8 @@ function authenticate_user($user, $password, $password_is_hash = false)
         User::get()->is_guest = false;
     }
 
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.User::get()->language.'/common.mo');
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.User::get()->language.'/index.mo');
+    translate('common.mo');
+    translate('index.mo');
 }
 
 // If we're a guest and we've sent a username/pass, we can try to authenticate using those details

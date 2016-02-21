@@ -19,8 +19,8 @@ class Forum
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Forum();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/forum.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/misc.mo');
+        translate('forum.mo');
+        translate('misc.mo');
     }
 
     public function display($req, $res, $args)

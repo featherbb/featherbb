@@ -18,8 +18,8 @@ class Userlist
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Userlist();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/userlist.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/search.mo');
+        translate('userlist.mo');
+        translate('search.mo');
     }
 
     public function display($req, $res, $args)

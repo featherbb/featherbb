@@ -17,7 +17,7 @@ class Censoring
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Censoring();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/admin/censoring.mo');
+        translate('admin/censoring.mo');
     }
 
     public function display($req, $res, $args)

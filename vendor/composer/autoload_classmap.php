@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'MO' => $baseDir . '/featherbb/Core/pomo/MO.php',
+    'MO' => $baseDir . '/featherbb/Core/gettext/MO.php',
 );

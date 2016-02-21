@@ -19,7 +19,7 @@ class Bans
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Bans();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/admin/bans.mo');
+        translate('admin/bans.mo');
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_ban_users == '0')) {
             throw new Error(__('No permission'), '403');

@@ -18,13 +18,13 @@ class Post
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Post();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/prof_reg.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/delete.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/post.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/misc.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/register.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/bbeditor.mo');
+        translate('prof_reg.mo');
+        translate('delete.mo');
+        translate('post.mo');
+        translate('misc.mo');
+        translate('register.mo');
+        translate('antispam.mo');
+        translate('bbeditor.mo');
     }
 
     public function newreply($req, $res, $args)

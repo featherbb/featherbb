@@ -21,7 +21,7 @@ class Auth
 {
     public function __construct()
     {
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/login.mo');
+        translate('login.mo');
     }
 
     public function login($req, $res, $args)

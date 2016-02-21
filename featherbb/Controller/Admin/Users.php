@@ -19,7 +19,7 @@ class Users
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Users();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/admin/users.mo');
+        translate('admin/users.mo');
     }
 
     public function display($req, $res, $args)

@@ -18,7 +18,7 @@ class Statistics
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Statistics();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/admin/index.mo');
+        translate('admin/index.mo');
     }
 
     public function display($req, $res, $args)

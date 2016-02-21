@@ -19,9 +19,9 @@ class Topic
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Topic();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/topic.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/misc.mo'); // To be removed
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/post.mo');
+        translate('topic.mo');
+        translate('misc.mo'); // To be removed
+        translate('post.mo');
     }
 
     public function display($req, $res, $args)

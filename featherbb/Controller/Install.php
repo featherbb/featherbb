@@ -49,7 +49,7 @@ class Install
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$this->install_lang.'/install.mo');
+        translate(ForumEnv::get('install.mo', 'featherbb', $this->install_lang));
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = array();
@@ -187,7 +187,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$data['default_lang'].'/install.mo');
+        translate(ForumEnv::get('install.mo', 'featherbb', $data['default_lang']));
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {

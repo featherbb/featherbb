@@ -18,9 +18,9 @@ class Register
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Register();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/register.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/prof_reg.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.mo');
+        translate('register.mo');
+        translate('prof_reg.mo');
+        translate('antispam.mo');
     }
 
     public function display($req, $res, $args)

@@ -294,7 +294,7 @@ class Auth
             Container::set('user', $user);
         }
 
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language.'/common.mo');
+        translate('common.mo');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());
