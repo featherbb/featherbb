@@ -109,7 +109,7 @@ class Profile
 
             View::addTemplate('profile/view_profile.php')->display();
         } else {
-            if (!$args['section'] || $args['section'] == 'essentials') {
+            if (!isset($args['section']) || $args['section'] == 'essentials') {
                 $user_disp = $this->model->edit_essentials($args['id'], $user);
 
                 View::setPageInfo(array(

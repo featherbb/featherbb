@@ -11,6 +11,7 @@ use \FeatherBB\Middleware\Logged as IsLogged;
 use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
 use \FeatherBB\Middleware\Admin as IsAdmin;
 use \FeatherBB\Middleware\AdminModo as IsAdmMod;
+use FeatherBB\Core\Error;
 
 
 Route::map(['GET', 'POST'], '/install', '\FeatherBB\Controller\Install:run')->setName('install');
@@ -179,11 +180,7 @@ Route::group('/admin', function() {
 // Override the default Not Found Handler
 Container::set('notFoundHandler', function ($c) {
     return function ($request, $response) use ($c) {
-        // throw new Error('Page not found', 404); // TODO : translation
-        return $c['response']
-            ->withStatus(404)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Page not found');
+        throw new Error('Page not found', 404); // TODO : translation
     };
 });
 
