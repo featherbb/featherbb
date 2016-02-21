@@ -1357,8 +1357,6 @@ class Profile
     //
     public function check_username($username, $errors, $exclude_id = null)
     {
-        global $errors;
-
         // Include UTF-8 function
         require_once ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 

@@ -201,8 +201,6 @@ function set_default_user()
 //
 function authenticate_user($user, $password, $password_is_hash = false)
 {
-    global $feather;
-
     // Check if there's a user matching $user and $password
     $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
 

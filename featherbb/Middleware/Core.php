@@ -147,8 +147,6 @@ class Core
 
     public function __invoke($req, $res, $next)
     {
-        global $forum_time_formats, $forum_date_formats; // Legacy
-
         // Set headers
         $res = $this->set_headers($res);
 
@@ -251,9 +249,9 @@ class Core
         // Run activated plugins
         self::loadPlugins();
 
-        // Define time formats
-        $forum_time_formats = array(ForumSettings::get('o_time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a');
-        $forum_date_formats = array(ForumSettings::get('o_date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y');
+        // Define time formats and add them to the container
+        Container::set('forum_time_formats', array(ForumSettings::get('o_time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
+        Container::set('forum_date_formats', array(ForumSettings::get('o_date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
 
         // Call FeatherBBAuth middleware
         return $next($req, $res);
