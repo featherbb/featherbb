@@ -17,7 +17,7 @@ class Maintenance
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
-        translate('admin/maintenance.mo');
+        translate('admin/maintenance');
     }
 
     public function display($req, $res, $args)

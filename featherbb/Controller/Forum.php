@@ -19,8 +19,8 @@ class Forum
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Forum();
-        translate('forum.mo');
-        translate('misc.mo');
+        translate('forum');
+        translate('misc');
     }
 
     public function display($req, $res, $args)

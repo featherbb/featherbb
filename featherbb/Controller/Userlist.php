@@ -18,8 +18,8 @@ class Userlist
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Userlist();
-        translate('userlist.mo');
-        translate('search.mo');
+        translate('userlist');
+        translate('search');
     }
 
     public function display($req, $res, $args)

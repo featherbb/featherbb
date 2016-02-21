@@ -18,7 +18,7 @@ class Index
 {
     public function __construct()
     {
-        translate('admin/index.mo');
+        translate('admin/index');
     }
 
     public function display($req, $res, $args)

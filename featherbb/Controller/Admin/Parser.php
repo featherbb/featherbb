@@ -19,7 +19,7 @@ class Parser
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Parser();
-        translate('admin/parser.mo');
+        translate('admin/parser');
     }
 
     public function display($req, $res, $args)

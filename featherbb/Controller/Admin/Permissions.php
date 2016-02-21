@@ -17,7 +17,7 @@ class Permissions
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Permissions();
-        translate('admin/permissions.mo');
+        translate('admin/permissions');
     }
 
     public function display($req, $res, $args)

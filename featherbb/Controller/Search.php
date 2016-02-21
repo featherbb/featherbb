@@ -18,10 +18,10 @@ class Search
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Search();
-        translate('userlist.mo');
-        translate('search.mo');
-        translate('topic.mo');
-        translate('forum.mo');
+        translate('userlist');
+        translate('search');
+        translate('topic');
+        translate('forum');
     }
 
     public function display($req, $res, $args)

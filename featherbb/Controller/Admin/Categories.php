@@ -20,7 +20,7 @@ class Categories
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Categories();
-        translate('admin/categories.mo');
+        translate('admin/categories');
     }
 
     public function add($req, $res, $args)

@@ -19,7 +19,7 @@ class Forums
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Forums();
-        translate('admin/forums.mo');
+        translate('admin/forums');
     }
 
     public function add()

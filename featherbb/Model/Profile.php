@@ -1360,8 +1360,8 @@ class Profile
         // Include UTF-8 function
         require_once ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
-        translate('register.mo');
-        translate('prof_reg.mo');
+        translate('register');
+        translate('prof_reg');
 
         // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
         $username = preg_replace('%\s+%s', ' ', $username);

@@ -17,7 +17,7 @@ class Censoring
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Censoring();
-        translate('admin/censoring.mo');
+        translate('admin/censoring');
     }
 
     public function display($req, $res, $args)

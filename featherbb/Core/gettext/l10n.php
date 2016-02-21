@@ -20,10 +20,10 @@ function translate($mofile, $domain = 'featherbb', $language = false) {
     global $l10n;
 
     if (!$language) {
-        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/'.$mofile;
+        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/'.$mofile.'.mo';
     }
     else {
-        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$language.'/'.$mofile;
+        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$language.'/'.$mofile.'.mo';
     }
 
     if (!is_readable($mofile)) {

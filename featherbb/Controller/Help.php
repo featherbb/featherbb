@@ -15,7 +15,7 @@ class Help
 {
     public function __construct()
     {
-        translate('help.mo');
+        translate('help');
     }
 
     public function display($req, $res, $args)

@@ -21,7 +21,7 @@ class Plugins
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Plugins();
-        translate('admin/plugins.mo');
+        translate('admin/plugins');
     }
 
     /**

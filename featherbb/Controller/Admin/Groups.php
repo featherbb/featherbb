@@ -18,7 +18,7 @@ class Groups
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Groups();
-        translate('admin/groups.mo');
+        translate('admin/groups');
     }
 
     public function display($req, $res, $args)

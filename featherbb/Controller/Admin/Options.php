@@ -17,7 +17,7 @@ class Options
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Options();
-        translate('admin/options.mo');
+        translate('admin/options');
     }
 
     public function display($req, $res, $args)

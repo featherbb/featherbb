@@ -18,13 +18,13 @@ class Post
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Post();
-        translate('prof_reg.mo');
-        translate('delete.mo');
-        translate('post.mo');
-        translate('misc.mo');
-        translate('register.mo');
-        translate('antispam.mo');
-        translate('bbeditor.mo');
+        translate('prof_reg');
+        translate('delete');
+        translate('post');
+        translate('misc');
+        translate('register');
+        translate('antispam');
+        translate('bbeditor');
     }
 
     public function newreply($req, $res, $args)

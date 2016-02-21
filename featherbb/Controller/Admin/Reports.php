@@ -18,7 +18,7 @@ class Reports
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Reports();
-        translate('admin/reports.mo');
+        translate('admin/reports');
     }
 
     public function display($req, $res, $args)

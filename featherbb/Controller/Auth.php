@@ -21,7 +21,7 @@ class Auth
 {
     public function __construct()
     {
-        translate('login.mo');
+        translate('login');
     }
 
     public function login($req, $res, $args)

@@ -19,9 +19,9 @@ class Topic
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Topic();
-        translate('topic.mo');
-        translate('misc.mo'); // To be removed
-        translate('post.mo');
+        translate('topic');
+        translate('misc'); // To be removed
+        translate('post');
     }
 
     public function display($req, $res, $args)
