@@ -21,7 +21,7 @@ class Reports
         $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(), 'zapped_by' => Container::get('user')->id);
+        $set_zap_report = array('zapped' => time(), 'zapped_by' => User::get()->id);
         $set_zap_report = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped

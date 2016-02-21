@@ -71,7 +71,7 @@ class Topic
 
         $num_posts = Container::get('hooks')->fire('model.topic.redirect_to_post_num', $num_posts);
 
-        $post['get_p'] = ceil(($num_posts + 1) / Container::get('user')->disp_posts);
+        $post['get_p'] = ceil(($num_posts + 1) / User::get()->disp_posts);
 
         $post = Container::get('hooks')->fire('model.topic.redirect_to_post', $post);
 
@@ -85,10 +85,10 @@ class Topic
 
         // If action=new, we redirect to the first new post (if any)
         if ($action == 'new') {
-            if (!Container::get('user')->is_guest) {
+            if (!User::get()->is_guest) {
                 // We need to check if this topic has been viewed recently by the user
                 $tracked_topics = Track::get_tracked_topics();
-                $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : Container::get('user')->last_visit;
+                $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : User::get()->last_visit;
 
                 $first_new_post_id = DB::for_table('posts')
                                         ->where('topic_id', $topic_id)
@@ -130,7 +130,7 @@ class Topic
             array('fp.read_forum' => '1')
         );
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id');
 
             $cur_topic = DB::for_table('topics')
@@ -138,9 +138,9 @@ class Topic
                 ->select_many($select_get_info_topic)
                 ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                 ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                ->left_outer_join('topic_subscriptions', array('s.user_id', '=', Container::get('user')->id), null, true)
+                ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
                 ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->where_any_is($cur_topic['where'])
                 ->where('t.id', $id)
                 ->where_null('t.moved_to');
@@ -153,7 +153,7 @@ class Topic
                             ->select_expr(0, 'is_subscribed')
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                             ->where_any_is($cur_topic['where'])
                             ->where('t.id', $id)
                             ->where_null('t.moved_to');
@@ -177,7 +177,7 @@ class Topic
         $closed = Container::get('hooks')->fire('model.topic.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
 
         if ($closed == '0') {
-            if (($post_replies == '' && Container::get('user')->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
+            if (($post_replies == '' && User::get()->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
                 $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newReply', ['tid' => $topic_id]).'">'.__('Post reply').'</a></p>'."\n";
             } else {
                 $post_link = '';
@@ -201,10 +201,10 @@ class Topic
     public function is_quickpost($post_replies, $closed, $is_admmod)
     {
         $quickpost = false;
-        if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && Container::get('user')->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
+        if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::get()->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
 
             $required_fields = array('req_message' => __('Message'));
-            if (Container::get('user')->is_guest) {
+            if (User::get()->is_guest) {
                 $required_fields['req_username'] = __('Guest name');
                 if (ForumSettings::get('p_force_guest_email') == '1') {
                     $required_fields['req_email'] = __('Email');
@@ -235,7 +235,7 @@ class Topic
         $authorized = DB::for_table('topics')
                         ->table_alias('t')
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($authorized['where'])
                         ->where('t.id', $topic_id)
                         ->where_null('t.moved_to');
@@ -247,7 +247,7 @@ class Topic
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
-                        ->where('user_id', Container::get('user')->id)
+                        ->where('user_id', User::get()->id)
                         ->where('topic_id', $topic_id);
         $is_subscribed = Container::get('hooks')->fireDB('model.topic.subscribe_topic_is_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
@@ -257,7 +257,7 @@ class Topic
         }
 
         $subscription['insert'] = array(
-            'user_id' => Container::get('user')->id,
+            'user_id' => User::get()->id,
             'topic_id'  => $topic_id
         );
 
@@ -280,7 +280,7 @@ class Topic
         }
 
         $is_subscribed = DB::for_table('topic_subscriptions')
-                            ->where('user_id', Container::get('user')->id)
+                            ->where('user_id', User::get()->id)
                             ->where('topic_id', $topic_id);
         $is_subscribed = Container::get('hooks')->fireDB('model.topic.unsubscribe_topic_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
@@ -291,7 +291,7 @@ class Topic
 
         // Delete the subscription
         $delete = DB::for_table('topic_subscriptions')
-                    ->where('user_id', Container::get('user')->id)
+                    ->where('user_id', User::get()->id)
                     ->where('topic_id', $topic_id);
         $delete = Container::get('hooks')->fireDB('model.topic.unsubscribe_topic_query', $delete);
         $delete = $delete->delete_many();
@@ -302,7 +302,7 @@ class Topic
     // Subscraction link
     public function get_subscraction($is_subscribed, $topic_id)
     {
-        if (!Container::get('user')->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
+        if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
             if ($is_subscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
                 $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeTopic', ['id' => $topic_id]).'">'.__('Unsubscribe').'</a></p>'."\n";
@@ -356,7 +356,7 @@ class Topic
                     ->select_many($result['select'])
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($result['order_by']);
@@ -385,7 +385,7 @@ class Topic
                     ->select_many($select_get_forum_list_move)
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->where_any_is($where_get_forum_list_move)
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_forum_list_move);
@@ -432,7 +432,7 @@ class Topic
                     ->select_many($result['select'])
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_forum_list_split);
@@ -492,7 +492,7 @@ class Topic
         $authorized = DB::for_table('forums')
                         ->table_alias('f')
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', $new_fid), 'fp', true)
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($authorized['where'])
                         ->where_null('f.redirect_url');
         $authorized = Container::get('hooks')->fireDB('model.topic.move_to_authorized', $authorized);
@@ -572,7 +572,7 @@ class Topic
                 ->where_in('id', $posts_array)
                 ->where('topic_id', $tid);
 
-            if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
                 $result->where_not_in('poster_id', Utils::get_admin_ids());
             }
 
@@ -606,7 +606,7 @@ class Topic
 
             // Update the topic
             $update_topic['insert'] = array(
-                'last_post' => Container::get('user')->id,
+                'last_post' => User::get()->id,
                 'last_post_id'  => $last_post['id'],
                 'last_poster'  => $last_post['poster'],
             );
@@ -641,7 +641,7 @@ class Topic
             ->select_many($cur_topic['select'])
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->where_any_is($cur_topic['where'])
             ->where('f.id', $fid)
             ->where('t.id', $tid)
@@ -701,7 +701,7 @@ class Topic
             $result = DB::for_table('forums')
                         ->table_alias('f')
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($result['where'])
                         ->where_null('f.redirect_url');
             $result = Container::get('hooks')->fireDB('model.topic.split_posts_second_query', $result);
@@ -830,7 +830,7 @@ class Topic
                     ->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by('id')
-                    ->limit(Container::get('user')->disp_topics)
+                    ->limit(User::get()->disp_topics)
                     ->offset($start_from);
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_ids_query', $result);
         $result = $result->find_many();
@@ -869,7 +869,7 @@ class Topic
 
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
-                if (Container::get('user')->g_view_users == '1') {
+                if (User::get()->g_view_users == '1') {
                     $cur_post['username_formatted'] = '<a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
@@ -884,7 +884,7 @@ class Topic
                 // Format the online indicator
                 $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.__('Online').'</strong>' : '<span>'.__('Offline').'</span>';
 
-                if (ForumSettings::get('o_avatars') == '1' && Container::get('user')->show_avatars != '0') {
+                if (ForumSettings::get('o_avatars') == '1' && User::get()->show_avatars != '0') {
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {
@@ -904,14 +904,14 @@ class Topic
 
                     $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.Utils::format_time($cur_post['registered'], true).'</span></dd>';
 
-                    if (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) {
+                    if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
                         $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
-                    if ((($cur_post['email_setting'] == '0' && !Container::get('user')->is_guest) || Container::get('user')->is_admmod) && Container::get('user')->g_send_email == '1') {
+                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::get()->is_admmod) && User::get()->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
-                    } elseif ($cur_post['email_setting'] == '1' && !Container::get('user')->is_guest && Container::get('user')->g_send_email == '1') {
+                    } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::get()->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
                     }
 
@@ -924,13 +924,13 @@ class Topic
                     }
                 }
 
-                if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_promote_users == '1')) {
+                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
                         $cur_post['user_info'][] = '<dd><span><a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
                     }
                 }
 
-                if (Container::get('user')->is_admmod) {
+                if (User::get()->is_admmod) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
@@ -943,38 +943,38 @@ class Topic
                 $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
 
-                if (Container::get('user')->is_admmod) {
+                if (User::get()->is_admmod) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
-                if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' && !Container::get('user')->is_guest && Container::get('user')->g_send_email == '1') {
+                if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' && !User::get()->is_guest && User::get()->g_send_email == '1') {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
                 }
             }
 
             // Generation post action array (quote, edit, delete etc.)
             if (!$is_admmod) {
-                if (!Container::get('user')->is_guest) {
+                if (!User::get()->is_guest) {
                     $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
                 }
 
                 if ($cur_topic['closed'] == '0') {
-                    if ($cur_post['poster_id'] == Container::get('user')->id) {
-                        if ((($start_from + $post_count) == 1 && Container::get('user')->g_delete_topics == '1') || (($start_from + $post_count) > 1 && Container::get('user')->g_delete_posts == '1')) {
+                    if ($cur_post['poster_id'] == User::get()->id) {
+                        if ((($start_from + $post_count) == 1 && User::get()->g_delete_topics == '1') || (($start_from + $post_count) > 1 && User::get()->g_delete_posts == '1')) {
                             $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                         }
-                        if (Container::get('user')->g_edit_posts == '1') {
+                        if (User::get()->g_edit_posts == '1') {
                             $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                         }
                     }
 
-                    if (($cur_topic['post_replies'] == '' && Container::get('user')->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
+                    if (($cur_topic['post_replies'] == '' && User::get()->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
                         $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
                     }
                 }
             } else {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
-                if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || !in_array($cur_post['poster_id'], $admin_ids)) {
+                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || !in_array($cur_post['poster_id'], $admin_ids)) {
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                 }
@@ -985,7 +985,7 @@ class Topic
             $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
-            if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && Container::get('user')->show_sig != '0') {
+            if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::get()->show_sig != '0') {
                 // if (isset($avatar_cache[$cur_post['poster_id']])) {
                 //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 // } else {
@@ -1014,7 +1014,7 @@ class Topic
         $find_ids = DB::for_table('posts')->select('id')
             ->where('topic_id', $tid)
             ->order_by('id')
-            ->limit(Container::get('user')->disp_posts)
+            ->limit(User::get()->disp_posts)
             ->offset($start_from);
         $find_ids = Container::get('hooks')->fireDB('model.topic.display_posts_view_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
@@ -1041,7 +1041,7 @@ class Topic
 
             // If the poster is a registered user
             if ($cur_post->poster_id > 1) {
-                if (Container::get('user')->g_view_users == '1') {
+                if (User::get()->g_view_users == '1') {
                     $cur_post->poster_disp = '<a href="'.Router::pathFor('userProfile', ['id' => $cur_post->poster_id]).'">'.Utils::escape($cur_post->poster).'</a>';
                 } else {
                     $cur_post->poster_disp = Utils::escape($cur_post->poster);

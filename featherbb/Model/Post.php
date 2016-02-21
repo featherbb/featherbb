@@ -40,9 +40,9 @@ class Post
                             ->select_many($cur_posting['select'])
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                             ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', Container::get('user')->id), null, true)
+                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
                             ->where_any_is($cur_posting['where'])
                             ->where('t.id', $tid);
 
@@ -53,7 +53,7 @@ class Post
                             ->table_alias('f')
                             ->select_many($cur_posting['select'])
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                             ->where_any_is($cur_posting['where'])
                             ->where('f.id', $fid);
         }
@@ -87,7 +87,7 @@ class Post
                     ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                     ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->where_any_is($cur_post['where'])
                     ->where('p.id', $id);
 
@@ -105,12 +105,12 @@ class Post
     // Checks the post for errors before posting
     public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
     {
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
 
         $fid = Container::get('hooks')->fire('model.post.check_errors_before_post_start', $fid);
 
         // Antispam feature
-        if (Container::get('user')->is_guest) {
+        if (User::get()->is_guest) {
 
             // It's a guest, so we have to validate the username
             $profile = new \FeatherBB\Model\Profile();
@@ -132,8 +132,8 @@ class Post
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && Container::get('user')->last_post != '' && (time() - Container::get('user')->last_post) < Container::get('prefs')->get(Container::get('user'), 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get(Container::get('user'), 'post.min_interval'), Container::get('prefs')->get(Container::get('user'), 'post.min_interval') - (time() - Container::get('user')->last_post));
+        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < Container::get('prefs')->get(User::get(), 'post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get(User::get(), 'post.min_interval'), Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post));
         }
 
         // If it's a new topic
@@ -152,14 +152,14 @@ class Post
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !Container::get('user')->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
                 $errors[] = __('All caps subject');
             }
 
             $errors = Container::get('hooks')->fire('model.post.check_errors_before_new_topic_errors', $errors);
         }
 
-        if (Container::get('user')->is_guest) {
+        if (User::get()->is_guest) {
             $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
@@ -171,7 +171,7 @@ class Post
 
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
-                if (Container::get('user')->is_guest && Container::get('email')->is_banned_email($email)) {
+                if (User::get()->is_guest && Container::get('email')->is_banned_email($email)) {
                     if (ForumSettings::get('p_allow_banned_email') == '0') {
                         $errors[] = __('Banned email');
                     }
@@ -188,7 +188,7 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !Container::get('user')->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::get()->is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -235,7 +235,7 @@ class Post
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !Container::get('user')->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -246,7 +246,7 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !Container::get('user')->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::get()->is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -280,9 +280,9 @@ class Post
 
         $post = Container::get('hooks')->fire('model.post.setup_variables_start', $post, $errors, $is_admmod);
 
-        if (!Container::get('user')->is_guest) {
-            $post['username'] = Container::get('user')->username;
-            $post['email'] = Container::get('user')->email;
+        if (!User::get()->is_guest) {
+            $post['username'] = User::get()->username;
+            $post['email'] = User::get()->email;
         }
         // Otherwise it should be in $feather ($_POST)
         else {
@@ -365,7 +365,7 @@ class Post
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->where_any_is($query['where'])
             ->where('p.id', $id);
 
@@ -526,7 +526,7 @@ class Post
 
         if (!Input::post('silent') || !$is_admmod) {
             $query['update_post']['edited'] = time();
-            $query['update_post']['edited_by'] = Container::get('user')->username;
+            $query['update_post']['edited_by'] = User::get()->username;
         }
 
         $query = DB::for_table('posts')->where('id', $id)
@@ -548,8 +548,8 @@ class Post
             throw new Error(__('Reason too long'), 400);
         }
 
-        if (Container::get('user')->last_report_sent != '' && (time() - Container::get('user')->last_report_sent) < Container::get('user')->g_report_flood && (time() - Container::get('user')->last_report_sent) >= 0) {
-            throw new Error(sprintf(__('Report flood'), Container::get('user')->g_report_flood, Container::get('user')->g_report_flood - (time() - Container::get('user')->last_report_sent)), 429);
+        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::get()->g_report_flood && (time() - User::get()->last_report_sent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), User::get()->g_report_flood, User::get()->g_report_flood - (time() - User::get()->last_report_sent)), 429);
         }
 
         // Get the topic ID
@@ -581,7 +581,7 @@ class Post
                 'post_id' => $post_id,
                 'topic_id'  => $topic['topic_id'],
                 'forum_id'  => $report['forum_id'],
-                'reported_by'  => Container::get('user')->id,
+                'reported_by'  => User::get()->id,
                 'created'  => time(),
                 'message'  => $reason,
             );
@@ -597,7 +597,7 @@ class Post
             // We send it to the complete mailing-list in one swoop
             if (ForumSettings::get('o_mailing_list') != '') {
                 // Load the "new report" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/new_report.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/new_report.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.post.insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -607,7 +607,7 @@ class Post
 
                 $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
                 $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
-                $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
+                $mail_message = str_replace('<username>', User::get()->username, $mail_message);
                 $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
@@ -618,7 +618,7 @@ class Post
             }
         }
 
-        $last_report_sent = DB::for_table('users')->where('id', Container::get('user')->id)
+        $last_report_sent = DB::for_table('users')->where('id', User::get()->id)
             ->find_one()
             ->set('last_report_sent', time());
         $last_report_sent = Container::get('hooks')->fireDB('model.post.insert_last_report_sent', $last_report_sent);
@@ -643,7 +643,7 @@ class Post
                         ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                         ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($cur_post['where'])
                         ->where('p.id', $post_id);
         $cur_post = Container::get('hooks')->fireDB('model.post.get_info_report_query', $cur_post);
@@ -665,13 +665,13 @@ class Post
 
         $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $new['tid'] = $tid;
 
             // Insert the new post
             $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_id' => Container::get('user')->id,
+                'poster_id' => User::get()->id,
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
@@ -694,7 +694,7 @@ class Post
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
 
                     $subscription['insert'] = array(
-                        'user_id'   =>  Container::get('user')->id,
+                        'user_id'   =>  User::get()->id,
                         'topic_id'  =>  $tid
                     );
 
@@ -708,7 +708,7 @@ class Post
                 } elseif ($post['subscribe'] == '0' && $is_subscribed) {
 
                     $unsubscription = DB::for_table('topic_subscriptions')
-                                        ->where('user_id', Container::get('user')->id)
+                                        ->where('user_id', User::get()->id)
                                         ->where('topic_id', $tid);
                     $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
                     $unsubscription = $unsubscription->delete_many();
@@ -794,7 +794,7 @@ class Post
                     ->where_null('b.username')
                     ->where_any_is($result['where'])
                     ->where('s.topic_id', $tid)
-                    ->where_not_equal('u.id', Container::get('user')->id);
+                    ->where_not_equal('u.id', User::get()->id);
         $result = Container::get('hooks')->fireDB('model.post.send_notifications_reply_query', $result);
         $result = $result->find_many();
 
@@ -900,12 +900,12 @@ class Post
 
         $new['tid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
 
                 $subscription['insert'] = array(
-                    'user_id'   =>  Container::get('user')->id,
+                    'user_id'   =>  User::get()->id,
                     'topic_id'  =>  $new['tid']
                 );
 
@@ -920,7 +920,7 @@ class Post
             // Create the post ("topic post")
             $query['insert'] = array(
                 'poster' => $post['username'],
-                'poster_id' => Container::get('user')->id,
+                'poster_id' => User::get()->id,
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
@@ -1002,7 +1002,7 @@ class Post
                     ->where_null('b.username')
                     ->where_any_is($result['where'])
                     ->where('s.forum_id', $cur_posting['id'])
-                    ->where_not_equal('u.id', Container::get('user')->id);
+                    ->where_not_equal('u.id', User::get()->id);
         $result = Container::get('hooks')->fireDB('model.post.send_notifications_new_topic_query', $result);
         $result = $result->find_many();
 
@@ -1087,7 +1087,7 @@ class Post
         Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_pid);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/banned_email_post.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.post.warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1109,9 +1109,9 @@ class Post
     {
         Container::get('hooks')->fire('model.post.increment_post_count_start', $post, $new_tid);
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $increment = DB::for_table('users')
-                            ->where('id', Container::get('user')->id)
+                            ->where('id', User::get()->id)
                             ->find_one()
                             ->set('last_post', $post['time'])
                             ->set_expr('num_posts', 'num_posts+1');
@@ -1119,10 +1119,10 @@ class Post
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if (Container::get('user')->g_promote_next_group != 0 && Container::get('user')->num_posts + 1 >= Container::get('user')->g_promote_min_posts) {
-                $new_group_id = Container::get('user')->g_promote_next_group;
+            if (User::get()->g_promote_next_group != 0 && User::get()->num_posts + 1 >= User::get()->g_promote_min_posts) {
+                $new_group_id = User::get()->g_promote_next_group;
                 $promote = DB::for_table('users')
-                            ->where('id', Container::get('user')->id)
+                            ->where('id', User::get()->id)
                             ->find_one()
                             ->set('group_id', $new_group_id);
                 $promote = Container::get('hooks')->fireDB('model.post.increment_post_count_query', $promote);
@@ -1263,7 +1263,7 @@ class Post
             $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.(Input::post('stick_topic') ? ' checked="checked"' : '').' />'.__('Stick topic').'<br /></label>';
         }
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             if (ForumSettings::get('o_smilies') == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
             }
@@ -1276,7 +1276,7 @@ class Post
                     $subscr_checked = (Input::post('subscribe')) ? true : false;
                 }
                 // If auto subscribed
-                elseif (Container::get('user')->auto_notify) {
+                elseif (User::get()->auto_notify) {
                     $subscr_checked = true;
                 }
                 // If already subscribed to the topic

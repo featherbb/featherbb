@@ -21,7 +21,7 @@ class Plugins
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Plugins();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/plugins.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/admin/plugins.mo');
     }
 
     /**

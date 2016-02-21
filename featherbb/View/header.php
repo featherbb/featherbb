@@ -48,8 +48,8 @@ foreach($assets as $type => $items) {
     }
 }
 if ($admin_console) {
-    if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.Container::get('user')->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.Container::get('user')->style.'/base_admin.css" />'."\n";
+    if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.User::get()->style.'/base_admin.css')) {
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.User::get()->style.'/base_admin.css" />'."\n";
     } else {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
     }
@@ -115,35 +115,35 @@ Container::get('hooks')->fire('view.header.before.head.tag');
 <?php
 $navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>';
 
-if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_view_users == '1') {
+if (User::get()->g_read_board == '1' && User::get()->g_view_users == '1') {
     $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userList').'">'.__('User list').'</a></li>';
 }
 
-if (ForumSettings::get('o_rules') == '1' && (!Container::get('user')->is_guest || Container::get('user')->g_read_board == '1' || ForumSettings::get('o_regs_allow') == '1')) {
+if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::get()->g_read_board == '1' || ForumSettings::get('o_regs_allow') == '1')) {
     $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('rules').'">'.__('Rules').'</a></li>';
 }
 
-if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_search == '1') {
+if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
     $navlinks[] = '<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('search').'">'.__('Search').'</a></li>';
 }
 
-if (Container::get('user')->is_guest) {
+if (User::get()->is_guest) {
     $navlinks[] = '<li id="navregister"'.(($active_page == 'register') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('register').'">'.__('Register').'</a></li>';
     $navlinks[] = '<li id="navlogin"'.(($active_page == 'login') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('login').'">'.__('Login').'</a></li>';
 } else {
-    $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userProfile', ['id' => Container::get('user')->id]).'">'.__('Profile').'</a></li>';
+    $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userProfile', ['id' => User::get()->id]).'">'.__('Profile').'</a></li>';
 
-    if (Container::get('user')->is_admmod) {
+    if (User::get()->is_admmod) {
         $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('adminIndex').'">'.__('Admin').'</a></li>';
     }
 
-    $navlinks[] = '<li id="navlogout"><a href="'.Router::pathFor('logout', ['token' => Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))]).'">'.__('Logout').'</a></li>';
+    $navlinks[] = '<li id="navlogout"><a href="'.Router::pathFor('logout', ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]).'">'.__('Logout').'</a></li>';
 }
 
 // Are there any additional navlinks we should insert into the array before imploding it?
 $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
 $extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
-if (Container::get('user')->g_read_board == '1' && ($extraLinks != '')) {
+if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {
         // Insert any additional links into the $links array (at the correct index)
         $num_links = count($results[1]);
@@ -178,14 +178,14 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
                 <div class="status-avatar">
                     <div id="brdwelcome" class="inbox">
 <?php
-if (Container::get('user')->is_guest) { ?>
+if (User::get()->is_guest) { ?>
                         <p class="conl"><?= __('Not logged in')?></p>
 <?php } else {
     echo "\t\t\t".'<ul class="conl">';
-    echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(Container::get('user')->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(Container::get('user')->last_visit)).'</span></li>'."\n";
+    echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
 
-    if (Container::get('user')->is_admmod) {
+    if (User::get()->is_admmod) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
             if ($has_reports) {
                 echo "\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
@@ -200,10 +200,10 @@ if (Container::get('user')->is_guest) { ?>
     echo "\t\t\t".'</ul>'."\n";
 }
 
-if (Container::get('user')->g_read_board == '1' && Container::get('user')->g_search == '1') {
+if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
     echo "\t\t\t".'<ul class="conr">'."\n";
     echo "\t\t\t\t".'<li><span>'.__('Topic searches').' ';
-    if (!Container::get('user')->is_guest) {
+    if (!User::get()->is_guest) {
         echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'replies']).'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
         echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'new']).'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
     }
@@ -220,7 +220,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                 </div>
                 <div class="clear"></div>
             </div>
-<?php if (Container::get('user')->g_read_board == '1' && ForumSettings::get('o_announcement') == '1') : ?>
+<?php if (User::get()->g_read_board == '1' && ForumSettings::get('o_announcement') == '1') : ?>
             <div id="announce" class="block">
                 <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
                 <div class="box">

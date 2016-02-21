@@ -21,12 +21,12 @@ class Auth
 {
     public function __construct()
     {
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/login.mo');
+        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/login.mo');
     }
 
     public function login($req, $res, $args)
     {
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
@@ -78,15 +78,15 @@ class Auth
     {
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
-        if (Container::get('user')->is_guest || !isset($token) || $token != Random::hash(Container::get('user')->id.Random::hash(Utils::getIp()))) {
+        if (User::get()->is_guest || !isset($token) || $token != Random::hash(User::get()->id.Random::hash(Utils::getIp()))) {
             return Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
-        ModelAuth::delete_online_by_id(Container::get('user')->id);
+        ModelAuth::delete_online_by_id(User::get()->id);
 
         // Update last_visit (make sure there's something to update it with)
-        if (isset(Container::get('user')->logged)) {
-            ModelAuth::set_last_visit(Container::get('user')->id, Container::get('user')->logged);
+        if (isset(User::get()->logged)) {
+            ModelAuth::set_last_visit(User::get()->id, User::get()->logged);
         }
 
         ModelAuth::feather_setcookie('Bearer ', 1);
@@ -97,7 +97,7 @@ class Auth
 
     public function forget($req, $res, $args)
     {
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
 
@@ -111,7 +111,7 @@ class Auth
 
             if ($user) {
                 // Load the "activate password" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_password.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/activate_password.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('controller.mail_tpl_password_forgotten', $mail_tpl);
 
                 // The first row contains the subject

@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                     <fieldset>
 <?php
 
-        if (Container::get('user')->g_moderator == '1') {
+        if (User::get()->g_moderator == '1') {
             ?>
                         <legend><?php _e('Delete ban legend') ?></legend>
                         <div class="infldset">
@@ -37,7 +37,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
 <?php
 
         } else {
-            if (Container::get('user')->id != $id) {
+            if (User::get()->id != $id) {
                 ?>
                         <legend><?php _e('Group membership legend') ?></legend>
                         <div class="infldset">

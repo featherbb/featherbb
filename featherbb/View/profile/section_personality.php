@@ -43,7 +43,7 @@ Container::get('hooks')->fire('view.profile.section_personality.start');
                         </div>
                         <ul class="bblinks">
                             <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
                             <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_sig_bbcode') == '1' && ForumSettings::get('p_sig_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
                             <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies_sig') == '1') ? __('on') : __('off'); ?></span></li>
                         </ul>

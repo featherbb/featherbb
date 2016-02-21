@@ -22,7 +22,7 @@ class Admin
     public function __invoke($request, $response, $next)
     {
         // Redirect user to home page if not admin
-        if(Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN')) {
+        if(User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
             return Router::redirect(Router::pathFor('home'), __('No permission'));
         }
 

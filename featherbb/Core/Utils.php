@@ -67,16 +67,16 @@ class Utils
             return __('Never');
         }
 
-        $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
+        $diff = (User::get()->timezone + User::get()->dst) * 3600;
         $timestamp += $diff;
         $now = time();
 
         if (is_null($date_format)) {
-            $date_format = $forum_date_formats[Container::get('user')->date_format];
+            $date_format = $forum_date_formats[User::get()->date_format];
         }
 
         if (is_null($time_format)) {
-            $time_format = $forum_time_formats[Container::get('user')->time_format];
+            $time_format = $forum_time_formats[User::get()->time_format];
         }
 
         $date = gmdate($date_format, $timestamp);

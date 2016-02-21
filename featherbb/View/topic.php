@@ -140,10 +140,10 @@ if ($quickpost) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="pid" value="<?= Utils::escape($pid) ?>" />
                         <input type="hidden" name="page" value="<?= Utils::escape($page_number) ?>" />
-<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (Container::get('user')->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
+<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::get()->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
-    if (Container::get('user')->is_guest) {
+    if (User::get()->is_guest) {
         $email_label = (ForumSettings::get('p_force_guest_email') == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
         $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
         ?>
@@ -162,7 +162,7 @@ if ($quickpost) {
                         <ul class="bblinks">
                             <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off');
     ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && Container::get('user')->g_post_links == '1') ? __('on') : __('off');
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off');
     ?></span></li>
                             <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off');
     ?></span></li>
@@ -172,7 +172,7 @@ if ($quickpost) {
                     </div>
                 </fieldset>
             </div>
-            <?php if (Container::get('user')->is_guest) : ?>
+            <?php if (User::get()->is_guest) : ?>
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Robot title') ?></legend>
