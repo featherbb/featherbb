@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -13,9 +13,7 @@ class Email
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->config = $this->feather->config;
-        require $this->feather->forum_env['FEATHER_ROOT'] . 'featherbb/Helpers/utf8/utils/ascii.php';
+        require ForumEnv::get('FEATHER_ROOT') . 'featherbb/Helpers/utf8/utils/ascii.php';
     }
 
     //
@@ -36,9 +34,7 @@ class Email
     //
     public function is_banned_email($email)
     {
-        global $feather_bans;
-
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             if ($cur_ban['email'] != '' &&
                 ($email == $cur_ban['email'] ||
                     (strpos($cur_ban['email'], '@') === false && stristr($email, '@' . $cur_ban['email'])))
@@ -104,8 +100,8 @@ class Email
             }
         }
 
-        if ($this->config['o_indent_num_spaces'] != 8 && $retab) {
-            $spaces = str_repeat(' ', $this->config['o_indent_num_spaces']);
+        if (ForumSettings::get('o_indent_num_spaces') != 8 && $retab) {
+            $spaces = str_repeat(' ', ForumSettings::get('o_indent_num_spaces'));
             $text = str_replace("\t", $spaces, $text);
         }
 
@@ -258,12 +254,12 @@ class Email
         }
 
         // Use \r\n for SMTP servers, the system's line ending for local mailers
-        $smtp = $this->config['o_smtp_host'] != '';
+        $smtp = ForumSettings::get('o_smtp_host') != '';
         $EOL = $smtp ? "\r\n" : FORUM_EOL;
 
         // Default sender/return address
-        $from_name = sprintf(__('Mailer'), $this->config['o_board_title']);
-        $from_email = $this->config['o_webmaster_email'];
+        $from_name = sprintf(__('Mailer'), ForumSettings::get('o_board_title'));
+        $from_email = ForumSettings::get('o_webmaster_email');
 
         // Do a little spring cleaning
         $to = Utils::trim(preg_replace('%[\n\r]+%s', '', $to));
@@ -333,19 +329,19 @@ class Email
         $message = (substr($message, 0, 1) == '.' ? '.' . $message : $message);
 
         // Are we using port 25 or a custom port?
-        if (strpos($this->config['o_smtp_host'], ':') !== false) {
-            list($smtp_host, $smtp_port) = explode(':', $this->config['o_smtp_host']);
+        if (strpos(ForumSettings::get('o_smtp_host'), ':') !== false) {
+            list($smtp_host, $smtp_port) = explode(':', ForumSettings::get('o_smtp_host'));
         } else {
-            $smtp_host = $this->config['o_smtp_host'];
+            $smtp_host = ForumSettings::get('o_smtp_host');
             $smtp_port = 25;
         }
 
-        if ($this->config['o_smtp_ssl'] == '1') {
+        if (ForumSettings::get('o_smtp_ssl') == '1') {
             $smtp_host = 'ssl://' . $smtp_host;
         }
 
         if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-            throw new Error('Could not connect to smtp host "' . $this->config['o_smtp_host'] . '" (' . $errno . ') (' . $errstr . ')', 500);
+            throw new Error('Could not connect to smtp host "' . ForumSettings::get('o_smtp_host') . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
         $this->server_parse($socket, '220');
@@ -363,24 +359,24 @@ class Email
             }
         }
 
-        if ($this->config['o_smtp_user'] != '' && $this->config['o_smtp_pass'] != '') {
+        if (ForumSettings::get('o_smtp_user') != '' && ForumSettings::get('o_smtp_pass') != '') {
             fwrite($socket, 'EHLO ' . $local_host . "\r\n");
             $this->server_parse($socket, '250');
 
             fwrite($socket, 'AUTH LOGIN' . "\r\n");
             $this->server_parse($socket, '334');
 
-            fwrite($socket, base64_encode($this->config['o_smtp_user']) . "\r\n");
+            fwrite($socket, base64_encode(ForumSettings::get('o_smtp_user')) . "\r\n");
             $this->server_parse($socket, '334');
 
-            fwrite($socket, base64_encode($this->config['o_smtp_pass']) . "\r\n");
+            fwrite($socket, base64_encode(ForumSettings::get('o_smtp_pass')) . "\r\n");
             $this->server_parse($socket, '235');
         } else {
             fwrite($socket, 'HELO ' . $local_host . "\r\n");
             $this->server_parse($socket, '250');
         }
 
-        fwrite($socket, 'MAIL FROM: <' . $this->config['o_webmaster_email'] . '>' . "\r\n");
+        fwrite($socket, 'MAIL FROM: <' . ForumSettings::get('o_webmaster_email') . '>' . "\r\n");
         $this->server_parse($socket, '250');
 
         foreach ($recipients as $email) {

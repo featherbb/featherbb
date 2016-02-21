@@ -16,6 +16,14 @@ This is __FeatherBB v1.0.0 Beta__. It is intended for testing purposes only and 
 for use in a production environment. Please report all the bugs you may encounter to
 the forums or in the GitHub bug tracker.
 
+### Beta 4 (2016-02-21)
+* Upgrade to Slim version 3 [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)]
+* More OOP goodness thanks to static classes (User::, Input::, Post::, ...) [[beaver](http://github.com/beaver-dev)]
+* Download and install plugins right from the admin panel [[adaur](http://github.com/adaur)]
+* Switch to Json Web Token for authentication [[beaver](http://github.com/beaver-dev)]
+* Better installer [[beaver](http://github.com/beaver-dev)]
+* Cleaner gettext code [[adaur](http://github.com/adaur)]
+
 ### Beta 3 (2015-09-09)
 * Plugin system and some hooks [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)] 
 * New architecture ready for Composer [[beaver](http://github.com/beaver-dev)]

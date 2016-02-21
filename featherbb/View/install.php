@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -12,13 +12,14 @@ if (!isset($feather)) {
     exit;
 }
 
+Container::get('hooks')->fire('view.install.start');
 ?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title><?php _e('FeatherBB Installation') ?></title>
-    <link rel="stylesheet" type="text/css" href="style/themes/<?php echo $feather->forum_env['FORUM_NAME'] ?>/style.css" />
+    <link rel="stylesheet" type="text/css" href="style/themes/<?= ForumEnv::get('FORUM_NAME') ?>/style.css" />
 </head>
 
 <body>
@@ -72,9 +73,11 @@ if (!isset($feather)) {
                         ?>
 
                         <div class="blockform">
-                            <h2><span><?php echo sprintf(__('Install'), $feather->forum_env['FORUM_VERSION']) ?></span></h2>
+                            <h2><span><?= sprintf(__('Install'), ForumEnv::get('FORUM_VERSION')) ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
+                                    <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
+                                    <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                                     <?php if (!empty($errors)): ?>
                                         <div class="inform">
                                             <div class="forminfo error-info">
@@ -120,7 +123,7 @@ if (!isset($feather)) {
                                             <div class="infldset">
                                                 <p><?php _e('Info 3') ?></p>
                                                 <label class="required"><strong><?php _e('Database server hostname') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[db_host]" size="50" required />
+                                                <input type="text" name="install[db_host]" size="50" value="localhost" required />
                                             </div>
                                         </fieldset>
                                     </div>
@@ -192,11 +195,11 @@ if (!isset($feather)) {
                                             <legend><?php _e('General information') ?></legend>
                                             <div class="infldset">
                                                 <label class="required"><strong><?php _e('Board title') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[title]" value="<?php echo $data['title'] ?>" size="60" maxlength="255" required />
+                                                <input type="text" name="install[title]" value="<?= $data['title'] ?>" size="60" maxlength="255" required />
                                                 <label><?php _e('Board description') ?></label>
-                                                <input type="text" name="install[description]" value="<?php echo $data['description'] ?>" size="60" maxlength="255" required />
+                                                <input type="text" name="install[description]" value="<?= $data['description'] ?>" size="60" maxlength="255" required />
                                                 <label class="required"><strong><?php _e('Base URL') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <input type="text" name="install[base_url]" value="<?php echo $data['base_url'] ?>" size="60" maxlength="100" required />
+                                                <input type="text" name="install[base_url]" value="<?= $data['base_url'] ?>" size="60" maxlength="100" required />
                                                 <label class="required"><strong><?php _e('Default language') ?> <span><?php _e('Required') ?></span></strong></label>
                                                 <select name="install[default_lang]" required />
                                                 <?php
@@ -220,3 +223,5 @@ if (!isset($feather)) {
     </div>
 </body>
 </html>
+<?php
+Container::get('hooks')->fire('view.install.end');

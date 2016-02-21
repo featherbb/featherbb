@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -18,159 +18,154 @@ class Profile
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Profile();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/profile.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/register.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/prof_reg.mo');
+        translate('profile');
+        translate('register');
+        translate('prof_reg');
+        translate('misc');
     }
 
-    public function display($id, $section = null)
+    public function display($req, $res, $args)
     {
-        global $forum_time_formats, $forum_date_formats;
-
         // Include UTF-8 function
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/substr_replace.php';
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
-        if ($this->request->post('update_group_membership')) {
-            if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
+        $args['id'] = Container::get('hooks')->fire('controller.profile.display', $args['id']);
+
+        if (Input::post('update_group_membership')) {
+            if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_group_membership($id, $this->feather);
-        } elseif ($this->request->post('update_forums')) {
-            if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
+            return $this->model->update_group_membership($args['id']);
+        } elseif (Input::post('update_forums')) {
+            if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_mod_forums($id, $this->feather);
-        } elseif ($this->request->post('ban')) {
-            if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_ban_users == '0')) {
+            return $this->model->update_mod_forums($args['id']);
+        } elseif (Input::post('ban')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->ban_user($id);
-        } elseif ($this->request->post('delete_user') || $this->request->post('delete_user_comply')) {
-            if ($this->user->g_id > $this->feather->forum_env['FEATHER_ADMIN']) {
+            return $this->model->ban_user($args['id']);
+        } elseif (Input::post('delete_user') || Input::post('delete_user_comply')) {
+            if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->delete_user($id, $this->feather);
+            return $this->model->delete_user($args['id']);
 
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Confirm delete user')),
+            View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
                 'active_page' => 'profile',
-                'username' => $this->model->get_username($id),
-                'id' => $id,
+                'username' => $this->model->get_username($args['id']),
+                'id' => $args['id'],
             ));
 
-            $this->feather->template->addTemplate('profile/delete_user.php');
-            $this->feather->template->display();
+            View::addTemplate('profile/delete_user.php')->display();
 
-        } elseif ($this->request->post('form_sent')) {
+        } elseif (Input::post('form_sent')) {
 
             // Fetch the user group of the user we are editing
-            $info = $this->model->fetch_user_group($id);
+            $info = $this->model->fetch_user_group($args['id']);
 
-            if ($this->user->id != $id &&                                                            // If we aren't the user (i.e. editing your own profile)
-                                    (!$this->user->is_admmod ||                                      // and we are not an admin or mod
-                                    ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] &&                           // or we aren't an admin and ...
-                                    ($this->user->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
-                                    $info['group_id'] == $this->feather->forum_env['FEATHER_ADMIN'] ||                            // or the user is an admin
+            if (User::get()->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
+                                    (!User::get()->is_admmod ||                                      // and we are not an admin or mod
+                                    (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                           // or we aren't an admin and ...
+                                    (User::get()->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
+                                    $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
                                     $info['is_moderator'])))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
             }
 
-            $this->model->update_profile($id, $info, $section, $this->feather);
+            return $this->model->update_profile($args['id'], $info, $args['section']);
         }
 
-        $user = $this->model->get_user_info($id);
+        $user = $this->model->get_user_info($args['id']);
 
         if ($user['signature'] != '') {
-            $parsed_signature = $this->feather->parser->parse_signature($user['signature']);
+            $parsed_signature = Container::get('parser')->parse_signature($user['signature']);
         }
 
         // View or edit?
-        if ($this->user->id != $id &&                                 // If we aren't the user (i.e. editing your own profile)
-                (!$this->user->is_admmod ||                           // and we are not an admin or mod
-                ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] &&                // or we aren't an admin and ...
-                ($this->user->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
-                $user['g_id'] == $this->feather->forum_env['FEATHER_ADMIN'] ||                     // or the user is an admin
+        if (User::get()->id != $args['id'] &&                                 // If we aren't the user (i.e. editing your own profile)
+                (!User::get()->is_admmod ||                           // and we are not an admin or mod
+                (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                // or we aren't an admin and ...
+                (User::get()->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
+                $user['g_id'] == ForumEnv::get('FEATHER_ADMIN') ||                     // or the user is an admin
                 $user['g_moderator'] == '1')))) {                     // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
 
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), sprintf(__('Users profile'), Utils::escape($user['username']))),
+            View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))),
                 'active_page' => 'profile',
                 'user_info' => $user_info,
-                'id' => $id
+                'id' => $args['id']
             ));
 
-            $this->feather->template->addTemplate('profile/view_profile.php')->display();
+            View::addTemplate('profile/view_profile.php')->display();
         } else {
-            if (!$section || $section == 'essentials') {
-                $user_disp = $this->model->edit_essentials($id, $user);
+            if (!isset($args['section']) || $args['section'] == 'essentials') {
+                $user_disp = $this->model->edit_essentials($args['id'], $user);
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section essentials')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')),
                     'required_fields' => array('req_username' => __('Username'), 'req_email' => __('Email')),
                     'active_page' => 'profile',
-                    'id' => $id,
+                    'id' => $args['id'],
                     'page' => 'essentials',
                     'user' => $user,
                     'user_disp' => $user_disp,
-                    'forum_time_formats' => $forum_time_formats,
-                    'forum_date_formats' => $forum_date_formats,
+                    'forum_time_formats' => Container::get('forum_time_formats'),
+                    'forum_date_formats' => Container::get('forum_date_formats')
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
+                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
 
-            } elseif ($section == 'personal') {
-                if ($this->user->g_set_title == '1') {
+            } elseif ($args['section'] == 'personal') {
+                if (User::get()->g_set_title == '1') {
                     $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section personal')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personal')),
                     'active_page' => 'profile',
-                    'id' => $id,
+                    'id' => $args['id'],
                     'page' => 'personal',
                     'user' => $user,
                     'title_field' => $title_field,
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
+                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
 
-            } elseif ($section == 'messaging') {
+            } elseif ($args['section'] == 'messaging') {
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section messaging')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section messaging')),
                     'active_page' => 'profile',
                     'page' => 'messaging',
                     'user' => $user,
-                    'id' => $id
+                    'id' => $args['id']
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_messaging.php')->display();
+                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_messaging.php')->display();
 
-            } elseif ($section == 'personality') {
-                if ($this->config['o_avatars'] == '0' && $this->config['o_signatures'] == '0') {
+            } elseif ($args['section'] == 'personality') {
+                if (ForumSettings::get('o_avatars') == '0' && ForumSettings::get('o_signatures') == '0') {
                     throw new Error(__('Bad request'), 404);
                 }
 
-                $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
+                $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
-                $user_avatar = Utils::generate_avatar_markup($id);
+                $user_avatar = Utils::generate_avatar_markup($args['id']);
                 if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
+                    $avatar_field .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.$this->feather->urlFor('profileAction', ['id' => $id, 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
+                    $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user['signature'] != '') {
@@ -179,146 +174,194 @@ class Profile
                     $signature_preview = '<p>'.__('No sig').'</p>'."\n";
                 }
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section personality')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personality')),
                     'active_page' => 'profile',
                     'user_avatar' => $user_avatar,
                     'avatar_field' => $avatar_field,
                     'signature_preview' => $signature_preview,
                     'page' => 'personality',
                     'user' => $user,
-                    'id' => $id,
+                    'id' => $args['id'],
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personality.php')->display();
+                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personality.php')->display();
 
-            } elseif ($section == 'display') {
+            } elseif ($args['section'] == 'display') {
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section display')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section display')),
                     'active_page' => 'profile',
                     'page' => 'display',
                     'user' => $user,
-                    'id' => $id
+                    'id' => $args['id']
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
+                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
 
-            } elseif ($section == 'privacy') {
+            } elseif ($args['section'] == 'privacy') {
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section privacy')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section privacy')),
                     'active_page' => 'profile',
                     'page' => 'privacy',
                     'user' => $user,
-                    'id' => $id
+                    'id' => $args['id']
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_privacy.php')->display();
+                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_privacy.php')->display();
 
-            } elseif ($section == 'admin') {
+            } elseif ($args['section'] == 'admin') {
 
-                if (!$this->user->is_admmod || ($this->user->g_moderator == '1' && $this->user->g_mod_ban_users == '0')) {
+                if (!User::get()->is_admmod || (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '0')) {
                     throw new Error(__('Bad request'), 404);
                 }
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Section admin')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section admin')),
                     'active_page' => 'profile',
                     'page' => 'admin',
                     'user' => $user,
-                    'forum_list' => $this->model->get_forum_list($id),
+                    'forum_list' => $this->model->get_forum_list($args['id']),
                     'group_list' => $this->model->get_group_list($user),
-                    'id' => $id
+                    'id' => $args['id']
                 ));
 
-                $this->feather->template->addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
+                return View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
             } else {
                 throw new Error(__('Bad request'), 404);
             }
         }
     }
 
-    public function action($id, $action)
+    public function action($req, $res, $args)
     {
         // Include UTF-8 function
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/substr_replace.php';
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require $this->feather->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/strcasecmp.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
+        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
-        if ($action != 'change_pass' || !$this->request->get('key')) {
-            if ($this->user->g_read_board == '0') {
+        $args['id'] = Container::get('hooks')->fire('controller.profile.action', $args['id']);
+
+        if ($args['action'] != 'change_pass' || !Input::query('key')) {
+            if (User::get()->g_read_board == '0') {
                 throw new Error(__('No view'), 403);
-            } elseif ($this->user->g_view_users == '0' && ($this->user->is_guest || $this->user->id != $id)) {
+            } elseif (User::get()->g_view_users == '0' && (User::get()->is_guest || User::get()->id != $args['id'])) {
                 throw new Error(__('No permission'), 403);
             }
         }
 
-        if ($action == 'change_pass') {
-            $this->model->change_pass($id, $this->feather);
+        if ($args['action'] == 'change_pass') {
+            if (Request::isPost()) {
+                // TODO: Check if security "if (User::get()->id != $id)" (l.58 of Model/Profile) isn't bypassed
+                // FOR ALL chained if below
+                return $this->model->change_pass($args['id']);
+            }
 
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Change pass')),
+            View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')),
                 'active_page' => 'profile',
-                'id' => $id,
+                'id' => $args['id'],
                 'required_fields' => array('req_old_password' => __('Old pass'), 'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')),
-                'focus_element' => array('change_pass', ((!$this->user->is_admmod) ? 'req_old_password' : 'req_new_password1')),
+                'focus_element' => array('change_pass', ((!User::get()->is_admmod) ? 'req_old_password' : 'req_new_password1')),
             ));
 
-            $this->feather->template->addTemplate('profile/change_pass.php')->display();
+            View::addTemplate('profile/change_pass.php')->display();
 
-        } elseif ($action == 'change_email') {
-            $this->model->change_email($id, $this->feather);
+        } elseif ($args['action'] == 'change_email') {
+            if (Request::isPost()) {
+                return $this->model->change_email($args['id']);
+            }
 
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Change email')),
+            View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')),
                 'active_page' => 'profile',
                 'required_fields' => array('req_new_email' => __('New email'), 'req_password' => __('Password')),
                 'focus_element' => array('change_email', 'req_new_email'),
-                'id' => $id,
+                'id' => $args['id'],
             ));
 
-            $this->feather->template->addTemplate('profile/change_mail.php')->display();
+            View::addTemplate('profile/change_mail.php')->display();
 
-        } elseif ($action == 'upload_avatar' || $action == 'upload_avatar2') {
-            if ($this->config['o_avatars'] == '0') {
+        } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
+            if (ForumSettings::get('o_avatars') == '0') {
                 throw new Error(__('Avatars disabled'), 400);
             }
 
-            if ($this->user->id != $id && !$this->user->is_admmod) {
+            if (User::get()->id != $args['id'] && !User::get()->is_admmod) {
                 throw new Error(__('No permission'), 403);
             }
 
-            if ($this->feather->request()->isPost()) {
-                $this->model->upload_avatar($id, $_FILES);
+            if (Request::isPost()) {
+                return $this->model->upload_avatar($args['id'], $_FILES);
             }
 
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Profile'), __('Upload avatar')),
+            View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Upload avatar')),
                 'active_page' => 'profile',
                 'required_fields' =>  array('req_file' => __('File')),
                 'focus_element' => array('upload_avatar', 'req_file'),
-                'id' => $id,
+                'id' => $args['id'],
             ));
 
-            $this->feather->template->addTemplate('profile/upload_avatar.php')->display();
+            View::addTemplate('profile/upload_avatar.php')->display();
 
-        } elseif ($action == 'delete_avatar') {
-            if ($this->user->id != $id && !$this->user->is_admmod) {
+        } elseif ($args['action'] == 'delete_avatar') {
+            if (User::get()->id != $args['id'] && !User::get()->is_admmod) {
                 throw new Error(__('No permission'), 403);
             }
 
-            Delete::avatar($id);
+            $this->model->delete_avatar($args['id']);
 
-            Url::redirect($this->feather->urlFor('profileSection', array('id' => $id, 'section' => 'personality')), __('Avatar deleted redirect'));
-        } elseif ($action == 'promote') {
-            if ($this->user->g_id != $this->feather->forum_env['FEATHER_ADMIN'] && ($this->user->g_moderator != '1' || $this->user->g_mod_promote_users == '0')) {
+            return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
+        } elseif ($args['action'] == 'promote') {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->promote_user($id, $this->feather);
+            $this->model->promote_user($args['id']);
         } else {
             throw new Error(__('Bad request'), 404);
         }
+    }
+
+    public function email($req, $res, $args)
+    {
+        $args['id'] = Container::get('hooks')->fire('controller.profile.email', $args['id']);
+
+        if (User::get()->g_send_email == '0') {
+            throw new Error(__('No permission'), 403);
+        }
+
+        if ($args['id'] < 2) {
+            throw new Error(__('Bad request'), 400);
+        }
+
+        $mail = $this->model->get_info_mail($args['id']);
+
+        if ($mail['email_setting'] == 2 && !User::get()->is_admmod) {
+            throw new Error(__('Form email disabled'), 403);
+        }
+
+
+        if (Request::isPost()) {
+            $this->model->send_email($mail);
+        }
+
+        View::setPageInfo(array(
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])),
+            'active_page' => 'email',
+            'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
+            'focus_element' => array('email', 'req_subject'),
+            'id' => $args['id'],
+            'mail' => $mail
+        ))->addTemplate('misc/email.php')->display();
+    }
+
+    public function gethostip($req, $res, $args)
+    {
+        $args['ip'] = Container::get('hooks')->fire('controller.profile.gethostip', $args['ip']);
+
+        $this->model->display_ip_info($args['ip']);
     }
 }

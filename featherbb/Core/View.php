@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Copyright (C) 2015 FeatherBB
+* Copyright (C) 2015-2016 FeatherBB
 * based on code by (C) 2008-2015 FluxBB
 * and Rickard Andersson (C) 2002-2008 PunBB
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -11,11 +11,10 @@ namespace FeatherBB\Core;
 
 class View
 {
-    protected $templatesDirectory,
+    protected $directories = array(),
     $templates,
     $app,
     $data,
-    $page,
     $assets,
     $validation = array(
         'page_number' => 'intval',
@@ -34,8 +33,9 @@ class View
     */
     public function __construct()
     {
-        $this->data = $this->page = new \Slim\Helper\Set();
-        $this->app = \Slim\Slim::getInstance();
+        $this->data = new \FeatherBB\Helpers\Set();
+        // Set default dir for view fallback
+        $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT') . 'featherbb/View/', 10);
     }
 
     /********************************************************************************
@@ -83,15 +83,6 @@ class View
     }
 
     /**
-    * Return view data
-    * @return array
-    */
-    public function all()
-    {
-        return $this->data->all();
-    }
-
-    /**
     * Replace view data
     * @param  array  $data
     */
@@ -109,80 +100,39 @@ class View
     }
 
     /********************************************************************************
-    * Legacy data methods
-    *******************************************************************************/
-
-    /**
-    * DEPRECATION WARNING! This method will be removed in the next major point release
-    *
-    * Get data from view
-    */
-    public function getData($key = null)
-    {
-        if (!is_null($key)) {
-            return isset($this->data[$key]) ? $this->data[$key] : null;
-        }
-
-        return $this->data->all();
-    }
-
-    /**
-    * DEPRECATION WARNING! This method will be removed in the next major point release
-    *
-    * Set data for view
-    */
-    public function setData()
-    {
-        $args = func_get_args();
-        if (count($args) === 1 && is_array($args[0])) {
-            $this->data->replace($args[0]);
-        } elseif (count($args) === 2) {
-            // Ensure original behavior is maintained. DO NOT invoke stored Closures.
-            if (is_object($args[1]) && method_exists($args[1], '__invoke')) {
-                $this->data->set($args[0], $this->data->protect($args[1]));
-            } else {
-                $this->data->set($args[0], $args[1]);
-            }
-        } else {
-            throw new \InvalidArgumentException('Cannot set View data with provided arguments. Usage: `View::setData( $key, $value );` or `View::setData([ key => value, ... ]);`');
-        }
-    }
-
-    /**
-    * DEPRECATION WARNING! This method will be removed in the next major point release
-    *
-    * Append data to view
-    * @param  array $data
-    */
-    public function appendData($data)
-    {
-        if (!is_array($data)) {
-            throw new \InvalidArgumentException('Cannot append view data. Expected array argument.');
-        }
-        $this->data->replace($data);
-    }
-
-    /********************************************************************************
     * Resolve template paths
     *******************************************************************************/
 
-    /**
-    * Set the base directory that contains view templates
-    * @param   string $directory
-    * @throws  \InvalidArgumentException If directory is not a directory
-    */
-    public function setTemplatesDirectory($directory)
+
+    public function addTemplatesDirectory($data, $priority = 10)
     {
-        $this->templatesDirectory = rtrim($directory, DIRECTORY_SEPARATOR);
+        $directories = (array) $data;
+        foreach ($directories as $key => $tpl_dir) {
+            if (is_dir($tpl_dir)) {
+                $this->directories[(int) $priority][] = rtrim((string) $tpl_dir, DIRECTORY_SEPARATOR);
+            }
+        }
+        return $this;
     }
 
     /**
-    * Get templates base directory
+    * Get templates directories ordered by priority
     * @return string
     */
     public function getTemplatesDirectory()
     {
-        return $this->templatesDirectory;
+        $output = array();
+        if (count($this->directories) > 1) {
+            ksort($this->directories);
+        }
+        foreach ($this->directories as $priority) {
+            if (!empty($priority)) {
+                foreach ($priority as $tpl_dir) {
+                    $output[] = $tpl_dir;
+                }
+            }
+        }
+        return $output;
     }
 
     /**
@@ -192,14 +142,13 @@ class View
     */
     public function getTemplatePathname($file)
     {
-        $pathname = $this->templatesDirectory . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR);
-        if (!is_file($pathname)) {
-            $pathname = $this->app->forum_env['FEATHER_ROOT'] . 'featherbb/View/' . ltrim($file, DIRECTORY_SEPARATOR); // Fallback on default view
-            if (!is_file($pathname)) {
-                throw new \RuntimeException("View cannot add template `$file` to stack because the template does not exist");
+        foreach ($this->getTemplatesDirectory() as $tpl_dir) {
+            $pathname = realpath($tpl_dir . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR));
+            if (is_file($pathname)) {
+                return (string) $pathname;
             }
         }
-        return (string) $pathname;
+        throw new \RuntimeException("View cannot add template `$file` to stack because the template does not exist");
     }
 
     /********************************************************************************
@@ -208,23 +157,19 @@ class View
 
     public function display($nested = true)
     {
-        if ($this->app->user) {
-            $this->setStyle($this->app->user->style);
+        if (User::get()) {
+            $this->setStyle(User::get()->style);
         }
-        echo $this->fetch($nested);
+        return $this->fetch($nested);
     }
 
     protected function fetch($nested = true)
     {
         $data = array();
-        // Force flash messages
-        if (isset($this->app->environment['slim.flash'])) {
-            $this->data->set('flash', $this->app->environment['slim.flash']);
-        }
-        $data = array_merge($this->getDefaultPageInfo(), $this->page->all(), $this->data->all(), (array) $data);
-        $data['feather'] = \Slim\Slim::getInstance();
+        $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
+        $data['feather'] = true;
         $data['assets'] = $this->getAssets();
-        $data = $this->app->hooks->fire('view.alter_data', $data);
+        $data = Container::get('hooks')->fire('view.alter_data', $data);
         return $this->render($data, $nested);
     }
 
@@ -232,17 +177,21 @@ class View
     {
         extract($data);
         ob_start();
-
+        // Include view files
         if ($nested) {
-            require $this->getTemplatePathname('header.php');
+            include $this->getTemplatePathname('header.php');
         }
         foreach ($this->getTemplates() as $tpl) {
-            require $tpl;
+            include $tpl;
         }
         if ($nested) {
-            require $this->getTemplatePathname('footer.php');
+            include $this->getTemplatePathname('footer.php');
         }
-        return ob_get_clean();
+
+        $output = ob_get_clean();
+        Response::getBody()->write($output);
+
+        return Container::get('response');
     }
 
     /********************************************************************************
@@ -251,11 +200,11 @@ class View
 
     public function setStyle($style)
     {
-        if (!is_dir($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/')) {
+        if (!is_dir(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
-        $this->setTemplatesDirectory($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$style.'/view');
+        $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/view', 9);
         return $this;
     }
 
@@ -268,14 +217,14 @@ class View
     {
         foreach ($data as $key => $value) {
             list($key, $value) = $this->validate($key, $value);
-            $this->page->set($key, $value);
+            $this->data->set($key, $value);
         }
         return $this;
     }
 
     public function getPageInfo()
     {
-        return $this->page->all();
+        return $this->data->all();
     }
 
     protected function validate($key, $value)
@@ -295,7 +244,7 @@ class View
         if (!in_array($type, array('js', 'css', 'feed', 'canonical', 'prev', 'next'))) {
             throw new \Exception('Invalid asset type : ' . $type);
         }
-        if (in_array($type, array('js', 'css')) && !is_file($this->app->forum_env['FEATHER_ROOT'].$asset)) {
+        if (in_array($type, array('js', 'css')) && !is_file(ForumEnv::get('FEATHER_ROOT').$asset)) {
             throw new \Exception('The asset file ' . $asset . ' does not exist');
         }
 
@@ -341,9 +290,9 @@ class View
 
     public function addMessage($msg, $type = 'info')
     {
-        if (isset($this->app->environment['slim.flash'])) {
-            if (in_array($type, array('info', 'error'))) {
-                $this->app->environment['slim.flash']->now($type, (string) $msg);
+        if (Container::get('flash')) {
+            if (in_array($type, array('info', 'error', 'warning', 'success'))) {
+                Container::get('flash')->addMessage($type, (string) $msg);
             }
         }
     }
@@ -357,18 +306,20 @@ class View
             $args = null;
         }
         list($key, $value) = $this->validate($method, $args);
-        $this->page->set($key, $value);
+        $this->data->set($key, $value);
     }
 
     protected function getDefaultPageInfo()
     {
         // Check if config file exists to avoid error when installing forum
-        if (!$this->app->cache->isCached('quickjump') && is_file($this->app->forum_env['FORUM_CONFIG_FILE'])) {
-            $this->app->cache->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+        if (!Container::get('cache')->isCached('quickjump') && is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
+            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
         }
 
+        $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';
+
         $data = array(
-            'title' => Utils::escape($this->app->forum_settings['o_board_title']),
+            'title' => Utils::escape($title),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,
@@ -378,19 +329,19 @@ class View
             'paging_links' => null,
             'required_fields' => null,
             'footer_style' => null,
-            'quickjump' => $this->app->cache->retrieve('quickjump'),
+            'quickjump' => Container::get('cache')->retrieve('quickjump'),
             'fid' => null,
             'pid' => null,
             'tid' => null,
         );
 
-        if (is_object($this->app->user) && $this->app->user->is_admmod) {
-            $data['has_reports'] = \FeatherBB\Model\Header::get_reports();
+        if (is_object(User::get()) && User::get()->is_admmod) {
+            $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
         }
 
-        if ($this->app->forum_env['FEATHER_SHOW_INFO']) {
+        if (ForumEnv::get('FEATHER_SHOW_INFO')) {
             $data['exec_info'] = \FeatherBB\Model\Debug::get_info();
-            if ($this->app->forum_env['FEATHER_SHOW_QUERIES']) {
+            if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
                 $data['queries_info'] = \FeatherBB\Model\Debug::get_queries();
             }
         }

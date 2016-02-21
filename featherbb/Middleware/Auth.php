@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -13,35 +13,50 @@
 
 namespace FeatherBB\Middleware;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
+use FeatherBB\Model\Auth as AuthModel;
+use Firebase\JWT\JWT;
 
-class Auth extends \Slim\Middleware
+class Auth
 {
-    protected $model;
-
-    public function __construct()
-	{
-        $this->model = new \FeatherBB\Model\Auth();
-    }
-
-    public function get_cookie_data($cookie_name, $cookie_seed)
+    protected function get_cookie_data($authCookie = null)
     {
-        // Get FeatherBB cookie
-        $cookie_raw = $this->app->getCookie($cookie_name);
-        // Check if cookie exists and is valid (getCookie method returns false if the data has been tampered locally so it can't decrypt the cookie);
-        if (isset($cookie_raw)) {
-            $cookie = json_decode($cookie_raw, true);
-            $checksum = hash_hmac('sha1', $cookie['user_id'].$cookie['expires'], $cookie_seed.'_checksum');
-            if ($cookie['user_id'] > 1 && $cookie['expires'] > $this->app->now && $checksum == $cookie['checksum']) {
-                return $cookie;
+        if ($authCookie) {
+            /*
+             * Extract the jwt from the Bearer
+             */
+            list($jwt) = sscanf( $authCookie, 'Bearer %s');
+
+            if ($jwt) {
+                try {
+                    /*
+                    * decode the jwt using the key from config
+                    */
+                    $secretKey = base64_decode(ForumSettings::get('jwt_token'));
+                    $token = JWT::decode($jwt, $secretKey, [ForumSettings::get('jwt_algorithm')]);
+
+                    return $token;
+
+                } catch (\Firebase\JWT\ExpiredException $e) {
+                    // TODO: (Optionnal) add flash message to say token has expired
+                    return false;
+                } catch (\Firebase\JWT\SignatureInvalidException $e) {
+                    // If token secret has changed (config.php file removed then regenerated)
+                    return false;
+                }
+            } else {
+                // Token is not present (or invalid) in cookie
+                return false;
             }
+        } else {
+            // Auth cookie is not present in headers
+            return false;
         }
-        return false;
     }
 
     public function update_online()
@@ -49,22 +64,22 @@ class Auth extends \Slim\Middleware
         // Define this if you want this visit to affect the online list and the users last visit data
         if (!defined('FEATHER_QUIET_VISIT')) {
             // Update the online list
-            if (!$this->app->user->logged) {
-                $this->app->user->logged = $this->app->now;
+            if (!User::get()->logged) {
+                User::get()->logged = Container::get('now');
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch ($this->app->forum_settings['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table('online')->raw_execute('REPLACE INTO '.$this->app->forum_settings['db_prefix'].'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.$this->app->forum_settings['db_prefix'].'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => $this->app->user->id, ':ident' => $this->app->user->username, ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
                         break;
                 }
 
@@ -73,27 +88,27 @@ class Auth extends \Slim\Middleware
 
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if ($this->app->user->logged < ($this->app->now-$this->app->forum_settings['o_timeout_visit'])) {
-                    DB::for_table('users')->where('id', $this->app->user->id)
+                if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
+                    DB::for_table('users')->where('id', User::get()->id)
                         ->find_one()
-                        ->set('last_visit', $this->app->user->logged)
+                        ->set('last_visit', User::get()->logged)
                         ->save();
-                    $this->app->user->last_visit = $this->app->user->logged;
+                    User::get()->last_visit = User::get()->logged;
                 }
 
-                $idle_sql = ($this->app->user->idle == '1') ? ', idle=0' : '';
+                $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table('online')->raw_execute('UPDATE '.$this->app->forum_settings['db_prefix'].'online SET logged='.$this->app->now.$idle_sql.' WHERE user_id=:user_id', array(':user_id' => $this->app->user->id));
+                DB::for_table('online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => User::get()->id));
 
                 // Update tracked topics with the current expire time
-                $cookie_tracked_topics = $this->app->getCookie($this->app->forum_settings['cookie_name'].'_track');
+                $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
                 if (isset($cookie_tracked_topics)) {
                     Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
                 }
             }
         } else {
-            if (!$this->app->user->logged) {
-                $this->app->user->logged = $this->app->user->last_visit;
+            if (!User::get()->logged) {
+                User::get()->logged = User::get()->last_visit;
             }
         }
     }
@@ -103,27 +118,27 @@ class Auth extends \Slim\Middleware
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
 
-        $result = \DB::for_table('online')
+        $result = DB::for_table('online')
                     ->select_many($select_update_users_online)
-                    ->where_lt('logged', $this->app->now-$this->app->forum_settings['o_timeout_online'])
+                    ->where_lt('logged', Container::get('now')-ForumSettings::get('o_timeout_online'))
                     ->find_many();
 
         foreach ($result as $cur_user) {
             // If the entry is a guest, delete it
             if ($cur_user['user_id'] == '1') {
-                \DB::for_table('online')->where('ident', $cur_user['ident'])
+                DB::for_table('online')->where('ident', $cur_user['ident'])
                     ->delete_many();
             } else {
                 // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
-                if ($cur_user['logged'] < ($this->app->now-$this->app->forum_settings['o_timeout_visit'])) {
-                    \DB::for_table('users')->where('id', $cur_user['user_id'])
+                if ($cur_user['logged'] < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
+                    DB::for_table('users')->where('id', $cur_user['user_id'])
                         ->find_one()
                         ->set('last_visit', $cur_user['logged'])
                         ->save();
-                    \DB::for_table('online')->where('user_id', $cur_user['user_id'])
+                    DB::for_table('online')->where('user_id', $cur_user['user_id'])
                         ->delete_many();
                 } elseif ($cur_user['idle'] == '0') {
-                    \DB::for_table('online')->where('user_id', $cur_user['user_id'])
+                    DB::for_table('online')->where('user_id', $cur_user['user_id'])
                         ->update_many('idle', 1);
                 }
             }
@@ -132,31 +147,29 @@ class Auth extends \Slim\Middleware
 
     public function check_bans()
     {
-        global $feather_bans;
-
         // Admins and moderators aren't affected
-        if ($this->app->user->is_admmod || !$feather_bans) {
+        if (User::get()->is_admmod || !Container::get('bans')) {
             return;
         }
 
         // Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
         // 192.168.0.5 from matching e.g. 192.168.0.50
-        $user_ip = $this->app->request->getIp();
+        $user_ip = Utils::getIp();
         $user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
 
         $bans_altered = false;
         $is_banned = false;
 
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             // Has this ban expired?
             if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-                \DB::for_table('bans')->where('id', $cur_ban['id'])
+                DB::for_table('bans')->where('id', $cur_ban['id'])
                     ->delete_many();
                 $bans_altered = true;
                 continue;
             }
 
-            if ($cur_ban['username'] != '' && utf8_strtolower($this->app->user->username) == utf8_strtolower($cur_ban['username'])) {
+            if ($cur_ban['username'] != '' && utf8_strtolower(User::get()->username) == utf8_strtolower($cur_ban['username'])) {
                 $is_banned = true;
             }
 
@@ -180,16 +193,16 @@ class Auth extends \Slim\Middleware
             }
 
             if ($is_banned) {
-                \DB::for_table('online')
-                    ->where('ident', $this->app->user->username)
+                DB::for_table('online')
+                    ->where('ident', User::get()->username)
                     ->delete_many();
-                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape($this->app->forum_settings['o_admin_email']).'">'.Utils::escape($this->app->forum_settings['o_admin_email']).'</a>.', 403);
+                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403);
             }
         }
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            $this->app->cache->store('bans', Cache::get_bans());
+            Container::get('cache')->store('bans', Cache::get_bans());
         }
     }
 
@@ -198,88 +211,97 @@ class Auth extends \Slim\Middleware
         // Deal with newlines, tabs and multiple spaces
         $pattern = array("\t", '  ', '  ');
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
-        $message = str_replace($pattern, $replace, $this->app->forum_settings['o_maintenance_message']);
+        $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
-        $this->app->template->setPageInfo(array(
-            'title' => array(Utils::escape($this->app->forum_settings['o_board_title']), __('Maintenance')),
-            'active_page' => 'index',
-            'message'    =>    $message,
-            'no_back_link'    =>    '',
-        ))->addTemplate('message.php')->display();
-
-        // Don't display anything after a message
-        $this->app->stop();
+        return View::setPageInfo(array(
+            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')),
+            'msg'    =>    $message,
+            'backlink'    =>   false,
+        ))->addTemplate('maintenance.php')->display();
     }
 
-    public function call()
+    public function __invoke($req, $res, $next)
     {
-        global $feather_bans;
+        $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
-        if ($cookie = $this->get_cookie_data($this->app->forum_settings['cookie_name'], $this->app->forum_settings['cookie_seed'])) {
-            $this->app->user = $this->model->load_user($cookie['user_id']);
-            $expires = ($cookie['expires'] > $this->app->now + $this->app->forum_settings['o_timeout_visit']) ? $this->app->now + 1209600 : $this->app->now + $this->app->forum_settings['o_timeout_visit'];
-            $this->app->user->is_guest = false;
-            $this->app->user->is_admmod = $this->app->user->g_id == $this->app->forum_env['FEATHER_ADMIN'] || $this->app->user->g_moderator == '1';
-            if (!$this->app->user->disp_topics) {
-                $this->app->user->disp_topics = $this->app->forum_settings['o_disp_topics_default'];
+        if ($jwt = $this->get_cookie_data($authCookie)) {
+            $user = AuthModel::load_user($jwt->data->userId);
+
+            $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+
+            $user->is_guest = false;
+            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+
+            if (!$user->disp_topics) {
+                $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
-            if (!$this->app->user->disp_posts) {
-                $this->app->user->disp_posts = $this->app->forum_settings['o_disp_posts_default'];
+            if (!$user->disp_posts) {
+                $user->disp_posts = ForumSettings::get('o_disp_posts_default');
             }
-            if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language)) {
-                $this->app->user->language = $this->app->forum_settings['o_default_lang'];
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language)) {
+                $user->language = ForumSettings::get('o_default_lang');
             }
-            if (!file_exists($this->app->forum_env['FEATHER_ROOT'].'style/themes/'.$this->app->user->style.'/style.css')) {
-                $this->app->user->style = $this->app->forum_settings['o_default_style'];
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->style.'/style.css')) {
+                $user->style = ForumSettings::get('o_default_style');
             }
-            $this->model->feather_setcookie($this->app->user->id, $this->app->user->password, $expires);
+
+            // Refresh cookie to avoid re-logging between idle
+            $jwt = AuthModel::generate_jwt($user, $expires);
+            AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
+
+            // Add user to DIC
+            Container::set('user', $user);
+
             $this->update_online();
         } else {
-            $this->app->user = $this->model->load_user(1);
+            $user = AuthModel::load_user(1);
 
-            $this->app->user->disp_topics = $this->app->forum_settings['o_disp_topics_default'];
-            $this->app->user->disp_posts = $this->app->forum_settings['o_disp_posts_default'];
-            $this->app->user->timezone = $this->app->forum_settings['o_default_timezone'];
-            $this->app->user->dst = $this->app->forum_settings['o_default_dst'];
-            $this->app->user->language = $this->app->forum_settings['o_default_lang'];
-            $this->app->user->style = $this->app->forum_settings['o_default_style'];
-            $this->app->user->is_guest = true;
-            $this->app->user->is_admmod = false;
+            $user->disp_topics = ForumSettings::get('o_disp_topics_default');
+            $user->disp_posts = ForumSettings::get('o_disp_posts_default');
+            $user->timezone = ForumSettings::get('o_default_timezone');
+            $user->dst = ForumSettings::get('o_default_dst');
+            $user->language = ForumSettings::get('o_default_lang');
+            $user->style = ForumSettings::get('o_default_style');
+            $user->is_guest = true;
+            $user->is_admmod = false;
 
             // Update online list
-            if (!$this->app->user->logged) {
-                $this->app->user->logged = time();
+            if (!$user->logged) {
+                $user->logged = time();
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch ($this->app->forum_settings['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::for_table('online')->raw_execute('REPLACE INTO '.$this->app->forum_settings['db_prefix'].'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
+                    DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Utils::getIp(), ':logged' => $user->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.$this->app->forum_settings['db_prefix'].'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE ident=:ident)', array(':ident' => $this->app->request->getIp(), ':logged' => $this->app->user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => Utils::getIp(), ':logged' => $user->logged));
                         break;
                 }
             } else {
-                DB::for_table('online')->where('ident', $this->app->request->getIp())
+                DB::for_table('online')->where('ident', Utils::getIp())
                      ->update_many('logged', time());
             }
-
-            $this->model->feather_setcookie(1, Random::hash(uniqid(rand(), true)), $this->app->now + 31536000);
+            // $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);
+            // AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
+            // Add $user as guest to DIC
+            Container::set('user', $user);
         }
 
-        load_textdomain('featherbb', $this->app->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->app->user->language.'/common.mo');
-
+        translate('common');
         // Load bans from cache
-        if (!$this->app->cache->isCached('bans')) {
-            $this->app->cache->store('bans', Cache::get_bans());
+        if (!Container::get('cache')->isCached('bans')) {
+            Container::get('cache')->store('bans', Cache::get_bans());
         }
-        $feather_bans = $this->app->cache->retrieve('bans');
+
+        // Add bans to the container
+        Container::set('bans', Container::get('cache')->retrieve('bans'));
 
         // Check if current user is banned
         $this->check_bans();
@@ -287,6 +309,6 @@ class Auth extends \Slim\Middleware
         // Update online list
         $this->update_users_online();
 
-        $this->next->call();
+        return $next($req, $res);
     }
 }

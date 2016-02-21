@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * Parser (C) 2011 Jeff Roberson (jmrware.com)
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
@@ -69,20 +69,20 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
         'handlers'                => array(
             'ATTRIB'            => array(
                 'format'        => '
-					</p>
-					<div class="codebox">
-						<h4>Code: "%a_str%"</h4>
-						<pre>%c_str%</pre>
-					</div>
-					<p>'
+                    </p>
+                    <div class="codebox">
+                        <h4>Code: "%a_str%"</h4>
+                        <pre>%c_str%</pre>
+                    </div>
+                    <p>'
             ),
             'NO_ATTRIB'            => array(
                 'format'        => '
-					</p>
-					<div class="codebox">
-						<pre>%c_str%</pre>
-					</div>
-					<p>'
+                    </p>
+                    <div class="codebox">
+                        <pre>%c_str%</pre>
+                    </div>
+                    <p>'
             )
         )
     ),
@@ -233,32 +233,32 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
         'html_type'                => 'block',
         'tag_type'                => 'zombie',
         'nest_type'                => 'clip',
-//		'depth_max'				=> 3,
+//        'depth_max'                => 3,
         'handlers'                => array(
             'ATTRIB'            => array(
                 'format'        => '
-				</p>
-				<div class="quotebox">
-					<cite>%a_str%</cite>
-					<blockquote>
-						<div>
-							<p>%c_str%</p>
-						</div>
-					</blockquote>
-				</div>
-				<p>'
+                </p>
+                <div class="quotebox">
+                    <cite>%a_str%</cite>
+                    <blockquote>
+                        <div>
+                            <p>%c_str%</p>
+                        </div>
+                    </blockquote>
+                </div>
+                <p>'
             ),
             'NO_ATTRIB'            => array(
                 'format'        => '
-				</p>
-				<div class="quotebox">
-					<blockquote>
-						<div>
-							<p>%c_str%</p>
-						</div>
-					</blockquote>
-				</div>
-				<p>'
+                </p>
+                <div class="quotebox">
+                    <blockquote>
+                        <div>
+                            <p>%c_str%</p>
+                        </div>
+                    </blockquote>
+                </div>
+                <p>'
             ),
         ),
     ),
@@ -291,7 +291,7 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
     ),
     'url' => array(
         'html_name'                => 'a',
-//		'nest_type'				=> 'err',
+//        'nest_type'                => 'err',
         'tags_excluded'            => array('email' => true, 'url' => true),
         'handlers'                => array(
             'ATTRIB'            => array(
@@ -371,22 +371,22 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                 'c_type'        => 'text',
                 'c_regex'        => '%(?:^|\bv[=/])(\w{10,12})\b%S',
                 'format'        => '
-					<object type="application/x-shockwave-flash" width="%w_str%" height="%h_str%"
-						data="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1&amp;rel=0">
-						<param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
-						<param name="allowFullScreen" value="true" />
-					</object>'
+                    <object type="application/x-shockwave-flash" width="%w_str%" height="%h_str%"
+                        data="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1&amp;rel=0">
+                        <param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
+                        <param name="allowFullScreen" value="true" />
+                    </object>'
             ),
             'NO_ATTRIB'            => array(
                 'a_type'        => 'width_height',
                 'c_type'        => 'width_height',
                 'c_regex'        => '%(?:^|\bv[=/])(\w{10,12})\b%S',
                 'format'        => '
-					<object type="application/x-shockwave-flash" width="%w_str%" height="%h_str%"
-						data="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1&amp;rel=0">
-						<param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
-						<param name="allowFullScreen" value="true" />
-					</object>'
+                    <object type="application/x-shockwave-flash" width="%w_str%" height="%h_str%"
+                        data="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1&amp;rel=0">
+                        <param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
+                        <param name="allowFullScreen" value="true" />
+                    </object>'
             )
         )
     ),

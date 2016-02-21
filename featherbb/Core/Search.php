@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -12,37 +12,37 @@
 
 namespace FeatherBB\Core;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 
 class Search
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
+
 
         // Make a regex that will match CJK or Hangul characters
         define('FEATHER_CJK_HANGUL_REGEX', '[' .
-            '\x{1100}-\x{11FF}' .        // Hangul Jamo							1100-11FF		(http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
-            '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo			3130-318F		(http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
-            '\x{AC00}-\x{D7AF}' .        // Hangul Syllables						AC00-D7AF		(http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)
+            '\x{1100}-\x{11FF}' .        // Hangul Jamo                            1100-11FF        (http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
+            '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo            3130-318F        (http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
+            '\x{AC00}-\x{D7AF}' .        // Hangul Syllables                        AC00-D7AF        (http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)
 
             // Hiragana
-            '\x{3040}-\x{309F}' .        // Hiragana								3040-309F		(http://www.fileformat.info/info/unicode/block/hiragana/index.htm)
+            '\x{3040}-\x{309F}' .        // Hiragana                                3040-309F        (http://www.fileformat.info/info/unicode/block/hiragana/index.htm)
 
             // Katakana
-            '\x{30A0}-\x{30FF}' .        // Katakana								30A0-30FF		(http://www.fileformat.info/info/unicode/block/katakana/index.htm)
-            '\x{31F0}-\x{31FF}' .        // Katakana Phonetic Extensions			31F0-31FF		(http://www.fileformat.info/info/unicode/block/katakana_phonetic_extensions/index.htm)
+            '\x{30A0}-\x{30FF}' .        // Katakana                                30A0-30FF        (http://www.fileformat.info/info/unicode/block/katakana/index.htm)
+            '\x{31F0}-\x{31FF}' .        // Katakana Phonetic Extensions            31F0-31FF        (http://www.fileformat.info/info/unicode/block/katakana_phonetic_extensions/index.htm)
 
-            // CJK Unified Ideographs	(http://en.wikipedia.org/wiki/CJK_Unified_Ideographs)
-            '\x{2E80}-\x{2EFF}' .        // CJK Radicals Supplement				2E80-2EFF		(http://www.fileformat.info/info/unicode/block/cjk_radicals_supplement/index.htm)
-            '\x{2F00}-\x{2FDF}' .        // Kangxi Radicals						2F00-2FDF		(http://www.fileformat.info/info/unicode/block/kangxi_radicals/index.htm)
-            '\x{2FF0}-\x{2FFF}' .        // Ideographic Description Characters	2FF0-2FFF		(http://www.fileformat.info/info/unicode/block/ideographic_description_characters/index.htm)
-            '\x{3000}-\x{303F}' .        // CJK Symbols and Punctuation			3000-303F		(http://www.fileformat.info/info/unicode/block/cjk_symbols_and_punctuation/index.htm)
-            '\x{31C0}-\x{31EF}' .        // CJK Strokes							31C0-31EF		(http://www.fileformat.info/info/unicode/block/cjk_strokes/index.htm)
-            '\x{3200}-\x{32FF}' .        // Enclosed CJK Letters and Months		3200-32FF		(http://www.fileformat.info/info/unicode/block/enclosed_cjk_letters_and_months/index.htm)
-            '\x{3400}-\x{4DBF}' .        // CJK Unified Ideographs Extension A	3400-4DBF		(http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_a/index.htm)
-            '\x{4E00}-\x{9FFF}' .        // CJK Unified Ideographs				4E00-9FFF		(http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm)
-            '\x{20000}-\x{2A6DF}' .        // CJK Unified Ideographs Extension B	20000-2A6DF		(http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm)
+            // CJK Unified Ideographs    (http://en.wikipedia.org/wiki/CJK_Unified_Ideographs)
+            '\x{2E80}-\x{2EFF}' .        // CJK Radicals Supplement                2E80-2EFF        (http://www.fileformat.info/info/unicode/block/cjk_radicals_supplement/index.htm)
+            '\x{2F00}-\x{2FDF}' .        // Kangxi Radicals                        2F00-2FDF        (http://www.fileformat.info/info/unicode/block/kangxi_radicals/index.htm)
+            '\x{2FF0}-\x{2FFF}' .        // Ideographic Description Characters    2FF0-2FFF        (http://www.fileformat.info/info/unicode/block/ideographic_description_characters/index.htm)
+            '\x{3000}-\x{303F}' .        // CJK Symbols and Punctuation            3000-303F        (http://www.fileformat.info/info/unicode/block/cjk_symbols_and_punctuation/index.htm)
+            '\x{31C0}-\x{31EF}' .        // CJK Strokes                            31C0-31EF        (http://www.fileformat.info/info/unicode/block/cjk_strokes/index.htm)
+            '\x{3200}-\x{32FF}' .        // Enclosed CJK Letters and Months        3200-32FF        (http://www.fileformat.info/info/unicode/block/enclosed_cjk_letters_and_months/index.htm)
+            '\x{3400}-\x{4DBF}' .        // CJK Unified Ideographs Extension A    3400-4DBF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_a/index.htm)
+            '\x{4E00}-\x{9FFF}' .        // CJK Unified Ideographs                4E00-9FFF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm)
+            '\x{20000}-\x{2A6DF}' .        // CJK Unified Ideographs Extension B    20000-2A6DF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm)
             ']');
     }
 
@@ -93,10 +93,10 @@ class Search
         }
 
         if (!isset($stopwords)) {
-            if (!$this->feather->cache->isCached('stopwords')) {
-                $this->feather->cache->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
+            if (!Container::get('cache')->isCached('stopwords')) {
+                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
             }
-            $stopwords = $this->feather->cache->retrieve('stopwords');
+            $stopwords = Container::get('cache')->retrieve('stopwords');
         }
 
         // If it is a stopword it isn't valid
@@ -114,7 +114,7 @@ class Search
 
         // Check the word is within the min/max length
         $num_chars = Utils::strlen($word);
-        return $num_chars >= $this->feather->forum_env['FEATHER_SEARCH_MIN_WORD'] && $num_chars <= $this->feather->forum_env['FEATHER_SEARCH_MAX_WORD'];
+        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
     }
 
 
@@ -161,9 +161,6 @@ class Search
     //
     public function update_search_index($mode, $post_id, $message, $subject = null)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
 
@@ -230,7 +227,7 @@ class Search
             unset($unique_words);
 
             if (!empty($new_words)) {
-                switch ($feather->forum_settings['db_type']) {
+                switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
@@ -238,7 +235,7 @@ class Search
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
                         DB::for_table('search_words')
-                            ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_words (word) VALUES ' . $placeholders, $new_words);
+                            ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $new_words);
                         break;
 
                     default:
@@ -283,7 +280,7 @@ class Search
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
                 DB::for_table('search_words')
-                    ->raw_execute('INSERT INTO ' . $feather->forum_settings['db_prefix'] . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . $feather->forum_settings['db_prefix'] . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                    ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -296,16 +293,13 @@ class Search
     //
     public function strip_search_index($post_ids)
     {
-        // Get Slim current session
-        $feather = \Slim\Slim::getInstance();
-
         if (!is_array($post_ids)) {
             $post_ids_sql = explode(',', $post_ids);
         } else {
             $post_ids_sql = $post_ids;
         }
 
-        switch ($feather->forum_settings['db_type']) {
+        switch (ForumSettings::get('db_type')) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
@@ -343,13 +337,13 @@ class Search
 
             default:
                 DB::for_table('search_matches')
-                    ->where_raw('id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . $feather->forum_settings['db_prefix'] . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->where_raw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
-
-                DB::for_table('search_matches')
-                    ->where_in('post_id', $post_ids_sql)
-                    ->delete_many();
         }
+
+        DB::for_table('search_matches')
+            ->where_in('post_id', $post_ids_sql)
+            ->delete_many();
     }
 }

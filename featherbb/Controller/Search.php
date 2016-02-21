@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -17,62 +17,62 @@ class Search
 {
     public function __construct()
     {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
         $this->model = new \FeatherBB\Model\Search();
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/userlist.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/search.mo');
-        load_textdomain('featherbb', $this->feather->forum_env['FEATHER_ROOT'].'featherbb/lang/'.$this->user->language.'/forum.mo');
+        translate('userlist');
+        translate('search');
+        translate('topic');
+        translate('forum');
     }
 
-
-    public function display()
+    public function display($req, $res, $args)
     {
-        if ($this->user->g_search == '0') {
+        Container::get('hooks')->fire('controller.search.display');
+
+        if (User::get()->g_search == '0') {
             throw new Error(__('No search permission'), 403);
         }
 
         // Figure out what to do :-)
-        if ($this->request->get('action') || ($this->request->get('search_id'))) {
+        if (Input::query('action') || (Input::query('search_id'))) {
 
             $search = $this->model->get_search_results();
 
             // We have results to display
-            if (isset($search['is_result'])) {
+            if (!is_object($search) && isset($search['is_result'])) {
 
-                $this->feather->template->setPageInfo(array(
-                    'title' => array(Utils::escape($this->config['o_board_title']), __('Search results')),
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search results')),
                     'active_page' => 'search',
-                ));
-
-                $this->model->display_search_results($search, $this->feather);
-
-                $this->feather->template->setPageInfo(array(
                     'search' => $search,
+                    'footer' => $search,
                 ));
 
-                $this->feather->template->addTemplate('search/header.php', 1);
+                $display = $this->model->display_search_results($search);
+
+                View::setPageInfo(array(
+                        'display' => $display,
+                    )
+                );
+
+                View::addTemplate('search/header.php', 1);
 
                 if ($search['show_as'] == 'posts') {
-                    $this->feather->template->addTemplate('search/posts.php', 5);
+                    View::addTemplate('search/posts.php', 5);
                 }
                 else {
-                    $this->feather->template->addTemplate('search/topics.php', 5);
+                    View::addTemplate('search/topics.php', 5);
                 }
 
-                $this->feather->template->addTemplate('search/footer.php', 10)->display();
+                View::addTemplate('search/footer.php', 10)->display();
 
             } else {
-                Url::redirect($this->feather->urlFor('search'), __('No hits'));
+                return Router::redirect(Router::pathFor('search'), __('No hits'));
             }
         }
         // Display the form
         else {
-            $this->feather->template->setPageInfo(array(
-                'title' => array(Utils::escape($this->config['o_board_title']), __('Search')),
+            View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search')),
                 'active_page' => 'search',
                 'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,
@@ -81,9 +81,10 @@ class Search
         }
     }
 
-    public function quicksearches($show)
+    public function quicksearches($req, $res, $args)
     {
-        // Url::redirect($this->feather->urlFor('search', array('show' => '?action=show_'.$show)));
-        $this->feather->redirect($this->feather->urlFor('search').'?action=show_'.$show);
+        Container::get('hooks')->fire('controller.search.quicksearches');
+
+        return Router::redirect(Router::pathFor('search').'?action=show_'.$args['show']);
     }
 }

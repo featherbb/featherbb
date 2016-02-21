@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 1.8.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "lang_direction"
@@ -81,6 +81,12 @@ msgstr "Yesterday"
 
 msgid "Info"
 msgstr "Info"
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "Error"
+msgstr "Error"
 
 msgid "Go back"
 msgstr "Go back"
@@ -200,7 +206,7 @@ msgid "Next"
 msgstr "Next"
 
 msgid "Spacer"
-msgstr "â¦"
+msgstr "…"
 
 msgid "Title"
 msgstr "Title"

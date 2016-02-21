@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -9,8 +9,20 @@
 
 namespace FeatherBB\Core;
 
-class Hooks extends \Slim\Slim
+class Hooks
 {
+
+    /**
+     * @var array
+     */
+    protected $hooks = array(
+        // 'slim.before' => array(array()),
+        // 'slim.before.router' => array(array()),
+        // 'slim.before.dispatch' => array(array()),
+        // 'slim.after.dispatch' => array(array()),
+        // 'slim.after.router' => array(array()),
+        // 'slim.after' => array(array())
+    );
     /**
      * Assign hook
      * @param  string   $name       The hook name
@@ -39,7 +51,7 @@ class Hooks extends \Slim\Slim
 
         if (!isset($this->hooks[$name])) {
             //$this->hooks[$name] = array(array());
-            if (isset ($args[0])) {
+            if (isset($args[0])) {
                 return $args[0];
             }
             else {

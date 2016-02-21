@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
@@ -17,22 +17,11 @@ use FeatherBB\Model\Cache;
 
 class Bans
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
-        $this->email = $this->feather->email;
-    }
-
     public function add_ban_info($id = null)
     {
         $ban = array();
 
-        $id = $this->hook->fire('add_ban_info_start', $id);
+        $id = Container::get('hooks')->fire('model.admin.bans.add_ban_info_start', $id);
 
         // If the ID of the user to ban was provided through GET (a link from profile.php)
         if (is_numeric($id)) {
@@ -45,7 +34,7 @@ class Bans
             $result = DB::for_table('users')->select_many($select_add_ban_info)
                         ->where('id', $ban['user_id']);
 
-            $result = $this->hook->fireDB('add_ban_info_query', $result);
+            $result = Container::get('hooks')->fireDB('model.admin.bans.add_ban_info_query', $result);
             $result = $result->find_one();
 
             if ($result) {
@@ -58,7 +47,7 @@ class Bans
         } else {
             // Otherwise the username is in POST
 
-            $ban['ban_user'] = Utils::trim($this->request->post('new_ban_user'));
+            $ban['ban_user'] = Utils::trim(Input::post('new_ban_user'));
 
             if ($ban['ban_user'] != '') {
                 $select_add_ban_info = array('id', 'group_id', 'username', 'email');
@@ -66,7 +55,7 @@ class Bans
                     ->where('username', $ban['ban_user'])
                     ->where_gt('id', 1);
 
-                $result = $this->hook->fireDB('add_ban_info_query', $result);
+                $result = Container::get('hooks')->fireDB('model.admin.bans.add_ban_info_query', $result);
                 $result = $result->find_one();
 
                 if ($result) {
@@ -82,7 +71,7 @@ class Bans
 
         // Make sure we're not banning an admin or moderator
         if (isset($group_id)) {
-            if ($group_id == $this->feather->forum_env['FEATHER_ADMIN']) {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
@@ -108,7 +97,7 @@ class Bans
 
         $ban['mode'] = 'add';
 
-        $ban = $this->hook->fire('add_ban_info', $ban);
+        $ban = Container::get('hooks')->fire('model.admin.bans.add_ban_info', $ban);
 
         return $ban;
     }
@@ -117,7 +106,7 @@ class Bans
     {
         $ban = array();
 
-        $id = $this->hook->fire('edit_ban_info_start', $id);
+        $id = Container::get('hooks')->fire('model.admin.bans.edit_ban_info_start', $id);
 
         $ban['id'] = $id;
 
@@ -125,7 +114,7 @@ class Bans
         $result = DB::for_table('bans')->select_many($select_edit_ban_info)
             ->where('id', $ban['id']);
 
-        $result = $this->hook->fireDB('edit_ban_info_query', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.bans.edit_ban_info_query', $result);
         $result = $result->find_one();
 
         if ($result) {
@@ -138,25 +127,25 @@ class Bans
             throw new Error(__('Bad request'), 404);
         }
 
-        $diff = ($this->user->timezone + $this->user->dst) * 3600;
+        $diff = (User::get()->timezone + User::get()->dst) * 3600;
         $ban['expire'] = ($ban['expire'] != '') ? gmdate('Y-m-d', $ban['expire'] + $diff) : '';
 
         $ban['mode'] = 'edit';
 
-        $ban = $this->hook->fire('edit_ban_info', $ban);
+        $ban = Container::get('hooks')->fire('model.admin.bans.edit_ban_info', $ban);
 
         return $ban;
     }
 
     public function insert_ban()
     {
-        $ban_user = Utils::trim($this->request->post('ban_user'));
-        $ban_ip = Utils::trim($this->request->post('ban_ip'));
-        $ban_email = strtolower(Utils::trim($this->request->post('ban_email')));
-        $ban_message = Utils::trim($this->request->post('ban_message'));
-        $ban_expire = Utils::trim($this->request->post('ban_expire'));
+        $ban_user = Utils::trim(Input::post('ban_user'));
+        $ban_ip = Utils::trim(Input::post('ban_ip'));
+        $ban_email = strtolower(Utils::trim(Input::post('ban_email')));
+        $ban_message = Utils::trim(Input::post('ban_message'));
+        $ban_expire = Utils::trim(Input::post('ban_expire'));
 
-        $this->hook->fire('insert_ban_start', $ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire);
+        Container::get('hooks')->fire('model.admin.bans.insert_ban_start', $ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire);
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
             throw new Error(__('Must enter message'), 400);
@@ -171,7 +160,7 @@ class Bans
                             ->find_one_col('group_id');
 
             if ($group_id) {
-                if ($group_id == $this->feather->forum_env['FEATHER_ADMIN']) {
+                if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
                     throw new Error(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
@@ -223,7 +212,7 @@ class Bans
             $ban_ip = implode(' ', $addresses);
         }
 
-        if ($ban_email != '' && !$this->email->is_valid_email($ban_email)) {
+        if ($ban_email != '' && !Container::get('email')->is_valid_email($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
                 throw new Error(__('Invalid e-mail message'), 400);
             }
@@ -236,7 +225,7 @@ class Bans
                 throw new Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
             }
 
-            $diff = ($this->user->timezone + $this->user->dst) * 3600;
+            $diff = (User::get()->timezone + User::get()->dst) * 3600;
             $ban_expire -= $diff;
 
             if ($ban_expire <= time()) {
@@ -259,10 +248,10 @@ class Bans
             'expire'    =>  $ban_expire,
         );
 
-        $insert_update_ban = $this->hook->fire('insert_ban_data', $insert_update_ban);
+        $insert_update_ban = Container::get('hooks')->fire('model.admin.bans.insert_ban_data', $insert_update_ban);
 
-        if ($this->request->post('mode') == 'add') {
-            $insert_update_ban['ban_creator'] = $this->user->id;
+        if (Input::post('mode') == 'add') {
+            $insert_update_ban['ban_creator'] = User::get()->id;
 
             $result = DB::for_table('bans')
                 ->create()
@@ -271,46 +260,46 @@ class Bans
         } else {
 
             $result = DB::for_table('bans')
-                ->where('id', $this->request->post('ban_id'))
+                ->where('id', Input::post('ban_id'))
                 ->find_one()
                 ->set($insert_update_ban)
                 ->save();
         }
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::get_bans());
 
-        Url::redirect($this->feather->urlFor('adminBans'), __('Ban edited redirect'));
+        return Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
 
     public function remove_ban($ban_id)
     {
-        $ban_id = $this->hook->fire('remove_ban', $ban_id);
+        $ban_id = Container::get('hooks')->fire('model.admin.bans.remove_ban', $ban_id);
 
         $result = DB::for_table('bans')->where('id', $ban_id)
                     ->find_one();
-        $result = $this->hook->fireDB('remove_ban_query', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.bans.remove_ban_query', $result);
         $result = $result->delete();
 
         // Regenerate the bans cache
-        $this->feather->cache->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::get_bans());
 
-        Url::redirect($this->feather->urlFor('adminBans'), __('Ban removed redirect'));
+        return Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }
 
     public function find_ban($start_from = false)
     {
         $ban_info = array();
 
-        $this->hook->fire('find_ban_start');
+        Container::get('hooks')->fire('model.admin.bans.find_ban_start');
 
         // trim() all elements in $form
         $ban_info['conditions'] = $ban_info['query_str'] = array();
 
-        $expire_after = $this->request->get('expire_after') ? Utils::trim($this->request->get('expire_after')) : '';
-        $expire_before = $this->request->get('expire_before') ? Utils::trim($this->request->get('expire_before')) : '';
-        $ban_info['order_by'] = $this->request->get('order_by') && in_array($this->request->get('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.$this->request->get('order_by') : 'b.username';
-        $ban_info['direction'] = $this->request->get('direction') && $this->request->get('direction') == 'DESC' ? 'DESC' : 'ASC';
+        $expire_after = Input::query('expire_after') ? Utils::trim(Input::query('expire_after')) : '';
+        $expire_before = Input::query('expire_before') ? Utils::trim(Input::query('expire_before')) : '';
+        $ban_info['order_by'] = Input::query('order_by') && in_array(Input::query('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.Input::query('order_by') : 'b.username';
+        $ban_info['direction'] = Input::query('direction') && Input::query('direction') == 'DESC' ? 'DESC' : 'ASC';
 
         $ban_info['query_str'][] = 'order_by='.$ban_info['order_by'];
         $ban_info['query_str'][] = 'direction='.$ban_info['direction'];
@@ -341,24 +330,24 @@ class Bans
             $result = $result->where_lt('b.expire', $expire_before);
         }
 
-        if ($this->request->get('username')) {
-            $result = $result->where_like('b.username', str_replace('*', '%', $this->request->get('username')));
-            $ban_info['query_str'][] = 'username=' . urlencode($this->request->get('username'));
+        if (Input::query('username')) {
+            $result = $result->where_like('b.username', str_replace('*', '%', Input::query('username')));
+            $ban_info['query_str'][] = 'username=' . urlencode(Input::query('username'));
         }
 
-        if ($this->request->get('ip')) {
-            $result = $result->where_like('b.ip', str_replace('*', '%', $this->request->get('ip')));
-            $ban_info['query_str'][] = 'ip=' . urlencode($this->request->get('ip'));
+        if (Input::query('ip')) {
+            $result = $result->where_like('b.ip', str_replace('*', '%', Input::query('ip')));
+            $ban_info['query_str'][] = 'ip=' . urlencode(Input::query('ip'));
         }
 
-        if ($this->request->get('email')) {
-            $result = $result->where_like('b.email', str_replace('*', '%', $this->request->get('email')));
-            $ban_info['query_str'][] = 'email=' . urlencode($this->request->get('email'));
+        if (Input::query('email')) {
+            $result = $result->where_like('b.email', str_replace('*', '%', Input::query('email')));
+            $ban_info['query_str'][] = 'email=' . urlencode(Input::query('email'));
         }
 
-        if ($this->request->get('message')) {
-            $result = $result->where_like('b.message', str_replace('*', '%', $this->request->get('message')));
-            $ban_info['query_str'][] = 'message=' . urlencode($this->request->get('message'));
+        if (Input::query('message')) {
+            $result = $result->where_like('b.message', str_replace('*', '%', Input::query('message')));
+            $ban_info['query_str'][] = 'message=' . urlencode(Input::query('message'));
         }
 
         // Fetch ban count
@@ -381,7 +370,7 @@ class Bans
             $ban_info['num_bans'] = $result->count('id');
         }
 
-        $this->hook->fire('find_ban', $ban_info);
+        Container::get('hooks')->fire('model.admin.bans.find_ban', $ban_info);
 
         return $ban_info;
     }

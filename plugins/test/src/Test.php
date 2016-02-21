@@ -15,14 +15,13 @@ class Test extends BasePlugin
 {
     public function run()
     {
-        $this->hooks->bind('get_forum_actions', [$this, 'addMarkRead']);
-
+        Container::get('hooks')->bind('model.index.get_forum_actions', [$this, 'addMarkRead']);
     }
 
     public function addMarkRead($forum_actions)
     {
-        $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test1</a>';
-        $forum_actions[] = '<a href="' . $this->feather->url->get('mark-read/') . '">Test2</a>';
+        $forum_actions[] = '<a href="' . Container::get('url')->get('mark-read/') . '">Test1</a>';
+        $forum_actions[] = '<a href="' . Container::get('url')->get('mark-read/') . '">Test2</a>';
         return $forum_actions;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -9,20 +9,10 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 
 class Forums
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
-    }
-
     //
     // Forum
     //
@@ -32,7 +22,7 @@ class Forums
         $set_add_forum = array('forum_name' => $forum_name,
                                 'cat_id' => $cat_id);
 
-        $set_add_forum = $this->hook->fire('add_forum', $set_add_forum);
+        $set_add_forum = Container::get('hooks')->fire('model.admin.forums.add_forum', $set_add_forum);
 
         $forum = DB::for_table('forums')
                     ->create()
@@ -47,7 +37,7 @@ class Forums
         $update_forum = DB::for_table('forums')
                     ->find_one($forum_id)
                     ->set($forum_data);
-        $update_forum = $this->hook->fireDB('update_forum_query', $update_forum);
+        $update_forum = Container::get('hooks')->fireDB('model.admin.forums.update_forum_query', $update_forum);
         $update_forum = $update_forum->save();
 
         return $update_forum;
@@ -55,7 +45,7 @@ class Forums
 
     public function delete_forum($forum_id)
     {
-        $forum_id = $this->hook->fire('delete_forum_start', $forum_id);
+        $forum_id = Container::get('hooks')->fire('model.admin.forums.delete_forum_start', $forum_id);
 
         // Prune all posts and topics
         $this->maintenance = new \FeatherBB\Model\Admin\Maintenance();
@@ -63,16 +53,16 @@ class Forums
 
         // Delete the forum
         $delete_forum = DB::for_table('forums')->find_one($forum_id);
-        $delete_forum = $this->hook->fireDB('delete_forum_query', $delete_forum);
+        $delete_forum = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_query', $delete_forum);
         $delete_forum->delete();
 
         // Delete forum specific group permissions and subscriptions
         $delete_forum_perms = DB::for_table('forum_perms')->where('forum_id', $forum_id);
-        $delete_forum_perms = $this->hook->fireDB('delete_forum_perms_query', $delete_forum_perms);
+        $delete_forum_perms = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_perms_query', $delete_forum_perms);
         $delete_forum_perms->delete_many();
 
         $delete_forum_subs = DB::for_table('forum_subscriptions')->where('forum_id', $forum_id);
-        $delete_forum_subs = $this->hook->fireDB('delete_forum_subs_query', $delete_forum_subs);
+        $delete_forum_subs = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_subs_query', $delete_forum_subs);
         $delete_forum_subs->delete_many();
 
         // Delete orphaned redirect topics
@@ -81,7 +71,7 @@ class Forums
                     ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to');
-        $orphans = $this->hook->fireDB('delete_orphan_redirect_topics_query', $orphans);
+        $orphans = Container::get('hooks')->fireDB('model.admin.forums.delete_orphan_redirect_topics_query', $orphans);
         $orphans = $orphans->find_many();
 
         if (count($orphans) > 0) {
@@ -95,16 +85,16 @@ class Forums
     {
         $result = DB::for_table('forums')
                     ->where('id', $forum_id);
-        $result = $this->hook->fireDB('get_forum_infos', $result);
-        $result = $result->find_array();
+        $result = Container::get('hooks')->fireDB('model.admin.forums.get_forum_infos', $result);
+        $result = $result->find_one();
 
-        return $result[0];
+        return $result;
     }
 
     public function get_forums()
     {
         $forum_data = array();
-        $forum_data = $this->hook->fire('get_forums_start', $forum_data);
+        $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forum_data);
 
         $select_get_forums = array('cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position');
 
@@ -114,7 +104,7 @@ class Forums
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
                     ->order_by_asc('f.disp_position')
                     ->order_by_asc('c.disp_position');
-        $result = $this->hook->fireDB('get_forums_query', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.forums.get_forums_query', $result);
         $result = $result->find_array();
 
         foreach ($result as $forum) {
@@ -128,13 +118,13 @@ class Forums
                                                                'position' => $forum['forum_position']);
         }
 
-        $forum_data = $this->hook->fire('get_forums', $forum_data);
+        $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums', $forum_data);
         return $forum_data;
     }
 
     public function update_positions($forum_id, $position)
     {
-        $this->hook->fire('update_positions_start', $forum_id, $position);
+        Container::get('hooks')->fire('model.admin.forums.update_positions_start', $forum_id, $position);
 
         return DB::for_table('forums')
                 ->find_one($forum_id)
@@ -149,7 +139,7 @@ class Forums
     public function get_permissions($forum_id)
     {
         $perm_data = array();
-        $forum_id = $this->hook->fire('get_permissions_start', $forum_id);
+        $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
 
         $select_permissions = array('g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
 
@@ -157,9 +147,9 @@ class Forums
                         ->table_alias('g')
                         ->select_many($select_permissions)
                         ->left_outer_join('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
-                        ->where_not_equal('g.g_id', $this->feather->forum_env['FEATHER_ADMIN'])
+                        ->where_not_equal('g.g_id', ForumEnv::get('FEATHER_ADMIN'))
                         ->order_by_asc('g.g_id');
-        $permissions = $this->hook->fireDB('get_permissions_query', $permissions);
+        $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);
         $permissions = $permissions->find_many();
 
         foreach($permissions as $cur_perm) {
@@ -175,7 +165,7 @@ class Forums
             $perm_data[] = $cur_perm;
         }
 
-        $perm_data = $this->hook->fire('get_permissions', $perm_data);
+        $perm_data = Container::get('hooks')->fire('model.admin.forums.get_permissions', $perm_data);
         return $perm_data;
     }
 
@@ -187,11 +177,11 @@ class Forums
                     ->select_many($select_get_default_group_permissions);
 
         if (!$fetch_admin) {
-            $result->where_not_equal('g_id', $this->feather->forum_env['FEATHER_ADMIN']);
+            $result->where_not_equal('g_id', ForumEnv::get('FEATHER_ADMIN'));
         }
 
         $result = $result->order_by_asc('g_id');
-        $result = $this->hook->fireDB('get_default_group_permissions_query', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.forums.get_default_group_permissions_query', $result);
         $result = $result->find_array();
 
         return $result;
@@ -199,7 +189,7 @@ class Forums
 
     public function update_permissions(array $permissions_data)
     {
-        $permissions_data = $this->hook->fire('update_permissions_start', $permissions_data);
+        $permissions_data = Container::get('hooks')->fire('model.admin.forums.update_permissions_start', $permissions_data);
 
         $permissions = DB::for_table('forum_perms')
                             ->where('forum_id', $permissions_data['forum_id'])
@@ -224,7 +214,7 @@ class Forums
             $result->where('group_id', $group_id);
         }
 
-        $result = $this->hook->fireDB('delete_permissions_query', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.forums.delete_permissions_query', $result);
 
         return $result->delete_many();
     }

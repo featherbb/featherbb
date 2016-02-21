@@ -6,7 +6,13 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Statical\\' => array($vendorDir . '/statical/statical/src'),
+    'Slim\\Flash\\' => array($vendorDir . '/slim/flash/src'),
+    'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Plugins\\' => array($baseDir . '/plugins'),
+    'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'FeatherBB\\' => array($baseDir . '/featherbb'),
-    '' => array($baseDir . '/'),
+    'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
 );

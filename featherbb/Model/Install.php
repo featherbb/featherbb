@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -9,8 +9,9 @@
 
 namespace FeatherBB\Model;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Random;
+use FeatherBB\Core\Utils;
 
 class Install
 {
@@ -72,7 +73,7 @@ class Install
             `cat_id` int(10) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
-        'groups' => "CREATE TABLE IF NOT EXISTS %t% (
+        'groups' => "CREATE TABLE  IF NOT EXISTS %t% (
             `g_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `g_title` varchar(50) NOT NULL DEFAULT '',
             `g_user_title` varchar(50) DEFAULT NULL,
@@ -100,8 +101,9 @@ class Install
             `g_search_flood` smallint(6) NOT NULL DEFAULT '30',
             `g_email_flood` smallint(6) NOT NULL DEFAULT '60',
             `g_report_flood` smallint(6) NOT NULL DEFAULT '60',
+            `inherit` text,
             PRIMARY KEY (`g_id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;",
         'online' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '1',
             `ident` varchar(200) NOT NULL DEFAULT '',
@@ -112,6 +114,23 @@ class Install
             UNIQUE KEY `online_user_id_ident_idx` (`user_id`,`ident`(25)),
             KEY `online_ident_idx` (`ident`(25)),
             KEY `online_logged_idx` (`logged`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'permissions' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `permission_name` varchar(255) DEFAULT NULL,
+            `allow` tinyint(1) DEFAULT NULL,
+            `deny` tinyint(1) DEFAULT NULL,
+            `user` int(11) DEFAULT NULL,
+            `group` int(11) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+        'plugins' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            `name` varchar(200) NOT NULL DEFAULT '',
+            `installed` tinyint(1) unsigned NOT NULL DEFAULT '1',
+            `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `plugin_namex` (`name`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'posts' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -129,6 +148,15 @@ class Install
             KEY `posts_topic_id_idx` (`topic_id`),
             KEY `posts_multi_idx` (`poster_id`,`topic_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'preferences' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `preference_name` tinytext,
+            `preference_value` tinytext,
+            `user` int(11) DEFAULT NULL,
+            `group` int(11) DEFAULT NULL,
+            `default` tinyint(1) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;",
         'reports' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `post_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -236,11 +264,6 @@ class Install
             KEY `users_registered_idx` (`registered`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",);
 
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-    }
-
     public function create_table($table_name, $sql)
     {
         $db = DB::get_db();
@@ -301,7 +324,8 @@ class Install
             'g_post_flood' => 0,
             'g_search_flood' => 0,
             'g_email_flood' => 0,
-            'g_report_flood' => 0);
+            'g_report_flood' => 0,
+            'inherit' => 'a:1:{i:0;i:2;}');
         $groups['Moderators'] = array(
             'g_id' => 2,
             'g_title' => __('Moderators'),
@@ -325,7 +349,8 @@ class Install
             'g_post_flood' => 0,
             'g_search_flood' => 0,
             'g_email_flood' => 0,
-            'g_report_flood' => 0);
+            'g_report_flood' => 0,
+            'inherit' => 'a:1:{i:0;i:4;}');
         $groups['Guests'] = array(
             'g_id' => 3,
             'g_title' => __('Guests'),
@@ -373,7 +398,8 @@ class Install
             'g_post_flood' => 60,
             'g_search_flood' => 30,
             'g_email_flood' => 60,
-            'g_report_flood' => 60);
+            'g_report_flood' => 60,
+            'inherit' => 'a:1:{i:0;i:3;}');
 
         return $groups;
     }
@@ -389,7 +415,6 @@ class Install
 
     public static function load_admin_user(array $data)
     {
-        $feather = \Slim\Slim::getInstance();
         $now = time();
         return $user = array(
             'group_id' => 1,
@@ -401,20 +426,19 @@ class Install
             'num_posts' => 1,
             'last_post' => $now,
             'registered' => $now,
-            'registration_ip' => $feather->request->getIp(),
+            'registration_ip' => Utils::getIp(),
             'last_visit' => $now);
     }
 
     public static function load_mock_forum_data(array $data)
     {
-        $feather = \Slim\Slim::getInstance();
         $cat_name = __('Test category');
         $subject = __('Test post');
         $message = __('Message');
         $forum_name = __('Test forum');
         $forum_desc = __('This is just a test forum');
         $now = time();
-        $ip = $feather->request->getIp();
+        $ip = Utils::getIp();
 
         return $mock_data = array(
             'categories' => array('cat_name' => $cat_name,

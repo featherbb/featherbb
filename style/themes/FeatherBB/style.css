@@ -416,7 +416,7 @@ section .blocktable .box table tbody tr .tcl .icon {
     background-image: url(img/old.png);
     height: 32px;
     width: 32px;
-	margin-right: 5px;
+    margin-right: 5px;
     float: left;
 }
 section .blocktable .box table tbody tr .tcl .icon .nosize {
@@ -1042,7 +1042,7 @@ footer .footer-link {
 #brdfooter .conl {
     text-align: left;
     float: left;
-	width: 20%;
+    width: 20%;
 }
 #brdfooter select {
     width: 80%
@@ -1148,8 +1148,8 @@ footer .footer-link a {
 }
 .blockform .box .inform fieldset label {
     margin: 6px 0;
-	display: inline-block;
-	padding-right: 12px;
+    display: inline-block;
+    padding-right: 12px;
 }
 .blockform .box .inform fieldset input {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, .075);
@@ -1263,9 +1263,36 @@ footer .footer-link a {
 }
 
 .error {
-    background-color: #f2dede !important;
+    background: #ebccd1;
     border: 1px solid #ebccd1 !important;
+    background: -webkit-linear-gradient(top, #f2dede, #ebccd1);
+    background:    -moz-linear-gradient(top, #f2dede, #ebccd1);
+    background:         linear-gradient(top, #f2dede, #ebccd1);
     color: #a94442 !important
+}
+.info {
+    background: #b3e1e4;
+    border: 1px solid #b3e1e4 !important;
+    background: -webkit-linear-gradient(top, #d2ecea, #b3e1e4);
+    background:    -moz-linear-gradient(top, #d2ecea, #b3e1e4);
+    background:         linear-gradient(top, #d2ecea, #b3e1e4);
+    color: #147880 !important;
+}
+.warning {
+    background: #edc58c;
+    border: 1px solid #edc58c !important;
+    background: -webkit-linear-gradient(top, #e8d1af, #edc58c);
+    background:    -moz-linear-gradient(top, #f0ad4e, #f0ad4e);
+    background:         linear-gradient(top, #f0ad4e, #f0ad4e);
+    color: #8c5a13 !important;
+}
+.success {
+    background: #a1e9a1;
+    border: 1px solid #a1e9a1 !important;
+    background: -webkit-linear-gradient(top, #cde9cd, #a1e9a1);
+    background:    -moz-linear-gradient(top, #cde9cd, #a1e9a1);
+    background:         linear-gradient(top, #cde9cd, #a1e9a1);
+    color: #2c752c !important;
 }
 
 
@@ -1296,34 +1323,6 @@ footer .footer-link a {
 .flashmsg h2 {
     margin: 0 0 4px;
     font-size: 18px
-}
-.flashmsg.error {
-    background: #ebccd1;
-    background: -webkit-linear-gradient(top, #f2dede, #ebccd1);
-    background:    -moz-linear-gradient(top, #f2dede, #ebccd1);
-    background:         linear-gradient(top, #f2dede, #ebccd1);
-    color: #a94442 !important
-}
-.flashmsg.info {
-    background: #b3e1e4;
-    background: -webkit-linear-gradient(top, #d2ecea, #b3e1e4);
-    background:    -moz-linear-gradient(top, #d2ecea, #b3e1e4);
-    background:         linear-gradient(top, #d2ecea, #b3e1e4);
-    color: #147880 !important;
-}
-.flashmsg.warning {
-    background: #edc58c;
-    background: -webkit-linear-gradient(top, #e8d1af, #edc58c);
-    background:    -moz-linear-gradient(top, #f0ad4e, #f0ad4e);
-    background:         linear-gradient(top, #f0ad4e, #f0ad4e);
-    color: #8c5a13 !important;
-}
-.flashmsg.success {
-    background: #a1e9a1;
-    background: -webkit-linear-gradient(top, #cde9cd, #a1e9a1);
-    background:    -moz-linear-gradient(top, #cde9cd, #a1e9a1);
-    background:         linear-gradient(top, #cde9cd, #a1e9a1);
-    color: #2c752c !important;
 }
 .flashmsg.show {
     opacity: 1;
@@ -1702,7 +1701,7 @@ img {
 }
 
 #debug.blocktable div.box div.inbox table {
-	table-layout: auto;
+    table-layout: auto;
 }
 #debug.blocktable .box table tbody tr .tcl {
     width: 20%;
@@ -1727,7 +1726,7 @@ img {
 #editform.blockform div.box form#edit div.inform fieldset div.infldset.txtarea label.required,
 #editform.blockform div.box form#edit div.inform fieldset div.infldset div.rbox label,
 #regform.blockform div.box form#register div.inform fieldset div.infldset div.rbox label{
-	display: block;
+    display: block;
 }
 #redir {
     text-align: center;
@@ -1736,11 +1735,11 @@ img {
     margin-top: 7px;
 }
 #searchform.blockform div.box form#search div.inform fieldset div.infldset div.conl.multiselect {
-	display: inline-block;
-	float: left;
+    display: inline-block;
+    float: left;
 }
 #searchform.blockform div.box form#search div.inform fieldset div.infldset label.conl {
-	padding: 5px;
+    padding: 5px;
 }
 #searchform.blockform div.box form#search div.inform fieldset div.infldset p.clearl {
     margin-top: 100px;
@@ -1755,26 +1754,26 @@ body #puninstall {
     padding-bottom: 60px;
 }
 #puninstall .blockform .box .inform fieldset {
-	margin-top: 15px;
+    margin-top: 15px;
 }
 #puninstall h3 {
-	font-size: 22px;
-	text-align: center;
+    font-size: 22px;
+    text-align: center;
 }
 .forminfo p, #install p.buttons, html body div#puninstall.pun div.punwrap section.container div#brdheader.block div.box div#brdtitle.inbox {
-	text-align: center;
+    text-align: center;
 }
 #install p.buttons {
-	font-size: 22px;
+    font-size: 22px;
 }
 #puninstall .blockform .box .inform fieldset label {
-	display: block;
+    display: block;
 }
 #puninstall .blockform .box .inform fieldset legend {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 #puninstall.pun div.punwrap section.container div#brdmain div.blockform div.box form#install div.inform fieldset div.infldset p{
-	margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 
 table {

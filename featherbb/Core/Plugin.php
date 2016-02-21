@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher.
@@ -9,33 +9,25 @@
 
 namespace FeatherBB\Core;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 
 class Plugin
 {
-    /**
-     * @var object
-     */
-    protected $feather;
-
-    /**
-     * @var object
-     */
-    protected $hooks;
-
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->hooks = $this->feather->hooks;
-    }
-
     public function getActivePlugins()
     {
-        $activePlugins = $this->feather->cache->isCached('active_plugins') ? $this->feather->cache->retrieve('active_plugins') : array();
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
+
+        return $activePlugins;
+    }
+
+    public function setActivePlugins()
+    {
+        $activePlugins = [];
+        $results = DB::for_table('plugins')->select('name')->where('active', 1)->find_array();
+        foreach ($results as $plugin) {
+            $activePlugins[] = $plugin['name'];
+        }
+        Container::get('cache')->store('activePlugins', $activePlugins);
 
         return $activePlugins;
     }
@@ -46,6 +38,7 @@ class Plugin
     public function loadPlugins()
     {
         $activePlugins = $this->getActivePlugins();
+        // var_dump($activePlugins);
 
         foreach ($activePlugins as $plugin) {
             if ($class = $this->load($plugin)) {
@@ -54,65 +47,94 @@ class Plugin
         }
     }
 
+    public function getName($items)
+    {
+        // Split name
+        $classNamespace = explode('\\', get_class($this));
+        $className = end($classNamespace);
+
+        // Prettify and return name of child class
+        preg_match_all('%[A-Z]*[a-z]+%m', $className, $result, PREG_PATTERN_ORDER);
+
+        $items[] = Utils::escape(implode(' ', $result[0]));
+
+        return $items;
+    }
+
     /**
      * Activate a plugin
      */
-    public function activate($plugin)
+    public function activate($name, $needInstall = true)
     {
-        $activePlugins = $this->getActivePlugins();
-
-        // Check if plugin is not yet activated
-        if (!in_array($plugin, $activePlugins)) {
-            $activePlugins[] = $plugin;
-
-            $class = $this->load($plugin);
-            $class->install();
-
-            $this->feather->cache->store('active_plugins', $activePlugins);
+        // Check if plugin name is valid
+        if ($class = $this->load($name)) {
+            // Do we need to run extra code for installation ?
+            if ($needInstall) {
+                $class->install();
+            }
         }
-    }
-
-    public function install()
-    {
-        // Daughter classes may override this method for custom install
     }
 
     /**
-     * Deactivate a plugin
+     * Default empty install function to avoid errors when activating.
+     * Daughter classes may override this method for custom install.
      */
-    public function deactivate($plugin)
+    public function install()
     {
-        $activePlugins = $this->getActivePlugins();
-
-        // Check if plugin is actually activated
-        if (($k = array_search($plugin, $activePlugins)) !== false) {
-            unset($activePlugins[$k]);
-            $this->feather->cache->store('active_plugins', $activePlugins);
-        }
     }
 
-    public function uninstall($plugin)
+    /**
+     * Default empty install function to avoid erros when deactivating.
+     * Daughter classes may override this method for custom deactivation.
+     */
+    public function deactivate()
     {
-        // Daughter classes may override this method for custom uninstall
-        $this->deactivate($plugin);
+    }
 
-        $class = $this->load($plugin);
-        $class->uninstall();
+    public function uninstall($name)
+    {
+        // Check if plugin name is valid
+        if ($class = $this->load($name)) {
+            // Do we need to run extra code for installation ?
+            if (method_exists($class, 'remove')) {
+                $class->remove();
+            }
+        }
     }
 
     public function run()
     {
-        // Daughter classes may override this method for custom run
+        // Daughter classes HAVE TO override this method for custom run
     }
 
     protected function load($plugin)
     {
-        if (file_exists($file = $this->feather->forum_env['FEATHER_ROOT'].'plugins/'.$plugin.'/bootstrap.php')) {
+        // "Complex" plugins which need to register namespace via bootstrap.php
+        if (file_exists($file = ForumEnv::get('FEATHER_ROOT').'plugins/'.$plugin.'/bootstrap.php')) {
             $className = require $file;
             $class = new $className();
             return $class;
         }
+        // Simple plugins, only a featherbb.json and the main class
+        if ( file_exists( $file = $this->checkSimple($plugin) ) ) {
+            require $file;
+            $className = '\FeatherBB\Plugins\\'.$this->getNamespace($plugin);
+            $class = new $className();
+            return $class;
+        }
+        // Invalid plugin
         return false;
+    }
+
+    // Clean a Simple Plugin's parent folder name to load it
+    protected function getNamespace($path) {
+        return str_replace (" ", "", str_replace ("/", "\\", ucwords (str_replace ('-', ' ', str_replace ('/ ', '/', ucwords (str_replace ('/', '/ ', $path)))))));
+    }
+
+    // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
+    protected function checkSimple($plugin)
+    {
+        return ForumEnv::get('FEATHER_ROOT').'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
 
 }

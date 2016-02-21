@@ -6,10 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'DB' => $baseDir . '/featherbb/Core/Database.php',
-    'IdiormMethodMissingException' => $baseDir . '/featherbb/Core/Database.php',
-    'IdiormResultSet' => $baseDir . '/featherbb/Core/Database.php',
-    'IdiormString' => $baseDir . '/featherbb/Core/Database.php',
-    'IdiormStringException' => $baseDir . '/featherbb/Core/Database.php',
-    'MO' => $baseDir . '/featherbb/Core/pomo/MO.php',
+    'MO' => $baseDir . '/featherbb/Core/gettext/MO.php',
 );

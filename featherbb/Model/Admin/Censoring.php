@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 FeatherBB
+ * Copyright (C) 2015-2016 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -9,7 +9,7 @@
 
 namespace FeatherBB\Model\Admin;
 
-use DB;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
@@ -17,20 +17,10 @@ use FeatherBB\Model\Cache;
 
 class Censoring
 {
-    public function __construct()
-    {
-        $this->feather = \Slim\Slim::getInstance();
-        $this->start = $this->feather->start;
-        $this->config = $this->feather->config;
-        $this->user = $this->feather->user;
-        $this->request = $this->feather->request;
-        $this->hook = $this->feather->hooks;
-    }
-
     public function add_word()
     {
-        $search_for = Utils::trim($this->request->post('new_search_for'));
-        $replace_with = Utils::trim($this->request->post('new_replace_with'));
+        $search_for = Utils::trim(Input::post('new_search_for'));
+        $replace_with = Utils::trim(Input::post('new_replace_with'));
 
         if ($search_for == '') {
             throw new Error(__('Must enter word message'), 400);
@@ -39,7 +29,7 @@ class Censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        $set_search_word = $this->hook->fire('add_censoring_word_data', $set_search_word);
+        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
 
         $result = DB::for_table('censoring')
             ->create()
@@ -47,18 +37,18 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Url::redirect($this->feather->urlFor('adminCensoring'), __('Word added redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
     }
 
     public function update_word()
     {
-        $id = intval(key($this->request->post('update')));
+        $id = intval(key(Input::post('update')));
 
-        $search_for = Utils::trim($this->request->post('search_for')[$id]);
-        $replace_with = Utils::trim($this->request->post('replace_with')[$id]);
+        $search_for = Utils::trim(Input::post('search_for')[$id]);
+        $replace_with = Utils::trim(Input::post('replace_with')[$id]);
 
         if ($search_for == '') {
             throw new Error(__('Must enter word message'), 400);
@@ -67,7 +57,7 @@ class Censoring
         $set_search_word = array('search_for' => $search_for,
                                 'replace_with' => $replace_with);
 
-        $set_search_word = $this->hook->fire('update_censoring_word_start', $set_search_word);
+        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
 
         $result = DB::for_table('censoring')
             ->find_one($id)
@@ -75,26 +65,26 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Url::redirect($this->feather->urlFor('adminCensoring'), __('Word updated redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
     }
 
     public function remove_word()
     {
-        $id = intval(key($this->request->post('remove')));
-        $id = $this->hook->fire('remove_censoring_word_start', $id);
+        $id = intval(key(Input::post('remove')));
+        $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
 
         $result = DB::for_table('censoring')->find_one($id);
-        $result = $this->hook->fireDB('remove_censoring_word', $result);
+        $result = Container::get('hooks')->fireDB('model.admin.censoring.remove_censoring_word', $result);
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        $this->feather->cache->store('search_for', Cache::get_censoring('search_for'));
-        $this->feather->cache->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        Url::redirect($this->feather->urlFor('adminCensoring'),  __('Word removed redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'),  __('Word removed redirect'));
     }
 
     public function get_words()
@@ -103,7 +93,7 @@ class Censoring
 
         $word_data = DB::for_table('censoring')
                         ->order_by_asc('id');
-        $word_data = $this->hook->fireDB('update_censoring_word_query', $word_data);
+        $word_data = Container::get('hooks')->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);
         $word_data = $word_data->find_array();
 
         return $word_data;
