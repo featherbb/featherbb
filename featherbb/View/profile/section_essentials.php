@@ -177,7 +177,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 
                         <br /><select name="form_time_format">
 <?php
-                            foreach (array_unique($forum_time_formats) as $key => $time_format) {
+                            foreach (array_unique(Container::get('forum_time_formats')) as $key => $time_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
                                 if ($user['time_format'] == $key) {
                                     echo ' selected="selected"';
@@ -195,7 +195,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 
                         <br /><select name="form_date_format">
 <?php
-                            foreach (array_unique($forum_date_formats) as $key => $date_format) {
+                            foreach (array_unique(Container::get('forum_date_formats')) as $key => $date_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
                                 if ($user['date_format'] == $key) {
                                     echo ' selected="selected"';

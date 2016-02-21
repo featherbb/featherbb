@@ -27,8 +27,6 @@ class Profile
 
     public function display($req, $res, $args)
     {
-        global $forum_time_formats, $forum_date_formats;
-
         // Include UTF-8 function
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
@@ -122,8 +120,8 @@ class Profile
                     'page' => 'essentials',
                     'user' => $user,
                     'user_disp' => $user_disp,
-                    'forum_time_formats' => $forum_time_formats,
-                    'forum_date_formats' => $forum_date_formats,
+                    'forum_time_formats' => Container::get('forum_time_formats'),
+                    'forum_date_formats' => Container::get('forum_date_formats')
                 ));
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();

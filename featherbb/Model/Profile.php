@@ -1357,8 +1357,6 @@ class Profile
     //
     public function check_username($username, $errors, $exclude_id = null)
     {
-        global $errors, $feather_bans;
-
         // Include UTF-8 function
         require_once ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
@@ -1399,7 +1397,7 @@ class Profile
         }
 
         // Check username for any banned usernames
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
                 $errors[] = __('Banned username');
                 break;

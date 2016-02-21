@@ -61,8 +61,6 @@ class Utils
     //
     public static function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
     {
-        global $forum_date_formats, $forum_time_formats;
-
         if ($timestamp == '') {
             return __('Never');
         }
@@ -72,11 +70,11 @@ class Utils
         $now = time();
 
         if (is_null($date_format)) {
-            $date_format = $forum_date_formats[User::get()->date_format];
+            $date_format = Container::get('forum_date_formats')[User::get()->date_format];
         }
 
         if (is_null($time_format)) {
-            $time_format = $forum_time_formats[User::get()->time_format];
+            $time_format = Container::get('forum_time_formats')[User::get()->time_format];
         }
 
         $date = gmdate($date_format, $timestamp);
@@ -229,13 +227,12 @@ class Utils
     //
     public static function get_title($user)
     {
-        global $feather_bans;
         static $ban_list;
 
         // If not already built in a previous call, build an array of lowercase banned usernames
         if (empty($ban_list)) {
             $ban_list = array();
-            foreach ($feather_bans as $cur_ban) {
+            foreach (Container::get('bans') as $cur_ban) {
                 $ban_list[] = utf8_strtolower($cur_ban['username']);
             }
         }

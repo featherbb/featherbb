@@ -147,10 +147,8 @@ class Auth
 
     public function check_bans()
     {
-        global $feather_bans;
-
         // Admins and moderators aren't affected
-        if (User::get()->is_admmod || !$feather_bans) {
+        if (User::get()->is_admmod || !Container::get('bans')) {
             return;
         }
 
@@ -162,7 +160,7 @@ class Auth
         $bans_altered = false;
         $is_banned = false;
 
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             // Has this ban expired?
             if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
                 DB::for_table('bans')->where('id', $cur_ban['id'])
@@ -224,16 +222,16 @@ class Auth
 
     public function __invoke($req, $res, $next)
     {
-        // setcookie(ForumSettings::get('cookie_name'), '', 1, '/', '', false, true);
-        global $feather_bans;
-
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
         if ($jwt = $this->get_cookie_data($authCookie)) {
             $user = AuthModel::load_user($jwt->data->userId);
+
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+
             $user->is_guest = false;
             $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
@@ -250,8 +248,10 @@ class Auth
             // Refresh cookie to avoid re-logging between idle
             $jwt = AuthModel::generate_jwt($user, $expires);
             AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
-            // Add ûser to DIC
+
+            // Add user to DIC
             Container::set('user', $user);
+
             $this->update_online();
         } else {
             $user = AuthModel::load_user(1);
@@ -299,7 +299,9 @@ class Auth
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());
         }
-        $feather_bans = Container::get('cache')->retrieve('bans');
+
+        // Add bans to the container
+        Container::set('bans', Container::get('cache')->retrieve('bans'));
 
         // Check if current user is banned
         $this->check_bans();
