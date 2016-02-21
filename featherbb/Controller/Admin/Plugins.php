@@ -146,7 +146,7 @@ class Plugins
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {
                 AdminUtils::generateAdminMenu($args['name']);
-                $plugin->info();
+                return $plugin->info();
             }
             else {
                 throw new Error(__('Bad request'), 400);
