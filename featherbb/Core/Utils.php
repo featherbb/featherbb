@@ -229,13 +229,12 @@ class Utils
     //
     public static function get_title($user)
     {
-        global $feather_bans;
         static $ban_list;
 
         // If not already built in a previous call, build an array of lowercase banned usernames
         if (empty($ban_list)) {
             $ban_list = array();
-            foreach ($feather_bans as $cur_ban) {
+            foreach (Container::get('bans') as $cur_ban) {
                 $ban_list[] = utf8_strtolower($cur_ban['username']);
             }
         }

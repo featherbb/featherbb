@@ -34,9 +34,7 @@ class Email
     //
     public function is_banned_email($email)
     {
-        global $feather_bans;
-
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             if ($cur_ban['email'] != '' &&
                 ($email == $cur_ban['email'] ||
                     (strpos($cur_ban['email'], '@') === false && stristr($email, '@' . $cur_ban['email'])))

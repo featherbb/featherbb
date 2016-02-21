@@ -147,10 +147,8 @@ class Auth
 
     public function check_bans()
     {
-        global $feather_bans;
-
         // Admins and moderators aren't affected
-        if (Container::get('user')->is_admmod || !$feather_bans) {
+        if (Container::get('user')->is_admmod || !Container::get('bans')) {
             return;
         }
 
@@ -162,7 +160,7 @@ class Auth
         $bans_altered = false;
         $is_banned = false;
 
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             // Has this ban expired?
             if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
                 DB::for_table('bans')->where('id', $cur_ban['id'])
@@ -224,8 +222,6 @@ class Auth
 
     public function __invoke($req, $res, $next)
     {
-        global $feather_bans;
-
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
         if ($jwt = $this->get_cookie_data($authCookie)) {
@@ -303,8 +299,9 @@ class Auth
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());
         }
-        $feather_bans = Container::get('cache')->retrieve('bans');
-        var_dump($feather_bans);
+
+        // Add bans to the container
+        Container::set('bans', Container::get('cache')->retrieve('bans'));
 
         // Check if current user is banned
         $this->check_bans();
