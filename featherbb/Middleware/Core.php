@@ -217,6 +217,8 @@ class Core
         Container::get('hooks')->fire('core.start');
 
         if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
+            // Reset cache
+            Container::get('cache')->flush();
             $installer = new \FeatherBB\Controller\Install();
             return $installer->run();
         }

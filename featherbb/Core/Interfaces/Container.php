@@ -5,7 +5,10 @@ class Container extends SlimSugar
 {
     public static function get($key)
 	{
-		return static::$slim->getContainer()[$key];
+        if (isset(static::$slim->getContainer()[$key])) {
+            return static::$slim->getContainer()[$key];
+        }
+		return false;
 	}
 
 	public static function set($key, $value)

@@ -316,8 +316,10 @@ class View
             Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
         }
 
+        $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';
+
         $data = array(
-            'title' => Utils::escape(ForumSettings::get('o_board_title')),
+            'title' => Utils::escape($title),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,

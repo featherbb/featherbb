@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Random;
+use FeatherBB\Core\Utils;
 
 class Install
 {

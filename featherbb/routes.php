@@ -189,7 +189,7 @@ Container::set('notFoundHandler', function ($c) {
 
 Container::set('errorHandler', function ($c) {
     return function ($request, $response, $e) use ($c) {
-        // var_dump($exception);
+        // var_dump($e);
         $error = array(
             'code' => $e->getCode(),
             'message' => $e->getMessage(),
