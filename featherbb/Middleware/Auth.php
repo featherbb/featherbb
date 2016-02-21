@@ -224,16 +224,18 @@ class Auth
 
     public function __invoke($req, $res, $next)
     {
-        // setcookie(ForumSettings::get('cookie_name'), '', 1, '/', '', false, true);
         global $feather_bans;
 
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
         if ($jwt = $this->get_cookie_data($authCookie)) {
             $user = AuthModel::load_user($jwt->data->userId);
+
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+
             $user->is_guest = false;
             $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
@@ -250,8 +252,10 @@ class Auth
             // Refresh cookie to avoid re-logging between idle
             $jwt = AuthModel::generate_jwt($user, $expires);
             AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
-            // Add ûser to DIC
+
+            // Add user to DIC
             Container::set('user', $user);
+
             $this->update_online();
         } else {
             $user = AuthModel::load_user(1);
@@ -300,6 +304,7 @@ class Auth
             Container::get('cache')->store('bans', Cache::get_bans());
         }
         $feather_bans = Container::get('cache')->retrieve('bans');
+        var_dump($feather_bans);
 
         // Check if current user is banned
         $this->check_bans();
