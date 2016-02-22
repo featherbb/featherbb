@@ -32,7 +32,7 @@ class Utils
     public static function strip_bad_multibyte_chars($str)
     {
         $result = '';
-        $length = self::strlen($str);
+        $length = strlen($str);
 
         for ($i = 0; $i < $length; $i++) {
             // Replace four-byte characters (11110www 10zzzzzz 10yyyyyy 10xxxxxx)
