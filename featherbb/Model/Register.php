@@ -156,16 +156,6 @@ class Register
 
         $new_uid = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
-
-        if (ForumSettings::get('o_regs_verify') == '0') {
-            // Regenerate the users info cache
-            if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
-            }
-
-            $stats = Container::get('cache')->retrieve('users_info');
-        }
-
         // If the mailing list isn't empty, we may need to send out some alerts
         if (ForumSettings::get('o_mailing_list') != '') {
             // If we previously found out that the email was banned
@@ -264,6 +254,9 @@ class Register
         $expire = time() + ForumSettings::get('o_timeout_visit');
         $jwt = AuthModel::generate_jwt($user_object, $expire);
         AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
+
+        // Refresh cache
+        Container::get('cache')->store('users_info', Cache::get_users_info());
 
         Container::get('hooks')->fire('model.register.insert_user');
 

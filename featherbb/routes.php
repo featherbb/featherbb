@@ -88,7 +88,7 @@ Route::get('/help', '\FeatherBB\Controller\Help:display')->add(new CanReadBoard)
 
 // Profile routes
 Route::group('/user', function() {
-    Route::get('/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction'); // TODO: Move to another route for non-authed users
     Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
