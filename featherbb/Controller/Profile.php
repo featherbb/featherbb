@@ -57,17 +57,16 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            return $this->model->delete_user($args['id']);
-
-            View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
-                'active_page' => 'profile',
-                'username' => $this->model->get_username($args['id']),
-                'id' => $args['id'],
-            ));
-
-            View::addTemplate('profile/delete_user.php')->display();
-
+            if (Input::post('delete_user_comply')) {
+                return $this->model->delete_user($args['id']);
+            } else {
+                View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
+                    'active_page' => 'profile',
+                    'username' => $this->model->get_username($args['id']),
+                    'id' => $args['id'],
+                ))->addTemplate('profile/delete_user.php')->display();
+            }
         } elseif (Input::post('form_sent')) {
 
             // Fetch the user group of the user we are editing
