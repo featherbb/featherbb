@@ -8,6 +8,7 @@ use IteratorAggregate;
 use RuntimeException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use FeatherBB\Core\Error;
 
 /**
  * CSRF protection middleware.
@@ -317,9 +318,7 @@ class Csrf
     {
         if (is_null($this->failureCallable)) {
             $this->failureCallable = function (ServerRequestInterface $request, ResponseInterface $response, $next) {
-                $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
-                $body->write('Failed CSRF check!');
-                return $response->withStatus(400)->withHeader('Content-type', 'text/plain')->withBody($body);
+                throw new Error('Failed CSRF check!', 500);
             };
         }
         return $this->failureCallable;
