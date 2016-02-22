@@ -729,9 +729,7 @@ class Profile
             $this->delete_avatar($id);
 
             // Regenerate the users info cache
-            if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
-            }
+            Container::get('cache')->store('users_info', Cache::get_users_info());
 
             $stats = Container::get('cache')->retrieve('users_info');
 

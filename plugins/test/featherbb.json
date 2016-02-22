@@ -1,9 +1,0 @@
-{
-    "name": "test",
-    "title": "Test plugin",
-    "description": "Just a useless plugin to check everything is all right.",
-    "version": "0.1.0",
-    "author": {
-        "name": "beaver"
-    }
-}
