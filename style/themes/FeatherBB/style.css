@@ -458,7 +458,7 @@ section .blocktable .box table tbody tr .tcl .tclcon h3 .newtext a:hover {
     text-decoration: underline;
     color: #2a6496
 }
-section .blocktable .box table tbody tr .tcl .tclcon .forumdesc {
+section .blocktable .box table tbody tr .tcl .tclcon .forumdesc, .modlist {
     font-size: 12px
 }
 section .blocktable .box table tbody tr .tcr {
