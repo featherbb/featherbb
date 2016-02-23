@@ -17,7 +17,7 @@ class Options
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Options();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/options.mo');
+        translate('admin/options');
     }
 
     public function display($req, $res, $args)

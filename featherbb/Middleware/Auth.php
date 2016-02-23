@@ -64,8 +64,8 @@ class Auth
         // Define this if you want this visit to affect the online list and the users last visit data
         if (!defined('FEATHER_QUIET_VISIT')) {
             // Update the online list
-            if (!Container::get('user')->logged) {
-                Container::get('user')->logged = Container::get('now');
+            if (!User::get()->logged) {
+                User::get()->logged = Container::get('now');
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
                 switch (ForumSettings::get('db_type')) {
@@ -75,11 +75,11 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => Container::get('user')->id, ':ident' => Container::get('user')->username, ':logged' => Container::get('user')->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
                         break;
                 }
 
@@ -88,17 +88,17 @@ class Auth
 
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
-                if (Container::get('user')->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
-                    DB::for_table('users')->where('id', Container::get('user')->id)
+                if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
+                    DB::for_table('users')->where('id', User::get()->id)
                         ->find_one()
-                        ->set('last_visit', Container::get('user')->logged)
+                        ->set('last_visit', User::get()->logged)
                         ->save();
-                    Container::get('user')->last_visit = Container::get('user')->logged;
+                    User::get()->last_visit = User::get()->logged;
                 }
 
-                $idle_sql = (Container::get('user')->idle == '1') ? ', idle=0' : '';
+                $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table('online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => Container::get('user')->id));
+                DB::for_table('online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => User::get()->id));
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
@@ -107,8 +107,8 @@ class Auth
                 }
             }
         } else {
-            if (!Container::get('user')->logged) {
-                Container::get('user')->logged = Container::get('user')->last_visit;
+            if (!User::get()->logged) {
+                User::get()->logged = User::get()->last_visit;
             }
         }
     }
@@ -147,10 +147,8 @@ class Auth
 
     public function check_bans()
     {
-        global $feather_bans;
-
         // Admins and moderators aren't affected
-        if (Container::get('user')->is_admmod || !$feather_bans) {
+        if (User::get()->is_admmod || !Container::get('bans')) {
             return;
         }
 
@@ -162,7 +160,7 @@ class Auth
         $bans_altered = false;
         $is_banned = false;
 
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             // Has this ban expired?
             if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
                 DB::for_table('bans')->where('id', $cur_ban['id'])
@@ -171,7 +169,7 @@ class Auth
                 continue;
             }
 
-            if ($cur_ban['username'] != '' && utf8_strtolower(Container::get('user')->username) == utf8_strtolower($cur_ban['username'])) {
+            if ($cur_ban['username'] != '' && utf8_strtolower(User::get()->username) == utf8_strtolower($cur_ban['username'])) {
                 $is_banned = true;
             }
 
@@ -196,7 +194,7 @@ class Auth
 
             if ($is_banned) {
                 DB::for_table('online')
-                    ->where('ident', Container::get('user')->username)
+                    ->where('ident', User::get()->username)
                     ->delete_many();
                 throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower($this->app->utils->format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403);
             }
@@ -224,16 +222,16 @@ class Auth
 
     public function __invoke($req, $res, $next)
     {
-        // setcookie(ForumSettings::get('cookie_name'), '', 1, '/', '', false, true);
-        global $feather_bans;
-
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
         if ($jwt = $this->get_cookie_data($authCookie)) {
             $user = AuthModel::load_user($jwt->data->userId);
+
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+
             $user->is_guest = false;
             $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
@@ -250,8 +248,10 @@ class Auth
             // Refresh cookie to avoid re-logging between idle
             $jwt = AuthModel::generate_jwt($user, $expires);
             AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
-            // Add ûser to DIC
+
+            // Add user to DIC
             Container::set('user', $user);
+
             $this->update_online();
         } else {
             $user = AuthModel::load_user(1);
@@ -294,12 +294,14 @@ class Auth
             Container::set('user', $user);
         }
 
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language.'/common.mo');
+        translate('common');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());
         }
-        $feather_bans = Container::get('cache')->retrieve('bans');
+
+        // Add bans to the container
+        Container::set('bans', Container::get('cache')->retrieve('bans'));
 
         // Check if current user is banned
         $this->check_bans();

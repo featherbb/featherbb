@@ -157,8 +157,8 @@ class View
 
     public function display($nested = true)
     {
-        if (Container::get('user')) {
-            $this->setStyle(Container::get('user')->style);
+        if (User::get()) {
+            $this->setStyle(User::get()->style);
         }
         return $this->fetch($nested);
     }
@@ -316,8 +316,10 @@ class View
             Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
         }
 
+        $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';
+
         $data = array(
-            'title' => Utils::escape(ForumSettings::get('o_board_title')),
+            'title' => Utils::escape($title),
             'page_number' => null,
             'active_page' => 'index',
             'focus_element' => null,
@@ -333,7 +335,7 @@ class View
             'tid' => null,
         );
 
-        if (is_object(Container::get('user')) && Container::get('user')->is_admmod) {
+        if (is_object(User::get()) && User::get()->is_admmod) {
             $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
         }
 

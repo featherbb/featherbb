@@ -15,7 +15,7 @@ class Help
 {
     public function __construct()
     {
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/help.mo');
+        translate('help');
     }
 
     public function display($req, $res, $args)

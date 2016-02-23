@@ -15,9 +15,16 @@
  *
  * Inspired from Luna <http://getluna.org>
  */
-function load_textdomain($domain, $mofile) {
+function translate($mofile, $domain = 'featherbb', $language = false) {
 
     global $l10n;
+
+    if (!$language) {
+        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/'.$mofile.'.mo';
+    }
+    else {
+        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$language.'/'.$mofile.'.mo';
+    }
 
     if (!is_readable($mofile)) {
         return false;
@@ -38,39 +45,24 @@ function load_textdomain($domain, $mofile) {
 }
 
 function __($text, $domain = 'featherbb') {
-
-    return feather_translate($text, $domain);
+    return translation($text);
 }
 
 function _e($text, $domain = 'featherbb') {
-
-    echo feather_translate($text, $domain);
+    echo translation($text);
 }
 
-function _n($single, $plural, $number, $domain = 'featherbb') {
-
-    $translations = load_translations($domain);
-    $translation = $translations->translate_plural($single, $plural, $number);
-
-    return $translation;
-}
-
-function feather_translate($text, $domain = 'featherbb') {
-
-    $translations = load_translations($domain);
-    $translations = $translations->translate($text);
-
-    return $translations;
-}
-
-function load_translations($domain) {
+function translation($text, $domain = 'featherbb') {
 
     global $l10n;
 
     if (!isset($l10n[$domain])) {
-        require_once dirname(__FILE__).'/../Core/pomo/translations/NOOPTranslations.php';
+        require_once dirname(__FILE__) . '/../Core/gettext/translations/NOOPTranslations.php';
         $l10n[$domain] = new NOOPTranslations;
     }
 
-    return $l10n[$domain];
+    $translations = $l10n[$domain];
+    $translations = $translations->translate($text);
+
+    return $translations;
 }

@@ -215,7 +215,7 @@ Container::get('hooks')->fire('view.admin.options.start');
                 </div>
 <?php
 
-    $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
+    $diff = (User::get()->timezone + User::get()->dst) * 3600;
     $timestamp = time() + $diff;
 
 ?>

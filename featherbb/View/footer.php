@@ -23,7 +23,7 @@ Container::get('hooks')->fire('view.footer.start');
             <div class="box">
 <?php
 
-if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && Container::get('user')->is_admmod) {
+if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && User::get()->is_admmod) {
     echo "\t\t".'<div id="modcontrols" class="inbox">'."\n";
 
     if ($active_page == 'Forum') {
@@ -77,7 +77,7 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                             <div><label><span><?php _e('Jump to') ?><br /></span></label>
                                 <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
-                foreach ($quickjump[(int) Container::get('user')->g_id] as $cat_id => $cat_data) {
+                foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
                     echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
                     foreach ($cat_data['cat_forums'] as $forum) {
                         echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";

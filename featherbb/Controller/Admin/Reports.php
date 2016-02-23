@@ -18,7 +18,7 @@ class Reports
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Reports();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/reports.mo');
+        translate('admin/reports');
     }
 
     public function display($req, $res, $args)

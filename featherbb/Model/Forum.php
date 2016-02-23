@@ -27,15 +27,15 @@ class Forum
             array('fp.read_forum' => '1')
         );
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $cur_forum['select'] = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id');
 
             $cur_forum = DB::for_table('forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
                             ->left_outer_join('forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
-                            ->left_outer_join('forum_subscriptions', array('s.user_id', '=', Container::get('user')->id), null, true)
+                            ->left_outer_join('forum_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                             ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         } else {
@@ -45,7 +45,7 @@ class Forum
                             ->select_many($cur_forum['select'])
                             ->select_expr(0, 'is_subscribed')
                             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                             ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         }
@@ -104,7 +104,7 @@ class Forum
 
         $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             if ($subscriptions == 1) {
                 if ($is_subscribed) {
                     $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeForum', ['id' => $forum_id]).'">'.__('Unsubscribe').'</a>';
@@ -127,7 +127,7 @@ class Forum
         $forum_id = Container::get('hooks')->fire('model.forum.print_topics_start', $forum_id, $sort_by, $start_from);
 
         // Get topic/forum tracking data
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $tracked_topics = Track::get_tracked_topics();
         }
 
@@ -138,7 +138,7 @@ class Forum
                         ->order_by_desc('sticky')
                         ->order_by_expr($sort_by)
                         ->order_by_desc('id')
-                        ->limit(Container::get('user')->disp_topics)
+                        ->limit(User::get()->disp_topics)
                         ->offset($start_from);
         $result = Container::get('hooks')->fire('model.forum.print_topics_ids_query', $result);
         $result = $result->find_many();
@@ -153,7 +153,7 @@ class Forum
             }
 
             // Fetch list of topics to display on this page
-            if (Container::get('user')->is_guest || ForumSettings::get('o_show_dot') == '0') {
+            if (User::get()->is_guest || ForumSettings::get('o_show_dot') == '0') {
                 // Without "the dot"
                 $result['select'] = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
 
@@ -171,7 +171,7 @@ class Forum
                             ->table_alias('t')
                             ->select_many($result['select'])
                             ->left_outer_join('posts', array('t.id', '=', 'p.topic_id'), 'p')
-                            ->left_outer_join('posts', array('p.poster_id', '=', Container::get('user')->id), null, true)
+                            ->left_outer_join('posts', array('p.poster_id', '=', User::get()->id), null, true)
                             ->where_in('t.id', $topic_ids)
                             ->group_by('t.id')
                             ->order_by_desc('sticky')
@@ -217,7 +217,7 @@ class Forum
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 
-                if (!Container::get('user')->is_guest && $cur_topic['last_post'] > Container::get('user')->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
+                if (!User::get()->is_guest && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
@@ -230,14 +230,14 @@ class Forum
                 $cur_topic['subject_formatted'] = implode(' ', $status_text).' '.$cur_topic['subject_formatted'];
 
                 // Should we display the dot or not? :)
-                if (!Container::get('user')->is_guest && ForumSettings::get('o_show_dot') == '1') {
-                    if ($cur_topic['has_posted'] == Container::get('user')->id) {
+                if (!User::get()->is_guest && ForumSettings::get('o_show_dot') == '1') {
+                    if ($cur_topic['has_posted'] == User::get()->id) {
                         $cur_topic['subject_formatted'] = '<strong class="ipost">·&#160;</strong>'.$cur_topic['subject_formatted'];
                         $cur_topic['item_status'] .= ' iposted';
                     }
                 }
 
-                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / Container::get('user')->disp_posts);
+                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').' ]</span>';
@@ -267,7 +267,7 @@ class Forum
         $topic_data = array();
 
         // Get topic/forum tracking data
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $tracked_topics = Track::get_tracked_topics();
         }
 
@@ -275,7 +275,7 @@ class Forum
         $result = DB::for_table('topics')->select('id')
                     ->where('forum_id', $fid)
                     ->order_by_expr('sticky DESC, '.$sort_by)
-                    ->limit(Container::get('user')->disp_topics)
+                    ->limit(User::get()->disp_topics)
                     ->offset($start_from);
         $result = Container::get('hooks')->fireDB('model.forum.display_topics_list_ids', $result);
         $result = $result->find_many();
@@ -335,7 +335,7 @@ class Forum
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 
-                if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > Container::get('user')->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
+                if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
@@ -347,7 +347,7 @@ class Forum
                 // Insert the status text before the subject
                 $cur_topic['subject_disp'] = implode(' ', $status_text).' '.$cur_topic['subject_disp'];
 
-                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / Container::get('user')->disp_posts);
+                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
@@ -429,7 +429,7 @@ class Forum
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
-            ->where('user_id', Container::get('user')->id)
+            ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
         $is_subscribed = Container::get('hooks')->fireDB('model.forum.unsubscribe_forum_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
@@ -440,7 +440,7 @@ class Forum
 
         // Delete the subscription
         $delete = DB::for_table('forum_subscriptions')
-            ->where('user_id', Container::get('user')->id)
+            ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
         $delete = Container::get('hooks')->fireDB('model.forum.unsubscribe_forum_query', $delete);
         $delete->delete_many();
@@ -463,7 +463,7 @@ class Forum
         $authorized = DB::for_table('forums')
                         ->table_alias('f')
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($authorized['where'])
                         ->where('f.id', $forum_id);
         $authorized = Container::get('hooks')->fireDB('model.forum.subscribe_forum_authorized_query', $authorized);
@@ -474,7 +474,7 @@ class Forum
         }
 
         $is_subscribed = DB::for_table('forum_subscriptions')
-            ->where('user_id', Container::get('user')->id)
+            ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
         $is_subscribed = Container::get('hooks')->fireDB('model.forum.subscribe_forum_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
@@ -485,7 +485,7 @@ class Forum
 
         // Insert the subscription
         $subscription['insert'] = array(
-            'user_id' => Container::get('user')->id,
+            'user_id' => User::get()->id,
             'forum_id'  => $forum_id
         );
         $subscription = DB::for_table('forum_subscriptions')
@@ -525,7 +525,7 @@ class Forum
         }
 
         // Verify that the posts are not by admins
-        if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
             $authorized = DB::for_table('posts')
                             ->where_in('topic_id', $topics_sql)
                             ->where('poster_id', Utils::get_admin_ids());

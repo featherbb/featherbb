@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.admin.statistics.start');
                     <dd>
                         <?php printf(__('Server load data')."\n", $server_load, $num_online) ?>
                     </dd>
-<?php if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')): ?>                    <dt><?php _e('Environment label') ?></dt>
+<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')): ?>                    <dt><?php _e('Environment label') ?></dt>
                     <dd>
                         <?php printf(__('Environment data OS'), PHP_OS) ?><br />
                         <?php printf(__('Environment data version'), phpversion(), '<a href="'.Router::pathFor('phpInfo').'">'.__('Show info').'</a>') ?><br />

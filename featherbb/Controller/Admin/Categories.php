@@ -20,7 +20,7 @@ class Categories
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Categories();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/categories.mo');
+        translate('admin/categories');
     }
 
     public function add($req, $res, $args)

@@ -19,7 +19,7 @@ class Parser
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Parser();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/parser.mo');
+        translate('admin/parser');
     }
 
     public function display($req, $res, $args)
@@ -29,7 +29,7 @@ class Parser
         Container::get('hooks')->fire('controller.admin.parser.display');
 
         // Legacy
-        require ForumEnv::get('FEATHER_ROOT') . 'featherbb/lang/' . Container::get('user')->language . '/admin/parser.php';
+        require ForumEnv::get('FEATHER_ROOT') . 'featherbb/lang/' . User::get()->language . '/admin/parser.php';
 
         // This is where the parser data lives and breathes.
         $cache_file = ForumEnv::get('FEATHER_ROOT').'cache/cache_parser_data.php';

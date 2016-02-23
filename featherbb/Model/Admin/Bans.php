@@ -127,7 +127,7 @@ class Bans
             throw new Error(__('Bad request'), 404);
         }
 
-        $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
+        $diff = (User::get()->timezone + User::get()->dst) * 3600;
         $ban['expire'] = ($ban['expire'] != '') ? gmdate('Y-m-d', $ban['expire'] + $diff) : '';
 
         $ban['mode'] = 'edit';
@@ -225,7 +225,7 @@ class Bans
                 throw new Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
             }
 
-            $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
+            $diff = (User::get()->timezone + User::get()->dst) * 3600;
             $ban_expire -= $diff;
 
             if ($ban_expire <= time()) {
@@ -251,7 +251,7 @@ class Bans
         $insert_update_ban = Container::get('hooks')->fire('model.admin.bans.insert_ban_data', $insert_update_ban);
 
         if (Input::post('mode') == 'add') {
-            $insert_update_ban['ban_creator'] = Container::get('user')->id;
+            $insert_update_ban['ban_creator'] = User::get()->id;
 
             $result = DB::for_table('bans')
                 ->create()

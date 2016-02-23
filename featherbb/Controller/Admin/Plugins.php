@@ -21,7 +21,7 @@ class Plugins
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Plugins();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/plugins.mo');
+        translate('admin/plugins');
     }
 
     /**
@@ -146,7 +146,7 @@ class Plugins
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {
                 AdminUtils::generateAdminMenu($args['name']);
-                $plugin->info();
+                return $plugin->info($req, $res, $args);
             }
             else {
                 throw new Error(__('Bad request'), 400);

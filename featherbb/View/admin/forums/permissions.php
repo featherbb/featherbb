@@ -75,7 +75,7 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
                     <fieldset>
                         <legend><?php _e('Group permissions subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php printf(__('Group permissions info'), '<a href="admin_groups.php">'.__('User groups').'</a>') ?></p>
+                            <p><?php printf(__('Group permissions info'), '<a href="'.Router::pathFor('adminGroups').'">'.__('User groups').'</a>') ?></p>
                             <table id="forumperms">
                             <thead>
                                 <tr>

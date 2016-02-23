@@ -8,6 +8,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Url;
+
 // This script compiles the $options, $smilies and $bbcd arrays (from bbcd_source.php script
 // or from an admin page web form) into the cache/cache_parser_data.php.
 
@@ -181,7 +183,7 @@ if (!ini_get('allow_url_fopen')) {
 // Validate and compute replacement texts for smilies array.
 $re_keys = array();                                    // Array of regex-safe smiley texts.
 $file_path = ForumEnv::get('FEATHER_ROOT') . 'style/img/smilies/';                // File system path to smilies.
-$url_path = Request::getServerParams()['SCRIPT_NAME'];                        // Convert abs URL to relative URL.
+$url_path = Url::base();                        // Convert abs URL to relative URL.
 $url_path = preg_replace('%^https?://[^/]++(.*)$%i', '$1', $url_path) . '/style/img/smilies/';
 foreach ($smilies as $smiley_text => $smiley_img) {    // Loop through all smilieys in array.
     $file = $file_path . $smiley_img['file'];        // Local file system address of smiley.

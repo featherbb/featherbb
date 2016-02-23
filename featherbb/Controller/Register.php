@@ -18,21 +18,21 @@ class Register
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Register();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/register.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.mo');
+        translate('register');
+        translate('prof_reg');
+        translate('antispam');
     }
 
     public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.register.display');
 
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'));
         }
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Display an error message if new registrations are disabled
@@ -82,7 +82,7 @@ class Register
         Container::get('hooks')->fire('controller.register.rules');
 
         // If we are logged in, we shouldn't be here
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'));
         }
 

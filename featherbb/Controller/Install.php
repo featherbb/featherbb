@@ -11,7 +11,6 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Lister;
 use FeatherBB\Core\Random;
-use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Middleware\Core;
 
@@ -50,7 +49,7 @@ class Install
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$this->install_lang.'/install.mo');
+        translate(ForumEnv::get('install', 'featherbb', $this->install_lang));
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = array();
@@ -188,7 +187,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$data['default_lang'].'/install.mo');
+        translate(ForumEnv::get('install', 'featherbb', $data['default_lang']));
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {

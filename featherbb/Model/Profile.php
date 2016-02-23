@@ -29,7 +29,7 @@ class Profile
             $key = Container::get('hooks')->fire('model.profile.change_pass_key', $key);
 
             // If the user is already logged in we shouldn't be here :)
-            if (!Container::get('user')->is_guest) {
+            if (!User::get()->is_guest) {
                 return Router::redirect(Router::pathFor('home'));
             }
 
@@ -55,12 +55,12 @@ class Profile
         }
 
         // Make sure we are allowed to change this user's password
-        if (Container::get('user')->id != $id) {
+        if (User::get()->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_pass_key_not_id', $id);
 
-            if (!Container::get('user')->is_admmod) { // A regular user trying to change another user's password?
+            if (!User::get()->is_admmod) { // A regular user trying to change another user's password?
                 throw new Error(__('No permission'), 403);
-            } elseif (Container::get('user')->g_moderator == '1') {
+            } elseif (User::get()->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
                 $user['select'] = array('u.group_id', 'g.g_moderator');
@@ -77,7 +77,7 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
                     throw new Error(__('No permission'), 403);
                 }
             }
@@ -105,7 +105,7 @@ class Profile
             if (!empty($cur_user['password'])) {
                 $old_password_hash = Random::hash($old_password);
 
-                if ($cur_user['password'] == $old_password_hash || Container::get('user')->is_admmod) {
+                if ($cur_user['password'] == $old_password_hash || User::get()->is_admmod) {
                     $authorized = true;
                 }
             }
@@ -123,9 +123,9 @@ class Profile
             $update_password = Container::get('hooks')->fireDB('model.profile.change_pass_query', $update_password);
             $update_password = $update_password->save();
 
-            if (Container::get('user')->id == $id) {
+            if (User::get()->id == $id) {
                 $expire = time() + ForumSettings::get('o_timeout_visit');
-                $jwt = AuthModel::generate_jwt(Container::get('user'), $expire);
+                $jwt = AuthModel::generate_jwt(User::get(), $expire);
                 AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
             }
 
@@ -139,12 +139,12 @@ class Profile
         $id = Container::get('hooks')->fire('model.profile.change_email_start', $id);
 
         // Make sure we are allowed to change this user's email
-        if (Container::get('user')->id != $id) {
+        if (User::get()->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_email_not_id', $id);
 
-            if (!Container::get('user')->is_admmod) { // A regular user trying to change another user's email?
+            if (!User::get()->is_admmod) { // A regular user trying to change another user's email?
                 throw new Error(__('No permission'), 403);
-            } elseif (Container::get('user')->g_moderator == '1') {
+            } elseif (User::get()->g_moderator == '1') {
                 // A moderator trying to change a user's email?
                 $user['select'] = array('u.group_id', 'g.g_moderator');
 
@@ -160,7 +160,7 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                if (Container::get('user')->g_mod_edit_users == '0' || Container::get('user')->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
                     throw new Error(__('No permission'), 403);
                 }
             }
@@ -192,7 +192,7 @@ class Profile
         } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
 
-            if (Random::hash(Input::post('req_password')) !== Container::get('user')->password) {
+            if (Random::hash(Input::post('req_password')) !== User::get()->password) {
                 throw new Error(__('Wrong pass'));
             }
 
@@ -209,7 +209,7 @@ class Profile
                     throw new Error(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -218,7 +218,7 @@ class Profile
                     $mail_subject = Container::get('hooks')->fire('model.profile.change_email_mail_subject', $mail_subject);
 
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
-                    $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
+                    $mail_message = str_replace('<username>', User::get()->username, $mail_message);
                     $mail_message = str_replace('<email>', $new_email, $mail_message);
                     $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
@@ -246,7 +246,7 @@ class Profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/dupe_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -255,7 +255,7 @@ class Profile
                     $mail_subject = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_subject', $mail_subject);
 
                     $mail_message = trim(substr($mail_tpl, $first_crlf));
-                    $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
+                    $mail_message = str_replace('<username>', User::get()->username, $mail_message);
                     $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                     $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mail_message);
                     $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
@@ -283,7 +283,7 @@ class Profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/activate_email.tpl'));
             $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
@@ -292,7 +292,7 @@ class Profile
             $mail_subject = Container::get('hooks')->fire('model.profile.change_email_mail_activate_subject', $mail_subject);
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
-            $mail_message = str_replace('<username>', Container::get('user')->username, $mail_message);
+            $mail_message = str_replace('<username>', User::get()->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
             $mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
             $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
@@ -729,9 +729,7 @@ class Profile
             $this->delete_avatar($id);
 
             // Regenerate the users info cache
-            if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
-            }
+            Container::get('cache')->store('users_info', Cache::get_users_info());
 
             $stats = Container::get('cache')->retrieve('users_info');
 
@@ -794,11 +792,11 @@ class Profile
                     }
                 }
 
-                if (Container::get('user')->is_admmod) {
+                if (User::get()->is_admmod) {
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || (Container::get('user')->g_moderator == '1' && Container::get('user')->g_mod_rename_users == '1')) {
+                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_rename_users == '1')) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -813,12 +811,12 @@ class Profile
                     }
 
                     // We only allow administrators to update the post count
-                    if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
                         $form['num_posts'] = intval(Input::post('num_posts'));
                     }
                 }
 
-                if (ForumSettings::get('o_regs_verify') == '0' || Container::get('user')->is_admmod) {
+                if (ForumSettings::get('o_regs_verify') == '0' || User::get()->is_admmod) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
                     if (!Container::get('email')->is_valid_email($form['email'])) {
@@ -838,7 +836,7 @@ class Profile
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-                if (Container::get('user')->g_post_links == '1') {
+                if (User::get()->g_post_links == '1') {
                     if ($form['url'] != '') {
                         $url = Url::is_valid($form['url']);
 
@@ -856,9 +854,9 @@ class Profile
                     $form['url'] = '';
                 }
 
-                if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
                     $form['title'] = Utils::trim(Input::post('title'));
-                } elseif (Container::get('user')->g_set_title == '1') {
+                } elseif (User::get()->g_set_title == '1') {
                     $form['title'] = Utils::trim(Input::post('title'));
 
                     if ($form['title'] != '') {
@@ -906,7 +904,7 @@ class Profile
                         throw new Error(sprintf(__('Sig too long'), ForumSettings::get('p_sig_length'), Utils::strlen($form['signature']) - ForumSettings::get('p_sig_length')));
                     } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
                         throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
-                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !Container::get('user')->is_admmod) {
+                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !User::get()->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
 
@@ -1143,9 +1141,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !Container::get('user')->is_guest && Container::get('user')->g_send_email == '1') {
+        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::get()->g_send_email == '1') {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !Container::get('user')->is_guest && Container::get('user')->g_send_email == '1') {
+        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::get()->g_send_email == '1') {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1196,16 +1194,16 @@ class Profile
         }
 
         $posts_field = '';
-        if (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) {
+        if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
             $posts_field = Utils::forum_number_format($user['num_posts']);
         }
-        if (Container::get('user')->g_search == '1') {
+        if (User::get()->g_search == '1') {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
-            if (Container::get('user')->is_admmod && ForumSettings::get('o_topic_subscriptions') == '1') {
+            if (User::get()->is_admmod && ForumSettings::get('o_topic_subscriptions') == '1') {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
@@ -1237,8 +1235,8 @@ class Profile
 
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
-        if (Container::get('user')->is_admmod) {
-            if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('user')->g_mod_rename_users == '1') {
+        if (User::get()->is_admmod) {
+            if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::get()->g_mod_rename_users == '1') {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
@@ -1258,13 +1256,13 @@ class Profile
         $user_disp['posts_field'] = '';
         $posts_actions = array();
 
-        if (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) {
+        } elseif (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
-        if (Container::get('user')->g_search == '1' || Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::get()->g_search == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
@@ -1357,13 +1355,11 @@ class Profile
     //
     public function check_username($username, $errors, $exclude_id = null)
     {
-        global $errors, $feather_bans;
-
         // Include UTF-8 function
         require_once ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/register.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/prof_reg.mo');
+        translate('register');
+        translate('prof_reg');
 
         // Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
         $username = preg_replace('%\s+%s', ' ', $username);
@@ -1399,7 +1395,7 @@ class Profile
         }
 
         // Check username for any banned usernames
-        foreach ($feather_bans as $cur_ban) {
+        foreach (Container::get('bans') as $cur_ban) {
             if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username'])) {
                 $errors[] = __('Banned username');
                 break;
@@ -1451,12 +1447,12 @@ class Profile
             throw new Error(__('Too long email message'), 400);
         }
 
-        if (Container::get('user')->last_email_sent != '' && (time() - Container::get('user')->last_email_sent) < Container::get('user')->g_email_flood && (time() - Container::get('user')->last_email_sent) >= 0) {
-            throw new Error(sprintf(__('Email flood'), Container::get('user')->g_email_flood, Container::get('user')->g_email_flood - (time() - Container::get('user')->last_email_sent)), 429);
+        if (User::get()->last_email_sent != '' && (time() - User::get()->last_email_sent) < User::get()->g_email_flood && (time() - User::get()->last_email_sent) >= 0) {
+            throw new Error(sprintf(__('Email flood'), User::get()->g_email_flood, User::get()->g_email_flood - (time() - User::get()->last_email_sent)), 429);
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/form_email.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1465,16 +1461,16 @@ class Profile
         $mail_message = Utils::trim(substr($mail_tpl, $first_crlf));
 
         $mail_subject = str_replace('<mail_subject>', $subject, $mail_subject);
-        $mail_message = str_replace('<sender>', Container::get('user')->username, $mail_message);
+        $mail_message = str_replace('<sender>', User::get()->username, $mail_message);
         $mail_message = str_replace('<board_title>', ForumSettings::get('o_board_title'), $mail_message);
         $mail_message = str_replace('<mail_message>', $message, $mail_message);
         $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
         $mail_message = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mail_message);
 
-        Container::get('email')->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, Container::get('user')->email, Container::get('user')->username);
+        Container::get('email')->feather_mail($mail['recipient_email'], $mail_subject, $mail_message, User::get()->email, User::get()->username);
 
-        $update_last_mail_sent = DB::for_table('users')->where('id', Container::get('user')->id)
+        $update_last_mail_sent = DB::for_table('users')->where('id', User::get()->id)
                                                   ->find_one()
                                                   ->set('last_email_sent', time());
         $update_last_mail_sent = Container::get('hooks')->fireDB('model.profile.send_email_update_last_mail_sent', $update_last_mail_sent);

@@ -11,6 +11,7 @@ use \FeatherBB\Middleware\Logged as IsLogged;
 use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
 use \FeatherBB\Middleware\Admin as IsAdmin;
 use \FeatherBB\Middleware\AdminModo as IsAdmMod;
+use FeatherBB\Core\Error;
 
 
 Route::map(['GET', 'POST'], '/install', '\FeatherBB\Controller\Install:run')->setName('install');
@@ -87,7 +88,7 @@ Route::get('/help', '\FeatherBB\Controller\Help:display')->add(new CanReadBoard)
 
 // Profile routes
 Route::group('/user', function() {
-    Route::get('/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction'); // TODO: Move to another route for non-authed users
     Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
@@ -179,17 +180,13 @@ Route::group('/admin', function() {
 // Override the default Not Found Handler
 Container::set('notFoundHandler', function ($c) {
     return function ($request, $response) use ($c) {
-        // throw new Error('Page not found', 404); // TODO : translation
-        return $c['response']
-            ->withStatus(404)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Page not found');
+        throw new Error('Page not found', 404); // TODO : translation
     };
 });
 
 Container::set('errorHandler', function ($c) {
     return function ($request, $response, $e) use ($c) {
-        // var_dump($exception);
+        // var_dump($e);
         $error = array(
             'code' => $e->getCode(),
             'message' => $e->getMessage(),

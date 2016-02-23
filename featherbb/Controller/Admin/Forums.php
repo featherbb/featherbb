@@ -19,7 +19,7 @@ class Forums
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Forums();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/forums.mo');
+        translate('admin/forums');
     }
 
     public function add()

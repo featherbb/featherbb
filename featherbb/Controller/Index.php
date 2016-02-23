@@ -20,8 +20,8 @@ class Index
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Index();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/index.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
+        translate('index');
+        translate('misc');
     }
 
     public function display($req, $res, $args)
@@ -43,7 +43,7 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.rules');
 
-        if (ForumSettings::get('o_rules') == '0' || (Container::get('user')->is_guest && Container::get('user')->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')) {
+        if (ForumSettings::get('o_rules') == '0' || (User::get()->is_guest && User::get()->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')) {
             throw new Error(__('Bad request'), 404);
         }
 
@@ -57,7 +57,7 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.markread');
 
-        Auth::set_last_visit(Container::get('user')->id, Container::get('user')->logged);
+        Auth::set_last_visit(User::get()->id, User::get()->logged);
         // Reset tracked topics
         Track::set_tracked_topics(null);
         return Router::redirect(Router::pathFor('home'), __('Mark read redirect'));

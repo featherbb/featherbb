@@ -40,7 +40,7 @@ class Index
         $forum_actions = array();
 
         // Display a "mark all as read" link
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $forum_actions[] = '<a href="'.Router::pathFor('markRead').'">'.__('Mark all as read').'</a>';
         }
 
@@ -64,9 +64,9 @@ class Index
             ->table_alias('f')
             ->select_many($query['select'])
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->where_any_is($query['where'])
-            ->where_gt('f.last_post', Container::get('user')->last_visit);
+            ->where_gt('f.last_post', User::get()->last_visit);
 
         $query = Container::get('hooks')->fireDB('model.index.query_get_new_posts', $query);
 
@@ -90,7 +90,7 @@ class Index
                 $query = DB::for_table('topics')
                     ->select_many($query['select'])
                     ->where_in('forum_id', array_keys($forums))
-                    ->where_gt('last_post', Container::get('user')->last_visit)
+                    ->where_gt('last_post', User::get()->last_visit)
                     ->where_null('moved_to');
 
                 $query = Container::get('hooks')->fireDB('model.index.get_new_posts_query', $query);
@@ -116,7 +116,7 @@ class Index
         Container::get('hooks')->fire('model.index.print_categories_forums_start');
 
         // Get list of forums and topics with new posts since last visit
-        if (!Container::get('user')->is_guest) {
+        if (!User::get()->is_guest) {
             $new_topics = $this->get_new_posts();
         }
 
@@ -132,7 +132,7 @@ class Index
             ->select_many($query['select'])
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->where_any_is($query['where'])
             ->order_by_many($query['order_by']);
 
@@ -204,7 +204,7 @@ class Index
                 $moderators = array();
 
                 foreach ($mods_array as $mod_username => $mod_id) {
-                    if (Container::get('user')->g_view_users == '1') {
+                    if (User::get()->g_view_users == '1') {
                         $moderators[] = '<a href="'.Router::pathFor('userProfile', ['id' => $mod_id]).'">'.Utils::escape($mod_username).'</a>';
                     } else {
                         $moderators[] = Utils::escape($mod_username);
@@ -248,7 +248,7 @@ class Index
         $stats['total_topics'] = intval($query['total_topics']);
         $stats['total_posts'] = intval($query['total_posts']);
 
-        if (Container::get('user')->g_view_users == '1') {
+        if (User::get()->g_view_users == '1') {
             $stats['newest_user'] = '<a href="'.Router::pathFor('userProfile', ['id' => $stats['last_user']['id']]).'">'.Utils::escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
@@ -283,7 +283,7 @@ class Index
 
         foreach($query as $user_online) {
             if ($user_online->user_id > 1) {
-                if (Container::get('user')->g_view_users == '1') {
+                if (User::get()->g_view_users == '1') {
                     $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Router::pathFor('userProfile', ['id' => $user_online->user_id]).'">'.Utils::escape($user_online->ident).'</a>';
                 } else {
                     $online['users'][] = "\n\t\t\t\t".'<dd>'.Utils::escape($user_online->ident);

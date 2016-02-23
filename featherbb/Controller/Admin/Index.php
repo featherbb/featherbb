@@ -18,7 +18,7 @@ class Index
 {
     public function __construct()
     {
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/index.mo');
+        translate('admin/index');
     }
 
     public function display($req, $res, $args)

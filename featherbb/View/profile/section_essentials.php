@@ -27,7 +27,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
                         <?= $user_disp['username_field'] ?>
-<?php if (Container::get('user')->id == $id || Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || ($user['g_moderator'] == '0' && Container::get('user')->g_mod_change_passwords == '1')): ?>                            <p class="actions"><span><a href="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
+<?php if (User::get()->id == $id || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || ($user['g_moderator'] == '0' && User::get()->g_mod_change_passwords == '1')): ?>                            <p class="actions"><span><a href="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
 <?php endif; ?>                        </div>
                 </fieldset>
             </div>
@@ -177,7 +177,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 
                         <br /><select name="form_time_format">
 <?php
-                            foreach (array_unique($forum_time_formats) as $key => $time_format) {
+                            foreach (array_unique(Container::get('forum_time_formats')) as $key => $time_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
                                 if ($user['time_format'] == $key) {
                                     echo ' selected="selected"';
@@ -195,7 +195,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 
                         <br /><select name="form_date_format">
 <?php
-                            foreach (array_unique($forum_date_formats) as $key => $date_format) {
+                            foreach (array_unique(Container::get('forum_date_formats')) as $key => $date_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
                                 if ($user['date_format'] == $key) {
                                     echo ' selected="selected"';
@@ -244,11 +244,11 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                 <fieldset>
                     <legend><?php _e('User activity') ?></legend>
                     <div class="infldset">
-                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((Container::get('user')->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
+                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((User::get()->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
                         <p><?php printf(__('Last post info'), Utils::format_time($user['last_post'])) ?></p>
                         <p><?php printf(__('Last visit info'), Utils::format_time($user['last_visit'])) ?></p>
                         <?= $user_disp['posts_field'] ?>
-<?php if (Container::get('user')->is_admmod): ?>                            <label><?php _e('Admin note') ?><br />
+<?php if (User::get()->is_admmod): ?>                            <label><?php _e('Admin note') ?><br />
                         <input id="admin_note" type="text" name="admin_note" value="<?= Utils::escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
 <?php endif; ?>                        </div>
                 </fieldset>

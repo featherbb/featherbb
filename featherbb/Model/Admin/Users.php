@@ -458,7 +458,7 @@ class Users
                     throw new Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
 
-                $diff = (Container::get('user')->timezone + Container::get('user')->dst) * 3600;
+                $diff = (User::get()->timezone + User::get()->dst) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {
@@ -504,13 +504,13 @@ class Users
                     'email' => $ban_email,
                     'message' => $ban_message,
                     'expire' => $ban_expire,
-                    'ban_creator' => Container::get('user')->id,
+                    'ban_creator' => User::get()->id,
                 );
 
                 $insert_update_ban = Container::get('hooks')->fire('model.admin.model.users.ban_users.ban_data', $insert_update_ban);
 
                 if (Input::post('mode') == 'add') {
-                    $insert_update_ban['ban_creator'] = Container::get('user')->id;
+                    $insert_update_ban['ban_creator'] = User::get()->id;
 
                     DB::for_table('bans')
                         ->create()

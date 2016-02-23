@@ -31,7 +31,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
-<?php if ($is_admin || Container::get('user')->g_mod_ban_users == '1'): ?>                    <li<?php if ($page == 'bans') {
+<?php if ($is_admin || User::get()->g_mod_ban_users == '1'): ?>                    <li<?php if ($page == 'bans') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('adminBans') ?>"><?php _e('Bans') ?></a></li>

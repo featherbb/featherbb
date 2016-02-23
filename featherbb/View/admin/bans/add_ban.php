@@ -47,7 +47,7 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
                                         echo Utils::escape($ban['ip']);
                                     } ?>" tabindex="2" />
                                         <span><?php _e('IP help') ?><?php if ($ban['ban_user'] != '' && isset($ban['user_id'])) {
-                                                printf(' '.__('IP help link'), '<a href="admin_users.php?ip_stats='.$ban['user_id'].'">'.__('here').'</a>');
+                                                printf(' '.__('IP help link'), '<a href="'.Router::pathFor('usersIpStats', ['id' => $ban['user_id']]).'">'.__('here').'</a>');
                                             } ?></span>
                                 </td>
                             </tr>

@@ -17,7 +17,7 @@ class Maintenance
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/maintenance.mo');
+        translate('admin/maintenance');
     }
 
     public function display($req, $res, $args)

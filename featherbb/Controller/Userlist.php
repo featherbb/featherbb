@@ -18,22 +18,22 @@ class Userlist
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Userlist();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/userlist.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/search.mo');
+        translate('userlist');
+        translate('search');
     }
 
     public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.userlist.display');
 
-        if (Container::get('user')->g_view_users == '0') {
+        if (User::get()->g_view_users == '0') {
             throw new Error(__('No permission'), 403);
         }
 
         // Determine if we are allowed to view post counts
-        $show_post_count = (ForumSettings::get('o_show_post_count') == '1' || Container::get('user')->is_admmod) ? true : false;
+        $show_post_count = (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) ? true : false;
 
-        $username = Input::query('username') && Container::get('user')->g_search_users == '1' ? Utils::trim(Input::query('username')) : '';
+        $username = Input::query('username') && User::get()->g_search_users == '1' ? Utils::trim(Input::query('username')) : '';
         $show_group = Input::query('show_group') ? intval(Input::query('show_group')) : -1;
         $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), array('username', 'registered')) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
         $sort_dir = Input::query('sort_dir') && Input::query('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
@@ -46,7 +46,7 @@ class Userlist
         $p = (!Input::query('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        if (Container::get('user')->g_search_users == '1') {
+        if (User::get()->g_search_users == '1') {
             $focus_element = array('userlist', 'username');
         }
         else {

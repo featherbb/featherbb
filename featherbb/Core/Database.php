@@ -628,7 +628,7 @@ use Serializable;
          */
         protected function _create_instance_from_row($row)
         {
-            $table = str_replace(ForumSettings::get('db_prefix'), '', $this->_table_name);
+            $table = str_replace(self::get_config('prefix', $this->_connection_name), '', $this->_table_name);
             $instance = self::for_table($table, $this->_connection_name);
             $instance->use_id_column($this->_instance_id_column);
             $instance->hydrate($row);
@@ -1038,7 +1038,7 @@ use Serializable;
          */
         protected function _add_join_source($join_operator, $table, $constraint, $table_alias = null, $no_escape_second_col = false)
         {
-            $table = ForumSettings::get('db_prefix') . $table;
+            $table = self::get_config('prefix', $this->_connection_name) . $table;
 
             $join_operator = trim("{$join_operator} JOIN");
 

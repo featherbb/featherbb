@@ -25,7 +25,7 @@ Container::get('hooks')->fire('view.profile.change_pass.start');
                 <fieldset>
                     <legend><?php _e('Change pass legend') ?></legend>
                     <div class="infldset">
-<?php if (!Container::get('user')->is_admmod): ?>                        <label class="required"><strong><?php _e('Old pass') ?> <span><?php _e('Required') ?></span></strong><br />
+<?php if (!User::get()->is_admmod): ?>                        <label class="required"><strong><?php _e('Old pass') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input type="password" name="req_old_password" size="16" /><br /></label>
 <?php endif; ?>                        <label class="conl required"><strong><?php _e('New pass') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input type="password" name="req_new_password1" size="16" /><br /></label>

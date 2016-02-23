@@ -136,7 +136,7 @@ function get_current_url($max_length = 0)
 }
 
 //
-// Fill Container::get('user') with default values (for guests)
+// Fill User::get() with default values (for guests)
 //
 function set_default_user()
 {
@@ -158,11 +158,11 @@ function set_default_user()
         exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
     }
 
-    foreach ($result as Container::get('user'));
+    foreach ($result as User::get());
 
     // Update online list
-    if (!Container::get('user')->logged) {
-        Container::get('user')->logged = time();
+    if (!User::get()->logged) {
+        User::get()->logged = time();
 
         // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
         switch (ForumSettings::get('db_type')) {
@@ -172,11 +172,11 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-                \DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => Container::get('user')->logged));
+                \DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => User::get()->logged));
                 break;
 
             default:
-                \DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => Container::get('user')->logged));
+                \DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => User::get()->logged));
                 break;
         }
     } else {
@@ -184,14 +184,14 @@ function set_default_user()
             ->update_many('logged', time());
     }
 
-    Container::get('user')->disp_topics = ForumSettings::get('o_disp_topics_default');
-    Container::get('user')->disp_posts = ForumSettings::get('o_disp_posts_default');
-    Container::get('user')->timezone = ForumSettings::get('o_default_timezone');
-    Container::get('user')->dst = ForumSettings::get('o_default_dst');
-    Container::get('user')->language = ForumSettings::get('o_default_lang');
-    Container::get('user')->style = ForumSettings::get('o_default_style');
-    Container::get('user')->is_guest = true;
-    Container::get('user')->is_admmod = false;
+    User::get()->disp_topics = ForumSettings::get('o_disp_topics_default');
+    User::get()->disp_posts = ForumSettings::get('o_disp_posts_default');
+    User::get()->timezone = ForumSettings::get('o_default_timezone');
+    User::get()->dst = ForumSettings::get('o_default_dst');
+    User::get()->language = ForumSettings::get('o_default_lang');
+    User::get()->style = ForumSettings::get('o_default_style');
+    User::get()->is_guest = true;
+    User::get()->is_admmod = false;
 }
 
 //
@@ -201,8 +201,6 @@ function set_default_user()
 //
 function authenticate_user($user, $password, $password_is_hash = false)
 {
-    global $feather;
-
     // Check if there's a user matching $user and $password
     $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
 
@@ -221,26 +219,26 @@ function authenticate_user($user, $password, $password_is_hash = false)
 
     $result = $result->find_result_set();
 
-    foreach ($result as Container::get('user'));
+    foreach ($result as User::get());
 
-    if (!isset(Container::get('user')->id) ||
-        ($password_is_hash && $password != Container::get('user')->password) ||
-        (!$password_is_hash && \FeatherBB\Core\Random::hash($password) != Container::get('user')->password)) {
+    if (!isset(User::get()->id) ||
+        ($password_is_hash && $password != User::get()->password) ||
+        (!$password_is_hash && \FeatherBB\Core\Random::hash($password) != User::get()->password)) {
         set_default_user();
     } else {
-        Container::get('user')->is_guest = false;
+        User::get()->is_guest = false;
     }
 
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.Container::get('user')->language.'/common.mo');
-    load_textdomain('featherbb', FEATHER_ROOT.'featherbb/lang/'.Container::get('user')->language.'/index.mo');
+    translate('common');
+    translate('index');
 }
 
 // If we're a guest and we've sent a username/pass, we can try to authenticate using those details
-if (Container::get('user')->is_guest && isset($_SERVER['PHP_AUTH_USER'])) {
+if (User::get()->is_guest && isset($_SERVER['PHP_AUTH_USER'])) {
     authenticate_user($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 }
 
-if (Container::get('user')->g_read_board == '0') {
+if (User::get()->g_read_board == '0') {
     http_authenticate_user();
     exit(__('No view'));
 }
@@ -267,7 +265,7 @@ function http_authenticate_user()
 {
     global $feather;
 
-    if (!Container::get('user')->is_guest) {
+    if (!User::get()->is_guest) {
         return;
     }
 
@@ -468,7 +466,7 @@ if ($action == 'feed') {
         $cur_topic = \DB::for_table('topics')->table_alias('t')
                         ->select_many($select_show_recent_topics)
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($where_show_recent_topics)
                         ->where_null('t.moved_to')
                         ->where('t.id', $tid)
@@ -519,12 +517,12 @@ if ($action == 'feed') {
             );
 
             if ($cur_post['poster_id'] > 1) {
-                if ($cur_post['email_setting'] == '0' && !Container::get('user')->is_guest) {
+                if ($cur_post['email_setting'] == '0' && !User::get()->is_guest) {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
                 $item['author']['uri'] = Url::get('user/'.$cur_post['poster_id'].'/');
-            } elseif ($cur_post['poster_email'] != '' && !Container::get('user')->is_guest) {
+            } elseif ($cur_post['poster_email'] != '' && !User::get()->is_guest) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
 
@@ -558,7 +556,7 @@ if ($action == 'feed') {
 
                 $cur_topic = \DB::for_table('forums')->table_alias('f')
                     ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->where_any_is($where_show_forum_name)
                     ->where('f.id', $fids[0])
                     ->find_one_col('f.forum_name');
@@ -581,7 +579,7 @@ if ($action == 'feed') {
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
         if (ForumSettings::get('o_feed_ttl') > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
-            $cache_id = 'feed'.sha1(Container::get('user')->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
+            $cache_id = 'feed'.sha1(User::get()->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
         }
 
         // Load cached feed
@@ -611,7 +609,7 @@ if ($action == 'feed') {
                         ->inner_join('posts', array('p.id', '=', ($order_posted ? 't.first_post_id' : 't.last_post_id')), 'p')
                         ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
                         ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', Container::get('user')->g_id), null, true)
+                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->where_any_is($where_print_posts)
                         ->where_null('t.moved_to')
                         ->order_by(($order_posted ? 't.posted' : 't.last_post'))
@@ -637,12 +635,12 @@ if ($action == 'feed') {
                 );
 
                 if ($cur_topic['poster_id'] > 1) {
-                    if ($cur_topic['email_setting'] == '0' && !Container::get('user')->is_guest) {
+                    if ($cur_topic['email_setting'] == '0' && !User::get()->is_guest) {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
                     $item['author']['uri'] = Url::get('user/'.$cur_topic['poster_id'].'/');
-                } elseif ($cur_topic['poster_email'] != '' && !Container::get('user')->is_guest) {
+                } elseif ($cur_topic['poster_email'] != '' && !User::get()->is_guest) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
 
@@ -702,7 +700,7 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     foreach ($result as $feather_user_online) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = (Container::get('user')->g_view_users == '1') ? '<a href="'.Url::get('user/'.$feather_user_online['user_id'].'/').'">'.Utils::escape($feather_user_online['ident']).'</a>' : Utils::escape($feather_user_online['ident']);
+            $users[] = (User::get()->g_view_users == '1') ? '<a href="'.Url::get('user/'.$feather_user_online['user_id'].'/').'">'.Utils::escape($feather_user_online['ident']).'</a>' : Utils::escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -750,7 +748,7 @@ elseif ($action == 'stats') {
     header('Pragma: public');
 
     echo sprintf(__('No of users'), Utils::forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf(__('Newest user'), ((Container::get('user')->g_view_users == '1') ? '<a href="'.Url::get('user/'.$stats['last_user']['id'].'/').'">'.Utils::escape($stats['last_user']['username']).'</a>' : Utils::escape($stats['last_user']['username']))).'<br />'."\n";
+    echo sprintf(__('Newest user'), ((User::get()->g_view_users == '1') ? '<a href="'.Url::get('user/'.$stats['last_user']['id'].'/').'">'.Utils::escape($stats['last_user']['username']).'</a>' : Utils::escape($stats['last_user']['username']))).'<br />'."\n";
     echo sprintf(__('No of topics'), Utils::forum_number_format($stats['total_topics'])).'<br />'."\n";
     echo sprintf(__('No of posts'), Utils::forum_number_format($stats['total_posts'])).'<br />'."\n";
 

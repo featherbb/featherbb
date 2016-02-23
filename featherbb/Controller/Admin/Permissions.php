@@ -17,7 +17,7 @@ class Permissions
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Permissions();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/admin/permissions.mo');
+        translate('admin/permissions');
     }
 
     public function display($req, $res, $args)

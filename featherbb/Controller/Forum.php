@@ -19,8 +19,8 @@ class Forum
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Forum();
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/forum.mo');
-        load_textdomain('featherbb', ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.Container::get('user')->language.'/misc.mo');
+        translate('forum');
+        translate('misc');
     }
 
     public function display($req, $res, $args)
@@ -37,28 +37,28 @@ class Forum
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
-        $is_admmod = (Container::get('user')->g_id == ForumEnv::get('FEATHER_ADMIN') || (Container::get('user')->g_moderator == '1' && array_key_exists(Container::get('user')->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
         // Can we or can we not post new topics?
-        if (($cur_forum['post_topics'] == '' && Container::get('user')->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
+        if (($cur_forum['post_topics'] == '' && User::get()->g_post_topics == '1') || $cur_forum['post_topics'] == '1' || $is_admmod) {
             $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $args['fid']]).'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $post_link = '';
         }
 
         // Determine the topic offset (based on $args['page'])
-        $num_pages = ceil($cur_forum['num_topics'] / Container::get('user')->disp_topics);
+        $num_pages = ceil($cur_forum['num_topics'] / User::get()->disp_topics);
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = Container::get('user')->disp_topics * ($p - 1);
+        $start_from = User::get()->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['fid'].'/'.$url_forum.'/#');
 
-        $forum_actions = $this->model->get_forum_actions($args['fid'], ForumSettings::get('o_forum_subscriptions'), ($cur_forum['is_subscribed'] == Container::get('user')->id));
+        $forum_actions = $this->model->get_forum_actions($args['fid'], ForumSettings::get('o_forum_subscriptions'), ($cur_forum['is_subscribed'] == User::get()->id));
 
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum]));
         if ($num_pages > 1) {
@@ -101,7 +101,7 @@ class Forum
         $moderators = $this->model->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -116,10 +116,10 @@ class Forum
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
         // Determine the topic offset (based on $_GET['p'])
-        $num_pages = ceil($cur_forum['num_topics'] / Container::get('user')->disp_topics);
+        $num_pages = ceil($cur_forum['num_topics'] / User::get()->disp_topics);
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = Container::get('user')->disp_topics * ($p - 1);
+        $start_from = User::get()->disp_topics * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         View::setPageInfo(array(
@@ -172,7 +172,7 @@ class Forum
         $moderators = $this->model->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (Container::get('user')->g_id != ForumEnv::get('FEATHER_ADMIN') && (Container::get('user')->g_moderator == '0' || !array_key_exists(Container::get('user')->username, $mods_array))) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 

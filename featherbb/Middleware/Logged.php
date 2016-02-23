@@ -22,7 +22,7 @@ class Logged
     public function __invoke($request, $response, $next)
     {
         // Redirect user to login page if not logged
-        if (Container::get('user')->is_guest) {
+        if (User::get()->is_guest) {
             // throw new Error(__('No permission'), 403);
             return Router::redirect(Router::pathFor('login'));
         }
