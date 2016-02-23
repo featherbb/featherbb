@@ -32,29 +32,6 @@ Container::get('hooks')->fire('view.header.start');
     <link rel="shortcut icon" href="<?= Url::base_static() ?>/style/img/favicon.ico" />
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= $style ?>/style.css">
-    <script type="text/javascript" src="style/imports/pjax-standalone.js"></script>
-    <script type='text/javascript'>
-        // Ensure console is defined
-        if(typeof console === 'undefined') console = {"log":function(m){}};
-        // PJAX links!
-        pjax.connect({
-            'container': 'brdmain',
-            'success': function(event){
-                var url = (typeof event.data !== 'undefined') ? event.data.url : '';
-                console.log("Successfully loaded "+ url);
-            },
-            'error': function(event){
-                var url = (typeof event.data !== 'undefined') ? event.data.url : '';
-                console.log("Could not load "+ url);
-            },
-            'ready': function(){
-                console.log("PJAX loaded!");
-            }
-        });
-        // pjax.connect('content', 'pjaxer');
-        // pjax.connect('content');
-        // pjax.connect();
-    </script>
 <?php
 
 foreach($assets as $type => $items) {
@@ -77,46 +54,6 @@ if ($admin_console) {
         echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
     }
 }
-if (isset($required_fields)) :
-    // Output JavaScript to validate form (make sure required fields are filled out)
-
-    ?>
-    <script type="text/javascript">
-        /* <![CDATA[ */
-        function process_form(the_form)
-        {
-            var required_fields = {
-                <?php
-                    // Output a JavaScript object with localised field names
-                    $tpl_temp = count($required_fields);
-                    foreach ($required_fields as $elem_orig => $elem_trans) {
-                        echo "\t\t\"".$elem_orig.'": "'.addslashes(str_replace('&#160;', ' ', $elem_trans));
-                        if (--$tpl_temp) {
-                            echo "\",\n";
-                        } else {
-                            echo "\"\n\t};\n";
-                        }
-                    }
-                    ?>
-                if (document.all || document.getElementById)
-            {
-                for (var i = 0; i < the_form.length; ++i)
-                {
-                    var elem = the_form.elements[i];
-                    if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
-                    {
-                        alert('"' + required_fields[elem.name] + '" <?php _e('required field') ?>');
-                        elem.focus();
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        /* ]]> */
-    </script>
-    <?php
-endif;
 if (!empty($page_head)) :
     echo implode("\n", $page_head)."\n";
 endif;
@@ -253,28 +190,68 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                 </div>
             </div>
 <?php endif; ?>
-<?php if (!empty(Container::get('flash')->getMessages())) : ?>
-            <script type="text/javascript">
-                window.onload = function() {
-                    var flashMessage = document.getElementById('flashmsg');
-                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
-                    setTimeout(function () {
-                        flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
-                    }, 10000);
-                    return false;
-                }
-            </script>
-<?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
-            <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
-                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-                <p><?= Utils::escape($message[0]) ?></p>
-            </div>
-<?php } ?>
-<?php endif; ?>
         </div>
     </header>
 
     <section class="container">
         <div id="brdmain">
-<?php
+<?php if (!empty(Container::get('flash')->getMessages())) : ?>
+<?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
+            <div class="flashmsg <?= $type; ?>" data-type="<?= $type; ?>" id="flashmsg">
+                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
+                <p><?= Utils::escape($message[0]) ?></p>
+            </div>
+<?php } ?>
+<script type="text/javascript">
+    // window.onload = function() {
+        var flashMessage = document.getElementById('flashmsg');
+        flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
+        setTimeout(function () {
+            flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
+        }, 10000);
+    //     return false;
+    // }
+</script>
+<?php endif;
+
+if (isset($required_fields)) :
+    // Output JavaScript to validate form (make sure required fields are filled out)
+
+    ?>
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        function process_form(the_form)
+        {
+            var required_fields = {
+                <?php
+                    // Output a JavaScript object with localised field names
+                    $tpl_temp = count($required_fields);
+                    foreach ($required_fields as $elem_orig => $elem_trans) {
+                        echo "\t\t\"".$elem_orig.'": "'.addslashes(str_replace('&#160;', ' ', $elem_trans));
+                        if (--$tpl_temp) {
+                            echo "\",\n";
+                        } else {
+                            echo "\"\n\t};\n";
+                        }
+                    }
+                    ?>
+                if (document.all || document.getElementById)
+            {
+                for (var i = 0; i < the_form.length; ++i)
+                {
+                    var elem = the_form.elements[i];
+                    if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
+                    {
+                        alert('"' + required_fields[elem.name] + '" <?php _e('required field') ?>');
+                        elem.focus();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        /* ]]> */
+    </script>
+    <?php
+endif;
 Container::get('hooks')->fire('view.header.end');
