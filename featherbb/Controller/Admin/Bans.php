@@ -77,7 +77,7 @@ class Bans
                 'admin_console' => true,
                 'focus_element' => array('bans2', 'ban_user'),
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
-                'ban' => $this->model->add_ban_info($req, $res, $args),
+                'ban' => $this->model->add_ban_info($args['id']),
             )
         )->addTemplate('admin/bans/add_ban.php')->display();
     }
