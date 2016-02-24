@@ -60,7 +60,7 @@ class Profile
             if (Input::post('delete_user_comply')) {
                 return $this->model->delete_user($args['id']);
             } else {
-                View::setPageInfo(array(
+                return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
                     'active_page' => 'profile',
                     'username' => $this->model->get_username($args['id']),
