@@ -150,18 +150,18 @@ class Post
         // If a topic ID was specified in the url (it's a reply)
         if ($args['tid']) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.Router::pathFor('newReply', ['tid' => $args['tid']]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.Router::pathFor('newReply', ['tid' => $args['tid']]).'">';
 
                 // If a quote ID was specified in the url
                 if (isset($args['qid'])) {
                     $quote = $this->model->get_quote_message($args['qid'], $args['tid']);
-                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]).'">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($args['fid']) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.Router::pathFor('newTopic', ['fid' => $args['fid']]).'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.Router::pathFor('newTopic', ['fid' => $args['fid']]).'">';
         } else {
             throw new Error(__('Bad request'), 404);
         }

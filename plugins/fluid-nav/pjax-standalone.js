@@ -161,6 +161,16 @@
 		}
 		// Else, we are dealing with forms
 		else if (node.nodeName === 'FORM') {
+			/**
+			 * forms submit listener
+			 * Listen for click events on forms submit, e.g. to distinct submits from previews
+			 */
+			for (input of node.querySelectorAll('input[type=submit]')) {
+				input.clicked = false;
+				internal.addEvent(input, 'click', function(evt) {
+					this.clicked = true;
+				});
+			}
 			// Add form ACTION to object
 			options.url = node.getAttribute('action');
 			options.httpVerb = node.getAttribute('method').toUpperCase();
@@ -409,7 +419,6 @@
 		internal.request(requestData, function(response) {
 
 			var html = response.responseText;
-			// console.log(response);
 
 			// Fail if unable to load HTML via AJAX
 			if(html === false){
@@ -556,6 +565,12 @@
 			if (formElement.name === '' || formElement.disabled) {
 				continue;
 			}
+
+			// Filter inputs to distinct submits from previews
+			if (formElement.type === 'submit' && formElement.clicked === true) {
+				addNameValue(formElement.name, formElement.value);
+			}
+
 			switch (formElement.nodeName.toLowerCase()) {
 				case 'input':
 				switch (formElement.type) {
@@ -563,7 +578,7 @@
 					case 'hidden':
 					case 'password':
 					case 'button': // Not submitted when submitting form manually, though jQuery does serialize this and it can be an HTML4 successful control
-					case 'submit':
+					// case 'submit':
 					addNameValue(formElement.name, formElement.value);
 					break;
 					case 'checkbox':
@@ -599,7 +614,7 @@
 				case 'button': // jQuery does not submit these, though it is an HTML4 successful control
 				switch (formElement.type) {
 					case 'reset':
-					case 'submit':
+					// case 'submit':
 					case 'button':
 					addNameValue(formElement.name, formElement.value);
 					break;
