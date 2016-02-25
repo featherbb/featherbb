@@ -41,14 +41,14 @@ if (!empty($errors)) {
 <div class="blockform">
     <h2><span><?php _e('Request pass') ?></span></h2>
     <div class="box">
-        <form id="request_pass" method="post" action="<?= Router::pathFor('resetPassword') ?>" onsubmit="this.request_pass.disabled=true;if(process_form(this)){return true;}else{this.request_pass.disabled=false;return false;}">
+        <form id="request_pass" method="post" action="<?= Router::pathFor('resetPassword') ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Request pass legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" /><br /></label>
+                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" required /><br /></label>
                         <p><?php _e('Request pass info') ?></p>
                     </div>
                 </fieldset>

@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
     <div class="blockform">
         <h2><span><?php _e('Group settings head') ?></span></h2>
         <div class="box">
-            <form id="groups2" method="post" action="" onsubmit="return process_form(this)">
+            <form id="groups2" method="post" action="">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop"><input type="submit" name="add_edit_group" value="<?php _e('Save') ?>" /></p>
                 <div class="inform">
@@ -37,7 +37,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                     <td>
                                         <input type="text" name="req_title" size="25" maxlength="50" value="<?php if ($group['mode'] == 'edit') {
     echo Utils::escape($group['info']['g_title']);
-} ?>" tabindex="1" />
+} ?>" tabindex="1" required />
                                     </td>
                                 </tr>
                                 <tr>

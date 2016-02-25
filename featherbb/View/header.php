@@ -255,3 +255,32 @@ if (isset($required_fields)) :
     <?php
 endif;
 Container::get('hooks')->fire('view.header.end');
+?>
+<?php
+
+foreach($assets as $type => $items) {
+    if ($type == 'js') {
+        continue;
+    }
+    echo "\t".'<!-- '.ucfirst($type).' -->'."\n";
+    foreach ($items as $item) {
+        echo "\t".'<link ';
+        foreach ($item['params'] as $key => $value) {
+            echo $key.'="'.$value.'" ';
+        }
+        echo 'href="'.Url::base_static().'/'.$item['file'].'">'."\n";
+    }
+}
+if ($admin_console) {
+    if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.User::get()->style.'/base_admin.css')) {
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.User::get()->style.'/base_admin.css" />'."\n";
+    } else {
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
+    }
+}
+if (!empty($page_head)) :
+    echo implode("\n", $page_head)."\n";
+endif;
+
+Container::get('hooks')->fire('view.header.before.head.tag');
+?>

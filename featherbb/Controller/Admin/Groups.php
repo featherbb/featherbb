@@ -114,7 +114,6 @@ class Groups
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'focus_element' => array('groups2', 'req_title'),
-                    'required_fields' => array('req_title' => __('Group title label')),
                     'group'    =>    $group,
                     'groups'    =>    $groups,
                     'id'    => $args['id'],

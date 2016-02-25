@@ -19,7 +19,8 @@
 		// Attempt to check that a device supports pushstate before attempting to use it.
 		"is_supported": window.history && window.history.pushState && window.history.replaceState && !navigator.userAgent.match(/((iPod|iPhone|iPad).+\bOS\s+[1-4]|WebApps\/.+CFNetwork)/),
 		// Track which scripts have been included in to the page. (used if e)
-		"loaded_scripts": []
+		"loaded_scripts": [],
+		"loaded_styles": []
 	};
 
 	// If PJAX isn't supported we can skip setting up the library all together
@@ -257,6 +258,14 @@
 				}
 			}
 
+			// Store array or all currently included stylesheets href's
+			// var links = document.getElementsByTagName('link');
+			// for(var c=0; c < links.length; c++) {
+			// 	if(links[c].href && internal.loaded_styles.indexOf(links[c].src) === -1 && links[c].rel === 'stylesheet'){
+			// 		internal.loaded_styles.push(links[c].href);
+			// 	}
+			// }
+
 			// Fire ready event once all links are connected
 			internal.triggerEvent(internal.get_container_node(options.container), 'ready');
 
@@ -372,27 +381,20 @@
 	 * return void
 	 */
 	internal.addStyles = function(html){
-		return;
-        // console.log(document.styleSheets[0]);
-		// Extract JavaScript & eval it (if enabled)
-		// var stylesheets = html.getElementsByTagName('link').filter(function(link){
-        //     return link.getAttribute('rel') == 'stylesheet';
-        // });
-        // console.log(stylesheets);
-		// for(var sc=0; sc < scripts.length;sc++) {
-		// 	// If has an src & src isn't in "loaded_scripts", load the script.
-		// 	if(scripts[sc].src && internal.loaded_scripts.indexOf(scripts[sc].src) === -1){
-		// 		// Append to head to include
-		// 		var s = document.createElement("script");
-		// 		s.src = scripts[sc].src;
-		// 		document.head.appendChild(s);
-		// 		// Add to loaded list
-		// 		internal.loaded_scripts.push(scripts[sc].src);
-		// 	}else{
-		// 		// If raw JS, eval it.
-		// 		eval(scripts[sc].innerHTML);
-		// 	}
-		// }
+		// Extract stylesheets and load them
+		var styles = document.getElementsByTagName('link');
+		for(var ss=0; ss < styles.length;ss++) {
+			console.log(styles[ss].href);
+			// If has an src & src isn't in "loaded_ssripts", load the ssript.
+			// if(styles[ss].href && internal.loaded_styles.indexOf(styles[ss].href) === -1 && styles[ss].rel === 'stylesheet'){
+			// 	// Append to head to include
+			// 	var s = document.createElement("link");
+			// 	s.href = styles[ss].href;
+			// 	// document.head.appendChild(s);
+			// 	// Add to loaded list
+			// 	// internal.loaded_styles.push(styles[ss].href);
+			// }
+		}
 	};
 
 	/**
@@ -575,6 +577,8 @@
 				case 'input':
 				switch (formElement.type) {
 					case 'text':
+					case 'number':
+					case 'email':
 					case 'hidden':
 					case 'password':
 					case 'button': // Not submitted when submitting form manually, though jQuery does serialize this and it can be an HTML4 successful control

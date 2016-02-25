@@ -58,7 +58,6 @@ class Register
         View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
                     'focus_element' => array('register', 'req_user'),
-                    'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
                     'active_page' => 'register',
                     'is_indexed' => true,
                     'errors' => $user['errors'],
