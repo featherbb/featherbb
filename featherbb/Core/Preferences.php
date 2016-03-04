@@ -240,7 +240,7 @@ class Preferences
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = DB::for_table('users')->find_one($user);
+            $data = User::get($user);
             if (!$data) {
                 throw new \ErrorException('Internal error : Unknown user ID', 500);
             }

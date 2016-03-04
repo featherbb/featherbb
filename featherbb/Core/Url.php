@@ -776,7 +776,6 @@ class Url
     public static function base()
     {
         return Request::getUri()->getScheme().'://'.Request::getUri()->getHost().Request::getUri()->getBasePath();
-        // return Request::getUri()->getBasePath();
     }
 
     //
@@ -784,9 +783,7 @@ class Url
     //
     public static function base_static()
     {
-        $url = Request::getUri()->getBasePath();
-        $url = str_replace('/index.php', '', $url);
-        return $url;
+        return Request::getUri()->getScheme().'://'.Request::getUri()->getHost();
     }
 
     //

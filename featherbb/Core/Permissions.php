@@ -312,7 +312,7 @@ class Permissions
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = DB::for_table('users')->find_one((int) $user);
+            $data = User::get((int) $user);
             if (!$data) {
                 throw new \ErrorException('Internal error : Unknown user ID', 500);
             }

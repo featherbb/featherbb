@@ -25,7 +25,7 @@ the forums or in the GitHub bug tracker.
 * Cleaner gettext code [[adaur](http://github.com/adaur)]
 
 ### Beta 3 (2015-09-09)
-* Plugin system and some hooks [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)] 
+* Plugin system and some hooks [[beaver](http://github.com/beaver-dev)] [[adaur](http://github.com/adaur)]
 * New architecture ready for Composer [[beaver](http://github.com/beaver-dev)]
 * New template system [[capkokoon](http://github.com/capkokoon)] [[adaur](http://github.com/adaur)]
 * Gettext implemented [[adaur](http://github.com/adaur)]
@@ -76,7 +76,7 @@ the forums or in the GitHub bug tracker.
 
 * Homepage: http://featherbb.org
 * Documentation: http://featherbb.org/docs/
-* Community: http://featherbb.org/forums/
+* Community: http://forums.featherbb.org/
 * Chat: https://gitter.im/featherbb/featherbb
 * Development: http://github.com/featherbb/featherbb
 

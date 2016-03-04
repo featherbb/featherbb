@@ -16,9 +16,9 @@
         "role": "Contributor"
     }],
     "autoload": {
-        "classmap": ["featherbb/Core/pomo/MO.php"],
+        "classmap": ["featherbb/Core/gettext/MO.php"],
         "psr-4": {
-            "Plugins\\": "plugins/",
+            "FeatherBB\\Plugins\\": "plugins/",
             "FeatherBB\\": "featherbb/"
         }
     },

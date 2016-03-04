@@ -16,11 +16,13 @@ use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Auth as ModelAuth;
 use FeatherBB\Model\Cache;
+use FeatherBB\Core\Database as DB;
 
 class Auth
 {
     public function __construct()
     {
+        translate('profile');
         translate('login');
     }
 
@@ -97,6 +99,7 @@ class Auth
 
     public function forget($req, $res, $args)
     {
+        // If the user is already logged in we shouldn't be here :)
         if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
@@ -137,7 +140,7 @@ class Auth
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
-                $cur_mail_message = str_replace('<activation_url>', Url::base().Router::pathFor('profileAction', ['id' => $user->id, 'action' => 'change_pass'], ['key' => $new_password_key]), $cur_mail_message);
+                $cur_mail_message = str_replace('<activation_url>', Router::pathFor('resetPassword', [], ['key' => $new_password_key, 'user_id' => $user->id]), $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
@@ -146,6 +149,35 @@ class Auth
                 return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
+            }
+        }
+
+        if (Input::query('key') && Input::query('user_id')) {
+
+            $key = Input::query('key');
+            $key = Container::get('hooks')->fire('controller.auth.password_forgotten_key', $key);
+
+            $id = Input::query('user_id');
+            $id = Container::get('hooks')->fire('controller.auth.password_forgotten_user_id', $id);
+
+            $cur_user = DB::for_table('users')
+                ->where('id', $id);
+            $cur_user = Container::get('hooks')->fireDB('controller.auth.password_forgotten_user_query', $cur_user);
+            $cur_user = $cur_user->find_one();
+
+            if ($key == '' || $key != $cur_user['activate_key']) {
+                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
+            } else {
+                $query = DB::for_table('users')
+                    ->where('id', $id)
+                    ->find_one()
+                    ->set('password', $cur_user['activate_string'])
+                    ->set_expr('activate_string', 'NULL')
+                    ->set_expr('activate_key', 'NULL');
+                $query = Container::get('hooks')->fireDB('controller.auth.password_forgotten_activate_query', $query);
+                $query = $query->save();
+
+                return Router::redirect(Router::pathFor('home'), __('Pass updated'));
             }
         }
 
