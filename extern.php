@@ -76,9 +76,11 @@ require 'vendor/autoload.php';
 $feather = new \Slim\Slim();
 $feather->add(new \FeatherBB\Middleware\Csrf());
 
-$feather_settings = array('config_file' => 'featherbb/config.php',
-    'cache_dir' => 'cache/',
-    'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+$feather_settings = array(
+    // 'config_file' => 'config.php',
+    // 'cache_dir' => 'cache/',
+    // 'debug' => 'all'  // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+);
 $feather->add(new \FeatherBB\Middleware\Auth());
 $feather->add(new \FeatherBB\Middleware\Core($feather_settings));
 
