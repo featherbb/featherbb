@@ -103,6 +103,8 @@ Route::group('/admin', function() {
     // Admin index
     Route::get('[/action/{action}]', '\FeatherBB\Controller\Admin\Index:display')->setName('adminAction');
     Route::get('/index', '\FeatherBB\Controller\Admin\Index:display')->setName('adminIndex');
+    Route::get('/updates', '\FeatherBB\Controller\Admin\Updates:display')->setName('adminUpdates');
+    Route::get('/updates/check', '\FeatherBB\Controller\Admin\Updates:check')->setName('adminCheckUpdates');
 
     // Admin bans
     Route::group('/bans', function() {
