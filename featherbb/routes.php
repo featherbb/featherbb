@@ -103,8 +103,13 @@ Route::group('/admin', function() {
     // Admin index
     Route::get('[/action/{action}]', '\FeatherBB\Controller\Admin\Index:display')->setName('adminAction');
     Route::get('/index', '\FeatherBB\Controller\Admin\Index:display')->setName('adminIndex');
+
+    // Admin updates
     Route::get('/updates', '\FeatherBB\Controller\Admin\Updates:display')->setName('adminUpdates');
     Route::get('/updates/check', '\FeatherBB\Controller\Admin\Updates:check')->setName('adminCheckUpdates');
+    Route::get('/updates/upgrade-core', '\FeatherBB\Controller\Admin\Updates:upgradeCore')->setName('adminUpgradeCore');
+    Route::post('/updates/upgrade-plugins', '\FeatherBB\Controller\Admin\Updates:upgradePlugins')->setName('adminUpgradePlugins');
+    Route::post('/updates/upgrade-themes', '\FeatherBB\Controller\Admin\Updates:upgradeThemes')->setName('adminUpgradeThemes');
 
     // Admin bans
     Route::group('/bans', function() {

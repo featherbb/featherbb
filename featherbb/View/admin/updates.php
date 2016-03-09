@@ -54,7 +54,7 @@ Container::get('hooks')->fire('view.admin.updates.start');
                         <legend><?php _e('Plugins') ?></legend>
                         <div class="infldset">
 <?php
-if (!empty($word_data)) {
+if (!empty($plugin_updates)) {
     ?>
                             <table>
                             <thead>
@@ -67,8 +67,8 @@ if (!empty($word_data)) {
                             <tbody>
 <?php
 
-    foreach ($word_data as $word) {
-        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.Utils::escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.Utils::escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
+    foreach ($plugin_updates as $plugin) {
+        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="checkbox" name="plugin_updates['.$plugin->name.']" value="'.$plugin->name.'" size="24" maxlength="60" /></td><td class="tc2">'.$plugin->last_version.'</td><td>'.$plugin->description.'</td></tr>'."\n";
     }
 
     ?>
@@ -77,13 +77,53 @@ if (!empty($word_data)) {
 <?php
 
 } else {
-    echo "\t\t\t\t\t\t\t".'<p>'.__('No words in list').'</p>'."\n";
+    echo "\t\t\t\t\t\t\t".'<p>'.__('All plugins are up to date').'</p>'."\n";
+}
+
+?>
+                        </div>
+                    </fieldset>
+                    <?php if (!empty($plugin_updates)): ?><p class="buttons"><input type="submit" name="upgrade" value="<?php _e('Upgrade plugins') ?>" /></p><?php endif; ?>
+                </div>
+            </form>
+            <form id="upgrade-themes" method="post" action="<?= Router::pathFor('adminUpgradeThemes') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+                <div class="inform">
+                    <fieldset>
+                        <legend><?php _e('Themes') ?></legend>
+                        <div class="infldset">
+<?php
+if (!empty($theme_updates)) {
+    ?>
+                            <table>
+                            <thead>
+                                <tr>
+                                    <th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
+                                    <th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
+                                    <th class="hidehead" scope="col"><?php _e('Action label') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+<?php
+
+    foreach ($theme_updates as $theme) {
+        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$theme['id'].']" value="'.Utils::escape($theme['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$theme['id'].']" value="'.Utils::escape($theme['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$theme['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$theme['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
+    }
+
+    ?>
+                            </tbody>
+                            </table>
+<?php
+
+} else {
+    echo "\t\t\t\t\t\t\t".'<p>'.__('All themes are up to date').'</p>'."\n";
 }
 
 ?>
                         </div>
                     </fieldset>
                 </div>
+                <?php if (!empty($theme_updates)): ?><p class="buttons"><input type="submit" name="upgrade" value="<?php _e('Upgrade themes') ?>" /></p><?php endif; ?>
             </form>
         </div>
     </div>

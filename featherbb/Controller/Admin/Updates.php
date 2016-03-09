@@ -9,10 +9,12 @@
 
 namespace FeatherBB\Controller\Admin;
 
+use FeatherBB\Core\AutoUpdater;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Lister;
 
 class Updates
 {
@@ -25,23 +27,37 @@ class Updates
     {
         Container::get('hooks')->fire('controller.admin.updates.display');
 
+        $all_plugins = Lister::getPlugins();
+        $plugin_updates = array();
+
+        foreach ($all_plugins as $plugin) {
+            $updater = new AutoUpdater(getcwd().'/temp/'.$plugin->name, getcwd().'/plugins/'.$plugin->name);
+            $updater->setCurrentVersion($plugin->version);
+            $updater->setUpdateUrl('https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
+            if ($updater->checkUpdate() === false) {
+                echo $plugin->name.' error check';
+                continue;
+            }
+            if ($updater->newVersionAvailable()) {
+                $plugin->last_version = $updater->getLatestVersion();
+                $plugin_updates[] = $plugin;
+            }
+        }
+
         AdminUtils::generateAdminMenu('updates');
 
         return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
                 'active_page' => 'admin',
-                'admin_console' => true
+                'admin_console' => true,
+                'plugin_updates' => $plugin_updates
             )
         )->addTemplate('admin/updates.php')->display();
     }
 
     public function check($req, $res, $args)
     {
-        if (!isset($args['action'])) {
-            $args['action'] = null;
-        }
-
-        Container::get('hooks')->fire('controller.admin.index.display');
+        Container::get('hooks')->fire('controller.admin.updates.check');
 
         // Check for upgrade
         if ($args['action'] == 'check_upgrade') {
