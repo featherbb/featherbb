@@ -190,6 +190,7 @@ Container::set('errorHandler', function ($c) {
             'code' => $e->getCode(),
             'message' => $e->getMessage(),
             'back' => true,
+            'html' => false,
         );
 
         // Hide internal mechanism
@@ -201,10 +202,15 @@ Container::set('errorHandler', function ($c) {
             $error['back'] = $e->hasBacklink();
         }
 
+        if (method_exists($e, 'displayHtml')) {
+            $error['html'] = $e->displayHtml();
+        }
+
         return View::setPageInfo(array(
             'title' => array(\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
             'msg'    =>    $error['message'],
             'backlink'    => $error['back'],
+            'html'    => $error['html'],
         ))->addTemplate('error.php')->display();
     };
 });

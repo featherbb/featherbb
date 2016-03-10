@@ -13,14 +13,22 @@ class Error extends \Exception
 {
     protected $backlink;
 
-    public function __construct($message, $code = 400, $backlink = true)
+    protected $html;
+
+    public function __construct($message, $code = 400, $backlink = true, $html = false)
     {
         parent::__construct(Utils::escape($message), $code);
         $this->backlink = (bool) $backlink;
+        $this->html = (bool) $html;
     }
 
     public function hasBacklink()
     {
         return $this->backlink;
+    }
+
+    public function displayHtml()
+    {
+        return $this->html;
     }
 }
