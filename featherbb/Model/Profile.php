@@ -145,7 +145,7 @@ class Profile
             $new_email_key = $new_email_key->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
-                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
+                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
             } else {
                 $update_mail = DB::for_table('users')
                     ->where('id', $id)
@@ -271,7 +271,7 @@ class Profile
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
-            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', true);
+            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
         }
         Container::get('hooks')->fire('model.profile.change_email');
     }
@@ -331,7 +331,7 @@ class Profile
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
             if (!@move_uploaded_file($uploaded_file['tmp_name'], ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp')) {
-                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
+                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
             }
 
             list($width, $height, $type, ) = @getimagesize(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
