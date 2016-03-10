@@ -184,7 +184,7 @@ Container::set('notFoundHandler', function ($c) {
     };
 });
 
-Container::set('errorHandler', function ($c) {
+Container::set('errorHandler', function ($c) use ($feather_settings) {
     return function ($request, $response, $e) use ($c) {
         // var_dump($e);
         $error = array(
@@ -194,7 +194,7 @@ Container::set('errorHandler', function ($c) {
         );
 
         // Hide internal mechanism
-        if (!in_array(get_class($e), array('FeatherBB\Core\Error'))) {
+        if (!in_array(get_class($e), array('FeatherBB\Core\Error')) && ForumEnv::get('FEATHER_DEBUG') != 'all') {
             $error['message'] = 'There was an internal error'; // TODO : translation
         }
 

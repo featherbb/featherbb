@@ -10,9 +10,9 @@ return array(
     'Slim\\Flash\\' => array($vendorDir . '/slim/flash/src'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'Plugins\\' => array($baseDir . '/plugins'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
-    'FeatherBB\\Plugins\\' => array($baseDir . '/plugins'),
     'FeatherBB\\' => array($baseDir . '/featherbb'),
     'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
 );
