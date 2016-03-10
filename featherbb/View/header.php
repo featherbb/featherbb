@@ -29,9 +29,9 @@ Container::get('hooks')->fire('view.header.start');
     <meta name="robots" content="noindex, follow">
 <?php } ?>
     <title><?= Utils::generate_page_title($title, $page_number) ?></title>
-    <link rel="shortcut icon" href="<?= Url::base_static() ?>/style/img/favicon.ico" />
+    <link rel="shortcut icon" href="<?= Url::base() ?>/style/img/favicon.ico" />
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= $style ?>/style.css">
+    <link rel="stylesheet" type="text/css" href="<?= Url::base() ?>/style/themes/<?= $style ?>/style.css">
 <?php
 
 foreach($assets as $type => $items) {
@@ -44,14 +44,14 @@ foreach($assets as $type => $items) {
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'href="'.Url::base_static().'/'.$item['file'].'">'."\n";
+        echo 'href="'.Url::base().'/'.$item['file'].'">'."\n";
     }
 }
 if ($admin_console) {
     if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.User::get()->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.User::get()->style.'/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/themes/'.User::get()->style.'/base_admin.css" />'."\n";
     } else {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/imports/base_admin.css" />'."\n";
     }
 }
 if (isset($required_fields)) :
