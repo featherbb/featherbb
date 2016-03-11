@@ -52,6 +52,14 @@ class AutoUpdater
     private $_installDir = '';
 
     /**
+     * Root folder name.
+     * Used to override root folder in archive
+     *
+     * @var string
+     */
+    private $_rootFolder = '';
+
+    /**
      * Url to the update folder on the server.
      *
      * @var string
@@ -200,6 +208,19 @@ class AutoUpdater
     }
 
     /**
+     * Set the root folder name.
+     *
+     * @param string $folder
+     * @return $this|void
+     */
+    public function setRootFolder($folder)
+    {
+        $this->_rootFolder = $folder;
+
+        return $this;
+    }
+
+    /**
      * Set the update filename.
      *
      * @param string $updateFile
@@ -307,6 +328,16 @@ class AutoUpdater
     }
 
     /**
+     * Skip auto-update process if needed
+     *
+     * @return bool
+     */
+    public function skipUpdate()
+    {
+        return $this->_skipUpdate === true;
+    }
+
+    /**
      * Check for a new version
      *
      * @return int|bool
@@ -357,7 +388,6 @@ class AutoUpdater
         foreach ($releases as $releaseContent) {
             $versionRaw = $releaseContent->tag_name;
             $updateUrl = $releaseContent->zipball_url;
-            $id = $releaseContent->id;
             $version = new version($versionRaw);
             if ($version->valid() === null) {
                 // $this->_log->addInfo(sprintf('Could not parse version "%s" from update server "%s"', $versionRaw, $updateFile));
@@ -370,9 +400,7 @@ class AutoUpdater
 
                 $this->_updates[] = [
                     'version' => $version,
-                    // 'url'     => 'https://codeload.github.com/featherbb/bbcode-toolbar/zip/'.$version,
-                    'url'     => $updateUrl,
-                    'id' => $id
+                    'url'     => $updateUrl
                 ];
             }
         }
@@ -471,6 +499,10 @@ class AutoUpdater
             $i++;
 
             $filename = zip_entry_name($file);
+            // Override first part of archive path
+            $parts = explode('/', $filename);
+            $parts[0] = $this->_rootFolder;
+            $filename = implode('/', $parts);
             $foldername = $this->_installDir . dirname($filename);
             $absoluteFilename = $this->_installDir . $filename;
 
@@ -593,6 +625,10 @@ class AutoUpdater
         // Read every file from archive
         while ($file = zip_read($zip)) {
             $filename = zip_entry_name($file);
+            // Override first part of archive path
+            $parts = explode('/', $filename);
+            $parts[0] = $this->_rootFolder;
+            $filename = implode('/', $parts);
             $foldername = $this->_installDir . dirname($filename);
             $absoluteFilename = $this->_installDir . $filename;
 
@@ -775,45 +811,59 @@ class AutoUpdater
      *
      * @return array Array of [url => body content]
      */
-    protected function _bulkRequests($urls = array())
+    // protected function _bulkRequests($urls = array())
+    // {
+    //     $multi = curl_multi_init();
+    //     $channels = array();
+    //     // Loop through the URLs so request, create curl-handles,
+    //     // attach the handle to our multi-request
+    //     foreach ($urls as $url) {
+    //         $ch = curl_init();
+    //         curl_setopt($ch, CURLOPT_URL, $url);
+    //         curl_setopt($ch, CURLOPT_HEADER, false);
+    //         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //         curl_multi_add_handle($multi, $ch);
+    //         $channels[$url] = $ch;
+    //     }
+    //     // While we're still active, execute curl
+    //     $active = null;
+    //     do {
+    //         $mrc = curl_multi_exec($multi, $active);
+    //     } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    //     while ($active && $mrc == CURLM_OK) {
+    //         // Wait for activity on any curl-connection
+    //         if (curl_multi_select($multi) == -1) {
+    //             continue;
+    //         }
+    //         // Continue to exec until curl is ready to
+    //         // give us more data
+    //         do {
+    //             $mrc = curl_multi_exec($multi, $active);
+    //         } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    //     }
+    //     // Loop through the channels and retrieve the received
+    //     // content, then remove the handle from the multi-handle
+    //     $results = array();
+    //     foreach ($channels as $url => $channel) {
+    //         $results[$url] = curl_multi_getcontent($channel);
+    //         curl_multi_remove_handle($multi, $channel);
+    //     }
+    //     // Close the multi-handle and return our results
+    //     curl_multi_close($multi);
+    //     return $results;
+    // }
+}
+
+class PluginAutoUpdater extends AutoUpdater {
+
+    public function __construct($plugin)
     {
-        $multi = curl_multi_init();
-        $channels = array();
-        // Loop through the URLs so request, create curl-handles,
-        // attach the handle to our multi-request
-        foreach ($urls as $url) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_multi_add_handle($multi, $ch);
-            $channels[$url] = $ch;
-        }
-        // While we're still active, execute curl
-        $active = null;
-        do {
-            $mrc = curl_multi_exec($multi, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-        while ($active && $mrc == CURLM_OK) {
-            // Wait for activity on any curl-connection
-            if (curl_multi_select($multi) == -1) {
-                continue;
-            }
-            // Continue to exec until curl is ready to
-            // give us more data
-            do {
-                $mrc = curl_multi_exec($multi, $active);
-            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-        }
-        // Loop through the channels and retrieve the received
-        // content, then remove the handle from the multi-handle
-        $results = array();
-        foreach ($channels as $url => $channel) {
-            $results[$url] = curl_multi_getcontent($channel);
-            curl_multi_remove_handle($multi, $channel);
-        }
-        // Close the multi-handle and return our results
-        curl_multi_close($multi);
-        return $results;
+        // Construct parent class
+        parent::__construct(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins');
+
+        // Set plugin informations
+        $this->setRootFolder($plugin->name);
+        $this->setCurrentVersion($plugin->version);
+        $this->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
     }
 }

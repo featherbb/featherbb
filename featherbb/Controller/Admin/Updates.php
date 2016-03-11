@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AutoUpdater;
+use FeatherBB\Core\PluginAutoUpdater;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
@@ -31,13 +32,20 @@ class Updates
         $plugin_updates = array();
 
         foreach ($all_plugins as $plugin) {
-            $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins/'.$plugin->name);
-            $updater->setCurrentVersion($plugin->version);
-            $updater->setUpdateUrl('https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
-            if ($updater->checkUpdate() === false) {
-                // echo $plugin->name.' error check';
+            // If plugin isn't well formed or doesn't want to be auto-updated, skip it
+            if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
                 continue;
             }
+            $updater = new PluginAutoUpdater($plugin);
+            // $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins');
+            // $updater->setCurrentVersion($plugin->version);
+            // $updater->setFolderName($plugin->name);
+            // $updater->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
+            // If check fails, go to next item
+            if ($updater->checkUpdate() === false) {
+                continue;
+            }
+            // If update available, add plugin to display in view
             if ($updater->newVersionAvailable()) {
                 $plugin->last_version = $updater->getLatestVersion();
                 $plugin_updates[] = $plugin;
@@ -93,18 +101,26 @@ class Updates
         // return var_dump(Input::post('plugin_updates'));
 
         foreach (Input::post('plugin_updates') as $plugin => $version) {
-            $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin, getcwd().'/plugins/'.$plugin);
-            $updater->setCurrentVersion($version);
-            $updater->setUpdateUrl('https://api.github.com/repos/featherbb/'.$plugin.'/releases');
-            $result = $updater->update(false);
-            if ($result === true) {
-                echo 'Update successful<br>';
-            } else {
-                echo 'Update failed: ' . $result . '!<br>';
-                if ($result = AutoUpdater::ERROR_SIMULATE) {
-                    echo '<pre>';
-                    var_dump($updater->getSimulationResults());
-                    echo '</pre>';
+            if ($plugin = Lister::loadPlugin($plugin)) {
+                // If plugin isn't well formed or doesn't want to be auto-updated, skip it
+                if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
+                    continue;
+                }
+                $updater = new PluginAutoUpdater($plugin);
+                // $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins');
+                // $updater->setCurrentVersion($plugin->version);
+                // $updater->setFolderName($plugin->name);
+                // $updater->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
+                $result = $updater->update();
+                if ($result === true) {
+                    echo 'Update successful<br>';
+                } else {
+                    echo 'Update failed: ' . $result . '!<br>';
+                    if ($result = AutoUpdater::ERROR_SIMULATE) {
+                        echo '<pre>';
+                        var_dump($updater->getSimulationResults());
+                        echo '</pre>';
+                    }
                 }
             }
         }

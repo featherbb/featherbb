@@ -76,6 +76,7 @@ return array(
     'FeatherBB\\Core\\Parser' => $baseDir . '/featherbb/Core/Parser.php',
     'FeatherBB\\Core\\Permissions' => $baseDir . '/featherbb/Core/Permissions.php',
     'FeatherBB\\Core\\Plugin' => $baseDir . '/featherbb/Core/Plugin.php',
+    'FeatherBB\\Core\\PluginAutoUpdater' => $baseDir . '/featherbb/Core/AutoUpdater.php',
     'FeatherBB\\Core\\Preferences' => $baseDir . '/featherbb/Core/Preferences.php',
     'FeatherBB\\Core\\Random' => $baseDir . '/featherbb/Core/Random.php',
     'FeatherBB\\Core\\Search' => $baseDir . '/featherbb/Core/Search.php',
