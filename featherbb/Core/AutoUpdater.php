@@ -336,7 +336,7 @@ class AutoUpdater
             $update = AdminUtils::get_content($updateFile);
             if ($update === false) {
                 // $this->_log->addInfo(sprintf('Could not download update file "%s"!', $updateFile));
-                echo sprintf('Could not download update file "%s"!', $updateFile);
+                // echo sprintf('Could not download update file "%s"!', $updateFile);
 
                 return false;
             }
@@ -357,6 +357,7 @@ class AutoUpdater
         foreach ($releases as $releaseContent) {
             $versionRaw = $releaseContent->tag_name;
             $updateUrl = $releaseContent->zipball_url;
+            $id = $releaseContent->id;
             $version = new version($versionRaw);
             if ($version->valid() === null) {
                 // $this->_log->addInfo(sprintf('Could not parse version "%s" from update server "%s"', $versionRaw, $updateFile));
@@ -369,7 +370,9 @@ class AutoUpdater
 
                 $this->_updates[] = [
                     'version' => $version,
+                    // 'url'     => 'https://codeload.github.com/featherbb/bbcode-toolbar/zip/'.$version,
                     'url'     => $updateUrl,
+                    'id' => $id
                 ];
             }
         }
@@ -411,7 +414,7 @@ class AutoUpdater
     protected function _downloadUpdate($updateUrl, $updateFile)
     {
         // $this->_log->addInfo(sprintf('Downloading update "%s" to "%s"', $updateUrl, $updateFile));
-        $update = @file_get_contents($updateUrl);
+        $update = AdminUtils::get_content($updateUrl);
 
         if ($update === false) {
             // $this->_log->addError(sprintf('Could not download update "%s"!', $updateUrl));
@@ -455,6 +458,7 @@ class AutoUpdater
         $zip = zip_open($updateFile);
         if (!is_resource($zip)) {
             // $this->_log->addError(sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip));
+            // echo sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip);
 
             return false;
         }
@@ -477,10 +481,12 @@ class AutoUpdater
             ];
 
             // $this->_log->addDebug(sprintf('[SIMULATE] Updating file "%s"', $filename));
+            echo sprintf('[SIMULATE] Updating file "%s"<br>', $filename);
 
             // Check if parent directory is writable
             if (!is_dir($foldername)) {
                 // $this->_log->addDebug(sprintf('[SIMULATE] Create directory "%s"', $foldername));
+                echo sprintf('[SIMULATE] Create directory "%s"<br>', $foldername);
                 $files[$i]['parent_folder_exists'] = false;
 
                 $parent = dirname($foldername);
@@ -489,6 +495,7 @@ class AutoUpdater
 
                     $simulateSuccess = false;
                     // $this->_log->addWarning(sprintf('[SIMULATE] Directory "%s" has to be writeable!', $parent));
+                    echo sprintf('[SIMULATE] Directory "%s" has to be writeable!<br>', $parent);
                 } else {
                     $files[$i]['parent_folder_writable'] = true;
                 }
@@ -505,6 +512,7 @@ class AutoUpdater
 
                 $simulateSuccess = false;
                 // $this->_log->addWarning(sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!', $filename));
+                echo sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!<br>', $filename);
             }
 
             // Write to file
@@ -515,6 +523,7 @@ class AutoUpdater
 
                     $simulateSuccess = false;
                     // $this->_log->addWarning('[SIMULATE] Could not overwrite "%s"!', $absoluteFilename);
+                    echo sprintf('[SIMULATE] Could not overwrite "%s"!<br>', $absoluteFilename);
                 }
             } else {
                 $files[$i]['file_exists'] = false;
@@ -525,6 +534,7 @@ class AutoUpdater
 
                         $simulateSuccess = false;
                         // $this->_log->addWarning(sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename));
+                        echo sprintf('[SIMULATE] The file "%s" could not be created!<br>', $absoluteFilename);
                     } else {
                         $files[$i]['file_writable'] = true;
                     }
@@ -532,11 +542,13 @@ class AutoUpdater
                     $files[$i]['file_writable'] = true;
 
                     // $this->_log->addDebug(sprintf('[SIMULATE] The file "%s" could be created', $absoluteFilename));
+                    echo sprintf('[SIMULATE] The file "%s" could be created<br>', $absoluteFilename);
                 }
             }
 
             if ($filename == $this->updateScriptName) {
                 // $this->_log->addDebug(sprintf('[SIMULATE] Update script "%s" found', $absoluteFilename));
+                echo sprintf('[SIMULATE] Update script "%s" found<br>', $absoluteFilename);
                 $files[$i]['update_script'] = true;
             } else {
                 $files[$i]['update_script'] = false;
@@ -563,7 +575,7 @@ class AutoUpdater
         // Check if install should be simulated
         if ($simulateInstall && !$this->_simulateInstall($updateFile)) {
             // $this->_log->addCritical('Simulation of update process failed!');
-            zip_close($zip);
+            // zip_close($zip);
 
             return self::ERROR_SIMULATE;
         }

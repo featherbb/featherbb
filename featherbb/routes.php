@@ -193,15 +193,15 @@ Container::set('notFoundHandler', function ($c) {
 
 Container::set('errorHandler', function ($c) {
     return function ($request, $response, $e) use ($c) {
-        // var_dump($e);
         $error = array(
             'code' => $e->getCode(),
             'message' => $e->getMessage(),
             'back' => true,
+            'html' => false,
         );
 
         // Hide internal mechanism
-        if (!in_array(get_class($e), array('FeatherBB\Core\Error'))) {
+        if (!in_array(get_class($e), array('FeatherBB\Core\Error')) && ForumEnv::get('FEATHER_DEBUG') != 'all') {
             $error['message'] = 'There was an internal error'; // TODO : translation
         }
 
@@ -209,10 +209,15 @@ Container::set('errorHandler', function ($c) {
             $error['back'] = $e->hasBacklink();
         }
 
+        if (method_exists($e, 'displayHtml')) {
+            $error['html'] = $e->displayHtml();
+        }
+
         return View::setPageInfo(array(
             'title' => array(\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
             'msg'    =>    $error['message'],
             'backlink'    => $error['back'],
+            'html'    => $error['html'],
         ))->addTemplate('error.php')->display();
     };
 });

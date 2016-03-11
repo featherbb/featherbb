@@ -31,11 +31,11 @@ class Updates
         $plugin_updates = array();
 
         foreach ($all_plugins as $plugin) {
-            $updater = new AutoUpdater(getcwd().'/temp/'.$plugin->name, getcwd().'/plugins/'.$plugin->name);
+            $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins/'.$plugin->name);
             $updater->setCurrentVersion($plugin->version);
             $updater->setUpdateUrl('https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
             if ($updater->checkUpdate() === false) {
-                echo $plugin->name.' error check';
+                // echo $plugin->name.' error check';
                 continue;
             }
             if ($updater->newVersionAvailable()) {
@@ -85,5 +85,28 @@ class Updates
                 'admin_console' => true
             )
         )->addTemplate('admin/updates.php')->display();
+    }
+
+    public function upgradePlugins($req, $res, $args)
+    {
+        Container::get('hooks')->fire('controller.admin.updates.upgradePlugins');
+        // return var_dump(Input::post('plugin_updates'));
+
+        foreach (Input::post('plugin_updates') as $plugin => $version) {
+            $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin, getcwd().'/plugins/'.$plugin);
+            $updater->setCurrentVersion($version);
+            $updater->setUpdateUrl('https://api.github.com/repos/featherbb/'.$plugin.'/releases');
+            $result = $updater->update(false);
+            if ($result === true) {
+                echo 'Update successful<br>';
+            } else {
+                echo 'Update failed: ' . $result . '!<br>';
+                if ($result = AutoUpdater::ERROR_SIMULATE) {
+                    echo '<pre>';
+                    var_dump($updater->getSimulationResults());
+                    echo '</pre>';
+                }
+            }
+        }
     }
 }
