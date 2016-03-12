@@ -57,7 +57,7 @@ function translation($text, $domain = 'featherbb') {
     global $l10n;
 
     if (!isset($l10n[$domain])) {
-        require_once dirname(__FILE__) . '/../Core/gettext/translations/NOOPTranslations.php';
+        require_once dirname(__FILE__) . '/translations/NOOPTranslations.php';
         $l10n[$domain] = new NOOPTranslations;
     }
 

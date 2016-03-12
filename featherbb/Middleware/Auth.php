@@ -220,11 +220,38 @@ class Auth
         ))->addTemplate('maintenance.php')->display();
     }
 
+    private function load_default_user()
+    {
+        $user = AuthModel::load_user(1);
+
+        $user->disp_topics = ForumSettings::get('o_disp_topics_default');
+        $user->disp_posts = ForumSettings::get('o_disp_posts_default');
+        $user->timezone = ForumSettings::get('o_default_timezone');
+        $user->dst = ForumSettings::get('o_default_dst');
+        $user->language = ForumSettings::get('o_default_lang');
+        $user->style = ForumSettings::get('o_default_style');
+        $user->is_guest = true;
+        $user->is_admmod = false;
+
+        return $user;
+    }
+
     public function __invoke($req, $res, $next)
     {
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
-        if ($jwt = $this->get_cookie_data($authCookie)) {
+        $jwt = false;
+
+        try {
+            $jwt = $this->get_cookie_data($authCookie);
+        } catch (\Exception $e) {
+            $user = $this->load_default_user();
+
+            // Add $user as guest to DIC
+            Container::set('user', $user);
+        }
+
+        if ($jwt) {
             $user = AuthModel::load_user($jwt->data->userId);
 
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
@@ -245,25 +272,16 @@ class Auth
                 $user->style = ForumSettings::get('o_default_style');
             }
 
+            // Add user to DIC
+            Container::set('user', $user);
+
             // Refresh cookie to avoid re-logging between idle
             $jwt = AuthModel::generate_jwt($user, $expires);
             AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
 
-            // Add user to DIC
-            Container::set('user', $user);
-
             $this->update_online();
         } else {
-            $user = AuthModel::load_user(1);
-
-            $user->disp_topics = ForumSettings::get('o_disp_topics_default');
-            $user->disp_posts = ForumSettings::get('o_disp_posts_default');
-            $user->timezone = ForumSettings::get('o_default_timezone');
-            $user->dst = ForumSettings::get('o_default_dst');
-            $user->language = ForumSettings::get('o_default_lang');
-            $user->style = ForumSettings::get('o_default_style');
-            $user->is_guest = true;
-            $user->is_admmod = false;
+            $user = $this->load_default_user();
 
             // Update online list
             if (!$user->logged) {
