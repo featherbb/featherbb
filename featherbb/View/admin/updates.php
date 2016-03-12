@@ -22,16 +22,24 @@ Container::get('hooks')->fire('view.admin.updates.start');
     <div class="blockform">
         <h2><span><?php _e('Available updates') ?></span></h2>
         <div class="box">
-            <form id="upgrade-core" method="get" action="<?= Router::pathFor('adminUpgradeCore') ?>">
-                <p class="submittop"><input type="submit" name="save" value="<?php _e('Check for updates') ?>" /></p>
+            <p class="submittop"><input type="submit" name="check-updates" value="<?php _e('Check for updates') ?>" /></p>
+            <form id="upgrade-core" method="post" action="<?= Router::pathFor('adminUpgradeCore') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('FeatherBB core') ?></legend>
                         <div class="infldset">
-                            <p><?php _e('Add word info'); echo (ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
+                            <p>
+                                <?php if ($core_updates): ?>
+                                    <?php printf(__('FeatherBB version data')."\n", ForumEnv::get('FORUM_VERSION'), $core_updates) ?>
+                                    <a href="https://github.com/featherbb/featherbb/releases/tag/<?= $core_updates; ?>" target="_blank"><?php _e('View changelog') ?></a>
+                                <?php else:
+                                    _e('FeatherBB core up to date');
+                                endif; ?>
+                            </p>
                         </div>
                     </fieldset>
-                    <?php if (!empty($core_updates)): ?><p class="buttons"><input type="submit" name="upgrade" value="<?php _e('Upgrade core') ?>" /></p><?php endif; ?>
+                    <?php if ($core_updates): ?><p class="buttons"><input type="submit" name="upgrade-core" value="<?php _e('Upgrade core') ?>" /></p><?php endif; ?>
                 </div>
             </form>
             <form id="upgrade-plugins" method="post" action="<?= Router::pathFor('adminUpgradePlugins') ?>">
@@ -74,7 +82,7 @@ if (!empty($plugin_updates)) {
 ?>
                         </div>
                     </fieldset>
-                    <?php if (!empty($plugin_updates)): ?><p class="buttons"><input type="submit" name="upgrade" value="<?php _e('Upgrade plugins') ?>" /></p><?php endif; ?>
+                    <?php if (!empty($plugin_updates)): ?><p class="buttons"><input type="submit" name="upgrade-plugins" value="<?php _e('Upgrade plugins') ?>" /></p><?php endif; ?>
                 </div>
             </form>
             <form id="upgrade-themes" method="post" action="<?= Router::pathFor('adminUpgradeThemes') ?>">
@@ -114,7 +122,7 @@ if (!empty($theme_updates)) {
                         </div>
                     </fieldset>
                 </div>
-                <?php if (!empty($theme_updates)): ?><p class="buttons"><input type="submit" name="upgrade" value="<?php _e('Upgrade themes') ?>" /></p><?php endif; ?>
+                <?php if (!empty($theme_updates)): ?><p class="buttons"><input type="submit" name="upgrade-themes" value="<?php _e('Upgrade themes') ?>" /></p><?php endif; ?>
             </form>
         </div>
     </div>

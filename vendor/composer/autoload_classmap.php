@@ -52,6 +52,7 @@ return array(
     'FeatherBB\\Core\\AdminUtils' => $baseDir . '/featherbb/Core/AdminUtils.php',
     'FeatherBB\\Core\\AutoUpdater' => $baseDir . '/featherbb/Core/AutoUpdater.php',
     'FeatherBB\\Core\\Cache' => $baseDir . '/featherbb/Core/Cache.php',
+    'FeatherBB\\Core\\CoreAutoUpdater' => $baseDir . '/featherbb/Core/AutoUpdater.php',
     'FeatherBB\\Core\\Database' => $baseDir . '/featherbb/Core/Database.php',
     'FeatherBB\\Core\\Email' => $baseDir . '/featherbb/Core/Email.php',
     'FeatherBB\\Core\\Error' => $baseDir . '/featherbb/Core/Error.php',

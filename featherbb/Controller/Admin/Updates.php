@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AutoUpdater;
 use FeatherBB\Core\PluginAutoUpdater;
+use FeatherBB\Core\CoreAutoUpdater;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
@@ -28,29 +29,40 @@ class Updates
     {
         Container::get('hooks')->fire('controller.admin.updates.display');
 
-        $all_plugins = Lister::getPlugins();
-        $plugin_updates = array();
+        $core_updates = false;
 
-        foreach ($all_plugins as $plugin) {
-            // If plugin isn't well formed or doesn't want to be auto-updated, skip it
-            if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
-                continue;
-            }
-            $updater = new PluginAutoUpdater($plugin);
-            // $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins');
-            // $updater->setCurrentVersion($plugin->version);
-            // $updater->setFolderName($plugin->name);
-            // $updater->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
-            // If check fails, go to next item
-            if ($updater->checkUpdate() === false) {
-                continue;
-            }
+        $plugin_updates = array();
+        $all_plugins = Lister::getPlugins();
+
+        // Check FeatherBB core updates
+        $coreUpdater = new CoreAutoUpdater();
+        if ($coreUpdater->checkUpdate() === false) {
+            // TODO: add error message to view
+        } else {
             // If update available, add plugin to display in view
-            if ($updater->newVersionAvailable()) {
-                $plugin->last_version = $updater->getLatestVersion();
-                $plugin_updates[] = $plugin;
+            if ($coreUpdater->newVersionAvailable()) {
+                $core_updates = $coreUpdater->getLatestVersion();
             }
         }
+
+        // Check plugins uavailable versions
+        // foreach ($all_plugins as $plugin) {
+        //     // If plugin isn't well formed or doesn't want to be auto-updated, skip it
+        //     if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
+        //         continue;
+        //     }
+        //     $pluginsUpdater = new PluginAutoUpdater($plugin);
+        //     // If check fails, go to next item
+        //     if ($pluginsUpdater->checkUpdate() === false) {
+        //         // TODO: handle errors
+        //         continue;
+        //     }
+        //     // If update available, add plugin to display in view
+        //     if ($pluginsUpdater->newVersionAvailable()) {
+        //         $plugin->last_version = $pluginsUpdater->getLatestVersion();
+        //         $plugin_updates[] = $plugin;
+        //     }
+        // }
 
         AdminUtils::generateAdminMenu('updates');
 
@@ -58,7 +70,8 @@ class Updates
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'plugin_updates' => $plugin_updates
+                'plugin_updates' => $plugin_updates,
+                'core_updates' => $core_updates
             )
         )->addTemplate('admin/updates.php')->display();
     }
@@ -98,7 +111,14 @@ class Updates
     public function upgradePlugins($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.updates.upgradePlugins');
-        // return var_dump(Input::post('plugin_updates'));
+
+        // Check submit button has been clicked
+        if (!Input::post('upgrade-plugins')) {
+            throw new Error(__('Wrong form values'), 500);
+        }
+
+        $errors = [];
+        $upgradedPlugins = [];
 
         foreach (Input::post('plugin_updates') as $plugin => $version) {
             if ($plugin = Lister::loadPlugin($plugin)) {
@@ -106,23 +126,42 @@ class Updates
                 if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
                     continue;
                 }
-                $updater = new PluginAutoUpdater($plugin);
-                // $updater = new AutoUpdater(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins');
-                // $updater->setCurrentVersion($plugin->version);
-                // $updater->setFolderName($plugin->name);
-                // $updater->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
-                $result = $updater->update();
-                if ($result === true) {
-                    echo 'Update successful<br>';
+                $pluginsUpdater = new PluginAutoUpdater($plugin);
+                $result = $pluginsUpdater->update();
+                if ($result !== true) {
+                    $errors[$plugin->name] = $pluginsUpdater->getSimulationResults();
                 } else {
-                    echo 'Update failed: ' . $result . '!<br>';
-                    if ($result = AutoUpdater::ERROR_SIMULATE) {
-                        echo '<pre>';
-                        var_dump($updater->getSimulationResults());
-                        echo '</pre>';
-                    }
+                    $upgradedPlugins[] = $plugin->name;
                 }
+            } else {
+                continue;
             }
         }
+        if (empty($errors)) {
+            return Router::redirect(Router::pathFor('adminUpdates'), __(sizeof($upgradedPlugins).' plugins upgraded.'));
+        }
+        // TODO: handle errors
+    }
+
+    public function upgradeCore($req, $res, $args)
+    {
+        Container::get('hooks')->fire('controller.admin.updates.upgradeCore');
+
+        // Check submit button has been clicked
+        if (!Input::post('upgrade-core')) {
+            throw new Error(__('Wrong form values'), 500);
+        }
+
+        $errors = [];
+        $coreUpdater = new CoreAutoUpdater();
+        $result = $coreUpdater->update();
+        if ($result !== true) {
+            $errors['core'] = $coreUpdater->getSimulationResults();
+        }
+
+        if (empty($errors)) {
+            return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded.'));
+        }
+        // TODO: handle errors
     }
 }

@@ -63,7 +63,7 @@ class Core
                 'FEATHER_ROOT' => '',
                 'FORUM_CONFIG_FILE' => 'config.php',
                 'FORUM_CACHE_DIR' => 'cache/',
-                'FORUM_VERSION' => '1.0.0',
+                'FORUM_VERSION' => '1.0.0-beta.2',
                 'FORUM_NAME' => 'FeatherBB',
                 'FORUM_DB_REVISION' => 21,
                 'FORUM_SI_REVISION' => 2,
@@ -154,7 +154,6 @@ class Core
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
             return $this->app->response->setStatus(403); // Send forbidden header
         }
-
         // Populate Slim object with forum_env vars
         Container::set('forum_env', $this->forum_env);
         // Load FeatherBB utils class

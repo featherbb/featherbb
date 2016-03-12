@@ -107,7 +107,7 @@ Route::group('/admin', function() {
     // Admin updates
     Route::get('/updates', '\FeatherBB\Controller\Admin\Updates:display')->setName('adminUpdates');
     Route::get('/updates/check', '\FeatherBB\Controller\Admin\Updates:check')->setName('adminCheckUpdates');
-    Route::get('/updates/upgrade-core', '\FeatherBB\Controller\Admin\Updates:upgradeCore')->setName('adminUpgradeCore');
+    Route::post('/updates/upgrade-core', '\FeatherBB\Controller\Admin\Updates:upgradeCore')->setName('adminUpgradeCore');
     Route::post('/updates/upgrade-plugins', '\FeatherBB\Controller\Admin\Updates:upgradePlugins')->setName('adminUpgradePlugins');
     Route::post('/updates/upgrade-themes', '\FeatherBB\Controller\Admin\Updates:upgradeThemes')->setName('adminUpgradeThemes');
 

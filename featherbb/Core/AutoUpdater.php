@@ -328,16 +328,6 @@ class AutoUpdater
     }
 
     /**
-     * Skip auto-update process if needed
-     *
-     * @return bool
-     */
-    public function skipUpdate()
-    {
-        return $this->_skipUpdate === true;
-    }
-
-    /**
      * Check for a new version
      *
      * @return int|bool
@@ -347,8 +337,6 @@ class AutoUpdater
      */
     public function checkUpdate()
     {
-        // $this->_log->addNotice('Checking for a new update...');
-
         // Reset previous updates
         $this->_latestVersion = new version('0.0.0');
         $this->_updates = [];
@@ -380,8 +368,6 @@ class AutoUpdater
             }
 
             // $this->_cache->set('update-versions', $releases);
-        // } else {
-            // $this->_log->addDebug('Got updates from cache');
         // }
 
         // Check for latest version
@@ -706,7 +692,6 @@ class AutoUpdater
 
         zip_close($zip);
 
-        // TODO
         // $this->_log->addNotice(sprintf('Update "%s" successfully installed', $version));
 
         return true;
@@ -723,8 +708,6 @@ class AutoUpdater
      */
     public function update($simulateInstall = true, $deleteDownload = true)
     {
-        // $this->_log->addInfo('Trying to perform update');
-
         // Check for latest version
         if ($this->_latestVersion === null || count($this->_updates) === 0)
             $this->checkUpdate();
@@ -743,8 +726,6 @@ class AutoUpdater
         }
 
         foreach ($this->_updates as $update) {
-            // $this->_log->addDebug(sprintf('Update to version "%s"', $update['version']));
-
             // Check for temp directory
             if (empty($this->_tempDir) || !is_dir($this->_tempDir) || !is_writable($this->_tempDir)) {
                 // $this->_log->addCritical(sprintf('Temporary directory "%s" does not exist or is not writeable!', $this->_tempDir));
@@ -759,7 +740,7 @@ class AutoUpdater
                 return self::ERROR_INSTALL_DIR;
             }
 
-            $updateFile = $this->_tempDir . $update['version'] . '.zip';
+            $updateFile = $this->_tempDir . $this->_rootFolder . $update['version'] . '.zip';
 
             // Download update
             if (!is_file($updateFile)) {
@@ -768,20 +749,13 @@ class AutoUpdater
 
                     return self::ERROR_DOWNLOAD_UPDATE;
                 }
-
-                // $this->_log->addDebug(sprintf('Latest update downloaded to "%s"', $updateFile));
-            } else {
-                // $this->_log->addInfo(sprintf('Latest update already downloaded to "%s"', $updateFile));
             }
 
             // Install update
             $result = $this->_install($updateFile, $simulateInstall, $update['version']);
             if ($result === true) {
                 if ($deleteDownload) {
-                    // $this->_log->addDebug(sprintf('Trying to delete update file "%s" after successfull update', $updateFile));
-                    if (@unlink($updateFile)) {
-                        // $this->_log->addInfo(sprintf('Update file "%s" deleted after successfull update', $updateFile));
-                    } else {
+                    if (!@unlink($updateFile)) {
                         // $this->_log->addError(sprintf('Could not delete update file "%s" after successfull update!', $updateFile));
 
                         return self::ERROR_DELETE_TEMP_UPDATE;
@@ -789,10 +763,7 @@ class AutoUpdater
                 }
             } else {
                 if ($deleteDownload) {
-                    // $this->_log->addDebug(sprintf('Trying to delete update file "%s" after failed update', $updateFile));
-                    if (@unlink($updateFile)) {
-                        // $this->_log->addInfo(sprintf('Update file "%s" deleted after failed update', $updateFile));
-                    } else {
+                    if (!@unlink($updateFile)) {
                         // $this->_log->addError(sprintf('Could not delete update file "%s" after failed update!', $updateFile));
                     }
                 }
@@ -859,11 +830,25 @@ class PluginAutoUpdater extends AutoUpdater {
     public function __construct($plugin)
     {
         // Construct parent class
-        parent::__construct(getcwd().'/temp/plugin-'.$plugin->name, getcwd().'/plugins');
+        parent::__construct(getcwd().'/temp/', getcwd().'/plugins');
 
         // Set plugin informations
         $this->setRootFolder($plugin->name);
         $this->setCurrentVersion($plugin->version);
         $this->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
+    }
+}
+
+class CoreAutoUpdater extends AutoUpdater {
+
+    public function __construct()
+    {
+        // Construct parent class
+        parent::__construct(getcwd().'/temp/', getcwd().'/');
+
+        // Set plugin informations
+        $this->setRootFolder('featherbb');
+        $this->setCurrentVersion(ForumEnv::get('FORUM_VERSION'));
+        $this->setUpdateUrl('https://api.github.com/repos/featherbb/featherbb/releases');
     }
 }
