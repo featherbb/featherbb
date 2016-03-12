@@ -490,9 +490,10 @@ class AutoUpdater
             // If we are upgrading core
             if ($this->_rootFolder == 'featherbb') {
                 array_shift($parts);
-                // Skip if entry is not in targetted files
-                // if ($parts[0] !== 'featherbb' && $parts[0] !== 'style')
-                //     continue;
+                // // Skip if entry is not in targetted files
+                if ($parts[0] == '' || $parts[0] == 'cache' || $parts[0] == 'style') {
+                    continue;
+                }
             } else {
                 // Override first part of archive path to get the proper name (for plugins and themes)
                 $parts[0] = $this->_rootFolder;
@@ -509,12 +510,12 @@ class AutoUpdater
             ];
 
             // $this->_log->addDebug(sprintf('[SIMULATE] Updating file "%s"', $filename));
-            echo sprintf('[SIMULATE] Updating file "%s"<br>', $filename);
+            // echo sprintf('[SIMULATE] Updating file "%s"<br>', $filename);
 
             // Check if parent directory is writable
             if (!is_dir($foldername)) {
                 // $this->_log->addDebug(sprintf('[SIMULATE] Create directory "%s"', $foldername));
-                echo sprintf('[SIMULATE] Create directory "%s"<br>', $foldername);
+                // echo sprintf('[SIMULATE] Create directory "%s"<br>', $foldername);
                 $files[$i]['parent_folder_exists'] = false;
 
                 $parent = dirname($foldername);
@@ -523,7 +524,7 @@ class AutoUpdater
 
                     $simulateSuccess = false;
                     // $this->_log->addWarning(sprintf('[SIMULATE] Directory "%s" has to be writeable!', $parent));
-                    echo sprintf('[SIMULATE] Directory "%s" has to be writeable!<br>', $parent);
+                    // echo sprintf('[SIMULATE] Directory "%s" has to be writeable!<br>', $parent);
                 } else {
                     $files[$i]['parent_folder_writable'] = true;
                 }
@@ -540,7 +541,7 @@ class AutoUpdater
 
                 $simulateSuccess = false;
                 // $this->_log->addWarning(sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!', $filename));
-                echo sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!<br>', $filename);
+                // echo sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!<br>', $filename);
             }
 
             // Write to file
@@ -551,7 +552,7 @@ class AutoUpdater
 
                     $simulateSuccess = false;
                     // $this->_log->addWarning('[SIMULATE] Could not overwrite "%s"!', $absoluteFilename);
-                    echo sprintf('[SIMULATE] Could not overwrite "%s"!<br>', $absoluteFilename);
+                    // echo sprintf('[SIMULATE] Could not overwrite "%s"!<br>', $absoluteFilename);
                 }
             } else {
                 $files[$i]['file_exists'] = false;
@@ -562,7 +563,7 @@ class AutoUpdater
 
                         $simulateSuccess = false;
                         // $this->_log->addWarning(sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename));
-                        echo sprintf('[SIMULATE] The file "%s" could not be created!<br>', $absoluteFilename);
+                        // echo sprintf('[SIMULATE] The file "%s" could not be created!<br>', $absoluteFilename);
                     } else {
                         $files[$i]['file_writable'] = true;
                     }
@@ -570,13 +571,13 @@ class AutoUpdater
                     $files[$i]['file_writable'] = true;
 
                     // $this->_log->addDebug(sprintf('[SIMULATE] The file "%s" could be created', $absoluteFilename));
-                    echo sprintf('[SIMULATE] The file "%s" could be created<br>', $absoluteFilename);
+                    // echo sprintf('[SIMULATE] The file "%s" could be created<br>', $absoluteFilename);
                 }
             }
 
             if ($filename == $this->updateScriptName) {
                 // $this->_log->addDebug(sprintf('[SIMULATE] Update script "%s" found', $absoluteFilename));
-                echo sprintf('[SIMULATE] Update script "%s" found<br>', $absoluteFilename);
+                // echo sprintf('[SIMULATE] Update script "%s" found<br>', $absoluteFilename);
                 $files[$i]['update_script'] = true;
             } else {
                 $files[$i]['update_script'] = false;
@@ -627,9 +628,10 @@ class AutoUpdater
             // $parts[0] = $this->_rootFolder;
             if ($this->_rootFolder == 'featherbb') {
                 array_shift($parts);
-                // Skip if entry is not in targetted files
-                // if ($parts[0] !== 'featherbb' && $parts[0] !== 'style')
-                //     continue;
+                // // Skip if entry is not in targetted files
+                if ($parts[0] == '' || $parts[0] == 'cache' || $parts[0] == 'style') {
+                    continue;
+                }
             } else {
                 // Override first part of archive path to get the proper name (for plugins and themes)
                 $parts[0] = $this->_rootFolder;

@@ -129,7 +129,7 @@ class Updates
                 $pluginsUpdater = new PluginAutoUpdater($plugin);
                 $result = $pluginsUpdater->update();
                 if ($result !== true) {
-                    $errors[$plugin->name] = $pluginsUpdater->getSimulationResults();
+                    $errors[] = $plugin->name;
                 } else {
                     $upgradedPlugins[] = $plugin->name;
                 }
@@ -152,24 +152,11 @@ class Updates
             throw new Error(__('Wrong form values'), 500);
         }
 
-        $errors = [];
         $coreUpdater = new CoreAutoUpdater();
         $result = $coreUpdater->update();
         if ($result !== true) {
-            $errors['core'] = $coreUpdater->getSimulationResults();
-        } else {
-            echo 'Update failed: ' . $result . '!<br>';
-            if ($result = AutoUpdater::ERROR_SIMULATE) {
-                echo '<pre>';
-                var_dump($coreUpdater->getSimulationResults());
-                echo '</pre>';
-            }
-            $upgradedPlugins[] = $plugin->name;
-        }
-
-        if (empty($errors)) {
             return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded.'));
         }
-        // TODO: handle errors
+        // TODO: handle errors        
     }
 }

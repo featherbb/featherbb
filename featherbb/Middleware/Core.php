@@ -36,7 +36,7 @@ class Core
     public function __construct(array $data)
     {
         // Handle empty values in data
-        $data = array_merge(array('config_file' => 'config.php',
+        $data = array_merge(array('config_file' => 'featherbb/config.php',
                                   'cache_dir' => 'cache/',
                                   'debug'   => false), $data);
         // Define some core variables
@@ -61,7 +61,7 @@ class Core
     {
         return array(
                 'FEATHER_ROOT' => '',
-                'FORUM_CONFIG_FILE' => 'config.php',
+                'FORUM_CONFIG_FILE' => 'featherbb/config.php',
                 'FORUM_CACHE_DIR' => 'cache/',
                 'FORUM_VERSION' => '1.0.0-beta.3',
                 'FORUM_NAME' => 'FeatherBB',
