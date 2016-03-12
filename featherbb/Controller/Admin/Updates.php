@@ -157,6 +157,14 @@ class Updates
         $result = $coreUpdater->update();
         if ($result !== true) {
             $errors['core'] = $coreUpdater->getSimulationResults();
+        } else {
+            echo 'Update failed: ' . $result . '!<br>';
+            if ($result = AutoUpdater::ERROR_SIMULATE) {
+                echo '<pre>';
+                var_dump($coreUpdater->getSimulationResults());
+                echo '</pre>';
+            }
+            $upgradedPlugins[] = $plugin->name;
         }
 
         if (empty($errors)) {

@@ -63,7 +63,7 @@ class Core
                 'FEATHER_ROOT' => '',
                 'FORUM_CONFIG_FILE' => 'config.php',
                 'FORUM_CACHE_DIR' => 'cache/',
-                'FORUM_VERSION' => '1.0.0-beta.2',
+                'FORUM_VERSION' => '1.0.0-beta.3',
                 'FORUM_NAME' => 'FeatherBB',
                 'FORUM_DB_REVISION' => 21,
                 'FORUM_SI_REVISION' => 2,

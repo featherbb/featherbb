@@ -27,7 +27,7 @@ SlimStatic::boot($feather);
 Statical::addNamespace('*', __NAMESPACE__.'\\*');
 
 $feather_settings = array(
-    // 'config_file' => 'config.php',
+    // 'config_file' => 'featherbb/config.php',
     // 'cache_dir' => 'cache/',
     'debug' => 'all'  // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 );

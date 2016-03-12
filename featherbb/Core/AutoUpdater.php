@@ -485,9 +485,19 @@ class AutoUpdater
             $i++;
 
             $filename = zip_entry_name($file);
-            // Override first part of archive path
+            // Manipulate and do verifications on file path
             $parts = explode('/', $filename);
-            $parts[0] = $this->_rootFolder;
+            // If we are upgrading core
+            if ($this->_rootFolder == 'featherbb') {
+                array_shift($parts);
+                // Skip if entry is not in targetted files
+                // if ($parts[0] !== 'featherbb' && $parts[0] !== 'style')
+                //     continue;
+            } else {
+                // Override first part of archive path to get the proper name (for plugins and themes)
+                $parts[0] = $this->_rootFolder;
+            }
+            // $parts[0] = ($this->_rootFolder == 'featherbb') ? null : $this->_rootFolder;
             $filename = implode('/', $parts);
             $foldername = $this->_installDir . dirname($filename);
             $absoluteFilename = $this->_installDir . $filename;
@@ -591,9 +601,10 @@ class AutoUpdater
         // $this->_log->addNotice(sprintf('Trying to install update "%s"', $updateFile));
 
         // Check if install should be simulated
+        // $this->_simulateInstall($updateFile);
+        // return self::ERROR_SIMULATE;
         if ($simulateInstall && !$this->_simulateInstall($updateFile)) {
             // $this->_log->addCritical('Simulation of update process failed!');
-            // zip_close($zip);
 
             return self::ERROR_SIMULATE;
         }
@@ -613,7 +624,16 @@ class AutoUpdater
             $filename = zip_entry_name($file);
             // Override first part of archive path
             $parts = explode('/', $filename);
-            $parts[0] = $this->_rootFolder;
+            // $parts[0] = $this->_rootFolder;
+            if ($this->_rootFolder == 'featherbb') {
+                array_shift($parts);
+                // Skip if entry is not in targetted files
+                // if ($parts[0] !== 'featherbb' && $parts[0] !== 'style')
+                //     continue;
+            } else {
+                // Override first part of archive path to get the proper name (for plugins and themes)
+                $parts[0] = $this->_rootFolder;
+            }
             $filename = implode('/', $parts);
             $foldername = $this->_installDir . dirname($filename);
             $absoluteFilename = $this->_installDir . $filename;
@@ -844,7 +864,7 @@ class CoreAutoUpdater extends AutoUpdater {
     public function __construct()
     {
         // Construct parent class
-        parent::__construct(getcwd().'/temp/', getcwd().'/');
+        parent::__construct(getcwd().'/temp/', getcwd());
 
         // Set plugin informations
         $this->setRootFolder('featherbb');
