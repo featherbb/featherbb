@@ -11,6 +11,7 @@ use \FeatherBB\Middleware\Logged as IsLogged;
 use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
 use \FeatherBB\Middleware\Admin as IsAdmin;
 use \FeatherBB\Middleware\AdminModo as IsAdmMod;
+use \FeatherBB\Middleware\JsonHeader;
 use FeatherBB\Core\Error;
 
 
@@ -176,6 +177,14 @@ Route::group('/admin', function() {
     });
 
 })->add(new IsAdmMod);
+
+// API
+Route::group('/api', function() {
+    Route::get('/user/{id:[0-9]+}', '\FeatherBB\Controller\Api:user')->setName('userApi');
+    Route::get('/forum/{id:[0-9]+}', '\FeatherBB\Controller\Api:forum')->setName('forumApi');
+    Route::get('/topic/{id:[0-9]+}', '\FeatherBB\Controller\Api:topic')->setName('topicApi');
+    Route::get('/post/{id:[0-9]+}', '\FeatherBB\Controller\Api:post')->setName('postApi');
+})->add(new JsonHeader);
 
 // Override the default Not Found Handler
 Container::set('notFoundHandler', function ($c) {
