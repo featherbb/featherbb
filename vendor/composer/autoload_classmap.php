@@ -93,6 +93,7 @@ return array(
     'FeatherBB\\Middleware\\Csrf' => $baseDir . '/featherbb/Middleware/Csrf.php',
     'FeatherBB\\Middleware\\Logged' => $baseDir . '/featherbb/Middleware/Logged.php',
     'FeatherBB\\Middleware\\ReadBoard' => $baseDir . '/featherbb/Middleware/ReadBoard.php',
+    'FeatherBB\\Middleware\\JsonHeader' => $baseDir . '/featherbb/Middleware/JsonHeader.php',
     'FeatherBB\\Model\\Admin\\Bans' => $baseDir . '/featherbb/Model/Admin/Bans.php',
     'FeatherBB\\Model\\Admin\\Categories' => $baseDir . '/featherbb/Model/Admin/Categories.php',
     'FeatherBB\\Model\\Admin\\Censoring' => $baseDir . '/featherbb/Model/Admin/Censoring.php',

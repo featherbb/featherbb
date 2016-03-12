@@ -882,6 +882,24 @@ use Serializable;
         }
 
         /**
+         * Delete an element in the SELECT field
+         */
+        protected function _delete_result_column($expr, $alias = null)
+        {
+            if (!is_null($alias)) {
+                $expr .= " AS " . $this->_quote_identifier($alias);
+            }
+
+            $key = array_search($expr, $this->_result_columns);
+
+            if (is_int($key)) {
+                unset($this->_result_columns[$key]);
+            }
+
+            return $this;
+        }
+
+        /**
          * Counts the number of columns that belong to the primary
          * key and their value is null.
          */
@@ -903,6 +921,15 @@ use Serializable;
         {
             $column = $this->_quote_identifier($column);
             return $this->_add_result_column($column, $alias);
+        }
+
+        /**
+         * Delete a column in the SELECT field
+         */
+        public function delete_select($column, $alias = null)
+        {
+            $column = $this->_quote_identifier($column);
+            return $this->_delete_result_column($column, $alias);
         }
 
         /**
@@ -939,6 +966,24 @@ use Serializable;
                         $alias = null;
                     }
                     $this->select($column, $alias);
+                }
+            }
+            return $this;
+        }
+
+        /**
+         * Delete multiple columns in the SELECT field.
+         */
+        public function select_delete_many()
+        {
+            $columns = func_get_args();
+            if (!empty($columns)) {
+                $columns = $this->_normalise_select_many_columns($columns);
+                foreach ($columns as $alias => $column) {
+                    if (is_numeric($alias)) {
+                        $alias = null;
+                    }
+                    $this->delete_select($column, $alias);
                 }
             }
             return $this;
