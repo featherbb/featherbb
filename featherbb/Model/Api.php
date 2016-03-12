@@ -105,6 +105,11 @@ class Api
     {
         $forum = new \FeatherBB\Model\Forum();
 
+        Container::get('hooks')->bind('model.forum.get_info_forum_query', function ($cur_forum) {
+            $cur_forum = $cur_forum->select('f.num_posts');
+            return $cur_forum;
+        });
+
         try {
             $data = $forum->get_forum_info($id);
         } catch (Error $e) {
@@ -112,6 +117,8 @@ class Api
         }
 
         $data = $data->as_array();
+
+        $data['moderators'] = unserialize($data['moderators']);
 
         return $data;
     }
@@ -128,6 +135,8 @@ class Api
 
         $data = $data->as_array();
 
+        $data['moderators'] = unserialize($data['moderators']);
+
         return $data;
     }
 
@@ -142,6 +151,8 @@ class Api
         }
 
         $data = $data->as_array();
+
+        $data['moderators'] = unserialize($data['moderators']);
 
         return $data;
     }
