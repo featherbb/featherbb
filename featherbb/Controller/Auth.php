@@ -78,7 +78,7 @@ class Auth
     {
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
-        if (User::get()->is_guest || !isset($token) || $token != Random::hash(User::get()->id.Random::hash(Utils::getIp()))) {
+        if (User::get()->is_guest || !isset($token) || !Utils::hash_equals($token, Random::hash(User::get()->id.Random::hash(Utils::getIp())))) {
             return Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 

@@ -13,6 +13,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Random;
+use FeatherBB\Core\Utils;
 
 class Api
 {
@@ -49,10 +50,10 @@ class Api
         }
 
         // Validate authentication using the token...
-        if (Input::query('token') &&                                        // We have a token
-            (Input::query('username') || Input::query('id')) &&             // User's ID or username are provided
-            is_object($this->tmpUser) &&                                    // The user loaded above exists
-            self::getToken($this->tmpUser) === Input::query('token')) {     // Provided token is correct
+        if (Input::query('token') &&                                                         // We have a token
+            (Input::query('username') || Input::query('id')) &&                              // User's ID or username are provided
+            is_object($this->tmpUser) &&                                                     // The user loaded above exists
+            Utils::hash_equals(self::getToken($this->tmpUser), Input::query('token'))) {     // Provided token is correct
             $this->connected = true;
             $this->user = $this->tmpUser;
         }

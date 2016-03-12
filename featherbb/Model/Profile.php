@@ -161,7 +161,7 @@ class Profile
         } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
 
-            if (Random::hash(Input::post('req_password')) !== User::get()->password) {
+            if (!Utils::hash_equals(Random::hash(Input::post('req_password')), User::get()->password)) {
                 throw new Error(__('Wrong pass'));
             }
 

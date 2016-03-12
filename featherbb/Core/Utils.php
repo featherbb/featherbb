@@ -341,4 +341,39 @@ class Utils
 
         return $remote;
     }
+
+    /**
+     * Timing attack safe string comparison
+     *
+     * Compares two strings using the same time whether they're equal or not.
+     *
+     * This function was added in PHP 5.6.
+     *
+     * Note: It can leak the length of a string when arguments of differing length are supplied.
+     *
+     * @param string $a Expected string.
+     * @param string $b Actual, user supplied, string.
+     * @return bool Whether strings are equal.
+     *
+     * Sourcecode from WordPress
+     */
+    public static function hash_equals($a, $b)
+    {
+        if (function_exists('hash_equals')) {
+            return hash_equals((string)$a, (string)$b);
+        }
+
+        $a_length = strlen( $a );
+        if ($a_length !== strlen($b)) {
+            return false;
+        }
+        $result = 0;
+
+        // Do not attempt to "optimize" this.
+        for ($i = 0; $i < $a_length; $i++) {
+            $result |= ord( $a[ $i ] ) ^ ord( $b[ $i ] );
+        }
+
+        return $result === 0;
+    }
 }
