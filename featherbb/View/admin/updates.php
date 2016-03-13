@@ -31,7 +31,7 @@ Container::get('hooks')->fire('view.admin.updates.start');
                         <div class="infldset">
                             <p>
                                 <?php if ($core_updates): ?>
-                                    <?php printf(__('FeatherBB version data')."\n", ForumEnv::get('FORUM_VERSION'), $core_updates) ?>
+                                    <?php printf(__('FeatherBB core updates available'), ForumEnv::get('FORUM_VERSION'), $core_updates) ?>
                                     <a href="https://github.com/featherbb/featherbb/releases/tag/<?= $core_updates; ?>" target="_blank"><?php _e('View changelog') ?></a>
                                 <?php else:
                                     _e('FeatherBB core up to date');
@@ -54,7 +54,7 @@ if (!empty($plugin_updates)) {
                             <table>
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Extension label') ?></th>
+                                    <th class="tcl" scope="col"><?php _e('Plugin') ?></th>
                                     <th class="tcr" scope="col"><?php _e('Latest version label') ?></th>
                                 </tr>
                             </thead>
@@ -76,7 +76,7 @@ if (!empty($plugin_updates)) {
 <?php
 
 } else {
-    echo "\t\t\t\t\t\t\t".'<p>'.__('All plugins are up to date').'</p>'."\n";
+    echo "\t\t\t\t\t\t\t".'<p>'.__('All plugins up to date').'</p>'."\n";
 }
 
 ?>
@@ -97,25 +97,29 @@ if (!empty($theme_updates)) {
                             <table>
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
-                                    <th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
-                                    <th class="hidehead" scope="col"><?php _e('Action label') ?></th>
+                                    <th class="tcl" scope="col"><?php _e('Theme') ?></th>
+                                    <th class="tcr" scope="col"><?php _e('Latest version label') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
-<?php
-
-    foreach ($theme_updates as $theme) {
-        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$theme['id'].']" value="'.Utils::escape($theme['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$theme['id'].']" value="'.Utils::escape($theme['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$theme['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$theme['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
-    }
-
-    ?>
+<?php foreach ($theme_updates as $theme): ?>
+                                <tr>
+                                    <td class="tcl">
+                                        <input type="checkbox" name="theme_updates[<?= $theme->name ?>]" value="<?= $theme->version ?>" checked />
+                                        <strong><?= $theme->title; ?></strong> <small><?= $theme->version; ?></small>
+                                    </td>
+                                    <td>
+                                        <a href="https://github.com/featherbb/<?= $theme->name; ?>/releases/tag/<?= $theme->last_version; ?>" target="_blank"><?= $theme->last_version; ?></a>
+                                        <a href="http://marketplace.featherbb.org/themes/view/<?= $theme->name; ?>/changelog" target="_blank"><?php _e('View changelog') ?></a>
+                                    </td>
+                                </tr>
+<?php endforeach; ?>
                             </tbody>
                             </table>
 <?php
 
 } else {
-    echo "\t\t\t\t\t\t\t".'<p>'.__('All themes are up to date').'</p>'."\n";
+    echo "\t\t\t\t\t\t\t".'<p>'.__('All themes up to date').'</p>'."\n";
 }
 
 ?>

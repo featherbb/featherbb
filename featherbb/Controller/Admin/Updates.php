@@ -23,6 +23,8 @@ class Updates
     public function __construct()
     {
         translate('admin/index');
+        translate('admin/updates');
+        translate('admin/plugins');
     }
 
     public function display($req, $res, $args)
@@ -46,23 +48,23 @@ class Updates
         }
 
         // Check plugins uavailable versions
-        // foreach ($all_plugins as $plugin) {
-        //     // If plugin isn't well formed or doesn't want to be auto-updated, skip it
-        //     if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
-        //         continue;
-        //     }
-        //     $pluginsUpdater = new PluginAutoUpdater($plugin);
-        //     // If check fails, go to next item
-        //     if ($pluginsUpdater->checkUpdate() === false) {
-        //         // TODO: handle errors
-        //         continue;
-        //     }
-        //     // If update available, add plugin to display in view
-        //     if ($pluginsUpdater->newVersionAvailable()) {
-        //         $plugin->last_version = $pluginsUpdater->getLatestVersion();
-        //         $plugin_updates[] = $plugin;
-        //     }
-        // }
+        foreach ($all_plugins as $plugin) {
+            // If plugin isn't well formed or doesn't want to be auto-updated, skip it
+            if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
+                continue;
+            }
+            $pluginsUpdater = new PluginAutoUpdater($plugin);
+            // If check fails, go to next item
+            if ($pluginsUpdater->checkUpdate() === false) {
+                // TODO: handle errors
+                continue;
+            }
+            // If update available, add plugin to display in view
+            if ($pluginsUpdater->newVersionAvailable()) {
+                $plugin->last_version = $pluginsUpdater->getLatestVersion();
+                $plugin_updates[] = $plugin;
+            }
+        }
 
         AdminUtils::generateAdminMenu('updates');
 
@@ -138,7 +140,7 @@ class Updates
             }
         }
         if (empty($errors)) {
-            return Router::redirect(Router::pathFor('adminUpdates'), __(sizeof($upgradedPlugins).' plugins upgraded.'));
+            return Router::redirect(Router::pathFor('adminUpdates'), sprintf(__('Plugins upgraded'), sizeof($upgradedPlugins)));
         }
         // TODO: handle errors
     }
@@ -155,8 +157,8 @@ class Updates
         $coreUpdater = new CoreAutoUpdater();
         $result = $coreUpdater->update();
         if ($result !== true) {
-            return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded.'));
+            return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded'));
         }
-        // TODO: handle errors        
+        // TODO: handle errors
     }
 }
