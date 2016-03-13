@@ -53,8 +53,6 @@ class Options
             'gzip'                    => Input::post('form_gzip') != '1' ? '0' : '1',
             'search_all_forums'        => Input::post('form_search_all_forums') != '1' ? '0' : '1',
             'additional_navlinks'    => Utils::trim(Input::post('form_additional_navlinks')),
-            'feed_type'                => intval(Input::post('form_feed_type')),
-            'feed_ttl'                => intval(Input::post('form_feed_ttl')),
             'report_method'            => intval(Input::post('form_report_method')),
             'mailing_list'            => Utils::trim(Input::post('form_mailing_list')),
             'avatars'                => Input::post('form_avatars') != '1' ? '0' : '1',
@@ -186,14 +184,6 @@ class Options
             $form['disp_posts_default'] = 75;
         }
 
-        if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            throw new Error(__('Bad request'), 400);
-        }
-
-        if ($form['feed_ttl'] < 0) {
-            throw new Error(__('Bad request'), 400);
-        }
-
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
             throw new Error(__('Bad request'), 400);
         }
@@ -221,26 +211,8 @@ class Options
 
         // Regenerate the config cache
         Container::get('cache')->store('config', Cache::get_config());
-        $this->clear_feed_cache();
 
         return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
-    }
-
-    public function clear_feed_cache()
-    {
-        $d = dir(ForumEnv::get('FORUM_CACHE_DIR'));
-        $d = Container::get('hooks')->fire('model.admin.options.clear_feed_cache.directory', $d);
-        while (($entry = $d->read()) !== false) {
-            if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
-                @unlink(ForumEnv::get('FORUM_CACHE_DIR').$entry);
-            }
-            if (function_exists('opcache_invalidate')) {
-                opcache_invalidate(ForumEnv::get('FORUM_CACHE_DIR').$entry, true);
-            } elseif (function_exists('apc_delete_file')) {
-                @apc_delete_file(ForumEnv::get('FORUM_CACHE_DIR').$entry);
-            }
-        }
-        $d->close();
     }
 
     public function get_styles()
@@ -289,7 +261,7 @@ class Options
         $output = '';
 
         foreach ($times as $time) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.(ForumSettings::get('o_feed_ttl') == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
 
         $output = Container::get('hooks')->fire('model.admin.options.get_times.output', $output);

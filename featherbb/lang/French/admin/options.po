@@ -381,15 +381,6 @@ msgstr "Éléments de menu supplémentaires"
 msgid "Menu items help"
 msgstr "En ajoutant des hyperliens HTML dans cette boîte, un nombre illimité d'éléments peuvent être ajoutés au menu de navigation situé en haut de chaque page. Le format pour ajouter de nouveaux liens est le suivant&#160;: X = &lt;a href=\"URL\"&gt;INTITULE DU LIEN&lt;/a&gt; où X est la position à laquelle le lien devra être inséré (ex. : 0 pour insérer au début et 2 pour insérer après l'élément «&#160;Liste d'utilisateurs&#160;»). Chaque élément devra se trouver dans une nouvelle ligne."
 
-msgid "Feed subhead"
-msgstr "Syndication"
-
-msgid "Default feed label"
-msgstr "Type de flux par défaut"
-
-msgid "Default feed help"
-msgstr "Type d'abonnement de flux devant être affiché. Remarque&#160;: le choix «&#160;Aucun&#160;» ne désactive pas le flux mais le masque simplement par défaut."
-
 msgid "None"
 msgstr "Aucun"
 
