@@ -15,15 +15,19 @@
  *
  * Inspired from Luna <http://getluna.org>
  */
-function translate($mofile, $domain = 'featherbb', $language = false) {
+function translate($mofile, $domain = 'featherbb', $language = false, $path = false) {
 
     global $l10n;
 
+    if (!$path) {
+        $path = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
+    }
+
     if (!$language) {
-        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/'.$mofile.'.mo';
+        $mofile = $path.'/'.User::get()->language.'/'.$mofile.'.mo';
     }
     else {
-        $mofile = ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$language.'/'.$mofile.'.mo';
+        $mofile = $path.'/'.$language.'/'.$mofile.'.mo';
     }
 
     if (!is_readable($mofile)) {
