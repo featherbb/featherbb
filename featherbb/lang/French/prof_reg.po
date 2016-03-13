@@ -1,0 +1,223 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Email legend"
+msgstr "Indiquez une adresse électronique valide"
+
+msgid "Email legend 2"
+msgstr "Saisissez et confirmez une adresse électronique valide"
+
+msgid "Localisation legend"
+msgstr "Définissez vos options géographiques"
+
+msgid "Time zone"
+msgstr "Fuseau horaire&#160;"
+
+msgid "Time zone info"
+msgstr "Afin que le forum affiche correctement l'heure, vous devez sélectionner votre fuseau horaire."
+
+msgid "DST"
+msgstr "Ajustement pour l'heure d'été&#160;: cochez cette case si nécessaire pour que les forums affichent correctement l'heure."
+
+msgid "Time format"
+msgstr "Format de l'heure"
+
+msgid "Date format"
+msgstr "Format de la date"
+
+msgid "Default"
+msgstr "Par défaut"
+
+msgid "Language"
+msgstr "Langue&#160;"
+
+msgid "Email setting info"
+msgstr "Indiquez si vous souhaitez que votre adresse électronique soit visible par les autres utilisateurs ou non et si vous voulez que les autres utilisateurs puissent vous envoyer des e-mails via ces forums (formulaire d'envoi d'e-mail) ou non."
+
+msgid "Email setting 1"
+msgstr "Divulguer votre adresse électronique aux autres utilisateurs"
+
+msgid "Email setting 2"
+msgstr "Masquer votre adresse électronique mais autoriser l'envoi via le formulaire d'envoi d'e-mail."
+
+msgid "Email setting 3"
+msgstr "Masquer votre adresse électronique et interdire l'utilisation du formulaire d'envoi d'e-mail."
+
+msgid "Privacy options legend"
+msgstr "Définissez vos options de vie privée"
+
+msgid "Confirm pass"
+msgstr "Confirmez votre mot de passe"
+
+msgid "Username too short"
+msgstr "Les noms d'utilisateur doivent comporter au moins 2 caractères. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username too long"
+msgstr "Les noms d'utilisateur ne doivent pas comporter plus de 25 caractères. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username guest"
+msgstr "Le nom d'utilisateur «&#160;invité&#160;» est réservé. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username IP"
+msgstr "Les noms d'utilisateur ne peuvent pas être au format d'une adresse IP. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username reserved chars"
+msgstr "Les noms d'utilisateurs ne peuvent pas contenir les caractères ', \" et [ ou ]. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username BBCode"
+msgstr "Les noms d'utilisateur ne peuvent pas contenir de balises (BBCode). Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Banned username"
+msgstr "Le nom d'utilisateur que vous avez indiqué est banni. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Pass too short"
+msgstr "Les mots de passe doivent comporter au moins 6 caractères. Veuillez choisir un autre mot de passe."
+
+msgid "Pass not match"
+msgstr "Les mots de passe ne coïncident pas. Veuillez recommencer."
+
+msgid "Banned email"
+msgstr "L'adresse électronique saisie est bannie de ces forums. Veuillez en choisir une autre."
+
+msgid "Dupe email"
+msgstr "Cette adresse électronique est déjà utilisée. Veuillez en choisir une autre."
+
+msgid "Sig too long"
+msgstr "Les signatures ne peuvent pas contenir plus de %1$s caractères. Veuillez raccourcir votre signature de %2$s caractères."
+
+msgid "Sig too many lines"
+msgstr "Les signatures ne peuvent pas comporter plus de %s lignes."
+
+msgid "Bad ICQ"
+msgstr "Vous avez saisi un UIN ICQ invalide. Merci de corriger."
+
+msgid "UTC-12:00"
+msgstr "(UTC-12:00) Ligne de changement de date OUEST"
+
+msgid "UTC-11:00"
+msgstr "(UTC-11:00) Niue, Samoa"
+
+msgid "UTC-10:00"
+msgstr "(UTC-10:00) Hawaii et des îles Aléoutiennes, Îles Cook"
+
+msgid "UTC-09:30"
+msgstr "(UTC-09:30) Îles Marquises"
+
+msgid "UTC-09:00"
+msgstr "(UTC-09:00) Alaska, Îles Gambier"
+
+msgid "UTC-08:30"
+msgstr "(UTC-08:30) Îles Pitcairn"
+
+msgid "UTC-08:00"
+msgstr "(UTC-08:00) Pacifique"
+
+msgid "UTC-07:00"
+msgstr "(UTC-07:00) Montagnes, les Rocheuses"
+
+msgid "UTC-06:00"
+msgstr "(UTC-06:00) Centre"
+
+msgid "UTC-05:00"
+msgstr "(UTC-05:00) Est"
+
+msgid "UTC-04:00"
+msgstr "(UTC-04:00) Atlantique"
+
+msgid "UTC-03:30"
+msgstr "(UTC-03:30) Terre-Neuve"
+
+msgid "UTC-03:00"
+msgstr "(UTC-03:00) Amazone, Centre du Groenland"
+
+msgid "UTC-02:00"
+msgstr "(UTC-02:00) Milieu de l'Atlantique"
+
+msgid "UTC-01:00"
+msgstr "(UTC-01:00) Açores, Cap Vert, Groenland de l'Est"
+
+msgid "UTC"
+msgstr "(UTC) Europe Occidentale, Greenwich"
+
+msgid "UTC+01:00"
+msgstr "(UTC+01:00) Europe Centrale, Afrique Occidentale"
+
+msgid "UTC+02:00"
+msgstr "(UTC+02:00) Europe de l'Est, Afrique Centrale"
+
+msgid "UTC+03:00"
+msgstr "(UTC+03:00) Moscou, Afrique Orientale"
+
+msgid "UTC+03:30"
+msgstr "(UTC+03:30) Iran"
+
+msgid "UTC+04:00"
+msgstr "(UTC+04:00) Golf, Samara"
+
+msgid "UTC+04:30"
+msgstr "(UTC+04:30) Afghanistan"
+
+msgid "UTC+05:00"
+msgstr "(UTC+05:00) Pakistan, Iekaterinbourg"
+
+msgid "UTC+05:30"
+msgstr "(UTC+05:30) Inde, Sri Lanka"
+
+msgid "UTC+05:45"
+msgstr "(UTC+05:45) Népal"
+
+msgid "UTC+06:00"
+msgstr "(UTC+06:00) Bangladesh, Bhutan, Novosibirsk"
+
+msgid "UTC+06:30"
+msgstr "(UTC+06:30) Îles Cocos, Myanmar"
+
+msgid "UTC+07:00"
+msgstr "(UTC+07:00) Indochine, Krasnoyarsk"
+
+msgid "UTC+08:00"
+msgstr "(UTC+08:00) Grande Chin, Australie occidentale, Irkutsk"
+
+msgid "UTC+08:45"
+msgstr "(UTC+08:45) Australie occidentale"
+
+msgid "UTC+09:00"
+msgstr "(UTC+09:00) Japon, Corée, Chine"
+
+msgid "UTC+09:30"
+msgstr "(UTC+09:30) Australie Méridionale"
+
+msgid "UTC+10:00"
+msgstr "(UTC+10:00) Australie Orientale, Vladivostok"
+
+msgid "UTC+10:30"
+msgstr "(UTC+10:30) Île Lord Howe"
+
+msgid "UTC+11:00"
+msgstr "(UTC+11:00) Île Salomon, Magadan"
+
+msgid "UTC+11:30"
+msgstr "(UTC+11:30) Île Norfolk"
+
+msgid "UTC+12:00"
+msgstr "(UTC+12:00) Nouvelle Zélande, Fiji, Kamchatka"
+
+msgid "UTC+12:45"
+msgstr "(UTC+12:45) Îles Chatham"
+
+msgid "UTC+13:00"
+msgstr "(UTC+13:00) Tonga, Îles Phoenix"
+
+msgid "UTC+14:00"
+msgstr "(UTC+14:00) Îles de la Ligne"

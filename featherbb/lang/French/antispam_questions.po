@@ -1,0 +1,43 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Combien font deux plus deux ?"
+msgstr "4"
+
+msgid "Combien font quatre moins un ?"
+msgstr "3"
+
+msgid "Combien font trois plus deux ?"
+msgstr "5"
+
+msgid "Combien font deux fois quatre ?"
+msgstr "8"
+
+msgid "Combien font cinq moins deux ?"
+msgstr "3"
+
+msgid "Combien font six plus trois ?"
+msgstr "9"
+
+msgid "Combien font sept moins un ?"
+msgstr "6"
+
+msgid "Combien font huit fois deux ?"
+msgstr "16"
+
+msgid "Combien font six fois deux ?"
+msgstr "12"
+
+msgid "Combien font neuf moins sept ?"
+msgstr "2"
