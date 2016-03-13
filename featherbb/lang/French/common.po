@@ -414,33 +414,6 @@ msgstr "Requête"
 msgid "Total query time"
 msgstr "Temps total d'exécution de la requête&#160;: %s"
 
-msgid "RSS description"
-msgstr "Les sujets les plus récents sur %s."
-
-msgid "RSS description topic"
-msgstr "Les sujets les plus récents dans %s."
-
-msgid "RSS reply"
-msgstr "Réponse à&#160;:  "
-
-msgid "RSS active topics feed"
-msgstr "Flux RSS des discussions actives"
-
-msgid "Atom active topics feed"
-msgstr "Flux Atom des discussions actives"
-
-msgid "RSS forum feed"
-msgstr "Flux RSS du forum"
-
-msgid "Atom forum feed"
-msgstr "Flux Atom du forum"
-
-msgid "RSS topic feed"
-msgstr "Flux RSS de la discussion"
-
-msgid "Atom topic feed"
-msgstr "Flux Atom de la discussion"
-
 msgid "New reports"
 msgstr "De nouveaux signalements ont été envoyés&#160;!"
 

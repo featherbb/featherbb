@@ -16,22 +16,6 @@ use FeatherBB\Core\Utils;
 
 class Index
 {
-    // Returns page head
-    public function get_page_head()
-    {
-        Container::get('hooks')->fire('model.index.get_page_head_start');
-
-        if (ForumSettings::get('o_feed_type') == '1') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
-        } elseif (ForumSettings::get('o_feed_type') == '2') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
-        }
-
-        $page_head = Container::get('hooks')->fire('model.index.get_page_head', $page_head);
-
-        return $page_head;
-    }
-
     // Returns forum action
     public function get_forum_actions()
     {

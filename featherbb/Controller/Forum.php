@@ -70,12 +70,6 @@ class Forum
             }
         }
 
-        if (ForumSettings::get('o_feed_type') == '1') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=rss', array('title' => __('RSS forum feed')));
-        } elseif (ForumSettings::get('o_feed_type') == '2') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=atom', array('title' => __('Atom forum feed')));
-        }
-
         View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])),
             'active_page' => 'Forum',

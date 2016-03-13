@@ -424,33 +424,6 @@ msgstr "Query"
 msgid "Total query time"
 msgstr "Total query time: %s"
 
-msgid "RSS description"
-msgstr "The most recent topics at %s."
-
-msgid "RSS description topic"
-msgstr "The most recent posts in %s."
-
-msgid "RSS reply"
-msgstr "Re: "
-
-msgid "RSS active topics feed"
-msgstr "RSS active topics feed"
-
-msgid "Atom active topics feed"
-msgstr "Atom active topics feed"
-
-msgid "RSS forum feed"
-msgstr "RSS forum feed"
-
-msgid "Atom forum feed"
-msgstr "Atom forum feed"
-
-msgid "RSS topic feed"
-msgstr "RSS topic feed"
-
-msgid "Atom topic feed"
-msgstr "Atom topic feed"
-
 msgid "New reports"
 msgstr "There are new reports"
 

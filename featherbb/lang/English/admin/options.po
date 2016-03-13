@@ -395,18 +395,6 @@ msgstr "Select the type of syndication feed to display. Note: Choosing none will
 msgid "None"
 msgstr "None"
 
-msgid "RSS"
-msgstr "RSS"
-
-msgid "Atom"
-msgstr "Atom"
-
-msgid "Feed TTL label"
-msgstr "Duration to cache feeds"
-
-msgid "Feed TTL help"
-msgstr "Feeds can be cached to lower the resource usage of feeds."
-
 msgid "No cache"
 msgstr "Don't cache"
 

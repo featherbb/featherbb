@@ -393,18 +393,6 @@ msgstr "Type d'abonnement de flux devant être affiché. Remarque&#160;: le choi
 msgid "None"
 msgstr "Aucun"
 
-msgid "RSS"
-msgstr "RSS"
-
-msgid "Atom"
-msgstr "Atom"
-
-msgid "Feed TTL label"
-msgstr "Temps de mise en cache des flux"
-
-msgid "Feed TTL help"
-msgstr "Les flux peuvent être placés dans le cache afin de réduire l'utilisation des ressources."
-
 msgid "No cache"
 msgstr "Ne pas placer dans le cache"
 
