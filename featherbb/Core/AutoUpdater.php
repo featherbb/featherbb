@@ -488,17 +488,17 @@ class AutoUpdater
             // Manipulate and do verifications on file path
             $parts = explode('/', $filename);
             // If we are upgrading core
+            array_shift($parts);
+
+            if ($parts[0] == '')
+                continue;
+
             if ($this->_rootFolder == 'featherbb') {
-                array_shift($parts);
                 // // Skip if entry is not in targetted files
-                if ($parts[0] == '' || $parts[0] == 'cache' || $parts[0] == 'style') {
+                if ($parts[0] == 'cache' || $parts[0] == 'style') {
                     continue;
                 }
-            } else {
-                // Override first part of archive path to get the proper name (for plugins and themes)
-                $parts[0] = $this->_rootFolder;
             }
-            // $parts[0] = ($this->_rootFolder == 'featherbb') ? null : $this->_rootFolder;
             $filename = implode('/', $parts);
             $foldername = $this->_installDir . dirname($filename);
             $absoluteFilename = $this->_installDir . $filename;
@@ -519,7 +519,7 @@ class AutoUpdater
                 $files[$i]['parent_folder_exists'] = false;
 
                 $parent = dirname($foldername);
-                if (!is_writable($parent)) {
+                if (!mkdir($foldername, $this->dirPermissions, true) && !is_writable($parent)) {
                     $files[$i]['parent_folder_writable'] = false;
 
                     $simulateSuccess = false;
@@ -623,18 +623,18 @@ class AutoUpdater
         // Read every file from archive
         while ($file = zip_read($zip)) {
             $filename = zip_entry_name($file);
-            // Override first part of archive path
+            // Remove first part of archive path
             $parts = explode('/', $filename);
-            // $parts[0] = $this->_rootFolder;
+            array_shift($parts);
+
+            if ($parts[0] == '')
+                continue;
+
             if ($this->_rootFolder == 'featherbb') {
-                array_shift($parts);
                 // // Skip if entry is not in targetted files
-                if ($parts[0] == '' || $parts[0] == 'cache' || $parts[0] == 'style') {
+                if ($parts[0] == 'cache' || $parts[0] == 'style') {
                     continue;
                 }
-            } else {
-                // Override first part of archive path to get the proper name (for plugins and themes)
-                $parts[0] = $this->_rootFolder;
             }
             $filename = implode('/', $parts);
             $foldername = $this->_installDir . dirname($filename);
@@ -703,6 +703,7 @@ class AutoUpdater
             //If file is a update script, include
             if ($filename == $this->updateScriptName) {
                 // $this->_log->addDebug(sprintf('Try to include update script "%s"', $absoluteFilename));
+                $upgrade_script = true;
                 require($absoluteFilename);
 
                 // $this->_log->addInfo(sprintf('Update script "%s" included!', $absoluteFilename));
@@ -852,7 +853,7 @@ class PluginAutoUpdater extends AutoUpdater {
     public function __construct($plugin)
     {
         // Construct parent class
-        parent::__construct(getcwd().'/temp/', getcwd().'/plugins');
+        parent::__construct(getcwd().'/temp/', getcwd().'/plugins/'.$plugin->name);
 
         // Set plugin informations
         $this->setRootFolder($plugin->name);
