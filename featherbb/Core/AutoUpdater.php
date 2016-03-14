@@ -577,11 +577,13 @@ class AutoUpdater
                 $files[$i]['file_exists'] = false;
 
                 if (is_dir($foldername)) {
-                    if (!mkdir($foldername, $this->dirPermissions, true) && !is_writable($foldername)) {
-                        $files[$i]['file_writable'] = false;
+                    if (!is_writable($foldername)) {
+                        if (!mkdir($foldername, $this->dirPermissions, true)) {
+                            $files[$i]['file_writable'] = false;
 
-                        $simulateSuccess = false;
-                        $this->_errors[] = sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename);
+                            $simulateSuccess = false;
+                            $this->_errors[] = sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename);
+                        }
                     } else {
                         $files[$i]['file_writable'] = true;
                     }
@@ -764,7 +766,7 @@ class AutoUpdater
                 return self::ERROR_INSTALL_DIR;
             }
 
-            $updateFile = $this->_tempDir . $this->_rootFolder . $update['version'] . '.zip';
+            $updateFile = $this->_tempDir . $this->_rootFolder .'-v' . $update['version'] . '.zip';
 
             // Download update
             if (!is_file($updateFile)) {
@@ -854,7 +856,7 @@ class PluginAutoUpdater extends AutoUpdater {
     public function __construct($plugin)
     {
         // Construct parent class
-        parent::__construct(getcwd().'/temp/', getcwd().'/plugins/'.$plugin->name);
+        parent::__construct(getcwd().'/temp', getcwd().'/plugins/'.$plugin->name);
 
         // Set plugin informations
         $this->setRootFolder($plugin->name);
@@ -868,7 +870,7 @@ class CoreAutoUpdater extends AutoUpdater {
     public function __construct()
     {
         // Construct parent class
-        parent::__construct(getcwd().'/temp/', getcwd());
+        parent::__construct(getcwd().'/temp', getcwd());
 
         // Set plugin informations
         $this->setRootFolder('featherbb');

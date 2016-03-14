@@ -135,9 +135,9 @@ class Updates
                     $upgrade_results[$plugin->title]['errors'] = $pluginsUpdater->getErrors();
                 } else {
                     $upgrade_results[$plugin->title]['message'] = sprintf('Plugin %s successfull update %s', $plugin->version, $pluginsUpdater->getLatestVersion());
-                    // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
-                    $upgrade_results[$plugin->title]['warnings'] = $pluginsUpdater->getWarnings();
                 }
+                // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
+                $upgrade_results[$plugin->title]['warnings'] = $pluginsUpdater->getWarnings();
             } else {
                 continue;
             }

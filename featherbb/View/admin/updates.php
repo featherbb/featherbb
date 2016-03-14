@@ -145,14 +145,16 @@ if (!empty($theme_updates)) {
 <?php foreach ($upgrade_results as $key => $result): ?>
                                     <th scope="row"><?= Utils::escape($key) ?></th>
                                     <td>
-                                        <span class="conl"><?= Utils::escape($result['message']); ?></span>
+                                        <span><?= Utils::escape($result['message']); ?></span>
 <?php if (!empty($result['errors'])) { ?>
                                         <span class="clearb">
+                                            <?= __('Errors label'); ?><br>
                                             <?php foreach ($result['errors'] as $error) { echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($error).'<br>'."\n"; } ?>
                                         </span>
 <?php } ?>
 <?php if (!empty($result['warnings'])) { ?>
                                         <span class="clearb">
+                                            <?= __('Warnings label'); ?><br>
                                             <?php foreach ($result['warnings'] as $warning) { echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($warning).'<br>'."\n"; } ?>
                                         </span>
 <?php } ?>
