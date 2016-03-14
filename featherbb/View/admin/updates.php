@@ -17,8 +17,8 @@ if (!isset($feather)) {
 }
 
 Container::get('hooks')->fire('view.admin.updates.start');
-?>
 
+if (empty($upgrade_results)): ?>
     <div class="blockform">
         <h2><span><?php _e('Available updates') ?></span></h2>
         <div class="box">
@@ -130,6 +130,47 @@ if (!empty($theme_updates)) {
             </form>
         </div>
     </div>
+<?php else: ?>
+    <div class="blockform">
+        <h2><span><?php _e('Upgrade results') ?></span></h2>
+        <div class="box">
+            <div class="fakeform">
+                <div class="inform">
+                    <fieldset>
+                        <legend><?php _e('Upgrade results') ?></legend>
+                        <div class="infldset">
+                            <!-- <p>The pre-defined groups Guests, Administrators, Moderators and Members cannot be removed. However, they can be edited. Please note that in some groups, some options are unavailable (e.g. the <em>edit posts</em> permission for guests). Administrators always have full permissions.</p> -->
+                            <table>
+                                <tr>
+<?php foreach ($upgrade_results as $key => $result): ?>
+                                    <th scope="row"><?= Utils::escape($key) ?></th>
+                                    <td>
+                                        <span class="conl"><?= Utils::escape($result['message']); ?></span>
+<?php if (!empty($result['errors'])) { ?>
+                                        <span class="clearb">
+                                            <?php foreach ($result['errors'] as $error) { echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($error).'<br>'."\n"; } ?>
+                                        </span>
+<?php } ?>
+<?php if (!empty($result['warnings'])) { ?>
+                                        <span class="clearb">
+                                            <?php foreach ($result['warnings'] as $warning) { echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($warning).'<br>'."\n"; } ?>
+                                        </span>
+<?php } ?>
+                                    </td>
+                                </tr>
+<?php endforeach; ?>
+								<!-- <tr><th scope="row"><a href="http://localhost/admin/groups/edit/1" tabindex="5">Edit</a></th><td>Administrators</td></tr>
+								<tr><th scope="row"><a href="http://localhost/admin/groups/edit/2" tabindex="6">Edit</a></th><td>Moderators</td></tr>
+								<tr><th scope="row"><a href="http://localhost/admin/groups/edit/3" tabindex="7">Edit</a></th><td>Guests</td></tr>
+								<tr><th scope="row"><a href="http://localhost/admin/groups/edit/4" tabindex="8">Edit</a></th><td>Members</td></tr> -->
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
     <div class="clearer"></div>
 </div>
 <?php

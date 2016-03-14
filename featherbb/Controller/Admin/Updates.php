@@ -119,8 +119,7 @@ class Updates
             throw new Error(__('Wrong form values'), 500);
         }
 
-        $errors = [];
-        $upgradedPlugins = [];
+        $upgrade_results = [];
 
         foreach (Input::post('plugin_updates') as $plugin => $version) {
             if ($plugin = Lister::loadPlugin($plugin)) {
@@ -128,21 +127,33 @@ class Updates
                 if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
                     continue;
                 }
+                $upgrade_results[$plugin->title] = [];
                 $pluginsUpdater = new PluginAutoUpdater($plugin);
                 $result = $pluginsUpdater->update();
                 if ($result !== true) {
-                    $errors[] = $plugin->name;
+                    $upgrade_results[$plugin->title]['message'] = sprintf('Plugin %s failed update %s', $plugin->version, $pluginsUpdater->getLatestVersion());
+                    $upgrade_results[$plugin->title]['errors'] = $pluginsUpdater->getErrors();
                 } else {
-                    $upgradedPlugins[] = $plugin->name;
+                    $upgrade_results[$plugin->title]['message'] = sprintf('Plugin %s successfull update %s', $plugin->version, $pluginsUpdater->getLatestVersion());
+                    // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
+                    $upgrade_results[$plugin->title]['warnings'] = $pluginsUpdater->getWarnings();
                 }
             } else {
                 continue;
             }
         }
-        if (empty($errors)) {
-            return Router::redirect(Router::pathFor('adminUpdates'), sprintf(__('Plugins upgraded'), sizeof($upgradedPlugins)));
-        }
-        // TODO: handle errors
+
+        // Display upgrade results
+        AdminUtils::generateAdminMenu('updates');
+
+        return View::setPageInfo(array(
+                'title'           => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
+                'active_page'     => 'admin',
+                'admin_console'   => true,
+                'upgrade_results' => $upgrade_results
+            )
+        )->addTemplate('admin/updates.php')->display();
+        // return Router::redirect(Router::pathFor('adminUpdates'), sprintf(__('Plugins upgraded'), sizeof($upgrade_results)));
     }
 
     public function upgradeCore($req, $res, $args)

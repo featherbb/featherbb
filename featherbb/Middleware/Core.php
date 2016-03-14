@@ -73,7 +73,7 @@ class Core
                 'FEATHER_MOD' => 2,
                 'FEATHER_GUEST' => 3,
                 'FEATHER_MEMBER' => 4,
-                // 'FEATHER_MAX_POSTSIZE' => 32768,
+                'FEATHER_MAX_POSTSIZE' => 32768,
                 'FEATHER_SEARCH_MIN_WORD' => 3,
                 'FEATHER_SEARCH_MAX_WORD' => 20,
                 // 'FORUM_MAX_COOKIE_SIZE' => 4048,

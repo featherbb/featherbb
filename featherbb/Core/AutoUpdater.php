@@ -74,6 +74,20 @@ class AutoUpdater
     protected $_updateFile = 'update.json';
 
     /**
+     * Content of errors occurred when updating.
+     *
+     * @var array
+     */
+    protected $_errors = array();
+
+    /**
+     * Content of warnings fired when updating.
+     *
+     * @var array
+     */
+    protected $_warnings = array();
+
+    /**
      * Current version.
      *
      * @var vierbergenlars\SemVer\version
@@ -153,6 +167,8 @@ class AutoUpdater
 
         $this->_latestVersion = new version('0.0.0');
         $this->_currentVersion = new version('0.0.0');
+        $this->_errors = [];
+        $this->_warnings = [];
 
         ini_set('max_execution_time', $maxExecutionTime);
     }
@@ -300,6 +316,26 @@ class AutoUpdater
     }
 
     /**
+     * Get the results of errors encountered.
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
+
+    /**
+     * Get the results of warnings encountered.
+     *
+     * @return array
+     */
+    public function getWarnings()
+    {
+        return $this->_warnings;
+    }
+
+    /**
      * Remove directory recursively.
      *
      * @param string $dir
@@ -349,20 +385,17 @@ class AutoUpdater
             // $updateFile = $this->_updateUrl . '/' . $this->_updateFile;
             $updateFile = $this->_updateUrl;
 
-            // $this->_log->addDebug(sprintf('Get new updates from %s', $updateFile));
-
             // Read update file from update server
             $update = AdminUtils::get_content($updateFile);
             if ($update === false) {
-                // $this->_log->addInfo(sprintf('Could not download update file "%s"!', $updateFile));
-                // echo sprintf('Could not download update file "%s"!', $updateFile);
+                $this->_errors[] = sprintf('Could not download update file "%s"!', $updateFile);
 
                 return false;
             }
 
             $releases = (array)@json_decode($update);
             if (!is_array($releases)) {
-                // $this->_log->addInfo('Unable to parse json update file!');
+                $this->_errors[] = 'Unable to parse json update file!';
 
                 return false;
             }
@@ -376,7 +409,7 @@ class AutoUpdater
             $updateUrl = $releaseContent->zipball_url;
             $version = new version($versionRaw);
             if ($version->valid() === null) {
-                // $this->_log->addInfo(sprintf('Could not parse version "%s" from update server "%s"', $versionRaw, $updateFile));
+                $this->_errors[] = sprintf('Could not parse version "%s" from update server "%s"', $versionRaw, $updateFile);
                 continue;
             }
 
@@ -397,12 +430,8 @@ class AutoUpdater
         });
 
         if ($this->newVersionAvailable()) {
-            // $this->_log->addDebug(sprintf('New version "%s" available', $this->_latestVersion));
-
             return true;
         } else {
-            // $this->_log->addDebug('No new version available');
-
             return self::NO_UPDATE_AVAILABLE;
         }
     }
@@ -427,11 +456,10 @@ class AutoUpdater
      */
     protected function _downloadUpdate($updateUrl, $updateFile)
     {
-        // $this->_log->addInfo(sprintf('Downloading update "%s" to "%s"', $updateUrl, $updateFile));
         $update = AdminUtils::get_content($updateUrl);
 
         if ($update === false) {
-            // $this->_log->addError(sprintf('Could not download update "%s"!', $updateUrl));
+            $this->_errors[] = sprintf('Could not download update "%s"!', $updateUrl);
 
             return false;
         }
@@ -439,13 +467,13 @@ class AutoUpdater
         $handle = fopen($updateFile, 'w');
 
         if (!$handle) {
-            // $this->_log->addError(sprintf('Could not open file handle to save update to "%s"!', $updateFile));
+            $this->_errors[] = sprintf('Could not open file handle to save update to "%s"!', $updateFile);
 
             return false;
         }
 
         if (!fwrite($handle, $update)) {
-            // $this->_log->addError(sprintf('Could not write update to file "%s"!', $updateFile));
+            $this->_errors[] = sprintf('Could not write update to file "%s"!', $updateFile);
             fclose($handle);
 
             return false;
@@ -465,14 +493,12 @@ class AutoUpdater
      */
     protected function _simulateInstall($updateFile)
     {
-        // $this->_log->addNotice('[SIMULATE] Install new version');
         clearstatcache();
 
         // Check if zip file could be opened
         $zip = zip_open($updateFile);
         if (!is_resource($zip)) {
-            // $this->_log->addError(sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip));
-            // echo sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip);
+            $this->_errors[] = sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip);
 
             return false;
         }
@@ -509,13 +535,9 @@ class AutoUpdater
                 'absolute_filename' => $absoluteFilename,
             ];
 
-            // $this->_log->addDebug(sprintf('[SIMULATE] Updating file "%s"', $filename));
-            // echo sprintf('[SIMULATE] Updating file "%s"<br>', $filename);
-
             // Check if parent directory is writable
             if (!is_dir($foldername)) {
-                // $this->_log->addDebug(sprintf('[SIMULATE] Create directory "%s"', $foldername));
-                // echo sprintf('[SIMULATE] Create directory "%s"<br>', $foldername);
+                // $this->_errors[] = sprintf('[SIMULATE] Create directory "%s"', $foldername);
                 $files[$i]['parent_folder_exists'] = false;
 
                 $parent = dirname($foldername);
@@ -523,8 +545,7 @@ class AutoUpdater
                     $files[$i]['parent_folder_writable'] = false;
 
                     $simulateSuccess = false;
-                    // $this->_log->addWarning(sprintf('[SIMULATE] Directory "%s" has to be writeable!', $parent));
-                    // echo sprintf('[SIMULATE] Directory "%s" has to be writeable!<br>', $parent);
+                    $this->_errors[] = sprintf('[SIMULATE] Directory "%s" has to be writeable!', $parent);
                 } else {
                     $files[$i]['parent_folder_writable'] = true;
                 }
@@ -540,8 +561,7 @@ class AutoUpdater
                 $files[$i]['extractable'] = false;
 
                 $simulateSuccess = false;
-                // $this->_log->addWarning(sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!', $filename));
-                // echo sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!<br>', $filename);
+                $this->_errors[] = sprintf('[SIMULATE] Coud not read contents of file "%s" from zip file!', $filename);
             }
 
             // Write to file
@@ -551,33 +571,26 @@ class AutoUpdater
                     $files[$i]['file_writable'] = false;
 
                     $simulateSuccess = false;
-                    // $this->_log->addWarning('[SIMULATE] Could not overwrite "%s"!', $absoluteFilename);
-                    // echo sprintf('[SIMULATE] Could not overwrite "%s"!<br>', $absoluteFilename);
+                    $this->_errors[] = sprintf('[SIMULATE] Could not overwrite "%s"!', $absoluteFilename);
                 }
             } else {
                 $files[$i]['file_exists'] = false;
 
                 if (is_dir($foldername)) {
-                    if (!is_writable($foldername)) {
+                    if (!mkdir($foldername, $this->dirPermissions, true) && !is_writable($foldername)) {
                         $files[$i]['file_writable'] = false;
 
                         $simulateSuccess = false;
-                        // $this->_log->addWarning(sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename));
-                        // echo sprintf('[SIMULATE] The file "%s" could not be created!<br>', $absoluteFilename);
+                        $this->_errors[] = sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename);
                     } else {
                         $files[$i]['file_writable'] = true;
                     }
                 } else {
                     $files[$i]['file_writable'] = true;
-
-                    // $this->_log->addDebug(sprintf('[SIMULATE] The file "%s" could be created', $absoluteFilename));
-                    // echo sprintf('[SIMULATE] The file "%s" could be created<br>', $absoluteFilename);
                 }
             }
 
             if ($filename == $this->updateScriptName) {
-                // $this->_log->addDebug(sprintf('[SIMULATE] Update script "%s" found', $absoluteFilename));
-                // echo sprintf('[SIMULATE] Update script "%s" found<br>', $absoluteFilename);
                 $files[$i]['update_script'] = true;
             } else {
                 $files[$i]['update_script'] = false;
@@ -599,13 +612,9 @@ class AutoUpdater
      */
     protected function _install($updateFile, $simulateInstall, $version)
     {
-        // $this->_log->addNotice(sprintf('Trying to install update "%s"', $updateFile));
-
         // Check if install should be simulated
-        // $this->_simulateInstall($updateFile);
-        // return self::ERROR_SIMULATE;
         if ($simulateInstall && !$this->_simulateInstall($updateFile)) {
-            // $this->_log->addCritical('Simulation of update process failed!');
+            $this->_errors[] = 'Simulation of update process failed!';
 
             return self::ERROR_SIMULATE;
         }
@@ -615,7 +624,7 @@ class AutoUpdater
         // Check if zip file could be opened
         $zip = zip_open($updateFile);
         if (!is_resource($zip)) {
-            // $this->_log->addError(sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip));
+            $this->_errors[] = sprintf('Could not open zip file "%s", error: %d', $updateFile, $zip);
 
             return false;
         }
@@ -640,11 +649,9 @@ class AutoUpdater
             $foldername = $this->_installDir . dirname($filename);
             $absoluteFilename = $this->_installDir . $filename;
 
-            // $this->_log->addDebug(sprintf('Updating file "%s"', $filename));
-
             if (!is_dir($foldername)) {
                 if (!mkdir($foldername, $this->dirPermissions, true)) {
-                    // $this->_log->addError(sprintf('Directory "%s" has to be writeable!', $parent));
+                    $this->_errors[] = sprintf('Directory "%s" has to be writeable!', $parent);
 
                     return false;
                 }
@@ -658,14 +665,14 @@ class AutoUpdater
             $contents = zip_entry_read($file, zip_entry_filesize($file));
 
             if ($contents === false) {
-                // $this->_log->addError(sprintf('Coud not read zip entry "%s"', $file));
+                $this->_errors[] = sprintf('Coud not read zip entry "%s"', $file);
                 continue;
             }
 
             // Write to file
             if (file_exists($absoluteFilename)) {
                 if (!is_writable($absoluteFilename)) {
-                    // $this->_log->addError('Could not overwrite "%s"!', $absoluteFilename);
+                    $this->_errors[] = sprintf('Could not overwrite "%s"!', $absoluteFilename);
 
                     zip_close($zip);
 
@@ -673,26 +680,24 @@ class AutoUpdater
                 }
             } else {
                 if (!touch($absoluteFilename)) {
-                    // $this->_log->addError(sprintf('[SIMULATE] The file "%s" could not be created!', $absoluteFilename));
+                    $this->_errors[] = sprintf('The file "%s" could not be created!', $absoluteFilename);
                     zip_close($zip);
 
                     return false;
                 }
-
-                // $this->_log->addDebug(sprintf('File "%s" created', $absoluteFilename));
             }
 
             $updateHandle = @fopen($absoluteFilename, 'w');
 
             if (!$updateHandle) {
-                // $this->_log->addError(sprintf('Could not open file "%s"!', $absoluteFilename));
+                $this->_errors[] = sprintf('Could not open file "%s"!', $absoluteFilename);
                 zip_close($zip);
 
                 return false;
             }
 
             if (!fwrite($updateHandle, $contents)) {
-                // $this->_log->addError(sprintf('Could not write to file "%s"!', $absoluteFilename));
+                $this->_errors[] = sprintf('Could not write to file "%s"!', $absoluteFilename);
                 zip_close($zip);
 
                 return false;
@@ -702,20 +707,16 @@ class AutoUpdater
 
             //If file is a update script, include
             if ($filename == $this->updateScriptName) {
-                // $this->_log->addDebug(sprintf('Try to include update script "%s"', $absoluteFilename));
                 $upgrade_script = true;
                 require($absoluteFilename);
 
-                // $this->_log->addInfo(sprintf('Update script "%s" included!', $absoluteFilename));
                 if (!unlink($absoluteFilename)) {
-                    // $this->_log->addWarning(sprintf('Could not delete update script "%s"!', $absoluteFilename));
+                    $this->_warnings[] = sprintf('Could not delete update script "%s", you should remove it manually!', $absoluteFilename);
                 }
             }
         }
 
         zip_close($zip);
-
-        // $this->_log->addNotice(sprintf('Update "%s" successfully installed', $version));
 
         return true;
     }
@@ -736,7 +737,7 @@ class AutoUpdater
             $this->checkUpdate();
 
         if ($this->_latestVersion === null || count($this->_updates) === 0) {
-            // $this->_log->addError('Could not get latest version from server!');
+            $this->_errors[] = 'Could not get latest version from server!';
 
             return self::ERROR_VERSION_CHECK;
         }
@@ -751,14 +752,14 @@ class AutoUpdater
         foreach ($this->_updates as $update) {
             // Check for temp directory
             if (empty($this->_tempDir) || !is_dir($this->_tempDir) || !is_writable($this->_tempDir)) {
-                // $this->_log->addCritical(sprintf('Temporary directory "%s" does not exist or is not writeable!', $this->_tempDir));
+                $this->_errors[] = sprintf('Temporary directory "%s" does not exist or is not writeable!', $this->_tempDir);
 
                 return self::ERROR_TEMP_DIR;
             }
 
             // Check for install directory
             if (empty($this->_installDir) || !is_dir($this->_installDir) || !is_writable($this->_installDir)) {
-                // $this->_log->addCritical(sprintf('Install directory "%s" does not exist or is not writeable!', $this->_installDir));
+                $this->_errors[] = sprintf('Install directory "%s" does not exist or is not writeable!', $this->_installDir);
 
                 return self::ERROR_INSTALL_DIR;
             }
@@ -768,7 +769,7 @@ class AutoUpdater
             // Download update
             if (!is_file($updateFile)) {
                 if (!$this->_downloadUpdate($update['url'], $updateFile)) {
-                    // $this->_log->addCritical(sprintf('Failed to download update from "%s" to "%s"!', $update['url'], $updateFile));
+                    $this->_errors[] = sprintf('Failed to download update from "%s" to "%s"!', $update['url'], $updateFile);
 
                     return self::ERROR_DOWNLOAD_UPDATE;
                 }
@@ -779,15 +780,15 @@ class AutoUpdater
             if ($result === true) {
                 if ($deleteDownload) {
                     if (!@unlink($updateFile)) {
-                        // $this->_log->addError(sprintf('Could not delete update file "%s" after successfull update!', $updateFile));
+                        $this->_warnings[] = sprintf('Could not delete update file "%s" after successfull update, you should delete it manually!', $updateFile);
 
-                        return self::ERROR_DELETE_TEMP_UPDATE;
+                        // return self::ERROR_DELETE_TEMP_UPDATE;
                     }
                 }
             } else {
                 if ($deleteDownload) {
                     if (!@unlink($updateFile)) {
-                        // $this->_log->addError(sprintf('Could not delete update file "%s" after failed update!', $updateFile));
+                        $this->_warnings[] = sprintf('Could not delete update file "%s" after failed update, you should delete it manually!', $updateFile);
                     }
                 }
 
