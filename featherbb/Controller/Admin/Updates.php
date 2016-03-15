@@ -17,6 +17,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Lister;
+use FeatherBB\Core\Database;
 
 class Updates
 {
@@ -165,11 +166,21 @@ class Updates
             throw new Error(__('Wrong form values'), 500);
         }
 
+        $key = __('FeatherBB core');
+        $upgrade_results = [$key => []];
         $coreUpdater = new CoreAutoUpdater();
         $result = $coreUpdater->update();
         if ($result !== true) {
-            return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded'));
+            $upgrade_results[$key]['message'] = sprintf('Core %s failed update %s', ForumEnv::get('FORUM_VERSION'), $pluginsUpdater->getLatestVersion());
+            $upgrade_results[$key]['errors'] = $coreUpdater->getErrors();
+        } else {
+            $upgrade_results[$key]['message'] = sprintf('Core %s successfull update %s', ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
+            if (!Database::for_table('config')->set('o_cur_version', ForumEnv::get('FORUM_VERSION'))->save()) {
+                $coreUpdater->_warnings[] = __('Could not update core version in database');
+            }
         }
-        // TODO: handle errors
+        // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
+        $upgrade_results[$key]['warnings'] = $coreUpdater->getWarnings();
+        //     return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded'));
     }
 }
