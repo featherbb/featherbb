@@ -161,10 +161,6 @@ if (!empty($theme_updates)) {
                                     </td>
                                 </tr>
 <?php endforeach; ?>
-								<!-- <tr><th scope="row"><a href="http://localhost/admin/groups/edit/1" tabindex="5">Edit</a></th><td>Administrators</td></tr>
-								<tr><th scope="row"><a href="http://localhost/admin/groups/edit/2" tabindex="6">Edit</a></th><td>Moderators</td></tr>
-								<tr><th scope="row"><a href="http://localhost/admin/groups/edit/3" tabindex="7">Edit</a></th><td>Guests</td></tr>
-								<tr><th scope="row"><a href="http://localhost/admin/groups/edit/4" tabindex="8">Edit</a></th><td>Members</td></tr> -->
                             </table>
                         </div>
                     </fieldset>

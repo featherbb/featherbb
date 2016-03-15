@@ -79,38 +79,6 @@ class Updates
         )->addTemplate('admin/updates.php')->display();
     }
 
-    public function check($req, $res, $args)
-    {
-        Container::get('hooks')->fire('controller.admin.updates.check');
-
-        // Check for upgrade
-        if ($args['action'] == 'check_upgrade') {
-            if (!ini_get('allow_url_fopen')) {
-                throw new Error(__('fopen disabled message'), 500);
-            }
-
-            $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version.html'));
-            if (empty($latest_version)) {
-                throw new Error(__('Upgrade check failed message'), 500);
-            }
-
-            if (version_compare(ForumSettings::get('o_cur_version'), $latest_version, '>=')) {
-                return Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
-            } else {
-                return Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">FeatherBB.org</a>'));
-            }
-        }
-
-        AdminUtils::generateAdminMenu('updates');
-
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
-                'active_page' => 'admin',
-                'admin_console' => true
-            )
-        )->addTemplate('admin/updates.php')->display();
-    }
-
     public function upgradePlugins($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.updates.upgradePlugins');
@@ -175,7 +143,7 @@ class Updates
             $upgrade_results[$key]['errors'] = $coreUpdater->getErrors();
         } else {
             $upgrade_results[$key]['message'] = sprintf('Core %s successfull update %s', ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
-            if (!Database::for_table('config')->set('o_cur_version', ForumEnv::get('FORUM_VERSION'))->save()) {
+            if (!Database::for_table('config')->raw_execute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', array('value' => ForumEnv::get('FORUM_VERSION')))) {
                 $coreUpdater->_warnings[] = __('Could not update core version in database');
             }
         }
