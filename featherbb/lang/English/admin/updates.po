@@ -26,14 +26,14 @@ msgstr "Available updates"
 msgid "Check for updates"
 msgstr "Check for updates"
 
-msgid "Core upgraded"
-msgstr "FeatherBB core upgraded successfully"
+msgid "Failed upgrade message"
+msgstr "Failed upgrading from version %s to %s!"
 
-msgid "Plugins upgraded"
-msgstr "%s plugins upgraded successfully"
+msgid "Successful upgrade message"
+msgstr "Successfully upgraded from version %s to %s!"
 
-msgid "Themes upgraded"
-msgstr "%s themes upgraded successfully"
+msgid "Could not update core version in database"
+msgstr "Could not update FeatherBB core version in database. You should edit it manually in the config table if you can."
 
 msgid "FeatherBB core"
 msgstr "FeatherBB core"

@@ -100,10 +100,10 @@ class Updates
                 $pluginsUpdater = new PluginAutoUpdater($plugin);
                 $result = $pluginsUpdater->update();
                 if ($result !== true) {
-                    $upgrade_results[$plugin->title]['message'] = sprintf('Plugin %s failed update %s', $plugin->version, $pluginsUpdater->getLatestVersion());
+                    $upgrade_results[$plugin->title]['message'] = sprintf(__('Failed upgrade message'), $plugin->version, $pluginsUpdater->getLatestVersion());
                     $upgrade_results[$plugin->title]['errors'] = $pluginsUpdater->getErrors();
                 } else {
-                    $upgrade_results[$plugin->title]['message'] = sprintf('Plugin %s successfull update %s', $plugin->version, $pluginsUpdater->getLatestVersion());
+                    $upgrade_results[$plugin->title]['message'] = sprintf(__('Successful upgrade message'), $plugin->version, $pluginsUpdater->getLatestVersion());
                 }
                 // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
                 $upgrade_results[$plugin->title]['warnings'] = $pluginsUpdater->getWarnings();
@@ -122,7 +122,6 @@ class Updates
                 'upgrade_results' => $upgrade_results
             )
         )->addTemplate('admin/updates.php')->display();
-        // return Router::redirect(Router::pathFor('adminUpdates'), sprintf(__('Plugins upgraded'), sizeof($upgrade_results)));
     }
 
     public function upgradeCore($req, $res, $args)
@@ -139,16 +138,28 @@ class Updates
         $coreUpdater = new CoreAutoUpdater();
         $result = $coreUpdater->update();
         if ($result !== true) {
-            $upgrade_results[$key]['message'] = sprintf('Core %s failed update %s', ForumEnv::get('FORUM_VERSION'), $pluginsUpdater->getLatestVersion());
+            $upgrade_results[$key]['message'] = sprintf(__('Failed upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
             $upgrade_results[$key]['errors'] = $coreUpdater->getErrors();
         } else {
-            $upgrade_results[$key]['message'] = sprintf('Core %s successfull update %s', ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
+            $upgrade_results[$key]['message'] = sprintf(__('Successful upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
+            // Reset cache and update core version in database
+            Container::get('cache')->flush();
             if (!Database::for_table('config')->raw_execute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', array('value' => ForumEnv::get('FORUM_VERSION')))) {
                 $coreUpdater->_warnings[] = __('Could not update core version in database');
             }
         }
         // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
         $upgrade_results[$key]['warnings'] = $coreUpdater->getWarnings();
-        //     return Router::redirect(Router::pathFor('adminUpdates'), __('Core upgraded'));
+
+        // Display upgrade results
+        AdminUtils::generateAdminMenu('updates');
+
+        return View::setPageInfo(array(
+                'title'           => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
+                'active_page'     => 'admin',
+                'admin_console'   => true,
+                'upgrade_results' => $upgrade_results
+            )
+        )->addTemplate('admin/updates.php')->display();
     }
 }
