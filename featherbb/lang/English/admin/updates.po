@@ -70,3 +70,63 @@ msgstr "Upgrade plugins"
 
 msgid "Upgrade themes"
 msgstr "Upgrade themes"
+
+msgid "Could not check for updates"
+msgstr "Could not reach \"%s\" to check for updates!"
+
+msgid "Unable to parse json update file"
+msgstr "Unable to parse json update file!"
+
+msgid "Could not parse version"
+msgstr "Could not parse version \"%s\" from update server \"%s\""
+
+msgid "Could not download update"
+msgstr "Could not download update \"%s\"!"
+
+msgid "Could not open file handle"
+msgstr "Could not open file handle to save update to \"%s\"!"
+
+msgid "Could not write update to file"
+msgstr "Could not write update to file \"%s\""
+
+msgid "Could not open zip file"
+msgstr "Could not open zip file \"%s\", error: %d"
+
+msgid "Directory not writeable"
+msgstr "Directory \"%s\" has to be writeable!"
+
+msgid "Coud not read zip entry"
+msgstr "Coud not read contents of file \"%s\" from zip file!"
+
+msgid "Could not overwrite file"
+msgstr "Could not overwrite file \"%s\"!"
+
+msgid "File could not be created"
+msgstr "The file \"%s\" could not be created!"
+
+msgid "Could not open file
+msgstr "Could not open file \"%s\"!"
+
+msgid "Could not write to file"
+msgstr "Could not write to file \"%s\"!"
+
+msgid "Could not delete update script"
+msgstr "Could not delete update script \"%s\", you should remove it manually!"
+
+msgid "Could not get latest version"
+msgstr "Could not get latest version from server!"
+
+msgid "Temporary directory not writeable"
+msgstr "Temporary directory \"%s\" does not exist or is not writeable!"
+
+msgid "Install directory not writeable"
+msgstr "Install directory \"%s\" does not exist or is not writeable!"
+
+msgid "Failed to download update"
+msgstr "Failed to download update from \"%s\" to \"%s\"!"
+
+msgid "Could not delete update file"
+msgstr "Could not delete update file \"%s\", you should delete it manually!"
+
+msgid "Update warnings"
+msgstr "Update warnings"

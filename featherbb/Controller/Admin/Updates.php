@@ -32,38 +32,41 @@ class Updates
     {
         Container::get('hooks')->fire('controller.admin.updates.display');
 
-        $core_updates = false;
+        $coreUpdates = false;
+        $coreUpdatesMessage = __('FeatherBB core up to date');
 
-        $plugin_updates = array();
-        $all_plugins = Lister::getPlugins();
+        $pluginUpdates = array();
+        $allPlugins = Lister::getPlugins();
 
         // Check FeatherBB core updates
         $coreUpdater = new CoreAutoUpdater();
         if ($coreUpdater->checkUpdate() === false) {
-            // TODO: add error message to view
+            $coreUpdatesMessage = join('<br>', $coreUpdater->getErrors());
         } else {
-            // If update available, add plugin to display in view
+            // If update available
             if ($coreUpdater->newVersionAvailable()) {
-                $core_updates = $coreUpdater->getLatestVersion();
+                $coreUpdates = true;
+                $coreUpdatesMessage = sprintf(__('FeatherBB core updates available'), ForumSettings::get('o_cur_version'), $coreUpdater->getLatestVersion());
+                $coreUpdatesMessage .= '<a href="https://github.com/featherbb/featherbb/releases/tag/'.$coreUpdater->getLatestVersion().'" target="_blank">'.__('View changelog').'</a>';
             }
         }
 
         // Check plugins uavailable versions
-        foreach ($all_plugins as $plugin) {
+        foreach ($allPlugins as $plugin) {
             // If plugin isn't well formed or doesn't want to be auto-updated, skip it
             if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
                 continue;
             }
             $pluginsUpdater = new PluginAutoUpdater($plugin);
-            // If check fails, go to next item
+            // If check fails, add errors to display in view
             if ($pluginsUpdater->checkUpdate() === false) {
-                // TODO: handle errors
-                continue;
+                $plugin->errors = join('<br>', $pluginsUpdater->getErrors());
+                $pluginUpdates[] = $plugin;
             }
             // If update available, add plugin to display in view
             if ($pluginsUpdater->newVersionAvailable()) {
                 $plugin->last_version = $pluginsUpdater->getLatestVersion();
-                $plugin_updates[] = $plugin;
+                $pluginUpdates[] = $plugin;
             }
         }
 
@@ -73,8 +76,9 @@ class Updates
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'plugin_updates' => $plugin_updates,
-                'core_updates' => $core_updates
+                'plugin_updates' => $pluginUpdates,
+                'core_updates' => $coreUpdates,
+                'core_updates_message' => $coreUpdatesMessage
             )
         )->addTemplate('admin/updates.php')->display();
     }
@@ -111,6 +115,9 @@ class Updates
                 continue;
             }
         }
+
+        // Reset cache
+        Container::get('cache')->flush();
 
         // Display upgrade results
         AdminUtils::generateAdminMenu('updates');

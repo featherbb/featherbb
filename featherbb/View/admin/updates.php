@@ -22,7 +22,6 @@ if (empty($upgrade_results)): ?>
     <div class="blockform">
         <h2><span><?php _e('Available updates') ?></span></h2>
         <div class="box">
-            <p class="submittop"><input type="submit" name="check-updates" value="<?php _e('Check for updates') ?>" /></p>
             <form id="upgrade-core" method="post" action="<?= Router::pathFor('adminUpgradeCore') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
@@ -30,12 +29,7 @@ if (empty($upgrade_results)): ?>
                         <legend><?php _e('FeatherBB core') ?></legend>
                         <div class="infldset">
                             <p>
-                                <?php if ($core_updates): ?>
-                                    <?php printf(__('FeatherBB core updates available'), ForumEnv::get('FORUM_VERSION'), $core_updates) ?>
-                                    <a href="https://github.com/featherbb/featherbb/releases/tag/<?= $core_updates; ?>" target="_blank"><?php _e('View changelog') ?></a>
-                                <?php else:
-                                    _e('FeatherBB core up to date');
-                                endif; ?>
+                                <?= $core_updates_message; ?>
                             </p>
                         </div>
                     </fieldset>
@@ -50,24 +44,28 @@ if (empty($upgrade_results)): ?>
                         <div class="infldset">
 <?php
 if (!empty($plugin_updates)) {
-    ?>
+// Init valid updates
+$valid_plugin_updates = 0;
+?>
                             <table>
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Plugin') ?></th>
-                                    <th class="tcr" scope="col"><?php _e('Latest version label') ?></th>
+                                    <th class="tcl" scope="col"></th>
+                                    <th class="tcr" scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
 <?php foreach ($plugin_updates as $plugin): ?>
                                 <tr>
                                     <td class="tcl">
-                                        <input type="checkbox" name="plugin_updates[<?= $plugin->name ?>]" value="<?= $plugin->version ?>" checked />
+                                        <?php if(!isset($plugin->errors)): ?><input type="checkbox" name="plugin_updates[<?= $plugin->name ?>]" value="<?= $plugin->version ?>" checked /><?php endif; ?>
                                         <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
                                     </td>
-                                    <td>
+                                    <td class="tcr">
+<?php if(!isset($plugin->errors)): ++$valid_plugin_updates; ?>
                                         <a href="https://github.com/featherbb/<?= $plugin->name; ?>/releases/tag/<?= $plugin->last_version; ?>" target="_blank"><?= $plugin->last_version; ?></a>
                                         <a href="http://marketplace.featherbb.org/plugins/view/<?= $plugin->name; ?>/changelog" target="_blank"><?php _e('View changelog') ?></a>
+<?php else: echo $plugin->errors; endif; ?>
                                     </td>
                                 </tr>
 <?php endforeach; ?>
@@ -82,7 +80,7 @@ if (!empty($plugin_updates)) {
 ?>
                         </div>
                     </fieldset>
-                    <?php if (!empty($plugin_updates)): ?><p class="buttons"><input type="submit" name="upgrade-plugins" value="<?php _e('Upgrade plugins') ?>" /></p><?php endif; ?>
+                    <?php if ($valid_plugin_updates > 0): ?><p class="buttons"><input type="submit" name="upgrade-plugins" value="<?php _e('Upgrade plugins') ?>" /></p><?php endif; ?>
                 </div>
             </form>
             <form id="upgrade-themes" method="post" action="<?= Router::pathFor('adminUpgradeThemes') ?>">
@@ -141,8 +139,8 @@ if (!empty($theme_updates)) {
                         <div class="infldset">
                             <!-- <p>The pre-defined groups Guests, Administrators, Moderators and Members cannot be removed. However, they can be edited. Please note that in some groups, some options are unavailable (e.g. the <em>edit posts</em> permission for guests). Administrators always have full permissions.</p> -->
                             <table>
-                                <tr>
 <?php foreach ($upgrade_results as $key => $result): ?>
+                                <tr>
                                     <th scope="row"><?= Utils::escape($key) ?></th>
                                     <td>
                                         <span><?= Utils::escape($result['message']); ?></span>
