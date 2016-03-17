@@ -1,0 +1,82 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "No new regs"
+msgstr "Ces forums n'acceptent pas de nouveaux utilisateurs."
+
+msgid "Reg cancel redirect"
+msgstr "Inscription annulée. Redirection&#160;…"
+
+msgid "Forum rules"
+msgstr "Conditions d'utilisation des forums"
+
+msgid "Rules legend"
+msgstr "Vous devez accepter les conditions d'utilisation suivantes pour vous inscrire sur ces forums."
+
+msgid "Registration flood"
+msgstr "Un nouvel utilisateur ayant la même adresse IP que vous a été inscrit dans la dernière heure. Pour éviter les inscriptions multiples, il n'est pas possible de s'inscrire à partir de la même IP dans un intervalle inférieur à 1 heure. Désolé pour la gêne occasionnée."
+
+msgid "Agree"
+msgstr "J'accepte"
+
+msgid "Cancel"
+msgstr "Je refuse"
+
+msgid "Register"
+msgstr "S'inscrire"
+
+msgid "Registration errors"
+msgstr "Erreurs d'inscription"
+
+msgid "Registration errors info"
+msgstr "Les erreurs suivantes doivent être corrigées avant que vous puissiez vous inscrire&#160;:"
+
+msgid "Username censor"
+msgstr "Le nom d'utilisateur que vous avez saisi contient des mots interdits. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username dupe 1"
+msgstr "Il existe déjà une personne inscrite avec ce nom d'utilisateur."
+
+msgid "Username dupe 2"
+msgstr "Ce nom d'utilisateur est trop ressemblant. Il doit différer par au moins un caractère alpha-numérique (a-z ou 0-9). Veuillez essayer un autre nom d'utilisateur."
+
+msgid "Email not match"
+msgstr "Les adresses électroniques ne coïncident pas. Veuillez revenir en arrière et corriger cela."
+
+msgid "Reg email"
+msgstr "Merci de vous être inscrit(e). Votre mot de passe a été envoyé à l'adresse indiquée. Si vous ne l'obtenez pas, merci de contacter l'administrateur&#160;:"
+
+msgid "Reg complete"
+msgstr "Inscription acceptée. Identification et redirection&#160;…"
+
+msgid "Desc 1"
+msgstr "L'inscription vous permettra d'accéder à un certain nombre de fonctionnalités autrement indisponibles. Cela inclut la possibilité de modifier et d'effacer des messages, de créer vos propres signatures et bien davantage. Pour toute question, contactez l'administrateur."
+
+msgid "Desc 2"
+msgstr "Ci-dessous le formulaire à remplir afin de vous inscrire. Après vous être inscrit(e), vous pourrez consulter votre profil et modifier vos préférences. Les champs ci-dessous ne sont qu'une toute petite partie de tout ce que vous pouvez changer dans votre profil."
+
+msgid "Username legend"
+msgstr "Veuillez saisir un nom d'utilisateur comportant entre 2 et 25 caractères."
+
+msgid "Pass legend"
+msgstr "Veuillez saisir et confirmer le mot de passe que vous avez choisi."
+
+msgid "Pass info"
+msgstr "Le mot de passe doit comporter au minimum 6 caractères (sensible à la casse)."
+
+msgid "Email info"
+msgstr "Vous devez saisir une adresse électronique valide. Vous pouvez choisir de ne pas divulguer votre adresse aux autres utilisateurs (voir ci-dessous)."
+
+msgid "Confirm email"
+msgstr "Confirmez votre adresse électronique"

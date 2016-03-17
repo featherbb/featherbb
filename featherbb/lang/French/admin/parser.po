@@ -1,0 +1,163 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Parser head"
+msgstr "Parser Options, BBCodes and Smilies"
+
+msgid "reset_success"
+msgstr "Parser Options, BBCodes and Smilies successfully reset to FluxBB default settings."
+
+msgid "save_success"
+msgstr "Parser changes successfully saved."
+
+msgid "upload success"
+msgstr "Smiley file upload successful."
+
+msgid "upload_button"
+msgstr "Upload File"
+
+msgid "reset defaults"
+msgstr "Restore default settings"
+
+msgid "Remotes subhead"
+msgstr "Remote image validation"
+
+msgid "unavailable"
+msgstr "This function is unavailable."
+
+msgid "Config subhead"
+msgstr "Parser options"
+
+msgid "syntax style"
+msgstr "CODE syntax style"
+
+msgid "syntax style help"
+msgstr "Select a style sheet file from this list of currently installed SyntaxHighlighter files."
+
+msgid "textile"
+msgstr "Enable Textile shortcuts"
+
+msgid "textile help"
+msgstr "Enable some textile tag keystroke shortcuts: _emphasized_, *strong*, @inline code@, super^script^, sub~script~, -deleted- and +inserted+ text. Textile shortcuts for bulleted (*) and numbered (#) lists are also supported. When posting a new message, (or editing an existing one), during the pre-parsing phase, the textile shortcut delimiters are converted to their equivalent BBCode tags before being stored in the database."
+
+msgid "quote_imgs"
+msgstr "Display IMG in QUOTE "
+
+msgid "quote_imgs help"
+msgstr "Display images contained within QUOTE tags. If this option is set to \"No\" (the default setting), then images within a quote are not displayed graphically but are instead displayed as a simple text hyperlink to the image (with the link text set to: \"{IMG}\"). If this option is set to \"Yes\", then images within quotes are displayed normally (as a graphic object)."
+
+msgid "quote_links"
+msgstr "Linkify QUOTE citation"
+
+msgid "quote_links help"
+msgstr "Make the \"Poster wrote:\" citation text a link back to the original post for quotes having original post number metadata included in the tag attribute (the post number, preceded by a: '#', is specified at the end of the attribute like so: \"[quote=Admin #101]...[/quote]\")."
+
+msgid "click_imgs"
+msgstr "Make IMG clickable"
+
+msgid "click_imgs help"
+msgstr "Display images and also make each image a clickable link to the full sized original."
+
+msgid "max_xy"
+msgstr "Maximum media XY"
+
+msgid "max_xy help"
+msgstr "Maximum pixel width and height allowable for new visual media objects (images, videos etc)."
+
+msgid "smiley_size"
+msgstr "Smiley display size"
+
+msgid "smiley_size help"
+msgstr "Percent size adjustment for smiley box dimensions (default 160% == 24x24 pixels)."
+
+msgid "valid_imgs"
+msgstr "Validate remote IMG"
+
+msgid "valid_imgs help"
+msgstr "When posting a message having IMG tags, validate the existence of the remote image files by requesting their file header information. Check each remote image filesize and do NOT display if too big (to save the forum viewer's bandwidth). If any image has a dimension greater than \"Max width\" or \"Max height\", then limit the displayed image to fit. (Note that this option is disabled if the PHP variable \"allow_url_fopen\" is FALSE.)"
+
+msgid "max_size"
+msgstr "Maximum IMG filesize"
+
+msgid "max_size help"
+msgstr "Maximum remote image filesize to be allowed on forum pages. When creating a new post, the remote image file size is checked against this value and reported as an error if it is too big and image validation is on."
+
+msgid "def_xy"
+msgstr "Default media XY"
+
+msgid "def_xy help"
+msgstr "Default pixel width and height for new visual media objects (images, videos etc). When a post has an IMG tag and the \"Validate remote IMG\" option is turned on, then the remote file information is scaled to fit within these dimensions and retain the original aspect ratio."
+
+msgid "Smilies subhead"
+msgstr "Smilies"
+
+msgid "smiley_text_label"
+msgstr "Smiley text"
+
+msgid "smiley_file_label"
+msgstr "Smiley image file"
+
+msgid "smiley_upload"
+msgstr "Upload new smiley image"
+
+msgid "upload_err_1"
+msgstr "Smiley upload failed. Unable to move to smiley folder."
+
+msgid "upload_err_2"
+msgstr "Smiley upload failed. File is too big."
+
+msgid "upload_err_3"
+msgstr "Smiley upload failed. File type is not an image."
+
+msgid "upload_err_4"
+msgstr "Smiley upload failed. Bad filename."
+
+msgid "upload_err_5"
+msgstr "Smiley upload failed. File only partially uploaded."
+
+msgid "upload_err_6"
+msgstr "Smiley upload failed. No filename."
+
+msgid "upload_err_7"
+msgstr "Smiley upload failed. No temporary folder."
+
+msgid "upload_err_8"
+msgstr "Smiley upload failed. Cannot write file to disk."
+
+msgid "upload_err_9"
+msgstr "Smiley upload failed. Unknown error!"
+
+msgid "upload_off"
+msgstr "Uploading files is currently disabled."
+
+msgid "BBCodes subhead"
+msgstr "BBCodes"
+
+msgid "tagname_label"
+msgstr "BBCode Tag Name"
+
+msgid "tagtype_label"
+msgstr "Tag type"
+
+msgid "in_post_label"
+msgstr "Allow in posts?"
+
+msgid "in_sig_label"
+msgstr "Allow in signatures?"
+
+msgid "depth_max"
+msgstr "Max tag nesting depth."
+
+msgid "tag_summary"
+msgstr ""

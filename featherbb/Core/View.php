@@ -241,7 +241,7 @@ class View
     public function addAsset($type, $asset, $params = array())
     {
         $type = (string) $type;
-        if (!in_array($type, array('js', 'css', 'feed', 'canonical', 'prev', 'next'))) {
+        if (!in_array($type, array('js', 'css', 'canonical', 'prev', 'next'))) {
             throw new \Exception('Invalid asset type : ' . $type);
         }
         if (in_array($type, array('js', 'css')) && !is_file(ForumEnv::get('FEATHER_ROOT').$asset)) {
@@ -356,8 +356,6 @@ class View
                 return array('type' => 'text/javascript');
             case 'css':
                 return array('rel' => 'stylesheet', 'type' => 'text/css');
-            case 'feed':
-                return array('rel' => 'alternate', 'type' => 'application/atom+xml');
             case 'canonical':
                 return array('rel' => 'canonical');
             case 'prev':

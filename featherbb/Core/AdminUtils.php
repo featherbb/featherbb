@@ -16,6 +16,8 @@ class AdminUtils
 {
     public static function generateAdminMenu($page = '')
     {
+        translate('admin/common');
+
         $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
 
         // See if there are any plugins that want to display in the menu

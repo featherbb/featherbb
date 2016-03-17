@@ -505,42 +505,6 @@ Container::get('hooks')->fire('view.admin.options.start');
                 </div>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Feed subhead') ?></legend>
-                        <div class="infldset">
-                            <table class="aligntop">
-                                <tr>
-                                    <th scope="row"><?php _e('Default feed label') ?></th>
-                                    <td>
-                                        <label class="conl"><input type="radio" name="form_feed_type" value="0"<?php if (ForumSettings::get('o_feed_type') == '0') {
-    echo ' checked="checked"';
-} ?> />&#160;<strong><?php _e('None') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="form_feed_type" value="1"<?php if (ForumSettings::get('o_feed_type') == '1') {
-    echo ' checked="checked"';
-} ?> />&#160;<strong><?php _e('RSS') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="form_feed_type" value="2"<?php if (ForumSettings::get('o_feed_type') == '2') {
-    echo ' checked="checked"';
-} ?> />&#160;<strong><?php _e('Atom') ?></strong></label>
-                                        <span class="clearb"><?php _e('Default feed help') ?></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><?php _e('Feed TTL label') ?></th>
-                                    <td>
-                                        <select name="form_feed_ttl">
-                                            <option value="0"<?php if (ForumSettings::get('o_feed_ttl') == '0') {
-    echo ' selected="selected"';
-} ?>><?php _e('No cache') ?></option>
-                                            <?= $times ?>
-                                        </select>
-                                        <span><?php _e('Feed TTL help') ?></span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="inform">
-                    <fieldset>
                         <legend><?php _e('Reports subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">

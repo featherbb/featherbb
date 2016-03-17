@@ -1,0 +1,31 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "User find legend"
+msgstr "Chercher et trier les utilisateurs"
+
+msgid "User search info"
+msgstr "Saisissez un nom d'utilisateur pour le rechercher et/ou un groupe d'utilisateurs pour filtrer les résultats. Le champ «&#160;Nom d'utilisateur&#160;» peut rester vide. Utilisez le joker * pour des recherches sur une partie du nom."
+
+msgid "User sort info"
+msgstr "Triez les utilisateurs par nom, date d'inscription ou nombre de messages et dans l'ordre croissant ou décroissant."
+
+msgid "User group"
+msgstr "Groupe d'utilisateurs"
+
+msgid "No of posts"
+msgstr "Nombre de messages"
+
+msgid "All users"
+msgstr "Tous les utilisateurs"
