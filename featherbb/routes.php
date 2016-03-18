@@ -180,10 +180,10 @@ Route::group('/admin', function() {
 
 // API
 Route::group('/api', function() {
-    Route::get('/user/{id:[0-9]+}', '\FeatherBB\Controller\Api:user')->setName('userApi');
-    Route::get('/forum/{id:[0-9]+}', '\FeatherBB\Controller\Api:forum')->setName('forumApi');
-    Route::get('/topic/{id:[0-9]+}', '\FeatherBB\Controller\Api:topic')->setName('topicApi');
-    Route::get('/post/{id:[0-9]+}', '\FeatherBB\Controller\Api:post')->setName('postApi');
+    Route::get('/user/{id:[0-9]+}', '\FeatherBB\Controller\Api\User:display')->setName('userApi');
+    Route::get('/forum/{id:[0-9]+}', '\FeatherBB\Controller\Api\Forum:display')->setName('forumApi');
+    Route::get('/topic/{id:[0-9]+}', '\FeatherBB\Controller\Api\Topic:display')->setName('topicApi');
+    Route::get('/post/{id:[0-9]+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
 })->add(new JsonHeader);
 
 // Override the default Not Found Handler

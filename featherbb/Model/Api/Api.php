@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB\Model;
+namespace FeatherBB\Model\Api;
 
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Database as DB;
@@ -15,17 +15,21 @@ use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Utils;
 
+/**
+ * Api base class, used to authenticate the user
+ * @package FeatherBB\Model\Api
+ */
 class Api
 {
-    private $errorMessage = array("error" => "Not Found");
+    protected $errorMessage = array("error" => "Not Found");
 
-    private $connected = false;
+    protected $connected = false;
 
-    private $isAdMod = false;
+    protected $isAdMod = false;
 
-    private $tmpUser;
+    protected $tmpUser;
 
-    private $user;
+    protected $user;
 
     /**
      * Api constructor.
@@ -76,84 +80,5 @@ class Api
     public static function getToken($user)
     {
         return Random::hash($user->password.$user->registered.$user->username);
-    }
-
-    public function user($id)
-    {
-        $user = new \FeatherBB\Model\Profile();
-
-        // Remove sensitive fields for regular users
-        if (!$this->isAdMod) {
-            Container::get('hooks')->bind('model.profile.get_user_info', function ($user) {
-                $user = $user->select_delete_many(array('u.email', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.registration_ip', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit'));
-                return $user;
-            });
-        }
-
-        try {
-            $data = $user->get_user_info($id);
-        } catch (Error $e) {
-            return $this->errorMessage;
-        }
-
-        $data = $data->as_array();
-
-        return $data;
-    }
-
-    public function forum($id)
-    {
-        $forum = new \FeatherBB\Model\Forum();
-
-        Container::get('hooks')->bind('model.forum.get_info_forum_query', function ($cur_forum) {
-            $cur_forum = $cur_forum->select('f.num_posts');
-            return $cur_forum;
-        });
-
-        try {
-            $data = $forum->get_forum_info($id);
-        } catch (Error $e) {
-            return $this->errorMessage;
-        }
-
-        $data = $data->as_array();
-
-        $data['moderators'] = unserialize($data['moderators']);
-
-        return $data;
-    }
-
-    public function topic($id)
-    {
-        $topic = new \FeatherBB\Model\Topic();
-
-        try {
-            $data = $topic->get_info_topic($id);
-        } catch (Error $e) {
-            return $this->errorMessage;
-        }
-
-        $data = $data->as_array();
-
-        $data['moderators'] = unserialize($data['moderators']);
-
-        return $data;
-    }
-
-    public function post($id)
-    {
-        $post = new \FeatherBB\Model\Post();
-
-        try {
-            $data = $post->get_info_edit($id);
-        } catch (Error $e) {
-            return $this->errorMessage;
-        }
-
-        $data = $data->as_array();
-
-        $data['moderators'] = unserialize($data['moderators']);
-
-        return $data;
     }
 }
