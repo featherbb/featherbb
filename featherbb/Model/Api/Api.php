@@ -61,9 +61,9 @@ class Api
             $this->connected = true;
             $this->user = $this->tmpUser;
         }
-        // ... or use current session if neither username nor id have been provided, or the token is invalid
+        // ... or login as guest
         else {
-            $this->user = User::get();
+            $this->user = User::get(1);
         }
 
         // If he is admin or moderator

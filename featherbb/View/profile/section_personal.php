@@ -9,7 +9,7 @@
 
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Utils;
-use FeatherBB\Model\Api;
+use FeatherBB\Model\Api\Api;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {

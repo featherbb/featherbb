@@ -35,6 +35,10 @@ class Topic extends Api
     //  Get some info about the post
     public function get_info_post($tid, $fid)
     {
+        if (!$fid && !$tid) {
+            return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
+        }
+
         $cur_posting['where'] = array(
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
@@ -75,15 +79,20 @@ class Topic extends Api
         return $cur_posting;
     }
 
-    public function checkPermissions($cur_posting, $args)
+    public function checkPermissions($cur_posting, $tid, $fid)
     {
+        // Is someone trying to post into a redirect forum?
+        if ($cur_posting['redirect_url'] != '') {
+            return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
+        }
+
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
         $is_admmod = ($this->user->g_id == ForumEnv::get('FEATHER_ADMIN') || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($args['tid'] && (($cur_posting['post_replies'] == '' && $this->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($args['fid'] && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($tid && (($cur_posting['post_replies'] == '' && $this->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
+                ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
             !$is_admmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);

@@ -26,16 +26,11 @@ class Topic extends Api
     public function newTopic($req, $res, $args)
     {
         // Fetch some info about the topic and/or the forum
-        $cur_posting = $this->model->get_info_post($args['tid'], $args['fid']);
+        $cur_posting = $this->model->get_info_post(false, $args['id']);
 
         //$is_subscribed = $args['tid'] && $cur_posting['is_subscribed'];
 
-        // Is someone trying to post into a redirect forum?
-        if ($cur_posting['redirect_url'] != '') {
-            return json_encode($this->errorMessage);
-        }
-
-        $is_admmod = $this->model->checkPermissions($cur_posting, $args);
+        $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
 
         if (is_bool($is_admmod)) {
             return $is_admmod;
@@ -45,7 +40,7 @@ class Topic extends Api
         $errors = array();
 
         // Let's see if everything went right
-        $errors = $this->model->check_errors_before_post($args['fid'], $errors);
+        $errors = $this->model->check_errors_before_post($args['id'], $errors);
 
         // Setup some variables before post
         $post = $this->model->setup_variables($errors, $is_admmod);
@@ -65,7 +60,7 @@ class Topic extends Api
             // If it's a new topic
             elseif ($args['fid']) {*/
                 // Insert the topic, get the new_pid
-                $new = $this->model->insert_topic($post, $args['fid']);
+                $new = $this->model->insert_topic($post, $args['id']);
 
                 // Should we send out notifications?
                 if (ForumSettings::get('o_forum_subscriptions') == '1') {
