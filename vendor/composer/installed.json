@@ -314,18 +314,72 @@
         "homepage": "https://github.com/firebase/php-jwt"
     },
     {
-        "name": "slim/slim",
-        "version": "3.2.2",
-        "version_normalized": "3.2.2.0",
+        "name": "vierbergenlars/php-semver",
+        "version": "3.0.1",
+        "version_normalized": "3.0.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/slimphp/Slim.git",
-            "reference": "1d99b8846c784d885201b2b709bfedb63656ed30"
+            "url": "https://github.com/vierbergenlars/php-semver.git",
+            "reference": "516bb3061577e60e9420cbecc479362d3ad8c7f1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/slimphp/Slim/zipball/1d99b8846c784d885201b2b709bfedb63656ed30",
-            "reference": "1d99b8846c784d885201b2b709bfedb63656ed30",
+            "url": "https://api.github.com/repos/vierbergenlars/php-semver/zipball/516bb3061577e60e9420cbecc479362d3ad8c7f1",
+            "reference": "516bb3061577e60e9420cbecc479362d3ad8c7f1",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "simpletest/simpletest": "1.1.*"
+        },
+        "time": "2015-05-02 19:28:54",
+        "bin": [
+            "bin/semver",
+            "bin/update-versions"
+        ],
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "vierbergenlars\\SemVer\\": "src/",
+                "vierbergenlars\\LibJs\\": "src/"
+            },
+            "classmap": [
+                "src/vierbergenlars/SemVer/internal.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Lars Vierbergen",
+                "email": "vierbergenlars@gmail.com"
+            }
+        ],
+        "description": "The Semantic Versioner for PHP",
+        "keywords": [
+            "semantic",
+            "semver",
+            "versioning"
+        ]
+    },
+    {
+        "name": "slim/slim",
+        "version": "3.3.0",
+        "version_normalized": "3.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/slimphp/Slim.git",
+            "reference": "939f2e85d57508de9cff241d10091cd972f221c3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/slimphp/Slim/zipball/939f2e85d57508de9cff241d10091cd972f221c3",
+            "reference": "939f2e85d57508de9cff241d10091cd972f221c3",
             "shasum": ""
         },
         "require": {
@@ -339,7 +393,7 @@
             "phpunit/phpunit": "^4.0",
             "squizlabs/php_codesniffer": "^2.5"
         },
-        "time": "2016-03-05 19:36:16",
+        "time": "2016-03-10 21:37:40",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

@@ -978,9 +978,10 @@ class Request extends Message implements ServerRequestInterface
                 );
             }
             $this->bodyParsed = $parsed;
+            return $this->bodyParsed;
         }
 
-        return $this->bodyParsed;
+        return null;
     }
 
     /**
@@ -1021,6 +1022,20 @@ class Request extends Message implements ServerRequestInterface
         $clone->bodyParsed = $data;
 
         return $clone;
+    }
+
+    /**
+     * Force Body to be parsed again.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return self
+     */
+    public function reparseBody()
+    {
+        $this->bodyParsed = false;
+
+        return $this;
     }
 
     /**
