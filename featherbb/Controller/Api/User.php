@@ -9,8 +9,10 @@
 
 namespace FeatherBB\Controller\Api;
 
-class User
+class User extends Api
 {
+    private $model;
+    
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Api\User();

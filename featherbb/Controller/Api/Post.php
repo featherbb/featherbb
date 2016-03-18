@@ -9,8 +9,10 @@
 
 namespace FeatherBB\Controller\Api;
 
-class Post
+class Post extends Api
 {
+    private $model;
+    
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Api\Post();

@@ -9,8 +9,10 @@
 
 namespace FeatherBB\Controller\Api;
 
-class Forum
+class Forum extends Api
 {
+    private $model;
+    
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Api\Forum();
