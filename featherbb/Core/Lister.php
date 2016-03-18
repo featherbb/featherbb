@@ -27,6 +27,14 @@ class Lister
     }
 
     /**
+     * Load data of a single plugin
+     */
+    public static function loadPlugin($pluginName = '')
+    {
+        return json_decode(file_get_contents(ForumEnv::get('FEATHER_ROOT').'plugins/'.$pluginName.'/featherbb.json'));
+    }
+
+    /**
      * Get all official plugins using GitHub API
      */
     public static function getOfficialPlugins()

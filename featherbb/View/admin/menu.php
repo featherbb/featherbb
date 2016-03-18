@@ -88,6 +88,9 @@ Container::get('hooks')->fire('view.admin.menu.start');
     echo ' class="isactive"';
 }
         ?>><a href="<?= Router::pathFor('adminMaintenance') ?>"><?php _e('Maintenance') ?></a></li>
+                    <li<?php if ($page == 'updates') echo ' class="isactive"'; ?>>
+                        <a href="<?= Router::pathFor('adminUpdates') ?>"><?php _e('Updates') ?></a>
+                    </li>
                 </ul>
             </div>
         </div>
