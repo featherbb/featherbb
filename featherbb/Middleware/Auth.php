@@ -306,8 +306,6 @@ class Auth
                 DB::for_table('online')->where('ident', Utils::getIp())
                      ->update_many('logged', time());
             }
-            // $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);
-            // AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
