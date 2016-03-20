@@ -203,14 +203,12 @@ class View
         if (!is_dir(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
-        $this->data->set('style', (string) $style);
+        // foreach (glob(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/*.css') as $themeStyle) {
+        //     $this->addAsset('css', 'style/themes/'.$style.'/'.$themeStyle, array('rel' => 'stylesheet', 'type' => 'text/css'));
+        // }
+        $this->addAsset('css', 'style/themes/'.$style.'/style.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
         $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/view', 9);
         return $this;
-    }
-
-    public function getStyle()
-    {
-        return $this->data['style'];
     }
 
     public function setPageInfo(array $data)

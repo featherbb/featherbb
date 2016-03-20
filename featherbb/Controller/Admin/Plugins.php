@@ -109,8 +109,9 @@ class Plugins
      */
     public function info($req, $res, $args)
     {
-        $formattedPluginName =  str_replace('-', '', $args['name']);
-        $new = "\FeatherBB\Plugins\Controller\\".$formattedPluginName;
+        // $formattedPluginName =  str_replace('-', '', $args['name']);
+        $formattedPluginName = str_replace(' ', '', ucwords(str_replace('-', ' ', $args['name'])));
+        $new = '\FeatherBB\Plugins\Controller\\'.$formattedPluginName;
         if (class_exists($new)) {
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {
