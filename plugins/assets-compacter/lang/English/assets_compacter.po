@@ -1,0 +1,57 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Select assets title"
+msgstr "Select assets"
+
+msgid "Select assets description"
+msgstr "All stylesheets and javascripts below are taken from the \"plugin\" and \"style\" folders. Check in the list the ones you want to use in your forum : after submitting the form, they will be compacted and minified in a single file."
+
+msgid "Compact"
+msgstr "Compact"
+
+msgid "Minified results title"
+msgstr "Minified assets results"
+
+msgid "Minified results description"
+msgstr "Here is an overview of compacted assets states for each theme."
+
+msgid "No minified styles"
+msgstr "Minified styles file does not exist"
+
+msgid "Minified styles up to date"
+msgstr "Minified styles up to date (last generation : %s)"
+
+msgid "Minified styles need update"
+msgstr "Minified styles need update (last generation : %s, last modified stylesheet : %s)"
+
+msgid "No minified scripts"
+msgstr "Minified scripts file does not exist"
+
+msgid "Minified scripts up to date"
+msgstr "Minified scripts up to date (last generation : %s)"
+
+msgid "Minified scripts need update"
+msgstr "Minified scripts need update (last generation : %s, last modified script : %s)"
+
+msgid "Destination"
+msgstr "Destination"
+
+msgid "Destination directory valid"
+msgstr "Destination directory writeable"
+
+msgid "Could not create destination directory"
+msgstr "Could not create destination directory or it is not writeable"
