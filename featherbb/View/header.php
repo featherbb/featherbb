@@ -45,13 +45,7 @@ foreach($assets as $type => $items) {
         echo 'href="'.Url::base().'/'.$item['file'].'">'."\n";
     }
 }
-if ($admin_console) {
-    if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.User::get()->style.'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/themes/'.User::get()->style.'/base_admin.css" />'."\n";
-    } else {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/imports/base_admin.css" />'."\n";
-    }
-}
+
 if (isset($required_fields)) :
     // Output JavaScript to validate form (make sure required fields are filled out)
 

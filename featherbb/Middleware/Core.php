@@ -242,8 +242,7 @@ class Core
         Container::set('forum_settings', $this->forum_settings);
 
         // Set default style and assets
-        // Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
-        // Container::get('template')->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
+        Container::get('template')->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
 
         // Run activated plugins
         self::loadPlugins();

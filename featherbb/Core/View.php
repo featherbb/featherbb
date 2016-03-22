@@ -203,10 +203,16 @@ class View
         if (!is_dir(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
-        // foreach (glob(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/*.css') as $themeStyle) {
-        //     $this->addAsset('css', 'style/themes/'.$style.'/'.$themeStyle, array('rel' => 'stylesheet', 'type' => 'text/css'));
-        // }
+        // Add theme main and admin panel (if needed) stylesheets
         $this->addAsset('css', 'style/themes/'.$style.'/style.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+        if ($this->has('admin_console')) {
+            if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/base_admin.css')) {
+                $this->addAsset('css', 'style/themes/'.$style.'/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+            } else {
+                $this->addAsset('css', 'style/imports/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+            }
+        }
+        // Override default templates directory if file exists in theme
         $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/view', 9);
         return $this;
     }

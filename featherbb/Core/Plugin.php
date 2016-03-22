@@ -13,7 +13,7 @@ use FeatherBB\Core\Database as DB;
 
 class Plugin
 {
-    public function getActivePlugins()
+    public static function getActivePlugins()
     {
         $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
 
