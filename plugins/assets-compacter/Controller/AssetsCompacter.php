@@ -27,13 +27,17 @@ class AssetsCompacter
         $assetsManager = new \FeatherBB\Plugins\AssetsCompacter();
         $last_modified_style = 0;
         $last_modified_script = 0;
-        $pluginsAssets = array('stylesheets' => [], 'scripts' => []);
+        $pluginsAssets = array();
         $themesData = array();
 
         if (Request::isPost()) {
             $result = $assetsManager->compactAssets(); // Returns array as ['success' => 'message']
             return Router::redirect(Router::pathFor('infoPlugin', ['name' => $args['name']]), $result);
         }
+
+        // Get base assets from 'import' folder
+        $pluginsAssets['stylesheets'] = $assetsManager->getAssets(ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'imports', 'css');
+        $pluginsAssets['scripts'] = $assetsManager->getAssets(ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'imports', 'js');
 
         // Get assets from all active plugins
         foreach (PluginManager::getActivePlugins() as $plugin) {
