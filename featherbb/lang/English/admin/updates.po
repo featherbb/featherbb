@@ -92,8 +92,8 @@ msgstr "Could not write update to file \"%s\""
 msgid "Could not open zip file"
 msgstr "Could not open zip file \"%s\", error: %d"
 
-msgid "Directory not writeable"
-msgstr "Directory \"%s\" has to be writeable!"
+msgid "Directory not writable"
+msgstr "Directory \"%s\" has to be writable!"
 
 msgid "Coud not read zip entry"
 msgstr "Coud not read contents of file \"%s\" from zip file!"
@@ -116,11 +116,11 @@ msgstr "Could not delete update script \"%s\", you should remove it manually!"
 msgid "Could not get latest version"
 msgstr "Could not get latest version from server!"
 
-msgid "Temporary directory not writeable"
-msgstr "Temporary directory \"%s\" does not exist or is not writeable!"
+msgid "Temporary directory not writable"
+msgstr "Temporary directory \"%s\" does not exist or is not writable!"
 
-msgid "Install directory not writeable"
-msgstr "Install directory \"%s\" does not exist or is not writeable!"
+msgid "Install directory not writable"
+msgstr "Install directory \"%s\" does not exist or is not writable!"
 
 msgid "Failed to download update"
 msgstr "Failed to download update from \"%s\" to \"%s\"!"

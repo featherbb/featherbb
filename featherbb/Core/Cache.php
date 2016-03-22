@@ -291,7 +291,7 @@ class Cache
             throw new \Exception('Unable to create cache directory ' . $this->getCachePath());
         } elseif (!is_readable($this->getCachePath()) || !is_writable($this->getCachePath())) {
             if (!chmod($this->getCachePath(), 0775)) {
-                throw new \Exception($this->getCachePath() . ' must be readable and writeable');
+                throw new \Exception($this->getCachePath() . ' must be readable and writable');
             }
         }
         return true;
