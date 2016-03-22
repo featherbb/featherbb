@@ -17,6 +17,9 @@ require 'Controller/AssetsCompacter.php';
 class AssetsCompacter extends BasePlugin
 {
 
+    public static $_compactedStyles = 'cmpct-styles.min.css';
+    public static $_compactedScripts = 'cmpct-scripts.min.js';
+
     public function run()
     {
         // Remove css and js files from "$data" var sent to views, and replace it with minified assets
@@ -39,8 +42,8 @@ class AssetsCompacter extends BasePlugin
     {
         $files = array();
         foreach(scandir($base_dir) as $entry) {
-            // Skip dots
-            if($entry == '.' || $entry == '..') continue;
+            // Skip dots and asset files already minified using this plugin
+            if($entry == '.' || $entry == '..' || $entry == self::$_compactedStyles || $entry == self::$_compactedScripts) continue;
             $file_ext = substr(strrchr($entry,'.'), 1);
             $absolute_path = $base_dir.DIRECTORY_SEPARATOR.$entry;
             // Recursive iteration if entry is directory
@@ -66,26 +69,25 @@ class AssetsCompacter extends BasePlugin
         // if ($error = $this->checkErrors()) {
         //     return ['error', $error];
         // }
-        // Compact checked stylesheets and write output to each themes 'min' directories
-        $minifiedCss = '';
-        foreach (Input::post('stylesheets', array()) as $style) {
-            $minifiedCss .= $this->minifyCss(file_get_contents(ForumEnv::get('FEATHER_ROOT').$style));
-        }
-        // Compact checked javascripts and write output to each themes 'min' directories
-        // $minifiedJs = '';
-        // foreach (Input::post('scripts', array()) as $script) {
-        //     $minifiedJs .= $this->minifyJs(file_get_contents(ForumEnv::get('FEATHER_ROOT').$script));
-        // }
+        foreach (Input::post('themes') as $theme => $assets) {
+            $themeFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme;
+            // Make sure theme directory exists and is writable
+            if (!is_dir($themeFolder) || !is_writable($themeFolder)) continue;
 
-        foreach (Lister::getStyles() as $theme) {
-            // Make sure 'min' directory exists and is writable
-            $minFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'min';
-            if (!is_dir($minFolder) || !is_writable($minFolder)) {
-                continue;
+            // Merge and minify checked stylesheets
+            $minifiedCss = '';
+            foreach ($assets['stylesheets'] as $stylesheet) {
+                $minifiedCss .= $this->minifyCss(file_get_contents(ForumEnv::get('FEATHER_ROOT').$stylesheet));
             }
+            // Merge and minify checked javascripts
+            $minifiedJs = '';
+            foreach ($assets['scripts'] as $script) {
+                $minifiedJs .= $this->minifyJs(file_get_contents(ForumEnv::get('FEATHER_ROOT').$script));
+            }
+
             // Write minified assets in destination folder
-            file_put_contents($minFolder.DIRECTORY_SEPARATOR.'styles.min.css', $minifiedCss);
-            // file_put_contents($minFolder.DIRECTORY_SEPARATOR.'scripts.min.js', $minifiedJs);
+            file_put_contents($themeFolder.DIRECTORY_SEPARATOR.self::$_compactedStyles, $minifiedCss);
+            file_put_contents($themeFolder.DIRECTORY_SEPARATOR.self::$_compactedScripts, $minifiedJs);
         }
 
         return array('success', 'test');

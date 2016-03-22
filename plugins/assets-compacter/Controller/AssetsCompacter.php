@@ -31,6 +31,7 @@ class AssetsCompacter
         $themesData = array();
 
         if (Request::isPost()) {
+            // return var_dump(Input::post('themes'));
             $result = $assetsManager->compactAssets(); // Returns array as ['success' => 'message']
             return Router::redirect(Router::pathFor('infoPlugin', ['name' => $args['name']]), $result);
         }
@@ -56,8 +57,8 @@ class AssetsCompacter
             $themesData[$theme]['scripts'] = array_merge($pluginsAssets['scripts'], $assetsManager->getAssets($themeFolder, 'js'));
 
             // If below files don't exist, $themesData mtimes will be (bool) false
-            $themesData[$theme]['stylesheets_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.'styles.min.css') ? filemtime($themeFolder.DIRECTORY_SEPARATOR.'styles.min.css') : false;
-            $themesData[$theme]['scripts_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.'scripts.min.js') ? filemtime($themeFolder.DIRECTORY_SEPARATOR.'scripts.min.js') : false;
+            $themesData[$theme]['stylesheets_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedStyles) ? filemtime($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedStyles) : false;
+            $themesData[$theme]['scripts_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedScripts) ? filemtime($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedScripts) : false;
             // Check last modification date to see if minified assets need a refresh, and use relative paths in view
             foreach ($themesData[$theme]['stylesheets'] as $key => $style) {
                 if (filemtime($style) > $last_modified_style) $last_modified_style = filemtime($style);

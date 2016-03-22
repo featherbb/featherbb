@@ -59,7 +59,7 @@ foreach ($themes_data as $key => $theme):
                                                 <td>
 <?php foreach ($theme['stylesheets'] as $stylesheet): ?>
                                                     <label style="overflow-x:scroll;overflow-y:hidden;white-space:nowrap;max-width:400px;display:block">
-                                                        <input type="checkbox" name="stylesheets[]" value="<?= $stylesheet; ?>" /> <span style="display:inline-block;"><?= $stylesheet; ?></span>
+                                                        <input type="checkbox" name="themes[<?= Utils::escape($key); ?>][stylesheets][]" value="<?= $stylesheet; ?>" checked="checked" /> <span style="display:inline-block;"><?= $stylesheet; ?></span>
                                                     </label>
 <?php endforeach; ?>
                                                 </td>
@@ -69,7 +69,7 @@ foreach ($themes_data as $key => $theme):
                                                 <td>
 <?php foreach ($theme['scripts'] as $script): ?>
                                                     <label style="overflow-x:scroll;overflow-y:hidden;white-space:nowrap;max-width:400px;display:block">
-                                                        <input type="checkbox" name="scripts[]" value="<?= $script; ?>" /> <span style="display:inline-block;"><?= $script; ?></span>
+                                                        <input type="checkbox" name="themes[<?= Utils::escape($key); ?>][scripts][]" value="<?= $script; ?>" checked="checked" /> <span style="display:inline-block;"><?= $script; ?></span>
                                                     </label>
 <?php endforeach; ?>
                                                 </td>
