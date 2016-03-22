@@ -15,19 +15,13 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "Select assets title"
-msgstr "Select assets"
-
-msgid "Select assets description"
-msgstr "All stylesheets and javascripts below are taken from the \"plugin\" and \"style\" folders. Check in the list the ones you want to use in your forum : after submitting the form, they will be compacted and minified in a single file."
+msgstr "Select assets to compact"
 
 msgid "Compact"
 msgstr "Compact"
 
-msgid "Minified results title"
-msgstr "Minified assets results"
-
-msgid "Minified results description"
-msgstr "Here is an overview of compacted assets states for each theme."
+msgid "Overview"
+msgstr "Overview"
 
 msgid "No minified styles"
 msgstr "Minified styles file does not exist"
@@ -51,7 +45,7 @@ msgid "Destination"
 msgstr "Destination"
 
 msgid "Destination directory valid"
-msgstr "Destination directory writeable"
+msgstr "Destination directory writable"
 
 msgid "Could not create destination directory"
-msgstr "Could not create destination directory or it is not writeable"
+msgstr "Theme directory is not writable!"

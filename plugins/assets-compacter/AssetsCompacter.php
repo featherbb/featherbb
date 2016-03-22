@@ -20,19 +20,22 @@ class AssetsCompacter extends BasePlugin
     public function run()
     {
         // Remove css and js files from "$data" var sent to views, and replace it with minified assets
-        Container::get('hooks')->bind('view.alter_data', [$this, 'sendMinifiedAssets']);
+        // Container::get('hooks')->bind('view.alter_data', [$this, 'sendMinifiedAssets']);
         Container::get('hooks')->bind('admin.plugin.menu', [$this, 'getName']);
     }
 
     public function sendMinifiedAssets($data)
     {
-        // translate('bbeditor', 'featherbb', false, __DIR__.'/lang');
-        var_dump(View::getAssets());
         var_dump($data['assets']);
+        // translate('bbeditor', 'featherbb', false, __DIR__.'/lang');
+        // var_dump(View::getAssets());
+        // var_dump($data['assets']);
+        // $data = $data;
+        return true;
         return $data;
     }
 
-    public function getAssets($base_dir, $extension = 'css')
+    public static function getAssets($base_dir, $extension = 'css')
     {
         $files = array();
         foreach(scandir($base_dir) as $entry) {
@@ -82,6 +85,7 @@ class AssetsCompacter extends BasePlugin
             }
             // Write minified assets in destination folder
             file_put_contents($minFolder.DIRECTORY_SEPARATOR.'styles.min.css', $minifiedCss);
+            // file_put_contents($minFolder.DIRECTORY_SEPARATOR.'scripts.min.js', $minifiedJs);
         }
 
         return array('success', 'test');

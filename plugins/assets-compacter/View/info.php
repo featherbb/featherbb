@@ -17,49 +17,11 @@ if (!isset($feather)) {
                 <div class="blockform">
                     <h2><span><?= __('Select assets title'); ?></span></h2>
                     <div class="box">
-                        <form id="select-assets" method="post" action="">
+                        <form id="minify-assets" method="post" action="">
                             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                             <p class="submittop"><input type="submit" name="compact" value="<?php _e('Compact'); ?>" /></p>
-                            <div class="inform">
-                                <fieldset>
-                                    <p><?php _e('Select assets description'); ?></p>
-                                    <legend><?php _e('Stylesheets'); ?></legend>
-                                    <div class="infldset">
-                                        <div class="rbox">
-<?php foreach ($stylesheets as $key => $stylesheet): ?>
-                                            <label><input type="checkbox" name="stylesheets[]" value="<?= $stylesheet; ?>" /> <?= $stylesheet; ?></label><br/>
-<?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <div class="inform">
-                                <fieldset>
-                                    <legend><?php _e('Javascripts'); ?></legend>
-                                    <div class="infldset">
-                                        <div class="rbox">
-<?php foreach ($scripts as $script): ?>
-                                            <label><input type="checkbox" name="scripts[]" value="<?= $script; ?>" /> <?= $script; ?></label><br/>
-<?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <p class="submitend"><input type="submit" name="compact" value="<?php _e('Compact'); ?>" /></p>
-                        </form>
-                    </div>
-
-                    <h2 class="block2"><span><?php _e('Minified results title'); ?></span></h2>
-                    <div class="box">
-                        <div class="fakeform">
-                            <div class="inform">
-                                <fieldset>
-                                    <legend><?php _e('Minified results title'); ?></legend>
-                                    <div class="infldset">
-                                        <p><?php _e('Minified results description'); ?></p>
-                                        <table>
 <?php
-foreach ($themes_state as $key => $theme):
+foreach ($themes_data as $key => $theme):
     // Check if destination folder exists
     if (!$theme['directory']) {
         $destination = '<span class="text-error">&times; '.__('Destination').' : '.__('Could not create destination directory').'</span>';
@@ -67,32 +29,58 @@ foreach ($themes_state as $key => $theme):
         $destination = '<span class="text-success">&#10003; '.__('Destination').' : '.__('Destination directory valid').'</span>';
     }
     // Check if a stylesheet was modified since last minification
-    if (!$theme['stylesheets']) {
+    if (!$theme['stylesheets_mtime']) {
         $stylesState = '<span class="text-error">&times; '.__('Stylesheets').' : '.__('No minified styles').'</span>';
     } else {
-        $stylesState = ($theme['stylesheets'] > $last_modified_style)
-            ? '<span class="text-success">&#10003; '.__('Stylesheets').' : '.sprintf(__('Minified styles up to date'), Utils::format_time($theme['stylesheets'])).'</span>'
-            : '<span class="text-warning">&#9888; '.__('Stylesheets').' : '.sprintf(__('Minified styles need update'), Utils::format_time($theme['stylesheets']), Utils::format_time($last_modified_style)).'</span>';
+        $stylesState = ($theme['stylesheets_mtime'] > $last_modified_style)
+            ? '<span class="text-success">&#10003; '.__('Stylesheets').' : '.sprintf(__('Minified styles up to date'), Utils::format_time($theme['stylesheets_mtime'])).'</span>'
+            : '<span class="text-warning">&#9888; '.__('Stylesheets').' : '.sprintf(__('Minified styles need update'), Utils::format_time($theme['stylesheets_mtime']), Utils::format_time($last_modified_style)).'</span>';
     }
     // Check if a javascript was modified since last minification
-    if (!$theme['scripts']) {
+    if (!$theme['scripts_mtime']) {
         $scriptsState = '<span class="text-error">&times; '.__('Javascripts').' : '.__('No minified scripts').'</span>';
     } else {
-        $scriptsState = ($theme['scripts'] > $last_modified_script)
-            ? '<span class="text-success">&#10003; '.__('Javascripts').' : '.sprintf(__('Minified scripts up to date'), Utils::format_time($theme['scripts'])).'</span>'
-            : '<span class="text-warning">&#9888; '.__('Javascripts').' : '.sprintf(__('Minified scripts need update'), Utils::format_time($theme['scripts']), Utils::format_time($last_modified_script)).'</span>';
+        $scriptsState = ($theme['scripts_mtime'] > $last_modified_script)
+            ? '<span class="text-success">&#10003; '.__('Javascripts').' : '.sprintf(__('Minified scripts up to date'), Utils::format_time($theme['scripts_mtime'])).'</span>'
+            : '<span class="text-warning">&#9888; '.__('Javascripts').' : '.sprintf(__('Minified scripts need update'), Utils::format_time($theme['scripts_mtime']), Utils::format_time($last_modified_script)).'</span>';
     }
 ?>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend><?= Utils::escape($key) ?></legend>
+                                    <div class="infldset">
+                                        <table>
             								<tr>
-                                                <th scope="row"><?= Utils::escape($key) ?></th>
+                                                <th scope="row"><?php _e('Overview') ?></th>
                                                 <td><?= $destination . $stylesState . $scriptsState; ?></td>
+                                            </tr>
+            								<tr>
+                                                <th scope="row"><?php _e('Stylesheets') ?></th>
+                                                <td>
+<?php foreach ($theme['stylesheets'] as $stylesheet): ?>
+                                                    <label style="overflow-x:scroll;overflow-y:hidden;white-space:nowrap;max-width:400px;display:block">
+                                                        <input type="checkbox" name="stylesheets[]" value="<?= $stylesheet; ?>" /> <span style="display:inline-block;"><?= $stylesheet; ?></span>
+                                                    </label>
+<?php endforeach; ?>
+                                                </td>
+                                            </tr>
+            								<tr>
+                                                <th scope="row"><?php _e('Javascripts') ?></th>
+                                                <td>
+<?php foreach ($theme['scripts'] as $script): ?>
+                                                    <label style="overflow-x:scroll;overflow-y:hidden;white-space:nowrap;max-width:400px;display:block">
+                                                        <input type="checkbox" name="scripts[]" value="<?= $script; ?>" /> <span style="display:inline-block;"><?= $script; ?></span>
+                                                    </label>
+<?php endforeach; ?>
+                                                </td>
                                             </tr>
 <?php endforeach; ?>
                                         </table>
                                     </div>
                                 </fieldset>
                             </div>
-                        </div>
+                            <p class="submitend"><input type="submit" name="compact" value="<?php _e('Compact'); ?>" /></p>
+                        </form>
                     </div>
                 </div>
                 <div class="clearer"></div>

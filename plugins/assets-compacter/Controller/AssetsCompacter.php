@@ -11,6 +11,7 @@ namespace FeatherBB\Plugins\Controller;
 
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Lister;
+use FeatherBB\Core\Plugin as PluginManager;
 
 class AssetsCompacter
 {
@@ -23,65 +24,54 @@ class AssetsCompacter
 
     public function info($req, $res, $args)
     {
-        $manager = new \FeatherBB\Plugins\AssetsCompacter();
+        $assetsManager = new \FeatherBB\Plugins\AssetsCompacter();
+        $last_modified_style = 0;
+        $last_modified_script = 0;
+        $pluginsAssets = array('stylesheets' => [], 'scripts' => []);
+        $themesData = array();
 
         if (Request::isPost()) {
-            // return var_dump(Input::post('stylesheets'));
-            $result = $manager->compactAssets(); // Returns array as ['success' => 'message']
+            $result = $assetsManager->compactAssets(); // Returns array as ['success' => 'message']
             return Router::redirect(Router::pathFor('infoPlugin', ['name' => $args['name']]), $result);
         }
 
+        // Get assets from all active plugins
+        foreach (PluginManager::getActivePlugins() as $plugin) {
+            $pluginFolder = ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$plugin;
+            $pluginsAssets['stylesheets'] = array_merge($pluginsAssets['stylesheets'], $assetsManager->getAssets($pluginFolder, 'css'));
+            $pluginsAssets['scripts'] = array_merge($pluginsAssets['scripts'], $assetsManager->getAssets($pluginFolder, 'js'));
+        }
+
         // Check minified assets state in each theme directory
-        $themesState = array();
         foreach (Lister::getStyles() as $theme) {
-            $minFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'min';
-            // Try to create 'min' directory in theme if don't exist
-            $themesState[$theme]['directory'] = true;
-            if (!is_dir($minFolder)) {
-                if (!mkdir($minFolder, 0755, true)) {
-                    $themesState[$theme]['directory'] = false;
-                }
-            } elseif (!is_writable($minFolder)) {
-                $themesState[$theme]['directory'] = false;
+            $themeFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme;
+            // Check if theme directory is writable for minified assets
+            $themesData[$theme]['directory'] = is_writable($themeFolder);
+            // Merge plugins available assets with the ones in current theme
+            $themesData[$theme]['stylesheets'] = array_merge($pluginsAssets['stylesheets'], $assetsManager->getAssets($themeFolder, 'css'));
+            $themesData[$theme]['scripts'] = array_merge($pluginsAssets['scripts'], $assetsManager->getAssets($themeFolder, 'js'));
+
+            // If below files don't exist, $themesData mtimes will be (bool) false
+            $themesData[$theme]['stylesheets_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.'styles.min.css') ? filemtime($themeFolder.DIRECTORY_SEPARATOR.'styles.min.css') : false;
+            $themesData[$theme]['scripts_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.'scripts.min.js') ? filemtime($themeFolder.DIRECTORY_SEPARATOR.'scripts.min.js') : false;
+            // Check last modification date to see if minified assets need a refresh, and use relative paths in view
+            foreach ($themesData[$theme]['stylesheets'] as $key => $style) {
+                if (filemtime($style) > $last_modified_style) $last_modified_style = filemtime($style);
+                $themesData[$theme]['stylesheets'][$key] = str_replace(ForumEnv::get('FEATHER_ROOT'), '', $style);
             }
-            // If below files don't exist, $themesState key will be (bool) false
-            $themesState[$theme]['stylesheets'] = is_file($minFolder.DIRECTORY_SEPARATOR.'styles.min.css') ? filemtime($minFolder.DIRECTORY_SEPARATOR.'styles.min.css') : false;
-            $themesState[$theme]['scripts'] = is_file($minFolder.DIRECTORY_SEPARATOR.'scripts.min.js') ? filemtime($minFolder.DIRECTORY_SEPARATOR.'scripts.min.js') : false;
-        }
-
-        // Define folders where we can find assets
-        $pluginsFolder = ForumEnv::get('FEATHER_ROOT').'plugins';
-        $styleFolder = ForumEnv::get('FEATHER_ROOT').'style';
-        // Get all stylesheets
-        $pluginStyles = $manager->getAssets($pluginsFolder, 'css');
-        $styleStyles = $manager->getAssets($styleFolder, 'css');
-        $stylesheets = array_merge($pluginStyles, $styleStyles);
-        // Get all javascript files
-        $pluginScripts = $manager->getAssets($pluginsFolder, 'js');
-        $styleScripts = $manager->getAssets($styleFolder, 'js');
-        $scripts = array_merge($pluginScripts, $styleScripts);
-
-        // Set last modification date to newer modified files and use relative path
-        $last_modified_style = 0;
-        $last_modified_script = 0;
-        foreach ($stylesheets as $key => $style) {
-            if (filemtime($style) > $last_modified_style) $last_modified_style = filemtime($style);
-            $stylesheets[$key] = str_replace(ForumEnv::get('FEATHER_ROOT'), '', $style);
-        }
-        foreach ($scripts as $key => $script) {
-            if (filemtime($script) > $last_modified_script) $last_modified_script = filemtime($script);
-            $scripts[$key] = str_replace(ForumEnv::get('FEATHER_ROOT'), '', $script);
+            foreach ($themesData[$theme]['scripts'] as $key => $script) {
+                if (filemtime($script) > $last_modified_script) $last_modified_script = filemtime($script);
+                $themesData[$theme]['scripts'][$key] = str_replace(ForumEnv::get('FEATHER_ROOT'), '', $script);
+            }
         }
 
         // Display view
         return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Assets compacter', 'private_messages')),
             'admin_console' => true,
-            'stylesheets' => $stylesheets,
-            'scripts' => $scripts,
             'last_modified_style' => $last_modified_style,
             'last_modified_script' => $last_modified_script,
-            'themes_state' => $themesState
+            'themes_data' => $themesData
             )
         )
         ->addTemplate('info.php')->display();
