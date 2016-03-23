@@ -19,6 +19,7 @@ class AssetsCompacter
     public function __construct()
     {
         translate('assets_compacter', 'featherbb', false, __DIR__.'/../lang');
+        translate('admin/users');
         View::addTemplatesDirectory(dirname(dirname(__FILE__)).'/View', 5);
     }
 
@@ -56,9 +57,6 @@ class AssetsCompacter
             $themesData[$theme]['stylesheets'] = array_merge($pluginsAssets['stylesheets'], $assetsManager->getAssets($themeFolder, 'css'));
             $themesData[$theme]['scripts'] = array_merge($pluginsAssets['scripts'], $assetsManager->getAssets($themeFolder, 'js'));
 
-            // If below files don't exist, $themesData mtimes will be (bool) false
-            $themesData[$theme]['stylesheets_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedStyles) ? filemtime($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedStyles) : false;
-            $themesData[$theme]['scripts_mtime'] = is_file($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedScripts) ? filemtime($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedScripts) : false;
             // Check last modification date to see if minified assets need a refresh, and use relative paths in view
             foreach ($themesData[$theme]['stylesheets'] as $key => $style) {
                 if (filemtime($style) > $last_modified_style) $last_modified_style = filemtime($style);
@@ -68,7 +66,33 @@ class AssetsCompacter
                 if (filemtime($script) > $last_modified_script) $last_modified_script = filemtime($script);
                 $themesData[$theme]['scripts'][$key] = str_replace(ForumEnv::get('FEATHER_ROOT'), '', $script);
             }
+
+            // Do some verifications if minified stylesheets file exists
+            if (is_file($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedStyles)) {
+                $minifiedStyles = $themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedStyles;
+                $themesData[$theme]['stylesheets_mtime'] = filemtime($minifiedStyles);
+                // Get files already minified in header content
+                preg_match_all('`\s\*\s{6}\- (.+)`muS', file_get_contents($minifiedStyles), $header_content, PREG_PATTERN_ORDER);
+                $themesData[$theme]['previous_styles'] = $header_content[1];
+            } else {
+                $themesData[$theme]['previous_styles'] = [];
+                $themesData[$theme]['stylesheets_mtime'] = false;
+            }
+
+            // Do some verifications if minified scripts file exists
+            if (is_file($themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedScripts)) {
+                $minifiedScripts = $themeFolder.DIRECTORY_SEPARATOR.$assetsManager::$_compactedScripts;
+                $themesData[$theme]['scripts_mtime'] = filemtime($minifiedScripts);
+                // Get files already minified in header content
+                preg_match_all('`\s\*\s{6}\- (.+)`muS', file_get_contents($minifiedScripts), $header_content, PREG_PATTERN_ORDER);
+                $themesData[$theme]['previous_scripts'] = $header_content[1];
+            } else {
+                $themesData[$theme]['previous_scripts'] = [];
+                $themesData[$theme]['scripts_mtime'] = false;
+            }
         }
+
+        View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
         // Display view
         return View::setPageInfo(array(
