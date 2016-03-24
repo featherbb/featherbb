@@ -56,15 +56,22 @@ class AssetsCompacter extends BasePlugin
      */
     public function alterAssets($assets)
     {
-        $assets = [];
-        $assets['css'][0] = array(
-            'file' => 'style/themes/'.User::get()->style.'/'.self::$_compactedStyles,
-            'params' => array('rel' => 'stylesheet', 'type' => 'text/css')
-        );
-        $assets['js'][0] = array(
-            'file' => 'style/themes/'.User::get()->style.'/'.self::$_compactedScripts,
-            'params' => array('type' => 'text/javascript')
-        );
+        if (is_file(ForumEnv::get('FEATHER_ROOT').'style/themes/'.User::get()->style.'/'.self::$_compactedStyles)) {
+            $assets['css'] = [];
+            $assets['css'][0] = array(
+                'file' => 'style/themes/'.User::get()->style.'/'.self::$_compactedStyles,
+                'params' => array('rel' => 'stylesheet', 'type' => 'text/css')
+            );
+        }
+        if (is_file(ForumEnv::get('FEATHER_ROOT').'style/themes/'.User::get()->style.'/'.self::$_compactedScripts)) {
+            $assets['js'] = [];
+            $assets['js'][0] = array(
+                'file' => 'style/themes/'.User::get()->style.'/'.self::$_compactedScripts,
+                'params' => array('type' => 'text/javascript')
+            );
+        }
+
+
         return $assets;
     }
 
