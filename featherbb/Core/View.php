@@ -264,7 +264,9 @@ class View
 
     public function getAssets()
     {
-        return $this->assets;
+        $assets = $this->assets;
+        $assets = Container::get('hooks')->fire('view.alter_assets', $assets);
+        return $assets;
     }
 
     public function addTemplate($tpl, $priority = 10)
