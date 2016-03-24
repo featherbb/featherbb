@@ -41,6 +41,12 @@ class AssetsCompacter
         $pluginsAssets['stylesheets'] = $assetsManager->getAssets(ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'imports', 'css');
         $pluginsAssets['scripts'] = $assetsManager->getAssets(ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'imports', 'js');
 
+        // Check if (de)activated plugins contained assets
+        if (is_file($assetsManager::$_watcher)) {
+            $last_modified_style = filemtime($assetsManager::$_watcher);
+            $last_modified_script = filemtime($assetsManager::$_watcher);
+        }
+
         // Get assets from all active plugins
         foreach (PluginManager::getActivePlugins() as $plugin) {
             $pluginFolder = ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$plugin;

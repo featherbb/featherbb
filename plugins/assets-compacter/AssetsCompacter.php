@@ -19,15 +19,21 @@ class AssetsCompacter extends BasePlugin
 
     public static $_compactedStyles = 'cmpct-styles.min.css';
     public static $_compactedScripts = 'cmpct-scripts.min.js';
+    public static $_watcher = __DIR__.DIRECTORY_SEPARATOR.'watcher.txt';
 
     public function run()
     {
-        View::set('admin_console', false);
-        // Remove css and js files from "$data" var sent to views, and replace it with minified assets
         Container::get('hooks')->bind('view.alter_assets', [$this, 'alterAssets']);
+        Container::get('hooks')->bind('model.plugin.activate.name', [$this, 'checkPluginAssets']);
+        Container::get('hooks')->bind('model.plugin.deactivate.name', [$this, 'checkPluginAssets']);
         Container::get('hooks')->bind('admin.plugin.menu', [$this, 'getName']);
     }
 
+    /**
+     * Remove stylesheets and scripts from normal $data var sent to views, and replace them with minified assets
+     * @param  array $assets  Assets array generated with View::addAsset() in controllers or models
+     * @return array          Altered (minified) assets array
+     */
     public function alterAssets($assets)
     {
         $assets = [];
@@ -42,9 +48,34 @@ class AssetsCompacter extends BasePlugin
         return $assets;
     }
 
+    /**
+     * On plugin (de)activation, check if it has assets. If so, update watcher.txt modification time to indicate
+     * the minified assets need update.
+     * @param  string $pluginName The name of the (de)activated plugin
+     * @return string             Idem
+     */
+    public function checkPluginAssets($pluginName = '')
+    {
+        $pluginFolder = ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$pluginName;
+        if (!empty(self::getAssets($pluginFolder, 'css')) || !empty(self::getAssets($pluginFolder, 'js'))) {
+            touch(self::$_watcher);
+        }
+        // Return plugin name to Models/Admin/Plugin so that it can correctly activate or deactivate plugin
+        return $pluginName;
+    }
+
+    /**
+     * Get all assets in a folder
+     * @param  string $base_dir  The absolute directory path to search assets in
+     * @param  string $extension Are we looking for CSS or JS ?
+     * @return array             Array of all assets contained in given folder
+     */
     public static function getAssets($base_dir, $extension = 'css')
     {
         $files = array();
+
+        if (!is_dir($base_dir)) return $files;
+
         foreach(scandir($base_dir) as $entry) {
             // Skip dots and asset files already minified using this plugin
             if($entry == '.' || $entry == '..' || $entry == self::$_compactedStyles || $entry == self::$_compactedScripts) continue;
@@ -52,8 +83,6 @@ class AssetsCompacter extends BasePlugin
             $absolute_path = $base_dir.DIRECTORY_SEPARATOR.$entry;
             // Recursive iteration if entry is directory
             if(is_dir($absolute_path)) {
-                // Skip entry if already in minified folder
-                if($entry === 'min') continue;
                 $files = array_merge($files, self::getAssets($absolute_path, $extension));
             }
             if ($file_ext === $extension) {
