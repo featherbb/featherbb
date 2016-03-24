@@ -29,6 +29,26 @@ class AssetsCompacter extends BasePlugin
         Container::get('hooks')->bind('admin.plugin.menu', [$this, 'getName']);
     }
 
+    public function pause()
+    {
+        foreach (Lister::getStyles() as $theme) {
+            $themeFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme;
+            @unlink($themeFolder.self::$_compactedStyles);
+            @unlink($themeFolder.self::$_compactedScripts);
+        }
+        @unlink(self::$_watcher);
+    }
+
+    public function remove()
+    {
+        foreach (Lister::getStyles() as $theme) {
+            $themeFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme;
+            @unlink($themeFolder.self::$_compactedStyles);
+            @unlink($themeFolder.self::$_compactedScripts);
+        }
+        @unlink(self::$_watcher);
+    }
+
     /**
      * Remove stylesheets and scripts from normal $data var sent to views, and replace them with minified assets
      * @param  array $assets  Assets array generated with View::addAsset() in controllers or models
