@@ -33,8 +33,8 @@ class AssetsCompacter extends BasePlugin
     {
         foreach (Lister::getStyles() as $theme) {
             $themeFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme;
-            @unlink($themeFolder.self::$_compactedStyles);
-            @unlink($themeFolder.self::$_compactedScripts);
+            @unlink($themeFolder.DIRECTORY_SEPARATOR.self::$_compactedStyles);
+            @unlink($themeFolder.DIRECTORY_SEPARATOR.self::$_compactedScripts);
         }
         @unlink(self::$_watcher);
     }
@@ -43,8 +43,8 @@ class AssetsCompacter extends BasePlugin
     {
         foreach (Lister::getStyles() as $theme) {
             $themeFolder = ForumEnv::get('FEATHER_ROOT').'style'.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$theme;
-            @unlink($themeFolder.self::$_compactedStyles);
-            @unlink($themeFolder.self::$_compactedScripts);
+            @unlink($themeFolder.DIRECTORY_SEPARATOR.self::$_compactedStyles);
+            @unlink($themeFolder.DIRECTORY_SEPARATOR.self::$_compactedScripts);
         }
         @unlink(self::$_watcher);
     }
@@ -70,8 +70,6 @@ class AssetsCompacter extends BasePlugin
                 'params' => array('type' => 'text/javascript')
             );
         }
-
-
         return $assets;
     }
 
