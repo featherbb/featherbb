@@ -212,6 +212,11 @@ class View
                 $this->addAsset('css', 'style/imports/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
             }
         }
+        // Add javascript files in theme root
+        foreach (glob(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/*.js') as $script) {
+            $parts = explode('/', $script);
+            $this->addAsset('js', 'style/themes/'.$style.'/'.end($parts), array('type' => 'text/javascript'));
+        }
         // Override default templates directory if file exists in theme
         $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/view', 9);
         return $this;
