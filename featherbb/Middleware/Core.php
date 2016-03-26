@@ -241,10 +241,6 @@ class Core
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
 
-        // Set default style and assets
-        Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
-        Container::get('template')->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
-
         // Run activated plugins
         self::loadPlugins();
 

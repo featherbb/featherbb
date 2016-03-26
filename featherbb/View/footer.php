@@ -138,14 +138,17 @@ if (!empty($queries_info)) { ?>
     var baseUrl = '<?= Utils::escape(Url::base()); ?>',
         phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
 </script>
-<?php foreach ($assets['js'] as $script) {
-    echo '<script ';
-    foreach ($script['params'] as $key => $value) {
-        echo $key.'="'.$value.'" ';
+<?php
+if (!empty($assets['js'])) {
+    foreach ($assets['js'] as $script) {
+        echo '<script ';
+        foreach ($script['params'] as $key => $value) {
+            echo $key.'="'.$value.'" ';
+        }
+        echo 'src="'.Url::base_static().'/'.$script['file'].'"></script>'."\n";
     }
-    echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
-} ?>
-<?php Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
+}
+Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
 </html>
 <?php
 Container::get('hooks')->fire('view.footer.end');

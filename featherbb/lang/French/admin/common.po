@@ -75,6 +75,9 @@ msgstr "Supprimer"
 msgid "Update"
 msgstr "Mettre à jour"
 
+msgid "Updates"
+msgstr "Mises à jour"
+
 msgid "Add"
 msgstr "Ajouter"
 

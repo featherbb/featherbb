@@ -545,7 +545,7 @@ class AutoUpdater
                     $files[$i]['parent_folder_writable'] = false;
 
                     $simulateSuccess = false;
-                    $this->_errors[] = sprintf(__('Directory not writeable'), $parent);
+                    $this->_errors[] = sprintf(__('Directory not writable'), $parent);
                 } else {
                     $files[$i]['parent_folder_writable'] = true;
                 }
@@ -653,7 +653,7 @@ class AutoUpdater
 
             if (!is_dir($foldername)) {
                 if (!mkdir($foldername, $this->dirPermissions, true)) {
-                    $this->_errors[] = sprintf(__('Directory not writeable'), $parent);
+                    $this->_errors[] = sprintf(__('Directory not writable'), $parent);
 
                     return false;
                 }
@@ -754,14 +754,14 @@ class AutoUpdater
         foreach ($this->_updates as $update) {
             // Check for temp directory
             if (empty($this->_tempDir) || !is_dir($this->_tempDir) || !is_writable($this->_tempDir)) {
-                $this->_errors[] = sprintf(__('Temporary directory not writeable'), $this->_tempDir);
+                $this->_errors[] = sprintf(__('Temporary directory not writable'), $this->_tempDir);
 
                 return self::ERROR_TEMP_DIR;
             }
 
             // Check for install directory
             if (empty($this->_installDir) || !is_dir($this->_installDir) || !is_writable($this->_installDir)) {
-                $this->_errors[] = sprintf(__('Install directory not writeable'), $this->_installDir);
+                $this->_errors[] = sprintf(__('Install directory not writable'), $this->_installDir);
 
                 return self::ERROR_INSTALL_DIR;
             }

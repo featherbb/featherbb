@@ -10,12 +10,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+"Language: fr\n"
 "X-Generator: Poedit 1.8.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "Available plugins"
-msgstr "The following plugins are available"
+msgstr "Les plugins suivants sont disponibles"
 
 msgid "Extension"
 msgstr "Extension"
@@ -24,22 +24,22 @@ msgid "Description"
 msgstr "Description"
 
 msgid "Activate"
-msgstr "Activate"
+msgstr "Activer"
 
 msgid "Deactivate"
-msgstr "Deactivate"
+msgstr "Désactiver"
 
 msgid "Install"
-msgstr "Install"
+msgstr "Installer"
 
 msgid "Uninstall"
-msgstr "Uninstall"
+msgstr "Désinstaller"
 
 msgid "Plugin deactivated"
-msgstr "Plugin \"%s\" deactivated!"
+msgstr "Plugin \"%s\" désactivé!"
 
 msgid "Plugin activated"
-msgstr "Plugin \"%s\" activated!"
+msgstr "Plugin \"%s\" activé!"
 
 msgid "Plugin downloaded"
-msgstr "Plugin downloaded!"
+msgstr "Plugin téléchargé!"

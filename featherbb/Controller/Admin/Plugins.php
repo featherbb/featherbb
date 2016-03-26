@@ -67,39 +67,39 @@ class Plugins
     {
         Container::get('hooks')->fire('controller.admin.plugins.activate');
 
-        if (!$args['name']) {
+        if (!$args['name'] || !is_dir(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
             throw new Error(__('Bad request'), 400);
         }
 
         $this->model->activate($args['name']);
         // Plugin has been activated, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
+        return Router::redirect(Router::pathFor('adminPlugins'), sprintf(__('Plugin activated'), $args['name']));
     }
 
     public function deactivate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.deactivate');
 
-        if (!$args['name']) {
+        if (!$args['name'] || !is_dir(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
             throw new Error(__('Bad request'), 400);
         }
 
         $this->model->deactivate($args['name']);
-        // // Plugin has been deactivated, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
+        // Plugin has been deactivated, confirm and redirect
+        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', sprintf(__('Plugin deactivated'), $args['name'])));
     }
 
     public function uninstall($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.uninstall');
 
-        if (!$args['name']) {
+        if (!$args['name'] || !is_dir(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
             throw new Error(__('Bad request'), 400);
         }
 
         $this->model->uninstall($args['name']);
-        // Plugin has been deactivated, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
+        // Plugin has been uninstalled, confirm and redirect
+        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', sprintf(__('Plugin uninstalled'), $args['name'])));
     }
 
     /**
@@ -109,8 +109,9 @@ class Plugins
      */
     public function info($req, $res, $args)
     {
-        $formattedPluginName =  str_replace('-', '', $args['name']);
-        $new = "\FeatherBB\Plugins\Controller\\".$formattedPluginName;
+        // $formattedPluginName =  str_replace('-', '', $args['name']);
+        $formattedPluginName = str_replace(' ', '', ucwords(str_replace('-', ' ', $args['name'])));
+        $new = '\FeatherBB\Plugins\Controller\\'.$formattedPluginName;
         if (class_exists($new)) {
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {

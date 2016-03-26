@@ -39,6 +39,7 @@ class Install
 
     public function run()
     {
+        Container::get('cache')->flush();
         Container::get('hooks')->fire('controller.install.run_install');
 
         if (Input::getParsedBodyParam('choose_lang')) {
