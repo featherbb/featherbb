@@ -91,31 +91,6 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     </div>
 <?php } ?>
                     <div class="conr">
-<?php
-
-if ($active_page == 'index') {
-    if (ForumSettings::get('o_feed_type') == '1') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
-    } elseif (ForumSettings::get('o_feed_type') == '2') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
-    }
-} elseif ($active_page == 'Forum') {
-    if (ForumSettings::get('o_feed_type') == '1') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
-    } elseif (ForumSettings::get('o_feed_type') == '2') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
-    }
-} elseif ($active_page == 'Topic') {
-    if (ForumSettings::get('o_feed_type') == '1') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
-    } elseif (ForumSettings::get('o_feed_type') == '2') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
-    }
-}
-
-Container::get('hooks')->fire('view.footer.feed.links');
-
-?>
                         <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.((ForumSettings::get('o_show_version') == '1') ? ' '.ForumSettings::get('o_cur_version') : '')) ?></p>
                     </div>
                 <div class="clearer"></div>
@@ -163,14 +138,17 @@ if (!empty($queries_info)) { ?>
     var baseUrl = '<?= Utils::escape(Url::base()); ?>',
         phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
 </script>
-<?php foreach ($assets['js'] as $script) {
-    echo '<script ';
-    foreach ($script['params'] as $key => $value) {
-        echo $key.'="'.$value.'" ';
+<?php
+if (!empty($assets['js'])) {
+    foreach ($assets['js'] as $script) {
+        echo '<script ';
+        foreach ($script['params'] as $key => $value) {
+            echo $key.'="'.$value.'" ';
+        }
+        echo 'src="'.Url::base_static().'/'.$script['file'].'"></script>'."\n";
     }
-    echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
-} ?>
-<?php Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
+}
+Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
 </html>
 <?php
 Container::get('hooks')->fire('view.footer.end');

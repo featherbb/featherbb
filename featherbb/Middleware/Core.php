@@ -43,7 +43,7 @@ class Core
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
         $this->forum_env['FORUM_CONFIG_FILE'] = $this->forum_env['FEATHER_ROOT'].$data['config_file'];
-        $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all');
+        $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all' || $data['debug'] == true);
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
 
         // Populate forum_env
@@ -63,7 +63,7 @@ class Core
                 'FEATHER_ROOT' => '',
                 'FORUM_CONFIG_FILE' => 'featherbb/config.php',
                 'FORUM_CACHE_DIR' => 'cache/',
-                'FORUM_VERSION' => '1.0.0',
+                'FORUM_VERSION' => '1.0.0-beta.4',
                 'FORUM_NAME' => 'FeatherBB',
                 'FORUM_DB_REVISION' => 21,
                 'FORUM_SI_REVISION' => 2,
@@ -76,7 +76,7 @@ class Core
                 'FEATHER_MAX_POSTSIZE' => 32768,
                 'FEATHER_SEARCH_MIN_WORD' => 3,
                 'FEATHER_SEARCH_MAX_WORD' => 20,
-                'FORUM_MAX_COOKIE_SIZE' => 4048,
+                // 'FORUM_MAX_COOKIE_SIZE' => 4048,
                 'FEATHER_DEBUG' => false,
                 'FEATHER_SHOW_QUERIES' => false,
                 'FEATHER_SHOW_INFO' => false
@@ -135,7 +135,7 @@ class Core
 
     // Headers
 
-    public function set_headers($res)
+    protected function set_headers($res)
     {
         foreach ($this->headers as $label => $value) {
             $res = $res->withHeader($label, $value);
@@ -154,7 +154,6 @@ class Core
         if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
             return $this->app->response->setStatus(403); // Send forbidden header
         }
-
         // Populate Slim object with forum_env vars
         Container::set('forum_env', $this->forum_env);
         // Load FeatherBB utils class
@@ -241,10 +240,6 @@ class Core
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
-
-        // Set default style and assets
-        Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
-        Container::get('template')->addAsset('js', 'style/themes/FeatherBB/phone.min.js');
 
         // Run activated plugins
         self::loadPlugins();

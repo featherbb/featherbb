@@ -23,37 +23,6 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
 
-        if (Input::query('key')) {
-
-            $key = Input::query('key');
-            $key = Container::get('hooks')->fire('model.profile.change_pass_key', $key);
-
-            // If the user is already logged in we shouldn't be here :)
-            if (!User::get()->is_guest) {
-                return Router::redirect(Router::pathFor('home'));
-            }
-
-            $cur_user = DB::for_table('users')
-                ->where('id', $id);
-            $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_user_query', $cur_user);
-            $cur_user = $cur_user->find_one();
-
-            if ($key == '' || $key != $cur_user['activate_key']) {
-                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
-            } else {
-                $query = DB::for_table('users')
-                    ->where('id', $id)
-                    ->find_one()
-                    ->set('password', $cur_user['activate_string'])
-                    ->set_expr('activate_string', 'NULL')
-                    ->set_expr('activate_key', 'NULL');
-                $query = Container::get('hooks')->fireDB('model.profile.change_pass_activate_query', $query);
-                $query = $query->save();
-
-                return Router::redirect(Router::pathFor('home'), __('Pass updated'));
-            }
-        }
-
         // Make sure we are allowed to change this user's password
         if (User::get()->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_pass_key_not_id', $id);
@@ -176,7 +145,7 @@ class Profile
             $new_email_key = $new_email_key->find_one_col('activate_key');
 
             if ($key == '' || $key != $new_email_key) {
-                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
+                throw new Error(__('Email key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
             } else {
                 $update_mail = DB::for_table('users')
                     ->where('id', $id)
@@ -192,7 +161,7 @@ class Profile
         } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
 
-            if (Random::hash(Input::post('req_password')) !== User::get()->password) {
+            if (!Utils::hash_equals(Random::hash(Input::post('req_password')), User::get()->password)) {
                 throw new Error(__('Wrong pass'));
             }
 
@@ -302,7 +271,7 @@ class Profile
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
-            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', true);
+            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
         }
         Container::get('hooks')->fire('model.profile.change_email');
     }
@@ -362,7 +331,7 @@ class Profile
 
             // Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
             if (!@move_uploaded_file($uploaded_file['tmp_name'], ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp')) {
-                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
+                throw new Error(__('Move failed').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
             }
 
             list($width, $height, $type, ) = @getimagesize(ForumEnv::get('FEATHER_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');

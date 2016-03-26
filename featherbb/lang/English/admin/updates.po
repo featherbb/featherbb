@@ -1,0 +1,132 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Updates"
+msgstr "Updates"
+
+msgid "Wrong form values"
+msgstr "You must submit the upgrade form!"
+
+msgid "Available updates"
+msgstr "Available updates"
+
+msgid "Check for updates"
+msgstr "Check for updates"
+
+msgid "Failed upgrade message"
+msgstr "Failed upgrading from version %s to %s!"
+
+msgid "Successful upgrade message"
+msgstr "Successfully upgraded from version %s to %s!"
+
+msgid "Could not update core version in database"
+msgstr "Could not update FeatherBB core version in database. You should edit it manually in the config table if you can."
+
+msgid "FeatherBB core"
+msgstr "FeatherBB core"
+
+msgid "Plugins"
+msgstr "Plugins"
+
+msgid "Themes"
+msgstr "Themes"
+
+msgid "View changelog"
+msgstr "View changelog"
+
+msgid "Latest version label"
+msgstr "Latest version available"
+
+msgid "FeatherBB core updates available"
+msgstr "You are running version %s, latest available is %s."
+
+msgid "FeatherBB core up to date"
+msgstr "You are running the latest version of FeatherBB."
+
+msgid "All plugins up to date"
+msgstr "All plugins are up to date"
+
+msgid "All themes up to date"
+msgstr "All themes are up to date"
+
+msgid "Upgrade core"
+msgstr "Upgrade core"
+
+msgid "Upgrade plugins"
+msgstr "Upgrade plugins"
+
+msgid "Upgrade themes"
+msgstr "Upgrade themes"
+
+msgid "Could not check for updates"
+msgstr "Could not reach \"%s\" to check for updates!"
+
+msgid "Unable to parse json update file"
+msgstr "Unable to parse json update file!"
+
+msgid "Could not parse version"
+msgstr "Could not parse version \"%s\" from update server \"%s\""
+
+msgid "Could not download update"
+msgstr "Could not download update \"%s\"!"
+
+msgid "Could not open file handle"
+msgstr "Could not open file handle to save update to \"%s\"!"
+
+msgid "Could not write update to file"
+msgstr "Could not write update to file \"%s\""
+
+msgid "Could not open zip file"
+msgstr "Could not open zip file \"%s\", error: %d"
+
+msgid "Directory not writable"
+msgstr "Directory \"%s\" has to be writable!"
+
+msgid "Coud not read zip entry"
+msgstr "Coud not read contents of file \"%s\" from zip file!"
+
+msgid "Could not overwrite file"
+msgstr "Could not overwrite file \"%s\"!"
+
+msgid "File could not be created"
+msgstr "The file \"%s\" could not be created!"
+
+msgid "Could not open file
+msgstr "Could not open file \"%s\"!"
+
+msgid "Could not write to file"
+msgstr "Could not write to file \"%s\"!"
+
+msgid "Could not delete update script"
+msgstr "Could not delete update script \"%s\", you should remove it manually!"
+
+msgid "Could not get latest version"
+msgstr "Could not get latest version from server!"
+
+msgid "Temporary directory not writable"
+msgstr "Temporary directory \"%s\" does not exist or is not writable!"
+
+msgid "Install directory not writable"
+msgstr "Install directory \"%s\" does not exist or is not writable!"
+
+msgid "Failed to download update"
+msgstr "Failed to download update from \"%s\" to \"%s\"!"
+
+msgid "Could not delete update file"
+msgstr "Could not delete update file \"%s\", you should delete it manually!"
+
+msgid "Update warnings"
+msgstr "Update warnings"

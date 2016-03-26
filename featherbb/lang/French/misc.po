@@ -1,0 +1,223 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Mark read redirect"
+msgstr "Toutes les discussions et forums ont été marqués comme lus. Redirection&#160;…"
+
+msgid "Mark forum read redirect"
+msgstr "Toutes les discussions du forum spécifié ont été marquées comme lues. Redirection&#160;…"
+
+msgid "Form email disabled"
+msgstr "L'utilisateur à qui vous essayez d'envoyer un e-mail a désactivé le formulaire e-mail."
+
+msgid "No email subject"
+msgstr "Vous devez indiquer un sujet."
+
+msgid "No email message"
+msgstr "Vous devez saisir un message."
+
+msgid "Too long email message"
+msgstr "Les messages ne peuvent contenir plus de 65535 caractères (64 Kio)."
+
+msgid "Email flood"
+msgstr "L'intervalle d'envoi consécutif d'e-mails est de %s secondes. Veuillez patienter un moment avant de tenter d'envoyer à nouveau."
+
+msgid "Email sent redirect"
+msgstr "E-mail envoyé. Redirection&#160;…"
+
+msgid "Send email to"
+msgstr "Envoyer un e-mail à"
+
+msgid "Email subject"
+msgstr "Sujet"
+
+msgid "Email message"
+msgstr "Message"
+
+msgid "Email disclosure note"
+msgstr "Veuillez prendre note qu'en utilisant ce formulaire, vous divulguerez votre adresse électronique au destinataire."
+
+msgid "Write email"
+msgstr "Composez et envoyez votre e-mail"
+
+msgid "No reason"
+msgstr "Vous devez indiquer un motif."
+
+msgid "Reason too long"
+msgstr "Votre message ne doit pas dépasser 65535 octets (~64 Kio)."
+
+msgid "Report flood"
+msgstr "L'intervalle d'envoi consécutif de signalements est de %s secondes. Veuillez patienter un moment avant de tenter d'envoyer à nouveau."
+
+msgid "Report redirect"
+msgstr "Message signalé. Redirection…"
+
+msgid "Report post"
+msgstr "Signaler un message"
+
+msgid "Reason"
+msgstr "Motif"
+
+msgid "Reason desc"
+msgstr "Indiquez la raison pour laquelle vous signalez ce message."
+
+msgid "Already subscribed topic"
+msgstr "Vous suivez déjà cette discussion."
+
+msgid "Already subscribed forum"
+msgstr "Vous suivez déjà ce forum."
+
+msgid "Subscribe redirect"
+msgstr "Votre demande de suivi a été prise en compte. Redirection&#160;…"
+
+msgid "Not subscribed topic"
+msgstr "Vous ne suivez pas cette discussion."
+
+msgid "Not subscribed forum"
+msgstr "Vous ne suivez pas ce forum."
+
+msgid "Unsubscribe redirect"
+msgstr "Vous ne suivez plus cette discussion. Redirection&#160;…"
+
+msgid "Moderate"
+msgstr "Modérer"
+
+msgid "Select"
+msgstr "Sélectionner"
+
+msgid "Move"
+msgstr "Déplacer"
+
+msgid "Split"
+msgstr "Scinder"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Merge"
+msgstr "Fusionner"
+
+msgid "Open"
+msgstr "Ouvrir"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Move topic"
+msgstr "Déplacer la discussion"
+
+msgid "Move topics"
+msgstr "Déplacer les discussions"
+
+msgid "Move legend"
+msgstr "Choisissez une destination"
+
+msgid "Move to"
+msgstr "Déplacer vers"
+
+msgid "Nowhere to move"
+msgstr "Aucun forum n'est disponible pour y déplacer des discussions."
+
+msgid "Leave redirect"
+msgstr "Laisser un lien de redirection"
+
+msgid "Move topic redirect"
+msgstr "Discussion déplacée. Redirection&#160;…"
+
+msgid "Move topics redirect"
+msgstr "Discussions déplacées. Redirection&#160;…"
+
+msgid "Confirm delete legend"
+msgstr "Veuillez confirmer la suppression"
+
+msgid "Delete topics"
+msgstr "Supprimer des discussions"
+
+msgid "Delete topics comply"
+msgstr "Souhaitez-vous vraiment supprimer les discussions sélectionnées&#160;?"
+
+msgid "Delete topics redirect"
+msgstr "Discussions supprimées. Redirection&#160;…"
+
+msgid "Open topic redirect"
+msgstr "Discussion ouverte. Redirection&#160;…"
+
+msgid "Open topics redirect"
+msgstr "Discussions ouvertes. Redirection&#160;…"
+
+msgid "Close topic redirect"
+msgstr "Discussion fermée. Redirection&#160;…"
+
+msgid "Close topics redirect"
+msgstr "Discussions fermées. Redirection&#160;…"
+
+msgid "No topics selected"
+msgstr "Vous devez choisir au moins une discussion à déplacer/supprimer/ouvrir/fermer."
+
+msgid "Not enough topics selected"
+msgstr "Vous devez sélectionner au moins 2 discussions pour une fusion."
+
+msgid "Stick topic redirect"
+msgstr "Discussion épinglée. Redirection&#160;…"
+
+msgid "Unstick topic redirect"
+msgstr "Discussion détachée. Redirection&#160;…"
+
+msgid "Merge topics"
+msgstr "Fusionner les discussions"
+
+msgid "Merge topics redirect"
+msgstr "Discussions fusionnées. Redirection&#160;…"
+
+msgid "Confirm merge legend"
+msgstr "Veuillez confirmer la fusion"
+
+msgid "New subject"
+msgstr "Nouveau sujet"
+
+msgid "Confirm split legend"
+msgstr "Veuillez confirmer la scission des messages sélectionnés et choisir leur destination pour déplacement."
+
+msgid "Split posts"
+msgstr "Scinder les messages"
+
+msgid "Split posts comply"
+msgstr "Souhaitez-vous vraiment scinder les messages sélectionnés&#160;?"
+
+msgid "Split posts redirect"
+msgstr "Les messages ont été scindés. Redirection&#160;…"
+
+msgid "Delete posts"
+msgstr "Supprimer les messages"
+
+msgid "Cannot select first"
+msgstr "Le premier message ne peut pas être sélectionné pour être scindé/supprimé."
+
+msgid "Delete posts comply"
+msgstr "Souhaitez-vous vraiment supprimer les messages sélectionnés&#160;?"
+
+msgid "Delete posts redirect"
+msgstr "Messages supprimés. Redirection&#160;…"
+
+msgid "No posts selected"
+msgstr "Vous devez choisir au moins un message à scinder/supprimer."
+
+msgid "Host info 1"
+msgstr "L'adresse IP est&#160;: %s"
+
+msgid "Host info 2"
+msgstr "Le nom d'hôte est&#160;: %s"
+
+msgid "Show more users"
+msgstr "Afficher davantage d'utilisateurs pour cette IP"

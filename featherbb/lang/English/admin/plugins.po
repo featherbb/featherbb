@@ -34,3 +34,12 @@ msgstr "Install"
 
 msgid "Uninstall"
 msgstr "Uninstall"
+
+msgid "Plugin deactivated"
+msgstr "Plugin \"%s\" deactivated!"
+
+msgid "Plugin activated"
+msgstr "Plugin \"%s\" activated!"
+
+msgid "Plugin downloaded"
+msgstr "Plugin downloaded!"

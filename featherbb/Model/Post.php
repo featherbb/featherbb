@@ -103,7 +103,7 @@ class Post
     }
 
     // Checks the post for errors before posting
-    public function check_errors_before_post($fid, $tid, $qid, $pid, $page, $errors)
+    public function check_errors_before_post($fid, $errors)
     {
         $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
 

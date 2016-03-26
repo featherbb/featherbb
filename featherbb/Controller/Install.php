@@ -12,6 +12,7 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Lister;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use FeatherBB\Middleware\Core;
 
 class Install
@@ -38,6 +39,7 @@ class Install
 
     public function run()
     {
+        Container::get('cache')->flush();
         Container::get('hooks')->fire('controller.install.run_install');
 
         if (Input::getParsedBodyParam('choose_lang')) {
@@ -49,7 +51,7 @@ class Install
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        translate(ForumEnv::get('install', 'featherbb', $this->install_lang));
+        translate('install', 'featherbb', $this->install_lang);
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = array();
@@ -137,7 +139,7 @@ class Install
                 return $this->create_config($data);
             }
         } else {
-            $base_url = str_replace('index.php', '', URL::base());
+            $base_url = str_replace('index.php', '', Url::base());
             $data = array('title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,
@@ -187,7 +189,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        translate(ForumEnv::get('install', 'featherbb', $data['default_lang']));
+        translate('install', 'featherbb', $data['default_lang']);
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
@@ -327,8 +329,6 @@ class Install
             'o_maintenance'                => 0,
             'o_maintenance_message'        => __('Maintenance message'),
             'o_default_dst'                => 0,
-            'o_feed_type'                => 2,
-            'o_feed_ttl'                => 0,
             'p_message_bbcode'            => 1,
             'p_message_img_tag'            => 1,
             'p_message_all_caps'        => 1,

@@ -203,14 +203,23 @@ class View
         if (!is_dir(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/')) {
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
-        $this->data->set('style', (string) $style);
+        // Add theme main and admin panel (if needed) stylesheets
+        $this->addAsset('css', 'style/themes/'.$style.'/style.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+        if ($this->has('admin_console')) {
+            if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/base_admin.css')) {
+                $this->addAsset('css', 'style/themes/'.$style.'/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+            } else {
+                $this->addAsset('css', 'style/imports/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+            }
+        }
+        // Add javascript files in theme root
+        foreach (glob(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/*.js') as $script) {
+            $parts = explode('/', $script);
+            $this->addAsset('js', 'style/themes/'.$style.'/'.end($parts), array('type' => 'text/javascript'));
+        }
+        // Override default templates directory if file exists in theme
         $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/view', 9);
         return $this;
-    }
-
-    public function getStyle()
-    {
-        return $this->data['style'];
     }
 
     public function setPageInfo(array $data)
@@ -241,7 +250,7 @@ class View
     public function addAsset($type, $asset, $params = array())
     {
         $type = (string) $type;
-        if (!in_array($type, array('js', 'css', 'feed', 'canonical', 'prev', 'next'))) {
+        if (!in_array($type, array('js', 'css', 'canonical', 'prev', 'next'))) {
             throw new \Exception('Invalid asset type : ' . $type);
         }
         if (in_array($type, array('js', 'css')) && !is_file(ForumEnv::get('FEATHER_ROOT').$asset)) {
@@ -260,7 +269,9 @@ class View
 
     public function getAssets()
     {
-        return $this->assets;
+        $assets = $this->assets;
+        $assets = Container::get('hooks')->fire('view.alter_assets', $assets);
+        return $assets;
     }
 
     public function addTemplate($tpl, $priority = 10)
@@ -356,8 +367,6 @@ class View
                 return array('type' => 'text/javascript');
             case 'css':
                 return array('rel' => 'stylesheet', 'type' => 'text/css');
-            case 'feed':
-                return array('rel' => 'alternate', 'type' => 'application/atom+xml');
             case 'canonical':
                 return array('rel' => 'canonical');
             case 'prev':

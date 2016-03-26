@@ -1,0 +1,139 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Forum added redirect"
+msgstr "Forum ajouté. Redirection&#160;…"
+
+msgid "Forum deleted redirect"
+msgstr "Forum supprimé. Redirection&#160;…"
+
+msgid "Forums updated redirect"
+msgstr "Forums mis à jour. Redirection&#160;…"
+
+msgid "Forum updated redirect"
+msgstr "Forum mis à jour. Redirection&#160;…"
+
+msgid "Perms reverted redirect"
+msgstr "Rétablissement des permissions par défaut. Redirection&#160;…"
+
+msgid "Must enter name message"
+msgstr "Vous devez indiquer un nom de forum."
+
+msgid "Must be integer message"
+msgstr "La position doit être indiquée sous forme de nombre entier positif."
+
+msgid "New forum"
+msgstr "Nouveau forum"
+
+msgid "Add forum head"
+msgstr "Ajouter un forum"
+
+msgid "Create new subhead"
+msgstr "Créer un nouveau forum"
+
+msgid "Add forum label"
+msgstr "Ajouter le forum à une catégorie"
+
+msgid "Add forum help"
+msgstr "Choisissez la catégorie à laquelle vous souhaitez ajouter un nouveau forum."
+
+msgid "Add forum"
+msgstr "Ajouter le forum"
+
+msgid "No categories exist"
+msgstr "Il n'existe aucune catégorie pour le moment"
+
+msgid "Edit forums head"
+msgstr "Modifier des forums"
+
+msgid "Category subhead"
+msgstr "Catégorie&#160;:"
+
+msgid "Forum label"
+msgstr "Forum"
+
+msgid "Edit link"
+msgstr "Modifier"
+
+msgid "Delete link"
+msgstr "Supprimer"
+
+msgid "Position label"
+msgstr "Position"
+
+msgid "Update positions"
+msgstr "Mettre à jour les positions"
+
+msgid "Confirm delete head"
+msgstr "Confirmation de suppression de forum"
+
+msgid "Confirm delete subhead"
+msgstr "Important ! Lisez ceci avant de supprimer."
+
+msgid "Confirm delete info"
+msgstr "Souhaitez-vous vraiment supprimer le forum <strong>%s</strong>&#160;?"
+
+msgid "Confirm delete warn"
+msgstr "ATTENTION ! La suppression d'un forum entraînera la suppression des éventuels messages contenus dans ce forum&#160;!"
+
+msgid "Edit forum head"
+msgstr "Modifier un forum"
+
+msgid "Edit details subhead"
+msgstr "Modifier les informations sur le forum"
+
+msgid "Forum name label"
+msgstr "Nom du forum"
+
+msgid "Forum description label"
+msgstr "Description (HTML)"
+
+msgid "Category label"
+msgstr "Catégorie"
+
+msgid "Sort by label"
+msgstr "Trier les discussions par"
+
+msgid "Last post"
+msgstr "Dernier message"
+
+msgid "Topic start"
+msgstr "Début du sujet"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "Redirect label"
+msgstr "URL de redirection"
+
+msgid "Redirect help"
+msgstr "Uniquement disponible pour les forums vides"
+
+msgid "Group permissions subhead"
+msgstr "Modifier les permissions des groupes pour ce forum"
+
+msgid "Group permissions info"
+msgstr "Dans ce forum, vous pouvez définir les permissions spécifiques à différents groupes d'utilisateurs. Si vous n'avez fait aucune modification aux permissions de groupe de ce forum, ce que vous voyez ci-dessous sont les paramètres par défaut basés sur ceux proposés dans %s. Les administrateurs ont toujours toutes les permissions et sont donc exclus de ce paramétrage. Les paramètres de permission qui diffèrent des permissions par défaut pour le groupe d'utilisateurs sont mis en évidence en rouge. La case à cocher indiquant la permission de «&#160;lire le forum&#160;» sera désactivée si le groupe en question ne possède pas cette permission. Pour les forums redirigés, seule la permission de lecture de forum est modifiable."
+
+msgid "Read forum label"
+msgstr "Lire le forum"
+
+msgid "Post replies label"
+msgstr "Répondre aux messages"
+
+msgid "Post topics label"
+msgstr "Créer des discussions"
+
+msgid "Revert to default"
+msgstr "Rétablir les paramètres par défaut"

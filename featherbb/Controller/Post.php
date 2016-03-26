@@ -89,21 +89,8 @@ class Post
         // Did someone just hit "Submit" or "Preview"?
         if (Request::isPost()) {
 
-            // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
-            if (Input::post('pid')) {
-                $pid = Input::post('pid');
-            } else {
-                $pid = '';
-            }
-
-            if (Input::post('page')) {
-                $page = Input::post('page');
-            } else {
-                $page = '';
-            }
-
             // Let's see if everything went right
-            $errors = $this->model->check_errors_before_post($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
+            $errors = $this->model->check_errors_before_post($args['fid'], $errors);
 
             // Setup some variables before post
             $post = $this->model->setup_variables($errors, $is_admmod);

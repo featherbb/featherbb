@@ -1,0 +1,196 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Update"
+msgstr "Mise à jour de FluxBB"
+
+msgid "Update message"
+msgstr "Votre base de données FluxBB est dépassée et doit être mise à niveau afin de poursuivre. Si vous êtes l'administrateur de ces forums, veuillez suivre les instructions ci-desssous afin d'achever la mise à niveau."
+
+msgid "Note"
+msgstr "Remarque :"
+
+msgid "Members message"
+msgstr "Cette procédure n'est destinée qu'aux administrateurs des forums. Si vous êtes un membre ce n'est pas la peine de vous préoccuper de cela - les forums seront très rapidement fonctionnels !"
+
+msgid "Administrator only"
+msgstr "Cette étape ne concerne que l'administrateur des forums !"
+
+msgid "Database password info"
+msgstr "Pour lancer la mise à jour de la base de données veuillez indiquer le mot de passe de base de données avec lequel FluxBB a été installé. Si vous ne vous en souvenez plus, il est stocké dans le fichier 'config.php'."
+
+msgid "Database password note"
+msgstr "Si vous utilisez SQLite (et donc n'avez défini aucun mot de passe), veuillez utiliser le nom du fichier de base de données à la place. Cela doit correspondre exactement au nom de base de données indiqué dans votre fichier de configuration."
+
+msgid "Database password"
+msgstr "Mot de passe de base de données"
+
+msgid "Maintenance"
+msgstr "Maintenance"
+
+msgid "Maintenance message info"
+msgstr "Le message qui s'affichera pour les utilisateurs lors de l'opération de mise à jour. Ce texte ne sera pas analysé comme les messages habituels et peut donc contenir du code HTML."
+
+msgid "Maintenance message"
+msgstr "Message de maintenance"
+
+msgid "Next"
+msgstr "Suivante"
+
+msgid "You are running error"
+msgstr "Vous utilez la version %2$s de %1$s. FluxBB %3$s nécessite au moins %1$s %4$s pour fonctionner correctement. Vous devez mettre à niveau votre installation avant de poursuivre."
+
+msgid "Version mismatch error"
+msgstr "Version non correspondante. La base de données '%s' ne semble pas utiliser un schéma de base de données FluxBB pris en charge par ce script de mise à jour."
+
+msgid "Invalid file error"
+msgstr "Nom de base de données invalide. Lorsque vous utilisez SQLite le nom de la base de données indiqué doit être exactement identique à celui de votre '%s'"
+
+msgid "Invalid password error"
+msgstr "Mot de passe de base de données invalide. Pour mettre à niveau FluxBB vous devez indiquer votre mot de passe de base de données, il doit être exactement identique à celui de votre '%s'"
+
+msgid "No password error"
+msgstr "Aucun mot de passe de base de données fourni"
+
+msgid "Script runs error"
+msgstr "Il semblerait que le script de mise à jour ait déjà été lancé par une autre personne. Si cela ne s'averrait pas être vrai, veuillez supprimer manuellement le fichier '%s' et essayer à nouveau"
+
+msgid "No update error"
+msgstr "Votre forum a déjà atteint le niveau de mis à jour le plus élevé pour ce script"
+
+msgid "Intro 1"
+msgstr "Ce script va se charger de mettre votre base de données à jour. La procédure de mise à jour pourra prendre quelques secondes à plusieures heures, cette durée dépendant de la vitesse du serveur et de la taille de la base de données. N'oubliez pas de faire une sauvegarde de la base de données avant de poursuivre."
+
+msgid "Intro 2"
+msgstr "Avez-vous lu les instructions de mise à jour dans la documentation ? Si non, allez voir."
+
+msgid "No charset conversion"
+msgstr "<strong>IMPORTANT !</strong> FluxBB a détecté que cet environnement PHP ne prend pas en charge les mécanismes d'encodage nécessaires pour effectuer une conversion UTF-8 à partir de jeux de caractères autres que ISO-8859-1. Cela signifie que si le jeu de caractères actuel n'est pas ISO-8859-1, FluxBB ne pourra pas convertir votre base de données du forum en UTF-8 et vous devrez le faire manuellement. Des informations concernant la conversion manuelle peuvent être trouvées dans les instructions de mise à jour."
+
+msgid "Enable conversion"
+msgstr "<strong>Activer la conversion :</strong> si activé, ce script de mise à jour procèdera, après avoir fait les modifications structurelles nécessaires à la base de données, à la conversion de tout le texte dans la base de données de l'actuel jeu de caractères vers UTF-8. Cette conversion est nécessaire si vous mettez à niveau une version 1.2."
+
+msgid "Current character set"
+msgstr "<strong>Jeu de caractère actuel :</strong> Si la langue principale de votre forum est l'anglais, vous pouvez laisser cela à la valeur par défaut. En revanche, si votre forum utilise une autre langue, vous devrez indiquer le jeu de caractères du paquetage de la langue principale utilisé par le forum. <em>Si cette donnée est fausse, cela pourra corrompre votre base de données, donc n'essayez pas de deviner !</em> Remarque : ceci est nécessaire même si votre ancienne base de données est en UTF-8."
+
+msgid "Charset conversion"
+msgstr "Conversion de jeu de caractères"
+
+msgid "Enable conversion label"
+msgstr "<strong>Activer la conversion</strong> (effectuer la conversion du jeu de caractères de la base de données)."
+
+msgid "Current character set label"
+msgstr "Jeu de caractères actuel"
+
+msgid "Current character set info"
+msgstr "Accepter la valeur par défaut pour des forums en anglais sinon, le jeu de caractères du paquetage de la langue principale."
+
+msgid "Start update"
+msgstr "Démarrer la mise à jour"
+
+msgid "Error converting users"
+msgstr "Erreur lors de la conversion de noms d'utilisateurs"
+
+msgid "Error info 1"
+msgstr "Une erreur est survenue lors de la conversion de certains noms d'utilisateurs. Cela peut arriver lors d'une conversion à partir de FluxBB v1.2 si plusieurs utilisateurs se sont inscrits en indiquant des noms très similaires, par exemple « bob » et « böb »."
+
+msgid "Error info 2"
+msgstr "Ci-dessous une liste d'utilisateurs dont la conversion du nom a échoué. Veuillez choisir un nouveau nom pour chaque utilisateur. Les utilisateurs dont le nom aura été modifié seront automatiquement avertis par l'envoi d'un e-mail."
+
+msgid "New username"
+msgstr "Nouvel utilisateur"
+
+msgid "Required"
+msgstr "(Obligatoire)"
+
+msgid "Correct errors"
+msgstr "Les erreurs suivantes doivent être corrigées :"
+
+msgid "Rename users"
+msgstr "Renommer les utilisateurs"
+
+msgid "Successfully updated"
+msgstr "Votre base de données a été mise à jour avec succès. Vous devrez à présent %s."
+
+msgid "go to index"
+msgstr "vous rendre à la page d'accueil des forums"
+
+msgid "Unable to lock error"
+msgstr "Impossible de déverrouiller pour mise à jour. Veuillez vérifier que PHP puisse modifier le répertoire '%s' et qu'actuellement personne d'autre n'a lancé le script de mise à jour."
+
+msgid "Converting"
+msgstr "Conversion de %s …"
+
+msgid "Converting item"
+msgstr "Conversion de %1$s %2$s …"
+
+msgid "Preparsing item"
+msgstr "Analyse préliminaire de %1$s %2$s …"
+
+msgid "Rebuilding index item"
+msgstr "Reconstruction de l'index pour %1$s %2$s"
+
+msgid "ban"
+msgstr "bannissement"
+
+msgid "categories"
+msgstr "catégories"
+
+msgid "censor words"
+msgstr "mots censurés"
+
+msgid "configuration"
+msgstr "configuration"
+
+msgid "forums"
+msgstr "forums"
+
+msgid "groups"
+msgstr "groupes"
+
+msgid "post"
+msgstr "message"
+
+msgid "report"
+msgstr "signalement"
+
+msgid "topic"
+msgstr "discussion"
+
+msgid "user"
+msgstr "utilisateur"
+
+msgid "signature"
+msgstr "signature"
+
+msgid "Username too short error"
+msgstr "Les noms d'utilisateurs doivent comporter au moins 2 caractères. Veuillez choisir un autre nom d'utilisateur (plus long)."
+
+msgid "Username too long error"
+msgstr "Les noms d'utilisateurs ne doivent pas comporter plus de 25 caractères. Veuillez choisir un autre nom d'utilisateur (plus court)."
+
+msgid "Username Guest reserved error"
+msgstr "Le nom d'utilisateur « guest » est réservé. Veuillez choisir un autre nom."
+
+msgid "Username IP format error"
+msgstr "Les noms d'utilisateurs ne doivent pas ressembler à une adresse IP. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username bad characters error"
+msgstr "Les noms d'utilisateurs ne doivent pas comporter tous les caractères ', \" et [ ou ] en même temps. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username BBCode error"
+msgstr "Les noms d'utilisateurs ne doivent pas comporter de balises de formatage de texte (BBCode) utilisés par le forum. Veuillez choisir un autre nom d'utilisateur."
+
+msgid "Username duplicate error"
+msgstr "Quelqu'un a déjà utilisé le nom d'utilisateur « %s ». Le nom d'utilisateur que vous avez indiqué est trop semblable. Le nom doit comporter au moins un caractère alphanumérique (a-z ou 0-9) différent. Veuillez choisir un autre nom d'utilisateur."

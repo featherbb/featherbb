@@ -13,7 +13,7 @@ use FeatherBB\Core\Database as DB;
 
 class Plugin
 {
-    public function getActivePlugins()
+    public static function getActivePlugins()
     {
         $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
 
@@ -87,8 +87,15 @@ class Plugin
      * Default empty install function to avoid erros when deactivating.
      * Daughter classes may override this method for custom deactivation.
      */
-    public function deactivate()
+    public function deactivate($name)
     {
+        // Check if plugin name is valid
+        if ($class = $this->load($name)) {
+            // Do we need to run extra code for deactivation ?
+            if (method_exists($class, 'pause')) {
+                $class->pause();
+            }
+        }
     }
 
     public function uninstall($name)
@@ -117,7 +124,7 @@ class Plugin
         }
         // Simple plugins, only a featherbb.json and the main class
         if ( file_exists( $file = $this->checkSimple($plugin) ) ) {
-            require $file;
+            require_once $file;
             $className = '\FeatherBB\Plugins\\'.$this->getNamespace($plugin);
             $class = new $className();
             return $class;

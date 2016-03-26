@@ -16,6 +16,8 @@ class AdminUtils
 {
     public static function generateAdminMenu($page = '')
     {
+        translate('admin/common');
+
         $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
 
         // See if there are any plugins that want to display in the menu
@@ -102,8 +104,12 @@ class AdminUtils
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
         $content = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);
+
+        if ($http_status != 200)
+            return false;
 
         return $content;
     }

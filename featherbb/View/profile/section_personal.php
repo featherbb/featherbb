@@ -7,7 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Utils;
+use FeatherBB\Model\Api\Api;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
@@ -31,6 +33,7 @@ Container::get('hooks')->fire('view.profile.section_personal.start');
 <?php endif; ?>                            <label><?php _e('Location') ?><br /><input type="text" name="form_location" value="<?= Utils::escape($user['location']) ?>" size="30" maxlength="30" /><br /></label>
 <?php if (User::get()->g_post_links == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) : ?>                            <label><?php _e('Website') ?><br /><input type="text" name="form_url" value="<?= Utils::escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>
+                        <label><?php _e('API token') ?><br /><input type="text" name="api" readonly="readonly" value="<?= Api::getToken(User::get()) ?>" size="60" maxlength="60" /><br /></label>
                     </div>
                 </fieldset>
             </div>

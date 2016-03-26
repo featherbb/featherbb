@@ -1,0 +1,100 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Perms updated redirect"
+msgstr "Permissions mises à jour. Redirection&#160;…"
+
+msgid "Permissions head"
+msgstr "Permissions"
+
+msgid "Posting subhead"
+msgstr "Messages"
+
+msgid "BBCode label"
+msgstr "BBCode"
+
+msgid "BBCode help"
+msgstr "Autoriser les balises BBCode dans les messages (recommandé)."
+
+msgid "Image tag label"
+msgstr "Balise image"
+
+msgid "Image tag help"
+msgstr "Autoriser la balise BBCode [img][/img] dans les messages."
+
+msgid "All caps message label"
+msgstr "Message uniquement en capitales"
+
+msgid "All caps message help"
+msgstr "Accepter qu'un message soit complètement écrit en lettres capitales."
+
+msgid "All caps subject label"
+msgstr "Sujet uniquement en capitales"
+
+msgid "All caps subject help"
+msgstr "Accepter qu'un sujet soit complètement écrit en lettres capitales."
+
+msgid "Require e-mail label"
+msgstr "E-mail de l'invité obligatoire"
+
+msgid "Require e-mail help"
+msgstr "Demander à l'invité d'indiquer son adresse électronique pour publier un message."
+
+msgid "Signatures subhead"
+msgstr "Signatures"
+
+msgid "BBCode sigs label"
+msgstr "BBCodes dans les signatures"
+
+msgid "BBCode sigs help"
+msgstr "Autoriser les balises BBCode dans les signatures des utilisateurs."
+
+msgid "Image tag sigs label"
+msgstr "Balise image dans les signatures"
+
+msgid "Image tag sigs help"
+msgstr "Autoriser la balise BBCode [img][/img] dans les signatures d'utilisateurs (non recommandé)."
+
+msgid "All caps sigs label"
+msgstr "Signature uniquement en capitales"
+
+msgid "All caps sigs help"
+msgstr "Accepter qu'une signature soit complètement écrite en lettres capitales."
+
+msgid "Max sig length label"
+msgstr "Longueur maximale de la signature"
+
+msgid "Max sig length help"
+msgstr "Nombre maximal de caractères contenus dans une signature d'utilisateur."
+
+msgid "Max sig lines label"
+msgstr "Lignes maximales de la signature"
+
+msgid "Max sig lines help"
+msgstr "Nombre maximal de lignes accepté dans une signature d'utilisateur."
+
+msgid "Registration subhead"
+msgstr "Inscription"
+
+msgid "Banned e-mail label"
+msgstr "Autoriser les adresses électroniques bannies"
+
+msgid "Banned e-mail help"
+msgstr "Autoriser l'utilisation d'adresse électroniques ou de domaines d'adresse électronique bannis lors de l'inscription ou la modification d'e-mail d'utilisateurs. Si laissé au paramètre par défaut (oui), cette action sera autorisée, mais un avertissement par e-mail sera envoyé à la liste de diffusion (moyen efficace pour détecter les inscriptions multiples)."
+
+msgid "Duplicate e-mail label"
+msgstr "Autoriser des adresses électroniques en double"
+
+msgid "Duplicate e-mail help"
+msgstr "Indique si les utilisateurs sont autorisés à s'inscrire avec une adresse électronique déjà utilisée par un autre utilisateur enregistré. Si autorisé, un e-mail d'avertissement sera envoyé à la liste de diffusion si un doublon est détecté."

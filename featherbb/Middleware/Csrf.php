@@ -141,7 +141,8 @@ class Csrf
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         // Validate POST, PUT, DELETE, PATCH requests
-        if (in_array($request->getMethod(), ['POST', 'PUT', 'DELETE', 'PATCH'])) {
+        if (in_array($request->getMethod(), ['POST', 'PUT', 'DELETE', 'PATCH'])
+            && substr($request->getUri()->getPath(), 0, 3) !== 'api') {
             $body = $request->getParsedBody();
             $body = $body ? (array)$body : [];
             $name = isset($body[$this->prefix . '_name']) ? $body[$this->prefix . '_name'] : false;

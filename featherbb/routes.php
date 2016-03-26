@@ -11,6 +11,7 @@ use \FeatherBB\Middleware\Logged as IsLogged;
 use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
 use \FeatherBB\Middleware\Admin as IsAdmin;
 use \FeatherBB\Middleware\AdminModo as IsAdmMod;
+use \FeatherBB\Middleware\JsonHeader;
 use FeatherBB\Core\Error;
 
 
@@ -90,7 +91,7 @@ Route::get('/help', '\FeatherBB\Controller\Help:display')->add(new CanReadBoard)
 Route::group('/user', function() {
     Route::map(['GET', 'POST'], '/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
     Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
-    Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction'); // TODO: Move to another route for non-authed users
+    Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
     Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
     Route::get('/get-host/{ip}', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
 })->add(new IsLogged);
@@ -103,6 +104,12 @@ Route::group('/admin', function() {
     // Admin index
     Route::get('[/action/{action}]', '\FeatherBB\Controller\Admin\Index:display')->setName('adminAction');
     Route::get('/index', '\FeatherBB\Controller\Admin\Index:display')->setName('adminIndex');
+
+    // Admin updates
+    Route::get('/updates', '\FeatherBB\Controller\Admin\Updates:display')->setName('adminUpdates');
+    Route::post('/updates/upgrade-core', '\FeatherBB\Controller\Admin\Updates:upgradeCore')->setName('adminUpgradeCore');
+    Route::post('/updates/upgrade-plugins', '\FeatherBB\Controller\Admin\Updates:upgradePlugins')->setName('adminUpgradePlugins');
+    Route::post('/updates/upgrade-themes', '\FeatherBB\Controller\Admin\Updates:upgradeThemes')->setName('adminUpgradeThemes');
 
     // Admin bans
     Route::group('/bans', function() {
@@ -177,6 +184,15 @@ Route::group('/admin', function() {
 
 })->add(new IsAdmMod);
 
+// API
+Route::group('/api', function() {
+    Route::get('/user/{id:[0-9]+}', '\FeatherBB\Controller\Api\User:display')->setName('userApi');
+    Route::get('/forum/{id:[0-9]+}', '\FeatherBB\Controller\Api\Forum:display')->setName('forumApi');
+    Route::get('/topic/{id:[0-9]+}', '\FeatherBB\Controller\Api\Topic:display')->setName('topicApi');
+    Route::post('/new/topic/forum-id/{id:[0-9]+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
+    Route::get('/post/{id:[0-9]+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
+})->add(new JsonHeader);
+
 // Override the default Not Found Handler
 Container::set('notFoundHandler', function ($c) {
     return function ($request, $response) use ($c) {
@@ -186,15 +202,15 @@ Container::set('notFoundHandler', function ($c) {
 
 Container::set('errorHandler', function ($c) {
     return function ($request, $response, $e) use ($c) {
-        // var_dump($e);
         $error = array(
             'code' => $e->getCode(),
             'message' => $e->getMessage(),
             'back' => true,
+            'html' => false,
         );
 
         // Hide internal mechanism
-        if (!in_array(get_class($e), array('FeatherBB\Core\Error'))) {
+        if (!in_array(get_class($e), array('FeatherBB\Core\Error')) && ForumEnv::get('FEATHER_DEBUG') != 'all') {
             $error['message'] = 'There was an internal error'; // TODO : translation
         }
 
@@ -202,10 +218,15 @@ Container::set('errorHandler', function ($c) {
             $error['back'] = $e->hasBacklink();
         }
 
+        if (method_exists($e, 'displayHtml')) {
+            $error['html'] = $e->displayHtml();
+        }
+
         return View::setPageInfo(array(
             'title' => array(\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
             'msg'    =>    $error['message'],
             'backlink'    => $error['back'],
+            'html'    => $error['html'],
         ))->addTemplate('error.php')->display();
     };
 });

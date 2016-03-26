@@ -1,0 +1,45 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Available plugins"
+msgstr "Les plugins suivants sont disponibles"
+
+msgid "Extension"
+msgstr "Extension"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Activate"
+msgstr "Activer"
+
+msgid "Deactivate"
+msgstr "Désactiver"
+
+msgid "Install"
+msgstr "Installer"
+
+msgid "Uninstall"
+msgstr "Désinstaller"
+
+msgid "Plugin deactivated"
+msgstr "Plugin \"%s\" désactivé!"
+
+msgid "Plugin activated"
+msgstr "Plugin \"%s\" activé!"
+
+msgid "Plugin downloaded"
+msgstr "Plugin téléchargé!"

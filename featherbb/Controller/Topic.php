@@ -90,12 +90,6 @@ class Topic
             }
         }
 
-        if (ForumSettings::get('o_feed_type') == '1') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=rss', array('title' => __('RSS forum feed')));
-        } elseif (ForumSettings::get('o_feed_type') == '2') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=atom', array('title' => __('Atom forum feed')));
-        }
-
         View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
             'active_page' => 'Topic',

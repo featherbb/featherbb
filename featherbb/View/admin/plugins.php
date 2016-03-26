@@ -16,7 +16,7 @@ Container::get('hooks')->fire('view.admin.plugins.start');
 ?>
 
 <div class="block">
-    <h2>Plugins</h2>
+    <h2>Installed plugins</h2>
     <div class="box">
         <div class="inbox">
             <table class="table">
@@ -53,6 +53,28 @@ Container::get('hooks')->fire('view.admin.plugins.start');
             </table>
             <p style="text-align:right"><?= count($availablePlugins) ?> éléments</p>
         </div>
+    </div>
+
+    <h2>Upload plugin</h2>
+    <div class="box">
+        <div class="inbox">
+            <form id="upload_avatar" method="post" enctype="multipart/form-data" action="" onsubmit="return process_form(this)">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+                <div class="inform">
+                        <div class="infldset">
+                            <input type="hidden" name="form_sent" value="1" />
+                            <input type="hidden" name="MAX_FILE_SIZE" value="10240" />
+                            <input name="req_file" type="file" size="40" />
+                        </div>
+                </div>
+                <br />
+                <p class="buttons"><input type="submit" name="upload" value="Upload" /></p>
+            </form>
+        </div>
+    </div>
+
+    <h2>Available plugins</h2>
+    <div class="box">
         <div class="inbox">
             <table class="table">
                 <caption><?php _e('Available plugins') ?></caption>

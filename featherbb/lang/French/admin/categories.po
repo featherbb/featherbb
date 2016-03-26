@@ -1,0 +1,79 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Must enter name message"
+msgstr "Vous devez indiquer un nom pour la catégorie"
+
+msgid "Category added redirect"
+msgstr "Catégorie ajoutée. Redirection&#160;…"
+
+msgid "Category deleted redirect"
+msgstr "Catégorie supprimée. Redirection&#160;…"
+
+msgid "Delete category head"
+msgstr "Supprimer la catégorie (ainsi que les forums et les sujets qu'elle contient)"
+
+msgid "Confirm delete subhead"
+msgstr "Confirmer la suppression de la catégorie"
+
+msgid "Confirm delete info"
+msgstr "Souhaitez-vous vraiment supprimer la catégorie «&#160;%s&#160;» ?"
+
+msgid "Delete category warn"
+msgstr "<strong>ATTENTION&#160;!</strong> Supprimer une catégorie entraîne la suppression des forums et sujets éventuels qu'elle contient !"
+
+msgid "Must enter integer message"
+msgstr "La position doit être indiquée sous la forme d'un nombre entier positif"
+
+msgid "Categories updated redirect"
+msgstr "Catégories mises à jour. Redirection&#160;…"
+
+msgid "Add categories head"
+msgstr "Ajouter des catégories"
+
+msgid "Add categories subhead"
+msgstr "Ajouter les catégories"
+
+msgid "Add category label"
+msgstr "Ajouter une nouvelle catégorie"
+
+msgid "Add new submit"
+msgstr "Ajouter"
+
+msgid "Add category help"
+msgstr "Le nom de la nouvelle catégorie que vous souhaitez ajouter. Vous pouvez modifier ce nom plus tard (voir ci-dessous). Allez à la rubrique %s pour ajouter des forums dans votre nouvelle catégorie."
+
+msgid "Delete categories head"
+msgstr "Supprimer des catégories"
+
+msgid "Delete categories subhead"
+msgstr "Supprimer les catégories"
+
+msgid "Delete category label"
+msgstr "Supprimer une catégorie"
+
+msgid "Delete category help"
+msgstr "Sélectionnez le nom de la catégorie que vous souhaitez supprimer. Une confirmation vous sera demandée avant que cette catégorie ne soit supprimée."
+
+msgid "Edit categories head"
+msgstr "Modifier des catégories"
+
+msgid "Edit categories subhead"
+msgstr "Modifier les catégories"
+
+msgid "Category position label"
+msgstr "Position"
+
+msgid "Category name label"
+msgstr "Nom"

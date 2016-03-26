@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.error.start');
     <h2><span><?= __('Error') ?></span></h2>
     <div class="box">
         <div class="inbox">
-            <p><?= $msg ?></p>
+            <p><?= ($html) ? htmlspecialchars_decode($msg) : $msg ?></p>
 <?php if ($backlink) {
     echo "\t\t\t".'<p><a href="javascript: history.go(-1)">'.__('Go back').'</a></p>';
 } ?>

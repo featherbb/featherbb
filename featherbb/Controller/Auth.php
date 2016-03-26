@@ -16,11 +16,13 @@ use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Auth as ModelAuth;
 use FeatherBB\Model\Cache;
+use FeatherBB\Core\Database as DB;
 
 class Auth
 {
     public function __construct()
     {
+        translate('profile');
         translate('login');
     }
 
@@ -38,30 +40,28 @@ class Auth
 
             $user = ModelAuth::get_user_from_name($form_username);
 
-            if (!empty($user->password)) {
-                $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
-                if ($user->password == $form_password_hash) {
-                    if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
-                        ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
-                        if (!Container::get('cache')->isCached('users_info')) {
-                            Container::get('cache')->store('users_info', Cache::get_users_info());
-                        }
+            $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
+            if ($user && !empty($user->password) && $user->password == $form_password_hash) {
+                if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
+                    ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
+                    if (!Container::get('cache')->isCached('users_info')) {
+                        Container::get('cache')->store('users_info', Cache::get_users_info());
                     }
-
-                    ModelAuth::delete_online_by_ip(Utils::getIp());
-                    // Reset tracked topics
-                    Track::set_tracked_topics(null);
-
-                    $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
-                    $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
-
-                    $jwt = ModelAuth::generate_jwt($user, $expire);
-                    ModelAuth::feather_setcookie('Bearer '.$jwt, $expire);
-
-                    return Router::redirect(Router::pathFor('home'), __('Login redirect'));
-                } else {
-                    throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
                 }
+
+                ModelAuth::delete_online_by_ip(Utils::getIp());
+                // Reset tracked topics
+                Track::set_tracked_topics(null);
+
+                $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+                $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
+
+                $jwt = ModelAuth::generate_jwt($user, $expire);
+                ModelAuth::feather_setcookie('Bearer '.$jwt, $expire);
+
+                return Router::redirect(Router::pathFor('home'), __('Login redirect'));
+            } else {
+                throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
             }
         } else {
             View::setPageInfo(array(
@@ -77,7 +77,7 @@ class Auth
     {
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
-        if (User::get()->is_guest || !isset($token) || $token != Random::hash(User::get()->id.Random::hash(Utils::getIp()))) {
+        if (User::get()->is_guest || !isset($token) || !Utils::hash_equals($token, Random::hash(User::get()->id.Random::hash(Utils::getIp())))) {
             return Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
@@ -96,6 +96,7 @@ class Auth
 
     public function forget($req, $res, $args)
     {
+        // If the user is already logged in we shouldn't be here :)
         if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'), 'Already logged in');
         }
@@ -136,15 +137,44 @@ class Auth
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
-                $cur_mail_message = str_replace('<activation_url>', Url::base().Router::pathFor('profileAction', ['id' => $user->id, 'action' => 'change_pass'], ['key' => $new_password_key]), $cur_mail_message);
+                $cur_mail_message = str_replace('<activation_url>', Router::pathFor('resetPassword', [], ['key' => $new_password_key, 'user_id' => $user->id]), $cur_mail_message);
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
                 Container::get('email')->feather_mail($email, $mail_subject, $cur_mail_message);
 
-                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200);
+                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200, true, true);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
+            }
+        }
+
+        if (Input::query('key') && Input::query('user_id')) {
+
+            $key = Input::query('key');
+            $key = Container::get('hooks')->fire('controller.auth.password_forgotten_key', $key);
+
+            $id = Input::query('user_id');
+            $id = Container::get('hooks')->fire('controller.auth.password_forgotten_user_id', $id);
+
+            $cur_user = DB::for_table('users')
+                ->where('id', $id);
+            $cur_user = Container::get('hooks')->fireDB('controller.auth.password_forgotten_user_query', $cur_user);
+            $cur_user = $cur_user->find_one();
+
+            if ($key == '' || $key != $cur_user['activate_key']) {
+                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
+            } else {
+                $query = DB::for_table('users')
+                    ->where('id', $id)
+                    ->find_one()
+                    ->set('password', $cur_user['activate_string'])
+                    ->set_expr('activate_string', 'NULL')
+                    ->set_expr('activate_key', 'NULL');
+                $query = Container::get('hooks')->fireDB('controller.auth.password_forgotten_activate_query', $query);
+                $query = $query->save();
+
+                return Router::redirect(Router::pathFor('home'), __('Pass updated'));
             }
         }
 

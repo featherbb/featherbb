@@ -90,7 +90,7 @@ class Auth
     public static function set_new_password($pass, $key, $user_id)
     {
         $query['update'] = array(
-            'activate_string' => hash($pass),
+            'activate_string' => Random::hash($pass),
             'activate_key'    => $key,
             'last_email_sent' => time(),
         );
