@@ -143,7 +143,7 @@ if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
         }
     }
 }
-echo "\t\t\t".implode("\n\t\t\t", $navlinks);
+echo "\t\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t\t", $navlinks);
 ?>
 
                         </ul>
@@ -172,28 +172,28 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
 if (User::get()->is_guest) { ?>
                         <p class="conl"><?= __('Not logged in')?></p>
 <?php } else {
-    echo "\t\t\t".'<ul class="conl">';
-    echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
+    echo "\t\t\t\t\t\t".'<ul class="conl">';
+    echo "\n\t\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
 
     if (User::get()->is_admmod) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
             if ($has_reports) {
-                echo "\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
+                echo "\t\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
             }
         }
         if (ForumSettings::get('o_maintenance') == '1') {
-            echo "\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+            echo "\t\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
     $headerToplist = Container::get('hooks')->fire('header.toplist', []);
-    echo implode("\t\t\t\t", $headerToplist);
-    echo "\t\t\t".'</ul>'."\n";
+    echo implode("\t\t\t\t\t\t\t", $headerToplist);
+    echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 
 if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
-    echo "\t\t\t".'<ul class="conr">'."\n";
-    echo "\t\t\t\t".'<li><span>'.__('Topic searches').' ';
+    echo "\t\t\t\t\t\t".'<ul class="conr">'."\n";
+    echo "\t\t\t\t\t\t\t".'<li><span>'.__('Topic searches').' ';
     if (!User::get()->is_guest) {
         echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'replies']).'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
         echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'new']).'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
@@ -201,12 +201,12 @@ if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
     echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'recent']).'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
     echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'unanswered']).'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
     echo '</li>'."\n";
-    echo "\t\t\t".'</ul>'."\n";
+    echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 
 Container::get('hooks')->fire('view.header.brdwelcome');
 ?>
-                    <div class="clearer"></div>
+                        <div class="clearer"></div>
                     </div>
                 </div>
                 <div class="clear"></div>
