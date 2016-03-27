@@ -128,7 +128,7 @@ class Plugins
         }
         rename(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'], ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']);
         unlink(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip');
-        return Router::redirect(Router::pathFor('adminPlugins'), __('Plugin downloaded!'));
+        return Router::redirect(Router::pathFor('adminPlugins'), __('Plugin downloaded'));
     }
 
     /**
@@ -241,7 +241,7 @@ class Plugins
 
         rename(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name_nozip, ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$cleaned_name);
         unlink(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name);
-        return Router::redirect(Router::pathFor('adminPlugins'), __('Plugin downloaded!'));
+        return Router::redirect(Router::pathFor('adminPlugins'), __('Plugin downloaded'));
     }
 
 }
