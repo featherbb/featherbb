@@ -468,6 +468,65 @@ section .blocktable .box table tbody tr .tcr {
 section .blocktable .box table tbody tr .tcr .byuser {
     display: block
 }
+footer .blocktable .box table thead th,
+footer .blocktable h2 {
+    font-weight: 400;
+    font-size: 20px;
+    font-family: bebas_neueregular, Arial, Helvetica, sans-serif;
+    color: #fff
+}
+footer .blocktable {
+    position: relative;
+    margin-bottom: 24px
+}
+footer .blocktable h2 {
+    position: absolute;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 56%;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    padding: 9px;
+    margin: 0
+}
+footer .blocktable .box table {
+    table-layout: fixed;
+    text-align: left;
+    width: 100%
+}
+footer .blocktable .box table thead th {
+    height: 40px;
+    background-color: #039be5;
+    border: 1px solid #039be5;
+    line-height: 40px
+}
+footer .blocktable .box table thead th.tcl {
+    font-size: 0
+}
+footer .blocktable .box table thead th.tcr {
+    width: 16%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 8px
+}
+footer .blocktable .box table tbody tr {
+    background-color: #fff
+}
+footer .blocktable .box table tbody tr td {
+    width: 100%;
+    border: 1px solid #d1d1d1;
+    color: #5a5a5a
+}
+footer .blocktable .box table tbody tr .tcl {
+    padding: 7px 8px
+}
+footer .blocktable .box table tbody tr .tcr {
+    width: 20%;
+    padding: 7px 8px
+}
 #vf {
     margin-bottom: 0
 }
