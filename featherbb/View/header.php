@@ -109,7 +109,7 @@ Container::get('hooks')->fire('view.header.before.head.tag');
 ?>
 </head>
 
-<body id="pun<?= $active_page ?>"<?= ($focus_element ? ' onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
+<body id="feather-body"<?= ($focus_element ? ' onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
     <header>
         <nav>
             <div class="container">
@@ -240,7 +240,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
         </div>
     </header>
 
-    <section class="container">
+    <section class="container" id="pun<?= $active_page ?>">
         <div id="brdmain">
 <?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
             <div class="flashmsg <?= $type; ?>" data-type="<?= $type; ?>" id="flashmsg">
