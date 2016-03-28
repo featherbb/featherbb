@@ -303,12 +303,6 @@ class Profile
             $this->model->delete_avatar($args['id']);
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
-        } elseif ($args['action'] == 'promote') {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_promote_users == '0')) {
-                throw new Error(__('No permission'), 403);
-            }
-
-            $this->model->promote_user($args['id']);
         } else {
             throw new Error(__('Bad request'), 404);
         }

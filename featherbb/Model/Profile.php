@@ -542,37 +542,6 @@ class Profile
         }
     }
 
-    public function promote_user($id)
-    {
-        $id = Container::get('hooks')->fire('model.profile.promote_user_start', $id);
-
-        $pid = Input::query('pid') ? intval(Input::query('pid')) : 0;
-
-        // Find the group ID to promote the user to
-        $next_group_id = DB::for_table('groups')
-            ->table_alias('g')
-            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
-            ->where('u.id', $id);
-        $next_group_id = Container::get('hooks')->fireDB('model.profile.promote_user_group_id', $next_group_id);
-        $next_group_id = $next_group_id->find_one_col('g.g_promote_next_group');
-
-        if (!$next_group_id) {
-            throw new Error(__('Bad request'), 404);
-        }
-
-        // Update the user
-        $update_user = DB::for_table('users')
-            ->where('id', $id)
-            ->find_one()
-            ->set('group_id', $next_group_id);
-        $update_user = Container::get('hooks')->fireDB('model.profile.promote_user_query', $update_user);
-        $update_user = $update_user->save();
-
-        $pid = Container::get('hooks')->fire('model.profile.promote_user', $pid);
-
-        return Router::redirect(Router::pathFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
-    }
-
     public function delete_user($id)
     {
         $id = Container::get('hooks')->fire('model.profile.delete_user_start', $id);
