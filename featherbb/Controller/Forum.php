@@ -63,10 +63,10 @@ class Forum
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $args['fid'], 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $args['fid'], 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', Router::pathFor('Forum', ['id' => $args['fid'], 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 

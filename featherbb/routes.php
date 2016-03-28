@@ -24,8 +24,7 @@ Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add(new IsLogg
 
 // Forum
 Route::group('/forum', function() {
-    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:display')->setName('ForumPaginate');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
     Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
