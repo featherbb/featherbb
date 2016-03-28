@@ -1,7 +1,0 @@
-{
-    "name": "fluid-nav",
-    "description": "Push state AJAX for non-jquery webpages.",
-    "authors": [{
-        "name": "beaver"
-    }]
-}
