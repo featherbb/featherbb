@@ -97,38 +97,39 @@ class Post
 
             // Did everything go according to plan?
             if (empty($errors) && !Input::post('preview')) {
-                    // If it's a reply
-                    if ($args['tid']) {
-                        // Insert the reply, get the new_pid
-                            $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
+                // If it's a reply
+                if ($args['tid']) {
+                    // Insert the reply, get the new_pid
+                    $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
 
-                            // Should we send out notifications?
-                            if (ForumSettings::get('o_topic_subscriptions') == '1') {
-                                $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
-                            }
+                    // Should we send out notifications?
+                    if (ForumSettings::get('o_topic_subscriptions') == '1') {
+                        $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
                     }
-                    // If it's a new topic
-                    elseif ($args['fid']) {
-                        // Insert the topic, get the new_pid
-                            $new = $this->model->insert_topic($post, $args['fid']);
+                }
+                // If it's a new topic
+                elseif ($args['fid']) {
+                    // Insert the topic, get the new_pid
+                    $new = $this->model->insert_topic($post, $args['fid']);
 
-                            // Should we send out notifications?
-                            if (ForumSettings::get('o_forum_subscriptions') == '1') {
-                                $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
-                            }
+                    // Should we send out notifications?
+                    if (ForumSettings::get('o_forum_subscriptions') == '1') {
+                        $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
                     }
+                }
 
-                    // If we previously found out that the email was banned
-                    if (User::get()->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
-                        $this->model->warn_banned_user($post, $new['pid']);
-                    }
+                // If we previously found out that the email was banned
+                if (User::get()->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
+                    $this->model->warn_banned_user($post, $new['pid']);
+                }
 
-                    // If the posting user is logged in, increment his/her post count
-                    if (!User::get()->is_guest) {
-                        $this->model->increment_post_count($post, $new['tid']);
-                    }
+                // If the posting user is logged in, increment his/her post count
+                if (!User::get()->is_guest) {
+                    $this->model->increment_post_count($post, $new['tid']);
+                }
+                // return var_dump($post, $new);
 
-                return Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
+                return Router::redirect(Router::pathFor('viewPost', ['id' => $new['tid'], 'name' => $new['topic_subject'], 'pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
             }
         }
 
@@ -284,7 +285,7 @@ class Post
                 // Edit the post
                 $this->model->edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                return Router::redirect(Router::pathFor('viewPost', ['pid' => $args['id']]).'#p'.$args['id'], __('Post redirect'));
+                return Router::redirect(Router::pathFor('viewPost', ['id' => $cur_post->tid, 'name' => URL::url_friendly($post['subject']), 'pid' => $args['id']]).'#p'.$args['id'], __('Post redirect'));
             }
         } else {
             $post = '';

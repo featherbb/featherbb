@@ -752,6 +752,10 @@ class Post
                     ->set($topic['update'])
                     ->set_expr('num_replies', 'num_replies+1');
         $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
+
+        // Get topic subject to redirect
+        $new['topic_subject'] = URL::url_friendly($topic->subject);
+
         $topic = $topic->save();
 
         $this->search->update_search_index('post', $new['pid'], $post['message']);
@@ -956,6 +960,7 @@ class Post
             $query = $query->save();
         }
         $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+        $new['topic_subject'] = URL::url_friendly($post['subject']);
 
         // Update the topic with last_post_id
         unset($topic);
