@@ -32,7 +32,7 @@ foreach ($display['cur_search'] as $search) {
         </td>
         <td class="tc2"><?= $search['forum'] ?></td>
         <td class="tc3"><?= Utils::forum_number_format($search['num_replies']) ?></td>
-        <td class="tcr"><?= '<a href="' . Router::pathFor('viewPost', ['pid' => $search['last_post_id']]) . '#p' . $search['last_post_id'] . '">' . Utils::format_time($search['last_post']) . '</a> <span class="byuser">' . __('by') . ' ' . Utils::escape($search['last_poster']) ?></span></td>
+        <td class="tcr"><?= '<a href="' . Router::pathFor('viewPost', ['id' => $search['tid'], 'name' => $search['url_topic'], 'pid' => $search['last_post_id']]) . '#p' . $search['last_post_id'] . '">' . Utils::format_time($search['last_post']) . '</a> <span class="byuser">' . __('by') . ' ' . Utils::escape($search['last_poster']) ?></span></td>
     </tr>
 
     <?php

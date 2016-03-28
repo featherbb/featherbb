@@ -32,7 +32,7 @@ foreach ($display['cur_search'] as $search) {
                         _e('Re'); echo  ' ';
                     } ?><?= $search['forum'] ?></span> <span>»&#160;<a
                         href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
-                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::format_time($search['pposted']) ?></a></span></span>
+                        href="<?= Router::pathFor('viewPost', ['id' => $search['tid'], 'name' => $search['url_topic'], 'pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::format_time($search['pposted']) ?></a></span></span>
         </h2>
 
         <div class="box">
@@ -69,7 +69,7 @@ foreach ($display['cur_search'] as $search) {
                                         href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php _e('Go to topic') ?></a></span>
                             </li>
                             <li><span><a
-                                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
+                                        href="<?= Router::pathFor('viewPost', ['id' => $search['tid'], 'name' => $search['url_topic'], 'pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
                             </li>
                         </ul>
                     </div>
