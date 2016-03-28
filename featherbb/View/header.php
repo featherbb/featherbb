@@ -42,7 +42,7 @@ foreach($assets as $type => $items) {
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'href="'.Url::base().'/'.$item['file'].'">'."\n";
+        echo 'href="'.(in_array($type, ['css', 'js']) ? Url::base().'/' : '').$item['file'].'">'."\n";
     }
 }
 

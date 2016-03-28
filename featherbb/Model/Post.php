@@ -386,7 +386,7 @@ class Post
 
         $tid = $cur_post['tid'];
         $fid = $cur_post['fid'];
-        $topic_subject = URL::url_friendly($cur_post['subject']);
+        $topic_subject = Url::url_friendly($cur_post['subject']);
 
         if ($is_topic_post) {
             Container::get('hooks')->fire('model.post.model.topic.delete', $is_topic_post, $id, $cur_post);
@@ -612,7 +612,7 @@ class Post
                 $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
                 $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
                 $mail_message = str_replace('<username>', User::get()->username, $mail_message);
-                $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => URL::url_friendly($report['subject']), 'pid' => $post_id]).'#p'.$post_id, $mail_message);
+                $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => Url::url_friendly($report['subject']), 'pid' => $post_id]).'#p'.$post_id, $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
@@ -628,7 +628,7 @@ class Post
         $last_report_sent = Container::get('hooks')->fireDB('model.post.insert_last_report_sent', $last_report_sent);
         $last_report_sent = $last_report_sent->save();
 
-        return Router::redirect(Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => URL::url_friendly($report['subject']), 'pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
+        return Router::redirect(Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => Url::url_friendly($report['subject']), 'pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
     }
 
     public function get_info_report($post_id)
@@ -758,7 +758,7 @@ class Post
         $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
 
         // Get topic subject to redirect
-        $new['topic_subject'] = URL::url_friendly($topic->subject);
+        $new['topic_subject'] = Url::url_friendly($topic->subject);
 
         $topic = $topic->save();
 
@@ -843,7 +843,7 @@ class Post
                         $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
                         $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => URL::url_friendly($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message);
+                        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => Url::url_friendly($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message);
                         $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                         $mail_message = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message', $mail_message);
@@ -852,7 +852,7 @@ class Post
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => URL::url_friendly($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
+                        $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => Url::url_friendly($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
                         $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
@@ -964,7 +964,7 @@ class Post
             $query = $query->save();
         }
         $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
-        $new['topic_subject'] = URL::url_friendly($post['subject']);
+        $new['topic_subject'] = Url::url_friendly($post['subject']);
 
         // Update the topic with last_post_id
         unset($topic);
