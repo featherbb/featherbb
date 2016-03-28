@@ -79,7 +79,7 @@ class Topic
     }
 
     // Redirect to new posts or last post
-    public function handle_actions($topic_id, $action)
+    public function handle_actions($topic_id, $topic_subject, $action)
     {
         $action = Container::get('hooks')->fire('model.topic.handle_actions_start', $action, $topic_id);
 
@@ -98,7 +98,7 @@ class Topic
                 $first_new_post_id = Container::get('hooks')->fire('model.topic.handle_actions_first_new', $first_new_post_id);
 
                 if ($first_new_post_id) {
-                    return Router::redirect(Router::pathFor('viewPost', ['pid' => $first_new_post_id]).'#p'.$first_new_post_id);
+                    return Router::redirect(Router::pathFor('viewPost', ['id' => $topic_id, 'name' => $topic_subject, 'pid' => $first_new_post_id]).'#p'.$first_new_post_id);
                 }
             }
 
@@ -115,7 +115,7 @@ class Topic
             $last_post_id = Container::get('hooks')->fire('model.topic.handle_actions_last_post', $last_post_id);
 
             if ($last_post_id) {
-                return Router::redirect(Router::pathFor('viewPost', ['pid' => $last_post_id]).'#p'.$last_post_id);
+                return Router::redirect(Router::pathFor('viewPost', ['id' => $topic_id, 'name' => $topic_subject, 'pid' => $last_post_id]).'#p'.$last_post_id);
             }
         }
 

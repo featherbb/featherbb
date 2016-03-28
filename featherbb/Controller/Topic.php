@@ -285,6 +285,6 @@ class Topic
     {
         Container::get('hooks')->fire('controller.topic.action');
 
-        return $this->model->handle_actions($args['id'], $args['action']);
+        return $this->model->handle_actions($args['id'], $args['name'], $args['action']);
     }
 }
