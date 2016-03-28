@@ -146,9 +146,10 @@ if ($quickpost) {
     if (User::get()->is_guest) {
         $email_label = (ForumSettings::get('p_force_guest_email') == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
         $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
+        $required = (ForumSettings::get('p_force_guest_email') == '1') ? ' required="required"' : '';
         ?>
-                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" /><br /></label>
-                        <label class="conl<?php echo(ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" /><br /></label>
+                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" required="required" /><br /></label>
+                        <label class="conl<?= (ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" <?= $required; ?> /><br /></label>
                         <div class="clearer"></div>
 <?php
 
@@ -158,7 +159,7 @@ if ($quickpost) {
     }
 
     ?>
-<textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>"></textarea></label>
+                        <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>" required="required"></textarea></label>
                         <ul class="bblinks">
                             <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off');
     ?></span></li>
@@ -185,7 +186,7 @@ if ($quickpost) {
     ?>
                              <span><?php _e('Required') ?></span></strong>
                              <br />
-                             <input    name="captcha" id="captcha"    type="text"    size="10" maxlength="30" /><input name="captcha_q" value="<?= $qencoded ?>" type="hidden" /><br />
+                             <input name="captcha" id="captcha" type="text" size="10" maxlength="30" required="required" /><input name="captcha_q" value="<?= $qencoded ?>" type="hidden" /><br />
                         </label>
                     </div>
                 </fieldset>

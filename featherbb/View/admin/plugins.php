@@ -58,14 +58,14 @@ Container::get('hooks')->fire('view.admin.plugins.start');
     <h2>Upload plugin</h2>
     <div class="box">
         <div class="inbox">
-            <form id="upload_avatar" method="post" enctype="multipart/form-data" action="" onsubmit="return process_form(this)">
+            <form id="upload_avatar" method="post" enctype="multipart/form-data" action="">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
-                        <div class="infldset">
-                            <input type="hidden" name="form_sent" value="1" />
-                            <input type="hidden" name="MAX_FILE_SIZE" value="10240" />
-                            <input name="req_file" type="file" size="40" />
-                        </div>
+                    <div class="infldset">
+                        <input type="hidden" name="form_sent" value="1" />
+                        <input type="hidden" name="MAX_FILE_SIZE" value="10240" />
+                        <input name="req_file" type="file" size="40" required="required" />
+                    </div>
                 </div>
                 <br />
                 <p class="buttons"><input type="submit" name="upload" value="Upload" /></p>

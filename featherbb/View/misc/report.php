@@ -32,14 +32,14 @@ Container::get('hooks')->fire('view.misc.email.report');
 <div id="reportform" class="blockform">
     <h2><span><?php _e('Report post') ?></span></h2>
     <div class="box">
-        <form id="report" method="post" action="<?= Router::pathFor('report', ['id' => $id]) ?>" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+        <form id="report" method="post" action="<?= Router::pathFor('report', ['id' => $id]) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Reason desc') ?></legend>
                     <div class="infldset txtarea">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="required"><strong><?php _e('Reason') ?> <span><?php _e('Required') ?></span></strong><br /><textarea name="req_reason" rows="5" cols="60"></textarea><br /></label>
+                        <label class="required"><strong><?php _e('Reason') ?> <span><?php _e('Required') ?></span></strong><br /><textarea name="req_reason" rows="5" cols="60" required="required"></textarea><br /></label>
                     </div>
                 </fieldset>
             </div>

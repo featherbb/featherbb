@@ -1206,19 +1206,19 @@ class Profile
 
         if (User::get()->is_admmod) {
             if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::get()->g_mod_rename_users == '1') {
-                $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" /><br /></label>'."\n";
+                $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" required /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
             }
 
-            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" /><br /></label><p><span class="email"><a href="'.Router::pathFor('email', ['id' => $id]).'">'.__('Send email').'</a></span></p>'."\n";
+            $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.Utils::escape($user['email']).'" size="40" maxlength="80" required /><br /></label><p><span class="email"><a href="'.Router::pathFor('email', ['id' => $id]).'">'.__('Send email').'</a></span></p>'."\n";
         } else {
             $user_disp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
             if (ForumSettings::get('o_regs_verify') == '1') {
                 $user_disp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
-                $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" /><br /></label>'."\n";
+                $user_disp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" required /><br /></label>'."\n";
             }
         }
 

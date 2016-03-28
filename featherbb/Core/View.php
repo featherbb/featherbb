@@ -338,7 +338,6 @@ class View
             'admin_console' => false,
             'page_head' => null,
             'paging_links' => null,
-            'required_fields' => null,
             'footer_style' => null,
             'quickjump' => Container::get('cache')->retrieve('quickjump'),
             'fid' => null,

@@ -163,17 +163,11 @@ class Post
             $url_topic = '';
         }
 
-        $required_fields = array('req_email' => __('Email'), 'req_subject' => __('Subject'), 'req_message' => __('Message'));
-        if (User::get()->is_guest) {
-            $required_fields['captcha'] = __('Robot title');
-        }
-
         // Set focus element (new post or new reply to an existing post ?)
         $focus_element[] = 'post';
         if (!User::get()->is_guest) {
             $focus_element[] = ($args['fid']) ? 'req_subject' : 'req_message';
         } else {
-            $required_fields['req_username'] = __('Guest name');
             $focus_element[] = 'req_username';
         }
 
@@ -189,7 +183,6 @@ class Post
 
         return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
-                'required_fields' => $required_fields,
                 'focus_element' => $focus_element,
                 'active_page' => 'post',
                 'post' => $post,
@@ -315,7 +308,6 @@ class Post
 
         View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')),
-                'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
                 'focus_element' => array('edit', 'req_message'),
                 'cur_post' => $cur_post,
                 'errors' => $errors,
@@ -346,7 +338,6 @@ class Post
         View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
             'active_page' => 'report',
-            'required_fields' => array('req_reason' => __('Reason')),
             'focus_element' => array('report', 'req_reason'),
             'id' => $args['id'],
             'cur_post' => $cur_post

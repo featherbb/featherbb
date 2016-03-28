@@ -202,14 +202,6 @@ class Topic
     {
         $quickpost = false;
         if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::get()->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
-
-            $required_fields = array('req_message' => __('Message'));
-            if (User::get()->is_guest) {
-                $required_fields['req_username'] = __('Guest name');
-                if (ForumSettings::get('p_force_guest_email') == '1') {
-                    $required_fields['req_email'] = __('Email');
-                }
-            }
             $quickpost = true;
         }
 
