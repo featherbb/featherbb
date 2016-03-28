@@ -57,6 +57,7 @@ class Forum
             throw new Error(__('Bad request'), '404');
         }
 
+        $cur_forum['forum_url'] = Url::url_friendly($cur_forum['forum_name']);
         $cur_forum = Container::get('hooks')->fire('model.forum.get_info_forum', $cur_forum);
 
         return $cur_forum;
@@ -98,22 +99,22 @@ class Forum
     }
 
     // Returns forum action
-    public function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
+    public function get_forum_actions($forum_id, $forum_url, $is_subscribed)
     {
         $forum_actions = array();
 
-        $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
+        $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head_start', $forum_actions, $forum_id, $forum_url, $is_subscribed);
 
         if (!User::get()->is_guest) {
-            if ($subscriptions == 1) {
+            if (ForumSettings::get('o_forum_subscriptions') == 1) {
                 if ($is_subscribed) {
-                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeForum', ['id' => $forum_id]).'">'.__('Unsubscribe').'</a>';
+                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeForum', ['id' => $forum_id, 'name' => $forum_url]).'">'.__('Unsubscribe').'</a>';
                 } else {
-                    $forum_actions[] = '<a href="'.Router::pathFor('subscribeForum', ['id' => $forum_id]).'">'.__('Subscribe').'</a>';
+                    $forum_actions[] = '<a href="'.Router::pathFor('subscribeForum', ['id' => $forum_id, 'name' => $forum_url]).'">'.__('Subscribe').'</a>';
                 }
             }
 
-            $forum_actions[] = '<a href="'.Router::pathFor('markForumRead', ['id' => $forum_id]).'">'.__('Mark forum read').'</a>';
+            $forum_actions[] = '<a href="'.Router::pathFor('markForumRead', ['id' => $forum_id, 'name' => $forum_url]).'">'.__('Mark forum read').'</a>';
         }
 
         $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head', $forum_actions);

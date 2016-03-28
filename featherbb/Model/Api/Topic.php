@@ -349,7 +349,7 @@ class Topic extends Api
                 $cleaned_message = Container::get('email')->bbcode2email($post['message'], -1);
             }
 
-            $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject']
+            $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'];
 
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {

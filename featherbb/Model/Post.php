@@ -387,6 +387,7 @@ class Post
         $tid = $cur_post['tid'];
         $fid = $cur_post['fid'];
         $topic_subject = Url::url_friendly($cur_post['subject']);
+        $forum_url = Url::url_friendly($cur_post['forum_name']);
 
         if ($is_topic_post) {
             Container::get('hooks')->fire('model.post.model.topic.delete', $is_topic_post, $id, $cur_post);
@@ -395,7 +396,7 @@ class Post
             Topic::delete($tid);
             Forum::update($fid);
 
-            return Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Topic del redirect'));
+            return Router::redirect(Router::pathFor('Forum', array('id' => $fid, 'name' => $forum_url)), __('Topic del redirect'));
         } else {
             Container::get('hooks')->fire('model.post.handle_deletion', $is_topic_post, $id, $cur_post);
 
@@ -1027,7 +1028,7 @@ class Post
                 $cleaned_message = Container::get('email')->bbcode2email($post['message'], -1);
             }
 
-            $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject']
+            $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'];
 
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {

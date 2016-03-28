@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
     </div>
 </div>
 
-<form method="post" action="<?= Router::pathFor('dealPosts', ['fid' => $id, 'page' => $p]) ?>">
+<form method="post" action="<?= Router::pathFor('dealPosts', ['id' => $id, 'name' => $url_forum, 'page' => $p]) ?>">
 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <input type="hidden" name="page" value="<?= Utils::escape($p) ?>" />
 <div id="vf" class="blocktable">

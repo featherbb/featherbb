@@ -25,11 +25,11 @@ Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add(new IsLogg
 // Forum
 Route::group('/forum', function() {
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
-    Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
-    Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
-    Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
-    Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
-    Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/mark-read', '\FeatherBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/moderate/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
+    Route::post('/{id:[0-9]+}/{name:[\w\-]+}/moderate[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
 })->add(new CanReadBoard);
 
 // Topic
@@ -37,12 +37,12 @@ Route::group('/topic', function() {
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/post/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
-    Route::get('/subscribe/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
-    Route::get('/unsubscribe/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
-    Route::get('/close/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->setName('closeTopic');
-    Route::get('/open/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->setName('openTopic');
-    Route::get('/stick/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
-    Route::get('/unstick/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/close', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->setName('closeTopic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/open', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->setName('openTopic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/stick', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/unstick', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
     Route::map(['GET', 'POST'], '/move/{id:[0-9]+}[/{name:[\w\-]+}/forum/{fid:[0-9]+}]', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->setName('moveTopic');
     Route::map(['GET', 'POST'], '/moderate/{id:[0-9]+}/forum/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
 })->add(new CanReadBoard);
