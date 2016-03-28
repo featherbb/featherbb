@@ -57,7 +57,6 @@ class Plugins
             'availablePlugins'    =>    $availablePlugins,
             'activePlugins'    =>    $activePlugins,
             'officialPlugins'    =>    $officialPlugins,
-            'required_fields' =>  array('req_file' => __('File')),
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')),
             )
         )->addTemplate('admin/plugins.php')->display();

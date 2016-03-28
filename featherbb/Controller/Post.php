@@ -137,18 +137,18 @@ class Post
         // If a topic ID was specified in the url (it's a reply)
         if ($args['tid']) {
             $action = __('Post a reply');
-            $form = '<form id="post" method="post" action="'.Router::pathFor('newReply', ['tid' => $args['tid']]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+            $form = '<form id="post" method="post" action="'.Router::pathFor('newReply', ['tid' => $args['tid']]).'">';
 
                 // If a quote ID was specified in the url
                 if (isset($args['qid'])) {
                     $quote = $this->model->get_quote_message($args['qid'], $args['tid']);
-                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]).'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    $form = '<form id="post" method="post" action="'.Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]).'">';
                 }
         }
         // If a forum ID was specified in the url (new topic)
         elseif ($args['fid']) {
             $action = __('Post new topic');
-            $form = '<form id="post" method="post" action="'.Router::pathFor('newTopic', ['fid' => $args['fid']]).'" onsubmit="return process_form(this)">';
+            $form = '<form id="post" method="post" action="'.Router::pathFor('newTopic', ['fid' => $args['fid']]).'">';
         } else {
             throw new Error(__('Bad request'), 404);
         }
@@ -163,20 +163,6 @@ class Post
             $url_topic = '';
         }
 
-        $required_fields = array('req_email' => __('Email'), 'req_subject' => __('Subject'), 'req_message' => __('Message'));
-        if (User::get()->is_guest) {
-            $required_fields['captcha'] = __('Robot title');
-        }
-
-        // Set focus element (new post or new reply to an existing post ?)
-        $focus_element[] = 'post';
-        if (!User::get()->is_guest) {
-            $focus_element[] = ($args['fid']) ? 'req_subject' : 'req_message';
-        } else {
-            $required_fields['req_username'] = __('Guest name');
-            $focus_element[] = 'req_username';
-        }
-
         // Get the current state of checkboxes
         $checkboxes = $this->model->get_checkboxes($args['fid'], $is_admmod, $is_subscribed);
 
@@ -189,8 +175,6 @@ class Post
 
         return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
-                'required_fields' => $required_fields,
-                'focus_element' => $focus_element,
                 'active_page' => 'post',
                 'post' => $post,
                 'tid' => $args['tid'],
@@ -246,7 +230,7 @@ class Post
 
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
@@ -313,10 +297,8 @@ class Post
             $preview_message = '';
         }
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')),
-                'required_fields' => array('req_subject' => __('Subject'), 'req_message' => __('Message')),
-                'focus_element' => array('edit', 'req_message'),
                 'cur_post' => $cur_post,
                 'errors' => $errors,
                 'preview_message' => $preview_message,
@@ -343,14 +325,13 @@ class Post
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
-            'active_page' => 'report',
-            'required_fields' => array('req_reason' => __('Reason')),
-            'focus_element' => array('report', 'req_reason'),
-            'id' => $args['id'],
-            'cur_post' => $cur_post
-            ))->addTemplate('misc/report.php')->display();
+        return View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
+                'active_page' => 'report',
+                'id' => $args['id'],
+                'cur_post' => $cur_post
+            )
+        )->addTemplate('misc/report.php')->display();
     }
 
     public function gethost($req, $res, $args)

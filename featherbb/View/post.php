@@ -87,35 +87,28 @@ $cur_index = 1;
                     <legend><?php _e('Write message legend') ?></legend>
                     <div class="infldset txtarea">
                         <input type="hidden" name="form_sent" value="1" />
-                                                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+                        <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <?php
 if (User::get()->is_guest) {
     $email_label = (ForumSettings::get('p_force_guest_email') == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
     $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
+    $required = (ForumSettings::get('p_force_guest_email') == '1') ? ' required="required"' : '';
     ?>
-                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?php if (Input::post('req_username')) {
-    echo Utils::escape($post['username']);
-}
-    ?>" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" /><br /></label>
-                        <label class="conl<?php echo(ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" value="<?php if (Input::post($email_form_name)) {
-    echo Utils::escape($post['email']);
-}
-    ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" /><br /></label>
+                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?= Input::post('req_username')?>" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" required="required" autofocus /><br /></label>
+                        <label class="conl<?= (ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="email" name="<?= $email_form_name ?>" value="<?= Input::post($email_form_name) ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" <?= $required; ?> /><br /></label>
                         <div class="clearer"></div>
 <?php
 
 }
 if ($fid): ?>
-                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (Input::post('req_subject')) {
-    echo Utils::escape($post['subject']);
-} ?>" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" /><br /></label>
+                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?= Input::post('req_subject') ?>" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" required="required"<?= (!User::get()->is_guest) ? ' autofocus' : '' ?> /><br /></label>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>"><?php echo(Input::post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape(Input::post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
+                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>" required="required"<?= (!$fid && !User::get()->is_guest) ? ' autofocus' : '' ?>><?= (Input::post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape(Input::post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
                         <ul class="bblinks">
-                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?= (ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></span></li>
                         </ul>
                     </div>
                 </fieldset>
@@ -136,7 +129,7 @@ if (!empty($checkboxes)) {
 }
 ?>
             </div>
-            <?php if (User::get()->is_guest) : ?>
+<?php if (User::get()->is_guest) : ?>
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Robot title') ?></legend>
@@ -148,12 +141,12 @@ if (!empty($checkboxes)) {
                              echo sprintf(__('Robot question'), $question[$index_questions]);?>
                              <span><?php _e('Required') ?></span></strong>
                              <br />
-                             <input    name="captcha" id="captcha"    type="text"    size="10" maxlength="30" /><input name="captcha_q" value="<?= $qencoded ?>" type="hidden" /><br />
+                             <input name="captcha" id="captcha" type="text" size="10" maxlength="30" required="required" /><input name="captcha_q" value="<?= $qencoded ?>" type="hidden" /><br />
                         </label>
                     </div>
                 </fieldset>
             </div>
-            <?php endif; ?>
+<?php endif; ?>
             <p class="buttons"><input type="submit" name="submit" value="<?php _e('Submit') ?>" tabindex="<?= $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php _e('Preview') ?>" tabindex="<?= $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
         </form>
     </div>

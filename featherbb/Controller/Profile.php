@@ -113,7 +113,6 @@ class Profile
 
                 View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')),
-                    'required_fields' => array('req_username' => __('Username'), 'req_email' => __('Email')),
                     'active_page' => 'profile',
                     'id' => $args['id'],
                     'page' => 'essentials',
@@ -257,30 +256,24 @@ class Profile
                 return $this->model->change_pass($args['id']);
             }
 
-            View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')),
-                'active_page' => 'profile',
-                'id' => $args['id'],
-                'required_fields' => array('req_old_password' => __('Old pass'), 'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')),
-                'focus_element' => array('change_pass', ((!User::get()->is_admmod) ? 'req_old_password' : 'req_new_password1')),
-            ));
-
-            View::addTemplate('profile/change_pass.php')->display();
+            return View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')),
+                    'active_page' => 'profile',
+                    'id' => $args['id']
+                )
+            )->addTemplate('profile/change_pass.php')->display();
 
         } elseif ($args['action'] == 'change_email') {
             if (Request::isPost()) {
                 return $this->model->change_email($args['id']);
             }
 
-            View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')),
-                'active_page' => 'profile',
-                'required_fields' => array('req_new_email' => __('New email'), 'req_password' => __('Password')),
-                'focus_element' => array('change_email', 'req_new_email'),
-                'id' => $args['id'],
-            ));
-
-            View::addTemplate('profile/change_mail.php')->display();
+            return View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')),
+                    'active_page' => 'profile',
+                    'id' => $args['id'],
+                )
+            )->addTemplate('profile/change_mail.php')->display();
 
         } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
             if (ForumSettings::get('o_avatars') == '0') {
@@ -295,15 +288,12 @@ class Profile
                 return $this->model->upload_avatar($args['id'], $_FILES);
             }
 
-            View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Upload avatar')),
-                'active_page' => 'profile',
-                'required_fields' =>  array('req_file' => __('File')),
-                'focus_element' => array('upload_avatar', 'req_file'),
-                'id' => $args['id'],
-            ));
-
-            View::addTemplate('profile/upload_avatar.php')->display();
+            return View::setPageInfo(array(
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Upload avatar')),
+                    'active_page' => 'profile',
+                    'id' => $args['id'],
+                )
+            )->addTemplate('profile/upload_avatar.php')->display();
 
         } elseif ($args['action'] == 'delete_avatar') {
             if (User::get()->id != $args['id'] && !User::get()->is_admmod) {
@@ -350,8 +340,6 @@ class Profile
         View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
-            'required_fields' => array('req_subject' => __('Email subject'), 'req_message' => __('Email message')),
-            'focus_element' => array('email', 'req_subject'),
             'id' => $args['id'],
             'mail' => $mail
         ))->addTemplate('misc/email.php')->display();

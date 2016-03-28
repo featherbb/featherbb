@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.profile.change_pass.start');
 <div class="blockform">
     <h2><span><?php _e('Change pass') ?></span></h2>
     <div class="box">
-        <form id="change_pass" method="post" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>" onsubmit="return process_form(this)">
+        <form id="change_pass" method="post" action="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <input type="hidden" name="form_sent" value="1" />
@@ -26,11 +26,11 @@ Container::get('hooks')->fire('view.profile.change_pass.start');
                     <legend><?php _e('Change pass legend') ?></legend>
                     <div class="infldset">
 <?php if (!User::get()->is_admmod): ?>                        <label class="required"><strong><?php _e('Old pass') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input type="password" name="req_old_password" size="16" /><br /></label>
+                        <input type="password" name="req_old_password" size="16" required="required" autofocus /><br /></label>
 <?php endif; ?>                        <label class="conl required"><strong><?php _e('New pass') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input type="password" name="req_new_password1" size="16" /><br /></label>
+                        <input type="password" name="req_new_password1" size="16" required="required"<?= (User::get()->is_admmod) ? ' autofocus' : ''; ?> /><br /></label>
                         <label class="conl required"><strong><?php _e('Confirm new pass') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input type="password" name="req_new_password2" size="16" /><br /></label>
+                        <input type="password" name="req_new_password2" size="16" required="required" /><br /></label>
                         <p class="clearb"><?php _e('Pass info') ?></p>
                     </div>
                 </fieldset>

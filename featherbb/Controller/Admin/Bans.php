@@ -56,7 +56,6 @@ class Bans
 
             View::setPageInfo(array(
                     'admin_console' => true,
-                    'focus_element' => array('bans', 'new_ban_user'),
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
                 )
             )->addTemplate('admin/bans/admin_bans.php')->display();
@@ -75,7 +74,6 @@ class Bans
 
         View::setPageInfo(array(
                 'admin_console' => true,
-                'focus_element' => array('bans2', 'ban_user'),
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
                 'ban' => $this->model->add_ban_info($args['id']),
             )
@@ -101,7 +99,6 @@ class Bans
 
         View::setPageInfo(array(
                 'admin_console' => true,
-                'focus_element' => array('bans2', 'ban_user'),
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
                 'ban' => $this->model->edit_ban_info($args['id']),
             )

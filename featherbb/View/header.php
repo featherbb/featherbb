@@ -46,55 +46,31 @@ foreach($assets as $type => $items) {
     }
 }
 
-if (isset($required_fields)) :
-    // Output JavaScript to validate form (make sure required fields are filled out)
-
-    ?>
-    <script type="text/javascript">
-        /* <![CDATA[ */
-        function process_form(the_form)
-        {
-            var required_fields = {
-                <?php
-                    // Output a JavaScript object with localised field names
-                    $tpl_temp = count($required_fields);
-                    foreach ($required_fields as $elem_orig => $elem_trans) {
-                        echo "\t\t\"".$elem_orig.'": "'.addslashes(str_replace('&#160;', ' ', $elem_trans));
-                        if (--$tpl_temp) {
-                            echo "\",\n";
-                        } else {
-                            echo "\"\n\t};\n";
-                        }
-                    }
-                    ?>
-                if (document.all || document.getElementById)
-            {
-                for (var i = 0; i < the_form.length; ++i)
-                {
-                    var elem = the_form.elements[i];
-                    if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
-                    {
-                        alert('"' + required_fields[elem.name] + '" <?php _e('required field') ?>');
-                        elem.focus();
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        /* ]]> */
-    </script>
-    <?php
-endif;
 if (!empty($page_head)) :
     echo implode("\n", $page_head)."\n";
-endif;
+endif; ?>
 
+    <script type="text/javascript">
+        (function(){
+            // Display notifications
+            var flashMessage;
+            window.onload = function() {
+                if (flashMessage = document.getElementById('flashmsg')) {
+                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
+                    setTimeout(function () {
+                        flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
+                    }, 10000);
+                }
+                return false;
+            }
+        }());
+    </script>
+<?php
 Container::get('hooks')->fire('view.header.before.head.tag');
 ?>
 </head>
 
-<body id="pun<?= $active_page ?>"<?= ($focus_element ? ' onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
+<body id="feather-body">
     <header>
         <nav>
             <div class="container">
@@ -144,7 +120,7 @@ if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
         }
     }
 }
-echo "\t\t\t".implode("\n\t\t\t", $navlinks);
+echo "\t\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t\t", $navlinks);
 ?>
 
                         </ul>
@@ -173,28 +149,28 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
 if (User::get()->is_guest) { ?>
                         <p class="conl"><?= __('Not logged in')?></p>
 <?php } else {
-    echo "\t\t\t".'<ul class="conl">';
-    echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
+    echo "\t\t\t\t\t\t".'<ul class="conl">';
+    echo "\n\t\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
+    echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
 
     if (User::get()->is_admmod) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
             if ($has_reports) {
-                echo "\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
+                echo "\t\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
             }
         }
         if (ForumSettings::get('o_maintenance') == '1') {
-            echo "\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+            echo "\t\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
     $headerToplist = Container::get('hooks')->fire('header.toplist', []);
-    echo implode("\t\t\t\t", $headerToplist);
-    echo "\t\t\t".'</ul>'."\n";
+    echo implode("\t\t\t\t\t\t\t", $headerToplist);
+    echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 
 if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
-    echo "\t\t\t".'<ul class="conr">'."\n";
-    echo "\t\t\t\t".'<li><span>'.__('Topic searches').' ';
+    echo "\t\t\t\t\t\t".'<ul class="conr">'."\n";
+    echo "\t\t\t\t\t\t\t".'<li><span>'.__('Topic searches').' ';
     if (!User::get()->is_guest) {
         echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'replies']).'" title="'.__('Show posted topics').'">'.__('Posted topics').'</a> | ';
         echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'new']).'" title="'.__('Show new posts').'">'.__('New posts header').'</a> | ';
@@ -202,12 +178,12 @@ if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
     echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'recent']).'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
     echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'unanswered']).'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
     echo '</li>'."\n";
-    echo "\t\t\t".'</ul>'."\n";
+    echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 
 Container::get('hooks')->fire('view.header.brdwelcome');
 ?>
-                    <div class="clearer"></div>
+                        <div class="clearer"></div>
                     </div>
                 </div>
                 <div class="clear"></div>
@@ -222,28 +198,15 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                 </div>
             </div>
 <?php endif; ?>
-<?php if (!empty(Container::get('flash')->getMessages())) : ?>
-            <script type="text/javascript">
-                window.onload = function() {
-                    var flashMessage = document.getElementById('flashmsg');
-                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
-                    setTimeout(function () {
-                        flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
-                    }, 10000);
-                    return false;
-                }
-            </script>
-<?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
-            <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
-                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-                <p><?= Utils::escape($message[0]) ?></p>
-            </div>
-<?php } ?>
-<?php endif; ?>
         </div>
     </header>
 
-    <section class="container">
+    <section class="container" id="pun<?= $active_page ?>">
         <div id="brdmain">
-<?php
+<?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
+            <div class="flashmsg <?= $type; ?>" data-type="<?= $type; ?>" id="flashmsg">
+                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
+                <p><?= Utils::escape($message[0]) ?></p>
+            </div>
+<?php }
 Container::get('hooks')->fire('view.header.end');

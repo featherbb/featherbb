@@ -241,7 +241,6 @@ class Topic
         else if (Input::post('split_posts')) {
             View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
-                    'focus_element' => array('subject','new_subject'),
                     'page' => $p,
                     'active_page' => 'moderate',
                     'id' => $args['id'],

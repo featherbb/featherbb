@@ -46,13 +46,6 @@ class Userlist
         $p = (!Input::query('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
         $start_from = 50 * ($p - 1);
 
-        if (User::get()->g_search_users == '1') {
-            $focus_element = array('userlist', 'username');
-        }
-        else {
-            $focus_element = array();
-        }
-
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
@@ -61,7 +54,6 @@ class Userlist
             'active_page' => 'userlist',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
-            'focus_element' => $focus_element,
             'is_indexed' => true,
             'username' => $username,
             'show_group' => $show_group,

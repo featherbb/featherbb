@@ -54,7 +54,7 @@ Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
                 </div>
             </form>
 
-            <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>" onsubmit="return process_form(this)">
+            <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <input type="hidden" name="action" value="prune" />
@@ -65,7 +65,7 @@ Container::get('hooks')->fire('view.admin.maintenance.admin_maintenance.start');
                                 <tr>
                                     <th scope="row"><?php _e('Days old label') ?></th>
                                     <td>
-                                        <input type="text" name="req_prune_days" size="3" maxlength="3" tabindex="5" />
+                                        <input type="text" name="req_prune_days" size="3" maxlength="3" tabindex="5" required="required" />
                                         <span><?php _e('Days old help') ?></span>
                                     </td>
                                 </tr>

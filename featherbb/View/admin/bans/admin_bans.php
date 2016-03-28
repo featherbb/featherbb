@@ -28,7 +28,7 @@ Container::get('hooks')->fire('view.admin.bans.admin_bans.start');
                                 <tr>
                                     <th scope="row"><?php _e('Username label') ?><div><input type="submit" name="add_ban" value="<?php _e('Add') ?>" tabindex="2" /></div></th>
                                     <td>
-                                        <input type="text" name="new_ban_user" size="25" maxlength="25" tabindex="1" />
+                                        <input type="text" name="new_ban_user" size="25" maxlength="25" tabindex="1" autofocus />
                                         <span><?php _e('Username advanced help') ?></span>
                                     </td>
                                 </tr>

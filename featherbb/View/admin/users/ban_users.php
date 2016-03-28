@@ -29,7 +29,7 @@ Container::get('hooks')->fire('view.admin.users.ban_users.start');
                                 <tr>
                                     <th scope="row"><?php _e('Ban message label') ?></th>
                                     <td>
-                                        <input type="text" name="ban_message" size="50" maxlength="255" tabindex="1" />
+                                        <input type="text" name="ban_message" size="50" maxlength="255" tabindex="1" autofocus />
                                         <span><?php _e('Ban message help') ?></span>
                                     </td>
                                 </tr>

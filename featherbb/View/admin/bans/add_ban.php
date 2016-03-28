@@ -36,7 +36,7 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
                                 <td>
                                     <input type="text" name="ban_user" size="25" maxlength="25" value="<?php if (isset($ban['ban_user'])) {
                                         echo Utils::escape($ban['ban_user']);
-                                    } ?>" tabindex="1" />
+                                    } ?>" tabindex="1" autofocus />
                                     <span><?php _e('Username help') ?></span>
                                 </td>
                             </tr>
