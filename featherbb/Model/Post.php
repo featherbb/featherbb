@@ -380,12 +380,16 @@ class Post
         return $query;
     }
 
-    public function handle_deletion($is_topic_post, $id, $tid, $fid)
+    public function handle_deletion($is_topic_post, $id, $cur_post)
     {
-        Container::get('hooks')->fire('model.post.handle_deletion_start', $is_topic_post, $id, $tid, $fid);
+        Container::get('hooks')->fire('model.post.handle_deletion_start', $is_topic_post, $id, $cur_post);
+
+        $tid = $cur_post['tid'];
+        $fid = $cur_post['fid'];
+        $topic_subject = URL::url_friendly($cur_post['subject']);
 
         if ($is_topic_post) {
-            Container::get('hooks')->fire('model.post.model.topic.delete', $tid, $fid);
+            Container::get('hooks')->fire('model.post.model.topic.delete', $is_topic_post, $id, $cur_post);
 
             // Delete the topic and all of its posts
             Topic::delete($tid);
@@ -393,7 +397,7 @@ class Post
 
             return Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Topic del redirect'));
         } else {
-            Container::get('hooks')->fire('model.post.handle_deletion', $tid, $fid, $id);
+            Container::get('hooks')->fire('model.post.handle_deletion', $is_topic_post, $id, $cur_post);
 
             // Delete just this one post
             $this->delete($id, $tid);
@@ -410,7 +414,7 @@ class Post
 
             $post = $post->find_one();
 
-            return Router::redirect(Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
+            return Router::redirect(Router::pathFor('viewPost', ['id' => $tid, 'name' => $topic_subject, 'pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
         }
     }
 
@@ -608,7 +612,7 @@ class Post
                 $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
                 $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
                 $mail_message = str_replace('<username>', User::get()->username, $mail_message);
-                $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, $mail_message);
+                $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => URL::url_friendly($report['subject']), 'pid' => $post_id]).'#p'.$post_id, $mail_message);
                 $mail_message = str_replace('<reason>', $reason, $mail_message);
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
@@ -624,7 +628,7 @@ class Post
         $last_report_sent = Container::get('hooks')->fireDB('model.post.insert_last_report_sent', $last_report_sent);
         $last_report_sent = $last_report_sent->save();
 
-        return Router::redirect(Router::pathFor('viewPost', ['pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
+        return Router::redirect(Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => URL::url_friendly($report['subject']), 'pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
     }
 
     public function get_info_report($post_id)
@@ -839,7 +843,7 @@ class Post
                         $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
                         $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
                         $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
+                        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => URL::url_friendly($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message);
                         $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                         $mail_message = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message', $mail_message);
@@ -848,7 +852,7 @@ class Post
                         $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
                         $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
+                        $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => URL::url_friendly($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
                         $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
@@ -1087,9 +1091,9 @@ class Post
     }
 
     // Warn the admin if a banned user posts
-    public function warn_banned_user($post, $new_pid)
+    public function warn_banned_user($post, $new_post)
     {
-        Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_pid);
+        Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_post);
 
         // Load the "banned email post" template
         $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/banned_email_post.tpl'));
@@ -1102,7 +1106,7 @@ class Post
 
         $mail_message = str_replace('<username>', $post['username'], $mail_message);
         $mail_message = str_replace('<email>', $post['email'], $mail_message);
-        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['pid' => $new_pid]).'#p'.$new_pid, $mail_message);
+        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $new_post['tid'], 'name' => $new_post['topic_subject'], 'pid' => $new_post['pid']]).'#p'.$new_post['pid'], $mail_message);
         $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
         $mail_message = Container::get('hooks')->fire('model.post.warn_banned_user_mail_message', $mail_message);
 

@@ -120,7 +120,7 @@ class Post
 
                 // If we previously found out that the email was banned
                 if (User::get()->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
-                    $this->model->warn_banned_user($post, $new['pid']);
+                    $this->model->warn_banned_user($post, $new);
                 }
 
                 // If the posting user is logged in, increment his/her post count
@@ -226,7 +226,7 @@ class Post
         }
 
         if (Request::isPost()) {
-            $this->model->handle_deletion($is_topic_post, $args['id'], $cur_post['tid'], $cur_post['fid']);
+            return $this->model->handle_deletion($is_topic_post, $args['id'], $cur_post);
         }
 
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
@@ -316,7 +316,7 @@ class Post
         $args['id'] = Container::get('hooks')->fire('controller.post.report', $args['id']);
 
         if (Request::isPost()) {
-            $this->model->insert_report($args['id']);
+            return $this->model->insert_report($args['id']);
         }
 
         // Fetch some info about the post, the topic and the forum
