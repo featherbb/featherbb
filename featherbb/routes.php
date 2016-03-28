@@ -37,6 +37,7 @@ Route::group('/forum', function() {
 Route::group('/topic', function() {
     Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/post/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
     Route::get('/{id:[0-9]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
     Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
     Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
@@ -51,7 +52,6 @@ Route::group('/topic', function() {
 
 // Post routes
 Route::group('/post', function() {
-    Route::get('/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
     Route::map(['GET', 'POST'], '/new-topic/{fid:[0-9]+}', '\FeatherBB\Controller\Post:newpost')->setName('newTopic');
     Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newReply');
     Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}/quote/{qid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newQuoteReply');
