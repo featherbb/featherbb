@@ -1081,7 +1081,8 @@ class Parser
                         $attribute .= ' '.__('wrote'); // Append language-specific "wrote:".
                         if ($this->pd['config']['quote_links'])
                         {
-                            $attribute = ' <a href="'. Router::pathFor('viewPost', ['pid' => $m[1]]).'#p'.$m[1] .'">'. $attribute .'</a>';
+                            // TODO: handle properly topic title and id in url
+                            $attribute = ' <a href="'. Router::pathFor('viewPost', ['id'=>1,'name'=>'topic','pid' => $m[1]]).'#p'.$m[1] .'">'. $attribute .'</a>';
                         }
                     }
                     else
