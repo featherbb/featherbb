@@ -78,15 +78,15 @@ class Topic
         }
 
         $quickpost = $this->model->is_quickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
-        $subscraction = $this->model->get_subscraction(($cur_topic['is_subscribed'] == User::get()->id), $args['id']);
+        $subscraction = $this->model->get_subscraction(($cur_topic['is_subscribed'] == User::get()->id), $args['id'], $args['name']);
 
-        View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['id'], 'name' => $url_forum]));
+        View::addAsset('canonical', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p+1)]));
             }
         }
 
@@ -132,14 +132,17 @@ class Topic
     {
         $args['id'] = Container::get('hooks')->fire('controller.topic.subscribe', $args['id']);
 
-        return $this->model->subscribe($args['id']);
+        $this->model->subscribe($args['id']);
+        return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Subscribe redirect'));
     }
 
     public function unsubscribe($req, $res, $args)
     {
         $args['id'] = Container::get('hooks')->fire('controller.topic.unsubscribe', $args['id']);
 
-        return $this->model->unsubscribe($args['id']);
+        $this->model->unsubscribe($args['id']);
+
+        return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Unsubscribe redirect'));
     }
 
     public function close($req, $res, $args)

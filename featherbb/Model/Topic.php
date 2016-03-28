@@ -260,7 +260,7 @@ class Topic
         $subscription = Container::get('hooks')->fireDB('model.topic.subscribe_topic_query', $subscription);
         $subscription = $subscription->save();
 
-        return Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
+        return $subscription;
     }
 
     public function unsubscribe($topic_id)
@@ -288,24 +288,24 @@ class Topic
         $delete = Container::get('hooks')->fireDB('model.topic.unsubscribe_topic_query', $delete);
         $delete = $delete->delete_many();
 
-        return Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
+        return $delete;
     }
 
     // Subscraction link
-    public function get_subscraction($is_subscribed, $topic_id)
+    public function get_subscraction($is_subscribed, $topic_id, $topic_subject)
     {
         if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
             if ($is_subscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeTopic', ['id' => $topic_id]).'">'.__('Unsubscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeTopic', ['id' => $topic_id, 'name' => $topic_subject]).'">'.__('Unsubscribe').'</a></p>'."\n";
             } else {
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.Router::pathFor('subscribeTopic', ['id' => $topic_id]).'">'.__('Subscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.Router::pathFor('subscribeTopic', ['id' => $topic_id, 'name' => $topic_subject]).'">'.__('Subscribe').'</a></p>'."\n";
             }
         } else {
             $subscraction = '';
         }
 
-        $subscraction = Container::get('hooks')->fire('model.topic.get_subscraction', $subscraction, $is_subscribed, $topic_id);
+        $subscraction = Container::get('hooks')->fire('model.topic.get_subscraction', $subscraction, $is_subscribed, $topic_id, $topic_subject);
 
         return $subscraction;
     }

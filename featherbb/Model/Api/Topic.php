@@ -349,6 +349,8 @@ class Topic extends Api
                 $cleaned_message = Container::get('email')->bbcode2email($post['message'], -1);
             }
 
+            $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject']
+
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
@@ -370,20 +372,20 @@ class Topic extends Api
                         $mail_message_full = trim(substr($mail_tpl_full, $first_crlf));
 
                         $mail_subject = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject);
-                        $mail_message = str_replace('<topic_subject>', ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'], $mail_message);
+                        $mail_message = str_replace('<topic_subject>', $cleaned_subject, $mail_message);
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid]), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id']]), $mail_message);
+                        $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::url_friendly($post['subject'])]), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id'], 'name' => Url::url_friendly($post['subject'])]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
                         $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
-                        $mail_message_full = str_replace('<topic_subject>', ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'], $mail_message_full);
+                        $mail_message_full = str_replace('<topic_subject>', $cleaned_subject, $mail_message_full);
                         $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid]), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid]), $mail_message_full);
+                        $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::url_friendly($post['subject'])]), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::url_friendly($post['subject'])]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
