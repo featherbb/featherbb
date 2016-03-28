@@ -70,7 +70,7 @@ Container::get('hooks')->fire('view.header.before.head.tag');
 ?>
 </head>
 
-<body id="feather-body"<?= ($focus_element ? ' onload="document.getElementById(\''.$focus_element[0].'\').elements[\''.$focus_element[1].'\'].focus();"' : '')?>>
+<body id="feather-body">
     <header>
         <nav>
             <div class="container">

@@ -37,7 +37,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                     <td>
                                         <input type="text" name="req_title" size="25" maxlength="50" value="<?php if ($group['mode'] == 'edit') {
     echo Utils::escape($group['info']['g_title']);
-} ?>" tabindex="1" required />
+} ?>" tabindex="1" required="required" autofocus />
                                     </td>
                                 </tr>
                                 <tr>

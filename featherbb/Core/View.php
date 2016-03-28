@@ -333,7 +333,6 @@ class View
             'title' => Utils::escape($title),
             'page_number' => null,
             'active_page' => 'index',
-            'focus_element' => null,
             'is_indexed' => true,
             'admin_console' => false,
             'page_head' => null,

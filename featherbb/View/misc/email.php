@@ -28,7 +28,7 @@ Container::get('hooks')->fire('view.misc.email.start');
                     <div class="infldset txtarea">
                         <input type="hidden" name="form_sent" value="1" />
                         <label class="required"><strong><?php _e('Email subject') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <input class="longinput" type="text" name="req_subject" size="75" maxlength="70" tabindex="1" required="required" /><br /></label>
+                        <input class="longinput" type="text" name="req_subject" size="75" maxlength="70" tabindex="1" required="required" autofocus /><br /></label>
                         <label class="required"><strong><?php _e('Email message') ?> <span><?php _e('Required') ?></span></strong><br />
                         <textarea name="req_message" rows="10" cols="75" tabindex="2" required="required"></textarea><br /></label>
                         <p><?php _e('Email disclosure note') ?></p>

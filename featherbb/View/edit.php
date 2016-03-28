@@ -84,7 +84,7 @@ endif;
 <?php if ($can_edit_subject): ?>                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="<?= Input::post('req_subject', $cur_post['subject']) ?>" required="required" /><br /></label>
 <?php endif; ?>                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
-                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>" required="required"><?= Utils::escape(Input::post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
+                        <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>" required="required" autofocus><?= Utils::escape(Input::post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
                         <ul class="bblinks">
                             <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
                             <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>

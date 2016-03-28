@@ -57,7 +57,7 @@ if (!empty($errors)) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="username" value="" />
                         <input type="hidden" name="password" value="" />
-                        <label class="required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?= Input::post('req_user'); ?>" size="25" maxlength="25" required /><br /></label>
+                        <label class="required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?= Input::post('req_user'); ?>" size="25" maxlength="25" required autofocus /><br /></label>
                     </div>
                 </fieldset>
             </div>

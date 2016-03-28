@@ -65,11 +65,10 @@ class Auth
             }
         } else {
             View::setPageInfo(array(
-                                'active_page' => 'login',
-                                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Login')),
-                                'focus_element' => array('login', 'req_username'),
-                                )
-                        )->addTemplate('login/form.php')->display();
+                    'active_page' => 'login',
+                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Login')),
+                )
+            )->addTemplate('login/form.php')->display();
         }
     }
 
@@ -181,8 +180,7 @@ class Auth
         View::setPageInfo(array(
 //                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')),
-                'focus_element' => array('request_pass', 'req_email'),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Request pass'))
             )
         )->addTemplate('login/password_forgotten.php')->display();
     }

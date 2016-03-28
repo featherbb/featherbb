@@ -25,7 +25,7 @@ Container::get('hooks')->fire('view.login.form.start');
                     <legend><?php _e('Login legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="conl required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="1" required /><br /></label>
+                        <label class="conl required"><strong><?php _e('Username') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="1" required autofocus /><br /></label>
                         <label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password" size="25" tabindex="2" required /><br /></label>
 
                         <div class="rbox clearb">

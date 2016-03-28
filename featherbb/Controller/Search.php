@@ -74,7 +74,6 @@ class Search
             View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search')),
                 'active_page' => 'search',
-                'focus_element' => array('search', 'keywords'),
                 'is_indexed' => true,
                 'forums' => $this->model->get_list_forums(),
             ))->addTemplate('search/form.php')->display();

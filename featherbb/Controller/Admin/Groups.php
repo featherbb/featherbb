@@ -113,7 +113,6 @@ class Groups
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
                     'active_page' => 'admin',
                     'admin_console' => true,
-                    'focus_element' => array('groups2', 'req_title'),
                     'group'    =>    $group,
                     'groups'    =>    $groups,
                     'id'    => $args['id'],

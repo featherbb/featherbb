@@ -43,7 +43,6 @@ class Censoring
 
         return View::setPageInfo(array(
                 'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')),
-                'focus_element'    =>    array('censoring', 'new_search_for'),
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,
                 'word_data'    =>    $this->model->get_words(),

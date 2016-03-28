@@ -57,7 +57,6 @@ class Register
 
         View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
-                    'focus_element' => array('register', 'req_user'),
                     'active_page' => 'register',
                     'is_indexed' => true,
                     'errors' => $user['errors'],

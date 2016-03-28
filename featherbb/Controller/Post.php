@@ -163,14 +163,6 @@ class Post
             $url_topic = '';
         }
 
-        // Set focus element (new post or new reply to an existing post ?)
-        $focus_element[] = 'post';
-        if (!User::get()->is_guest) {
-            $focus_element[] = ($args['fid']) ? 'req_subject' : 'req_message';
-        } else {
-            $focus_element[] = 'req_username';
-        }
-
         // Get the current state of checkboxes
         $checkboxes = $this->model->get_checkboxes($args['fid'], $is_admmod, $is_subscribed);
 
@@ -183,7 +175,6 @@ class Post
 
         return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
-                'focus_element' => $focus_element,
                 'active_page' => 'post',
                 'post' => $post,
                 'tid' => $args['tid'],
@@ -239,7 +230,7 @@ class Post
 
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
@@ -306,9 +297,8 @@ class Post
             $preview_message = '';
         }
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')),
-                'focus_element' => array('edit', 'req_message'),
                 'cur_post' => $cur_post,
                 'errors' => $errors,
                 'preview_message' => $preview_message,
@@ -335,13 +325,13 @@ class Post
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
-            'active_page' => 'report',
-            'focus_element' => array('report', 'req_reason'),
-            'id' => $args['id'],
-            'cur_post' => $cur_post
-            ))->addTemplate('misc/report.php')->display();
+        return View::setPageInfo(array(
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
+                'active_page' => 'report',
+                'id' => $args['id'],
+                'cur_post' => $cur_post
+            )
+        )->addTemplate('misc/report.php')->display();
     }
 
     public function gethost($req, $res, $args)

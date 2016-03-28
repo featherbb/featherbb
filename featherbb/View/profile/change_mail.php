@@ -25,7 +25,7 @@ Container::get('hooks')->fire('view.profile.change_mail.start');
                     <legend><?php _e('Email legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="required"><strong><?php _e('New email') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_new_email" size="50" required="required" maxlength="80" /><br /></label>
+                        <label class="required"><strong><?php _e('New email') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_new_email" size="50" required="required" maxlength="80" autofocus /><br /></label>
                         <label class="required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong><br /><input type="password" name="req_password" size="16" required="required" /><br /></label>
                         <p><?php _e('Email instructions') ?></p>
                     </div>

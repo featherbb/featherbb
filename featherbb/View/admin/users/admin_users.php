@@ -28,7 +28,7 @@ Container::get('hooks')->fire('view.admin.users.admin_users.start');
                             <table class="aligntop">
                                 <tr>
                                     <th scope="row"><?php _e('Username label') ?></th>
-                                    <td><input type="text" name="form[username]" size="25" maxlength="25" tabindex="2" /></td>
+                                    <td><input type="text" name="form[username]" size="25" maxlength="25" tabindex="2" autofocus /></td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?php _e('E-mail address label') ?></th>

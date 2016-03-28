@@ -25,7 +25,7 @@ Container::get('hooks')->fire('view.moderate.split_posts.start');
                     <legend><?php _e('Confirm split legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="posts" value="<?= implode(',', array_map('intval', array_keys($posts))) ?>" />
-                        <label class="required"><strong><?php _e('New subject') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" /><br /></label>
+                        <label class="required"><strong><?php _e('New subject') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" autofocus /><br /></label>
                         <label><?php _e('Move to') ?>
                         <br /><select name="move_to_forum">
                                 <?= $list_forums ?>

@@ -39,7 +39,7 @@ Container::get('hooks')->fire('view.misc.email.report');
                     <legend><?php _e('Reason desc') ?></legend>
                     <div class="infldset txtarea">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="required"><strong><?php _e('Reason') ?> <span><?php _e('Required') ?></span></strong><br /><textarea name="req_reason" rows="5" cols="60" required="required"></textarea><br /></label>
+                        <label class="required"><strong><?php _e('Reason') ?> <span><?php _e('Required') ?></span></strong><br /><textarea name="req_reason" rows="5" cols="60" required="required" autofocus></textarea><br /></label>
                     </div>
                 </fieldset>
             </div>

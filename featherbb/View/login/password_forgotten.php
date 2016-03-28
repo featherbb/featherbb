@@ -48,7 +48,7 @@ if (!empty($errors)) {
                     <legend><?php _e('Request pass legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="text" name="req_email" size="50" maxlength="80" required /><br /></label>
+                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="email" name="req_email" size="50" maxlength="80" required autofocus /><br /></label>
                         <p><?php _e('Request pass info') ?></p>
                     </div>
                 </fieldset>

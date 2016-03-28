@@ -73,7 +73,6 @@ class Users
             return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Bans')),
                     'active_page' => 'moderate',
-                    'focus_element' => array('bans2', 'ban_message'),
                     'admin_console' => true,
                     'user_ids'          => $this->model->ban_users(),
                 )
@@ -126,7 +125,6 @@ class Users
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users')),
                     'active_page' => 'admin',
                     'admin_console' => true,
-                    'focus_element' => array('find_user', 'form[username]'),
                     'group_list' => $this->model->get_group_list(),
                 )
             )->addTemplate('admin/users/admin_users.php')->display();
