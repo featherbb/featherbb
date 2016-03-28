@@ -83,10 +83,10 @@ class Topic
         View::addAsset('canonical', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic, 'page' => intval($p-1)]));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p+1)]));
+                View::addAsset('next', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic, 'page' => intval($p+1)]));
             }
         }
 
@@ -141,7 +141,6 @@ class Topic
         $args['id'] = Container::get('hooks')->fire('controller.topic.unsubscribe', $args['id']);
 
         $this->model->unsubscribe($args['id']);
-
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Unsubscribe redirect'));
     }
 

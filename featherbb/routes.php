@@ -34,8 +34,7 @@ Route::group('/forum', function() {
 
 // Topic
 Route::group('/topic', function() {
-    Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\FeatherBB\Controller\Topic:display')->setName('TopicPaginate');
+    Route::get('/{id:[0-9]+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/post/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
     Route::get('/{id:[0-9]+}/{name:[\w\-]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
     Route::get('/subscribe/{id:[0-9]+}/{name:[\w\-]+}', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');

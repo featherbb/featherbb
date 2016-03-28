@@ -545,7 +545,7 @@ class Topic
 
     public function delete_posts($tid, $fid)
     {
-        $posts = Input::post('posts') ? Input::post('posts') : array();
+        $posts = Input::post('posts', array());
         $posts = Container::get('hooks')->fire('model.topic.delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
@@ -608,10 +608,11 @@ class Topic
                 ->set($update_topic['insert'])
                 ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted);
             $update_topic = Container::get('hooks')->fireDB('model.topic.delete_posts_update_topic_query', $update_topic);
+            $topic_subject = Url::url_friendly($update_topic->subject);
             $update_topic = $update_topic->save();
 
             Forum::update($fid);
-            return Router::redirect(Router::pathFor('Topic', array('id' => $tid)), __('Delete posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', array('id' => $tid, 'name' => $topic_subject)), __('Delete posts redirect'));
         }
         else {
             $posts = Container::get('hooks')->fire('model.topic.delete_posts', $posts);
@@ -704,7 +705,7 @@ class Topic
             }
 
             // Check subject
-            $new_subject = Input::post('new_subject') ? Utils::trim(Input::post('new_subject')) : '';
+            $new_subject = Input::post('new_subject');
 
             if ($new_subject == '') {
                 throw new Error(__('No subject'), 400);
@@ -801,7 +802,7 @@ class Topic
             Forum::update($fid);
             Forum::update($move_to_forum);
 
-            return Router::redirect(Router::pathFor('Topic', array('id' => $new_tid)), __('Split posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', array('id' => $new_tid, 'name' => Url::url_friendly($new_subject))), __('Split posts redirect'));
         }
 
         $posts = Container::get('hooks')->fire('model.topic.split_posts', $posts);
