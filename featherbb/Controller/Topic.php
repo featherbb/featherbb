@@ -207,7 +207,7 @@ class Topic
 
         // Make sure that only admmods allowed access this page
         $forumModel = new \FeatherBB\Model\Forum();
-        $moderators = $forumModel->get_moderators($args['id']);
+        $moderators = $forumModel->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
@@ -230,7 +230,7 @@ class Topic
         else if (Input::post('delete_posts')) {
                 $posts = $this->model->delete_posts($args['id'], $args['fid']);
 
-                View::setPageInfo(array(
+                return View::setPageInfo(array(
                         'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                         'active_page' => 'moderate',
                         'posts' => $posts,
@@ -241,7 +241,7 @@ class Topic
             return $this->model->split_posts($args['id'], $args['fid'], $p);
         }
         else if (Input::post('split_posts')) {
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                     'page' => $p,
                     'active_page' => 'moderate',
@@ -265,7 +265,7 @@ class Topic
                 $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
             }
 
-            View::setPageInfo(array(
+            return View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
                     'page' => $p,
                     'active_page' => 'moderate',

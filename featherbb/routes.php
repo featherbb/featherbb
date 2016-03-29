@@ -44,7 +44,7 @@ Route::group('/topic', function() {
     Route::get('/{id:\d+}/{name:[\w\-]+}/stick', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
     Route::get('/{id:\d+}/{name:[\w\-]+}/unstick', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
     Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/move/from/{fid:\d+}', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->setName('moveTopic');
-    Route::map(['GET', 'POST'], '/moderate/{id:\d+}/forum/{fid:\d+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
+    Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/moderate/forum/{fid:\d+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
 })->add(new CanReadBoard);
 
 // Post routes
