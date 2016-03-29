@@ -459,6 +459,7 @@ class Topic
 
         $topics = is_string($tid) ? [$tid] : $tid;
         $new_fid = intval($new_fid);
+        $fid = intval($fid);
 
         if (empty($topics) || $new_fid < 1) {
             throw new Error(__('Bad request'), 400);
@@ -526,7 +527,7 @@ class Topic
                     'posted'  => $moved_to['posted'],
                     'last_post'  => $moved_to['last_post'],
                     'moved_to'  => $cur_topic,
-                    'forum_id'  => $new_fid,
+                    'forum_id'  => $fid,
                 );
 
                 // Insert the report
