@@ -24,38 +24,38 @@ Route::get('/mark-read', '\FeatherBB\Controller\Index:markread')->add(new IsLogg
 
 // Forum
 Route::group('/forum', function() {
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/mark-read', '\FeatherBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/moderate/page/{page:[0-9]+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
-    Route::post('/{id:[0-9]+}/{name:[\w\-]+}/moderate[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
+    Route::get('/{id:\d+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Forum:display')->setName('Forum');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/mark-read', '\FeatherBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/moderate/page/{page:\d+}', '\FeatherBB\Controller\Forum:moderate')->setName('moderateForum');
+    Route::post('/{id:\d+}/{name:[\w\-]+}/moderate[/page/{page:\d+}]', '\FeatherBB\Controller\Forum:dealposts')->setName('dealPosts');
 })->add(new CanReadBoard);
 
 // Topic
 Route::group('/topic', function() {
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/post/{pid:[0-9]+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/close', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->setName('closeTopic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/open', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->setName('openTopic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/stick', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
-    Route::get('/{id:[0-9]+}/{name:[\w\-]+}/unstick', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
-    Route::map(['GET', 'POST'], '/move/{id:[0-9]+}[/{name:[\w\-]+}/forum/{fid:[0-9]+}]', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->setName('moveTopic');
-    Route::map(['GET', 'POST'], '/moderate/{id:[0-9]+}/forum/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:display')->setName('Topic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/post/{pid:\d+}', '\FeatherBB\Controller\Topic:viewpost')->setName('viewPost');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/close', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->setName('closeTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/open', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->setName('openTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/stick', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/unstick', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
+    Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/move/from/{fid:\d+}', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->setName('moveTopic');
+    Route::map(['GET', 'POST'], '/moderate/{id:\d+}/forum/{fid:\d+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
 })->add(new CanReadBoard);
 
 // Post routes
 Route::group('/post', function() {
-    Route::map(['GET', 'POST'], '/new-topic/{fid:[0-9]+}', '\FeatherBB\Controller\Post:newpost')->setName('newTopic');
-    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newReply');
-    Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}/quote/{qid:[0-9]+}', '\FeatherBB\Controller\Post:newreply')->setName('newQuoteReply');
-    Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Post:delete')->setName('deletePost');
-    Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Post:editpost')->setName('editPost');
-    Route::map(['GET', 'POST'], '/report/{id:[0-9]+}', '\FeatherBB\Controller\Post:report')->setName('report');
-    Route::get('/get-host/{pid:[0-9]+}', '\FeatherBB\Controller\Post:gethost')->setName('getPostHost');
+    Route::map(['GET', 'POST'], '/new-topic/{fid:\d+}', '\FeatherBB\Controller\Post:newpost')->setName('newTopic');
+    Route::map(['GET', 'POST'], '/reply/{tid:\d+}', '\FeatherBB\Controller\Post:newreply')->setName('newReply');
+    Route::map(['GET', 'POST'], '/reply/{tid:\d+}/quote/{qid:\d+}', '\FeatherBB\Controller\Post:newreply')->setName('newQuoteReply');
+    Route::map(['GET', 'POST'], '/delete/{id:\d+}', '\FeatherBB\Controller\Post:delete')->setName('deletePost');
+    Route::map(['GET', 'POST'], '/edit/{id:\d+}', '\FeatherBB\Controller\Post:editpost')->setName('editPost');
+    Route::map(['GET', 'POST'], '/report/{id:\d+}', '\FeatherBB\Controller\Post:report')->setName('report');
+    Route::get('/get-host/{pid:\d+}', '\FeatherBB\Controller\Post:gethost')->setName('getPostHost');
 })->add(new CanReadBoard);
 
 // Userlist
@@ -86,10 +86,10 @@ Route::get('/help', '\FeatherBB\Controller\Help:display')->add(new CanReadBoard)
 
 // Profile routes
 Route::group('/user', function() {
-    Route::map(['GET', 'POST'], '/{id:[0-9]+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
-    Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
-    Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
-    Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\FeatherBB\Controller\Profile:email')->setName('email');
+    Route::map(['GET', 'POST'], '/{id:\d+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
+    Route::map(['GET', 'POST'], '/{id:\d+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
+    Route::map(['GET', 'POST'], '/{id:\d+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
+    Route::map(['GET', 'POST'], '/email/{id:\d+}', '\FeatherBB\Controller\Profile:email')->setName('email');
     Route::get('/get-host/{ip}', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
 })->add(new IsLogged);
 
@@ -111,9 +111,9 @@ Route::group('/admin', function() {
     // Admin bans
     Route::group('/bans', function() {
         Route::get('', '\FeatherBB\Controller\Admin\Bans:display')->setName('adminBans');
-        Route::get('/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Bans:delete')->setName('deleteBan');
-        Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Bans:edit')->setName('editBan');
-        Route::map(['GET', 'POST'], '/add[/{id:[0-9]+}]', '\FeatherBB\Controller\Admin\Bans:add')->setName('addBan');
+        Route::get('/delete/{id:\d+}', '\FeatherBB\Controller\Admin\Bans:delete')->setName('deleteBan');
+        Route::map(['GET', 'POST'], '/edit/{id:\d+}', '\FeatherBB\Controller\Admin\Bans:edit')->setName('editBan');
+        Route::map(['GET', 'POST'], '/add[/{id:\d+}]', '\FeatherBB\Controller\Admin\Bans:add')->setName('addBan');
     });
 
     // Admin options
@@ -144,16 +144,16 @@ Route::group('/admin', function() {
     Route::group('/forums', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Forums:display')->setName('adminForums');
         Route::post('/add', '\FeatherBB\Controller\Admin\Forums:add')->setName('addForum');
-        Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:edit')->setName('editForum');
-        Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Forums:delete')->setName('deleteForum');
+        Route::map(['GET', 'POST'], '/edit/{id:\d+}', '\FeatherBB\Controller\Admin\Forums:edit')->setName('editForum');
+        Route::map(['GET', 'POST'], '/delete/{id:\d+}', '\FeatherBB\Controller\Admin\Forums:delete')->setName('deleteForum');
     })->add(new IsAdmin);
 
     // Admin groups
     Route::group('/groups', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Groups:display')->setName('adminGroups');
         Route::map(['GET', 'POST'], '/add', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('addGroup');
-        Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('editGroup');
-        Route::map(['GET', 'POST'], '/delete/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Groups:delete')->setName('deleteGroup');
+        Route::map(['GET', 'POST'], '/edit/{id:\d+}', '\FeatherBB\Controller\Admin\Groups:addedit')->setName('editGroup');
+        Route::map(['GET', 'POST'], '/delete/{id:\d+}', '\FeatherBB\Controller\Admin\Groups:delete')->setName('deleteGroup');
     })->add(new IsAdmin);
 
     // Admin plugins
@@ -175,7 +175,7 @@ Route::group('/admin', function() {
     // Admin users
     Route::group('/users', function() {
         Route::map(['GET', 'POST'], '', '\FeatherBB\Controller\Admin\Users:display')->setName('adminUsers');
-        Route::get('/ip-stats/id/{id:[0-9]+}', '\FeatherBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
+        Route::get('/ip-stats/id/{id:\d+}', '\FeatherBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
         Route::get('/show-users', '\FeatherBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
     });
 
@@ -183,11 +183,11 @@ Route::group('/admin', function() {
 
 // API
 Route::group('/api', function() {
-    Route::get('/user/{id:[0-9]+}', '\FeatherBB\Controller\Api\User:display')->setName('userApi');
-    Route::get('/forum/{id:[0-9]+}', '\FeatherBB\Controller\Api\Forum:display')->setName('forumApi');
-    Route::get('/topic/{id:[0-9]+}', '\FeatherBB\Controller\Api\Topic:display')->setName('topicApi');
-    Route::post('/new/topic/forum-id/{id:[0-9]+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
-    Route::get('/post/{id:[0-9]+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
+    Route::get('/user/{id:\d+}', '\FeatherBB\Controller\Api\User:display')->setName('userApi');
+    Route::get('/forum/{id:\d+}', '\FeatherBB\Controller\Api\Forum:display')->setName('forumApi');
+    Route::get('/topic/{id:\d+}', '\FeatherBB\Controller\Api\Topic:display')->setName('topicApi');
+    Route::post('/new/topic/forum-id/{id:\d+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
+    Route::get('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
 })->add(new JsonHeader);
 
 // Override the default Not Found Handler

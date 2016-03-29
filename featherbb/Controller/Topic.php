@@ -179,11 +179,11 @@ class Topic
     // Move a single topic
     public function move($req, $res, $args)
     {
-        $args['tid'] = Container::get('hooks')->fire('controller.topic.move', $args['tid']);
+        $args['id'] = Container::get('hooks')->fire('controller.topic.move', $args['id']);
 
         if ($new_fid = Input::post('move_to_forum')) {
-            $this->model->move_to($args['fid'], $new_fid, $args['tid']);
-            return Router::redirect(Router::pathFor('Topic', array('id' => $args['tid'], 'name' => $args['name'])), __('Move topic redirect'));
+            $this->model->move_to($args['fid'], $new_fid, $args['id']);
+            return Router::redirect(Router::pathFor('Topic', array('id' => $args['id'], 'name' => $args['name'])), __('Move topic redirect'));
         }
 
         // Check if there are enough forums to move the topic
@@ -195,7 +195,7 @@ class Topic
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
                 'active_page' => 'moderate',
                 'action'    =>    'single',
-                'topics'    =>    $args['tid'],
+                'topics'    =>    $args['id'],
                 'list_forums'   => $this->model->get_forum_list_move($args['fid']),
             )
         )->addTemplate('moderate/move_topics.php')->display();

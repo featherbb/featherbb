@@ -30,7 +30,7 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
     if ($active_page == 'Forum') {
         echo "\t\t\t\t\t".'<dl>'."\n";
         echo "\t\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-        echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['fid' => $fid, 'name' => $url_forum, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
+        echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['id' => $fid, 'name' => $url_forum, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
         echo "\t\t\t\t\t".'</dl>'."\n";
     } elseif ($active_page == 'Topic') {
         if (isset($pid)) {
