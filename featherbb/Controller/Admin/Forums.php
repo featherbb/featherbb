@@ -173,7 +173,7 @@ class Forums
         Container::get('hooks')->fire('controller.admin.forums.display');
 
         if (Input::post('update_positions')) {
-            $this->edit_positions();
+            return $this->edit_positions($req, $res, $args);
         }
 
         AdminUtils::generateAdminMenu('forums');

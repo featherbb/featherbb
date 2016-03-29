@@ -26,7 +26,7 @@ class Index
     public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.index.index');
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title'))),
             'active_page' => 'index',
             'is_indexed' => true,
@@ -46,10 +46,11 @@ class Index
             throw new Error(__('Bad request'), 404);
         }
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')),
             'active_page' => 'rules'
-            ))->addTemplate('misc/rules.php')->display();
+            )
+        )->addTemplate('misc/rules.php')->display();
     }
 
     public function markread()

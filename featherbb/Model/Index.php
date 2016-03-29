@@ -115,7 +115,7 @@ class Index
             ->table_alias('c')
             ->select_many($query['select'])
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->inner_join('topics', array('t.last_post_id', '=', 'f.last_post_id'), 't')
+            ->left_outer_join('topics', array('t.last_post_id', '=', 'f.last_post_id'), 't')
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->where_any_is($query['where'])
