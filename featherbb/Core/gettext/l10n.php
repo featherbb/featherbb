@@ -19,18 +19,25 @@ function translate($mofile, $domain = 'featherbb', $language = false, $path = fa
 
     global $l10n;
 
-    if (!$path) {
-        $path = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
-    }
+    // Set default path to forum core translations
+    $path = $path ? $path :  ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
+    // Set default language to current user
+    $language = $language ? $language : User::get()->language;
 
-    if (!$language) {
-        $mofile = $path.'/'.User::get()->language.'/'.$mofile.'.mo';
-    }
-    else {
+    /**
+     * Try to locate translation file with the following priority order :
+     *     - As provided in function arguments
+     *     - User language
+     *     - Forum default
+     *     - English (which sould always be available)
+     */
+    if (is_readable($path.'/'.$language.'/'.$mofile.'.mo')) {
         $mofile = $path.'/'.$language.'/'.$mofile.'.mo';
-    }
-
-    if (!is_readable($mofile)) {
+    } elseif (is_readable($path.'/'.ForumSettings::get('o_default_lang').'/'.$mofile.'.mo')) {
+        $mofile = $path.'/'.ForumSettings::get('o_default_lang').'/'.$mofile.'.mo';
+    } elseif (is_readable($path.'/English/'.$mofile.'.mo')) {
+        $mofile = $path.'/English/'.$mofile.'.mo';
+    } else {
         return false;
     }
 
@@ -49,11 +56,11 @@ function translate($mofile, $domain = 'featherbb', $language = false, $path = fa
 }
 
 function __($text, $domain = 'featherbb') {
-    return translation($text);
+    return translation($text, $domain);
 }
 
 function _e($text, $domain = 'featherbb') {
-    echo translation($text);
+    echo translation($text, $domain);
 }
 
 function translation($text, $domain = 'featherbb') {
@@ -61,7 +68,8 @@ function translation($text, $domain = 'featherbb') {
     global $l10n;
 
     if (!isset($l10n[$domain])) {
-        require_once dirname(__FILE__) . '/translations/NOOPTranslations.php';
+        if (!class_exists('NOOPTranslations'))
+            require_once dirname(__FILE__) . '/translations/NOOPTranslations.php';
         $l10n[$domain] = new NOOPTranslations;
     }
 
