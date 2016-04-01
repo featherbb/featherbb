@@ -234,7 +234,7 @@ class Csrf
      */
     protected function createToken()
     {
-        return sha1(serialize($_SERVER) . rand(0, 0xffffffff));
+        return bin2hex(random_bytes($this->strength));
     }
 
     /**
