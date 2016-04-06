@@ -64,7 +64,7 @@ the forums or in the GitHub bug tracker.
 ## Requirements
 
 * A webserver
-* PHP 5.3.0 or later
+* PHP 5.5.0 or later
 * A database such as MySQL 4.1.2 or later, PostgreSQL 7.0 or later, SQLite 2 or later
 
 ## Recommendations
