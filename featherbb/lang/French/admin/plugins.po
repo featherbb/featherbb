@@ -14,14 +14,20 @@ msgstr ""
 "X-Generator: Poedit 1.8.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-msgid "Available plugins"
-msgstr "Les plugins suivants sont disponibles"
-
 msgid "Extension"
 msgstr "Extension"
 
+msgid "Version"
+msgstr "Version"
+
 msgid "Description"
 msgstr "Description"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Action"
+msgstr "Action"
 
 msgid "Activate"
 msgstr "Activer"
@@ -34,6 +40,33 @@ msgstr "Installer"
 
 msgid "Uninstall"
 msgstr "Désinstaller"
+
+msgid "Uninstall warning"
+msgstr "Êtes-vous sûr de vouloir supprimer cette extension ? Tout le contenu associé dans la base de données sera également supprimé !"
+
+msgid "Installed plugins"
+msgstr "Extensions installées"
+
+msgid "Author"
+msgstr "Auteur:"
+
+msgid "Toggle active state"
+msgstr "Cliquez sur les symboles pour activer ou désactiver une extension."
+
+msgid "Upload plugin"
+msgstr "Télécharger une extension"
+
+msgid "Upload"
+msgstr "Télécharger"
+
+msgid "Official plugins"
+msgstr "Extensions officielles"
+
+msgid "Official plugins description"
+msgstr "Les extensions suivantes sont disponibles sur le Marketplace FeatherBB."
+
+msgid "Download"
+msgstr "Télécharger"
 
 msgid "Plugin deactivated"
 msgstr "Plugin \"%s\" désactivé!"
