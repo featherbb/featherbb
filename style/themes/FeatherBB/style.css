@@ -1897,3 +1897,22 @@ th {
 .table > tfoot > tr.active > th {
   background-color: #f5f5f5;
 }
+
+.text-success {
+    color: green;
+}
+.text-success:hover, .text-success:active {
+    color: #35860d;
+}
+.text-warning {
+    color: orange;
+}
+.text-warning:hover, .text-warning:active {
+    color: #d0710f;
+}
+.text-error {
+    color: red;
+}
+.text-error:hover, .text-error:active {
+    color: #b60b0b;
+}

@@ -150,3 +150,35 @@ input[type=radio]:focus {
         width: 7%!important
     }
 }
+
+#adminconsole tr.plugin-deactivated {
+    color: silver;
+}
+#adminconsole td {
+    vertical-align: middle;
+}
+#adminconsole td.plugin-name, #adminconsole th.plugin-name {
+    min-width: 150px;
+}
+#adminconsole td.plugin-version, #adminconsole th.plugin-version {
+    text-align: center;
+}
+#adminconsole td.plugin-status, #adminconsole th.plugin-status {
+    text-align: center;
+}
+#adminconsole td.plugin-actions, #adminconsole th.plugin-actions {
+    text-align: center;
+}
+#adminconsole p.plugin-details {
+    font-style: italic;
+}
+#adminconsole td.plugin-status {
+    text-align: center;
+    font-size: 1.3rem;
+}
+#adminconsole td.plugin-status a {
+    text-decoration: none;
+}
+#adminconsole #upload-plugin div {
+    display: inline;
+}
