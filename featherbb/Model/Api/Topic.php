@@ -11,6 +11,7 @@ namespace FeatherBB\Model\Api;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
 
 class Topic extends Api
@@ -110,6 +111,7 @@ class Topic extends Api
 
         // If it's a new topic
         if ($fid) {
+            // todo: can't get req_subject
             $subject = Utils::trim(Input::post('req_subject'));
 
             if (ForumSettings::get('o_censoring') == '1') {
@@ -307,9 +309,11 @@ class Topic extends Api
             ->set($topic['update']);
         $topic = $topic->save();
 
-        $this->search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
+        $search = new \FeatherBB\Core\Search();
 
-        Forum::update($fid);
+        $search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
+
+        \FeatherBB\Model\Forum::update($fid);
 
         return $new;
     }

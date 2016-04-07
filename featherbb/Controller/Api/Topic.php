@@ -32,7 +32,7 @@ class Topic extends Api
 
         $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
 
-        if (is_bool($is_admmod)) {
+        if (!is_bool($is_admmod)) {
             return $is_admmod;
         }
 
@@ -77,6 +77,10 @@ class Topic extends Api
             $this->model->increment_post_count($post, $new['tid']);
 
             return Router::redirect(Router::pathFor('postApi', ['id' => $new['pid']]));
+        }
+        else {
+            die(var_dump($errors));
+            return json_encode($errors, JSON_PRETTY_PRINT);
         }
     }
 }
