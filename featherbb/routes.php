@@ -88,7 +88,7 @@ Route::get('/help', '\FeatherBB\Controller\Help:display')->add(new CanReadBoard)
 Route::group('/user', function() {
     Route::map(['GET', 'POST'], '/{id:\d+}', '\FeatherBB\Controller\Profile:display')->setName('userProfile');
     Route::map(['GET', 'POST'], '/{id:\d+}/section/{section}', '\FeatherBB\Controller\Profile:display')->setName('profileSection');
-    Route::map(['GET', 'POST'], '/{id:\d+}/action/{action}', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
+    Route::map(['GET', 'POST'], '/{id:\d+}/action/{action}[/pid/{pid:\d+}]', '\FeatherBB\Controller\Profile:action')->setName('profileAction');
     Route::map(['GET', 'POST'], '/email/{id:\d+}', '\FeatherBB\Controller\Profile:email')->setName('email');
     Route::get('/get-host/{ip}', '\FeatherBB\Controller\Profile:gethostip')->setName('getHostIp');
 })->add(new IsLogged);

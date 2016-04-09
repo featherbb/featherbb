@@ -303,6 +303,12 @@ class Profile
             $this->model->delete_avatar($args['id']);
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
+        } elseif ($args['action'] == 'promote') {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_promote_users == '0')) {
+                throw new Error(__('No permission'), 403);
+            }
+
+            return $this->model->promote_user($args['id'], $args['pid']);
         } else {
             throw new Error(__('Bad request'), 404);
         }
@@ -328,10 +334,10 @@ class Profile
 
 
         if (Request::isPost()) {
-            $this->model->send_email($mail);
+            return $this->model->send_email($mail);
         }
 
-        View::setPageInfo(array(
+        return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
             'id' => $args['id'],

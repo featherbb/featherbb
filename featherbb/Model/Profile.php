@@ -23,6 +23,37 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
 
+        if (Input::query('key')) {
+
+            $key = Input::query('key');
+            $key = Container::get('hooks')->fire('model.profile.change_pass_key', $key);
+
+            // If the user is already logged in we shouldn't be here :)
+            if (!User::get()->is_guest) {
+                return Router::redirect(Router::pathFor('home'));
+            }
+
+            $cur_user = DB::for_table('users')
+                ->where('id', $id);
+            $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_user_query', $cur_user);
+            $cur_user = $cur_user->find_one();
+
+            if ($key == '' || $key != $cur_user['activate_key']) {
+                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
+            } else {
+                $query = DB::for_table('users')
+                    ->where('id', $id)
+                    ->find_one()
+                    ->set('password', $cur_user['activate_string'])
+                    ->set_expr('activate_string', 'NULL')
+                    ->set_expr('activate_key', 'NULL');
+                $query = Container::get('hooks')->fireDB('model.profile.change_pass_activate_query', $query);
+                $query = $query->save();
+
+                return Router::redirect(Router::pathFor('home'), __('Pass updated'));
+            }
+        }
+
         // Make sure we are allowed to change this user's password
         if (User::get()->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_pass_key_not_id', $id);
@@ -540,6 +571,42 @@ class Profile
         } else {
             return Router::redirect(Router::pathFor('addBan', array('id' => $id)), __('Ban redirect'));
         }
+    }
+
+    public function promote_user($id, $pid)
+    {
+        $id = Container::get('hooks')->fire('model.profile.promote_user.user_id', $id);
+        $pid = Container::get('hooks')->fire('model.profile.promote_user.post_id', $pid);
+
+        // Find the group ID to promote the user to
+        $next_group_id = DB::for_table('groups')
+            ->table_alias('g')
+            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
+            ->where('u.id', $id);
+        $next_group_id = Container::get('hooks')->fireDB('model.profile.promote_user.next_group_id', $next_group_id);
+        $next_group_id = $next_group_id->find_one_col('g_promote_next_group');
+
+        if (!$next_group_id) {
+            throw new Error(__('Bad request'), 404);
+        }
+
+        // Update the user
+        $update_user = DB::for_table('users')
+            ->where('id', $id)
+            ->find_one()
+            ->set('group_id', $next_group_id);
+        $update_user = Container::get('hooks')->fireDB('model.profile.promote_user_query', $update_user);
+        $update_user = $update_user->save();
+
+        // Get topic infos to redirect to
+        $topic_infos = DB::for_table('posts')
+            ->table_alias('p')
+            ->select_many(['t.subject', 't.id'])
+            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
+            ->where('p.id', $pid)
+            ->find_one();
+
+        return Router::redirect(Router::pathFor('viewPost', ['id' => $topic_infos->id, 'name' => Url::url_friendly($topic_infos->subject), 'pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
     public function delete_user($id)
