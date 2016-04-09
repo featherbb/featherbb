@@ -107,7 +107,8 @@ class Groups
 
             AdminUtils::generateAdminMenu('groups');
 
-            $group = $this->model->info_add_group($groups, $args['id']);
+            $id = isset($args['id']) ? intval($args['id']) : intval(Input::post('base_group'));
+            $group = $this->model->info_add_group($groups, $id);
 
             View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
@@ -115,7 +116,7 @@ class Groups
                     'admin_console' => true,
                     'group'    =>    $group,
                     'groups'    =>    $groups,
-                    'id'    => $args['id'],
+                    'id'    => $id,
                     'group_list'    => $this->model->get_group_list($groups, $group),
                 )
             )->addTemplate('admin/groups/add_edit_group.php')->display();

@@ -36,9 +36,9 @@ class Groups
         $group = array();
 
         if (Input::post('add_group')) {
-            $group['base_group'] = intval(Input::post('base_group'));
+            $group['base_group'] = $id; // Equals intval(Input::post('base_group'))
             $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
-            $group['info'] = $groups[$group['base_group']];
+            $group['info'] = $groups[$id];
 
             $group['mode'] = 'add';
         } else {
