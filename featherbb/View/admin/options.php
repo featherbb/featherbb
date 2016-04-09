@@ -252,13 +252,6 @@ Container::get('hooks')->fire('view.admin.options.start');
                                         <span><?php _e('Online timeout help') ?></span>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <th scope="row"><?php _e('Redirect time label') ?></th>
-                                    <td>
-                                        <input type="text" name="form_redirect_delay" size="3" maxlength="3" value="<?= ForumSettings::get('o_redirect_delay') ?>" />
-                                        <span><?php _e('Redirect time help') ?></span>
-                                    </td>
-                                </tr>
                             </table>
                         </div>
                     </fieldset>

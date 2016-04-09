@@ -245,12 +245,6 @@ msgstr "Online timeout"
 msgid "Online timeout help"
 msgstr "Number of seconds a user must be idle before being removed from the online users list."
 
-msgid "Redirect time label"
-msgstr "Redirect time"
-
-msgid "Redirect time help"
-msgstr "Number of seconds to wait when redirecting. If set to 0, no redirect page will be displayed (not recommended)."
-
 msgid "Display subhead"
 msgstr "Display"
 

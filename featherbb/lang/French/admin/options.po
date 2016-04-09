@@ -243,12 +243,6 @@ msgstr "Délai de déconnexion"
 msgid "Online timeout help"
 msgstr "Délai en secondes d'inactivité d'un utilisateur avant d'être retiré de la liste des utilisateurs en ligne."
 
-msgid "Redirect time label"
-msgstr "Délai de redirection"
-
-msgid "Redirect time help"
-msgstr "Délai en secondes avant redirection. Si défini à 0, la page de redirection ne sera pas affichée (non recommandé)."
-
 msgid "Display subhead"
 msgstr "Affichage"
 

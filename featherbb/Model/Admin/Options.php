@@ -31,7 +31,6 @@ class Options
             'date_format'            => Utils::trim(Input::post('form_date_format')),
             'timeout_visit'            => (intval(Input::post('form_timeout_visit')) > 0) ? intval(Input::post('form_timeout_visit')) : 1,
             'timeout_online'        => (intval(Input::post('form_timeout_online')) > 0) ? intval(Input::post('form_timeout_online')) : 1,
-            'redirect_delay'        => (intval(Input::post('form_redirect_delay')) >= 0) ? intval(Input::post('form_redirect_delay')) : 0,
             'show_version'            => Input::post('form_show_version') != '1' ? '0' : '1',
             'show_user_info'        => Input::post('form_show_user_info') != '1' ? '0' : '1',
             'show_post_count'        => Input::post('form_show_post_count') != '1' ? '0' : '1',
