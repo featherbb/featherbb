@@ -47,6 +47,12 @@ class Plugin
         }
     }
 
+    /**
+     * Child classes may use this method to quickly get plugin name added in admin menu
+     *
+     * @param  array $items Array of plugin names to display in admin panel sidebar
+     * @return array        Pushed initial array above
+     */
     public function getName($items)
     {
         // Split name
@@ -62,60 +68,17 @@ class Plugin
     }
 
     /**
-     * Activate a plugin
+     * Try to load a plugin class based on URI/folder-name
+     * @param  string $plugin the name of the plugin to load
+     * @return mixed         Return an instance of the plugin class or (bool) false if it could not be loaded
      */
-    public function activate($name, $needInstall = true)
+    public function load($plugin)
     {
-        // Check if plugin name is valid
-        if ($class = $this->load($name)) {
-            // Do we need to run extra code for installation ?
-            if ($needInstall) {
-                $class->install();
-            }
+        // Plugins loaded via composer ($this->getNamespace should return valid namespace)
+        if (class_exists($className = '\FeatherBB\Plugins\\'.$this->getNamespace($plugin))) {
+            $class = new $className();
+            return $class;
         }
-    }
-
-    /**
-     * Default empty install function to avoid errors when activating.
-     * Daughter classes may override this method for custom install.
-     */
-    public function install()
-    {
-    }
-
-    /**
-     * Default empty install function to avoid erros when deactivating.
-     * Daughter classes may override this method for custom deactivation.
-     */
-    public function deactivate($name)
-    {
-        // Check if plugin name is valid
-        if ($class = $this->load($name)) {
-            // Do we need to run extra code for deactivation ?
-            if (method_exists($class, 'pause')) {
-                $class->pause();
-            }
-        }
-    }
-
-    public function uninstall($name)
-    {
-        // Check if plugin name is valid
-        if ($class = $this->load($name)) {
-            // Do we need to run extra code for installation ?
-            if (method_exists($class, 'remove')) {
-                $class->remove();
-            }
-        }
-    }
-
-    public function run()
-    {
-        // Daughter classes HAVE TO override this method for custom run
-    }
-
-    protected function load($plugin)
-    {
         // "Complex" plugins which need to register namespace via bootstrap.php
         if (file_exists($file = ForumEnv::get('FEATHER_ROOT').'plugins/'.$plugin.'/bootstrap.php')) {
             $className = require $file;
