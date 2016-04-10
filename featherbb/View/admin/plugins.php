@@ -102,7 +102,7 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                         <td class="plugin-version"><?= Utils::escape($plugin->version); ?></td>
                                         <td class="plugin-description"><?= Utils::escape($plugin->description); ?></td>
                                         <td class="plugin-actions">
-                                            <a href="<?= Router::pathFor('downloadPlugin', ['name' => Utils::escape($plugin->name), 'version' => intval($plugin->version)]) ?>"><?php _e('Download'); ?></a>
+                                            <a href="<?= Router::pathFor('downloadPlugin', ['name' => Utils::escape($plugin->name), 'version' => Utils::escape($plugin->version)]) ?>"><?php _e('Download'); ?></a>
                                         </td>
                                     </tr>
 <?php endforeach; ?>
