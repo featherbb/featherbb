@@ -28,8 +28,7 @@
         "statical/statical": "^1.1",
         "slim/flash": "^0.1.0",
         "firebase/php-jwt": "^3.0",
-        "vierbergenlars/php-semver": "^3.0",
-        "paragonie/random_compat": "^2.0"
+        "vierbergenlars/php-semver": "^3.0"
     },
     "support": {
         "email": "admin@featherbb.org",
