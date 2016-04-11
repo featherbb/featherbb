@@ -251,8 +251,7 @@ class Auth
             Container::set('user', $user);
         }
 
-        if ($jwt) {
-            $user = AuthModel::load_user($jwt->data->userId);
+        if ($jwt && $user = AuthModel::load_user($jwt->data->userId)) {
 
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
