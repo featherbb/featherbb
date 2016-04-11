@@ -34,8 +34,14 @@ msgstr "You do not have permission to view these forums."
 msgid "No permission"
 msgstr "You do not have permission to access this page."
 
-msgid "Bad referrer"
-msgstr "Bad HTTP_REFERER. You were referred to this page from an unauthorized source. If the problem persists please make sure that 'Base URL' is correctly set in Admin/Options and that you are visiting the forum by navigating to that URL. More information regarding the referrer check can be found in the FluxBB documentation."
+msgid "Failed CSRF check"
+msgstr "Failed CSRF check! You were referred to this page from an unauthorized source."
+
+msgid "CSRF strength fail"
+msgstr "CSRF middleware failed. Minimum strength is 16."
+
+msgid "CSRF session fail"
+msgstr "CSRF middleware failed. Session not found."
 
 msgid "No cookie"
 msgstr "You appear to have logged in successfully, however a cookie has not been set. Please check your settings and if applicable, enable cookies for this website."

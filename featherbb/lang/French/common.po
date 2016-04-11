@@ -33,8 +33,14 @@ msgstr "Vous n'êtes pas autorisé(e) à visiter ces forums."
 msgid "No permission"
 msgstr "Vous n'êtes pas autorisé(e) à afficher cette page."
 
-msgid "Bad referrer"
-msgstr "Mauvais HTTP_REFERER. Vous avez été renvoyé(e) vers cette page par une source inconnue ou interdite. Si le problème persiste, assurez-vous que le champ «&#160;URL de base&#160;» de la page Administration&#160;» Options est correctement renseigné et que vous vous rendez sur ces forums en utilisant cette URL. Vous pourrez trouver davantage d'informations dans la documentation de FluxBB."
+msgid "Failed CSRF check"
+msgstr "Echec de la vérification CSRF. Vous avez été renvoyé(e) vers cette page par une source inconnue ou interdite."
+
+msgid "CSRF strength fail"
+msgstr "Echec du module CSRF. 16 caractères au minimum."
+
+msgid "CSRF session fail"
+msgstr "Echec du module CSRF. Session introuvable."
 
 msgid "No cookie"
 msgstr "Vous semblez avoir été identifié(e), cependant aucun cookie n'a été envoyé. Veuillez vérifier vos paramètres et, si possible, activer les cookies pour ce site."
