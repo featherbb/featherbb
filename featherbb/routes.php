@@ -193,7 +193,7 @@ Route::group('/api', function() {
 // Override the default Not Found Handler
 Container::set('notFoundHandler', function ($c) {
     return function ($request, $response) use ($c) {
-        throw new Error('Page not found', 404); // TODO : translation
+        throw new Error(__('Bad request'), 404);
     };
 });
 
@@ -208,7 +208,7 @@ Container::set('errorHandler', function ($c) {
 
         // Hide internal mechanism
         if (!in_array(get_class($e), array('FeatherBB\Core\Error')) && ForumEnv::get('FEATHER_DEBUG') != 'all') {
-            $error['message'] = 'There was an internal error'; // TODO : translation
+            $error['message'] = __('Error');
         }
 
         if (method_exists($e, 'hasBacklink')) {
