@@ -206,7 +206,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
 <?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
             <div class="flashmsg <?= $type; ?>" data-type="<?= $type; ?>" id="flashmsg">
                 <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
-                <p><?= Utils::escape($message[0]) ?></p>
+                <p><?= htmlspecialchars_decode(Utils::escape($message[0])) ?></p>
             </div>
 <?php }
 Container::get('hooks')->fire('view.header.end');

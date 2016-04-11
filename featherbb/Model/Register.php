@@ -133,7 +133,7 @@ class Register
         $password_hash = Random::hash($user['password1']);
 
         // Add the user
-        $user['insert'] = array(
+        $user_data = array(
             'username'        => $user['username'],
             'group_id'        => $intial_group_id,
             'password'        => $password_hash,
@@ -148,11 +148,11 @@ class Register
             'last_visit'      => $now,
         );
 
-        $user = DB::for_table('users')
+        $insert_user = DB::for_table('users')
                     ->create()
-                    ->set($user['insert']);
-        $user = Container::get('hooks')->fireDB('model.register.insert_user_query', $user);
-        $user = $user->save();
+                    ->set($user_data);
+        $insert_user = Container::get('hooks')->fireDB('model.register.insert_user_query', $insert_user);
+        $insert_user = $insert_user->save();
 
         $new_uid = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
@@ -246,14 +246,15 @@ class Register
             Container::get('email')->feather_mail($user['email1'], $mail_subject, $mail_message);
 
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
+        } else {
+            // Auto auth only if registrations verify is disabled
+            $user_object = new \stdClass();
+            $user_object->id = $new_uid;
+            $user_object->username = $user['username'];
+            $expire = time() + ForumSettings::get('o_timeout_visit');
+            $jwt = AuthModel::generate_jwt($user_object, $expire);
+            AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
         }
-
-        $user_object = new \stdClass();
-        $user_object->id = $new_uid;
-        $user_object->username = $user['username'];
-        $expire = time() + ForumSettings::get('o_timeout_visit');
-        $jwt = AuthModel::generate_jwt($user_object, $expire);
-        AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
 
         // Refresh cache
         Container::get('cache')->store('users_info', Cache::get_users_info());
