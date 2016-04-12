@@ -28,6 +28,10 @@ class Topic extends Api
         // Fetch some info about the topic and/or the forum
         $cur_posting = $this->model->get_info_post(false, $args['id']);
 
+        if (!is_object($cur_posting)) {
+            return $cur_posting;
+        }
+
         $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
 
         if (!is_bool($is_admmod)) {
@@ -73,6 +77,10 @@ class Topic extends Api
     {
         // Fetch some info about the topic and/or the forum
         $cur_posting = $this->model->get_info_post($args['id'], false);
+
+        if (!is_object($cur_posting)) {
+            return $cur_posting;
+        }
 
         $is_subscribed = $args['id'] && $cur_posting['is_subscribed'];
 

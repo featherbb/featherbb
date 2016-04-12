@@ -190,6 +190,8 @@ Route::group('/api', function() {
     Route::post('/topic/{id:\d+}[/quote/{qid:\d+}]', '\FeatherBB\Controller\Api\Topic:newReply')->setName('newReplyApi');
     Route::get('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
     Route::delete('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:delete')->setName('deletePostApi');
+    Route::put('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:update')->setName('updatePostApi');
+    Route::patch('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:update')->setName('updatePostApi');
 })->add(new JsonHeader);
 
 // Override the default Not Found Handler

@@ -17,12 +17,7 @@ use FeatherBB\Core\Utils;
 
 class Post
 {
-    public function __construct()
-    {
-        $this->search = new \FeatherBB\Core\Search();
-    }
 
-    //  Get some info about the post
     public function get_info_post($tid, $fid)
     {
         Container::get('hooks')->fire('model.post.get_info_post_start', $tid, $fid);
@@ -217,7 +212,7 @@ class Post
         return $errors;
     }
 
-    public function check_errors_before_edit($can_edit_subject, $errors)
+    public static function check_errors_before_edit($can_edit_subject, $errors, $is_admmod)
     {
         $errors = Container::get('hooks')->fire('model.post.check_errors_before_edit_start', $errors);
 
@@ -235,7 +230,7 @@ class Post
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !$is_admmod) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -246,7 +241,7 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::get()->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !$is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -316,7 +311,7 @@ class Post
     }
 
     // If the previous check went OK, setup some variables used later
-    public function setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors)
+    public static function setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors)
     {
         Container::get('hooks')->fire('model.post.setup_edit_variables_start');
 
@@ -349,7 +344,7 @@ class Post
         return $post;
     }
 
-    public static function get_info_delete($id)
+    public function get_info_delete($id)
     {
         $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
 
@@ -492,7 +487,7 @@ class Post
         }
     }
 
-    public function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod)
+    public static function edit_post($id, $can_edit_subject, $post, $cur_post, $is_admmod, $username = null)
     {
         Container::get('hooks')->fire('model.post.edit_post_start');
 
@@ -517,9 +512,9 @@ class Post
             $query = $query->save();
 
             // We changed the subject, so we need to take that into account when we update the search words
-            $this->search->update_search_index('edit', $id, $post['message'], $post['subject']);
+            \FeatherBB\Core\Search::update_search_index('edit', $id, $post['message'], $post['subject']);
         } else {
-            $this->search->update_search_index('edit', $id, $post['message']);
+            \FeatherBB\Core\Search::update_search_index('edit', $id, $post['message']);
         }
 
         // Update the post
@@ -531,7 +526,7 @@ class Post
 
         if (!Input::post('silent') || !$is_admmod) {
             $query['update_post']['edited'] = time();
-            $query['update_post']['edited_by'] = User::get()->username;
+            $query['update_post']['edited_by'] = (is_null($username) ? User::get()->username : $username);
         }
 
         $query = DB::for_table('posts')->where('id', $id)
@@ -763,7 +758,7 @@ class Post
 
         $topic = $topic->save();
 
-        $this->search->update_search_index('post', $new['pid'], $post['message']);
+        \FeatherBB\Core\Search::update_search_index('post', $new['pid'], $post['message']);
 
         Forum::update($cur_posting['id']);
 
@@ -981,7 +976,7 @@ class Post
         $topic = Container::get('hooks')->fireDB('model.post.insert_topic_post_topic', $topic);
         $topic = $topic->save();
 
-        $this->search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
+        \FeatherBB\Core\Search::update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
         Forum::update($fid);
 
