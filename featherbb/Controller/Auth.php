@@ -40,8 +40,7 @@ class Auth
 
             $user = ModelAuth::get_user_from_name($form_username);
 
-            $form_password_hash = Random::hash($form_password); // Will result in a SHA-1 hash
-            if ($user && !empty($user->password) && $user->password == $form_password_hash) {
+            if ($user && !empty($user->password) && Utils::password_verify($form_password, $user->password)) {
                 if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
                     ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
                     if (!Container::get('cache')->isCached('users_info')) {

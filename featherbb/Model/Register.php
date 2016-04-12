@@ -130,7 +130,7 @@ class Register
         $now = time();
 
         $intial_group_id = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
-        $password_hash = Random::hash($user['password1']);
+        $password_hash = Utils::password_hash($user['password1']);
 
         // Add the user
         $user_data = array(

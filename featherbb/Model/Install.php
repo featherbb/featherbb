@@ -220,7 +220,7 @@ class Install
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `group_id` int(10) unsigned NOT NULL DEFAULT '3',
             `username` varchar(200) NOT NULL DEFAULT '',
-            `password` varchar(40) NOT NULL DEFAULT '',
+            `password` char(72) NOT NULL DEFAULT '',
             `email` varchar(80) NOT NULL DEFAULT '',
             `title` varchar(50) DEFAULT NULL,
             `realname` varchar(40) DEFAULT NULL,
@@ -419,7 +419,7 @@ class Install
         return $user = array(
             'group_id' => 1,
             'username' => $data['username'],
-            'password' => Random::hash($data['password']),
+            'password' => Utils::password_hash($data['password']),
             'email' => $data['email'],
             'language' => $data['default_lang'],
             'style' => $data['default_style'],

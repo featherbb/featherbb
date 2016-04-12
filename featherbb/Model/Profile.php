@@ -103,7 +103,7 @@ class Profile
             $authorized = false;
 
             if (!empty($cur_user['password'])) {
-                $old_password_hash = Random::hash($old_password);
+                $old_password_hash = Utils::password_hash($old_password);
 
                 if ($cur_user['password'] == $old_password_hash || User::get()->is_admmod) {
                     $authorized = true;
@@ -114,7 +114,7 @@ class Profile
                 throw new Error(__('Wrong pass'), 403);
             }
 
-            $new_password_hash = Random::hash($new_password1);
+            $new_password_hash = Utils::password_hash($new_password1);
 
             $update_password = DB::for_table('users')
                 ->where('id', $id)
@@ -192,7 +192,7 @@ class Profile
         } elseif (Request::isPost()) {
             Container::get('hooks')->fire('model.profile.change_email_post');
 
-            if (!Utils::hash_equals(Random::hash(Input::post('req_password')), User::get()->password)) {
+            if (!Utils::password_verify(Input::post('req_password'), User::get()->password)) {
                 throw new Error(__('Wrong pass'));
             }
 

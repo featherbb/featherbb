@@ -12,6 +12,7 @@ namespace FeatherBB\Model;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 use Firebase\JWT\JWT;
 
 class Auth
@@ -90,7 +91,7 @@ class Auth
     public static function set_new_password($pass, $key, $user_id)
     {
         $query['update'] = array(
-            'activate_string' => Random::hash($pass),
+            'activate_string' => Utils::password_hash($pass),
             'activate_key'    => $key,
             'last_email_sent' => time(),
         );
@@ -107,7 +108,7 @@ class Auth
     {
         $issuedAt   = time();
         $tokenId    = base64_encode(Random::key(32));
-        $serverName = Config::get('serverName');
+        $serverName = Url::base_static();
 
         /*
         * Create the token as an array

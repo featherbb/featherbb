@@ -376,4 +376,30 @@ class Utils
 
         return $result === 0;
     }
+
+    /**
+     * Hash a user password using BCRYPT
+     * Replaces old sha1 password hashing verification
+     * Requires PHP >= 5.5
+     *
+     * @param  string $password User password
+     * @return string           Hashed password
+     */
+    public static function password_hash(string $password)
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Compare an inputed password with the one in database for a user
+     * Requires PHP >= 5.5
+     *
+     * @param  string $password Inputed password
+     * @param  string $hash     Password stored in database
+     * @return bool             Do the passwords match ?
+     */
+    public static function password_verify(string $password, string $hash)
+    {
+        return password_verify($password, $hash);
+    }
 }
