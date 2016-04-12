@@ -185,8 +185,9 @@ Route::group('/admin', function() {
 Route::group('/api', function() {
     Route::get('/user/{id:\d+}', '\FeatherBB\Controller\Api\User:display')->setName('userApi');
     Route::get('/forum/{id:\d+}', '\FeatherBB\Controller\Api\Forum:display')->setName('forumApi');
+    Route::post('/forum/{id:\d+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
     Route::get('/topic/{id:\d+}', '\FeatherBB\Controller\Api\Topic:display')->setName('topicApi');
-    Route::post('/topic/{id:\d+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
+    Route::post('/topic/{id:\d+}[/quote/{qid:\d+}]', '\FeatherBB\Controller\Api\Topic:newReply')->setName('newReplyApi');
     Route::get('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
 })->add(new JsonHeader);
 

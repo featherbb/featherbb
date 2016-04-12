@@ -28,7 +28,53 @@ class Topic extends Api
         // Fetch some info about the topic and/or the forum
         $cur_posting = $this->model->get_info_post(false, $args['id']);
 
-        //$is_subscribed = $args['tid'] && $cur_posting['is_subscribed'];
+        $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
+
+        if (!is_bool($is_admmod)) {
+            return $is_admmod;
+        }
+
+        // Start with a clean slate
+        $errors = array();
+
+        // Let's see if everything went right
+        $errors = $this->model->check_errors_before_post($args['id'], $errors);
+
+        // Setup some variables before post
+        $post = $this->model->setup_variables($errors, $is_admmod);
+
+        // Did everything go according to plan?
+        if (empty($errors)) {
+            // If it's a new topic
+            // Insert the topic, get the new_pid
+            $new = $this->model->insert_topic($post, $args['id']);
+
+            // Should we send out notifications?
+            if (ForumSettings::get('o_forum_subscriptions') == '1') {
+                $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
+            }
+
+            // If we previously found out that the email was banned
+            if ($this->user->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
+                \FeatherBB\Model\Post::warn_banned_user($post, $new['pid']);
+            }
+
+            // If the posting user is logged in, increment his/her post count
+            $this->model->increment_post_count($post, $new['tid']);
+
+            return Router::redirect(Router::pathFor('postApi', ['id' => $new['pid']]));
+        }
+        else {
+            return json_encode($errors, JSON_PRETTY_PRINT);
+        }
+    }
+
+    public function newReply($req, $res, $args)
+    {
+        // Fetch some info about the topic and/or the forum
+        $cur_posting = $this->model->get_info_post($args['id'], false);
+
+        $is_subscribed = $args['id'] && $cur_posting['is_subscribed'];
 
         $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
 
@@ -47,39 +93,26 @@ class Topic extends Api
 
         // Did everything go according to plan?
         if (empty($errors)) {
-            // If it's a reply
-            /*if ($args['tid']) {
-                // Insert the reply, get the new_pid
-                $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
+            // It's a reply
+            // Insert the reply, get the new_pid
+            $new = $this->model->insert_reply($post, $args['id'], $cur_posting, $is_subscribed);
 
-                // Should we send out notifications?
-                if (ForumSettings::get('o_topic_subscriptions') == '1') {
-                    $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
-                }
+            // Should we send out notifications?
+            if (ForumSettings::get('o_topic_subscriptions') == '1') {
+                \FeatherBB\Model\Post::send_notifications_reply($args['id'], $cur_posting, $new['pid'], $post);
             }
-            // If it's a new topic
-            elseif ($args['fid']) {*/
-                // Insert the topic, get the new_pid
-                $new = $this->model->insert_topic($post, $args['id']);
-
-                // Should we send out notifications?
-                if (ForumSettings::get('o_forum_subscriptions') == '1') {
-                    $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
-                }
-            //}
 
             // If we previously found out that the email was banned
-            /*if (User::get()->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
-                $this->model->warn_banned_user($post, $new['pid']);
-            }*/
+            if ($this->user->is_guest && isset($errors['banned_email']) && ForumSettings::get('o_mailing_list') != '') {
+                \FeatherBB\Model\Post::warn_banned_user($post, $new['pid']);
+            }
 
             // If the posting user is logged in, increment his/her post count
-            $this->model->increment_post_count($post, $new['tid']);
+            $this->model->increment_post_count($post, $new['id']);
 
             return Router::redirect(Router::pathFor('postApi', ['id' => $new['pid']]));
         }
         else {
-            die(var_dump($errors));
             return json_encode($errors, JSON_PRETTY_PRINT);
         }
     }

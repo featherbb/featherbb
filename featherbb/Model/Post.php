@@ -773,7 +773,7 @@ class Post
     }
 
     // Send notifications for replies
-    public function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
+    public static function send_notifications_reply($tid, $cur_posting, $new_pid, $post)
     {
         Container::get('hooks')->fire('model.post.send_notifications_reply_start', $tid, $cur_posting, $new_pid, $post);
 
@@ -1094,7 +1094,7 @@ class Post
     }
 
     // Warn the admin if a banned user posts
-    public function warn_banned_user($post, $new_post)
+    public static function warn_banned_user($post, $new_post)
     {
         Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_post);
 
