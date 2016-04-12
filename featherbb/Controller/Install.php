@@ -42,9 +42,10 @@ class Install
         Container::get('cache')->flush();
         Container::get('hooks')->fire('controller.install.run_install');
 
-        if (Input::getParsedBodyParam('choose_lang')) {
-            if (in_array(Utils::trim(Input::getParsedBodyParam('install_lang')), $this->available_langs)) {
-                $this->install_lang = Input::getParsedBodyParam('install_lang');
+        // First form has been submitted to change default language
+        if (Input::post('choose_lang')) {
+            if (in_array(Utils::trim(Input::post('install_lang')), $this->available_langs)) {
+                $this->install_lang = Input::post('install_lang');
             }
         }
 
@@ -53,11 +54,12 @@ class Install
 
         translate('install', 'featherbb', $this->install_lang);
 
-        if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
+        // Second form has been submitted to start install
+        if (Request::isPost() && !Input::post('choose_lang')) {
             $missing_fields = array();
             $data = array_map(function ($item) {
                 return Utils::escape(Utils::trim($item));
-            }, Input::getParsedBodyParam('install'));
+            }, Input::post('install'));
 
             foreach ($data as $field => $value) {
                 // Handle empty fields
