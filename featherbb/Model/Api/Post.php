@@ -29,4 +29,27 @@ class Post extends Api
 
         return $data;
     }
+
+    public function getPermissions($cur_post, $args)
+    {
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $is_admmod = ($this->user->g_id == ForumEnv::get('FEATHER_ADMIN') || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
+
+        $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
+
+        // Do we have permission to edit this post?
+        if (($this->user->g_delete_posts == '0' ||
+                ($this->user->g_delete_topics == '0' && $is_topic_post) ||
+                $cur_post['poster_id'] != $this->user->id ||
+                $cur_post['closed'] == '1') &&
+            !$is_admmod) {
+            throw new Error(__('No permission'), 403);
+        }
+
+        if ($is_admmod && $this->user->g_id != ForumEnv::get('FEATHER_ADMIN') && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+            throw new Error(__('No permission'), 403);
+        }
+
+        return $is_topic_post;
+    }
 }

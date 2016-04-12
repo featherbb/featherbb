@@ -349,7 +349,7 @@ class Post
         return $post;
     }
 
-    public function get_info_delete($id)
+    public static function get_info_delete($id)
     {
         $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
 
@@ -380,7 +380,7 @@ class Post
         return $query;
     }
 
-    public function handle_deletion($is_topic_post, $id, $cur_post)
+    public static function handle_deletion($is_topic_post, $id, $cur_post)
     {
         Container::get('hooks')->fire('model.post.handle_deletion_start', $is_topic_post, $id, $cur_post);
 
@@ -401,7 +401,7 @@ class Post
             Container::get('hooks')->fire('model.post.handle_deletion', $is_topic_post, $id, $cur_post);
 
             // Delete just this one post
-            $this->delete($id, $tid);
+            self::delete($id, $tid);
             Forum::update($fid);
 
             // Redirect towards the previous post
