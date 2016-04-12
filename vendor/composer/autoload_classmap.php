@@ -164,6 +164,7 @@ return array(
     'Slim\\Exception\\MethodNotAllowedException' => $vendorDir . '/slim/slim/Slim/Exception/MethodNotAllowedException.php',
     'Slim\\Exception\\NotFoundException' => $vendorDir . '/slim/slim/Slim/Exception/NotFoundException.php',
     'Slim\\Exception\\SlimException' => $vendorDir . '/slim/slim/Slim/Exception/SlimException.php',
+    'Slim\\Flash\\Messages' => $vendorDir . '/slim/flash/src/Messages.php',
     'Slim\\Handlers\\Error' => $vendorDir . '/slim/slim/Slim/Handlers/Error.php',
     'Slim\\Handlers\\NotAllowed' => $vendorDir . '/slim/slim/Slim/Handlers/NotAllowed.php',
     'Slim\\Handlers\\NotFound' => $vendorDir . '/slim/slim/Slim/Handlers/NotFound.php',
