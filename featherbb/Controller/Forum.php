@@ -26,7 +26,7 @@ class Forum
     public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.forum.display');
-        // Fetch some informations about the forum
+        // Fetch some information about the forum
         $cur_forum = $this->model->get_forum_info($args['id']);
 
         // Is this a redirect forum? In that case, redirect!

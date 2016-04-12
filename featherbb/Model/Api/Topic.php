@@ -13,6 +13,7 @@ use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
 
 class Topic extends Api
 {
@@ -111,7 +112,6 @@ class Topic extends Api
 
         // If it's a new topic
         if ($fid) {
-            // todo: can't get req_subject
             $subject = Utils::trim(Input::post('req_subject'));
 
             if (ForumSettings::get('o_censoring') == '1') {
@@ -447,4 +447,116 @@ class Topic extends Api
             $last_post = $last_post->save();
         }
     }
+
+    // Insert a reply
+    public function insert_reply($post, $tid, $cur_posting, $is_subscribed)
+    {
+        $new = array();
+
+        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
+
+        if (!$this->user->is_guest) {
+            $new['tid'] = $tid;
+
+            // Insert the new post
+            $query['insert'] = array(
+                'poster' => $post['username'],
+                'poster_id' => $this->user->id,
+                'poster_ip' => Utils::getIp(),
+                'message' => $post['message'],
+                'hide_smilies' => $post['hide_smilies'],
+                'posted'  => $post['time'],
+                'topic_id'  => $tid,
+            );
+
+            $query = DB::for_table('posts')
+                ->create()
+                ->set($query['insert']);
+            $query = Container::get('hooks')->fireDB('model.post.insert_reply_guest_query', $query);
+            $query = $query->save();
+
+            $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'posts');
+
+            // To subscribe or not to subscribe, that ...
+            if (ForumSettings::get('o_topic_subscriptions') == '1') {
+                // ... is the question
+                // Let's do it
+                if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
+
+                    $subscription['insert'] = array(
+                        'user_id'   =>  $this->user->id,
+                        'topic_id'  =>  $tid
+                    );
+
+                    $subscription = DB::for_table('topic_subscriptions')
+                        ->create()
+                        ->set($subscription['insert']);
+                    $subscription = Container::get('hooks')->fireDB('model.post.insert_reply_subscription', $subscription);
+                    $subscription = $subscription->save();
+
+                    // We reply and we don't want to be subscribed anymore
+                } elseif ($post['subscribe'] == '0' && $is_subscribed) {
+
+                    $unsubscription = DB::for_table('topic_subscriptions')
+                        ->where('user_id', $this->user->id)
+                        ->where('topic_id', $tid);
+                    $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
+                    $unsubscription = $unsubscription->delete_many();
+
+                }
+            }
+        } else {
+            // It's a guest. Insert the new post
+            $query['insert'] = array(
+                'poster' => $post['username'],
+                'poster_ip' => Utils::getIp(),
+                'message' => $post['message'],
+                'hide_smilies' => $post['hide_smilies'],
+                'posted'  => $post['time'],
+                'topic_id'  => $tid,
+            );
+
+            if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
+                $query['insert']['poster_email'] = $post['email'];
+            }
+
+            $query = DB::for_table('posts')
+                ->create()
+                ->set($query['insert']);
+            $query = Container::get('hooks')->fireDB('model.post.insert_reply_member_query', $query);
+            $query = $query->save();
+
+            $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'posts');
+        }
+
+        // Update topic
+        $topic['update'] = array(
+            'last_post' => $post['time'],
+            'last_post_id'  => $new['pid'],
+            'last_poster'  => $post['username'],
+        );
+
+        $topic = DB::for_table('topics')
+            ->where('id', $tid)
+            ->find_one()
+            ->set($topic['update'])
+            ->set_expr('num_replies', 'num_replies+1');
+        $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
+
+        // Get topic subject to redirect
+        $new['topic_subject'] = Url::url_friendly($topic->subject);
+
+        $topic = $topic->save();
+
+        $search = new \FeatherBB\Core\Search();
+
+        $search->update_search_index('post', $new['pid'], $post['message']);
+
+        \FeatherBB\Model\Forum::update($cur_posting['id']);
+
+        $new = Container::get('hooks')->fireDB('model.post.insert_reply', $new);
+
+        return $new;
+    }
+
 }

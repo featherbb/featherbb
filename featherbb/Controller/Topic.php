@@ -44,7 +44,7 @@ class Topic
         $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
-        // Fetch some informations about the topic
+        // Fetch some information about the topic
         $cur_topic = $this->model->get_info_topic($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)

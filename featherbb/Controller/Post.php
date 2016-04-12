@@ -199,7 +199,7 @@ class Post
     {
         Container::get('hooks')->fire('controller.post.delete');
 
-        // Fetch some informations about the post, the topic and the forum
+        // Fetch some information about the post, the topic and the forum
         $cur_post = $this->model->get_info_delete($args['id']);
 
         if (ForumSettings::get('o_censoring') == '1') {
@@ -244,7 +244,7 @@ class Post
     {
         Container::get('hooks')->fire('controller.post.edit');
 
-        // Fetch some informations about the post, the topic and the forum
+        // Fetch some information about the post, the topic and the forum
         $cur_post = $this->model->get_info_edit($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -274,7 +274,7 @@ class Post
             Container::get('hooks')->fire('controller.post.edit.submit', $args['id']);
 
             // Let's see if everything went right
-            $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
+            $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors, $is_admmod);
 
             // Setup some variables before post
             $post = $this->model->setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors);

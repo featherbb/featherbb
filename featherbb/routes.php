@@ -185,9 +185,13 @@ Route::group('/admin', function() {
 Route::group('/api', function() {
     Route::get('/user/{id:\d+}', '\FeatherBB\Controller\Api\User:display')->setName('userApi');
     Route::get('/forum/{id:\d+}', '\FeatherBB\Controller\Api\Forum:display')->setName('forumApi');
+    Route::post('/forum/{id:\d+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
     Route::get('/topic/{id:\d+}', '\FeatherBB\Controller\Api\Topic:display')->setName('topicApi');
-    Route::post('/topic/{id:\d+}', '\FeatherBB\Controller\Api\Topic:newTopic')->setName('newTopicApi');
+    Route::post('/topic/{id:\d+}[/quote/{qid:\d+}]', '\FeatherBB\Controller\Api\Topic:newReply')->setName('newReplyApi');
     Route::get('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:display')->setName('postApi');
+    Route::delete('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:delete')->setName('deletePostApi');
+    Route::put('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:update')->setName('updatePostApi');
+    Route::patch('/post/{id:\d+}', '\FeatherBB\Controller\Api\Post:update')->setName('updatePostApi');
 })->add(new JsonHeader);
 
 // Override the default Not Found Handler

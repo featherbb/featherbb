@@ -16,12 +16,93 @@ use FeatherBB\Core\Database as DB;
 
 class Search
 {
-    public function __construct()
+    //
+    // "Cleans up" a text string and returns an array of unique words
+    // This function depends on the current locale setting
+    //
+    public static function split_words($text, $idx)
     {
+        // Remove BBCode
+        $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
+
+        // Remove any apostrophes or dashes which aren't part of words
+        $text = substr(Utils::ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
+
+        // Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
+        $text = Utils::ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
+
+        // Replace multiple whitespace or dashes
+        $text = preg_replace('%(\s){2,}%u', '\1', $text);
+
+        // Fill an array with all the words
+        $words = array_unique(explode(' ', $text));
+
+        // Remove any words that should not be indexed
+        foreach ($words as $key => $value) {
+            // If the word shouldn't be indexed, remove it
+            if (!self::validate_search_word($value, $idx)) {
+                unset($words[$key]);
+            }
+        }
+
+        return $words;
+    }
 
 
+    //
+    // Checks if a word is a valid searchable word
+    //
+    public static function validate_search_word($word, $idx)
+    {
+        static $stopwords;
+
+        // If the word is a keyword we don't want to index it, but we do want to be allowed to search it
+        if (self::is_keyword($word)) {
+            return !$idx;
+        }
+
+        if (!isset($stopwords)) {
+            if (!Container::get('cache')->isCached('stopwords')) {
+                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
+            }
+            $stopwords = Container::get('cache')->retrieve('stopwords');
+        }
+
+        // If it is a stopword it isn't valid
+        if (in_array($word, $stopwords)) {
+            return false;
+        }
+
+        // If the word is CJK we don't want to index it, but we do want to be allowed to search it
+        if (self::is_cjk($word)) {
+            return !$idx;
+        }
+
+        // Exclude % and * when checking whether current word is valid
+        $word = str_replace(array('%', '*'), '', $word);
+
+        // Check the word is within the min/max length
+        $num_chars = Utils::strlen($word);
+        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
+    }
+
+
+    //
+    // Check a given word is a search keyword.
+    //
+    public static function is_keyword($word)
+    {
+        return $word == 'and' || $word == 'or' || $word == 'not';
+    }
+
+
+    //
+    // Check if a given word is CJK or Hangul.
+    //
+    public static function is_cjk($word)
+    {
         // Make a regex that will match CJK or Hangul characters
-        define('FEATHER_CJK_HANGUL_REGEX', '[' .
+        return preg_match('%^' . '[' .
             '\x{1100}-\x{11FF}' .        // Hangul Jamo                            1100-11FF        (http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
             '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo            3130-318F        (http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
             '\x{AC00}-\x{D7AF}' .        // Hangul Syllables                        AC00-D7AF        (http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)
@@ -43,103 +124,14 @@ class Search
             '\x{3400}-\x{4DBF}' .        // CJK Unified Ideographs Extension A    3400-4DBF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_a/index.htm)
             '\x{4E00}-\x{9FFF}' .        // CJK Unified Ideographs                4E00-9FFF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm)
             '\x{20000}-\x{2A6DF}' .        // CJK Unified Ideographs Extension B    20000-2A6DF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm)
-            ']');
-    }
-
-
-    //
-    // "Cleans up" a text string and returns an array of unique words
-    // This function depends on the current locale setting
-    //
-    public function split_words($text, $idx)
-    {
-        // Remove BBCode
-        $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
-
-        // Remove any apostrophes or dashes which aren't part of words
-        $text = substr(Utils::ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
-
-        // Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
-        $text = Utils::ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
-
-        // Replace multiple whitespace or dashes
-        $text = preg_replace('%(\s){2,}%u', '\1', $text);
-
-        // Fill an array with all the words
-        $words = array_unique(explode(' ', $text));
-
-        // Remove any words that should not be indexed
-        foreach ($words as $key => $value) {
-            // If the word shouldn't be indexed, remove it
-            if (!$this->validate_search_word($value, $idx)) {
-                unset($words[$key]);
-            }
-        }
-
-        return $words;
-    }
-
-
-    //
-    // Checks if a word is a valid searchable word
-    //
-    public function validate_search_word($word, $idx)
-    {
-        static $stopwords;
-
-        // If the word is a keyword we don't want to index it, but we do want to be allowed to search it
-        if ($this->is_keyword($word)) {
-            return !$idx;
-        }
-
-        if (!isset($stopwords)) {
-            if (!Container::get('cache')->isCached('stopwords')) {
-                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
-            }
-            $stopwords = Container::get('cache')->retrieve('stopwords');
-        }
-
-        // If it is a stopword it isn't valid
-        if (in_array($word, $stopwords)) {
-            return false;
-        }
-
-        // If the word is CJK we don't want to index it, but we do want to be allowed to search it
-        if ($this->is_cjk($word)) {
-            return !$idx;
-        }
-
-        // Exclude % and * when checking whether current word is valid
-        $word = str_replace(array('%', '*'), '', $word);
-
-        // Check the word is within the min/max length
-        $num_chars = Utils::strlen($word);
-        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
-    }
-
-
-    //
-    // Check a given word is a search keyword.
-    //
-    public function is_keyword($word)
-    {
-        return $word == 'and' || $word == 'or' || $word == 'not';
-    }
-
-
-    //
-    // Check if a given word is CJK or Hangul.
-    //
-    public function is_cjk($word)
-    {
-        return preg_match('%^' . FEATHER_CJK_HANGUL_REGEX . '+$%u', $word) ? true : false;
+            ']' . '+$%u', $word) ? true : false;
     }
 
 
     //
     // Strip [img] [url] and [email] out of the message so we don't index their contents
     //
-    public function strip_bbcode($text)
+    public static function strip_bbcode($text)
     {
         static $patterns;
 
@@ -159,17 +151,17 @@ class Search
     //
     // Updates the search index with the contents of $post_id (and $subject)
     //
-    public function update_search_index($mode, $post_id, $message, $subject = null)
+    public static function update_search_index($mode, $post_id, $message, $subject = null)
     {
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
 
         // Remove any bbcode that we shouldn't index
-        $message = $this->strip_bbcode($message);
+        $message = self::strip_bbcode($message);
 
         // Split old and new post/subject to obtain array of 'words'
-        $words_message = $this->split_words($message, true);
-        $words_subject = ($subject) ? $this->split_words($subject, true) : array();
+        $words_message = self::split_words($message, true);
+        $words_subject = ($subject) ? self::split_words($subject, true) : array();
 
         if ($mode == 'edit') {
             $select_update_search_index = array('w.id', 'w.word', 'm.subject_match');
