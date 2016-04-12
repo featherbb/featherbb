@@ -91,6 +91,11 @@ class Topic extends Api
         // Setup some variables before post
         $post = $this->model->setup_variables($errors, $is_admmod);
 
+        // Append quote if needed
+        if (isset($args['qid'])) {
+            $post['message'] = \FeatherBB\Model\Post::get_quote_message($args['qid'], $args['id']).$post['message'];
+        }
+
         // Did everything go according to plan?
         if (empty($errors)) {
             // It's a reply

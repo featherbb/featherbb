@@ -1187,7 +1187,7 @@ class Post
     }
 
     // If we are quoting a message
-    public function get_quote_message($qid, $tid)
+    public static function get_quote_message($qid, $tid)
     {
         $quote = array();
 
