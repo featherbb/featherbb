@@ -12,6 +12,7 @@ if (!isset($feather)) {
     exit;
 }
 
+use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 Container::get('hooks')->fire('view.admin.plugins.start');
@@ -42,9 +43,9 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                         <td class="plugin-description"><?= Utils::escape($plugin->description); ?></td>
                                         <td class="plugin-status">
 <?php if (in_array($plugin->name, $activePlugins)) { ?>
-                                            <a href="<?= Router::pathFor('deactivatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?php _e('Deactivate') ?>" class="text-success">&checkmark;</a>
+                                            <a href="<?= Router::pathFor('deactivatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?php _e('Deactivate') ?>" class="text-success"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/active.png" alt="<?php _e('Deactivate') ?>"/></a>
 <?php } else { ?>
-                                            <a href="<?= Router::pathFor('activatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?php _e('Activate') ?>" class="text-error">&#8416;</a>
+                                            <a href="<?= Router::pathFor('activatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?php _e('Activate') ?>" class="text-error"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/inactive.png" alt="<?php _e('Activate') ?>"/></a>
 <?php } ?>
                                         </td>
                                         <td class="plugin-actions">
@@ -58,7 +59,7 @@ Container::get('hooks')->fire('view.admin.plugins.start');
 <?php endforeach; ?>
                                 </tbody>
                             </table>
-                            <tfoot><strong>* <?php _e('Toggle active state'); ?></strong></tfoot>
+                            <tfoot><div id="toggle">* <?php _e('Toggle active state'); ?></div></tfoot>
                         </div>
                     </div>
 

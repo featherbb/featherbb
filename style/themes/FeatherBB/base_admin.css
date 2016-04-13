@@ -182,3 +182,6 @@ input[type=radio]:focus {
 #adminconsole #upload-plugin div {
     display: inline;
 }
+#toggle {
+	font-weight: bold;
+}
