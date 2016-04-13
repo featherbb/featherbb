@@ -23,37 +23,6 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
 
-        if (Input::query('key')) {
-
-            $key = Input::query('key');
-            $key = Container::get('hooks')->fire('model.profile.change_pass_key', $key);
-
-            // If the user is already logged in we shouldn't be here :)
-            if (!User::get()->is_guest) {
-                return Router::redirect(Router::pathFor('home'));
-            }
-
-            $cur_user = DB::for_table('users')
-                ->where('id', $id);
-            $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_user_query', $cur_user);
-            $cur_user = $cur_user->find_one();
-
-            if ($key == '' || $key != $cur_user['activate_key']) {
-                throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
-            } else {
-                $query = DB::for_table('users')
-                    ->where('id', $id)
-                    ->find_one()
-                    ->set('password', $cur_user['activate_string'])
-                    ->set_expr('activate_string', 'NULL')
-                    ->set_expr('activate_key', 'NULL');
-                $query = Container::get('hooks')->fireDB('model.profile.change_pass_activate_query', $query);
-                $query = $query->save();
-
-                return Router::redirect(Router::pathFor('home'), __('Pass updated'));
-            }
-        }
-
         // Make sure we are allowed to change this user's password
         if (User::get()->id != $id) {
             $id = Container::get('hooks')->fire('model.profile.change_pass_key_not_id', $id);
@@ -294,7 +263,7 @@ class Profile
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_message = str_replace('<username>', User::get()->username, $mail_message);
             $mail_message = str_replace('<base_url>', Url::base(), $mail_message);
-            $mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'?key='.$new_email_key, $mail_message);
+            $mail_message = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email'], ['key' => $new_email_key]), $mail_message);
             $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')->fire('model.profile.change_email_mail_activate_message', $mail_message);
 
