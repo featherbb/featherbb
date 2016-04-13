@@ -84,9 +84,9 @@ class Profile
         }
 
         if (Request::isPost()) {
-            $old_password = Input::post('req_old_password') ? Utils::trim(Input::post('req_old_password')) : '';
-            $new_password1 = Utils::trim(Input::post('req_new_password1'));
-            $new_password2 = Utils::trim(Input::post('req_new_password2'));
+            $old_password = Input::post('req_old_password');
+            $new_password1 = Input::post('req_new_password1');
+            $new_password2 = Input::post('req_new_password2');
 
             if ($new_password1 != $new_password2) {
                 throw new Error(__('Pass not match'), 400);
@@ -105,7 +105,7 @@ class Profile
             if (!empty($cur_user['password'])) {
                 $old_password_hash = Utils::password_hash($old_password);
 
-                if ($cur_user['password'] == $old_password_hash || User::get()->is_admmod) {
+                if (Utils::password_verify($old_password, $cur_user['password']) || User::get()->is_admmod) {
                     $authorized = true;
                 }
             }
