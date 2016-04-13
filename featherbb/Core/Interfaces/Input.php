@@ -1,6 +1,8 @@
 <?php
 namespace FeatherBB\Core\Interfaces;
 
+use FeatherBB\Core\Utils;
+
 class Input extends \Statical\BaseProxy
 {
 	public static function file($name)
@@ -12,7 +14,7 @@ class Input extends \Statical\BaseProxy
 		$result = Request::getParam($key, $default);
 		if ($sanitize) {
 			$result = htmlspecialchars($result, ENT_QUOTES, 'UTF-8');
-			$result = trim($result);
+			$result = Utils::trim($result);
 		}
 		return $result;
 	}
@@ -21,7 +23,7 @@ class Input extends \Statical\BaseProxy
 		$result = Request::getParsedBodyParam($key, $default);
 		if ($sanitize) {
 			$result = htmlspecialchars($result, ENT_QUOTES, 'UTF-8');
-			$result = trim($result);
+			$result = Utils::trim($result);
 		}
 		return $result;
 	}
@@ -30,7 +32,7 @@ class Input extends \Statical\BaseProxy
 		$result = Request::getQueryParam($key, $default);
 		if ($sanitize) {
 			$result = htmlspecialchars($result, ENT_QUOTES, 'UTF-8');
-			$result = trim($result);
+			$result = Utils::trim($result);
 		}
 		return $result;
 	}
