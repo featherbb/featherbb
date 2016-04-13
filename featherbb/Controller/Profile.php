@@ -264,7 +264,7 @@ class Profile
             )->addTemplate('profile/change_pass.php')->display();
 
         } elseif ($args['action'] == 'change_email') {
-            if (Request::isPost()) {
+            if (Request::isPost() || Input::query('key')) {
                 return $this->model->change_email($args['id']);
             }
 

@@ -276,7 +276,7 @@ class Profile
                 'activate_key'  => $new_email_key,
             );
             $user = DB::for_table('users')
-                ->where('id', tid)
+                ->where('id', $id)
                 ->find_one()
                 ->set($user['update']);
             $user = Container::get('hooks')->fireDB('model.profile.change_email_user_query', $user);
@@ -302,7 +302,8 @@ class Profile
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
-            throw new Error(__('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
+            $message = __('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.';
+            return Router::redirect(Router::pathFor('userProfile', ['id' => $id]), $message);
         }
         Container::get('hooks')->fire('model.profile.change_email');
     }
