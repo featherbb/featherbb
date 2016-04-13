@@ -291,6 +291,35 @@ class Profile
             )->addTemplate('profile/change_pass.php')->display();
 
         } elseif ($args['action'] == 'change_email') {
+            // Make sure we are allowed to change this user's email
+            if (User::get()->id != $args['id']) {
+                $args['id'] = Container::get('hooks')->fire('controller.profile.change_email_not_id', $args['id']);
+
+                if (!User::get()->is_admmod) { // A regular user trying to change another user's email?
+                    throw new Error(__('No permission'), 403);
+                } elseif (User::get()->g_moderator == '1') {
+                    // A moderator trying to change a user's email?
+                    $user['select'] = array('u.group_id', 'g.g_moderator');
+
+                    $user = DB::for_table('users')
+                        ->table_alias('u')
+                        ->select_many($user['select'])
+                        ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->where('u.id', $args['id']);
+                    $user = Container::get('hooks')->fireDB('controller.profile.change_email_not_id_query', $user);
+                    $user = $user->find_one();
+
+                    if (!$user) {
+                        throw new Error(__('Bad request'), 404);
+                    }
+
+                    if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                        throw new Error(__('No permission'), 403);
+                    }
+                }
+            }
+
+            // User is allowed to change email and has submitted the forum, do it
             if (Request::isPost() || Input::query('key')) {
                 return $this->model->change_email($args['id']);
             }
