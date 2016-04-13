@@ -23,84 +23,53 @@ class Profile
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
 
-        // Make sure we are allowed to change this user's password
-        if (User::get()->id != $id) {
-            $id = Container::get('hooks')->fire('model.profile.change_pass_key_not_id', $id);
+        $old_password = Input::post('req_old_password');
+        $new_password1 = Input::post('req_new_password1');
+        $new_password2 = Input::post('req_new_password2');
 
-            if (!User::get()->is_admmod) { // A regular user trying to change another user's password?
-                throw new Error(__('No permission'), 403);
-            } elseif (User::get()->g_moderator == '1') {
-                // A moderator trying to change a user's password?
+        if ($new_password1 != $new_password2) {
+            throw new Error(__('Pass not match'), 400);
+        }
+        if (Utils::strlen($new_password1) < 6) {
+            throw new Error(__('Pass too short'), 400);
+        }
 
-                $user['select'] = array('u.group_id', 'g.g_moderator');
+        $cur_user = DB::for_table('users')
+            ->where('id', $id);
+        $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_find_user', $cur_user);
+        $cur_user = $cur_user->find_one();
 
-                $user = DB::for_table('users')
-                    ->table_alias('u')
-                    ->select_many($user['select'])
-                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                    ->where('u.id', $id);
-                $user = Container::get('hooks')->fireDB('model.profile.change_pass_user_query', $user);
-                $user = $user->find_one();
+        $authorized = false;
 
-                if (!$user) {
-                    throw new Error(__('Bad request'), 404);
-                }
+        if (!empty($cur_user['password'])) {
+            $old_password_hash = Utils::password_hash($old_password);
 
-                if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
-                    throw new Error(__('No permission'), 403);
-                }
+            if (Utils::password_verify($old_password, $cur_user['password']) || User::get()->is_admmod) {
+                $authorized = true;
             }
         }
 
-        if (Request::isPost()) {
-            $old_password = Input::post('req_old_password');
-            $new_password1 = Input::post('req_new_password1');
-            $new_password2 = Input::post('req_new_password2');
-
-            if ($new_password1 != $new_password2) {
-                throw new Error(__('Pass not match'), 400);
-            }
-            if (Utils::strlen($new_password1) < 6) {
-                throw new Error(__('Pass too short'), 400);
-            }
-
-            $cur_user = DB::for_table('users')
-                ->where('id', $id);
-            $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_find_user', $cur_user);
-            $cur_user = $cur_user->find_one();
-
-            $authorized = false;
-
-            if (!empty($cur_user['password'])) {
-                $old_password_hash = Utils::password_hash($old_password);
-
-                if (Utils::password_verify($old_password, $cur_user['password']) || User::get()->is_admmod) {
-                    $authorized = true;
-                }
-            }
-
-            if (!$authorized) {
-                throw new Error(__('Wrong pass'), 403);
-            }
-
-            $new_password_hash = Utils::password_hash($new_password1);
-
-            $update_password = DB::for_table('users')
-                ->where('id', $id)
-                ->find_one()
-                ->set('password', $new_password_hash);
-            $update_password = Container::get('hooks')->fireDB('model.profile.change_pass_query', $update_password);
-            $update_password = $update_password->save();
-
-            if (User::get()->id == $id) {
-                $expire = time() + ForumSettings::get('o_timeout_visit');
-                $jwt = AuthModel::generate_jwt(User::get(), $expire);
-                AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
-            }
-
-            Container::get('hooks')->fire('model.profile.change_pass');
-            return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
+        if (!$authorized) {
+            throw new Error(__('Wrong pass'), 403);
         }
+
+        $new_password_hash = Utils::password_hash($new_password1);
+
+        $update_password = DB::for_table('users')
+            ->where('id', $id)
+            ->find_one()
+            ->set('password', $new_password_hash);
+        $update_password = Container::get('hooks')->fireDB('model.profile.change_pass_query', $update_password);
+        $update_password = $update_password->save();
+
+        if (User::get()->id == $id) {
+            $expire = time() + ForumSettings::get('o_timeout_visit');
+            $jwt = AuthModel::generate_jwt(User::get(), $expire);
+            AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
+        }
+
+        Container::get('hooks')->fire('model.profile.change_pass');
+        return Router::redirect(Router::pathFor('profileSection', array('id' => $id, 'section' => 'essentials')), __('Pass updated redirect'));
     }
 
     public function change_email($id)

@@ -250,9 +250,36 @@ class Profile
         }
 
         if ($args['action'] == 'change_pass') {
+            // Make sure we are allowed to change this user's password
+            if (User::get()->id != $args['id']) {
+                $args['id'] = Container::get('hooks')->fire('controller.profile.change_pass_key_not_id', $args['id']);
+
+                if (!User::get()->is_admmod) { // A regular user trying to change another user's password?
+                    throw new Error(__('No permission'), 403);
+                } elseif (User::get()->g_moderator == '1') {
+                    // A moderator trying to change a user's password?
+                    $user['select'] = array('u.group_id', 'g.g_moderator');
+
+                    $user = DB::for_table('users')
+                        ->table_alias('u')
+                        ->select_many($user['select'])
+                        ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                        ->where('u.id', $args['id']);
+                    $user = Container::get('hooks')->fireDB('controller.profile.change_pass_user_query', $user);
+                    $user = $user->find_one();
+
+                    if (!$user) {
+                        throw new Error(__('Bad request'), 404);
+                    }
+
+                    if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                        throw new Error(__('No permission'), 403);
+                    }
+                }
+            }
+
+            // User is allowed to change pass and has submitted the forum, do it
             if (Request::isPost()) {
-                // TODO: Check if security "if (User::get()->id != $id)" (l.58 of Model/Profile) isn't bypassed
-                // FOR ALL chained if below
                 return $this->model->change_pass($args['id']);
             }
 
