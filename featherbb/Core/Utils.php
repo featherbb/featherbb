@@ -310,7 +310,7 @@ class Utils
             $path = ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type;
 
             if (file_exists(ForumEnv::get('FEATHER_ROOT').$path) && $img_size = getimagesize(ForumEnv::get('FEATHER_ROOT').$path)) {
-                $avatar_markup = '<img src="'.\FeatherBB\Core\Utils::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(ForumEnv::get('FEATHER_ROOT').$path)).'" '.$img_size[3].' alt="" />';
+                $avatar_markup = '<img src="'.self::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(ForumEnv::get('FEATHER_ROOT').$path)).'" '.$img_size[3].' alt="" />';
                 break;
             }
         }
@@ -385,7 +385,7 @@ class Utils
      * @param  string $password User password
      * @return string           Hashed password
      */
-    public static function password_hash(string $password)
+    public static function password_hash($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
@@ -398,7 +398,7 @@ class Utils
      * @param  string $hash     Password stored in database
      * @return bool             Do the passwords match ?
      */
-    public static function password_verify(string $password, string $hash)
+    public static function password_verify($password, $hash)
     {
         return password_verify($password, $hash);
     }

@@ -36,29 +36,44 @@ class Auth
             Container::get('hooks')->fire('controller.login');
             $form_username = Input::post('req_username');
             $form_password = Input::post('req_password');
-            $save_pass = (bool) Input::post('save_pass');
+            $save_pass = (bool)Input::post('save_pass');
 
             $user = ModelAuth::get_user_from_name($form_username);
 
-            if ($user && !empty($user->password) && Utils::password_verify($form_password, $user->password)) {
-                if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
-                    ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
-                    if (!Container::get('cache')->isCached('users_info')) {
-                        Container::get('cache')->store('users_info', Cache::get_users_info());
+            if ($user && !empty($user->password)) {
+                // Convert old password to BCrypt if needed
+                $old_password_hash = Random::hash($form_password);
+                $password_to_convert = Utils::hash_equals($old_password_hash, $user->password);
+                
+                if (Utils::password_verify($form_password, $user->password) || $password_to_convert) {
+
+                    if ($password_to_convert) {
+                        ModelAuth::update_password($user->id, $form_password);
+                        $user = ModelAuth::get_user_from_name($form_username);
                     }
+
+                    if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
+                        ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
+                        if (!Container::get('cache')->isCached('users_info')) {
+                            Container::get('cache')->store('users_info', Cache::get_users_info());
+                        }
+                    }
+
+                    ModelAuth::delete_online_by_ip(Utils::getIp());
+                    // Reset tracked topics
+                    Track::set_tracked_topics(null);
+
+                    $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+                    $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
+
+                    $jwt = ModelAuth::generate_jwt($user, $expire);
+                    ModelAuth::feather_setcookie('Bearer ' . $jwt, $expire);
+
+                    return Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 }
-
-                ModelAuth::delete_online_by_ip(Utils::getIp());
-                // Reset tracked topics
-                Track::set_tracked_topics(null);
-
-                $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
-                $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
-
-                $jwt = ModelAuth::generate_jwt($user, $expire);
-                ModelAuth::feather_setcookie('Bearer '.$jwt, $expire);
-
-                return Router::redirect(Router::pathFor('home'), __('Login redirect'));
+                else {
+                    throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
+                }
             } else {
                 throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
             }

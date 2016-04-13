@@ -104,6 +104,16 @@ class Auth
         return $query->save();
     }
 
+    public static function update_password($user_id, $clear_password)
+    {
+        $query = DB::for_table('users')
+            ->where('id', $user_id)
+            ->find_one()
+            ->set('password', Utils::password_hash($clear_password));
+        $query = Container::get('hooks')->fireDB('update_password_query', $query);
+        return $query->save();
+    }
+
     public static function generate_jwt($user, $expire)
     {
         $issuedAt   = time();
