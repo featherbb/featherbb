@@ -34,7 +34,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
                         </div>
                     </div>
 <?php
-if ($is_admin) {
+if (Container::get('perms')->can(User::get(), 'board.view')):
 ?>
                     <h2 class="block2"><span><?php _e('Admin menu') ?></span></h2>
                     <div class="box">
@@ -51,27 +51,23 @@ if ($is_admin) {
                         </div>
                     </div>
 <?php
-}
+endif;
 
 // Did we find any plugins?
-if (!empty($plugins)) { ?>
+if (!empty($plugins)): ?>
                     <h2 class="block2"><span><?php _e('Plugins menu') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>
-<?php
-                    foreach ($plugins as $plugin) {
-                        $plugin_url = Url::url_friendly($plugin);
-                        echo "\t\t\t\t\t\t\t\t".'<li'.(($page == $plugin_url) ? ' class="isactive"' : '').'><a href="'.Router::pathFor('infoPlugin', ['name' => $plugin_url]).'">'.$plugin.'</a></li>'."\n";
-                    }
+<?php foreach ($plugins as $plugin) {
+    $plugin_url = Url::url_friendly($plugin);
+    echo "\t\t\t\t\t\t\t\t".'<li'.(($page == $plugin_url) ? ' class="isactive"' : '').'><a href="'.Router::pathFor('infoPlugin', ['name' => $plugin_url]).'">'.$plugin.'</a></li>'."\n";
+}
 ?>
                             </ul>
                         </div>
                     </div>
-<?php
-}
-?>
+<?php endif; ?>
                 </div>
-
 <?php
 Container::get('hooks')->fire('view.admin.menu.end');
