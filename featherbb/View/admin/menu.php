@@ -22,14 +22,14 @@ Container::get('hooks')->fire('view.admin.menu.start');
                     <div class="box">
                         <div class="inbox">
                             <ul>
-                                <li<?php if ($page == 'index') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Index') ?></a></li>
-                                <li<?php if ($page == 'users') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
-<?php if ($is_admin || User::get()->g_mod_ban_users == '1'): ?>
-                                <li<?php if ($page == 'bans') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
-<?php endif;
-if ($is_admin || ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2'): ?>
-                                <li<?php if ($page == 'reports') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminReports') ?>"><?php _e('Reports') ?></a></li>
-<?php endif; ?>
+<? foreach ($menu_items as $perm => $data) {
+    if (preg_match('/^mod\..*$/', $perm)) {
+        if (Container::get('perms')->can(User::get(), $perm)) {
+            // ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2')
+            echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? 'class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
+        }
+    }
+} ?>
                             </ul>
                         </div>
                     </div>
@@ -40,16 +40,13 @@ if ($is_admin) {
                     <div class="box">
                         <div class="inbox">
                             <ul>
-                                <li<?php if ($page == 'options') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminOptions') ?>"><?php _e('Options') ?></a></li>
-                                <li<?php if ($page == 'permissions') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminPermissions') ?>"><?php _e('Permissions') ?></a></li>
-                                <li<?php if ($page == 'categories') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminCategories') ?>"><?php _e('Categories') ?></a></li>
-                                <li<?php if ($page == 'forums') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminForums') ?>"><?php _e('Forums') ?></a></li>
-                                <li<?php if ($page == 'groups') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminGroups') ?>"><?php _e('User groups') ?></a></li>
-                                <li<?php if ($page == 'plugins') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminPlugins') ?>"><?= 'Plugins'; ?></a></li>
-                                <li<?php if ($page == 'censoring') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminCensoring') ?>"><?php _e('Censoring') ?></a></li>
-                                <li<?php if ($page == 'parser') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminParser') ?>"><?php _e('Parser') ?></a></li>
-                                <li<?php if ($page == 'maintenance') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminMaintenance') ?>"><?php _e('Maintenance') ?></a></li>
-                                <li<?php if ($page == 'updates') echo ' class="isactive"'; ?>><a href="<?= Router::pathFor('adminUpdates') ?>"><?php _e('Updates') ?></a></li>
+<? foreach ($menu_items as $perm => $data) {
+    if (preg_match('/^board\..*$/', $perm)) {
+        if (Container::get('perms')->can(User::get(), $perm)) {
+            echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
+        }
+    }
+} ?>
                             </ul>
                         </div>
                     </div>

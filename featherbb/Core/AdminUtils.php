@@ -22,7 +22,7 @@ class AdminUtils
 
         \View::setPageInfo(array(
             'page'        =>    $page,
-            // 'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::load_default_menu()), // For later ?
+            'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::load_default_menu()),
             'is_admin'    =>    $is_admin,
             'plugins'     =>    self::adminPluginsMenu($is_admin) // See if there are any plugins that want to be displayed in the menu
             ), 1
@@ -112,22 +112,23 @@ class AdminUtils
         return $content;
     }
 
-    // TODO: For later ? See 4594472380e0dd68271920dad3ee5a44cfca0b3b
-    // protected static function load_default_menu()
-    // {
-    //     return array(
-    //         'mod.users' => array('title' => 'Users', 'url' => 'adminUsers'),
-    //         'mod.bans' => array('title' => 'Bans', 'url' => 'adminBans'),
-    //         'mod.reports' => array('title' => 'Reports', 'url' => 'adminReports'),
-    //         'board.options' => array('title' => 'Options', 'url' => 'adminOptions'),
-    //         'board.permissions' => array('title' => 'Permissions', 'url' => 'adminPermissions'),
-    //         'board.categories' => array('title' => 'Categories', 'url' => 'adminCategories'),
-    //         'board.forums' => array('title' => 'Forums', 'url' => 'adminForums'),
-    //         'board.groups' => array('title' => 'User groups', 'url' => 'adminGroups'),
-    //         'board.plugins' => array('title' => 'Plugins', 'url' => 'adminPlugins'),
-    //         'board.censoring' => array('title' => 'Censoring', 'url' => 'adminCensoring'),
-    //         'board.parser' => array('title' => 'Parser', 'url' => 'adminParser'),
-    //         'board.maintenance' => array('title' => 'Maintenance', 'url' => 'adminMaintenance')
-    //     );
-    // }
+    protected static function load_default_menu()
+    {
+        return array(
+            'mod.index' => array('title' => 'Index', 'url' => 'adminIndex'),
+            'mod.users' => array('title' => 'Users', 'url' => 'adminUsers'),
+            'mod.bans' => array('title' => 'Bans', 'url' => 'adminBans'),
+            'mod.reports' => array('title' => 'Reports', 'url' => 'adminReports'),
+            'board.options' => array('title' => 'Options', 'url' => 'adminOptions'),
+            'board.permissions' => array('title' => 'Permissions', 'url' => 'adminPermissions'),
+            'board.categories' => array('title' => 'Categories', 'url' => 'adminCategories'),
+            'board.forums' => array('title' => 'Forums', 'url' => 'adminForums'),
+            'board.groups' => array('title' => 'User groups', 'url' => 'adminGroups'),
+            'board.plugins' => array('title' => 'Plugins', 'url' => 'adminPlugins'),
+            'board.censoring' => array('title' => 'Censoring', 'url' => 'adminCensoring'),
+            'board.parser' => array('title' => 'Parser', 'url' => 'adminParser'),
+            'board.maintenance' => array('title' => 'Maintenance', 'url' => 'adminMaintenance'),
+            'board.updates' => array('title' => 'Updates', 'url' => 'adminUpdates')
+        );
+    }
 }

@@ -35,7 +35,7 @@ class Groups
             return $this->model->set_default_group($groups);
         }
 
-        AdminUtils::generateAdminMenu('groups');
+        AdminUtils::generateAdminMenu('user groups');
 
         View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
@@ -68,7 +68,7 @@ class Groups
             if (Input::post('del_group_comply') || Input::post('del_group')) {
                 return $this->model->delete_group($args['id']);
             } else {
-                AdminUtils::generateAdminMenu('groups');
+                AdminUtils::generateAdminMenu('user groups');
 
                 return View::setPageInfo(array(
                         'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
@@ -81,7 +81,7 @@ class Groups
             }
         }
 
-        AdminUtils::generateAdminMenu('groups');
+        AdminUtils::generateAdminMenu('user groups');
 
         return View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
@@ -108,7 +108,7 @@ class Groups
         // Add/edit a group (stage 1)
         elseif (Input::post('add_group') || isset($args['id'])) {
 
-            AdminUtils::generateAdminMenu('groups');
+            AdminUtils::generateAdminMenu('user groups');
 
             $id = isset($args['id']) ? intval($args['id']) : intval(Input::post('base_group'));
             $group = $this->model->info_add_group($groups, $id);
