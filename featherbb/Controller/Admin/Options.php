@@ -18,6 +18,9 @@ class Options
     {
         $this->model = new \FeatherBB\Model\Admin\Options();
         translate('admin/options');
+        if (!Container::get('perms')->can(User::get(), 'board.options')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function display($req, $res, $args)

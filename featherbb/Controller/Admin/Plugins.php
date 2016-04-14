@@ -22,6 +22,9 @@ class Plugins
     {
         $this->model = new \FeatherBB\Model\Admin\Plugins();
         translate('admin/plugins');
+        if (!Container::get('perms')->can(User::get(), 'board.plugins')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     /**

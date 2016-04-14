@@ -18,6 +18,9 @@ class Permissions
     {
         $this->model = new \FeatherBB\Model\Admin\Permissions();
         translate('admin/permissions');
+        if (!Container::get('perms')->can(User::get(), 'board.permissions')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function display($req, $res, $args)

@@ -13,9 +13,6 @@ use FeatherBB\Core\Database as DB;
 
 class Forums
 {
-    //
-    // Forum
-    //
 
     public function add_forum($cat_id, $forum_name)
     {
@@ -131,10 +128,6 @@ class Forums
                 ->set('disp_position', $position)
                 ->save();
     }
-
-    //
-    // Permissions
-    //
 
     public function get_permissions($forum_id)
     {

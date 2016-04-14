@@ -20,6 +20,9 @@ class Parser
     {
         $this->model = new \FeatherBB\Model\Admin\Parser();
         translate('admin/parser');
+        if (!Container::get('perms')->can(User::get(), 'board.parser')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function display($req, $res, $args)

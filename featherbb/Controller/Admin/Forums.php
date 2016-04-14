@@ -20,6 +20,9 @@ class Forums
     {
         $this->model = new \FeatherBB\Model\Admin\Forums();
         translate('admin/forums');
+        if (!Container::get('perms')->can(User::get(), 'board.forums')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function add()

@@ -20,6 +20,9 @@ class Users
     {
         $this->model = new \FeatherBB\Model\Admin\Users();
         translate('admin/users');
+        if (!Container::get('perms')->can(User::get(), 'mod.users')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function display($req, $res, $args)
@@ -28,9 +31,6 @@ class Users
 
         // Move multiple users to other user groups
         if (Input::post('move_users') || Input::post('move_users_comply')) {
-            if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
-                throw new Error(__('No permission'), 403);
-            }
 
             AdminUtils::generateAdminMenu('users');
 
@@ -46,9 +46,6 @@ class Users
 
         // Delete multiple users
         if (Input::post('delete_users') || Input::post('delete_users_comply')) {
-            if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
-                throw new Error(__('No permission'), 403);
-            }
 
             AdminUtils::generateAdminMenu('users');
 
@@ -64,8 +61,8 @@ class Users
 
         // Ban multiple users
         if (Input::post('ban_users') || Input::post('ban_users_comply')) {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_ban_users == '0')) {
-                throw new Error(__('No permission'), 403);
+            if (!Container::get('perms')->can(User::get(), 'mod.bans')) {
+                throw new Error(__('No permission'), '403');
             }
 
             AdminUtils::generateAdminMenu('users');

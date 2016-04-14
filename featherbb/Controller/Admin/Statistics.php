@@ -19,6 +19,9 @@ class Statistics
     {
         $this->model = new \FeatherBB\Model\Admin\Statistics();
         translate('admin/index');
+        if (!Container::get('perms')->can(User::get(), 'mod.statistics')) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function display($req, $res, $args)
