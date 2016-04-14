@@ -206,10 +206,15 @@ class Install
             $this->model->add_data('groups', $group_data);
         }
 
+        // Init permissions
+        Container::get('perms')->addParent(4, 3);
+        Container::get('perms')->addParent(2, array(3,4));
+        Container::get('perms')->addParent(1, array(2,3,4));
         Container::get('perms')->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
         Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
         Container::get('perms')->allowGroup(2, array('mod.*', 'board.title.set'));
         Container::get('perms')->allowGroup(1, array('board.*'));
+        // Init preferences
         Container::get('prefs')->set(array(
             'post.min_interval' => 60,
             'search.min_interval' => 30,
