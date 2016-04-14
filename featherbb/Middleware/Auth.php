@@ -309,6 +309,9 @@ class Auth
             Container::set('user', $user);
         }
 
+        // Load permissions for user
+        Container::get('perms')->getUserPermissions($user);
+
         translate('common');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
