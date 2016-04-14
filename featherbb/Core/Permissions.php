@@ -38,19 +38,20 @@ class Permissions
         return false;
     }
 
-    public function addParent($gid = null, $new_parent = null)
+    public function addParent($gid = null, $new_parents = null)
     {
         $gid = (int) $gid;
-        $new_parent =  (int) $new_parent;
+        $new_parent =  (array) $new_parents;
 
-        if ($gid == $new_parent) {
-            throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
-        }
+        $old_parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
 
-        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
-
-        if (!in_array($new_parent, $parents)) {
-            $this->parents[$gid][] = $new_parent;
+        foreach ($new_parents as $id => $parent) {
+            if ($gid == $parent) {
+                throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
+            }
+            if (!in_array($parent, $old_parents)) {
+                $this->parents[$gid][] = $parent;
+            }
         }
 
         $result = DB::for_table('groups')
