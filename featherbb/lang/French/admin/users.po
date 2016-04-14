@@ -129,21 +129,6 @@ msgstr "Nom réel"
 msgid "Website label"
 msgstr "Site Web"
 
-msgid "Jabber label"
-msgstr "Jabber"
-
-msgid "ICQ label"
-msgstr "ICQ"
-
-msgid "MSN label"
-msgstr "Compte Microsoft"
-
-msgid "AOL label"
-msgstr "AOL IM"
-
-msgid "Yahoo label"
-msgstr "Yahoo Messenger"
-
 msgid "Location label"
 msgstr "Lieu"
 

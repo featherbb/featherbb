@@ -21,9 +21,6 @@ msgstr "Principal"
 msgid "Section personal"
 msgstr "Personnel"
 
-msgid "Section messaging"
-msgstr "Messagerie"
-
 msgid "Section personality"
 msgstr "Personnalité"
 
@@ -41,9 +38,6 @@ msgstr "Nom d'utilisateur et mot de passe"
 
 msgid "Personal details legend"
 msgstr "Informations personnelles"
-
-msgid "Contact details legend"
-msgstr "Informations sur les messageries instantanées"
 
 msgid "User activity"
 msgstr "Activité de l'utilisateur"
@@ -212,21 +206,6 @@ msgstr "L'URL de site Web saisie est invalide."
 
 msgid "Website not allowed"
 msgstr "Vous n'êtes pas autorisé à ajouter un site à votre profil pour le moment"
-
-msgid "Jabber"
-msgstr "Jabber"
-
-msgid "ICQ"
-msgstr "ICQ"
-
-msgid "MSN"
-msgstr "Compte Microsoft"
-
-msgid "AOL IM"
-msgstr "AOL IM"
-
-msgid "Yahoo"
-msgstr "Yahoo! Messenger"
 
 msgid "Avatar"
 msgstr "Avatar"

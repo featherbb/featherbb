@@ -28,10 +28,6 @@ Container::get('hooks')->fire('view.profile.menu.start');
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personal']) ?>"><?php _e('Section personal') ?></a></li>
-                    <li<?php if ($page == 'messaging') {
-    echo ' class="isactive"';
-}
-    ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'messaging']) ?>"><?php _e('Section messaging') ?></a></li>
 <?php if (ForumSettings::get('o_avatars') == '1' || ForumSettings::get('o_signatures') == '1'): ?>                    <li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }

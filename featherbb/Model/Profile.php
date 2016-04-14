@@ -790,24 +790,6 @@ class Profile
                 break;
             }
 
-            case 'messaging':
-            {
-                $form = array(
-                    'jabber'        => Utils::trim(Input::post('form_jabber')),
-                    'icq'            => Utils::trim(Input::post('form_icq')),
-                    'msn'            => Utils::trim(Input::post('form_msn')),
-                    'aim'            => Utils::trim(Input::post('form_aim')),
-                    'yahoo'            => Utils::trim(Input::post('form_yahoo')),
-                );
-
-                // If the ICQ UIN contains anything other than digits it's invalid
-                if (preg_match('%[^0-9]%', $form['icq'])) {
-                    throw new Error(__('Bad ICQ'));
-                }
-
-                break;
-            }
-
             case 'personality':
             {
                 $form = array();
@@ -1012,7 +994,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.jabber', 'u.icq', 'u.msn', 'u.aim', 'u.yahoo', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')
@@ -1068,31 +1050,6 @@ class Profile
         if ($user['email_field'] != '') {
             $user_info['personal'][] = '<dt>'.__('Email').'</dt>';
             $user_info['personal'][] = '<dd><span class="email">'.$user['email_field'].'</span></dd>';
-        }
-
-        if ($user['jabber'] != '') {
-            $user_info['messaging'][] = '<dt>'.__('Jabber').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['jabber']) : $user['jabber']).'</dd>';
-        }
-
-        if ($user['icq'] != '') {
-            $user_info['messaging'][] = '<dt>'.__('ICQ').'</dt>';
-            $user_info['messaging'][] = '<dd>'.$user['icq'].'</dd>';
-        }
-
-        if ($user['msn'] != '') {
-            $user_info['messaging'][] = '<dt>'.__('MSN').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['msn']) : $user['msn']).'</dd>';
-        }
-
-        if ($user['aim'] != '') {
-            $user_info['messaging'][] = '<dt>'.__('AOL IM').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['aim']) : $user['aim']).'</dd>';
-        }
-
-        if ($user['yahoo'] != '') {
-            $user_info['messaging'][] = '<dt>'.__('Yahoo').'</dt>';
-            $user_info['messaging'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['yahoo']) : $user['yahoo']).'</dd>';
         }
 
         if (ForumSettings::get('o_avatars') == '1') {

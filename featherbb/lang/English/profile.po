@@ -23,9 +23,6 @@ msgstr "Essentials"
 msgid "Section personal"
 msgstr "Personal"
 
-msgid "Section messaging"
-msgstr "Messaging"
-
 msgid "Section personality"
 msgstr "Personality"
 
@@ -43,9 +40,6 @@ msgstr "Enter your username and password"
 
 msgid "Personal details legend"
 msgstr "Enter your personal details"
-
-msgid "Contact details legend"
-msgstr "Enter your messaging details"
 
 msgid "User activity"
 msgstr "User activity"
@@ -214,21 +208,6 @@ msgstr "The website URL you entered is invalid."
 
 msgid "Website not allowed"
 msgstr "You are not allowed to add a website to your profile yet."
-
-msgid "Jabber"
-msgstr "Jabber"
-
-msgid "ICQ"
-msgstr "ICQ"
-
-msgid "MSN"
-msgstr "Microsoft Account"
-
-msgid "AOL IM"
-msgstr "AOL IM"
-
-msgid "Yahoo"
-msgstr "Yahoo! Messenger"
 
 msgid "Avatar"
 msgstr "Avatar"

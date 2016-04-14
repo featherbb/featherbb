@@ -140,18 +140,6 @@ class Profile
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
 
-            } elseif ($args['section'] == 'messaging') {
-
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section messaging')),
-                    'active_page' => 'profile',
-                    'page' => 'messaging',
-                    'user' => $user,
-                    'id' => $args['id']
-                ));
-
-                View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_messaging.php')->display();
-
             } elseif ($args['section'] == 'personality') {
                 if (ForumSettings::get('o_avatars') == '0' && ForumSettings::get('o_signatures') == '0') {
                     throw new Error(__('Bad request'), 404);

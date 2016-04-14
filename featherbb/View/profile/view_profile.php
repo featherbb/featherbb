@@ -30,18 +30,7 @@ Container::get('hooks')->fire('view.profile.view_profile.start');
                     </div>
                 </fieldset>
             </div>
-<?php if (!empty($user_info['messaging'])): ?>            <div class="inform">
-                <fieldset>
-                <legend><?php _e('Section messaging') ?></legend>
-                    <div class="infldset">
-                        <dl>
-                            <?= implode("\n\t\t\t\t\t\t\t", $user_info['messaging'])."\n" ?>
-                        </dl>
-                        <div class="clearer"></div>
-                    </div>
-                </fieldset>
-            </div>
-<?php endif; if (!empty($user_info['personality'])): ?>            <div class="inform">
+<?php if (!empty($user_info['personality'])): ?>            <div class="inform">
                 <fieldset>
                 <legend><?php _e('Section personality') ?></legend>
                     <div class="infldset">

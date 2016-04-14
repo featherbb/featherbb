@@ -47,26 +47,6 @@ Container::get('hooks')->fire('view.admin.users.admin_users.start');
                                     <td><input type="text" name="form[url]" size="35" maxlength="100" tabindex="6" /></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Jabber label') ?></th>
-                                    <td><input type="text" name="form[jabber]" size="30" maxlength="75" tabindex="7" /></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><?php _e('ICQ label') ?></th>
-                                    <td><input type="text" name="form[icq]" size="12" maxlength="12" tabindex="8" /></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><?php _e('MSN label') ?></th>
-                                    <td><input type="text" name="form[msn]" size="30" maxlength="50" tabindex="9" /></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><?php _e('AOL label') ?></th>
-                                    <td><input type="text" name="form[aim]" size="20" maxlength="20" tabindex="10" /></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><?php _e('Yahoo label') ?></th>
-                                    <td><input type="text" name="form[yahoo]" size="20" maxlength="20" tabindex="11" /></td>
-                                </tr>
-                                <tr>
                                     <th scope="row"><?php _e('Location label') ?></th>
                                     <td><input type="text" name="form[location]" size="30" maxlength="30" tabindex="12" /></td>
                                 </tr>
