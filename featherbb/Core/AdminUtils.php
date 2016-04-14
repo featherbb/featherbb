@@ -20,13 +20,11 @@ class AdminUtils
 
         $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
 
-        // See if there are any plugins that want to display in the menu
-        $plugins = self::adminPluginsMenu($is_admin);
-
         \View::setPageInfo(array(
-            'page'    =>    $page,
+            'page'        =>    $page,
+            // 'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::load_default_menu()), // For later ?
             'is_admin'    =>    $is_admin,
-            'plugins'    =>    $plugins,
+            'plugins'     =>    self::adminPluginsMenu($is_admin) // See if there are any plugins that want to be displayed in the menu
             ), 1
         )->addTemplate('admin/menu.php');
     }
@@ -113,4 +111,23 @@ class AdminUtils
 
         return $content;
     }
+
+    // For later ?
+    // protected static function load_default_menu()
+    // {
+    //     return array(
+    //         'mod.users' => array('title' => 'Users', 'url' => 'adminUsers'),
+    //         'mod.bans' => array('title' => 'Bans', 'url' => 'adminBans'),
+    //         'mod.reports' => array('title' => 'Reports', 'url' => 'adminReports'),
+    //         'board.options' => array('title' => 'Options', 'url' => 'adminOptions'),
+    //         'board.permissions' => array('title' => 'Permissions', 'url' => 'adminPermissions'),
+    //         'board.categories' => array('title' => 'Categories', 'url' => 'adminCategories'),
+    //         'board.forums' => array('title' => 'Forums', 'url' => 'adminForums'),
+    //         'board.groups' => array('title' => 'User groups', 'url' => 'adminGroups'),
+    //         'board.plugins' => array('title' => 'Plugins', 'url' => 'adminPlugins'),
+    //         'board.censoring' => array('title' => 'Censoring', 'url' => 'adminCensoring'),
+    //         'board.parser' => array('title' => 'Parser', 'url' => 'adminParser'),
+    //         'board.maintenance' => array('title' => 'Maintenance', 'url' => 'adminMaintenance')
+    //     );
+    // }
 }
