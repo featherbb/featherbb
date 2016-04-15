@@ -168,6 +168,7 @@ input[type=radio]:focus {
 }
 #adminconsole td.plugin-actions, #adminconsole th.plugin-actions {
     text-align: center;
+    min-width: 75px;
 }
 #adminconsole p.plugin-details {
     font-style: italic;
@@ -181,4 +182,10 @@ input[type=radio]:focus {
 }
 #adminconsole #upload-plugin div {
     display: inline;
+}
+#adminconsole #toggle-description {
+	font-weight: bold;
+	padding-top: 5px;
+}
+#adminconsole img.pluginIcons {
 }
