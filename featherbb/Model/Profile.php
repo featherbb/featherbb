@@ -1321,8 +1321,8 @@ class Profile
             throw new Error(__('Too long email message'), 400);
         }
 
-        if (User::get()->last_email_sent != '' && (time() - User::get()->last_email_sent) < User::get()->g_email_flood && (time() - User::get()->last_email_sent) >= 0) {
-            throw new Error(sprintf(__('Email flood'), User::get()->g_email_flood, User::get()->g_email_flood - (time() - User::get()->last_email_sent)), 429);
+        if (User::get()->last_email_sent != '' && (time() - User::get()->last_email_sent) < Container::get('prefs')->get(User::get(), 'email.min_interval') && (time() - User::get()->last_email_sent) >= 0) {
+            throw new Error(sprintf(__('Email flood'), Container::get('prefs')->get(User::get(), 'email.min_interval'), Container::get('prefs')->get(User::get(), 'email.min_interval') - (time() - User::get()->last_email_sent)), 429);
         }
 
         // Load the "form email" template

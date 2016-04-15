@@ -548,8 +548,8 @@ class Post
             throw new Error(__('Reason too long'), 400);
         }
 
-        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::get()->g_report_flood && (time() - User::get()->last_report_sent) >= 0) {
-            throw new Error(sprintf(__('Report flood'), User::get()->g_report_flood, User::get()->g_report_flood - (time() - User::get()->last_report_sent)), 429);
+        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < Container::get('prefs')->get(User::get(), 'report.min_interval') && (time() - User::get()->last_report_sent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), Container::get('prefs')->get(User::get(), 'report.min_interval'), Container::get('prefs')->get(User::get(), 'report.min_interval') - (time() - User::get()->last_report_sent)), 429);
         }
 
         // Get the topic ID
