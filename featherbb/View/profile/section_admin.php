@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                     <fieldset>
 <?php
 
-        if (User::get()->g_moderator == '1') {
+        if (User::getPref('mod.is_mod') == '1') {
             ?>
                         <legend><?php _e('Delete ban legend') ?></legend>
                         <div class="infldset">

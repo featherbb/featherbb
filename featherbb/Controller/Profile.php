@@ -47,7 +47,7 @@ class Profile
 
             return $this->model->update_mod_forums($args['id']);
         } elseif (Input::post('ban')) {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_ban_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') != '1' || User::get()->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -199,7 +199,7 @@ class Profile
 
             } elseif ($args['section'] == 'admin') {
 
-                if (!User::get()->is_admmod || (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '0')) {
+                if (!User::get()->is_admmod || (User::getPref('mod.is_mod') == '1' && User::get()->g_mod_ban_users == '0')) {
                     throw new Error(__('Bad request'), 404);
                 }
 
@@ -244,7 +244,7 @@ class Profile
 
                 if (!User::get()->is_admmod) { // A regular user trying to change another user's password?
                     throw new Error(__('No permission'), 403);
-                } elseif (User::get()->g_moderator == '1') {
+                } elseif (User::getPref('mod.is_mod') == '1') {
                     // A moderator trying to change a user's password?
                     $user['select'] = array('u.group_id', 'g.g_moderator');
 
@@ -285,7 +285,7 @@ class Profile
 
                 if (!User::get()->is_admmod) { // A regular user trying to change another user's email?
                     throw new Error(__('No permission'), 403);
-                } elseif (User::get()->g_moderator == '1') {
+                } elseif (User::getPref('mod.is_mod') == '1') {
                     // A moderator trying to change a user's email?
                     $user['select'] = array('u.group_id', 'g.g_moderator');
 
@@ -348,7 +348,7 @@ class Profile
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_promote_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') != '1' || User::get()->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 

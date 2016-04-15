@@ -71,7 +71,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
         if ((($args['tid'] && (($cur_posting['post_replies'] == '' && User::get()->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
@@ -208,7 +208,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
 
@@ -249,7 +249,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $args['id'] == $cur_post['first_post_id'];
 

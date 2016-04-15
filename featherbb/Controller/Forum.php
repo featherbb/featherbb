@@ -36,7 +36,7 @@ class Forum
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
@@ -94,7 +94,7 @@ class Forum
         $moderators = $this->model->get_moderators($args['id']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') == '0' || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -165,7 +165,7 @@ class Forum
         $moderators = $this->model->get_moderators($args['id']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') == '0' || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 

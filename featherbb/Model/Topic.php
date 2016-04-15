@@ -918,7 +918,7 @@ class Topic
                     }
                 }
 
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_promote_users == '1')) {
+                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && User::get()->g_mod_promote_users == '1')) {
                     if ($cur_post['g_promote_next_group']) {
                         $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('profileAction', ['id' => $cur_post['poster_id'], 'action' => 'promote', 'pid' => $cur_post['id']]).'">'.__('Promote user').'</a></span></dd>';
                     }

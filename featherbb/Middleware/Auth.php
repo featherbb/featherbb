@@ -256,7 +256,7 @@ class Auth
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
-            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || User::getPref('mod.is_mod', $jwt->data->userId) == '1';
 
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');

@@ -713,7 +713,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_rename_users == '1')) {
+                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && User::get()->g_mod_rename_users == '1')) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
