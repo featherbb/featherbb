@@ -234,6 +234,12 @@ class Install
             'email.min_interval' => 0,
             'report.min_interval' => 0
         ));
+        Container::get('prefs')->setGroup(1, array(
+            'post.min_interval' => 0,
+            'search.min_interval' => 0,
+            'email.min_interval' => 0,
+            'report.min_interval' => 0
+        ));
 
 
         // Populate user table with default values
