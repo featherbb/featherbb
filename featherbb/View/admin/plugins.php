@@ -32,6 +32,13 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                         <th class="plugin-actions"><?php _e('Action') ?></th>
                                     </tr>
                                 </thead>
+                                <tfoot>
+                                	<tr>
+                                		<td colspan="5">
+                                			<div id="toggle-description">* <?php _e('Toggle active state'); ?></div>
+                                		</td>
+                                	</tr>
+                                </tfoot>
                                 <tbody>
 <?php foreach ($availablePlugins as $plugin) : ?>
                                     <tr<?php if (!in_array($plugin->name, $activePlugins)) echo ' class="plugin-deactivated"'; ?>>
@@ -59,7 +66,6 @@ Container::get('hooks')->fire('view.admin.plugins.start');
 <?php endforeach; ?>
                                 </tbody>
                             </table>
-                            <tfoot><div id="toggle">* <?php _e('Toggle active state'); ?></div></tfoot>
                         </div>
                     </div>
 
