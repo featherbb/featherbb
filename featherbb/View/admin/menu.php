@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
     if (preg_match('/^mod\..*$/', $perm)) {
         if (Container::get('perms')->can(User::get(), $perm)) {
             // ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2')
-            echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? 'class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
+            echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
         }
     }
 } ?>
