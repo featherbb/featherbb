@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.install.start');
 <head>
     <meta charset="utf-8">
     <title><?php _e('FeatherBB Installation') ?></title>
-    <link rel="stylesheet" type="text/css" href="<?= Url::base_static(); ?>/style/themes/<?= ForumEnv::get('FORUM_NAME') ?>/style.css" />
+    <link rel="stylesheet" type="text/css" href="<?= Url::base() ?>/style/themes/<?= ForumEnv::get('FORUM_NAME') ?>/style.css" />
 </head>
 
 <body>
