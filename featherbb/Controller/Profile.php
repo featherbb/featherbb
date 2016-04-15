@@ -125,7 +125,7 @@ class Profile
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
 
             } elseif ($args['section'] == 'personal') {
-                if (User::get()->g_set_title == '1') {
+                if (User::getPref('user.set_title') == '1') {
                     $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 

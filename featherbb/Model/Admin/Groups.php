@@ -179,7 +179,6 @@ class Groups
             'g_delete_posts'        =>  $delete_posts,
             'g_delete_topics'       =>  $delete_topics,
             'g_post_links'          =>  $post_links,
-            'g_set_title'           =>  $set_title,
         );
         $new_insert_update_group = array(
             'mod.is_mod'            => (int) $moderator,
@@ -190,6 +189,7 @@ class Groups
             'email.min_interval'    => (int) $email_flood,
             'email.send'            => (int) $send_email,
             'report.min_interval'   => (int) $search_flood,
+            'user.set_title'        => (int) $set_title,
         );
 
         $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
