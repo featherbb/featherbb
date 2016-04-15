@@ -1040,9 +1040,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::get()->g_send_email == '1') {
+        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::getPref('email.send') == '1') {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::get()->g_send_email == '1') {
+        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::getPref('email.send') == '1') {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';

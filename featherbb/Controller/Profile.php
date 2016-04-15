@@ -362,7 +362,7 @@ class Profile
     {
         $args['id'] = Container::get('hooks')->fire('controller.profile.email', $args['id']);
 
-        if (User::get()->g_send_email == '0') {
+        if (User::getPref('email.send') == '0') {
             throw new Error(__('No permission'), 403);
         }
 
