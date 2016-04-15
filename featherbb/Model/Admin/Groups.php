@@ -180,12 +180,12 @@ class Groups
             'g_delete_topics'       =>  $delete_topics,
             'g_post_links'          =>  $post_links,
             'g_set_title'           =>  $set_title,
-            'g_search'              =>  $search,
         );
         $new_insert_update_group = array(
             'mod.is_mod'            => (int) $moderator,
             'post.min_interval'     => (int) $post_flood,
             'search.min_interval'   => (int) $search_flood,
+            'search.use'            => (int) $search,
             'search.users'          => (int) $search_users,
             'email.min_interval'    => (int) $email_flood,
             'email.send'            => (int) $send_email,
