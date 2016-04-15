@@ -160,6 +160,7 @@ class Groups
         $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
         $report_flood = (Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
 
+        // TODO: Remove this array and use the one below when new perms are ready
         $insert_update_group = array(
             'g_title'               =>  $title,
             'g_user_title'          =>  $user_title,
@@ -183,9 +184,14 @@ class Groups
             'g_search'              =>  $search,
             'g_search_users'        =>  $search_users,
             'g_send_email'          =>  $send_email,
-            'g_search_flood'        =>  $search_flood,
-            'g_email_flood'         =>  $email_flood,
             'g_report_flood'        =>  $report_flood,
+        );
+        $new_insert_update_group = array(
+            'post.min_interval'     => (int) $post_flood,
+            'email.min_interval'    => (int) $email_flood,
+            'search.min_interval'   => (int) $search_flood,
+            'mod.is_mod'            => (int) $moderator,
+
         );
 
         $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
@@ -203,9 +209,10 @@ class Groups
             $new_group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
 
             // Set new preferences
-            Container::get('prefs')->setGroup($new_group_id, array('post.min_interval' => (int) $post_flood));
+            Container::get('prefs')->setGroup($new_group_id, $new_insert_update_group);
 
             // Now lets copy the forum specific permissions from the group which this group is based on
+            // TODO: Remove this when new perms are ready
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
             $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', Input::post('base_group'));
@@ -236,6 +243,9 @@ class Groups
                     ->find_one(Input::post('group_id'))
                     ->set($insert_update_group)
                     ->save();
+
+            // Update group preferences
+            Container::get('prefs')->setGroup(Input::post('group_id'), $new_insert_update_group);
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
