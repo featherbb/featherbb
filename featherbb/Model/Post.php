@@ -127,8 +127,8 @@ class Post
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < Container::get('prefs')->get(User::get(), 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get(User::get(), 'post.min_interval'), Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post));
+        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < User::getPref('post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval'), User::getPref('post.min_interval') - (time() - User::get()->last_post));
         }
 
         // If it's a new topic
@@ -548,8 +548,8 @@ class Post
             throw new Error(__('Reason too long'), 400);
         }
 
-        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < Container::get('prefs')->get(User::get(), 'report.min_interval') && (time() - User::get()->last_report_sent) >= 0) {
-            throw new Error(sprintf(__('Report flood'), Container::get('prefs')->get(User::get(), 'report.min_interval'), Container::get('prefs')->get(User::get(), 'report.min_interval') - (time() - User::get()->last_report_sent)), 429);
+        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::getPref('report.min_interval') && (time() - User::get()->last_report_sent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), User::getPref('report.min_interval'), User::getPref('report.min_interval') - (time() - User::get()->last_report_sent)), 429);
         }
 
         // Get the topic ID
