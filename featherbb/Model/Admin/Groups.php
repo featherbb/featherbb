@@ -181,16 +181,15 @@ class Groups
             'g_post_links'          =>  $post_links,
             'g_set_title'           =>  $set_title,
             'g_search'              =>  $search,
-            'g_search_users'        =>  $search_users,
         );
         $new_insert_update_group = array(
             'mod.is_mod'            => (int) $moderator,
             'post.min_interval'     => (int) $post_flood,
             'search.min_interval'   => (int) $search_flood,
+            'search.users'          => (int) $search_users,
             'email.min_interval'    => (int) $email_flood,
             'email.send'            => (int) $send_email,
             'report.min_interval'   => (int) $search_flood,
-
         );
 
         $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
