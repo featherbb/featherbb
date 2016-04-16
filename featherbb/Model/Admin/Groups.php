@@ -41,6 +41,7 @@ class Groups
             $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
             $group['info'] = $groups[$id];
             $group['prefs'] = $this->get_group_preferences($id);
+            $group['perms'] = $this->get_group_permissions($id);
 
             $group['mode'] = 'add';
         } else {
@@ -52,6 +53,7 @@ class Groups
             $groups[$id] = Container::get('hooks')->fire('model.admin.groups.update_user_group', $groups[$id]);
             $group['info'] = $groups[$id];
             $group['prefs'] = $this->get_group_preferences($id);
+            $group['perms'] = $this->get_group_permissions($id);
 
             $group['mode'] = 'edit';
         }
@@ -139,6 +141,7 @@ class Groups
             $promote_next_group = '0';
         }
 
+        // Permissions
         $moderator = Input::post('moderator') && Input::post('moderator') == '1' ? '1' : '0';
         $mod_edit_users = $moderator == '1' && Input::post('mod_edit_users') == '1' ? '1' : '0';
         $mod_rename_users = $moderator == '1' && Input::post('mod_rename_users') == '1' ? '1' : '0';
@@ -157,6 +160,7 @@ class Groups
         $search = (Input::post('search') == 0) ? Input::post('search') : '1';
         $search_users = (Input::post('search_users') == 0) ? Input::post('search_users') : '1';
         $send_email = (Input::post('send_email') && Input::post('send_email') == '1') || $is_admin_group ? '1' : '0';
+        // Preferences
         $post_flood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
         $search_flood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
         $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
@@ -422,5 +426,44 @@ class Groups
 
         $group_preferences = Container::get('hooks')->fire('model.admin.groups.get_group_preferences.group_preferences', $group_preferences);
         return (array) $group_preferences;
+    }
+
+    public function get_group_permissions(int $group_id)
+    {
+        $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_permissions.group_id', $group_id);
+
+        $result = DB::for_table('permissions')
+            ->select_many('permission_name', 'allow', 'deny')
+            ->where_in('permission_name', array(
+                'mod.is_mod',
+                'mod.edit_users',
+                'mod.rename_users',
+                'mod.change_passwords',
+                'mod.promote_users',
+                'mod.ban_users',
+                'forum.read',
+                'topic.reply',
+                'topic.post',
+                'topic.delete',
+                'post.edit',
+                'post.delete',
+                'post.links',
+                'users.view',
+                'user.set_title',
+                'search.topics',
+                'search.users',
+                'email.send'
+            ))
+            ->where('group', $group_id)
+            ->find_array();
+
+        $group_permissions = array();
+
+        foreach ($result as $perm) {
+            $group_permissions[$perm['permission_name']] = (bool) $perm['allow'];
+        }
+
+        $group_permissions = Container::get('hooks')->fire('model.admin.groups.get_group_permissions.group_permissions', $group_permissions);
+        return (array) $group_permissions;
     }
 }
