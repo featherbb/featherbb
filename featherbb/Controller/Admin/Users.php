@@ -20,7 +20,7 @@ class Users
     {
         $this->model = new \FeatherBB\Model\Admin\Users();
         translate('admin/users');
-        if (!Container::get('perms')->can(User::get(), 'mod.users')) {
+        if (!User::can('mod.users')) {
             throw new Error(__('No permission'), '403');
         }
     }
@@ -61,7 +61,7 @@ class Users
 
         // Ban multiple users
         if (Input::post('ban_users') || Input::post('ban_users_comply')) {
-            if (!Container::get('perms')->can(User::get(), 'mod.bans')) {
+            if (!User::can('mod.bans')) {
                 throw new Error(__('No permission'), '403');
             }
 

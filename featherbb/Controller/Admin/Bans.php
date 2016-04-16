@@ -22,7 +22,7 @@ class Bans
         translate('admin/bans');
         translate('admin/common');
 
-        if (!Container::get('perms')->can(User::get(), 'mod.bans')) {
+        if (!User::can('mod.bans')) {
             throw new Error(__('No permission'), '403');
         }
     }

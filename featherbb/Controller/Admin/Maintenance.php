@@ -18,7 +18,7 @@ class Maintenance
     {
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
         translate('admin/maintenance');
-        if (!Container::get('perms')->can(User::get(), 'board.maintenance')) {
+        if (!User::can('board.maintenance')) {
             throw new Error(__('No permission'), '403');
         }
     }

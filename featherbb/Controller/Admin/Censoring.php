@@ -18,7 +18,7 @@ class Censoring
     {
         $this->model = new \FeatherBB\Model\Admin\Censoring();
         translate('admin/censoring');
-        if (!Container::get('perms')->can(User::get(), 'board.censoring')) {
+        if (!User::can('board.censoring')) {
             throw new Error(__('No permission'), '403');
         }
     }

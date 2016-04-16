@@ -21,7 +21,7 @@ class Categories
     {
         $this->model = new \FeatherBB\Model\Admin\Categories();
         translate('admin/categories');
-        if (!Container::get('perms')->can(User::get(), 'board.categories')) {
+        if (!User::can('board.categories')) {
             throw new Error(__('No permission'), '403');
         }
     }

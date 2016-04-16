@@ -26,7 +26,7 @@ class Updates
         translate('admin/index');
         translate('admin/updates');
         translate('admin/plugins');
-        if (!Container::get('perms')->can(User::get(), 'board.updates')) {
+        if (!User::can('board.updates')) {
             throw new Error(__('No permission'), '403');
         }
     }

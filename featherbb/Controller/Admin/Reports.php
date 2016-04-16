@@ -19,7 +19,7 @@ class Reports
     {
         $this->model = new \FeatherBB\Model\Admin\Reports();
         translate('admin/reports');
-        if (!Container::get('perms')->can(User::get(), 'mod.reports')) {
+        if (!User::can('mod.reports')) {
             throw new Error(__('No permission'), '403');
         }
     }

@@ -19,7 +19,7 @@ class Index
     public function __construct()
     {
         translate('admin/index');
-        if (!Container::get('perms')->can(User::get(), 'mod.view')) {
+        if (!User::can('mod.view')) {
             throw new Error(__('No permission'), '403');
         }
     }

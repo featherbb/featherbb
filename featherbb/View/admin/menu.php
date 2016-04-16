@@ -24,7 +24,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
                             <ul>
 <?php foreach ($menu_items as $perm => $data) {
     if (preg_match('/^mod\..*$/', $perm)) {
-        if (Container::get('perms')->can(User::get(), $perm)) {
+        if (User::can($perm)) {
             // ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2')
             echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
         }
@@ -34,7 +34,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
                         </div>
                     </div>
 <?php
-if (Container::get('perms')->can(User::get(), 'board.view')):
+if (User::can('board.view')):
 ?>
                     <h2 class="block2"><span><?php _e('Admin menu') ?></span></h2>
                     <div class="box">
@@ -42,7 +42,7 @@ if (Container::get('perms')->can(User::get(), 'board.view')):
                             <ul>
 <?php foreach ($menu_items as $perm => $data) {
     if (preg_match('/^board\..*$/', $perm)) {
-        if (Container::get('perms')->can(User::get(), $perm)) {
+        if (User::can($perm)) {
             echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
         }
     }

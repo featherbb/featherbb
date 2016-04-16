@@ -19,7 +19,7 @@ class Groups
     {
         $this->model = new \FeatherBB\Model\Admin\Groups();
         translate('admin/groups');
-        if (!Container::get('perms')->can(User::get(), 'board.groups')) {
+        if (!User::can('board.groups')) {
             throw new Error(__('No permission'), '403');
         }
     }
