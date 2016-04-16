@@ -188,21 +188,29 @@ class Permissions
         $result = DB::for_table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
-                    ->where('deny', 1)
                     ->find_one();
+
         if ($result) {
-            $result->delete();
+            $result->set(array(
+                'permission_name' => $permission,
+                'group' => $gid,
+                'allow' => 1,
+                'deny'  => null
+            ))
+            ->save();
+        } else {
+            DB::for_table('permissions')
+                ->create()
+                ->set(array(
+                    'permission_name' => $permission,
+                    'group' => $gid,
+                    'allow' => 1,
+                    'deny'  => null
+                ))
+                ->save();
         }
-        $result = DB::for_table('permissions')
-                    ->create()
-                    ->set(array(
-                        'permission_name' => $permission,
-                        'group' => $gid,
-                        'allow' => 1))
-                    ->save();
-        if ($result) {
-            $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
-        }
+
+        $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
         return $this;
     }
 
@@ -226,19 +234,29 @@ class Permissions
         $result = DB::for_table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
-                    ->where('allow', 1)
                     ->find_one();
+
         if ($result) {
-            $result->delete();
-            $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
+            $result->set(array(
+                'permission_name' => $permission,
+                'group' => $gid,
+                'deny'  => 1,
+                'allow' => null
+            ))
+            ->save();
+        } else {
+            DB::for_table('permissions')
+                ->create()
+                ->set(array(
+                    'permission_name' => $permission,
+                    'group' => $gid,
+                    'deny'  => 1,
+                    'allow' => null
+                ))
+                ->save();
         }
-        $result = DB::for_table('permissions')
-                    ->create()
-                    ->set(array(
-                        'permission_name' => $permission,
-                        'group' => $gid,
-                        'deny' => 1))
-                    ->save();
+
+        $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
         return $this;
     }
 
