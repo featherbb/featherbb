@@ -207,12 +207,13 @@ class Install
         }
 
         // Init permissions
-        Container::get('perms')->addParent(4, 3);
+        Container::get('perms')->addParent(4, array(3));
         Container::get('perms')->addParent(2, array(3,4));
         Container::get('perms')->addParent(1, array(2,3,4));
+
         Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
         Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
-        Container::get('perms')->allowGroup(2, array('mod.*', 'board.title.set'));
+        Container::get('perms')->allowGroup(2, array('modpanel.*', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users', 'board.title.set'));
         Container::get('perms')->allowGroup(1, array('board.*'));
         // Init preferences
         Container::get('prefs')->set(array(

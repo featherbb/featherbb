@@ -23,7 +23,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
                         <div class="inbox">
                             <ul>
 <?php foreach ($menu_items as $perm => $data) {
-    if (preg_match('/^mod\..*$/', $perm)) {
+    if (preg_match('/^modpanel\..*$/', $perm)) {
         if (User::can($perm)) {
             // ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2')
             echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";

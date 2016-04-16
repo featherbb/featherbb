@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 
 class Reports
 {
@@ -19,7 +20,7 @@ class Reports
     {
         $this->model = new \FeatherBB\Model\Admin\Reports();
         translate('admin/reports');
-        if (!User::can('mod.reports')) {
+        if (!User::can('modpanel.reports')) {
             throw new Error(__('No permission'), '403');
         }
     }

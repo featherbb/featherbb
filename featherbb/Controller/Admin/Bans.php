@@ -22,7 +22,7 @@ class Bans
         translate('admin/bans');
         translate('admin/common');
 
-        if (!User::can('mod.bans')) {
+        if (!User::can('modpanel.bans') || !User::can('mod.ban_users')) {
             throw new Error(__('No permission'), '403');
         }
     }

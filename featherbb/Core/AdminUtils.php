@@ -115,10 +115,10 @@ class AdminUtils
     protected static function load_default_menu()
     {
         return array(
-            'mod.index' => array('title' => 'Index', 'url' => 'adminIndex'),
-            'mod.users' => array('title' => 'Users', 'url' => 'adminUsers'),
-            'mod.bans' => array('title' => 'Bans', 'url' => 'adminBans'),
-            'mod.reports' => array('title' => 'Reports', 'url' => 'adminReports'),
+            'modpanel.index' => array('title' => 'Index', 'url' => 'adminIndex'),
+            'modpanel.users' => array('title' => 'Users', 'url' => 'adminUsers'),
+            'modpanel.bans' => array('title' => 'Bans', 'url' => 'adminBans'),
+            'modpanel.reports' => array('title' => 'Reports', 'url' => 'adminReports'),
             'board.options' => array('title' => 'Options', 'url' => 'adminOptions'),
             'board.permissions' => array('title' => 'Permissions', 'url' => 'adminPermissions'),
             'board.categories' => array('title' => 'Categories', 'url' => 'adminCategories'),
