@@ -214,7 +214,7 @@ class Post
 
         // Do we have permission to edit this post?
         if ((User::get()->g_delete_posts == '0' ||
-                (User::get()->g_delete_topics == '0' && $is_topic_post) ||
+                (!User::can('topic.delete') && $is_topic_post) ||
                 $cur_post['poster_id'] != User::get()->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {

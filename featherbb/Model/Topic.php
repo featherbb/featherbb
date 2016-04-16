@@ -954,7 +954,7 @@ class Topic
 
                 if ($cur_topic['closed'] == '0') {
                     if ($cur_post['poster_id'] == User::get()->id) {
-                        if ((($start_from + $post_count) == 1 && User::get()->g_delete_topics == '1') || (($start_from + $post_count) > 1 && User::get()->g_delete_posts == '1')) {
+                        if ((($start_from + $post_count) == 1 && User::can('topic.delete')) || (($start_from + $post_count) > 1 && User::get()->g_delete_posts == '1')) {
                             $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                         }
                         if (User::get()->g_edit_posts == '1') {
