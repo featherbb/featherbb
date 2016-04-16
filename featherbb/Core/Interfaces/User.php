@@ -32,4 +32,16 @@ class User extends \Statical\BaseProxy
         $user = self::get($id);
         return Container::get('prefs')->get($user, $pref);
     }
+
+    /**
+     * Check if the given user has the required permissions
+     * @param  string $permission  The name of the action to check
+     * @param  integer $id         Optionnal user id
+     * @return boolval             True if user is allowed to do this
+     */
+    public static function can(string $permission = null, int $id = null)
+    {
+        $user = self::get($id);
+        return Container::get('perms')->can($user, $permission);
+    }
 }
