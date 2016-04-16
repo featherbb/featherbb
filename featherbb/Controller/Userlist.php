@@ -33,7 +33,7 @@ class Userlist
         // Determine if we are allowed to view post counts
         $show_post_count = (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) ? true : false;
 
-        $username = Input::query('username') && User::getPref('search.users') == '1' ? Utils::trim(Input::query('username')) : '';
+        $username = Input::query('username') && User::can('search.users') ? Utils::trim(Input::query('username')) : '';
         $show_group = Input::query('show_group') ? intval(Input::query('show_group')) : -1;
         $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), array('username', 'registered')) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
         $sort_dir = Input::query('sort_dir') && Input::query('sort_dir') == 'DESC' ? 'DESC' : 'ASC';

@@ -25,7 +25,7 @@ Container::get('hooks')->fire('view.userlist.start');
                 <fieldset>
                     <legend><?php _e('User find legend') ?></legend>
                     <div class="infldset">
-<?php if (User::getPref('search.users') == '1'): ?>                        <label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" autofocus /><br /></label>
+<?php if (User::can('search.users')): ?>                        <label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" autofocus /><br /></label>
 <?php endif; ?>                        <label class="conl"><?php _e('User group')."\n" ?>
                         <br /><select name="show_group">
                             <option value="-1"<?php if ($show_group == -1) {
@@ -57,7 +57,7 @@ Container::get('hooks')->fire('view.userlist.start');
 } ?>><?php _e('Descending') ?></option>
                         </select>
                         <br /></label>
-                        <p class="clearb"><?php echo(User::getPref('search.users') == '1' ? __('User search info').' ' : '').__('User sort info'); ?></p>
+                        <p class="clearb"><?php echo(User::can('search.users') ? __('User search info').' ' : '').__('User sort info'); ?></p>
                     </div>
                 </fieldset>
             </div>
