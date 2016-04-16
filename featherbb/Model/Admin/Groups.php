@@ -39,9 +39,6 @@ class Groups
         if (Input::post('add_group')) {
             $group['base_group'] = $id; // Equals intval(Input::post('base_group'))
             $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
-            $group['info'] = $groups[$id];
-            $group['prefs'] = $this->get_group_preferences($id);
-            $group['perms'] = $this->get_group_permissions($id);
 
             $group['mode'] = 'add';
         } else {
@@ -49,14 +46,14 @@ class Groups
             if (!isset($groups[$id])) {
                 throw new Error(__('Bad request'), 404);
             }
-
             $groups[$id] = Container::get('hooks')->fire('model.admin.groups.update_user_group', $groups[$id]);
-            $group['info'] = $groups[$id];
-            $group['prefs'] = $this->get_group_preferences($id);
-            $group['perms'] = $this->get_group_permissions($id);
 
             $group['mode'] = 'edit';
         }
+
+        $group['info'] = $groups[$id];
+        $group['prefs'] = $this->get_group_preferences($id);
+        $group['perms'] = $this->get_group_permissions($id);
 
         $group = Container::get('hooks')->fire('model.admin.groups.info_add_group', $group);
         return $group;
@@ -415,35 +412,31 @@ class Groups
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_permissions.group_id', $group_id);
 
+        $where = array(['group' => $group_id]);
+
+        if ($parents = Container::get('perms')->getParents($group_id)) {
+            foreach ($parents as $parent_id) {
+                $where[] = ['group' => (int) $parent_id];
+            }
+        }
+
         $result = DB::for_table('permissions')
             ->select_many('permission_name', 'allow', 'deny')
-            ->where_in('permission_name', array(
-                'mod.is_mod',
-                'mod.edit_users',
-                'mod.rename_users',
-                'mod.change_passwords',
-                'mod.promote_users',
-                'mod.ban_users',
-                'board.read',
-                'topic.reply',
-                'topic.post',
-                'topic.delete',
-                'post.edit',
-                'post.delete',
-                'post.links',
-                'users.view',
-                'user.set_title',
-                'search.topics',
-                'search.users',
-                'email.send'
-            ))
-            ->where('group', $group_id)
+            ->where_any_is($where)
+            ->order_by_desc('group')
             ->find_array();
 
         $group_permissions = array();
 
         foreach ($result as $perm) {
             $group_permissions[$perm['permission_name']] = (bool) $perm['allow'];
+        }
+        // Set default permissions
+        $default_perms = array('mod.is_mod','mod.edit_users','mod.rename_users','mod.change_passwords','mod.promote_users','mod.ban_users','board.read','topic.reply','topic.post','topic.delete','post.edit','post.delete','post.links','users.view','user.set_title','search.topics','search.users','email.send');
+        foreach ($default_perms as $perm) {
+            if (!isset($group_permissions[$perm])) {
+                $group_permissions[$perm] = (bool) false;
+            }
         }
 
         $group_permissions = Container::get('hooks')->fire('model.admin.groups.get_group_permissions.group_permissions', $group_permissions);
