@@ -773,7 +773,7 @@ class Profile
 
                 if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
                     $form['title'] = Utils::trim(Input::post('title'));
-                } elseif (User::getPref('user.set_title') == '1') {
+                } elseif (User::can('user.set_title')) {
                     $form['title'] = Utils::trim(Input::post('title'));
 
                     if ($form['title'] != '') {
