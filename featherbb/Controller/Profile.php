@@ -230,7 +230,7 @@ class Profile
         $args['id'] = Container::get('hooks')->fire('controller.profile.action', $args['id']);
 
         if ($args['action'] != 'change_pass' || !Input::query('key')) {
-            if (User::get()->g_read_board == '0') {
+            if (!User::can('board.read')) {
                 throw new Error(__('No view'), 403);
             } elseif (!User::can('users.view') && (User::get()->is_guest || User::get()->id != $args['id'])) {
                 throw new Error(__('No permission'), 403);

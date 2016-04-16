@@ -34,7 +34,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
                         </div>
                     </div>
 <?php
-if (User::can('board.view')):
+if (User::can('board.admin')):
 ?>
                     <h2 class="block2"><span><?php _e('Admin menu') ?></span></h2>
                     <div class="box">

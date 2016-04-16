@@ -24,7 +24,7 @@ class ReadBoard
     public function __invoke($request, $response, $next)
     {
         // Display error page
-        if (User::get()->g_read_board == '0') {
+        if (!User::can('board.read')) {
             throw new Error(__('No view'), 403);
         }
         $response = $next($request, $response);

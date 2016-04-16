@@ -110,8 +110,8 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?php _e('Read board label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="read_board" value="1"<?php if ($group['perms']['forum.read'] == '1') {echo ' checked="checked"';} ?> tabindex="17" />&#160;<strong><?php _e('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="read_board" value="0"<?php if ($group['perms']['forum.read'] == '0') {echo ' checked="checked"';} ?> tabindex="18" />&#160;<strong><?php _e('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="read_board" value="1"<?php if ($group['perms']['board.read'] == '1') {echo ' checked="checked"';} ?> tabindex="17" />&#160;<strong><?php _e('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="read_board" value="0"<?php if ($group['perms']['board.read'] == '0') {echo ' checked="checked"';} ?> tabindex="18" />&#160;<strong><?php _e('No') ?></strong></label>
                                         <span class="clearb"><?php _e('Read board help') ?></span>
                                     </td>
                                 </tr>
