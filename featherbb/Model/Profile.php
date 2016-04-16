@@ -753,7 +753,7 @@ class Profile
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-                if (User::getPref('post.links') == '1') {
+                if (User::can('post.links')) {
                     if ($form['url'] != '') {
                         $url = Url::is_valid($form['url']);
 

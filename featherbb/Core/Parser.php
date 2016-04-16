@@ -359,7 +359,7 @@ class Parser
                 // Sanitize contents which is (hopefully) a url link. Trim spaces.
                 $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
                 // Handle special case link to a
-                if (User::get()->g_post_links != '1') {
+                if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
                 }
                 else if (($m = Url::is_valid($contents)))
@@ -409,7 +409,7 @@ class Parser
                 break;
 
             case 'url':
-                if (User::get()->g_post_links != '1') {
+                if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
                 }
                 else if (($m = Url::is_valid($attribute)))
