@@ -213,7 +213,7 @@ class Post
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if ((User::get()->g_delete_posts == '0' ||
+        if ((!User::can('post.delete') ||
                 (!User::can('topic.delete') && $is_topic_post) ||
                 $cur_post['poster_id'] != User::get()->id ||
                 $cur_post['closed'] == '1') &&
