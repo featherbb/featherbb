@@ -259,7 +259,7 @@ class Post
         }
 
         // Do we have permission to edit this post?
-        if ((User::get()->g_edit_posts == '0' || $cur_post['poster_id'] != User::get()->id || $cur_post['closed'] == '1') && !$is_admmod) {
+        if ((!User::can('post.edit') || $cur_post['poster_id'] != User::get()->id || $cur_post['closed'] == '1') && !$is_admmod) {
             throw new Error(__('No permission'), 403);
         }
 

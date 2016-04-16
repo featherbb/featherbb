@@ -957,7 +957,7 @@ class Topic
                         if ((($start_from + $post_count) == 1 && User::can('topic.delete')) || (($start_from + $post_count) > 1 && User::can('post.delete'))) {
                             $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                         }
-                        if (User::get()->g_edit_posts == '1') {
+                        if (User::can('post.edit')) {
                             $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                         }
                     }
