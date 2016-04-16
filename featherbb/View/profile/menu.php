@@ -27,7 +27,7 @@ Container::get('hooks')->fire('view.profile.menu.start');
 <?php endif;?>
                     <li<?php if ($page == 'display') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'display']) ?>"><?php _e('Section display') ?></a></li>
                     <li<?php if ($page == 'privacy') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>"><?php _e('Section privacy') ?></a></li>
-<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && User::get()->g_mod_ban_users == '1')): ?>
+<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::get()->g_mod_ban_users == '1')): ?>
                     <li<?php if ($page == 'admin') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'admin']) ?>"><?php _e('Section admin') ?></a></li>
 <?php endif;?>
                 </ul>

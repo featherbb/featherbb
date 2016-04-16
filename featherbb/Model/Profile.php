@@ -713,7 +713,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && User::get()->g_mod_rename_users == '1')) {
+                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::get()->g_mod_rename_users == '1')) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -753,7 +753,7 @@ class Profile
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-                if (User::get()->g_post_links == '1') {
+                if (User::getPref('post.links') == '1') {
                     if ($form['url'] != '') {
                         $url = Url::is_valid($form['url']);
 

@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                     <fieldset>
 <?php
 
-        if (User::getPref('mod.is_mod') == '1') {
+        if (User::can('mod.is_mod')) {
             ?>
                         <legend><?php _e('Delete ban legend') ?></legend>
                         <div class="infldset">

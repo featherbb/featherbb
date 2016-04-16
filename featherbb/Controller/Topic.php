@@ -49,7 +49,7 @@ class Topic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::getPref('mod.is_mod') == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Can we or can we not post replies?
         $post_link = $this->model->get_post_link($args['id'], $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
@@ -210,7 +210,7 @@ class Topic
         $moderators = $forumModel->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
