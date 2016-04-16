@@ -171,7 +171,7 @@ class Groups
             'g_user_title'          =>  $user_title,
             'g_promote_min_posts'   =>  $promote_min_posts,
             'g_promote_next_group'  =>  $promote_next_group,
-            // 'g_moderator'           =>  $moderator,
+            // *** 'g_moderator'           =>  $moderator,
             // 'g_mod_edit_users'      =>  $mod_edit_users,
             // 'g_mod_rename_users'    =>  $mod_rename_users,
             // 'g_mod_change_passwords'=>  $mod_change_passwords,

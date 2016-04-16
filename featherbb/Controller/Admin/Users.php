@@ -96,7 +96,7 @@ class Users
 
             // Some helper variables for permissions
             $can_delete = $can_move = User::get()->g_id == ForumEnv::get('FEATHER_ADMIN');
-            $can_ban = User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::get()->g_mod_ban_users == '1');
+            $can_ban = User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::can('mod.ban_users'));
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
             View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 

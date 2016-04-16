@@ -47,7 +47,7 @@ class Profile
 
             return $this->model->update_mod_forums($args['id']);
         } elseif (Input::post('ban')) {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || User::get()->g_mod_ban_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || !User::can('mod.ban_users'))) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -75,7 +75,7 @@ class Profile
             if (User::get()->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
                                     (!User::get()->is_admmod ||                                      // and we are not an admin or mod
                                     (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                           // or we aren't an admin and ...
-                                    (User::get()->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
+                                    (!User::can('mod.edit_users') ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
                                     $info['is_moderator'])))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
@@ -94,7 +94,7 @@ class Profile
         if (User::get()->id != $args['id'] &&                                 // If we aren't the user (i.e. editing your own profile)
                 (!User::get()->is_admmod ||                           // and we are not an admin or mod
                 (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                // or we aren't an admin and ...
-                (User::get()->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
+                (!User::can('mod.edit_users') ||              // mods aren't allowed to edit users
                 $user['g_id'] == ForumEnv::get('FEATHER_ADMIN') ||                     // or the user is an admin
                 $user['g_moderator'] == '1')))) {                     // or the user is another mod
                 $user_info = $this->model->parse_user_info($user);
@@ -199,7 +199,7 @@ class Profile
 
             } elseif ($args['section'] == 'admin') {
 
-                if (!User::get()->is_admmod || (User::can('mod.is_mod') && User::get()->g_mod_ban_users == '0')) {
+                if (!User::get()->is_admmod || (User::can('mod.is_mod') && !User::can('mod.ban_users'))) {
                     throw new Error(__('Bad request'), 404);
                 }
 
@@ -260,7 +260,7 @@ class Profile
                         throw new Error(__('Bad request'), 404);
                     }
 
-                    if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                    if (!User::can('mod.edit_users') || !User::can('mod.change_passwords') || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
                         throw new Error(__('No permission'), 403);
                     }
                 }
@@ -301,7 +301,7 @@ class Profile
                         throw new Error(__('Bad request'), 404);
                     }
 
-                    if (User::get()->g_mod_edit_users == '0' || User::get()->g_mod_change_passwords == '0' || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                    if (!User::can('mod.edit_users') || !User::can('mod.change_passwords') || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
                         throw new Error(__('No permission'), 403);
                     }
                 }
@@ -348,7 +348,7 @@ class Profile
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || User::get()->g_mod_promote_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || !User::can('mod.promote_users'))) {
                 throw new Error(__('No permission'), 403);
             }
 

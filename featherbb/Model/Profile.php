@@ -713,7 +713,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::get()->g_mod_rename_users == '1')) {
+                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::can('mod.rename_users'))) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -1110,7 +1110,7 @@ class Profile
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
         if (User::get()->is_admmod) {
-            if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::get()->g_mod_rename_users == '1') {
+            if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::can('mod.rename_users')) {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" required /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
