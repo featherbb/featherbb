@@ -47,7 +47,7 @@ class Profile
 
             return $this->model->update_mod_forums($args['id']);
         } elseif (Input::post('ban')) {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') != '1' || User::get()->g_mod_ban_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || User::get()->g_mod_ban_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -348,7 +348,7 @@ class Profile
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::getPref('mod.is_mod') != '1' || User::get()->g_mod_promote_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || User::get()->g_mod_promote_users == '0')) {
                 throw new Error(__('No permission'), 403);
             }
 
