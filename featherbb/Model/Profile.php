@@ -1071,7 +1071,7 @@ class Profile
         if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
             $posts_field = Utils::forum_number_format($user['num_posts']);
         }
-        if (User::getPref('search.use') == '1') {
+        if (User::can('search.topics')) {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
@@ -1136,7 +1136,7 @@ class Profile
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
-        if (User::getPref('search.use') == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::can('search.topics') || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
