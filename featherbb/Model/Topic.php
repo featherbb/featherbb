@@ -863,7 +863,7 @@ class Topic
 
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
-                if (User::get()->g_view_users == '1') {
+                if (User::can('users.view')) {
                     $cur_post['username_formatted'] = '<a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
@@ -1035,7 +1035,7 @@ class Topic
 
             // If the poster is a registered user
             if ($cur_post->poster_id > 1) {
-                if (User::get()->g_view_users == '1') {
+                if (User::can('users.view')) {
                     $cur_post->poster_disp = '<a href="'.Router::pathFor('userProfile', ['id' => $cur_post->poster_id]).'">'.Utils::escape($cur_post->poster).'</a>';
                 } else {
                     $cur_post->poster_disp = Utils::escape($cur_post->poster);

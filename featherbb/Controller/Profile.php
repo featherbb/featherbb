@@ -232,7 +232,7 @@ class Profile
         if ($args['action'] != 'change_pass' || !Input::query('key')) {
             if (User::get()->g_read_board == '0') {
                 throw new Error(__('No view'), 403);
-            } elseif (User::get()->g_view_users == '0' && (User::get()->is_guest || User::get()->id != $args['id'])) {
+            } elseif (!User::can('users.view') && (User::get()->is_guest || User::get()->id != $args['id'])) {
                 throw new Error(__('No permission'), 403);
             }
         }

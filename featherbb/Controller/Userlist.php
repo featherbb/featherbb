@@ -26,7 +26,7 @@ class Userlist
     {
         Container::get('hooks')->fire('controller.userlist.display');
 
-        if (User::get()->g_view_users == '0') {
+        if (!User::can('users.view')) {
             throw new Error(__('No permission'), 403);
         }
 

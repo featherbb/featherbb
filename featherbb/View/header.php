@@ -83,7 +83,7 @@ Container::get('hooks')->fire('view.header.before.head.tag');
 <?php
 $navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>';
 
-if (User::get()->g_read_board == '1' && User::get()->g_view_users == '1') {
+if (User::get()->g_read_board == '1' && User::can('users.view')) {
     $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userList').'">'.__('User list').'</a></li>';
 }
 

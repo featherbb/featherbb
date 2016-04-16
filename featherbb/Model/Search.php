@@ -727,7 +727,7 @@ class Search
                 $cur_search['message'] = Container::get('parser')->parse_message($cur_search['message'], $cur_search['hide_smilies']);
                 $pposter = Utils::escape($cur_search['pposter']);
 
-                if ($cur_search['poster_id'] > 1 && User::get()->g_view_users == '1') {
+                if ($cur_search['poster_id'] > 1 && User::can('users.view')) {
                     $cur_search['pposter_disp'] = '<strong><a href="'.Router::pathFor('userProfile', ['id' => $cur_search['poster_id']]).'">'.$pposter.'</a></strong>';
                 } else {
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
