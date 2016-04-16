@@ -74,8 +74,8 @@ class Post
         $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($args['tid'] && (($cur_posting['post_replies'] == '' && User::get()->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($args['fid'] && (($cur_posting['post_topics'] == '' && User::get()->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($args['tid'] && (($cur_posting['post_replies'] == '' && !User::can('topic.reply')) || $cur_posting['post_replies'] == '0')) ||
+                ($args['fid'] && (($cur_posting['post_topics'] == '' && !User::can('topic.post')) || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
             throw new Error(__('No permission'), 403);

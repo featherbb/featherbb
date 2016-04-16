@@ -177,7 +177,7 @@ class Topic
         $closed = Container::get('hooks')->fire('model.topic.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
 
         if ($closed == '0') {
-            if (($post_replies == '' && User::get()->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
+            if (($post_replies == '' && User::can('topic.reply')) || $post_replies == '1' || $is_admmod) {
                 $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newReply', ['tid' => $topic_id]).'">'.__('Post reply').'</a></p>'."\n";
             } else {
                 $post_link = '';
@@ -201,7 +201,7 @@ class Topic
     public function is_quickpost($post_replies, $closed, $is_admmod)
     {
         $quickpost = false;
-        if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::get()->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
+        if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::can('topic.reply'))) && ($closed == '0' || $is_admmod)) {
             $quickpost = true;
         }
 
@@ -962,7 +962,7 @@ class Topic
                         }
                     }
 
-                    if (($cur_topic['post_replies'] == '' && User::get()->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
+                    if (($cur_topic['post_replies'] == '' && User::can('topic.reply')) || $cur_topic['post_replies'] == '1') {
                         $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
                     }
                 }
