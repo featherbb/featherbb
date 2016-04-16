@@ -285,7 +285,7 @@ class Post
                 // Edit the post
                 $this->model->edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                return Router::redirect(Router::pathFor('viewPost', ['id' => $cur_post->tid, 'name' => Url::url_friendly($post['subject']), 'pid' => $args['id']]).'#p'.$args['id'], __('Post redirect'));
+                return Router::redirect(Router::pathFor('viewPost', ['id' => $cur_post->tid, 'name' => Input::post('topic_subject'), 'pid' => $args['id']]).'#p'.$args['id'], __('Edit redirect'));
             }
         } else {
             $post = '';

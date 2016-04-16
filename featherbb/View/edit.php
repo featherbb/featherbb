@@ -76,14 +76,17 @@ endif;
     <div class="box">
         <form id="edit" method="post" action="<?= Router::pathFor('editPost', ['id' => $id]) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+            <input type="hidden" name="topic_subject" value="<?= Url::url_friendly($cur_post['subject']) ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Edit post legend') ?></legend>
                     <input type="hidden" name="form_sent" value="1" />
                     <div class="infldset txtarea">
-<?php if ($can_edit_subject): ?>                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br />
+<?php if ($can_edit_subject): ?>
+                        <label class="required"><strong><?php _e('Subject') ?> <span><?php _e('Required') ?></span></strong><br />
                         <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="<?= Input::post('req_subject', $cur_post['subject']) ?>" required="required" /><br /></label>
-<?php endif; ?>                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
+<?php endif; ?>
+                        <label class="required"><strong><?php _e('Message') ?> <span><?php _e('Required') ?></span></strong><br />
                         <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="<?= $cur_index++ ?>" required="required" autofocus><?= Utils::escape(Input::post('req_message') ? $post['message'] : $cur_post['message']) ?></textarea><br /></label>
                         <ul class="bblinks">
                             <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
