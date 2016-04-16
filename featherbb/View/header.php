@@ -91,7 +91,7 @@ if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::get
     $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('rules').'">'.__('Rules').'</a></li>';
 }
 
-if (User::get()->g_read_board == '1' && User::getPref('search.use') == '1') {
+if (User::get()->g_read_board == '1' && User::can('search.topics')) {
     $navlinks[] = '<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('search').'">'.__('Search').'</a></li>';
 }
 
@@ -168,7 +168,7 @@ if (User::get()->is_guest) { ?>
     echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 
-if (User::get()->g_read_board == '1' && User::getPref('search.use') == '1') {
+if (User::get()->g_read_board == '1' && User::can('search.topics')) {
     echo "\t\t\t\t\t\t".'<ul class="conr">'."\n";
     echo "\t\t\t\t\t\t\t".'<li><span>'.__('Topic searches').' ';
     if (!User::get()->is_guest) {
