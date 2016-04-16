@@ -903,9 +903,9 @@ class Topic
                     }
 
                     // Now let's deal with the contact links (Email and URL)
-                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::get()->is_admmod) && User::getPref('email.send') == '1') {
+                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::get()->is_admmod) && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
-                    } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::getPref('email.send') == '1') {
+                    } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
                     }
 
@@ -941,7 +941,7 @@ class Topic
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
-                if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' && !User::get()->is_guest && User::getPref('email.send') == '1') {
+                if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' && !User::get()->is_guest && User::can('email.send')) {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
                 }
             }
