@@ -19,7 +19,8 @@ class Groups
 {
     public function fetch_groups()
     {
-        $result = DB::for_table('groups')->order_by('g_id')->find_many();
+        // $result = DB::for_table('groups')->order_by('g_id')->find_many();
+        $result = DB::for_table('groups')->select_many('g_id', 'g_user_title', 'g_title', 'g_promote_min_posts', 'g_promote_next_group')->order_by('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = array();
         foreach ($result as $cur_group) {
@@ -39,6 +40,7 @@ class Groups
             $group['base_group'] = $id; // Equals intval(Input::post('base_group'))
             $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
             $group['info'] = $groups[$id];
+            $group['prefs'] = $this->get_group_preferences($id);
 
             $group['mode'] = 'add';
         } else {
@@ -48,8 +50,8 @@ class Groups
             }
 
             $groups[$id] = Container::get('hooks')->fire('model.admin.groups.update_user_group', $groups[$id]);
-
             $group['info'] = $groups[$id];
+            $group['prefs'] = $this->get_group_preferences($id);
 
             $group['mode'] = 'edit';
         }
@@ -397,5 +399,28 @@ class Groups
 
         $group_info = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_info', $group_info);
         return $group_info;
+    }
+
+    public function get_group_preferences(int $group_id)
+    {
+        $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_preferences.group_id', $group_id);
+
+        $result = DB::for_table('preferences')
+            ->select_many('preference_name', 'preference_value')
+            ->where_in('preference_name', array('post.min_interval', 'search.min_interval', 'email.min_interval', 'report.min_interval'))
+            ->where_any_is(array(
+                array('group' => $group_id),
+                array('default' => 1),
+            ))
+            ->order_by_desc('default')
+            ->find_array();
+
+        $group_preferences = array();
+        foreach ($result as $pref) {
+            $group_preferences[$pref['preference_name']] = $pref['preference_value'];
+        }
+
+        $group_preferences = Container::get('hooks')->fire('model.admin.groups.get_group_preferences.group_preferences', $group_preferences);
+        return (array) $group_preferences;
     }
 }
