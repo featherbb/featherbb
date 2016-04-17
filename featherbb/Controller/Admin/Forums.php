@@ -74,7 +74,7 @@ class Forums
                 foreach($permissions as $perm_group) {
                     $permissions_data = array('group_id' => $perm_group['g_id'],
                                                 'forum_id' => $args['id']);
-                    if ($perm_group['g_read_board'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
+                    if ($perm_group['board.read'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
                         $permissions_data['read_forum'] = '1';
                     }
                     else {

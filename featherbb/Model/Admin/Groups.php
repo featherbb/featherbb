@@ -168,10 +168,9 @@ class Groups
             'g_user_title'          =>  $user_title,
             'g_promote_min_posts'   =>  $promote_min_posts,
             'g_promote_next_group'  =>  $promote_next_group,
-            // *** 'g_moderator'           =>  $moderator,
-            // *** 'g_read_board'          =>  $read_board,
-            // *** 'g_post_replies'        =>  $post_replies,
-            // *** 'g_post_topics'         =>  $post_topics,
+            'g_moderator'           =>  $moderator,
+            'g_post_replies'        =>  $post_replies,
+            'g_post_topics'         =>  $post_topics,
         );
         $group_preferences = array(
             'post.min_interval'     => (int) $post_flood,

@@ -69,11 +69,15 @@ class Cache
 
     public static function get_quickjump()
     {
-        $select_quickjump = array('g_id', 'g_read_board');
-        $read_perms = DB::for_table('groups')
-                        ->select_many($select_quickjump)
-                        ->where('g_read_board', 1)
-                        ->find_array();
+        $read_perms = DB::for_table('permissions')
+            ->select('group', 'g_id')
+            ->where_any_is(array(
+                ['permission_name' => 'board.read'],
+                ['permission_name' => 'board.*'],
+                ['permission_name' => '*']
+            ))
+            ->where('allow', 1)
+            ->find_array();
 
         $output = array();
         foreach ($read_perms as $item) {
