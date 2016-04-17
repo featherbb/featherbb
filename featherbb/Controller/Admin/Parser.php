@@ -20,7 +20,7 @@ class Parser
     {
         $this->model = new \FeatherBB\Model\Admin\Parser();
         translate('admin/parser');
-        if (!User::can('board.parser')) {
+        if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }
     }

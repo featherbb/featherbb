@@ -20,9 +20,6 @@ class Users
     {
         $this->model = new \FeatherBB\Model\Admin\Users();
         translate('admin/users');
-        if (!User::can('modpanel.users')) {
-            throw new Error(__('No permission'), '403');
-        }
     }
 
     public function display($req, $res, $args)

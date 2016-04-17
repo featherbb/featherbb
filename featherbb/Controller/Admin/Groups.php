@@ -19,7 +19,7 @@ class Groups
     {
         $this->model = new \FeatherBB\Model\Admin\Groups();
         translate('admin/groups');
-        if (!User::can('board.groups')) {
+        if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }
     }

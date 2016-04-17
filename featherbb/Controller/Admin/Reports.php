@@ -20,9 +20,6 @@ class Reports
     {
         $this->model = new \FeatherBB\Model\Admin\Reports();
         translate('admin/reports');
-        if (!User::can('modpanel.reports')) {
-            throw new Error(__('No permission'), '403');
-        }
     }
 
     public function display($req, $res, $args)

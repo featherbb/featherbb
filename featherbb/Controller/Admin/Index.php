@@ -19,9 +19,6 @@ class Index
     public function __construct()
     {
         translate('admin/index');
-        if (!User::can('modpanel.index')) {
-            throw new Error(__('No permission'), '403');
-        }
     }
 
     public function display($req, $res, $args)

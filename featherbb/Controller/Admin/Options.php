@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 
 class Options
 {
@@ -18,7 +19,7 @@ class Options
     {
         $this->model = new \FeatherBB\Model\Admin\Options();
         translate('admin/options');
-        if (!User::can('board.options')) {
+        if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }
     }

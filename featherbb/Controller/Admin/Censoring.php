@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 
 class Censoring
 {
@@ -18,7 +19,7 @@ class Censoring
     {
         $this->model = new \FeatherBB\Model\Admin\Censoring();
         translate('admin/censoring');
-        if (!User::can('board.censoring')) {
+        if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }
     }

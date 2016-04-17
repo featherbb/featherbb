@@ -19,9 +19,6 @@ class Statistics
     {
         $this->model = new \FeatherBB\Model\Admin\Statistics();
         translate('admin/index');
-        if (!User::can('mod.statistics')) {
-            throw new Error(__('No permission'), '403');
-        }
     }
 
     public function display($req, $res, $args)

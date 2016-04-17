@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Model\Cache;
 
 class Forums
@@ -20,7 +21,7 @@ class Forums
     {
         $this->model = new \FeatherBB\Model\Admin\Forums();
         translate('admin/forums');
-        if (!User::can('board.forums')) {
+        if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }
     }
