@@ -88,7 +88,7 @@ class Forums
                         $permissions_data['post_replies'] != Input::post('post_replies_old')[$perm_group['g_id']] ||
                         $permissions_data['post_topics'] != Input::post('post_topics_old')[$perm_group['g_id']]) {
                             // If there is no group permissions override for this forum
-                            if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['g_post_replies'] && $permissions_data['post_topics'] == $perm_group['g_post_topics']) {
+                            if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['topic.reply'] && $permissions_data['post_topics'] == $perm_group['topic.post']) {
                                 $this->model->delete_permissions($args['id'], $perm_group['g_id']);
                             } else {
                             // Run an UPDATE and see if it affected a row, if not, INSERT

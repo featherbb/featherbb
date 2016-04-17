@@ -80,8 +80,6 @@ class Install
             `g_promote_min_posts` int(10) unsigned NOT NULL DEFAULT '0',
             `g_promote_next_group` int(10) unsigned NOT NULL DEFAULT '0',
             `g_moderator` tinyint(1) NOT NULL DEFAULT '0',
-            `g_post_replies` tinyint(1) NOT NULL DEFAULT '1',
-            `g_post_topics` tinyint(1) NOT NULL DEFAULT '1',
             `inherit` text,
             PRIMARY KEY (`g_id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;",
@@ -282,32 +280,24 @@ class Install
             'g_title' => __('Administrators'),
             'g_user_title' => __('Administrator'),
             'g_moderator' => 1,
-            'g_post_replies' => 1,
-            'g_post_topics' => 1
         );
         $groups['Moderators'] = array(
             'g_id' => 2,
             'g_title' => __('Moderators'),
             'g_user_title' => __('Moderator'),
             'g_moderator' => 1,
-            'g_post_replies' => 1,
-            'g_post_topics' => 1
         );
         $groups['Guests'] = array(
             'g_id' => 3,
             'g_title' => __('Guests'),
             'g_user_title' => __('Guest'),
             'g_moderator' => 0,
-            'g_post_replies' => 0,
-            'g_post_topics' => 0
         );
         $groups['Members'] = array(
             'g_id' => 4,
             'g_title' => __('Members'),
             'g_user_title' => __('Member'),
             'g_moderator' => 0,
-            'g_post_replies' => 1,
-            'g_post_topics' => 1
         );
 
         return $groups;

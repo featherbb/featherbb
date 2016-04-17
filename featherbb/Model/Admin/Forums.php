@@ -134,8 +134,7 @@ class Forums
         $perm_data = array();
         $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
 
-        $select_permissions = array('g.g_id', 'g.g_title', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
-        // $select_permissions = array('g.g_id', 'g.g_title', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
+        $select_permissions = array('g.g_id', 'g.g_title', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
 
         $permissions = DB::for_table('groups')
                         ->table_alias('g')
