@@ -345,6 +345,9 @@ class Groups
         DB::for_table('forum_perms')
             ->where('group_id', $group_id)
             ->delete_many();
+        DB::for_table('permissions')
+            ->where('group', $group_id)
+            ->delete_many();
 
         // Don't let users be promoted to this group
         DB::for_table('groups')->where('g_promote_next_group', $group_id)
