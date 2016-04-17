@@ -52,8 +52,8 @@ class Groups
         }
 
         $group['info'] = $groups[$id];
-        $group['prefs'] = $this->get_group_preferences($id);
-        $group['perms'] = $this->get_group_permissions($id);
+        $group['prefs'] = Container::get('perms')->getGroupPreferences($id);
+        $group['perms'] = Container::get('perms')->getGroupPermissions($id);
 
         $group = Container::get('hooks')->fire('model.admin.groups.info_add_group', $group);
         return $group;
@@ -383,63 +383,5 @@ class Groups
 
         $group_info = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_info', $group_info);
         return $group_info;
-    }
-
-    public function get_group_preferences(int $group_id)
-    {
-        $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_preferences.group_id', $group_id);
-
-        $result = DB::for_table('preferences')
-            ->select_many('preference_name', 'preference_value')
-            ->where_in('preference_name', array('post.min_interval', 'search.min_interval', 'email.min_interval', 'report.min_interval'))
-            ->where_any_is(array(
-                array('group' => $group_id),
-                array('default' => 1),
-            ))
-            ->order_by_desc('default')
-            ->find_array();
-
-        $group_preferences = array();
-        foreach ($result as $pref) {
-            $group_preferences[$pref['preference_name']] = $pref['preference_value'];
-        }
-
-        $group_preferences = Container::get('hooks')->fire('model.admin.groups.get_group_preferences.group_preferences', $group_preferences);
-        return (array) $group_preferences;
-    }
-
-    public function get_group_permissions(int $group_id)
-    {
-        $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_permissions.group_id', $group_id);
-
-        $where = array(['group' => $group_id]);
-
-        if ($parents = Container::get('perms')->getParents($group_id)) {
-            foreach ($parents as $parent_id) {
-                $where[] = ['group' => (int) $parent_id];
-            }
-        }
-
-        $result = DB::for_table('permissions')
-            ->select_many('permission_name', 'allow', 'deny')
-            ->where_any_is($where)
-            ->order_by_desc('group')
-            ->find_array();
-
-        $group_permissions = array();
-
-        foreach ($result as $perm) {
-            $group_permissions[$perm['permission_name']] = (bool) $perm['allow'];
-        }
-        // Set default permissions
-        $default_perms = array('mod.is_mod','mod.edit_users','mod.rename_users','mod.change_passwords','mod.promote_users','mod.ban_users','board.read','topic.reply','topic.post','topic.delete','post.edit','post.delete','post.links','users.view','user.set_title','search.topics','search.users','email.send');
-        foreach ($default_perms as $perm) {
-            if (!isset($group_permissions[$perm])) {
-                $group_permissions[$perm] = (bool) false;
-            }
-        }
-
-        $group_permissions = Container::get('hooks')->fire('model.admin.groups.get_group_permissions.group_permissions', $group_permissions);
-        return (array) $group_permissions;
     }
 }

@@ -98,7 +98,6 @@ class Permissions
 
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
-
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
@@ -181,24 +180,21 @@ class Permissions
         if ($gid > 0) {
             $group = DB::for_table('groups')->find_one($gid);
             if (!$group) {
-                throw new \ErrorException('Internal error : Unknown user ID', 500);
+                throw new \ErrorException('Internal error : Unknown group ID', 500);
             }
         }
 
         $result = DB::for_table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
+                    ->where('deny', 1)
                     ->find_one();
-
         if ($result) {
-            $result->set(array(
-                'permission_name' => $permission,
-                'group' => $gid,
-                'allow' => 1,
-                'deny'  => null
-            ))
-            ->save();
-        } else {
+            $result->delete();
+        }
+
+        // If group or one of his parents have the permission, remove it
+        if (!array_key_exists($permission, $this->getGroupPermissions($gid)) || $this->getGroupPermissions($gid)[$permission] == false) {
             DB::for_table('permissions')
                 ->create()
                 ->set(array(
@@ -231,20 +227,18 @@ class Permissions
             }
         }
 
+        // Remove group permission from DB if exists
         $result = DB::for_table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
+                    ->where('allow', 1)
                     ->find_one();
-
         if ($result) {
-            $result->set(array(
-                'permission_name' => $permission,
-                'group' => $gid,
-                'deny'  => 1,
-                'allow' => null
-            ))
-            ->save();
-        } else {
+            $result->delete();
+        }
+
+        // Check if one of his parents have the permission, and force denied permission if needed
+        if (array_key_exists($permission, $this->getGroupPermissions($gid)) && $this->getGroupPermissions($gid)[$permission] == true) {
             DB::for_table('permissions')
                 ->create()
                 ->set(array(
@@ -341,5 +335,68 @@ class Permissions
             throw new \ErrorException('Internal error : wrong user object type', 500);
         }
         return array((int) $uid, (int) $gid);
+    }
+
+    public function getGroupPreferences(int $group_id)
+    {
+        $result = DB::for_table('preferences')
+            ->select_many('preference_name', 'preference_value')
+            ->where_in('preference_name', array('post.min_interval', 'search.min_interval', 'email.min_interval', 'report.min_interval'))
+            ->where_any_is(array(
+                array('group' => $group_id),
+                array('default' => 1),
+            ))
+            ->order_by_desc('default')
+            ->find_array();
+
+        $group_preferences = array();
+        foreach ($result as $pref) {
+            $group_preferences[$pref['preference_name']] = $pref['preference_value'];
+        }
+
+        return (array) $group_preferences;
+    }
+
+    public function getGroupPermissions(int $group_id)
+    {
+        $where = array(['group' => $group_id]);
+
+        if ($parents = Container::get('perms')->getParents($group_id)) {
+            foreach ($parents as $parent_id) {
+                $where[] = ['group' => (int) $parent_id];
+            }
+        }
+
+        $result = DB::for_table('permissions')
+            ->select_many('permission_name', 'allow', 'deny', 'group')
+            ->where_any_is($where)
+            ->order_by_desc('group')
+            ->find_array();
+
+        $group_data = $group_permissions = array();
+
+        foreach ($result as $perm) {
+            $group_data[$perm['group']][$perm['permission_name']] = (bool) $perm['allow'];
+        }
+        // Set default permissions
+        $default_perms = array('mod.is_mod','mod.edit_users','mod.rename_users','mod.change_passwords','mod.promote_users','mod.ban_users','board.read','topic.reply','topic.post','topic.delete','post.edit','post.delete','post.links','users.view','user.set_title','search.topics','search.users','email.send');
+        foreach ($default_perms as $perm) {
+            // Init all perms to false
+            if (!isset($group_data[$group_id][$perm])) {
+                $group_permissions[$perm] = false;
+            }
+            // Check if parent groups have perm
+            foreach ($parents as $parent_id) {
+                if (isset($group_data[$parent_id][$perm])) {
+                    $group_permissions[$perm] = $group_data[$parent_id][$perm];
+                }
+            }
+            // Always override perm if group specific exists
+            if (isset($group_data[$group_id][$perm])) {
+                $group_permissions[$perm] = $group_data[$group_id][$perm];
+            }
+        }
+
+        return (array) $group_permissions;
     }
 }
