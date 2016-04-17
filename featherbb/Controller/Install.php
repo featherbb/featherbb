@@ -207,14 +207,18 @@ class Install
         }
 
         // Init permissions
-        Container::get('perms')->addParent(4, array(3));
-        Container::get('perms')->addParent(2, array(3,4));
-        Container::get('perms')->addParent(1, array(2,3,4));
+        // TODO: Reuse groups inheritance later ?
+        // Container::get('perms')->addParent(4, array(3));
+        // Container::get('perms')->addParent(2, array(3,4));
+        // Container::get('perms')->addParent(1, array(2,3,4));
+        // Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
+        // Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
+        // Container::get('perms')->allowGroup(2, array('mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users', 'user.set_title'));
 
         Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
-        Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
-        Container::get('perms')->allowGroup(2, array('modpanel.*', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users', 'user.set_title'));
-        Container::get('perms')->allowGroup(1, array('board.*'));
+        Container::get('perms')->allowGroup(4, array('board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
+        Container::get('perms')->allowGroup(2, array('board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users'));
+        Container::get('perms')->allowGroup(1, array('*'));
         // Init preferences
         Container::get('prefs')->set(array(
             'post.min_interval' => 60,
