@@ -23,18 +23,16 @@ Container::get('hooks')->fire('view.admin.menu.start');
                         <div class="inbox">
                             <ul>
 <?php foreach ($menu_items as $perm => $data) {
-    if (preg_match('/^modpanel\..*$/', $perm)) {
-        if (User::can($perm)) {
-            // ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2')
-            echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
-        }
+    if (preg_match('/^mod\..*$/', $perm)) {
+        // ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2')
+        echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
     }
 } ?>
                             </ul>
                         </div>
                     </div>
 <?php
-if (User::can('board.admin')):
+if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')):
 ?>
                     <h2 class="block2"><span><?php _e('Admin menu') ?></span></h2>
                     <div class="box">
@@ -42,9 +40,7 @@ if (User::can('board.admin')):
                             <ul>
 <?php foreach ($menu_items as $perm => $data) {
     if (preg_match('/^board\..*$/', $perm)) {
-        if (User::can($perm)) {
-            echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
-        }
+        echo "\t\t\t\t\t\t\t\t".'<li'.($page == strtolower($data['title']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor($data['url']).'">'.__($data['title']).'</a></li>'."\n";
     }
 } ?>
                             </ul>
