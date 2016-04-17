@@ -134,7 +134,8 @@ class Forums
         $perm_data = array();
         $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
 
-        $select_permissions = array('g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
+        $select_permissions = array('g.g_id', 'g.g_title', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
+        // $select_permissions = array('g.g_id', 'g.g_title', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
 
         $permissions = DB::for_table('groups')
                         ->table_alias('g')
@@ -146,14 +147,17 @@ class Forums
         $permissions = $permissions->find_many();
 
         foreach($permissions as $cur_perm) {
+            $group_permissions = Container::get('perms')->getGroupPermissions($cur_perm['g_id']);
+
+            $cur_perm['board.read'] = $group_permissions['board.read'];
             $cur_perm['read_forum'] = ($cur_perm['read_forum'] != '0') ? true : false;
-            $cur_perm['post_replies'] = (($cur_perm['g_post_replies'] == '0' && $cur_perm['post_replies'] == '1') || ($cur_perm['g_post_replies'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
-            $cur_perm['post_topics'] = (($cur_perm['g_post_topics'] == '0' && $cur_perm['post_topics'] == '1') || ($cur_perm['g_post_topics'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
+            $cur_perm['post_replies'] = (($group_permissions['topic.reply'] == '0' && $cur_perm['post_replies'] == '1') || ($group_permissions['topic.reply'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
+            $cur_perm['post_topics'] = (($group_permissions['topic.post'] == '0' && $cur_perm['post_topics'] == '1') || ($group_permissions['topic.post'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
 
             // Determine if the current settings differ from the default or not
             $cur_perm['read_forum_def'] = ($cur_perm['read_forum'] == '0') ? false : true;
-            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && $cur_perm['g_post_replies'] == '0') || (!$cur_perm['post_replies'] && ($cur_perm['g_post_replies'] == '' || $cur_perm['g_post_replies'] == '1'))) ? false : true;
-            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && $cur_perm['g_post_topics'] == '0') || ($cur_perm['post_topics'] && ($cur_perm['g_post_topics'] == '' || $cur_perm['g_post_topics'] == '1'))) ? false : true;
+            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && $group_permissions['topic.reply'] == '0') || (!$cur_perm['post_replies'] && $group_permissions['topic.reply'] == '1')) ? false : true;
+            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && $group_permissions['topic.post'] == '0') || (!$cur_perm['post_topics'] && $group_permissions['topic.post'] == '1')) ? false : true;
 
             $perm_data[] = $cur_perm;
         }
@@ -164,10 +168,9 @@ class Forums
 
     public function get_default_group_permissions($fetch_admin = true)
     {
-        $select_get_default_group_permissions = array('g_id', 'g_read_board', 'g_post_replies', 'g_post_topics');
+        $perm_data = array();
 
-        $result = DB::for_table('groups')
-                    ->select_many($select_get_default_group_permissions);
+        $result = DB::for_table('groups')->select('g_id');
 
         if (!$fetch_admin) {
             $result->where_not_equal('g_id', ForumEnv::get('FEATHER_ADMIN'));
@@ -177,7 +180,16 @@ class Forums
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_default_group_permissions_query', $result);
         $result = $result->find_array();
 
-        return $result;
+        foreach ($result as $cur_perm) {
+            $group_permissions = Container::get('perms')->getGroupPermissions($cur_perm['g_id']);
+            $cur_perm['board.read'] = $group_permissions['board.read'];
+            $cur_perm['topic.reply'] = $group_permissions['topic.reply'];
+            $cur_perm['topic.post'] = $group_permissions['topic.post'];
+
+            $perm_data[] = $cur_perm;
+        }
+
+        return $perm_data;
     }
 
     public function update_permissions(array $permissions_data)
