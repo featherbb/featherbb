@@ -40,12 +40,12 @@ if ($is_admin) {
                     <div class="box">
                         <div class="inbox">
                             <ul>
-                                <li<?php if ($page == 'options') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminOptions') ?>"><?php _e('Options') ?></a></li>
+                                <li<?php if ($page == 'options') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminOptions') ?>"><?php _e('Admin options') ?></a></li>
                                 <li<?php if ($page == 'permissions') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminPermissions') ?>"><?php _e('Permissions') ?></a></li>
                                 <li<?php if ($page == 'categories') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminCategories') ?>"><?php _e('Categories') ?></a></li>
                                 <li<?php if ($page == 'forums') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminForums') ?>"><?php _e('Forums') ?></a></li>
                                 <li<?php if ($page == 'groups') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminGroups') ?>"><?php _e('User groups') ?></a></li>
-                                <li<?php if ($page == 'plugins') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminPlugins') ?>"><?= 'Plugins'; ?></a></li>
+                                <li<?php if ($page == 'plugins') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminPlugins') ?>"><?= _e('Plugins'); ?></a></li>
                                 <li<?php if ($page == 'censoring') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminCensoring') ?>"><?php _e('Censoring') ?></a></li>
                                 <li<?php if ($page == 'parser') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminParser') ?>"><?php _e('Parser') ?></a></li>
                                 <li<?php if ($page == 'maintenance') {echo ' class="isactive"';}?>><a href="<?= Router::pathFor('adminMaintenance') ?>"><?php _e('Maintenance') ?></a></li>
