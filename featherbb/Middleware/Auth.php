@@ -253,6 +253,9 @@ class Auth
 
         if ($jwt && $user = AuthModel::load_user($jwt->data->userId)) {
 
+            // Load permissions for user
+            $user->perms = Container::get('perms')->getUserPermissions($user);
+
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
@@ -305,12 +308,13 @@ class Auth
                 DB::for_table('online')->where('ident', Utils::getIp())
                      ->update_many('logged', time());
             }
+
+            // Load permissions for user
+            $user->perms = Container::get('perms')->getUserPermissions($user);
+
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
-
-        // Load permissions for user
-        Container::get('perms')->getUserPermissions($user);
 
         translate('common');
         // Load bans from cache
