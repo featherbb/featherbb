@@ -212,7 +212,7 @@ class Preferences
 
     // Utils
 
-    protected function loadPrefs($user = null)
+    public function loadPrefs($user = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 

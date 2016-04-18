@@ -253,8 +253,9 @@ class Auth
 
         if ($jwt && $user = AuthModel::load_user($jwt->data->userId)) {
 
-            // Load permissions for user
+            // Load permissions and preferences for logged user
             $user->perms = Container::get('perms')->getUserPermissions($user);
+            $user->prefs = Container::get('prefs')->loadPrefs($user);
 
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
@@ -308,8 +309,9 @@ class Auth
                      ->update_many('logged', time());
             }
 
-            // Load permissions for user
+            // Load permissions  and preferences for guest user
             $user->perms = Container::get('perms')->getUserPermissions($user);
+            $user->prefs = Container::get('prefs')->loadPrefs($user);
 
             // Add $user as guest to DIC
             Container::set('user', $user);
