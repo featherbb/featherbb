@@ -73,7 +73,7 @@ class Profile
             $info = $this->model->fetch_user_group($args['id']);
 
             if (User::get()->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
-                                    (!User::get()->is_admmod ||                                      // and we are not an admin or mod
+                                    (!User::isAdminMod() ||                                      // and we are not an admin or mod
                                     (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                           // or we aren't an admin and ...
                                     (!User::can('mod.edit_users') ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
@@ -91,13 +91,15 @@ class Profile
         }
 
         // View or edit?
-        if (User::get()->id != $args['id'] &&                                 // If we aren't the user (i.e. editing your own profile)
-                (!User::get()->is_admmod ||                           // and we are not an admin or mod
-                (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                // or we aren't an admin and ...
-                (!User::can('mod.edit_users') ||              // mods aren't allowed to edit users
-                $user['g_id'] == ForumEnv::get('FEATHER_ADMIN') ||                     // or the user is an admin
-                $user['g_moderator'] == '1')))) {                     // or the user is another mod
-                $user_info = $this->model->parse_user_info($user);
+        if (User::get()->id != $args['id'] &&                     // If we aren't the user (i.e. editing your own profile)
+                (!User::isAdminMod() ||                           // and we are not an admin or mod
+                (!User::isAdmin() &&                              // or we aren't an admin and ...
+                (!User::can('mod.edit_users') ||                  // mods aren't allowed to edit users
+                User::isAdmin($user['id']) ||                     // or the user is an admin
+                User::isAdminMod($user['id']))))                  // or the user is another mod
+            )
+        {
+            $user_info = $this->model->parse_user_info($user);
 
             View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))),
@@ -199,7 +201,7 @@ class Profile
 
             } elseif ($args['section'] == 'admin') {
 
-                if (!User::get()->is_admmod || (User::can('mod.is_mod') && !User::can('mod.ban_users'))) {
+                if (!User::isAdminMod() || (User::can('mod.is_mod') && !User::can('mod.ban_users'))) {
                     throw new Error(__('Bad request'), 404);
                 }
 
@@ -242,7 +244,7 @@ class Profile
             if (User::get()->id != $args['id']) {
                 $args['id'] = Container::get('hooks')->fire('controller.profile.change_pass_key_not_id', $args['id']);
 
-                if (!User::get()->is_admmod) { // A regular user trying to change another user's password?
+                if (!User::isAdminMod()) { // A regular user trying to change another user's password?
                     throw new Error(__('No permission'), 403);
                 } elseif (User::can('mod.is_mod')) {
                     // A moderator trying to change a user's password?
@@ -283,7 +285,7 @@ class Profile
             if (User::get()->id != $args['id']) {
                 $args['id'] = Container::get('hooks')->fire('controller.profile.change_email_not_id', $args['id']);
 
-                if (!User::get()->is_admmod) { // A regular user trying to change another user's email?
+                if (!User::isAdminMod()) { // A regular user trying to change another user's email?
                     throw new Error(__('No permission'), 403);
                 } elseif (User::can('mod.is_mod')) {
                     // A moderator trying to change a user's email?
@@ -324,7 +326,7 @@ class Profile
                 throw new Error(__('Avatars disabled'), 400);
             }
 
-            if (User::get()->id != $args['id'] && !User::get()->is_admmod) {
+            if (User::get()->id != $args['id'] && !User::isAdminMod()) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -340,7 +342,7 @@ class Profile
             )->addTemplate('profile/upload_avatar.php')->display();
 
         } elseif ($args['action'] == 'delete_avatar') {
-            if (User::get()->id != $args['id'] && !User::get()->is_admmod) {
+            if (User::get()->id != $args['id'] && !User::isAdminMod()) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -372,7 +374,7 @@ class Profile
 
         $mail = $this->model->get_info_mail($args['id']);
 
-        if ($mail['email_setting'] == 2 && !User::get()->is_admmod) {
+        if ($mail['email_setting'] == 2 && !User::isAdminMod()) {
             throw new Error(__('Form email disabled'), 403);
         }
 

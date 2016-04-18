@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                     <fieldset>
 <?php
 
-        if (User::can('mod.is_mod')) {
+        if (!User::isAdmin()) {
             ?>
                         <legend><?php _e('Delete ban legend') ?></legend>
                         <div class="infldset">
@@ -42,7 +42,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                         <legend><?php _e('Group membership legend') ?></legend>
                         <div class="infldset">
                             <select id="group_id" name="group_id">
-                                                            <?= $group_list ?>
+<?= $group_list ?>
                             </select>
                             <input type="submit" name="update_group_membership" value="<?php _e('Save') ?>" />
                         </div>
@@ -63,14 +63,14 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                 </div>
 <?php
 
-            if ($user['g_moderator'] == '1' || $user['g_id'] == ForumEnv::get('FEATHER_ADMIN')) {
+            if (User::isAdminMod($user['id'])) {
                 ?>
                 <div class="inform">
                     <fieldset>
                         <legend><?php _e('Set mods legend') ?></legend>
                         <div class="infldset">
                             <p><?php _e('Moderator in info') ?></p>
-                                                        <?= $forum_list ?>
+<?= $forum_list ?>
                                 </div>
                             </div>
                             <br class="clearb" /><input type="submit" name="update_forums" value="<?php _e('Update forums') ?>" />

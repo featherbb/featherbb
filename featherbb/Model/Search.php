@@ -81,7 +81,7 @@ class Search
             }
 
             // Subscribed topics can only be viewed by admins, moderators and the users themselves
-            if ($action == 'show_subscriptions' && !User::get()->is_admmod && $user_id != User::get()->id) {
+            if ($action == 'show_subscriptions' && !User::isAdminMod() && $user_id != User::get()->id) {
                 throw new Error(__('No permission'), 403);
             }
         } elseif ($action == 'show_recent') {
@@ -124,7 +124,7 @@ class Search
             $keyword_results = $author_results = array();
 
             // Search a specific forum?
-            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !User::get()->is_admmod)) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
+            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !User::isAdminMod())) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
 
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
@@ -822,7 +822,7 @@ class Search
         $result = $result->find_many();
 
         // We either show a list of forums of which multiple can be selected
-        if (ForumSettings::get('o_search_all_forums') == '1' || User::get()->is_admmod) {
+        if (ForumSettings::get('o_search_all_forums') == '1' || User::isAdminMod()) {
             $output .= "\t\t\t\t\t\t".'<div class="conl multiselect">'.__('Forum search')."\n";
             $output .= "\t\t\t\t\t\t".'<br />'."\n";
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";

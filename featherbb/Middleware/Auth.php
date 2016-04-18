@@ -148,7 +148,7 @@ class Auth
     public function check_bans()
     {
         // Admins and moderators aren't affected
-        if (User::get()->is_admmod || !Container::get('bans')) {
+        if (User::isAdminMod() || !Container::get('bans')) {
             return;
         }
 
@@ -259,7 +259,6 @@ class Auth
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
-            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || User::can('mod.is_mod', $jwt->data->userId);
 
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');

@@ -101,7 +101,7 @@ if (User::get()->is_guest) {
 } else {
     $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userProfile', ['id' => User::get()->id]).'">'.__('Profile').'</a></li>';
 
-    if (User::get()->is_admmod) {
+    if (User::isAdminMod()) {
         $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('adminIndex').'">'.__('Admin').'</a></li>';
     }
 
@@ -153,7 +153,7 @@ if (User::get()->is_guest) { ?>
     echo "\n\t\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
     echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
 
-    if (User::get()->is_admmod) {
+    if (User::isAdminMod()) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
             if ($has_reports) {
                 echo "\t\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";

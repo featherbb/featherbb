@@ -898,12 +898,12 @@ class Topic
 
                     $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.Utils::format_time($cur_post['registered'], true).'</span></dd>';
 
-                    if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
+                    if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
                         $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
-                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::get()->is_admmod) && User::can('email.send')) {
+                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::isAdminMod()) && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
@@ -924,7 +924,7 @@ class Topic
                     }
                 }
 
-                if (User::get()->is_admmod) {
+                if (User::isAdminMod()) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
@@ -937,7 +937,7 @@ class Topic
                 $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
 
-                if (User::get()->is_admmod) {
+                if (User::isAdminMod()) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 

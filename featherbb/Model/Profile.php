@@ -44,7 +44,7 @@ class Profile
         if (!empty($cur_user['password'])) {
             $old_password_hash = Utils::password_hash($old_password);
 
-            if (Utils::password_verify($old_password, $cur_user['password']) || User::get()->is_admmod) {
+            if (Utils::password_verify($old_password, $cur_user['password']) || User::isAdminMod()) {
                 $authorized = true;
             }
         }
@@ -709,7 +709,7 @@ class Profile
                     }
                 }
 
-                if (User::get()->is_admmod) {
+                if (User::isAdminMod()) {
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
@@ -733,7 +733,7 @@ class Profile
                     }
                 }
 
-                if (ForumSettings::get('o_regs_verify') == '0' || User::get()->is_admmod) {
+                if (ForumSettings::get('o_regs_verify') == '0' || User::isAdminMod()) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
                     if (!Container::get('email')->is_valid_email($form['email'])) {
@@ -803,7 +803,7 @@ class Profile
                         throw new Error(sprintf(__('Sig too long'), ForumSettings::get('p_sig_length'), Utils::strlen($form['signature']) - ForumSettings::get('p_sig_length')));
                     } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
                         throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
-                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !User::get()->is_admmod) {
+                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !User::isAdminMod()) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
 
@@ -1068,7 +1068,7 @@ class Profile
         }
 
         $posts_field = '';
-        if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
+        if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
             $posts_field = Utils::forum_number_format($user['num_posts']);
         }
         if (User::can('search.topics')) {
@@ -1077,7 +1077,7 @@ class Profile
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
-            if (User::get()->is_admmod && ForumSettings::get('o_topic_subscriptions') == '1') {
+            if (User::isAdminMod() && ForumSettings::get('o_topic_subscriptions') == '1') {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
@@ -1109,7 +1109,7 @@ class Profile
 
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
-        if (User::get()->is_admmod) {
+        if (User::isAdminMod()) {
             if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::can('mod.rename_users')) {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" required /><br /></label>'."\n";
             } else {
@@ -1132,7 +1132,7 @@ class Profile
 
         if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
+        } elseif (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 

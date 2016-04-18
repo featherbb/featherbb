@@ -246,11 +246,11 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                 <fieldset>
                     <legend><?php _e('User activity') ?></legend>
                     <div class="infldset">
-                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((User::get()->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
+                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((User::isAdminMod()) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
                         <p><?php printf(__('Last post info'), Utils::format_time($user['last_post'])) ?></p>
                         <p><?php printf(__('Last visit info'), Utils::format_time($user['last_visit'])) ?></p>
                         <?= $user_disp['posts_field'] ?>
-<?php if (User::get()->is_admmod): ?>                            <label><?php _e('Admin note') ?><br />
+<?php if (User::isAdminMod()): ?>                            <label><?php _e('Admin note') ?><br />
                         <input id="admin_note" type="text" name="admin_note" value="<?= Utils::escape($user['admin_note']) ?>" size="30" maxlength="30" /><br /></label>
 <?php endif; ?>                        </div>
                 </fieldset>
