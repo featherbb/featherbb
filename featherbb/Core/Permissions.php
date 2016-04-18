@@ -18,6 +18,8 @@ class Permissions
 
     public function getParents($gid = null)
     {
+        // Remove below line if we use again group inheritance later
+        return false;
         $gid = (int) $gid;
         if ($gid > 0) {
             if (!isset($this->parents[$gid])) {
