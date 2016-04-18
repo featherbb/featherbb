@@ -363,7 +363,7 @@ class Permissions
     {
         $where = array(['group' => $group_id]);
 
-        if ($parents = Container::get('perms')->getParents($group_id)) {
+        if ($parents = $this->getParents($group_id)) {
             foreach ($parents as $parent_id) {
                 $where[] = ['group' => (int) $parent_id];
             }
@@ -388,9 +388,11 @@ class Permissions
                 $group_permissions[$perm] = false;
             }
             // Check if parent groups have perm
-            foreach ($parents as $parent_id) {
-                if (isset($group_data[$parent_id][$perm])) {
-                    $group_permissions[$perm] = $group_data[$parent_id][$perm];
+            if ($parents) {
+                foreach ($parents as $parent_id) {
+                    if (isset($group_data[$parent_id][$perm])) {
+                        $group_permissions[$perm] = $group_data[$parent_id][$perm];
+                    }
                 }
             }
             // Always override perm if group specific exists
