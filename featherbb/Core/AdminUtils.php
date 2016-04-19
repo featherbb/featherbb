@@ -18,13 +18,10 @@ class AdminUtils
     {
         translate('admin/common');
 
-        $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
-
         \View::setPageInfo(array(
             'page'        =>    $page,
             'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::load_default_menu()),
-            'is_admin'    =>    $is_admin,
-            'plugins'     =>    self::adminPluginsMenu($is_admin) // See if there are any plugins that want to be displayed in the menu
+            'plugins'     =>    self::adminPluginsMenu() // See if there are any plugins that want to be displayed in the menu
             ), 1
         )->addTemplate('admin/menu.php');
     }
@@ -119,7 +116,7 @@ class AdminUtils
             'mod.users' => array('title' => 'Users', 'url' => 'adminUsers'),
             'mod.bans' => array('title' => 'Bans', 'url' => 'adminBans'),
             'mod.reports' => array('title' => 'Reports', 'url' => 'adminReports'),
-            'board.options' => array('title' => 'Options', 'url' => 'adminOptions'),
+            'board.options' => array('title' => 'Admin options', 'url' => 'adminOptions'),
             'board.permissions' => array('title' => 'Permissions', 'url' => 'adminPermissions'),
             'board.categories' => array('title' => 'Categories', 'url' => 'adminCategories'),
             'board.forums' => array('title' => 'Forums', 'url' => 'adminForums'),

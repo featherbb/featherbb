@@ -32,7 +32,7 @@ class Options
             return $this->model->update_options();
         }
 
-        AdminUtils::generateAdminMenu('options');
+        AdminUtils::generateAdminMenu('admin options');
 
         View::setPageInfo(array(
                 'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Admin options')),
