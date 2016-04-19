@@ -36,7 +36,7 @@ msgstr "Utilisateurs"
 msgid "User groups"
 msgstr "Groupes d'utilisateurs"
 
-msgid "Options"
+msgid "Admin options"
 msgstr "Options"
 
 msgid "Permissions"
