@@ -35,7 +35,7 @@ class Options
         AdminUtils::generateAdminMenu('options');
 
         View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Options')),
+                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Admin options')),
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'languages' => $this->model->get_langs(),
