@@ -24,6 +24,18 @@ class Cache
         return $config;
     }
 
+    public static function get_preferences()
+    {
+        $result = DB::for_table('preferences')
+                    ->where('default', 1)
+                    ->find_array();
+        $preferences = array();
+        foreach ($result as $item) {
+            $preferences[$item['preference_name']] = $item['preference_value'];
+        }
+        return $preferences;
+    }
+
     public static function get_bans()
     {
         return DB::for_table('bans')
