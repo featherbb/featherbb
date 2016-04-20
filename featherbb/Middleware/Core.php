@@ -245,8 +245,8 @@ class Core
         self::loadPlugins();
 
         // Define time formats and add them to the container
-        Container::set('forum_time_formats', array(ForumSettings::get('o_time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
-        Container::set('forum_date_formats', array(ForumSettings::get('o_date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
+        Container::set('forum_time_formats', array(ForumSettings::get('time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
+        Container::set('forum_date_formats', array(ForumSettings::get('date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
 
         // Call FeatherBBAuth middleware
         return $next($req, $res);

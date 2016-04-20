@@ -25,16 +25,16 @@ class Options
             'base_url'                => Utils::trim(Input::post('form_base_url')),
             'default_timezone'        => floatval(Input::post('form_default_timezone')),
             'default_dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
-            'default_lang'            => Utils::trim(Input::post('form_default_lang')),
-            'default_style'            => Utils::trim(Input::post('form_default_style')),
-            'time_format'            => Utils::trim(Input::post('form_time_format')),
-            'date_format'            => Utils::trim(Input::post('form_date_format')),
+            // 'default_lang'            => Utils::trim(Input::post('form_default_lang')),
+            // 'default_style'            => Utils::trim(Input::post('form_default_style')),
+            // 'time_format'            => Utils::trim(Input::post('form_time_format')),
+            // 'date_format'            => Utils::trim(Input::post('form_date_format')),
             'timeout_visit'            => (intval(Input::post('form_timeout_visit')) > 0) ? intval(Input::post('form_timeout_visit')) : 1,
             'timeout_online'        => (intval(Input::post('form_timeout_online')) > 0) ? intval(Input::post('form_timeout_online')) : 1,
             'show_version'            => Input::post('form_show_version') != '1' ? '0' : '1',
             'show_user_info'        => Input::post('form_show_user_info') != '1' ? '0' : '1',
             'show_post_count'        => Input::post('form_show_post_count') != '1' ? '0' : '1',
-            'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
+            // 'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
             'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'make_links'            => Input::post('form_make_links') != '1' ? '0' : '1',
             'topic_review'            => (intval(Input::post('form_topic_review')) >= 0) ? intval(Input::post('form_topic_review')) : 0,
@@ -78,7 +78,17 @@ class Options
             'maintenance_message'    => Utils::trim(Input::post('form_maintenance_message')),
         );
 
+        $prefs = array(
+            'language'            => Utils::trim(Input::post('form_default_lang')),
+            'style'            => Utils::trim(Input::post('form_default_style')),
+            'time_format'            => Utils::trim(Input::post('form_time_format')),
+            'date_format'            => Utils::trim(Input::post('form_date_format')),
+            'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
+
+        );
+
         $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
+        $prefs = Container::get('hooks')->fire('model.admin.options.update_options.prefs', $prefs);
 
         if ($form['board_title'] == '') {
             throw new Error(__('Must enter title message'), 400);
@@ -99,21 +109,21 @@ class Options
         }
 
         $languages = \FeatherBB\Core\Lister::getLangs();
-        if (!in_array($form['default_lang'], $languages)) {
+        if (!in_array($prefs['language'], $languages)) {
             throw new Error(__('Bad request'), 404);
         }
 
         $styles = \FeatherBB\Core\Lister::getStyles();
-        if (!in_array($form['default_style'], $styles)) {
+        if (!in_array($prefs['style'], $styles)) {
             throw new Error(__('Bad request'), 404);
         }
 
-        if ($form['time_format'] == '') {
-            $form['time_format'] = 'H:i:s';
+        if ($prefs['time_format'] == '') {
+            $prefs['time_format'] = 'H:i:s';
         }
 
-        if ($form['date_format'] == '') {
-            $form['date_format'] = 'Y-m-d';
+        if ($prefs['date_format'] == '') {
+            $prefs['date_format'] = 'Y-m-d';
         }
 
         if (!Container::get('email')->is_valid_email($form['admin_email'])) {
@@ -208,8 +218,10 @@ class Options
             }
         }
 
+        Container::get('prefs')->set($prefs);
+
         // Regenerate the config cache
-        Container::get('cache')->store('config', Cache::get_config());
+        Container::get('cache')->store('config', array_merge(Cache::get_config(), Cache::get_preferences()));
 
         return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }
@@ -222,7 +234,7 @@ class Options
         $output = '';
 
         foreach ($styles as $temp) {
-            if (ForumSettings::get('o_default_style') == $temp) {
+            if (ForumSettings::get('style') == $temp) {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
@@ -241,7 +253,7 @@ class Options
         $output = '';
 
         foreach ($langs as $temp) {
-            if (ForumSettings::get('o_default_lang') == $temp) {
+            if (ForumSettings::get('language') == $temp) {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";

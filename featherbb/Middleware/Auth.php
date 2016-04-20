@@ -228,8 +228,8 @@ class Auth
         $user->disp_posts = ForumSettings::get('o_disp_posts_default');
         $user->timezone = ForumSettings::get('o_default_timezone');
         $user->dst = ForumSettings::get('o_default_dst');
-        $user->language = ForumSettings::get('o_default_lang');
-        $user->style = ForumSettings::get('o_default_style');
+        $user->language = ForumSettings::get('language');
+        $user->style = ForumSettings::get('style');
         $user->is_guest = true;
         $user->is_admmod = false;
 
@@ -268,10 +268,10 @@ class Auth
                 $user->disp_posts = ForumSettings::get('o_disp_posts_default');
             }
             if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language)) {
-                $user->language = ForumSettings::get('o_default_lang');
+                $user->language = ForumSettings::get('language');
             }
             if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->style.'/style.css')) {
-                $user->style = ForumSettings::get('o_default_style');
+                $user->style = ForumSettings::get('style');
             }
 
             // Add user to DIC

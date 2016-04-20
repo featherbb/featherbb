@@ -77,11 +77,11 @@ class Parser
         // Set $smile_on flag depending on global flags and whether or not this is a signature.
         if ($this->pd['in_signature'])
         {
-            $smile_on = (ForumSettings::get('o_smilies_sig') && User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+            $smile_on = (ForumSettings::get('o_smilies_sig') && User::getPref('smilies') && !$hide_smilies) ? 1 : 0;
         }
         else
         {
-            $smile_on = (ForumSettings::get('o_smilies') && User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+            $smile_on = (ForumSettings::get('smilies') && User::getPref('smilies') && !$hide_smilies) ? 1 : 0;
         }
         // Split text into hidden and non-hidden chunks. Process the non-hidden content chunks.
         $parts = explode("\1", $text); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"

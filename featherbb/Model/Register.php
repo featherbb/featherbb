@@ -114,7 +114,7 @@ class Register
                 throw new Error(__('Bad request'), 500);
             }
         } else {
-            $user['language'] = ForumSettings::get('o_default_lang');
+            $user['language'] = ForumSettings::get('language');
         }
 
         $user = Container::get('hooks')->fire('model.register.check_for_errors', $user);
@@ -142,7 +142,7 @@ class Register
             'timezone'        => ForumSettings::get('o_default_timezone'),
             'dst'             => 0,
             'language'        => $user['language'],
-            'style'           => ForumSettings::get('o_default_style'),
+            'style'           => ForumSettings::get('style'),
             'registered'      => $now,
             'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,
@@ -161,7 +161,7 @@ class Register
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('o_default_lang').'/mail_templates/banned_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/banned_email_register.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_banned_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -182,7 +182,7 @@ class Register
             // If we previously found out that the email was a dupe
             if (!empty($dupe_list)) {
                 // Load the "dupe email register" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('o_default_lang').'/mail_templates/dupe_email_register.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/dupe_email_register.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -203,7 +203,7 @@ class Register
             // Should we alert people on the admin mailing list that a new user has registered?
             if (ForumSettings::get('o_regs_report') == '1') {
                 // Load the "new user" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('o_default_lang').'/mail_templates/new_user.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/new_user.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_new_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject

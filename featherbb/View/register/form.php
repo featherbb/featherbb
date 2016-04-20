@@ -102,7 +102,7 @@ if (!empty($errors)) {
 <?php
 
             foreach ($languages as $temp) {
-                if (ForumSettings::get('o_default_lang') == $temp) {
+                if (ForumSettings::get('language') == $temp) {
                     echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
                 } else {
                     echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";

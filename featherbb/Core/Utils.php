@@ -70,11 +70,11 @@ class Utils
         $now = time();
 
         if (is_null($date_format)) {
-            $date_format = Container::get('forum_date_formats')[User::get()->date_format];
+            $date_format = Container::get('forum_date_formats')[User::getPref('date_format')];
         }
 
         if (is_null($time_format)) {
-            $time_format = Container::get('forum_time_formats')[User::get()->time_format];
+            $time_format = Container::get('forum_time_formats')[User::getPref('time_format')];
         }
 
         $date = gmdate($date_format, $timestamp);

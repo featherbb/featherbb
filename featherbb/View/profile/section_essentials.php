@@ -181,7 +181,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 <?php
                             foreach (array_unique(Container::get('forum_time_formats')) as $key => $time_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
-                                if ($user['time_format'] == $key) {
+                                if (User::getPref('time_format', $user['id']) == $key) {
                                     echo ' selected="selected"';
                                 }
                                 echo '>'. Utils::format_time(time(), false, null, $time_format, true, true);
@@ -199,7 +199,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 <?php
                             foreach (array_unique(Container::get('forum_date_formats')) as $key => $date_format) {
                                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
-                                if ($user['date_format'] == $key) {
+                                if (User::getPref('date_format', $user['id']) == $key) {
                                     echo ' selected="selected"';
                                 }
                                 echo '>'. Utils::format_time(time(), true, $date_format, null, false, true);

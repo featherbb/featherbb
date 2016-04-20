@@ -59,14 +59,14 @@ Container::get('hooks')->fire('view.profile.section_display.start');
     }
 
 ?>
-<?php if (ForumSettings::get('o_smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1' || ForumSettings::get('o_signatures') == '1' || ForumSettings::get('o_avatars') == '1' || (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1')): ?>
+<?php if (ForumSettings::get('smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1' || ForumSettings::get('o_signatures') == '1' || ForumSettings::get('o_avatars') == '1' || (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1')): ?>
             <div class="inform">
                 <fieldset>
                     <legend><?php _e('Post display legend') ?></legend>
                     <div class="infldset">
                         <p><?php _e('Post display info') ?></p>
                         <div class="rbox">
-<?php if (ForumSettings::get('o_smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1'): ?>                                <label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
+<?php if (ForumSettings::get('smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1'): ?>                                <label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user['show_smilies'] == '1') {
     echo ' checked="checked"';
 } ?> /><?php _e('Show smilies') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>                                <label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {

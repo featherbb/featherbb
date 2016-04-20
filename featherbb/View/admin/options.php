@@ -227,15 +227,15 @@ Container::get('hooks')->fire('view.admin.options.start');
                                 <tr>
                                     <th scope="row"><?php _e('Time format label') ?></th>
                                     <td>
-                                        <input type="text" name="form_time_format" size="25" maxlength="25" value="<?= Utils::escape(ForumSettings::get('o_time_format')) ?>" />
-                                        <span><?php printf(__('Time format help'), gmdate(ForumSettings::get('o_time_format'), $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
+                                        <input type="text" name="form_time_format" size="25" maxlength="25" value="<?= Utils::escape(ForumSettings::get('time_format')) ?>" />
+                                        <span><?php printf(__('Time format help'), gmdate(ForumSettings::get('time_format'), $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?php _e('Date format label') ?></th>
                                     <td>
-                                        <input type="text" name="form_date_format" size="25" maxlength="25" value="<?= Utils::escape(ForumSettings::get('o_date_format')) ?>" />
-                                        <span><?php printf(__('Date format help'), gmdate(ForumSettings::get('o_date_format'), $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
+                                        <input type="text" name="form_date_format" size="25" maxlength="25" value="<?= Utils::escape(ForumSettings::get('date_format')) ?>" />
+                                        <span><?php printf(__('Date format help'), gmdate(ForumSettings::get('date_format'), $timestamp), '<a href="http://www.php.net/manual/en/function.date.php">'.__('PHP manual').'</a>') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -300,10 +300,10 @@ Container::get('hooks')->fire('view.admin.options.start');
                                 <tr>
                                     <th scope="row"><?php _e('Smilies label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="form_smilies" value="1"<?php if (ForumSettings::get('o_smilies') == '1') {
+                                        <label class="conl"><input type="radio" name="form_smilies" value="1"<?php if (ForumSettings::get('smilies') == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="form_smilies" value="0"<?php if (ForumSettings::get('o_smilies') == '0') {
+                                        <label class="conl"><input type="radio" name="form_smilies" value="0"<?php if (ForumSettings::get('smilies') == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
                                         <span class="clearb"><?php _e('Smilies help') ?></span>
