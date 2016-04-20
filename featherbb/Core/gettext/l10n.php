@@ -22,7 +22,7 @@ function translate($mofile, $domain = 'featherbb', $language = false, $path = fa
     // Set default path to forum core translations
     $path = $path ? $path :  ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
     // Set default language to current user
-    $language = $language ? $language : User::get()->language;
+    $language = $language ? $language : User::getPref('language');
 
     /**
      * Try to locate translation file with the following priority order :

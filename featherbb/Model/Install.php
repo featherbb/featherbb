@@ -315,8 +315,6 @@ class Install
             'username' => $data['username'],
             'password' => Utils::password_hash($data['password']),
             'email' => $data['email'],
-            'language' => $data['default_lang'],
-            'style' => $data['default_style'],
             'num_posts' => 1,
             'last_post' => $now,
             'registered' => $now,

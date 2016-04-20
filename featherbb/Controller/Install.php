@@ -107,7 +107,7 @@ class Install
                 }
 
                 // Validate language
-                if (!in_array($data['default_lang'], Lister::getLangs())) {
+                if (!in_array($data['language'], Lister::getLangs())) {
                     $this->errors[] = __('Error default language');
                 }
 
@@ -136,7 +136,7 @@ class Install
                     'errors' => $this->errors,
                 ))->addTemplate('install.php')->display(false);
             } else {
-                $data['default_style'] = $this->default_style;
+                $data['style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
                 return $this->create_config($data);
             }
@@ -145,7 +145,7 @@ class Install
             $data = array('title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,
-                'default_lang' => $this->install_lang);
+                'language' => $this->install_lang);
             return View::setPageInfo(array(
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
@@ -191,7 +191,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        translate('install', 'featherbb', $data['default_lang']);
+        translate('install', 'featherbb', $data['language']);
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
@@ -228,8 +228,8 @@ class Install
             'timezone' => 0,
             'time_format' => 'H:i:s',
             'date_format' => 'Y-m-d',
-            'language' => $data['default_lang'],
-            'style' => $data['default_style'],
+            'language' => $data['language'],
+            'style' => $data['style'],
             'smilies' => 1,
         ));
         Container::get('prefs')->setGroup(2, array(

@@ -158,7 +158,7 @@ class View
     public function display($nested = true)
     {
         if (User::get()) {
-            $this->setStyle(User::get()->style);
+            $this->setStyle(User::getPref('style'));
         }
         return $this->fetch($nested);
     }
