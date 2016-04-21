@@ -784,7 +784,7 @@ class Post
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post');
 
         $result = DB::for_table('users')
                     ->table_alias('u')
@@ -815,15 +815,15 @@ class Post
 
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {
-                // Is the subscription email for $cur_subscriber['language'] cached or not?
-                if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
+                // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
+                if (!isset($notification_emails[User::getPref('language', $cur_subscriber['id'])])) {
+                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $cur_subscriber['id']).'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $cur_subscriber['id']).'/mail_templates/new_reply.tpl'));
                         $mail_tpl = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $cur_subscriber['id']).'/mail_templates/new_reply_full.tpl'));
                         $mail_tpl_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
@@ -853,21 +853,21 @@ class Post
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
 
-                        $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
-                        $notification_emails[$cur_subscriber['language']][1] = $mail_message;
-                        $notification_emails[$cur_subscriber['language']][2] = $mail_subject_full;
-                        $notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][0] = $mail_subject;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][1] = $mail_message;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][2] = $mail_subject_full;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][3] = $mail_message_full;
 
                         $mail_subject = $mail_message = $mail_subject_full = $mail_message_full = null;
                     }
                 }
 
                 // We have to double check here because the templates could be missing
-                if (isset($notification_emails[$cur_subscriber['language']])) {
+                if (isset($notification_emails[User::getPref('language', $cur_subscriber['id'])])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[User::getPref('language', $cur_subscriber['id'])][0], $notification_emails[User::getPref('language', $cur_subscriber['id'])][1]);
                     } else {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[User::getPref('language', $cur_subscriber['id'])][2], $notification_emails[User::getPref('language', $cur_subscriber['id'])][3]);
                     }
                 }
             }
@@ -995,7 +995,7 @@ class Post
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post');
 
         $result = DB::for_table('users')
                     ->table_alias('u')
@@ -1027,15 +1027,15 @@ class Post
 
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {
-                // Is the subscription email for $cur_subscriber['language'] cached or not?
-                if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
+                // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
+                if (!isset($notification_emails[User::getPref('language', $cur_subscriber['id'])])) {
+                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $cur_subscriber['id']).'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $cur_subscriber['id']).'/mail_templates/new_topic.tpl'));
                         $mail_tpl = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $cur_subscriber['id']).'/mail_templates/new_topic_full.tpl'));
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
@@ -1065,19 +1065,19 @@ class Post
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message_full', $mail_message_full);
 
-                        $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
-                        $notification_emails[$cur_subscriber['language']][1] = $mail_message;
-                        $notification_emails[$cur_subscriber['language']][2] = $mail_subject_full;
-                        $notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][0] = $mail_subject;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][1] = $mail_message;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][2] = $mail_subject_full;
+                        $notification_emails[User::getPref('language', $cur_subscriber['id'])][3] = $mail_message_full;
                     }
                 }
 
                 // We have to double check here because the templates could be missing
-                if (isset($notification_emails[$cur_subscriber['language']])) {
+                if (isset($notification_emails[User::getPref('language', $cur_subscriber['id'])])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[User::getPref('language', $cur_subscriber['id'])][0], $notification_emails[User::getPref('language', $cur_subscriber['id'])][1]);
                     } else {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[User::getPref('language', $cur_subscriber['id'])][2], $notification_emails[User::getPref('language', $cur_subscriber['id'])][3]);
                     }
                 }
             }

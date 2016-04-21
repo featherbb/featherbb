@@ -255,11 +255,11 @@ class Auth
 
             $user->is_guest = false;
 
-            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language)) {
-                $user->language = ForumSettings::get('language');
+            if (!is_dir(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->prefs['language'])) {
+                $user->prefs['language'] = ForumSettings::get('language');
             }
-            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->style.'/style.css')) {
-                $user->style = ForumSettings::get('style');
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->prefs['style'].'/style.css')) {
+                $user->prefs['style'] = ForumSettings::get('style');
             }
 
             // Add user to DIC
