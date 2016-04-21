@@ -312,10 +312,10 @@ Container::get('hooks')->fire('view.admin.options.start');
                                 <tr>
                                     <th scope="row"><?php _e('Smilies sigs label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="form_smilies_sig" value="1"<?php if (ForumSettings::get('o_smilies_sig') == '1') {
+                                        <label class="conl"><input type="radio" name="form_smilies_sig" value="1"<?php if (ForumSettings::get('smilies.sig') == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="form_smilies_sig" value="0"<?php if (ForumSettings::get('o_smilies_sig') == '0') {
+                                        <label class="conl"><input type="radio" name="form_smilies_sig" value="0"<?php if (ForumSettings::get('smilies.sig') == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
                                         <span class="clearb"><?php _e('Smilies sigs help') ?></span>

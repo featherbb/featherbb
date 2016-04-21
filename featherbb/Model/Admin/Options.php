@@ -35,7 +35,7 @@ class Options
             'show_user_info'        => Input::post('form_show_user_info') != '1' ? '0' : '1',
             'show_post_count'        => Input::post('form_show_post_count') != '1' ? '0' : '1',
             // 'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
-            'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
+            // 'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'make_links'            => Input::post('form_make_links') != '1' ? '0' : '1',
             'topic_review'            => (intval(Input::post('form_topic_review')) >= 0) ? intval(Input::post('form_topic_review')) : 0,
             'disp_topics_default'    => intval(Input::post('form_disp_topics_default')),
@@ -86,6 +86,7 @@ class Options
             'time_format'            => Utils::trim(Input::post('form_time_format')),
             'date_format'            => Utils::trim(Input::post('form_date_format')),
             'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
+            'smilies.sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
         );
 
         $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);

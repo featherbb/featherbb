@@ -224,7 +224,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
 <?php
 
         foreach ($languages as $temp) {
-            if ($user['language'] == $temp) {
+            if (User::getPref('language', $user['id']) == $temp) {
                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>';
             } else {
                 echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>';
