@@ -378,7 +378,6 @@ class Profile
             throw new Error(__('Form email disabled'), 403);
         }
 
-
         if (Request::isPost()) {
             return $this->model->send_email($mail);
         }
@@ -386,7 +385,6 @@ class Profile
         return View::setPageInfo(array(
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])),
             'active_page' => 'email',
-            'id' => $args['id'],
             'mail' => $mail
         ))->addTemplate('misc/email.php')->display();
     }

@@ -723,13 +723,13 @@ Container::get('hooks')->fire('view.admin.options.start');
                                     <th scope="row"><?php _e('E-mail default label') ?></th>
                                     <td>
                                         <span><?php _e('E-mail default help') ?></span>
-                                        <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_0" value="0"<?php if (ForumSettings::get('o_default_email_setting') == '0') {
+                                        <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_0" value="0"<?php if (ForumSettings::get('email.setting') == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<?php _e('Display e-mail label') ?></label>
-                                        <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_1" value="1"<?php if (ForumSettings::get('o_default_email_setting') == '1') {
+                                        <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_1" value="1"<?php if (ForumSettings::get('email.setting') == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<?php _e('Hide allow form label') ?></label>
-                                        <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_2" value="2"<?php if (ForumSettings::get('o_default_email_setting') == '2') {
+                                        <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_2" value="2"<?php if (ForumSettings::get('email.setting') == '2') {
     echo ' checked="checked"';
 } ?> />&#160;<?php _e('Hide both label') ?></label>
                                     </td>

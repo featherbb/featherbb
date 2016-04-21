@@ -684,10 +684,10 @@ class Profile
     public function update_profile($id, $info, $section)
     {
         $info = Container::get('hooks')->fire('model.profile.update_profile_start', $info, $id, $section);
+        $section = Container::get('hooks')->fire('model.profile.update_profile_section', $section, $id, $info);
 
         $username_updated = false;
-
-        $section = Container::get('hooks')->fire('model.profile.update_profile_section', $section, $id, $info);
+        $form = $prefs = array();
 
         // Validate input depending on section
         switch ($section) {
@@ -855,7 +855,7 @@ class Profile
                     $styles = \FeatherBB\Core\Lister::getStyles();
                     $prefs['style'] = Utils::trim(Input::post('form_style'));
                     if (!in_array($prefs['style'], $styles)) {
-                        throw new Error(__('Bad request'), 404);
+                        $prefs['style'] = ForumSettings::get('style');
                     }
                 }
 
@@ -864,14 +864,14 @@ class Profile
 
             case 'privacy':
             {
-                $form = array(
-                    'email_setting'            => intval(Input::post('form_email_setting')),
+                $prefs = array(
+                    'email.setting'            => intval(Input::post('form_email_setting')),
                     'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
                     'auto_notify'            => Input::post('form_auto_notify') ? '1' : '0',
                 );
 
-                if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                    $form['email_setting'] = ForumSettings::get('o_default_email_setting');
+                if ($prefs['email.setting'] < 0 || $prefs['email.setting'] > 2) {
+                    $prefs['email.setting'] = ForumSettings::get('email.setting');
                 }
 
                 break;
@@ -889,7 +889,7 @@ class Profile
             $temp[$key] = $input;
         }
 
-        if (empty($temp)) {
+        if (empty($temp) && empty($prefs)) {
             throw new Error(__('Bad request'), 404);
         }
 
@@ -998,7 +998,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.notify_with_post', 'u.auto_notify', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')
@@ -1044,9 +1044,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
+        if (User::getPref('email.setting', $user['id']) == '0' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
+        } elseif (User::getPref('email.setting', $user['id']) == '1' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1287,10 +1287,10 @@ class Profile
     {
         $recipient_id = Container::get('hooks')->fire('model.profile.get_info_mail_start', $recipient_id);
 
-        $mail['select'] = array('username', 'email', 'email_setting');
-
         $mail = DB::for_table('users')
-                ->select_many($mail['select'])
+                ->select('username', 'recipient')
+                ->select('email', 'recipient_email')
+                ->select('id', 'recipient_id')
                 ->where('id', $recipient_id);
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail_query', $mail);
         $mail = $mail->find_one();
@@ -1299,8 +1299,7 @@ class Profile
             throw new Error(__('Bad request'), 404);
         }
 
-        $mail['recipient'] = $mail['username'];
-        $mail['recipient_email'] = $mail['email'];
+        $mail['email_setting'] = User::getPref('email.setting', $recipient_id);
 
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail', $mail);
 
@@ -1330,7 +1329,7 @@ class Profile
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/form_email.tpl'));
+        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $mail['recipient_id']).'/mail_templates/form_email.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1354,10 +1353,7 @@ class Profile
         $update_last_mail_sent = Container::get('hooks')->fireDB('model.profile.send_email_update_last_mail_sent', $update_last_mail_sent);
         $update_last_mail_sent = $update_last_mail_sent->save();
 
-        // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
-        //$redirect_url = validate_redirect(Input::post('redirect_url'), 'index.php');
-
-        return Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
+        return Router::redirect(Router::pathFor('userProfile', ['id' => $mail['recipient_id']]), __('Email sent redirect'));
     }
 
     public function display_ip_info($ip)
