@@ -180,8 +180,8 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                         <br /><select name="form_time_format">
 <?php
                             foreach (array_unique(Container::get('forum_time_formats')) as $key => $time_format) {
-                                echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
-                                if (User::getPref('time_format', $user['id']) == $key) {
+                                echo "\t\t\t\t\t\t\t\t".'<option value="'.$time_format.'"';
+                                if (User::getPref('time_format', $user['id']) == $time_format) {
                                     echo ' selected="selected"';
                                 }
                                 echo '>'. Utils::format_time(time(), false, null, $time_format, true, true);
@@ -198,8 +198,8 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                         <br /><select name="form_date_format">
 <?php
                             foreach (array_unique(Container::get('forum_date_formats')) as $key => $date_format) {
-                                echo "\t\t\t\t\t\t\t\t".'<option value="'.$key.'"';
-                                if (User::getPref('date_format', $user['id']) == $key) {
+                                echo "\t\t\t\t\t\t\t\t".'<option value="'.$date_format.'"';
+                                if (User::getPref('date_format', $user['id']) == $date_format) {
                                     echo ' selected="selected"';
                                 }
                                 echo '>'. Utils::format_time(time(), true, $date_format, null, false, true);

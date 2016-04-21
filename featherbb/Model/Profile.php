@@ -693,18 +693,18 @@ class Profile
         switch ($section) {
             case 'essentials':
             {
-                $form = array(
+                $prefs = array(
                     'timezone'        => floatval(Input::post('form_timezone')),
                     'dst'            => Input::post('form_dst') ? '1' : '0',
-                    'time_format'    => intval(Input::post('form_time_format')),
-                    'date_format'    => intval(Input::post('form_date_format')),
+                    'time_format'    => Input::post('form_time_format'),
+                    'date_format'    => Input::post('form_date_format'),
                 );
 
                 // Make sure we got a valid language string
                 if (Input::post('form_language')) {
                     $languages = \FeatherBB\Core\Lister::getLangs();
-                    $form['language'] = Utils::trim(Input::post('form_language'));
-                    if (!in_array($form['language'], $languages)) {
+                    $prefs['language'] = Utils::trim(Input::post('form_language'));
+                    if (!in_array($prefs['language'], $languages)) {
                         throw new Error(__('Bad request'), 404);
                     }
                 }
@@ -895,12 +895,18 @@ class Profile
             throw new Error(__('Bad request'), 404);
         }
 
+        // Update general user infos
         $update_user = DB::for_table('users')
             ->where('id', $id)
             ->find_one()
             ->set($temp);
         $update_user = Container::get('hooks')->fireDB('model.profile.update_profile_query', $update_user);
         $update_user = $update_user->save();
+
+        // Update user prefs
+        if (!empty($prefs)) {
+            Container::get('prefs')->setUser($id, $prefs);
+        }
 
         // If we changed the username we have to update some stuff
         if ($username_updated) {
