@@ -127,7 +127,7 @@ class Bans
             throw new Error(__('Bad request'), 404);
         }
 
-        $diff = (User::get()->timezone + User::get()->dst) * 3600;
+        $diff = (User::getPref('timezone') + User::getPref('dst')) * 3600;
         $ban['expire'] = ($ban['expire'] != '') ? gmdate('Y-m-d', $ban['expire'] + $diff) : '';
 
         $ban['mode'] = 'edit';
@@ -225,7 +225,7 @@ class Bans
                 throw new Error(__('Invalid date message').' '.__('Invalid date reasons'), 400);
             }
 
-            $diff = (User::get()->timezone + User::get()->dst) * 3600;
+            $diff = (User::getPref('timezone') + User::getPref('dst')) * 3600;
             $ban_expire -= $diff;
 
             if ($ban_expire <= time()) {

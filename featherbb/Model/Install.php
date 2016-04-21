@@ -215,8 +215,6 @@ class Install
             `show_img_sig` tinyint(1) NOT NULL DEFAULT '1',
             `show_avatars` tinyint(1) NOT NULL DEFAULT '1',
             `show_sig` tinyint(1) NOT NULL DEFAULT '1',
-            `timezone` float NOT NULL DEFAULT '0',
-            `dst` tinyint(1) NOT NULL DEFAULT '0',
             `num_posts` int(10) unsigned NOT NULL DEFAULT '0',
             `last_post` int(10) unsigned DEFAULT NULL,
             `last_search` int(10) unsigned DEFAULT NULL,

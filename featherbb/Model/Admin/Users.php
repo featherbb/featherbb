@@ -458,7 +458,7 @@ class Users
                     throw new Error(__('Invalid date message') . ' ' . __('Invalid date reasons'), 400);
                 }
 
-                $diff = (User::get()->timezone + User::get()->dst) * 3600;
+                $diff = (User::getPref('timezone') + User::getPref('dst')) * 3600;
                 $ban_expire -= $diff;
 
                 if ($ban_expire <= time()) {

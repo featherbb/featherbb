@@ -182,10 +182,10 @@ Container::get('hooks')->fire('view.admin.options.start');
                                 <tr>
                                     <th scope="row"><?php _e('DST label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="form_default_dst" value="1"<?php if (ForumSettings::get('o_default_dst') == '1') {
+                                        <label class="conl"><input type="radio" name="form_default_dst" value="1"<?php if (ForumSettings::get('dst') == '1') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="form_default_dst" value="0"<?php if (ForumSettings::get('o_default_dst') == '0') {
+                                        <label class="conl"><input type="radio" name="form_default_dst" value="0"<?php if (ForumSettings::get('dst') == '0') {
     echo ' checked="checked"';
 } ?> />&#160;<strong><?php _e('No') ?></strong></label>
                                         <span class="clearb"><?php _e('DST help') ?></span>
@@ -215,7 +215,7 @@ Container::get('hooks')->fire('view.admin.options.start');
                 </div>
 <?php
 
-    $diff = (User::get()->timezone + User::get()->dst) * 3600;
+    $diff = (User::getPref('timezone') + User::getPref('dst')) * 3600;
     $timestamp = time() + $diff;
 
 ?>

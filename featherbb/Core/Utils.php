@@ -65,7 +65,7 @@ class Utils
             return __('Never');
         }
 
-        $diff = (User::get()->timezone + User::get()->dst) * 3600;
+        $diff = (User::getPref('timezone') + User::getPref('dst')) * 3600;
         $timestamp += $diff;
         $now = time();
 

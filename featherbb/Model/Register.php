@@ -139,10 +139,6 @@ class Register
             'password'        => $password_hash,
             'email'           => $user['email1'],
             'email_setting'   => ForumSettings::get('o_default_email_setting'),
-            'timezone'        => ForumSettings::get('o_default_timezone'),
-            'dst'             => 0,
-            'language'        => $user['language'],
-            'style'           => ForumSettings::get('style'),
             'registered'      => $now,
             'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,
@@ -155,6 +151,8 @@ class Register
         $insert_user = $insert_user->save();
 
         $new_uid = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
+
+        Container::get('prefs')->setUser($new_uid,['language' => $user['language']]);
 
         // If the mailing list isn't empty, we may need to send out some alerts
         if (ForumSettings::get('o_mailing_list') != '') {

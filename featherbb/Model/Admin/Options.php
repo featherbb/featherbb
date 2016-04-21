@@ -23,8 +23,8 @@ class Options
             'board_title'            => Utils::trim(Input::post('form_board_title')),
             'board_desc'            => Utils::trim(Input::post('form_board_desc')),
             'base_url'                => Utils::trim(Input::post('form_base_url')),
-            'default_timezone'        => floatval(Input::post('form_default_timezone')),
-            'default_dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
+            // 'default_timezone'        => floatval(Input::post('form_default_timezone')),
+            // 'default_dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
             // 'default_lang'            => Utils::trim(Input::post('form_default_lang')),
             // 'default_style'            => Utils::trim(Input::post('form_default_style')),
             // 'time_format'            => Utils::trim(Input::post('form_time_format')),
@@ -81,10 +81,11 @@ class Options
         $prefs = array(
             'language'            => Utils::trim(Input::post('form_default_lang')),
             'style'            => Utils::trim(Input::post('form_default_style')),
+            'dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
+            'timezone'        => floatval(Input::post('form_default_timezone')),
             'time_format'            => Utils::trim(Input::post('form_time_format')),
             'date_format'            => Utils::trim(Input::post('form_date_format')),
             'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
-
         );
 
         $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
@@ -221,7 +222,8 @@ class Options
         Container::get('prefs')->set($prefs);
 
         // Regenerate the config cache
-        Container::get('cache')->store('config', array_merge(Cache::get_config(), Cache::get_preferences()));
+        $config = array_merge(Cache::get_config(), Cache::get_preferences());
+        Container::get('cache')->store('config', $config);
 
         return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }

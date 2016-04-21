@@ -226,10 +226,6 @@ class Auth
 
         $user->disp_topics = ForumSettings::get('o_disp_topics_default');
         $user->disp_posts = ForumSettings::get('o_disp_posts_default');
-        $user->timezone = ForumSettings::get('o_default_timezone');
-        $user->dst = ForumSettings::get('o_default_dst');
-        $user->language = ForumSettings::get('language');
-        $user->style = ForumSettings::get('style');
         $user->is_guest = true;
         $user->is_admmod = false;
 

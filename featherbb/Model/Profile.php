@@ -825,8 +825,8 @@ class Profile
             case 'display':
             {
                 $form = array(
-                    'disp_topics'        => Utils::trim(Input::post('form_disp_topics')),
-                    'disp_posts'        => Utils::trim(Input::post('form_disp_posts')),
+                    'disp_topics'        => intval(Input::post('form_disp_topics')),
+                    'disp_posts'        => intval(Input::post('form_disp_posts')),
                     'show_smilies'        => Input::post('form_show_smilies') ? '1' : '0',
                     'show_img'            => Input::post('form_show_img') ? '1' : '0',
                     'show_img_sig'        => Input::post('form_show_img_sig') ? '1' : '0',
@@ -835,7 +835,6 @@ class Profile
                 );
 
                 if ($form['disp_topics'] != '') {
-                    $form['disp_topics'] = intval($form['disp_topics']);
                     if ($form['disp_topics'] < 3) {
                         $form['disp_topics'] = 3;
                     } elseif ($form['disp_topics'] > 75) {
@@ -844,7 +843,6 @@ class Profile
                 }
 
                 if ($form['disp_posts'] != '') {
-                    $form['disp_posts'] = intval($form['disp_posts']);
                     if ($form['disp_posts'] < 3) {
                         $form['disp_posts'] = 3;
                     } elseif ($form['disp_posts'] > 75) {
@@ -1000,7 +998,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')
