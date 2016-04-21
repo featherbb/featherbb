@@ -206,8 +206,6 @@ class Install
             `url` varchar(100) DEFAULT NULL,
             `location` varchar(30) DEFAULT NULL,
             `signature` text,
-            `disp_topics` tinyint(3) unsigned DEFAULT NULL,
-            `disp_posts` tinyint(3) unsigned DEFAULT NULL,
             `email_setting` tinyint(1) NOT NULL DEFAULT '1',
             `notify_with_post` tinyint(1) NOT NULL DEFAULT '0',
             `auto_notify` tinyint(1) NOT NULL DEFAULT '0',

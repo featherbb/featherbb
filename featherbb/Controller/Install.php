@@ -221,6 +221,8 @@ class Install
         Container::get('perms')->allowGroup(1, array('*'));
         // Init preferences
         Container::get('prefs')->set(array(
+            'disp.topics' => 30,
+            'disp.posts' => 25,
             'post.min_interval' => 60,
             'search.min_interval' => 30,
             'email.min_interval' => 60,
@@ -306,8 +308,8 @@ class Install
             // 'o_default_style'            => $data['default_style'],
             'o_default_user_group'        => 4,
             'o_topic_review'            => 15,
-            'o_disp_topics_default'        => 30,
-            'o_disp_posts_default'        => 25,
+            // 'o_disp_topics_default'        => 30,
+            // 'o_disp_posts_default'        => 25,
             'o_indent_num_spaces'        => 4,
             'o_quote_depth'                => 3,
             'o_quickpost'                => 1,

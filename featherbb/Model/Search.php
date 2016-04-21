@@ -594,7 +594,7 @@ class Search
             }
 
             // Determine the topic or post offset (based on $_GET['p'])
-            $per_page = ($show_as == 'posts') ? User::get()->disp_posts : User::get()->disp_topics;
+            $per_page = ($show_as == 'posts') ? User::getPref('disp.posts') : User::getPref('disp.topics');
             $num_pages = ceil($num_hits / $per_page);
 
             $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
@@ -763,7 +763,7 @@ class Search
                 // Insert the status text before the subject
                 $subject = implode(' ', $status_text).' '.$subject;
 
-                $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / User::get()->disp_posts);
+                $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / User::getPref('disp.posts'));
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';

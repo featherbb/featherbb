@@ -38,8 +38,8 @@ class Options
             // 'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'make_links'            => Input::post('form_make_links') != '1' ? '0' : '1',
             'topic_review'            => (intval(Input::post('form_topic_review')) >= 0) ? intval(Input::post('form_topic_review')) : 0,
-            'disp_topics_default'    => intval(Input::post('form_disp_topics_default')),
-            'disp_posts_default'    => intval(Input::post('form_disp_posts_default')),
+            // 'disp_topics_default'    => intval(Input::post('form_disp_topics_default')),
+            // 'disp_posts_default'    => intval(Input::post('form_disp_posts_default')),
             'indent_num_spaces'        => (intval(Input::post('form_indent_num_spaces')) >= 0) ? intval(Input::post('form_indent_num_spaces')) : 0,
             'quote_depth'            => (intval(Input::post('form_quote_depth')) > 0) ? intval(Input::post('form_quote_depth')) : 1,
             'quickpost'                => Input::post('form_quickpost') != '1' ? '0' : '1',
@@ -87,6 +87,8 @@ class Options
             'date_format'            => Utils::trim(Input::post('form_date_format')),
             'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
             'smilies.sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
+            'disp.topics'    => intval(Input::post('form_disp_topics_default')),
+            'disp.posts'    => intval(Input::post('form_disp_posts_default')),
         );
 
         $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
@@ -183,16 +185,16 @@ class Options
         }
 
         // Make sure the number of displayed topics and posts is between 3 and 75
-        if ($form['disp_topics_default'] < 3) {
-            $form['disp_topics_default'] = 3;
-        } elseif ($form['disp_topics_default'] > 75) {
-            $form['disp_topics_default'] = 75;
+        if ($prefs['disp.topics'] < 3) {
+            $prefs['disp.topics'] = 3;
+        } elseif ($prefs['disp.topics'] > 75) {
+            $prefs['disp.topics'] = 75;
         }
 
-        if ($form['disp_posts_default'] < 3) {
-            $form['disp_posts_default'] = 3;
-        } elseif ($form['disp_posts_default'] > 75) {
-            $form['disp_posts_default'] = 75;
+        if ($prefs['disp.posts'] < 3) {
+            $prefs['disp.posts'] = 3;
+        } elseif ($prefs['disp.posts'] > 75) {
+            $prefs['disp.posts'] = 75;
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {

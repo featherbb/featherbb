@@ -62,10 +62,10 @@ class Topic
         }
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::get()->disp_posts * ($p - 1);
+        $start_from = User::getPref('disp.posts') * ($p - 1);
 
         $url_topic = Url::url_friendly($cur_topic['subject']);
         $url_forum = Url::url_friendly($cur_topic['forum_name']);
@@ -217,11 +217,11 @@ class Topic
         $cur_topic = $this->model->get_topic_info($args['fid'], $args['id']);
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
 
-        $start_from = User::get()->disp_posts * ($p - 1);
+        $start_from = User::getPref('disp.posts') * ($p - 1);
 
         // Delete one or more posts
         if (Input::post('delete_posts_comply')) {
@@ -258,7 +258,7 @@ class Topic
             $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
 
             /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
-                    User::get()->disp_posts = $cur_topic['num_replies'] + 1;
+                    User::getPref('disp.posts') = $cur_topic['num_replies'] + 1;
             }*/
 
             if (ForumSettings::get('o_censoring') == '1') {

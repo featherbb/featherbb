@@ -71,7 +71,7 @@ class Topic
 
         $num_posts = Container::get('hooks')->fire('model.topic.redirect_to_post_num', $num_posts);
 
-        $post['get_p'] = ceil(($num_posts + 1) / User::get()->disp_posts);
+        $post['get_p'] = ceil(($num_posts + 1) / User::getPref('disp.posts'));
 
         $post = Container::get('hooks')->fire('model.topic.redirect_to_post', $post);
 
@@ -824,7 +824,7 @@ class Topic
                     ->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by('id')
-                    ->limit(User::get()->disp_topics)
+                    ->limit(User::getPref('disp.topics'))
                     ->offset($start_from);
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_ids_query', $result);
         $result = $result->find_many();
@@ -998,7 +998,7 @@ class Topic
 
     public function display_posts_moderate($tid, $start_from)
     {
-        Container::get('hooks')->fire('model.topic.display_posts_view_start', $tid, $start_from);
+        Container::get('hooks')->fire('model.disp.topics_posts_view_start', $tid, $start_from);
 
         $post_data = array();
 
@@ -1008,9 +1008,9 @@ class Topic
         $find_ids = DB::for_table('posts')->select('id')
             ->where('topic_id', $tid)
             ->order_by('id')
-            ->limit(User::get()->disp_posts)
+            ->limit(User::getPref('disp.posts'))
             ->offset($start_from);
-        $find_ids = Container::get('hooks')->fireDB('model.topic.display_posts_view_find_ids', $find_ids);
+        $find_ids = Container::get('hooks')->fireDB('model.disp.topics_posts_view_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
 
         foreach ($find_ids as $id) {
@@ -1027,7 +1027,7 @@ class Topic
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
-        $result = Container::get('hooks')->fireDB('model.topic.display_posts_view_query', $result);
+        $result = Container::get('hooks')->fireDB('model.disp.topics_posts_view_query', $result);
         $result = $result->find_many();
 
         foreach($result as $cur_post) {
@@ -1061,7 +1061,7 @@ class Topic
             $post_data[] = $cur_post;
         }
 
-        $post_data = Container::get('hooks')->fire('model.topic.display_posts_view', $post_data);
+        $post_data = Container::get('hooks')->fire('model.disp.topics_posts_view', $post_data);
 
         return $post_data;
     }

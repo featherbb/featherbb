@@ -343,14 +343,14 @@ Container::get('hooks')->fire('view.admin.options.start');
                                 <tr>
                                     <th scope="row"><?php _e('Topics per page label') ?></th>
                                     <td>
-                                        <input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="<?= ForumSettings::get('o_disp_topics_default') ?>" />
+                                        <input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="<?= ForumSettings::get('disp.topics') ?>" />
                                         <span><?php _e('Topics per page help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?php _e('Posts per page label') ?></th>
                                     <td>
-                                        <input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="<?= ForumSettings::get('o_disp_posts_default') ?>" />
+                                        <input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="<?= ForumSettings::get('disp.posts') ?>" />
                                         <span><?php _e('Posts per page help') ?></span>
                                     </td>
                                 </tr>

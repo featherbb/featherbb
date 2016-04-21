@@ -48,10 +48,10 @@ class Forum
         }
 
         // Determine the topic offset (based on $args['page'])
-        $num_pages = ceil($cur_forum['num_topics'] / User::get()->disp_topics);
+        $num_pages = ceil($cur_forum['num_topics'] / User::getPref('disp.topics'));
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::get()->disp_topics * ($p - 1);
+        $start_from = User::getPref('disp.topics') * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         // Generate paging links
@@ -109,10 +109,10 @@ class Forum
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
 
         // Determine the topic offset (based on $_GET['p'])
-        $num_pages = ceil($cur_forum['num_topics'] / User::get()->disp_topics);
+        $num_pages = ceil($cur_forum['num_topics'] / User::getPref('disp.topics'));
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::get()->disp_topics * ($p - 1);
+        $start_from = User::getPref('disp.topics') * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
         View::setPageInfo(array(

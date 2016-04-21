@@ -224,8 +224,6 @@ class Auth
     {
         $user = AuthModel::load_user(1);
 
-        $user->disp_topics = ForumSettings::get('o_disp_topics_default');
-        $user->disp_posts = ForumSettings::get('o_disp_posts_default');
         $user->is_guest = true;
         $user->is_admmod = false;
 
@@ -257,12 +255,6 @@ class Auth
 
             $user->is_guest = false;
 
-            if (!$user->disp_topics) {
-                $user->disp_topics = ForumSettings::get('o_disp_topics_default');
-            }
-            if (!$user->disp_posts) {
-                $user->disp_posts = ForumSettings::get('o_disp_posts_default');
-            }
             if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language)) {
                 $user->language = ForumSettings::get('language');
             }

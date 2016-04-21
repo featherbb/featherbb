@@ -139,7 +139,7 @@ class Forum
                         ->order_by_desc('sticky')
                         ->order_by_expr($sort_by)
                         ->order_by_desc('id')
-                        ->limit(User::get()->disp_topics)
+                        ->limit(User::getPref('disp.topics'))
                         ->offset($start_from);
         $result = Container::get('hooks')->fire('model.forum.print_topics_ids_query', $result);
         $result = $result->find_many();
@@ -238,7 +238,7 @@ class Forum
                     }
                 }
 
-                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
+                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').' ]</span>';
@@ -276,7 +276,7 @@ class Forum
         $result = DB::for_table('topics')->select('id')
                     ->where('forum_id', $fid)
                     ->order_by_expr('sticky DESC, '.$sort_by)
-                    ->limit(User::get()->disp_topics)
+                    ->limit(User::getPref('disp.topics'))
                     ->offset($start_from);
         $result = Container::get('hooks')->fireDB('model.forum.display_topics_list_ids', $result);
         $result = $result->find_many();
@@ -348,7 +348,7 @@ class Forum
                 // Insert the status text before the subject
                 $cur_topic['subject_disp'] = implode(' ', $status_text).' '.$cur_topic['subject_disp'];
 
-                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
+                $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
