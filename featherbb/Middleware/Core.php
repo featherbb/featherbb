@@ -234,7 +234,8 @@ class Core
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         if (!Container::get('cache')->isCached('config')) {
-            Container::get('cache')->store('config', \FeatherBB\Model\Cache::get_config());
+            $config = array_merge(\FeatherBB\Model\Cache::get_config(), \FeatherBB\Model\Cache::get_preferences());
+            Container::get('cache')->store('config', $config);
         }
 
         // Finalize forum_settings array

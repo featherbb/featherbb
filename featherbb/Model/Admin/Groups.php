@@ -302,7 +302,8 @@ class Groups
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
-        Container::get('cache')->store('config', Cache::get_config());
+        $config = array_merge(Cache::get_config(), Cache::get_preferences());
+        Container::get('cache')->store('config', $config);
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }

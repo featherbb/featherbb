@@ -37,7 +37,7 @@ class Preferences
                         ->where('user', $uid)
                         ->find_one();
 
-            if (ForumSettings::get($pref_name) == $pref_value) {
+            if (Container::get('forum_settings') && ForumSettings::get($pref_name) == $pref_value) {
                 if ($result) {
                     $result->delete();
                 }
@@ -77,7 +77,7 @@ class Preferences
                         ->where('preference_name', (string) $pref_name)
                         ->where('group', $gid)
                         ->find_one();
-            if (ForumSettings::get($pref_name) == $pref_value) {
+            if (Container::get('forum_settings') && ForumSettings::get($pref_name) == $pref_value) {
                 if ($result) {
                     $result->delete();
                 }
