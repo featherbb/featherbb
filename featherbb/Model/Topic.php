@@ -878,7 +878,7 @@ class Topic
                 // Format the online indicator
                 $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.__('Online').'</strong>' : '<span>'.__('Offline').'</span>';
 
-                if (ForumSettings::get('o_avatars') == '1' && User::getPref('show.avatar') != '0') {
+                if (ForumSettings::get('o_avatars') == '1' && User::getPref('show.avatars') != '0') {
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {

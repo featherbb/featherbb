@@ -1271,7 +1271,7 @@ class Post
         }
 
         if (!User::get()->is_guest) {
-            if (ForumSettings::get('smilies') == '1') {
+            if (ForumSettings::get('show.smilies') == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
             }
 
@@ -1293,7 +1293,7 @@ class Post
 
                 $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
             }
-        } elseif (ForumSettings::get('smilies') == '1') {
+        } elseif (ForumSettings::get('show.smilies') == '1') {
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
@@ -1316,7 +1316,7 @@ class Post
             }
         }
 
-        if (ForumSettings::get('smilies') == '1') {
+        if (ForumSettings::get('show.smilies') == '1') {
             if (Input::post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
             } else {

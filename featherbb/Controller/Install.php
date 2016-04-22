@@ -233,8 +233,12 @@ class Install
             'date_format' => 'Y-m-d',
             'language' => $data['language'],
             'style' => $data['style'],
-            'smilies' => 1,
-            'smilies.sig' => 1,
+            'show.smilies.sig' => 1,
+            'show.smilies' => 1,
+            'show.img' => 1,
+            'show.img.sig' => 1,
+            'show.avatars' => 1,
+            'show.sig' => 1,
         ));
         Container::get('prefs')->setGroup(2, array(
             'post.min_interval' => 0,

@@ -85,8 +85,8 @@ class Options
             'timezone'        => floatval(Input::post('form_default_timezone')),
             'time_format'            => Utils::trim(Input::post('form_time_format')),
             'date_format'            => Utils::trim(Input::post('form_date_format')),
-            'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
-            'smilies.sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
+            'show.smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
+            'show.smilies.sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'disp.topics'    => intval(Input::post('form_disp_topics_default')),
             'disp.posts'    => intval(Input::post('form_disp_posts_default')),
         );
