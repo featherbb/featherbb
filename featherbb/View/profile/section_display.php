@@ -69,9 +69,9 @@ Container::get('hooks')->fire('view.profile.section_display.start');
 <?php if (ForumSettings::get('smilies') == '1' || ForumSettings::get('smilies.sig') == '1'): ?>
                                 <label><input type="checkbox" name="form_show_smilies" value="1"<?php if (User::getPref('smilies', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Show smilies') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>
-                                <label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user['show_sig'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Show sigs') ?><br /></label>
+                                <label><input type="checkbox" name="form_show_sig" value="1"<?php if (User::getPref('show.sig', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Show sigs') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_avatars') == '1'): ?>
-                                <label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user['show_avatars'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Show avatars') ?><br /></label>
+                                <label><input type="checkbox" name="form_show_avatars" value="1"<?php if (User::getPref('show.avatars', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Show avatars') ?><br /></label>
 <?php endif; if (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1'): ?>
                                 <label><input type="checkbox" name="form_show_img" value="1"<?php if (User::getPref('show.img', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Show images') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1' && ForumSettings::get('p_sig_bbcode') == '1' && ForumSettings::get('p_sig_img_tag') == '1'): ?>

@@ -830,8 +830,8 @@ class Profile
                     'show_smilies'        => Input::post('form_show_smilies') ? '1' : '0',
                     'show.img'            => Input::post('form_show_img') ? '1' : '0',
                     'show.img.sig'        => Input::post('form_show_img_sig') ? '1' : '0',
-                    'show_avatars'        => Input::post('form_show_avatars') ? '1' : '0',
-                    'show_sig'            => Input::post('form_show_sig') ? '1' : '0',
+                    'show.avatars'        => Input::post('form_show_avatars') ? '1' : '0',
+                    'show.sig'            => Input::post('form_show_sig') ? '1' : '0',
                 );
 
                 if ($prefs['disp.topics'] != '') {
@@ -998,7 +998,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_avatars', 'u.show_sig', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')

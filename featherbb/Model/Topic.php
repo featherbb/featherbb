@@ -878,7 +878,7 @@ class Topic
                 // Format the online indicator
                 $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.__('Online').'</strong>' : '<span>'.__('Offline').'</span>';
 
-                if (ForumSettings::get('o_avatars') == '1' && User::get()->show_avatars != '0') {
+                if (ForumSettings::get('o_avatars') == '1' && User::getPref('show.avatar') != '0') {
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {
@@ -979,7 +979,7 @@ class Topic
             $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
-            if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::get()->show_sig != '0') {
+            if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::getPref('show.sig') != '0') {
                 // if (isset($avatar_cache[$cur_post['poster_id']])) {
                 //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 // } else {
