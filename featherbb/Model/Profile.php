@@ -713,7 +713,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::can('mod.rename_users'))) {
+                    if (User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.rename_users'))) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -728,7 +728,7 @@ class Profile
                     }
 
                     // We only allow administrators to update the post count
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+                    if (User::isAdmin()) {
                         $form['num_posts'] = intval(Input::post('num_posts'));
                     }
                 }
@@ -771,7 +771,7 @@ class Profile
                     $form['url'] = '';
                 }
 
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+                if (User::isAdmin()) {
                     $form['title'] = Utils::trim(Input::post('title'));
                 } elseif (User::can('user.set_title')) {
                     $form['title'] = Utils::trim(Input::post('title'));
@@ -1114,7 +1114,7 @@ class Profile
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
         if (User::isAdminMod()) {
-            if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::can('mod.rename_users')) {
+            if (User::isAdmin() || User::can('mod.rename_users')) {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" required /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
@@ -1134,13 +1134,13 @@ class Profile
         $user_disp['posts_field'] = '';
         $posts_actions = array();
 
-        if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::isAdmin()) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
         } elseif (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
-        if (User::can('search.topics') || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::can('search.topics') || User::isAdmin()) {
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 

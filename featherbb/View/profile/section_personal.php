@@ -31,7 +31,7 @@ Container::get('hooks')->fire('view.profile.section_personal.start');
                         <label><?php _e('Realname') ?><br /><input type="text" name="form_realname" value="<?= Utils::escape($user['realname']) ?>" size="40" maxlength="40" /><br /></label>
 <?php if (isset($title_field)): ?>                            <?= $title_field ?>
 <?php endif; ?>                            <label><?php _e('Location') ?><br /><input type="text" name="form_location" value="<?= Utils::escape($user['location']) ?>" size="30" maxlength="30" /><br /></label>
-<?php if (User::can('post.links') || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) : ?>                            <label><?php _e('Website') ?><br /><input type="text" name="form_url" value="<?= Utils::escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
+<?php if (User::can('post.links') || User::isAdmin()) : ?>                            <label><?php _e('Website') ?><br /><input type="text" name="form_url" value="<?= Utils::escape($user['url']) ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>
                         <label><?php _e('API token') ?><br /><input type="text" name="api" readonly="readonly" value="<?= Api::getToken(User::get()) ?>" size="60" maxlength="60" /><br /></label>
                     </div>

@@ -92,8 +92,8 @@ class Users
             $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
-            $can_delete = $can_move = User::get()->g_id == ForumEnv::get('FEATHER_ADMIN');
-            $can_ban = User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::can('mod.ban_users'));
+            $can_delete = $can_move = User::isAdmin();
+            $can_ban = User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.ban_users'));
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
             View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 

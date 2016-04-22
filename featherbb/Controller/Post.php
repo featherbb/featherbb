@@ -71,7 +71,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
         if ((($args['tid'] && (($cur_posting['post_replies'] == '' && !User::can('topic.reply')) || $cur_posting['post_replies'] == '0')) ||
@@ -208,7 +208,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
 
@@ -249,7 +249,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::can('mod.is_mod') && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $args['id'] == $cur_post['first_post_id'];
 

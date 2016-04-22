@@ -27,7 +27,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
                         <?= $user_disp['username_field'] ?>
-<?php if (User::get()->id == $id || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::can('mod.change_passwords'))): ?>
+<?php if (User::get()->id == $id || User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.change_passwords'))): ?>
                             <p class="actions"><span><a href="<?= Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_pass']) ?>"><?php _e('Change pass') ?></a></span></p>
 <?php endif; ?>
                     </div>
