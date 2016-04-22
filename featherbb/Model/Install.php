@@ -209,8 +209,6 @@ class Install
             `email_setting` tinyint(1) NOT NULL DEFAULT '1',
             `notify_with_post` tinyint(1) NOT NULL DEFAULT '0',
             `auto_notify` tinyint(1) NOT NULL DEFAULT '0',
-            `show_img` tinyint(1) NOT NULL DEFAULT '1',
-            `show_img_sig` tinyint(1) NOT NULL DEFAULT '1',
             `show_avatars` tinyint(1) NOT NULL DEFAULT '1',
             `show_sig` tinyint(1) NOT NULL DEFAULT '1',
             `num_posts` int(10) unsigned NOT NULL DEFAULT '0',

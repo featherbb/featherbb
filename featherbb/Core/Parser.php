@@ -132,7 +132,7 @@ class Parser
     {
         $this->pd['in_signature'] = false;
         // Disable images via the $bbcd['in_post'] flag if globally disabled.
-        if (ForumSettings::get('p_message_img_tag') !== '1' || User::get()['show_img'] !== '1')
+        if (ForumSettings::get('p_message_img_tag') !== '1' || User::getPref('show.img') !== '1')
             if (isset($this->pd['bbcd']['img']))
                 $this->pd['bbcd']['img']['in_post'] = false;
         return $this->parse_bbcode($text, $hide_smilies);
@@ -148,7 +148,7 @@ class Parser
     {
         $this->pd['in_signature'] = true;
         // Disable images via the $bbcd['in_sig'] flag if globally disabled.
-        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::get()['show_img_sig'] !== '1')
+        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::getPref('show.img.sig') !== '1')
             if (isset($this->pd['bbcd']['img']))
                 $this->pd['bbcd']['img']['in_sig'] = false;
         return $this->parse_bbcode($text);
