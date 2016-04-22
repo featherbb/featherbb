@@ -27,8 +27,11 @@ class User extends \Statical\BaseProxy
      * @param  int     $id  Optionnal user id. If not provided, will return pref for currently logged user
      * @return string       Value of the pref returned by Core/Preferences class
      */
-    public static function getPref($pref = null, int $id = null)
+    public static function getPref($pref = null, $id = null)
     {
+        if ($id == Container::get('user')->id) {
+            $id = null;
+        }
         $user = self::get($id);
         return Container::get('prefs')->get($user, $pref);
     }
@@ -41,6 +44,9 @@ class User extends \Statical\BaseProxy
      */
     public static function can($permission = null, $id = null)
     {
+        if ($id == Container::get('user')->id) {
+            $id = null;
+        }
         $user = self::get($id);
         return Container::get('perms')->can($user, $permission);
     }
@@ -52,6 +58,9 @@ class User extends \Statical\BaseProxy
      */
     public static function isAdmin($id = null)
     {
+        if ($id == Container::get('user')->id) {
+            $id = null;
+        }
         return self::get($id)->g_id == ForumEnv::get('FEATHER_ADMIN');
     }
 
@@ -62,6 +71,9 @@ class User extends \Statical\BaseProxy
      */
     public static function isAdminMod($id = null)
     {
+        if ($id == Container::get('user')->id) {
+            $id = null;
+        }
         $user = self::get($id);
         return $user->g_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->can($user, 'mod.is_mod');
     }

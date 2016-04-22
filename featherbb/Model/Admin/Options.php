@@ -71,7 +71,7 @@ class Options
             'regs_report'            => Input::post('form_regs_report') != '1' ? '0' : '1',
             'rules'                    => Input::post('form_rules') != '1' ? '0' : '1',
             'rules_message'            => Utils::trim(Input::post('form_rules_message')),
-            // 'default_email_setting'    => intval(Input::post('form_default_email_setting')),
+            'default_email_setting'    => intval(Input::post('form_default_email_setting')),
             'announcement'            => Input::post('form_announcement') != '1' ? '0' : '1',
             'announcement_message'    => Utils::trim(Input::post('form_announcement_message')),
             'maintenance'            => Input::post('form_maintenance') != '1' ? '0' : '1',
@@ -89,7 +89,6 @@ class Options
             'smilies.sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'disp.topics'    => intval(Input::post('form_disp_topics_default')),
             'disp.posts'    => intval(Input::post('form_disp_posts_default')),
-            'email.setting'    => intval(Input::post('form_default_email_setting')),
         );
 
         $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
@@ -189,6 +188,14 @@ class Options
             throw new Error(__('Timeout error message'), 400);
         }
 
+        if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
+            throw new Error(__('Bad request'), 400);
+        }
+
+        if ($form['report_method'] < 0 || $form['report_method'] > 2) {
+            throw new Error(__('Bad request'), 400);
+        }
+
         // Make sure the number of displayed topics and posts is between 3 and 75
         if ($prefs['disp.topics'] < 3) {
             $prefs['disp.topics'] = 3;
@@ -200,14 +207,6 @@ class Options
             $prefs['disp.posts'] = 3;
         } elseif ($prefs['disp.posts'] > 75) {
             $prefs['disp.posts'] = 75;
-        }
-
-        if ($prefs['email.setting'] < 0 || $prefs['email.setting'] > 2) {
-            throw new Error(__('Bad request'), 400);
-        }
-
-        if ($form['report_method'] < 0 || $form['report_method'] > 2) {
-            throw new Error(__('Bad request'), 400);
         }
 
         foreach ($form as $key => $input) {

@@ -839,7 +839,7 @@ class Topic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
+        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
 
         $result = DB::for_table('posts')
                     ->table_alias('p')
@@ -903,9 +903,9 @@ class Topic
                     }
 
                     // Now let's deal with the contact links (Email and URL)
-                    if (((User::getPref('email.setting', $cur_post['poster_id']) == '0' && !User::get()->is_guest) || User::isAdminMod()) && User::can('email.send')) {
+                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::isAdminMod()) && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
-                    } elseif (User::getPref('email.setting', $cur_post['poster_id']) == '1' && !User::get()->is_guest && User::can('email.send')) {
+                    } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
                     }
 
@@ -918,7 +918,7 @@ class Topic
                     }
                 }
 
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::can('mod.is_mod') && User::can('mod.promote_users'))) {
+                if (User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.promote_users'))) {
                     if ($cur_post['g_promote_next_group']) {
                         $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('profileAction', ['id' => $cur_post['poster_id'], 'action' => 'promote', 'pid' => $cur_post['id']]).'">'.__('Promote user').'</a></span></dd>';
                     }
