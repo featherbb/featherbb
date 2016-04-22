@@ -86,8 +86,8 @@ Container::get('hooks')->fire('view.profile.section_display.start');
                     <fieldset>
                         <legend><?php _e('Pagination legend') ?></legend>
                         <div class="infldset">
-                            <label class="conl"><?php _e('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?= User::getPref('disp.topics', $user['id']) ?>" size="6" maxlength="2" /><br /></label>
-                            <label class="conl"><?php _e('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?= User::getPref('disp.posts', $user['id']) ?>" size="6" maxlength="2" /><br /></label>
+                            <label class="conl"><?php _e('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?= (User::getPref('disp.topics', $user['id']) != ForumSettings::get('disp.topics')) ? User::getPref('disp.topics', $user['id']) : '' ?>" size="6" maxlength="2" /><br /></label>
+                            <label class="conl"><?php _e('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?= (User::getPref('disp.posts', $user['id']) != ForumSettings::get('disp.posts')) ? User::getPref('disp.posts', $user['id']) : '' ?>" size="6" maxlength="2" /><br /></label>
                             <p class="clearb"><?php _e('Paginate info') ?> <?php _e('Leave blank') ?></p>
                         </div>
                     </fieldset>

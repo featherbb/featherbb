@@ -825,9 +825,9 @@ class Profile
             case 'display':
             {
                 $prefs = array(
-                    'disp.topics'        => intval(Input::post('form_disp_topics')),
-                    'disp.posts'        => intval(Input::post('form_disp_posts')),
-                    'show_smilies'        => Input::post('form_show_smilies') ? '1' : '0',
+                    'disp.topics'         => Input::post('form_disp_topics'),
+                    'disp.posts'          => Input::post('form_disp_posts'),
+                    'show.smilies'        => Input::post('form_show_smilies') ? '1' : '0',
                     'show.img'            => Input::post('form_show_img') ? '1' : '0',
                     'show.img.sig'        => Input::post('form_show_img_sig') ? '1' : '0',
                     'show.avatars'        => Input::post('form_show_avatars') ? '1' : '0',
@@ -835,6 +835,7 @@ class Profile
                 );
 
                 if ($prefs['disp.topics'] != '') {
+                    $prefs['disp.topics'] = intval($prefs['disp.topics']);
                     if ($prefs['disp.topics'] < 3) {
                         $prefs['disp.topics'] = 3;
                     } elseif ($prefs['disp.topics'] > 75) {
@@ -843,6 +844,7 @@ class Profile
                 }
 
                 if ($prefs['disp.posts'] != '') {
+                    $prefs['disp.posts'] = intval($prefs['disp.posts']);
                     if ($prefs['disp.posts'] < 3) {
                         $prefs['disp.posts'] = 3;
                     } elseif ($prefs['disp.posts'] > 75) {
