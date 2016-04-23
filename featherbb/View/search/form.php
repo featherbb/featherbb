@@ -24,7 +24,7 @@ Container::get('hooks')->fire('view.search.form.start');
                     <legend><?php _e('Search criteria legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="action" value="search" />
-                        <label class="conl"><?php _e('Keyword search') ?><br /><input type="text" name="keywords" size="40" maxlength="100" autofocus /><br /></label>
+                        <label class="conl"><?php _e('Keyword search') ?><br /><input type="text" name="keywords" size="40" maxlength="100" pattern=".{<?= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') ?>,}" autofocus required /><br /></label>
                         <label class="conl"><?php _e('Author search') ?><br /><input id="author" type="text" name="author" size="25" maxlength="25" /><br /></label>
                         <p class="clearb"><?php _e('Search info') ?></p>
                     </div>

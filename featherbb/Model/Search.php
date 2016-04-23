@@ -22,7 +22,7 @@ class Search
         $this->search = new \FeatherBB\Core\Search();
     }
 
-    public function get_search_results()
+    public function get_search_results($search_id = null)
     {
         $search = array();
 
@@ -42,8 +42,8 @@ class Search
         }
 
         // If a search_id was supplied
-        if (Input::query('search_id')) {
-            $search_id = intval(Input::query('search_id'));
+        if ($search_id) {
+            $search_id = intval($search_id);
             if ($search_id < 1) {
                 throw new Error(__('Bad request'), 400);
             }
@@ -62,7 +62,7 @@ class Search
             }
 
             if (!$keywords && !$author) {
-                throw new Error(__('No terms'), 400);
+                return Router::redirect(Router::pathFor('search'), ['error', __('No terms')]);
             }
 
             if ($author) {
@@ -118,7 +118,7 @@ class Search
 
                 unset($temp);
             } else {
-                throw new Error(__('No hits'), 404);
+                return Router::redirect(Router::pathFor('search'), ['error', __('No hits')]);
             }
         } else {
             $keyword_results = $author_results = array();
@@ -178,7 +178,7 @@ class Search
                     $keywords_array = Container::get('hooks')->fire('model.search.get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
-                        throw new Error(__('No hits'), 400);
+                        return Router::redirect(Router::pathFor('search'), ['error', __('No hits')]);
                     }
 
                     // Should we search in message body or topic subject specifically?
@@ -315,7 +315,7 @@ class Search
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
-                    throw new Error(__('No hits'), 400);
+                    return Router::redirect(Router::pathFor('search'), ['error', __('No hits')]);
                 }
             } elseif ($action == 'show_new' || $action == 'show_recent' || $action == 'show_replies' || $action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions' || $action == 'show_unanswered') {
                 $search_type = array('action', $action);
@@ -563,6 +563,11 @@ class Search
                         ->set($cache['insert']);
             $cache = Container::get('hooks')->fireDB('model.search.get_search_results_update_cache', $cache);
             $cache = $cache->save();
+
+            if ($search_type[0] != 'action') {
+                // Redirect the user to the cached result page
+                return Router::redirect(Router::pathFor('search', ['search_id' => $search_id]));
+            }
         }
 
         // If we're on the new posts search, display a "mark all as read" link

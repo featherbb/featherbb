@@ -33,13 +33,21 @@ class Search
         }
 
         // Figure out what to do :-)
-        if (Input::query('action') || (Input::query('search_id'))) {
+        if (Input::query('action') || $args['search_id']) {
 
-            $search = $this->model->get_search_results();
+            $search = $this->model->get_search_results($args['search_id']);
 
-            // We have results to display
-            if (!is_object($search) && isset($search['is_result'])) {
+            if (is_object($search)) {
+                // $search is most likely a Router::redirect() to search page (no hits or other error) or to a search_id
+                return $search;
+            } else {
 
+                // No results to display, redirect with message
+                if (!isset($search['is_result'])) {
+                    return Router::redirect(Router::pathFor('search'), ['error', __('No hits')]);
+                }
+
+                // We have results to display
                 View::setPageInfo(array(
                     'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search results')),
                     'active_page' => 'search',
@@ -64,9 +72,6 @@ class Search
                 }
 
                 View::addTemplate('search/footer.php', 10)->display();
-
-            } else {
-                return Router::redirect(Router::pathFor('search'), __('No hits'));
             }
         }
         // Display the form

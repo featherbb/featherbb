@@ -77,7 +77,7 @@ Route::group('/register', function() {
 
 // Search routes
 Route::group('/search', function() {
-    Route::get('', '\FeatherBB\Controller\Search:display')->setName('search');
+    Route::get('[/{search_id:\d+}]', '\FeatherBB\Controller\Search:display')->setName('search');
     Route::get('/show/{show}', '\FeatherBB\Controller\Search:quicksearches')->setName('quickSearch');
 })->add(new CanReadBoard);
 
