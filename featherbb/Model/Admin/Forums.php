@@ -148,15 +148,15 @@ class Forums
         foreach($permissions as $cur_perm) {
             $group_permissions = Container::get('perms')->getGroupPermissions($cur_perm['g_id']);
 
-            $cur_perm['board.read'] = $group_permissions['board.read'];
+            $cur_perm['board.read'] = isset($group_permissions['board.read']);
             $cur_perm['read_forum'] = ($cur_perm['read_forum'] != '0') ? true : false;
-            $cur_perm['post_replies'] = (($group_permissions['topic.reply'] == '0' && $cur_perm['post_replies'] == '1') || ($group_permissions['topic.reply'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
-            $cur_perm['post_topics'] = (($group_permissions['topic.post'] == '0' && $cur_perm['post_topics'] == '1') || ($group_permissions['topic.post'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
+            $cur_perm['post_replies'] = ((!isset($group_permissions['topic.reply']) && $cur_perm['post_replies'] == '1') || (isset($group_permissions['topic.reply']) && $cur_perm['post_replies'] != '0')) ? true : false;
+            $cur_perm['post_topics'] = ((!isset($group_permissions['topic.post']) && $cur_perm['post_topics'] == '1') || (isset($group_permissions['topic.post']) && $cur_perm['post_topics'] != '0')) ? true : false;
 
             // Determine if the current settings differ from the default or not
             $cur_perm['read_forum_def'] = ($cur_perm['read_forum'] == '0') ? false : true;
-            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && $group_permissions['topic.reply'] == '0') || (!$cur_perm['post_replies'] && $group_permissions['topic.reply'] == '1')) ? false : true;
-            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && $group_permissions['topic.post'] == '0') || (!$cur_perm['post_topics'] && $group_permissions['topic.post'] == '1')) ? false : true;
+            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && !isset($group_permissions['topic.reply'])) || (!$cur_perm['post_replies'] && isset($group_permissions['topic.reply']))) ? false : true;
+            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && !isset($group_permissions['topic.post'])) || (!$cur_perm['post_topics'] && isset($group_permissions['topic.post']))) ? false : true;
 
             $perm_data[] = $cur_perm;
         }

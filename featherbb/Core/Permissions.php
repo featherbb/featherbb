@@ -195,8 +195,8 @@ class Permissions
             $result->delete();
         }
 
-        // If group or one of his parents have the permission, remove it
-        if (!array_key_exists($permission, $this->getGroupPermissions($gid)) || $this->getGroupPermissions($gid)[$permission] == false) {
+        // If group or one of his parents have not the permission, add it
+        if (!array_key_exists($permission, $this->getGroupPermissions($gid))) {
             DB::for_table('permissions')
                 ->create()
                 ->set(array(
@@ -240,14 +240,14 @@ class Permissions
         }
 
         // Check if one of his parents have the permission, and force denied permission if needed
-        if (array_key_exists($permission, $this->getGroupPermissions($gid)) && $this->getGroupPermissions($gid)[$permission] == true) {
+        if (array_key_exists($permission, $this->getGroupPermissions($gid))) {
             DB::for_table('permissions')
                 ->create()
                 ->set(array(
                     'permission_name' => $permission,
                     'group' => $gid,
-                    'deny'  => 1,
-                    'allow' => null
+                    'allow' => null,
+                    'deny'  => 1
                 ))
                 ->save();
         }
@@ -378,29 +378,8 @@ class Permissions
         $group_data = $group_permissions = array();
 
         foreach ($result as $perm) {
-            $group_data[$perm['group']][$perm['permission_name']] = (bool) $perm['allow'];
+            $group_permissions[$perm['permission_name']] = isset($perm['allow']) && $perm['allow'] == true;
         }
-        // Set default permissions
-        $default_perms = array('mod.is_mod','mod.edit_users','mod.rename_users','mod.change_passwords','mod.promote_users','mod.ban_users','board.read','topic.reply','topic.post','topic.delete','post.edit','post.delete','post.links','users.view','user.set_title','search.topics','search.users','email.send');
-        foreach ($default_perms as $perm) {
-            // Init all perms to false
-            if (!isset($group_data[$group_id][$perm])) {
-                $group_permissions[$perm] = false;
-            }
-            // Check if parent groups have perm
-            if ($parents) {
-                foreach ($parents as $parent_id) {
-                    if (isset($group_data[$parent_id][$perm])) {
-                        $group_permissions[$perm] = $group_data[$parent_id][$perm];
-                    }
-                }
-            }
-            // Always override perm if group specific exists
-            if (isset($group_data[$group_id][$perm])) {
-                $group_permissions[$perm] = $group_data[$group_id][$perm];
-            }
-        }
-
         return (array) $group_permissions;
     }
 }
