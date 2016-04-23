@@ -327,7 +327,7 @@ class Permissions
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = User::get((int) $user);
+            $data = User::getBasic((int) $user);
             if (!$data) {
                 throw new \ErrorException('Internal error : Unknown user ID', 500);
             }
@@ -339,7 +339,7 @@ class Permissions
         return array((int) $uid, (int) $gid);
     }
 
-    public function getGroupPreferences(int $group_id)
+    public function getGroupPreferences($group_id)
     {
         $result = DB::for_table('preferences')
             ->select_many('preference_name', 'preference_value')
@@ -359,7 +359,7 @@ class Permissions
         return (array) $group_preferences;
     }
 
-    public function getGroupPermissions(int $group_id)
+    public function getGroupPermissions($group_id)
     {
         $where = array(['group' => $group_id]);
 

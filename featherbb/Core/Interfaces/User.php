@@ -2,6 +2,7 @@
 namespace FeatherBB\Core\Interfaces;
 
 use FeatherBB\Model\Auth as AuthModel;
+use FeatherBB\Core\Database as DB;
 
 class User extends \Statical\BaseProxy
 {
@@ -12,12 +13,28 @@ class User extends \Statical\BaseProxy
      */
     public static function get($id = null)
     {
-        if (!$id) {
+        if (!$id || $id == Container::get('user')->id) {
             // Get current user by default
             return Container::get('user');
         } else {
             // Load user from Db based on $id
             return AuthModel::load_user($id);
+        }
+    }
+
+    /**
+     * Load a user minimal infos, e.g for permissions and preferences
+     * @param  int    $id The id of the user. If null (default), will return currently logged user
+     * @return object     User id and group id
+     */
+    public static function getBasic($id = null)
+    {
+        if (!$id || $id == Container::get('user')->id) {
+            // Get current user by default
+            return Container::get('user');
+        } else {
+            // Load user from DB based on $id
+            return DB::for_table('users')->select_many('id', 'group_id')->find_one($id);
         }
     }
 
@@ -29,10 +46,7 @@ class User extends \Statical\BaseProxy
      */
     public static function getPref($pref = null, $id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        $user = self::get($id);
+        $user = self::getBasic($id);
         return Container::get('prefs')->get($user, $pref);
     }
 
@@ -44,10 +58,7 @@ class User extends \Statical\BaseProxy
      */
     public static function can($permission = null, $id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        $user = self::get($id);
+        $user = self::getBasic($id);
         return Container::get('perms')->can($user, $permission);
     }
 
@@ -58,10 +69,7 @@ class User extends \Statical\BaseProxy
      */
     public static function isAdmin($id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        return self::get($id)->g_id == ForumEnv::get('FEATHER_ADMIN');
+        return self::getBasic($id)->group_id == ForumEnv::get('FEATHER_ADMIN');
     }
 
     /**
@@ -71,10 +79,7 @@ class User extends \Statical\BaseProxy
      */
     public static function isAdminMod($id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        $user = self::get($id);
-        return $user->g_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->can($user, 'mod.is_mod');
+        $user = self::getBasic($id);
+        return $user->group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->can($user, 'mod.is_mod');
     }
 }
