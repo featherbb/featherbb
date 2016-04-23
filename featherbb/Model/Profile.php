@@ -841,6 +841,8 @@ class Profile
                     } elseif ($prefs['disp.topics'] > 75) {
                         $prefs['disp.topics'] = 75;
                     }
+                } else {
+                    unset($prefs['disp.topics']);
                 }
 
                 if ($prefs['disp.posts'] != '') {
@@ -850,6 +852,8 @@ class Profile
                     } elseif ($prefs['disp.posts'] > 75) {
                         $prefs['disp.posts'] = 75;
                     }
+                } else {
+                    unset($prefs['disp.posts']);
                 }
 
                 // Make sure we got a valid style string
