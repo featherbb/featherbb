@@ -20,7 +20,7 @@ class Groups
     public function fetch_groups()
     {
         // $result = DB::for_table('groups')->order_by('g_id')->find_many();
-        $result = DB::for_table('groups')->select_many('g_id', 'g_user_title', 'g_title', 'g_promote_min_posts', 'g_promote_next_group')->order_by('g_id')->find_many();
+        $result = DB::for_table('groups')->select_many('g_id', 'g_user_title', 'g_title', 'g_promote_min_posts', 'g_promote_next_group', 'g_moderator')->order_by('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = array();
         foreach ($result as $cur_group) {
@@ -177,7 +177,6 @@ class Groups
             'report.min_interval'   => (int) $report_flood
         );
         $group_permissions = array(
-            'mod.is_mod'            => (int) $moderator,
             'mod.edit_users'        => (int) $mod_edit_users,
             'mod.rename_users'      => (int) $mod_rename_users,
             'mod.change_passwords'  => (int) $mod_change_passwords,
@@ -222,7 +221,6 @@ class Groups
             Container::get('perms')->denyGroup($new_group_id, array_keys($denied_perms));
 
             // Now lets copy the forum specific permissions from the group which this group is based on
-            // TODO: Remove this when new perms are ready
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
             $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', Input::post('base_group'));

@@ -713,7 +713,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.rename_users'))) {
+                    if (User::isAdmin() || (User::isAdminMod() && User::can('mod.rename_users'))) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -952,8 +952,7 @@ class Profile
             // If the user is a moderator or an administrator we have to update the moderator lists
             $group_id = DB::for_table('users')
                 ->where('id', $id);
-            // TODO: restore hook
-            // $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $update_online);
+            $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $group_id);
             $group_id = $group_id->find_one_col('group_id');
 
             $group_mod = DB::for_table('groups')
