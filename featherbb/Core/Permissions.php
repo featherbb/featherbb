@@ -372,13 +372,20 @@ class Permissions
         $result = DB::for_table('permissions')
             ->select_many('permission_name', 'allow', 'deny', 'group')
             ->where_any_is($where)
-            ->order_by_desc('group')
             ->find_array();
 
-        $group_data = $group_permissions = array();
+        $group_permissions = array();
 
         foreach ($result as $perm) {
-            $group_permissions[$perm['permission_name']] = isset($perm['allow']) && $perm['allow'] == true;
+            if (!isset($group_permissions[$perm['permission_name']])) {
+                if ((bool) $perm['allow']) {
+                    $group_permissions[$perm['permission_name']] = true;
+                }
+            } else {
+                if ((bool) $perm['deny']) {
+                    unset($group_permissions[$perm['permission_name']]);
+                }
+            }
         }
         return (array) $group_permissions;
     }
