@@ -871,7 +871,7 @@ class Profile
             case 'privacy':
             {
                 $form = array(
-                    'email_setting'            => intval(Input::post('form_email_setting')),
+                    'email.setting'            => intval(Input::post('form_email_setting')),
                     'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
                     'auto_notify'            => Input::post('form_auto_notify') ? '1' : '0',
                 );
@@ -1003,7 +1003,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.notify_with_post', 'u.auto_notify', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.auto_notify', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')

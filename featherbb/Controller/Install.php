@@ -239,7 +239,8 @@ class Install
             'show.img.sig' => 1,
             'show.avatars' => 1,
             'show.sig' => 1,
-            'email.setting' => 1
+            'email.setting' => 1,
+            'notify_with_post' => 0,
         ));
         Container::get('prefs')->setGroup(2, array(
             'post.min_interval' => 0,

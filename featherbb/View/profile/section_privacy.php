@@ -41,7 +41,7 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                         <legend><?php _e('Subscription legend') ?></legend>
                         <div class="infldset">
                             <div class="rbox">
-                                <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user['notify_with_post'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Notify full') ?><br /></label>
+                                <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user['prefs']['notify_with_post'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Notify full') ?><br /></label>
 <?php if (ForumSettings::get('o_topic_subscriptions') == '1'): ?>
                                 <label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['auto_notify'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Auto notify full') ?><br /></label>
 <?php endif; ?>

@@ -20,7 +20,7 @@ class User extends Api
         // Remove sensitive fields for regular users
         if (!$this->isAdMod) {
             Container::get('hooks')->bind('model.profile.get_user_info', function ($user) {
-                $user = $user->select_delete_many(array('u.email', 'u.registration_ip', 'u.notify_with_post', 'u.auto_notify', 'u.admin_note', 'u.last_visit'));
+                $user = $user->select_delete_many(array('u.email', 'u.registration_ip', 'u.auto_notify', 'u.admin_note', 'u.last_visit'));
                 return $user;
             });
         }
