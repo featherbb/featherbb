@@ -24,20 +24,22 @@ class User extends \Statical\BaseProxy
 
     /**
      * Load a user minimal infos, e.g for permissions and preferences
-     * @param  int    $id The id of the user. If null (default), will return currently logged user
+     * @param  mixed    $user Either a user id or user object.
      * @return object     User id and group id
      */
-    public static function getBasic($id = null)
+    public static function getBasic($user = null)
     {
-        if (!$id || $id == Container::get('user')->id) {
+        if (is_object($user) && isset($user->id) && isset($user->group_id)) {
+            return $user;
+        } elseif (!$user || (is_int($user) && intval($user) == Container::get('user')->id)) {
             // Get current user by default
             return Container::get('user');
         } else {
-            // Load user from DB based on $id
+            // Load user from DB based on ID
             return DB::for_table('users')
                 ->table_alias('u')
                 ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                ->where('u.id', $id)
+                ->where('u.id', $user)
                 ->select_many('u.id', 'u.group_id', 'g.g_moderator')
                 ->find_one();
         }
@@ -46,12 +48,12 @@ class User extends \Statical\BaseProxy
     /**
      * Get a user preference value
      * @param  string $pref The name of preference to get
-     * @param  int     $id  Optionnal user id. If not provided, will return pref for currently logged user
+     * @param  int     $user  Either a user id or user object.
      * @return string       Value of the pref returned by Core/Preferences class
      */
-    public static function getPref($pref = null, $id = null)
+    public static function getPref($pref = null, $user = null)
     {
-        $user = self::getBasic($id);
+        $user = self::getBasic($user);
         return Container::get('prefs')->get($user, $pref);
     }
 

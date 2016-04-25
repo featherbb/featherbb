@@ -28,9 +28,9 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                             <input type="hidden" name="form_sent" value="1" />
                             <p><?php _e('Email setting info') ?></p>
                             <div class="rbox">
-                                <label><input type="radio" name="form_email_setting" value="0"<?php if ($user['email_setting'] == '0') {echo ' checked="checked"';} ?> /><?php _e('Email setting 1') ?><br /></label>
-                                <label><input type="radio" name="form_email_setting" value="1"<?php if ($user['email_setting'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Email setting 2') ?><br /></label>
-                                <label><input type="radio" name="form_email_setting" value="2"<?php if ($user['email_setting'] == '2') {echo ' checked="checked"';} ?> /><?php _e('Email setting 3') ?><br /></label>
+                                <label><input type="radio" name="form_email_setting" value="0"<?php if ($user['prefs']['email.setting'] == '0') {echo ' checked="checked"';} ?> /><?php _e('Email setting 1') ?><br /></label>
+                                <label><input type="radio" name="form_email_setting" value="1"<?php if ($user['prefs']['email.setting'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Email setting 2') ?><br /></label>
+                                <label><input type="radio" name="form_email_setting" value="2"<?php if ($user['prefs']['email.setting'] == '2') {echo ' checked="checked"';} ?> /><?php _e('Email setting 3') ?><br /></label>
                             </div>
                         </div>
                     </fieldset>

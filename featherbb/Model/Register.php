@@ -138,7 +138,6 @@ class Register
             'group_id'        => $intial_group_id,
             'password'        => $password_hash,
             'email'           => $user['email1'],
-            'email_setting'   => ForumSettings::get('o_default_email_setting'),
             'registered'      => $now,
             'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,

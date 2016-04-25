@@ -96,8 +96,8 @@ class Profile
                 (!User::isAdminMod() ||                           // and we are not an admin or mod
                 (!User::isAdmin() &&                              // or we aren't an admin and ...
                 (!User::can('mod.edit_users') ||                  // mods aren't allowed to edit users
-                User::isAdmin($user['id']) ||                     // or the user is an admin
-                User::isAdminMod($user['id']))))                  // or the user is another mod
+                User::isAdmin($user) ||                     // or the user is an admin
+                User::isAdminMod($user))))                  // or the user is another mod
             )
         {
             $user_info = $this->model->parse_user_info($user);

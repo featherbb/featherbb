@@ -29,7 +29,6 @@ class Groups
         Container::get('hooks')->fire('controller.admin.groups.display');
 
         $groups = $this->model->fetch_groups();
-        var_dump($groups);
 
         // Set default group
         if (Request::isPost()) {

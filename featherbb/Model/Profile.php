@@ -877,7 +877,7 @@ class Profile
                 );
 
                 if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                    $form['email_setting'] = ForumSettings::get('o_default_email_setting');
+                    $form['email_setting'] = ForumSettings::get('email.setting');
                 }
 
                 break;
@@ -1003,7 +1003,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.notify_with_post', 'u.auto_notify', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
 
         $user = DB::for_table('users')
             ->table_alias('u')
@@ -1016,6 +1016,8 @@ class Profile
         if (!$user) {
             throw new Error(__('Bad request'), 404);
         }
+
+        $user['prefs'] = Container::get('prefs')->loadPrefs($user);
 
         return $user;
     }
@@ -1049,9 +1051,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
+        if ($user['prefs']['email.setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
+        } elseif ($user['prefs']['email.setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1295,8 +1297,8 @@ class Profile
         $mail = DB::for_table('users')
                 ->select('username', 'recipient')
                 ->select('email', 'recipient_email')
-                ->select('id', 'recipient_id')
-                ->select('email_setting')
+                ->select('id')
+                ->select('group_id')
                 ->where('id', $recipient_id);
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail_query', $mail);
         $mail = $mail->find_one();
@@ -1304,6 +1306,9 @@ class Profile
         if (!$mail) {
             throw new Error(__('Bad request'), 404);
         }
+
+        $mail['recipient_id'] = $mail['id'];
+        $mail['email_setting'] = User::getPref('email.setting', $mail);
 
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail', $mail);
 
