@@ -241,6 +241,7 @@ class Install
             'show.sig' => 1,
             'email.setting' => 1,
             'notify_with_post' => 0,
+            'auto_notify' => 0,
         ));
         Container::get('prefs')->setGroup(2, array(
             'post.min_interval' => 0,

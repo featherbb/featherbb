@@ -140,7 +140,7 @@ if ($quickpost) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="pid" value="<?= Utils::escape($pid) ?>" />
                         <input type="hidden" name="page" value="<?= Utils::escape($page_number) ?>" />
-<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::get()->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
+<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::getPref('auto_notify') == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
     if (User::get()->is_guest) {

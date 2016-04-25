@@ -1285,7 +1285,7 @@ class Post
                     $subscr_checked = (Input::post('subscribe')) ? true : false;
                 }
                 // If auto subscribed
-                elseif (User::get()->auto_notify) {
+                elseif (User::getPref('auto_notify')) {
                     $subscr_checked = true;
                 }
                 // If already subscribed to the topic
