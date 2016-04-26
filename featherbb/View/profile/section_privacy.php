@@ -16,46 +16,46 @@ if (!isset($feather)) {
 
 Container::get('hooks')->fire('view.profile.section_privacy.start');
 ?>
-    <div class="blockform">
-        <h2><span><?= Utils::escape($user['username']).' - '.__('Section privacy') ?></span></h2>
-        <div class="box">
-            <form id="profile6" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>">
-                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
-                <div class="inform">
-                    <fieldset>
-                        <legend><?php _e('Privacy options legend') ?></legend>
-                        <div class="infldset">
-                            <input type="hidden" name="form_sent" value="1" />
-                            <p><?php _e('Email setting info') ?></p>
-                            <div class="rbox">
-                                <label><input type="radio" name="form_email_setting" value="0"<?php if ($user['prefs']['email.setting'] == '0') {echo ' checked="checked"';} ?> /><?php _e('Email setting 1') ?><br /></label>
-                                <label><input type="radio" name="form_email_setting" value="1"<?php if ($user['prefs']['email.setting'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Email setting 2') ?><br /></label>
-                                <label><input type="radio" name="form_email_setting" value="2"<?php if ($user['prefs']['email.setting'] == '2') {echo ' checked="checked"';} ?> /><?php _e('Email setting 3') ?><br /></label>
+                <div class="blockform">
+                    <h2><span><?= Utils::escape($user['username']).' - '.__('Section privacy') ?></span></h2>
+                    <div class="box">
+                        <form id="profile6" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>">
+                            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend><?php _e('Privacy options legend') ?></legend>
+                                    <div class="infldset">
+                                        <input type="hidden" name="form_sent" value="1" />
+                                        <p><?php _e('Email setting info') ?></p>
+                                        <div class="rbox">
+                                            <label><input type="radio" name="form_email_setting" value="0"<?php if (User::getPref('email.setting', $user['id']) == '0') {echo ' checked="checked"';} ?> /><?php _e('Email setting 1') ?><br /></label>
+                                            <label><input type="radio" name="form_email_setting" value="1"<?php if (User::getPref('email.setting', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Email setting 2') ?><br /></label>
+                                            <label><input type="radio" name="form_email_setting" value="2"<?php if (User::getPref('email.setting', $user['id']) == '2') {echo ' checked="checked"';} ?> /><?php _e('Email setting 3') ?><br /></label>
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
-                        </div>
-                    </fieldset>
-                </div>
 <?php if (ForumSettings::get('o_forum_subscriptions') == '1' || ForumSettings::get('o_topic_subscriptions') == '1'): ?>
-                <div class="inform">
-                    <fieldset>
-                        <legend><?php _e('Subscription legend') ?></legend>
-                        <div class="infldset">
-                            <div class="rbox">
-                                <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user['prefs']['notify_with_post'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Notify full') ?><br /></label>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend><?php _e('Subscription legend') ?></legend>
+                                    <div class="infldset">
+                                        <div class="rbox">
+                                            <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if (User::getPref('notify_with_post', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Notify full') ?><br /></label>
 <?php if (ForumSettings::get('o_topic_subscriptions') == '1'): ?>
-                                <label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user['prefs']['auto_notify'] == '1') {echo ' checked="checked"';} ?> /><?php _e('Auto notify full') ?><br /></label>
+                                            <label><input type="checkbox" name="form_auto_notify" value="1"<?php if (User::getPref('auto_notify', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?php _e('Auto notify full') ?><br /></label>
 <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
-                        </div>
-                    </fieldset>
-                </div>
 <?php endif; ?>
-                <p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
-            </form>
-        </div>
-    </div>
-    <div class="clearer"></div>
-</div>
+                            <p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
+                        </form>
+                    </div>
+                </div>
+                <div class="clearer"></div>
+            </div>
 
 <?php
 Container::get('hooks')->fire('view.profile.section_privacy.end');
