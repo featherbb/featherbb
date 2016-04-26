@@ -1017,7 +1017,7 @@ class Profile
             throw new Error(__('Bad request'), 404);
         }
 
-        $user['prefs'] = Container::get('prefs')->loadPrefs($user);
+        $user['prefs'] = ($id == User::get()->id) ? User::get()->prefs : Container::get('prefs')->loadPrefs($user);
 
         return $user;
     }

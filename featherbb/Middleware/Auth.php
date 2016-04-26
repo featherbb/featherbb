@@ -256,10 +256,10 @@ class Auth
             $user->is_guest = false;
 
             if (!is_dir(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->prefs['language'])) {
-                $user->prefs['language'] = ForumSettings::get('language');
+                Container::get('prefs')->setUser($user, ['language' => ForumSettings::get('language')]);
             }
             if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->prefs['style'].'/style.css')) {
-                $user->prefs['style'] = ForumSettings::get('style');
+                Container::get('prefs')->setUser($user, ['style' => ForumSettings::get('style')]);
             }
 
             // Add user to DIC
