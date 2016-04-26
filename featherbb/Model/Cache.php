@@ -127,8 +127,11 @@ class Cache
         return $output;
     }
 
-    public static function get_stopwords($lang_path)
+    public static function get_stopwords($lang_path = null)
     {
+        if (!$lang_path) {
+            $lang_path = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
+        }
         $files = new \DirectoryIterator($lang_path);
         $stopwords = array();
         foreach($files as $file) {

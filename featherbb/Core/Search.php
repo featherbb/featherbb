@@ -63,7 +63,7 @@ class Search
 
         if (!isset($stopwords)) {
             if (!Container::get('cache')->isCached('stopwords')) {
-                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_config(), '+1 week');
+                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_stopwords(), '+1 week');
             }
             $stopwords = Container::get('cache')->retrieve('stopwords');
         }
