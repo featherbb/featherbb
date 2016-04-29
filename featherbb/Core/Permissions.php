@@ -16,6 +16,10 @@ class Permissions
               $parents = array(),
               $regexs = array();
 
+    public function __construct()
+    {
+    }
+
     public function getParents($gid = null)
     {
         // Remove below line if we use again group inheritance later
@@ -126,6 +130,8 @@ class Permissions
                 throw new \ErrorException('Internal error : Unable to add new permission to user', 500);
             }
         }
+        // Reload permissions cache
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         return $this;
     }
 
@@ -166,6 +172,8 @@ class Permissions
                         ))
                         ->save();
         }
+        // Reload permissions cache
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         return $this;
     }
 
@@ -339,54 +347,8 @@ class Permissions
         return array((int) $uid, (int) $gid);
     }
 
-    public function getGroupPreferences($group_id)
-    {
-        $result = DB::for_table('preferences')
-            ->select_many('preference_name', 'preference_value')
-            ->where_in('preference_name', array('post.min_interval', 'search.min_interval', 'email.min_interval', 'report.min_interval'))
-            ->where_any_is(array(
-                array('group' => $group_id),
-                array('default' => 1),
-            ))
-            ->order_by_desc('default')
-            ->find_array();
-
-        $group_preferences = array();
-        foreach ($result as $pref) {
-            $group_preferences[$pref['preference_name']] = $pref['preference_value'];
-        }
-
-        return (array) $group_preferences;
-    }
-
     public function getGroupPermissions($group_id)
     {
-        $where = array(['group' => $group_id]);
-
-        if ($parents = $this->getParents($group_id)) {
-            foreach ($parents as $parent_id) {
-                $where[] = ['group' => (int) $parent_id];
-            }
         }
-
-        $result = DB::for_table('permissions')
-            ->select_many('permission_name', 'allow', 'deny', 'group')
-            ->where_any_is($where)
-            ->find_array();
-
-        $group_permissions = array();
-
-        foreach ($result as $perm) {
-            if (!isset($group_permissions[$perm['permission_name']])) {
-                if ((bool) $perm['allow']) {
-                    $group_permissions[$perm['permission_name']] = true;
-                }
-            } else {
-                if ((bool) $perm['deny']) {
-                    unset($group_permissions[$perm['permission_name']]);
-                }
-            }
-        }
-        return (array) $group_permissions;
     }
 }

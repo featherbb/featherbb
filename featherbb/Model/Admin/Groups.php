@@ -52,7 +52,7 @@ class Groups
         }
 
         $group['info'] = $groups[$id];
-        $group['prefs'] = Container::get('perms')->getGroupPreferences($id);
+        $group['prefs'] = Container::get('prefs')->getGroupPreferences($id);
         $group['perms'] = Container::get('perms')->getGroupPermissions($id);
 
         $group = Container::get('hooks')->fire('model.admin.groups.info_add_group', $group);
@@ -214,11 +214,6 @@ class Groups
 
             // Set new group preferences
             Container::get('prefs')->setGroup($new_group_id, $group_preferences);
-            // Set new group permissions
-            $allowed_perms = array_filter($group_permissions);
-            $denied_perms = array_diff($group_permissions, $allowed_perms);
-            Container::get('perms')->allowGroup($new_group_id, array_keys($allowed_perms));
-            Container::get('perms')->denyGroup($new_group_id, array_keys($denied_perms));
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
@@ -254,11 +249,6 @@ class Groups
 
             // Update group preferences
             Container::get('prefs')->setGroup(Input::post('group_id'), $group_preferences);
-            // Update group permissions
-            $allowed_perms = array_filter($group_permissions);
-            $denied_perms = array_diff($group_permissions, $allowed_perms);
-            Container::get('perms')->allowGroup(Input::post('group_id'), array_keys($allowed_perms));
-            Container::get('perms')->denyGroup(Input::post('group_id'), array_keys($denied_perms));
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
@@ -270,6 +260,14 @@ class Groups
 
         $group_id = Input::post('mode') == 'add' ? $new_group_id : Input::post('group_id');
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $group_id);
+
+        // Update group permissions
+        $allowed_perms = array_filter($group_permissions);
+        $denied_perms = array_diff($group_permissions, $allowed_perms);
+        Container::get('perms')->allowGroup($group_id, array_keys($allowed_perms));
+        Container::get('perms')->denyGroup($group_id, array_keys($denied_perms));
+        // Reload cache
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
 
         // Regenerate the quick jump cache
         Container::get('cache')->store('quickjump', Cache::get_quickjump());

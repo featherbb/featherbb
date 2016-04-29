@@ -141,4 +141,32 @@ class Cache
         }
         return array_map('trim', $stopwords);
     }
+
+    public static function get_permissions()
+    {
+        // Initial empty array
+        $result = array();
+
+        // First, get default group permissions
+        $groups_perms = DB::for_table('permissions')->where_null('user')->order_by_desc('group')->find_array();
+        foreach ($groups_perms as $perm) {
+            if ((bool) $perm['allow']) {
+                $result[$perm['group']][0][$perm['permission_name']] = true;
+            }
+        }
+
+        // Then get optionnal user permissions to override their group defaults
+        // TODO: Add a page in profile Administration section to display custom permissions
+        $users_perms = DB::for_table('permissions')
+            ->table_alias('p')
+            ->select_many('p.permission_name', 'p.allow', 'p.deny', 'p.user', 'u.group_id')
+            ->inner_join('users', array('u.id', '=', 'p.user'), 'u')
+            ->where_not_null('p.user')
+            ->find_array();
+        foreach ($users_perms as $perm) {
+            $result[$perm['group_id']][$perm['user']][$perm['permission_name']] = (bool) $perm['allow'] || !(bool) $perm['deny'];
+        }
+
+        return $result;
+    }
 }

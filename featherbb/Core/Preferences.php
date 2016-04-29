@@ -264,4 +264,24 @@ class Preferences
         }
         return array((int) $uid, (int) $gid);
     }
+
+    public function getGroupPreferences($group_id)
+    {
+        $result = DB::for_table('preferences')
+            ->select_many('preference_name', 'preference_value')
+            ->where_in('preference_name', array('post.min_interval', 'search.min_interval', 'email.min_interval', 'report.min_interval'))
+            ->where_any_is(array(
+                array('group' => $group_id),
+                array('default' => 1),
+            ))
+            ->order_by_desc('default')
+            ->find_array();
+
+        $group_preferences = array();
+        foreach ($result as $pref) {
+            $group_preferences[$pref['preference_name']] = $pref['preference_value'];
+        }
+
+        return (array) $group_preferences;
+    }
 }
