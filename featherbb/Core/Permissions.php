@@ -16,11 +16,6 @@ class Permissions
               $parents = array(),
               $regexs = array();
 
-    public function __construct()
-    {
-        $this->permissions = Container::get('cache')->retrieve('permissions');
-    }
-
     public function getParents($gid = null)
     {
         // Remove below line if we use again group inheritance later
@@ -266,19 +261,13 @@ class Permissions
     public function can($user = null, $permission = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-        // Admins 'got the power!
-        if ($gid == ForumEnv::get('FEATHER_ADMIN'))
-            return true;
-
-        $user_perms = $this->getUserPermissions($user);
-        return isset($user_perms[$permission]);
-        // if (!isset($this->regexs[$gid][$uid])) {
-        //     if (!isset($this->permissions[$gid][$uid])) {
-        //         $this->getUserPermissions($user);
-        //     }
-        //     $this->buildRegex($uid, $gid);
-        // }
-        // return (bool) preg_match($this->regexs[$gid][$uid], $permission);
+        if (!isset($this->regexs[$gid][$uid])) {
+            if (!isset($this->permissions[$gid][$uid])) {
+                $this->getUserPermissions($user);
+            }
+            $this->buildRegex($uid, $gid);
+        }
+        return (bool) preg_match($this->regexs[$gid][$uid], $permission);
     }
 
     public function dump()
@@ -298,26 +287,37 @@ class Permissions
     public function getUserPermissions($user = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-        $group_perms = $this->permissions[$gid];
+        // Admins 'got the power!
+        if ($gid == ForumEnv::get('FEATHER_ADMIN')) {
+            $user_perms = array('*' => true);
+        } else { // Regular user
+            $all_permissions = Container::get('cache')->retrieve('permissions');
+            if (isset($all_permissions[$gid][0])) {
+                $group_perms = $all_permissions[$gid];
+            } else {
+                $group_perms = array([]);
+            }
 
-        // Init user permissions with the group defaults
-        $user_perms = $group_perms[0];
-        if (array_key_exists($uid, $group_perms)) {
-            // If user have custom permissions, override the defaults
-            foreach ($group_perms[$uid] as $permission_name => $is_allowed) {
-                if (!isset($user_perms[$permission_name])) {
-                    if ((bool) $is_allowed) {
-                        $user_perms[$permission_name] = true;
-                    }
-                } else {
-                    if ((bool) !$is_allowed) {
-                        unset($user_perms[$permission_name]);
+            // Init user permissions with the group defaults
+            $user_perms = $group_perms[0];
+            if (array_key_exists($uid, $group_perms)) {
+                // If user have custom permissions, override the defaults
+                foreach ($group_perms[$uid] as $permission_name => $is_allowed) {
+                    if (!isset($user_perms[$permission_name])) {
+                        if ((bool) $is_allowed) {
+                            $user_perms[$permission_name] = true;
+                        }
+                    } else {
+                        if ((bool) !$is_allowed) {
+                            unset($user_perms[$permission_name]);
+                        }
                     }
                 }
             }
         }
 
-        // $this->buildRegex($uid, $gid);
+        $this->permissions[$gid][$uid] = $user_perms;
+        $this->buildRegex($uid, $gid);
         return $user_perms;
 
         // Legacy code which may be useful later
