@@ -145,23 +145,23 @@ class Groups
         $mod_change_passwords = $moderator == '1' && Input::post('mod_change_passwords') == '1' ? '1' : '0';
         $mod_ban_users = $moderator == '1' && Input::post('mod_ban_users') == '1' ? '1' : '0';
         $mod_promote_users = $moderator == '1' && Input::post('mod_promote_users') == '1' ? '1' : '0';
-        $read_board = (Input::post('read_board') == 0) ? Input::post('read_board') : '1';
+        $read_board = Input::post('read_board') ? intval(Input::post('read_board')) : '1';
         $view_users = (Input::post('view_users') && Input::post('view_users') == '1') || $is_admin_group ? '1' : '0';
-        $post_replies = (Input::post('post_replies') == 0) ? Input::post('post_replies') : '1';
-        $post_topics = (Input::post('post_topics') == 0) ? Input::post('post_topics') : '1';
-        $edit_posts = (Input::post('edit_posts') == 0) ? Input::post('edit_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_posts = (Input::post('delete_posts') == 0) ? Input::post('delete_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_topics = (Input::post('delete_topics') == 0) ? Input::post('delete_topics') : ($is_admin_group) ? '1' : '0';
-        $post_links = (Input::post('post_links') == 0) ? Input::post('post_links') : '1';
-        $set_title = (Input::post('set_title') == 0) ? Input::post('set_title') : ($is_admin_group) ? '1' : '0';
-        $search = (Input::post('search') == 0) ? Input::post('search') : '1';
-        $search_users = (Input::post('search_users') == 0) ? Input::post('search_users') : '1';
+        $post_replies = Input::post('post_replies') ? intval(Input::post('post_replies')) : '1';
+        $post_topics = Input::post('post_topics') ? intval(Input::post('post_topics')) : '1';
+        $edit_posts = Input::post('edit_posts') ? intval(Input::post('edit_posts')) : ($is_admin_group) ? '1' : '0';
+        $delete_posts = Input::post('delete_posts') ? intval(Input::post('delete_posts')) : ($is_admin_group) ? '1' : '0';
+        $delete_topics = Input::post('delete_topics') ? intval(Input::post('delete_topics')) : ($is_admin_group) ? '1' : '0';
+        $post_links = Input::post('post_links') ? intval(Input::post('post_links')) : '1';
+        $set_title = Input::post('set_title') ? intval(Input::post('set_title')) : ($is_admin_group) ? '1' : '0';
+        $search = Input::post('search') ? intval(Input::post('search')) : '1';
+        $search_users = Input::post('search_users') ? intval(Input::post('search_users')) : '1';
         $send_email = (Input::post('send_email') && Input::post('send_email') == '1') || $is_admin_group ? '1' : '0';
         // Preferences
         $post_flood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
         $search_flood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
         $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
-        $report_flood = (Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
+        $report_flood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
 
         $insert_update_group = array(
             'g_title'               =>  $title,
