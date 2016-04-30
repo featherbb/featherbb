@@ -1128,8 +1128,8 @@ class Post
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if (User::get()->g_promote_next_group != 0 && User::get()->num_posts + 1 >= User::get()->g_promote_min_posts) {
-                $new_group_id = User::get()->g_promote_next_group;
+            if (User::getPref('promote.next_group') && User::get()->num_posts + 1 >= User::getPref('promote.min_posts')) {
+                $new_group_id = User::getPref('promote.next_group');
                 $promote = DB::for_table('users')
                             ->where('id', User::get()->id)
                             ->find_one()

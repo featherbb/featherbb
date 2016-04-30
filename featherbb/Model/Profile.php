@@ -491,12 +491,7 @@ class Profile
         $pid = Container::get('hooks')->fire('model.profile.promote_user.post_id', $pid);
 
         // Find the group ID to promote the user to
-        $next_group_id = DB::for_table('groups')
-            ->table_alias('g')
-            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
-            ->where('u.id', $id);
-        $next_group_id = Container::get('hooks')->fireDB('model.profile.promote_user.next_group_id', $next_group_id);
-        $next_group_id = $next_group_id->find_one_col('g_promote_next_group');
+        $next_group_id = Container::get('hooks')->fire('model.profile.promote_user.next_group_id', User::getPref('promote.next_group', $id));
 
         if (!$next_group_id) {
             throw new Error(__('Bad request'), 404);

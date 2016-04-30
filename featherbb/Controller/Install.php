@@ -218,6 +218,7 @@ class Install
         Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
         Container::get('perms')->allowGroup(4, array('board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
         Container::get('perms')->allowGroup(2, array('board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users'));
+        Container::get('perms')->allowGroup(1, array('*'));
         Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         // Init preferences
         Container::get('prefs')->set(array(
@@ -227,6 +228,8 @@ class Install
             'search.min_interval' => 30,
             'email.min_interval' => 60,
             'report.min_interval' => 60,
+            'promote.min_posts' => 0,
+            'promote.next_group' => 0,
             'timezone' => 0,
             'dst' => 0,
             'time_format' => 'H:i:s',

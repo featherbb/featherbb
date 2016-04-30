@@ -53,7 +53,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                             <option value="0"><?php _e('Disable promotion') ?></option>
                                             <?= $group_list ?>
                                         </select>
-                                        <input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?= Utils::escape($group['info']['g_promote_min_posts']) ?>" tabindex="4" />
+                                        <input type="text" name="promote_min_posts" size="5" maxlength="10" value="<?= Utils::escape($group['prefs']['promote.min_posts']) ?>" tabindex="4" />
                                         <span><?php printf(__('Promote users help'), __('Disable promotion')) ?></span>
                                     </td>
                                 </tr>

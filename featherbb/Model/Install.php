@@ -77,8 +77,6 @@ class Install
             `g_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `g_title` varchar(50) NOT NULL DEFAULT '',
             `g_user_title` varchar(50) DEFAULT NULL,
-            `g_promote_min_posts` int(10) unsigned NOT NULL DEFAULT '0',
-            `g_promote_next_group` int(10) unsigned NOT NULL DEFAULT '0',
             `g_moderator` tinyint(1) NOT NULL DEFAULT '0',
             `inherit` text,
             PRIMARY KEY (`g_id`)

@@ -839,7 +839,7 @@ class Topic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'email_setting' => 'pr.preference_value', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
+        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'email_setting' => 'pr.preference_value', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
 
         $result = DB::for_table('posts')
                     ->table_alias('p')
@@ -861,6 +861,7 @@ class Topic
             $cur_post['post_actions'] = array();
             $cur_post['is_online_formatted'] = '';
             $cur_post['signature_formatted'] = '';
+            $cur_post['promote.next_group'] = Container::get('prefs')->getGroupPreferences($cur_post['g_id'])['promote.next_group'];
 
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
@@ -923,7 +924,7 @@ class Topic
                 }
 
                 if (User::isAdmin() || (User::isAdminMod() && User::can('mod.promote_users'))) {
-                    if ($cur_post['g_promote_next_group']) {
+                    if ($cur_post['promote.next_group']) {
                         $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('profileAction', ['id' => $cur_post['poster_id'], 'action' => 'promote', 'pid' => $cur_post['id']]).'">'.__('Promote user').'</a></span></dd>';
                     }
                 }

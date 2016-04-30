@@ -20,7 +20,7 @@ class Groups
     public function fetch_groups()
     {
         // $result = DB::for_table('groups')->order_by('g_id')->find_many();
-        $result = DB::for_table('groups')->select_many('g_id', 'g_user_title', 'g_title', 'g_promote_min_posts', 'g_promote_next_group', 'g_moderator')->order_by('g_id')->find_many();
+        $result = DB::for_table('groups')->select_many('g_id', 'g_user_title', 'g_title', 'g_moderator')->order_by('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = array();
         foreach ($result as $cur_group) {
@@ -65,7 +65,7 @@ class Groups
 
         foreach ($groups as $cur_group) {
             if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != ForumEnv::get('FEATHER_ADMIN') && $cur_group['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
-                if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
+                if ($cur_group['g_id'] == $group['prefs']['promote.next_group']) {
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
                 } else {
                     $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
@@ -166,15 +166,15 @@ class Groups
         $insert_update_group = array(
             'g_title'               =>  $title,
             'g_user_title'          =>  $user_title,
-            'g_promote_min_posts'   =>  $promote_min_posts,
-            'g_promote_next_group'  =>  $promote_next_group,
             'g_moderator'           =>  $moderator,
         );
         $group_preferences = array(
             'post.min_interval'     => (int) $post_flood,
             'search.min_interval'   => (int) $search_flood,
             'email.min_interval'    => (int) $email_flood,
-            'report.min_interval'   => (int) $report_flood
+            'report.min_interval'   => (int) $report_flood,
+            'promote.min_posts'     => (int) $promote_min_posts,
+            'promote.next_group'    => (int) $promote_next_group,
         );
         $group_permissions = array(
             'mod.edit_users'        => (int) $mod_edit_users,
@@ -342,10 +342,12 @@ class Groups
         DB::for_table('permissions')
             ->where('group', $group_id)
             ->delete_many();
+        DB::for_table('preferences')
+            ->where('group', $group_id)
+            ->delete_many();
 
         // Don't let users be promoted to this group
-        DB::for_table('groups')->where('g_promote_next_group', $group_id)
-                                                   ->update_many('g_promote_next_group', 0);
+        DB::for_table('preferences')->where('promote.next_group', $group_id)->delete_many();
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
