@@ -861,12 +861,12 @@ class Topic
             $cur_post['post_actions'] = array();
             $cur_post['is_online_formatted'] = '';
             $cur_post['signature_formatted'] = '';
-            $cur_post['promote.next_group'] = Container::get('prefs')->getGroupPreferences($cur_post['g_id'])['promote.next_group'];
+            $cur_post['promote.next_group'] = Container::get('prefs')->getGroupPreferences($cur_post['g_id'], 'promote.next_group');
 
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if (User::can('users.view')) {
-                    $cur_post['username_formatted'] = '<a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
+                    $cur_post['username_formatted'] = '<a href="'.Router::pathFor('userProfile', ['id' => $cur_post['poster_id']]).'/">'.Utils::escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 }

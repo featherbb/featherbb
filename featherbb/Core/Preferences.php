@@ -272,6 +272,6 @@ class Preferences
             return (array) $preferences[$group_id];
         }
 
-        return $preferences[$group_id][$preference];
+        return isset($preferences[$group_id][$preference]) ? $preferences[$group_id][$preference] : null;
     }
 }
